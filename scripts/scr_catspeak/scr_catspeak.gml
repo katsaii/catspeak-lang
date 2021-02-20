@@ -86,12 +86,24 @@ function CatspeakLexer(_buffer) constructor {
 	}
 	/// @desc Advances the lexer until a specific byte is reached, or until the EoF was reached.
 	/// @param {real} byte The byte to check for.
-	static advanceUntil = function(_byte) {
+	static advanceUntil = function() {
 		var seek = buffer_tell(buff);
+		var skip_next = false;
 		while (seek < limit) {
 			var byte = buffer_peek(buff, seek, buffer_u8);
-			if (byte == _byte) {
-				break;
+			if (skip_next) {
+				skip_next = false;
+			} else if (byte == ord("\\")) {
+				skip_next = true;
+			} else {
+				var i = argument_count - 1;
+				while (i >= 0 && byte != argument[i]) {
+					i -= 1;
+				}
+				if (i >= 0) {
+					// there were matches
+					break;
+				}
 			}
 			seek += alignment;
 		}
@@ -100,7 +112,7 @@ function CatspeakLexer(_buffer) constructor {
 	/// @desc Advances the lexer and returns the next token. 
 	static next = function() {
 		resetSpan();
-		advanceUntil(0x20);
+		advanceUntil(ord(" "), ord("\n"));
 		return CatspeakTokenKind.UNKNOWN;
 	}
 }
@@ -121,7 +133,7 @@ function catspeak_session_destroy(_sess) {
 	buffer_delete(_sess);
 }
 
-var sess = catspeak_session_create("hello world");
+var sess = catspeak_session_create("hello\\ world");
 var lex = new CatspeakLexer(sess);
 lex.next()
 show_debug_message(lex.getSpan());
