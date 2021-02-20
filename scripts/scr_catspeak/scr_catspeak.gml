@@ -68,6 +68,17 @@ function catspeak_render_token(_kind) {
 	}
 }
 
+/// @desc Returns whether a byte is a valid whitespace character.
+function catspeak_byte_is_whitespace(_byte) {
+	switch (_byte) {
+	case ord(" "):
+	case ord("\t"):
+		return true;
+	default:
+		return false;
+	}
+}
+
 /// @desc Tokenises the buffer contents.
 /// @param {real} buffer The id of the buffer to use.
 function CatspeakLexer(_buffer) constructor {
@@ -84,9 +95,9 @@ function CatspeakLexer(_buffer) constructor {
 	static getSpan = function() {
 		return new CatspeakSpan(spanBegin, buffer_tell(buff));
 	}
-	/// @desc Advances the lexer until a specific byte is reached, or until the EoF was reached.
-	/// @param {real} byte The byte to check for.
-	static advanceUntil = function() {
+	/// @desc Advances the lexer whilst a specific byte is reached, or until the EoF was reached.
+	/// @param {script} pred The predicate to check for.
+	static advanceWhile = function(_pred) {
 		var seek = buffer_tell(buff);
 		var skip_next = false;
 		while (seek < limit) {
@@ -95,15 +106,8 @@ function CatspeakLexer(_buffer) constructor {
 				skip_next = false;
 			} else if (byte == ord("\\")) {
 				skip_next = true;
-			} else {
-				var i = argument_count - 1;
-				while (i >= 0 && byte != argument[i]) {
-					i -= 1;
-				}
-				if (i >= 0) {
-					// there were matches
-					break;
-				}
+			} else if not (_pred(byte)) {
+				break;
 			}
 			seek += alignment;
 		}
@@ -120,26 +124,35 @@ function CatspeakLexer(_buffer) constructor {
 		case ord("\n"):
 		case ord("\r"):
 			return CatspeakTokenKind.EOL;
-		/*CatspeakTokenKind.LEFT_PAREN,
-		CatspeakTokenKind.RIGHT_PAREN,
-		CatspeakTokenKind.LEFT_BOX,
-		CatspeakTokenKind.RIGHT_BOX,
-		CatspeakTokenKind.LEFT_BRACE,
-		CatspeakTokenKind.RIGHT_BRACE,
-		CatspeakTokenKind.DOT,
-		CatspeakTokenKind.BAR,
-		CatspeakTokenKind.COLON,
-		CatspeakTokenKind.SEMICOLON,
-		CatspeakTokenKind.PLUS,
-		CatspeakTokenKind.MINUS,
-		CatspeakTokenKind.STRING,
-		CatspeakTokenKind.NUMBER,
-		CatspeakTokenKind.WHITESPACE,
-		CatspeakTokenKind.COMMENT,
-		CatspeakTokenKind.EOL,
-		*/
+		case ord("("):
+			return CatspeakTokenKind.LEFT_PAREN;
+		case ord(")"):
+			return CatspeakTokenKind.RIGHT_PAREN;
+		case ord("["):
+			return CatspeakTokenKind.LEFT_BOX;
+		case ord("]"):
+			return CatspeakTokenKind.RIGHT_BOX;
+		case ord("{"):
+			return CatspeakTokenKind.LEFT_BRACE;
+		case ord("}"):
+			return CatspeakTokenKind.RIGHT_BRACE;
+		case ord("."):
+			return CatspeakTokenKind.DOT;
+		case ord(":"):
+			return CatspeakTokenKind.COLON;
+		case ord(";"):
+			return CatspeakTokenKind.SEMICOLON;
+		case ord("+"):
+			return CatspeakTokenKind.PLUS;
+		case ord("-"):
+			return CatspeakTokenKind.MINUS;
 		default:
-			return CatspeakTokenKind.UNKNOWN;
+			if (catspeak_byte_is_whitespace(byte)) {
+				advanceWhile(catspeak_byte_is_whitespace);
+				return CatspeakTokenKind.WHITESPACE;
+			} else {
+				return CatspeakTokenKind.UNKNOWN;
+			}
 		}
 	}
 }
