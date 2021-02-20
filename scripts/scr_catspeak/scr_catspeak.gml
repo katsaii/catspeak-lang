@@ -112,8 +112,35 @@ function CatspeakLexer(_buffer) constructor {
 	/// @desc Advances the lexer and returns the next token. 
 	static next = function() {
 		resetSpan();
-		advanceUntil(ord(" "), ord("\n"));
-		return CatspeakTokenKind.UNKNOWN;
+		if (buffer_seek(buff) > limit) {
+			return CatspeakTokenKind.EOF;
+		}
+		var byte = buffer_read(buff, buffer_u8);
+		switch (byte) {
+		case ord("\n"):
+		case ord("\r"):
+			return CatspeakTokenKind.EOL;
+		/*CatspeakTokenKind.LEFT_PAREN,
+		CatspeakTokenKind.RIGHT_PAREN,
+		CatspeakTokenKind.LEFT_BOX,
+		CatspeakTokenKind.RIGHT_BOX,
+		CatspeakTokenKind.LEFT_BRACE,
+		CatspeakTokenKind.RIGHT_BRACE,
+		CatspeakTokenKind.DOT,
+		CatspeakTokenKind.BAR,
+		CatspeakTokenKind.COLON,
+		CatspeakTokenKind.SEMICOLON,
+		CatspeakTokenKind.PLUS,
+		CatspeakTokenKind.MINUS,
+		CatspeakTokenKind.STRING,
+		CatspeakTokenKind.NUMBER,
+		CatspeakTokenKind.WHITESPACE,
+		CatspeakTokenKind.COMMENT,
+		CatspeakTokenKind.EOL,
+		*/
+		default:
+			return CatspeakTokenKind.UNKNOWN;
+		}
 	}
 }
 
