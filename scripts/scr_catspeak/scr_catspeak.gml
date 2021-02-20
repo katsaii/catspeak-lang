@@ -6,7 +6,7 @@
 /// @desc Represents a span of bytes of some buffer.
 /// @param {real} begin The start of the span.
 /// @param {real} end The end of the span.
-function CatspeakSpan(_begin, _end) {
+function CatspeakSpan(_begin, _end) constructor {
 	start = min(_begin, _end);
 	limit = max(_begin, _end) - start;
 	/// @desc Creates a clone of this span.
@@ -29,8 +29,6 @@ enum CatspeakTokenKind {
 	BAR,
 	// function application operator `f (a + b)` is equivalent to `f : a + b`
 	COLON,
-	// used to escape newlines
-	ESCAPE,
 	// statement terminator
 	SEMICOLON,
 	PLUS,
@@ -57,7 +55,6 @@ function catspeak_render_token(_kind) {
 	case CatspeakTokenKind.DOT: return "DOT";
 	case CatspeakTokenKind.BAR: return "BAR";
 	case CatspeakTokenKind.COLON: return "COLON";
-	case CatspeakTokenKind.ESCAPE: return "ESCAPE";
 	case CatspeakTokenKind.SEMICOLON: return "SEMICOLON";
 	case CatspeakTokenKind.PLUS: return "PLUS";
 	case CatspeakTokenKind.MINUS: return "MINUS";
@@ -74,5 +71,58 @@ function catspeak_render_token(_kind) {
 /// @desc Tokenises the buffer contents.
 /// @param {real} buffer The id of the buffer to use.
 function CatspeakLexer(_buffer) constructor {
-	
+	buff = _buffer;
+	offset = buffer_tell(_buffer);
+	alignment = buffer_get_alignment(_buffer);
+	limit = buffer_get_size(_buffer);
+	spanBegin = offset;
+	/// @desc Resets the current span.
+	static resetSpan = function() {
+		spanBegin = buffer_tell(buff);
+	}
+	/// @desc Returns the current buffer span.
+	static getSpan = function() {
+		return new CatspeakSpan(spanBegin, buffer_tell(buff));
+	}
+	/// @desc Advances the lexer until a specific byte is reached, or until the EoF was reached.
+	/// @param {real} byte The byte to check for.
+	static advanceUntil = function(_byte) {
+		var seek = buffer_tell(buff);
+		while (seek < limit) {
+			var byte = buffer_peek(buff, seek, buffer_u8);
+			if (byte == _byte) {
+				break;
+			}
+			seek += alignment;
+		}
+		buffer_seek(buff, buffer_seek_start, seek);
+	}
+	/// @desc Advances the lexer and returns the next token. 
+	static next = function() {
+		resetSpan();
+		advanceUntil(0x20);
+		return CatspeakTokenKind.UNKNOWN;
+	}
 }
+
+/// @desc Creates a compiler session from this string.
+/// @param {string} str The string that contains the source code.
+function catspeak_session_create(_str) {
+	var size = string_byte_length(_str);
+	var buff = buffer_create(size, buffer_fixed, 1);
+	buffer_write(buff, buffer_text, _str);
+	buffer_seek(buff, buffer_seek_start, 0);
+	return buff;
+}
+
+/// @desc Destroys this compiler session.
+/// @param {struct} sess The session to kill.
+function catspeak_session_destroy(_sess) {
+	buffer_delete(_sess);
+}
+
+var sess = catspeak_session_create("hello world");
+var lex = new CatspeakLexer(sess);
+lex.next()
+show_debug_message(lex.getSpan());
+catspeak_session_destroy(sess);
