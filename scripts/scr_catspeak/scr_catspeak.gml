@@ -68,7 +68,20 @@ function catspeak_render_token(_kind) {
 	}
 }
 
+/// @desc Returns whether a byte is a valid newline character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_newline(_byte) {
+	switch (_byte) {
+	case ord("\n"):
+	case ord("\r"):
+		return true;
+	default:
+		return false;
+	}
+}
+
 /// @desc Returns whether a byte is a valid whitespace character.
+/// @param {real} byte The byte to check.
 function catspeak_byte_is_whitespace(_byte) {
 	switch (_byte) {
 	case ord(" "):
@@ -116,14 +129,11 @@ function CatspeakLexer(_buffer) constructor {
 	/// @desc Advances the lexer and returns the next token. 
 	static next = function() {
 		resetSpan();
-		if (buffer_seek(buff) > limit) {
+		if (buffer_tell(buff) > limit) {
 			return CatspeakTokenKind.EOF;
 		}
 		var byte = buffer_read(buff, buffer_u8);
 		switch (byte) {
-		case ord("\n"):
-		case ord("\r"):
-			return CatspeakTokenKind.EOL;
 		case ord("("):
 			return CatspeakTokenKind.LEFT_PAREN;
 		case ord(")"):
@@ -147,7 +157,9 @@ function CatspeakLexer(_buffer) constructor {
 		case ord("-"):
 			return CatspeakTokenKind.MINUS;
 		default:
-			if (catspeak_byte_is_whitespace(byte)) {
+			if (catspeak_byte_is_newline(byte)) {
+				return CatspeakTokenKind.EOL;
+			} else if (catspeak_byte_is_whitespace(byte)) {
 				advanceWhile(catspeak_byte_is_whitespace);
 				return CatspeakTokenKind.WHITESPACE;
 			} else {
