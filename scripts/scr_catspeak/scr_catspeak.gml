@@ -92,6 +92,26 @@ function catspeak_byte_is_whitespace(_byte) {
 	}
 }
 
+/// @desc Returns whether a byte is a valid alphabetic character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_alphabetic(_byte) {
+	return _byte >= ord("a") && _byte <= ord("z")
+			|| _byte >= ord("A") && _byte <= ord("Z");
+}
+
+/// @desc Returns whether a byte is a valid digit character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_digit(_byte) {
+	return _byte >= ord("0") && _byte <= ord("9");
+}
+
+/// @desc Returns whether a byte is a valid alphanumeric character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_alphanumeric(_byte) {
+	return catspeak_byte_is_alphabetic(_byte)
+			|| catspeak_byte_is_digit(_byte);
+}
+
 /// @desc Tokenises the buffer contents.
 /// @param {real} buffer The id of the buffer to use.
 function CatspeakLexer(_buffer) constructor {
@@ -129,7 +149,7 @@ function CatspeakLexer(_buffer) constructor {
 	/// @desc Advances the lexer and returns the next token. 
 	static next = function() {
 		resetSpan();
-		if (buffer_tell(buff) > limit) {
+		if (buffer_tell(buff) >= limit) {
 			return CatspeakTokenKind.EOF;
 		}
 		var byte = buffer_read(buff, buffer_u8);
@@ -162,6 +182,12 @@ function CatspeakLexer(_buffer) constructor {
 			} else if (catspeak_byte_is_whitespace(byte)) {
 				advanceWhile(catspeak_byte_is_whitespace);
 				return CatspeakTokenKind.WHITESPACE;
+			} else if (catspeak_byte_is_alphabetic(byte)) {
+				advanceWhile(catspeak_byte_is_alphanumeric);
+				return CatspeakTokenKind.STRING;
+			} else if (catspeak_byte_is_digit(byte)) {
+				advanceWhile(catspeak_byte_is_digit);
+				return CatspeakTokenKind.NUMBER;
 			} else {
 				return CatspeakTokenKind.UNKNOWN;
 			}
@@ -185,8 +211,24 @@ function catspeak_session_destroy(_sess) {
 	buffer_delete(_sess);
 }
 
-var sess = catspeak_session_create("hello\\ world");
+var sess = catspeak_session_create(@' \
+def add |x y| {
+  ret x + y
+}
+
+player.x
+
+def result : add 1 2
+
+var iftrue {
+  print hi
+}
+
+set result : result + 1
+');
 var lex = new CatspeakLexer(sess);
-lex.next()
-show_debug_message(lex.getSpan());
+do {
+	var token = lex.next();
+	show_debug_message(catspeak_render_token(token));
+} until (token == CatspeakTokenKind.EOF);
 catspeak_session_destroy(sess);
