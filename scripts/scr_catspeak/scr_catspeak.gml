@@ -120,6 +120,18 @@ function catspeak_byte_is_not_newline(_byte) {
 	return !catspeak_byte_is_newline(_byte);
 }
 
+/// @desc Returns whether a byte is a valid quote character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_quote(_byte) {
+	return _byte == ord("\"");
+}
+
+/// @desc Returns whether a byte is NOT a valid quote character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_not_quote(_byte) {
+	return !catspeak_byte_is_quote(_byte);
+}
+
 /// @desc Returns whether a byte is a valid whitespace character.
 /// @param {real} byte The byte to check.
 function catspeak_byte_is_whitespace(_byte) {
@@ -163,6 +175,7 @@ function CatspeakLexer(_buff) constructor {
 	alignment = buffer_get_alignment(_buff);
 	limit = buffer_get_size(_buff);
 	spanBegin = offset;
+	skipNextByte = false;
 	/// @desc Resets the current span.
 	static resetSpan = function() {
 		spanBegin = buffer_tell(buff);
@@ -202,10 +215,15 @@ function CatspeakLexer(_buff) constructor {
 	}
 	/// @desc Advances the lexer and returns the next token. 
 	static next = function() {
-		resetSpan();
 		if (buffer_tell(buff) >= limit) {
+			spanBegin = limit;
 			return CatspeakTokenKind.EOF;
 		}
+		if (skipNextByte) {
+			buffer_read(buff, buffer_u8);
+			skipNextByte = false;
+		}
+		resetSpan();
 		var byte = buffer_read(buff, buffer_u8);
 		switch (byte) {
 		case ord("\\"):
@@ -230,6 +248,8 @@ function CatspeakLexer(_buff) constructor {
 			return CatspeakTokenKind.RIGHT_BRACE;
 		case ord("."):
 			return CatspeakTokenKind.DOT;
+		case ord("|"):
+			return CatspeakTokenKind.BAR;
 		case ord(":"):
 			return CatspeakTokenKind.COLON;
 		case ord(";"):
@@ -238,6 +258,11 @@ function CatspeakLexer(_buff) constructor {
 			return CatspeakTokenKind.PLUS;
 		case ord("-"):
 			return CatspeakTokenKind.MINUS;
+		case ord("\""):
+			resetSpan();
+			advanceWhileEscape(catspeak_byte_is_not_quote, catspeak_byte_is_quote);
+			skipNextByte = true;
+			return CatspeakTokenKind.STRING;
 		default:
 			if (catspeak_byte_is_newline(byte)) {
 				advanceWhile(catspeak_byte_is_newline);
@@ -261,7 +286,7 @@ function CatspeakLexer(_buff) constructor {
 var sess = catspeak_session_create(@'
 def add |x y| {
   # yo waddup
-  ret x + y
+  ret "x + y"
 }');
 var lex = new CatspeakLexer(sess);
 do {
