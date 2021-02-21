@@ -427,6 +427,19 @@ function CatspeakParser(_buff) constructor {
 			error(_msg);
 		}
 	}
+	/// @desc Entry point for parsing terms.
+	static parse = function() {
+		try {
+			var term = parseValue();
+			return term;
+		} catch (_e) {
+			if (instanceof(_e) == "CatspeakParseError") {
+				return _e;
+			}
+			// propogate other errors
+			throw _e;
+		}
+	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
 		if (consume(CatspeakTokenKind.STRING)) {
@@ -435,7 +448,17 @@ function CatspeakParser(_buff) constructor {
 			var marshal = renderContent();
 			return real(marshal);
 		} else {
-			error("not implemented");
+			return parseGrouping();
+		}
+	}
+	/// @desc Parses groupings of expressions.
+	static parseGrouping = function() {
+		if (consume(CatspeakTokenKind.LEFT_PAREN)) {
+			var value = parseValue();
+			expects(CatspeakTokenKind.RIGHT_PAREN, "expected closing `)` in grouping");
+			return value;
+		} else {
+			error("unexpected symbol in expression");
 		}
 	}
 }
@@ -444,7 +467,7 @@ function CatspeakParser(_buff) constructor {
 /// @param {string} str The string to parse.
 function catspeak_parse(_str) {
 	var sess = catspeak_session_create(_str);
-	var ir = new CatspeakParser(sess).parseValue();
+	var ir = new CatspeakParser(sess).parse();
 	catspeak_session_destroy(sess);
 	return ir;
 }
@@ -459,5 +482,5 @@ fun add |arr| {
   ret acc
 }
 ';
-var ast = catspeak_parse("\"hi hello\"");
+var ast = catspeak_parse("(\"hi hello\")");
 show_debug_message(ast);
