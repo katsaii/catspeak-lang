@@ -128,16 +128,17 @@ function CatspeakLexer(_buffer) constructor {
 	static getSpan = function() {
 		return new CatspeakSpan(spanBegin, buffer_tell(buff));
 	}
-	/// @desc Advances the lexer whilst a specific byte is reached, or until the EoF was reached.
+	/// @desc Advances the lexer whilst a predicate holds, or until the EoF was reached.
 	/// @param {script} pred The predicate to check for.
-	static advanceWhile = function(_pred) {
+	/// @param {script} escape The escape character.
+	static advanceWhileEscape = function(_pred, _escape) {
 		var seek = buffer_tell(buff);
 		var skip_next = false;
 		while (seek < limit) {
 			var byte = buffer_peek(buff, seek, buffer_u8);
 			if (skip_next) {
 				skip_next = false;
-			} else if (byte == ord("\\")) {
+			} else if (byte == _escape) {
 				skip_next = true;
 			} else if not (_pred(byte)) {
 				break;
@@ -145,6 +146,11 @@ function CatspeakLexer(_buffer) constructor {
 			seek += alignment;
 		}
 		buffer_seek(buff, buffer_seek_start, seek);
+	}
+	/// @desc Advances the lexer whilst a predicate holds, or until the EoF was reached.
+	/// @param {script} pred The predicate to check for.
+	static advanceWhile = function(_pred) {
+		advanceWhileEscape(_pred, undefined);
 	}
 	/// @desc Advances the lexer and returns the next token. 
 	static next = function() {
