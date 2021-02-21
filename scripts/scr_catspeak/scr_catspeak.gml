@@ -3,6 +3,22 @@
  * Kat @katsaii
  */
 
+/// @desc Creates a compiler session from this string.
+/// @param {string} str The string that contains the source code.
+function catspeak_session_create(_str) {
+	var size = string_byte_length(_str);
+	var buff = buffer_create(size, buffer_fixed, 1);
+	buffer_write(buff, buffer_text, _str);
+	buffer_seek(buff, buffer_seek_start, 0);
+	return buff;
+}
+
+/// @desc Destroys this compiler session.
+/// @param {struct} sess The session to kill.
+function catspeak_session_destroy(_sess) {
+	buffer_delete(_sess);
+}
+
 /// @desc Represents a span of bytes of some buffer.
 /// @param {real} begin The start of the span.
 /// @param {real} end The end of the span.
@@ -12,6 +28,20 @@ function CatspeakSpan(_begin, _end) constructor {
 	/// @desc Creates a clone of this span.
 	static clone = function() {
 		return new CatspeakSpan(start, start + limit);
+	}
+	/// @desc Renders this span with the content of this buffer.
+	/// @param {real} buffer The buffer to pull string data from.
+	static render = function(_buff) {
+		if (limit < 1) {
+			// always an empty slice
+			return "";
+		}
+		var slice = buffer_create(limit, buffer_fixed, 1);
+		buffer_copy(_buff, start, limit, slice, 0);
+		buffer_seek(slice, buffer_seek_start, 0);
+		var str = buffer_read(slice, buffer_text);
+		buffer_delete(slice);
+		return str;
 	}
 }
 
@@ -114,11 +144,11 @@ function catspeak_byte_is_alphanumeric(_byte) {
 
 /// @desc Tokenises the buffer contents.
 /// @param {real} buffer The id of the buffer to use.
-function CatspeakLexer(_buffer) constructor {
-	buff = _buffer;
-	offset = buffer_tell(_buffer);
-	alignment = buffer_get_alignment(_buffer);
-	limit = buffer_get_size(_buffer);
+function CatspeakLexer(_buff) constructor {
+	buff = _buff;
+	offset = buffer_tell(_buff);
+	alignment = buffer_get_alignment(_buff);
+	limit = buffer_get_size(_buff);
 	spanBegin = offset;
 	/// @desc Resets the current span.
 	static resetSpan = function() {
@@ -160,6 +190,9 @@ function CatspeakLexer(_buffer) constructor {
 		}
 		var byte = buffer_read(buff, buffer_u8);
 		switch (byte) {
+		case ord("\\"):
+			advanceWhile(catspeak_byte_is_newline);
+			return CatspeakTokenKind.WHITESPACE;
 		case ord("("):
 			return CatspeakTokenKind.LEFT_PAREN;
 		case ord(")"):
@@ -184,6 +217,7 @@ function CatspeakLexer(_buffer) constructor {
 			return CatspeakTokenKind.MINUS;
 		default:
 			if (catspeak_byte_is_newline(byte)) {
+				advanceWhile(catspeak_byte_is_newline);
 				return CatspeakTokenKind.EOL;
 			} else if (catspeak_byte_is_whitespace(byte)) {
 				advanceWhile(catspeak_byte_is_whitespace);
@@ -201,40 +235,14 @@ function CatspeakLexer(_buffer) constructor {
 	}
 }
 
-/// @desc Creates a compiler session from this string.
-/// @param {string} str The string that contains the source code.
-function catspeak_session_create(_str) {
-	var size = string_byte_length(_str);
-	var buff = buffer_create(size, buffer_fixed, 1);
-	buffer_write(buff, buffer_text, _str);
-	buffer_seek(buff, buffer_seek_start, 0);
-	return buff;
-}
-
-/// @desc Destroys this compiler session.
-/// @param {struct} sess The session to kill.
-function catspeak_session_destroy(_sess) {
-	buffer_delete(_sess);
-}
-
-var sess = catspeak_session_create(@' \
-def add |x y| {
-  ret x + y
-}
-
-player.x
-
-def result : add 1 2
-
-var iftrue {
-  print hi
-}
-
-set result : result + 1
-');
+var sess = catspeak_session_create(@'\
+def add |x y| {\
+  ret x + y\
+}');
 var lex = new CatspeakLexer(sess);
 do {
 	var token = lex.next();
-	show_debug_message(catspeak_render_token(token));
+	var slice = lex.getSpan().render(sess);
+	show_debug_message([catspeak_render_token(token), slice]);
 } until (token == CatspeakTokenKind.EOF);
 catspeak_session_destroy(sess);
