@@ -72,13 +72,14 @@ enum CatspeakTokenKind {
 	WHITESPACE,
 	COMMENT,
 	EOL,
+	BOF,
 	EOF,
 	UNKNOWN
 }
 
 /// @desc Displays the token as a string.
 /// @param {CatspeakTokenKind} kidn The token kind to display.
-function catspeak_render_token(_kind) {
+function catspeak_token_render(_kind) {
 	switch (_kind) {
 	case CatspeakTokenKind.LEFT_PAREN: return "LEFT_PAREN";
 	case CatspeakTokenKind.RIGHT_PAREN: return "RIGHT_PAREN";
@@ -97,6 +98,7 @@ function catspeak_render_token(_kind) {
 	case CatspeakTokenKind.WHITESPACE: return "WHITESPACE";
 	case CatspeakTokenKind.COMMENT: return "COMMENT";
 	case CatspeakTokenKind.EOL: return "EOL";
+	case CatspeakTokenKind.BOF: return "BOF";
 	case CatspeakTokenKind.EOF: return "EOF";
 	case CatspeakTokenKind.UNKNOWN: return "UNKNOWN";
 	}
@@ -138,7 +140,6 @@ function catspeak_byte_is_whitespace(_byte) {
 	switch (_byte) {
 	case ord(" "):
 	case ord("\t"):
-	case ord("\\"):
 		return true;
 	default:
 		return false;
@@ -287,23 +288,66 @@ function CatspeakLexer(_buff) constructor {
 /// @param {real} lexer The id of the lexer to iterate over.
 function CatspeakParserLexer(_lexer) constructor {
 	lexer = _lexer;
+	pred = CatspeakTokenKind.BOF;
+	span = lexer.getSpan();
+	current = lexer.next();
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
-		return lexer.getSpan();
+		return span;
 	}
-	/// @desc Advances the lexer and returns the next token. 
+	/// @desc Advances the lexer and returns the next token.
 	static next = function() {
-		var token;
-		do {
-			token = lexer.next();
-		} until (token != CatspeakTokenKind.WHITESPACE
-				&& token != CatspeakTokenKind.COMMENT);
-		return token;
+		while (true) {
+			span = lexer.getSpan();
+			var succ;
+			do {
+				succ = lexer.next();
+			} until (succ != CatspeakTokenKind.WHITESPACE
+					&& succ != CatspeakTokenKind.COMMENT);
+			if (current == CatspeakTokenKind.EOL) {
+				var implicit_semicolon = true;
+				switch (pred) {
+				case CatspeakTokenKind.LEFT_BRACE:
+				case CatspeakTokenKind.DOT:
+				case CatspeakTokenKind.BAR:
+				case CatspeakTokenKind.COLON:
+				case CatspeakTokenKind.SEMICOLON:
+				case CatspeakTokenKind.PLUS:
+				case CatspeakTokenKind.MINUS:
+					implicit_semicolon = false;
+					break;
+				}
+				switch (succ) {
+				case CatspeakTokenKind.LEFT_BRACE:
+				case CatspeakTokenKind.DOT:
+				case CatspeakTokenKind.BAR:
+				case CatspeakTokenKind.COLON:
+				case CatspeakTokenKind.SEMICOLON:
+				case CatspeakTokenKind.PLUS:
+				case CatspeakTokenKind.MINUS:
+					implicit_semicolon = false;
+					break;
+				}
+				if (implicit_semicolon) {
+					current = CatspeakTokenKind.SEMICOLON;
+				} else {
+					// ignore this EOL character and try again
+					current = succ;
+					continue;
+				}
+			}
+			pred = current;
+			current = succ;
+			return pred;
+		}
 	}
 }
 
 var sess = catspeak_session_create(@'
-def add |x y| {
+def add
+|x 
+y|
+{
   # yo waddup
   ret "x + y"
 }');
@@ -311,6 +355,6 @@ var lex = new CatspeakParserLexer(new CatspeakLexer(sess));
 do {
 	var token = lex.next();
 	var slice = lex.getSpan().render(sess);
-	show_debug_message([catspeak_render_token(token), slice]);
+	show_debug_message([catspeak_token_render(token), slice]);
 } until (token == CatspeakTokenKind.EOF);
 catspeak_session_destroy(sess);
