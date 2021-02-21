@@ -43,6 +43,10 @@ function CatspeakSpan(_begin, _end) constructor {
 		buffer_delete(slice);
 		return str;
 	}
+	/// @desc Converts this span into a string.
+	static toString = function() {
+		return "[" + string(start) + ".." + string(start + limit) + "]";
+	}
 }
 
 /// @desc Represents a kind of token.
