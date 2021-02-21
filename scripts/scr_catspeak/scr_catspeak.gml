@@ -291,6 +291,8 @@ function CatspeakParserLexer(_lexer) constructor {
 	pred = CatspeakTokenKind.BOF;
 	span = lexer.getSpan();
 	current = lexer.next();
+	parenDepth = 0;
+	seenBar = false;
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
 		return span;
@@ -304,8 +306,21 @@ function CatspeakParserLexer(_lexer) constructor {
 				succ = lexer.next();
 			} until (succ != CatspeakTokenKind.WHITESPACE
 					&& succ != CatspeakTokenKind.COMMENT);
-			if (current == CatspeakTokenKind.EOL) {
-				var implicit_semicolon = true;
+			switch (current) {
+			case CatspeakTokenKind.BAR:
+				seenBar = !seenBar;
+			case CatspeakTokenKind.LEFT_PAREN:
+			case CatspeakTokenKind.LEFT_BOX:
+				parenDepth += 1;
+				break;
+			case CatspeakTokenKind.RIGHT_PAREN:
+			case CatspeakTokenKind.RIGHT_BOX:
+				if (parenDepth > 0) {
+					parenDepth -= 1;
+				}
+				break;
+			case CatspeakTokenKind.EOL:
+				var implicit_semicolon = !seenBar && parenDepth <= 0;
 				switch (pred) {
 				case CatspeakTokenKind.LEFT_BRACE:
 				case CatspeakTokenKind.DOT:
@@ -335,6 +350,7 @@ function CatspeakParserLexer(_lexer) constructor {
 					current = succ;
 					continue;
 				}
+				break;
 			}
 			pred = current;
 			current = succ;
