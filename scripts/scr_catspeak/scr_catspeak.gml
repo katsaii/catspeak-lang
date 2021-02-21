@@ -363,9 +363,19 @@ function CatspeakParserLexer(_lexer) constructor {
 
 var sess = catspeak_session_create(@'
 # adds to numbers together
-def "add" |x y| {
-  ret : x + y
+def add |arr| {
+  def acc 0
+  for arr |x| {
+    acc += x
+  }
+  ret acc
 }
+
+def say_hello {
+  print "heya"
+}
+
+run say_hello
 
 if condition {
   print hi
