@@ -67,6 +67,7 @@ enum CatspeakTokenKind {
 	SEMICOLON,
 	PLUS,
 	MINUS,
+	IDENTIFIER,
 	STRING,
 	NUMBER,
 	WHITESPACE,
@@ -93,6 +94,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakTokenKind.SEMICOLON: return "SEMICOLON";
 	case CatspeakTokenKind.PLUS: return "PLUS";
 	case CatspeakTokenKind.MINUS: return "MINUS";
+	case CatspeakTokenKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakTokenKind.STRING: return "STRING";
 	case CatspeakTokenKind.NUMBER: return "NUMBER";
 	case CatspeakTokenKind.WHITESPACE: return "WHITESPACE";
@@ -273,7 +275,7 @@ function CatspeakLexer(_buff) constructor {
 				return CatspeakTokenKind.WHITESPACE;
 			} else if (catspeak_byte_is_alphabetic(byte)) {
 				advanceWhile(catspeak_byte_is_alphanumeric);
-				return CatspeakTokenKind.STRING;
+				return CatspeakTokenKind.IDENTIFIER;
 			} else if (catspeak_byte_is_digit(byte)) {
 				advanceWhile(catspeak_byte_is_digit);
 				return CatspeakTokenKind.NUMBER;
@@ -360,12 +362,15 @@ function CatspeakParserLexer(_lexer) constructor {
 }
 
 var sess = catspeak_session_create(@'
-def add
-|x 
-y|
-{
-  # yo waddup
-  ret "x + y"
+# adds to numbers together
+def "add" |x y| {
+  ret : x + y
+}
+
+if condition {
+  print hi
+} else {
+  print hello
 }');
 var lex = new CatspeakParserLexer(new CatspeakLexer(sess));
 do {
