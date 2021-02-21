@@ -114,12 +114,19 @@ function catspeak_byte_is_newline(_byte) {
 	}
 }
 
+/// @desc Returns whether a byte is NOT a valid newline character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_not_newline(_byte) {
+	return !catspeak_byte_is_newline(_byte);
+}
+
 /// @desc Returns whether a byte is a valid whitespace character.
 /// @param {real} byte The byte to check.
 function catspeak_byte_is_whitespace(_byte) {
 	switch (_byte) {
 	case ord(" "):
 	case ord("\t"):
+	case ord("\\"):
 		return true;
 	default:
 		return false;
@@ -130,7 +137,9 @@ function catspeak_byte_is_whitespace(_byte) {
 /// @param {real} byte The byte to check.
 function catspeak_byte_is_alphabetic(_byte) {
 	return _byte >= ord("a") && _byte <= ord("z")
-			|| _byte >= ord("A") && _byte <= ord("Z");
+			|| _byte >= ord("A") && _byte <= ord("Z")
+			|| _byte == ord("_")
+			|| _byte == ord("'");
 }
 
 /// @desc Returns whether a byte is a valid digit character.
@@ -164,36 +173,31 @@ function CatspeakLexer(_buff) constructor {
 	}
 	/// @desc Advances the lexer whilst a predicate holds, or until the EoF was reached.
 	/// @param {script} pred The predicate to check for.
-	static advanceWhile = function(_pred, _escape) {
+	/// @param {script} escape The predicate to check for escapes.
+	static advanceWhileEscape = function(_pred, _escape) {
+		var do_escape = false;
 		var byte = undefined;
 		var seek = buffer_tell(buff);
 		while (seek < limit) {
 			byte = buffer_peek(buff, seek, buffer_u8);
-			if not (_pred(byte)) {
-				break;
+			if (do_escape) {
+				do_escape = _escape(byte);
+			}
+			if not (do_escape) {
+				if not (_pred(byte)) {
+					break;
+				} else if (byte == ord("\\")) {
+					do_escape = true;
+				}
 			}
 			seek += alignment;
 		}
 		buffer_seek(buff, buffer_seek_start, seek);
 		return byte;
 	}
-	/// @desc Advances the lexer whilst a predicate holds, including escape sequences.
-	/// @param {script} pred The predicate to check for.
-	/// @param {script} escape The predicate to check for escapes.
-	static advanceWhileEscape = function(_pred, _escape) {
-		var byte;
-		while (true) {
-			byte = advanceWhile(_pred);
-			if (byte != ord("\\")) {
-				break;
-			}
-			advanceWhile(_escape);
-		}
-		return byte;
-	}
 	/// @desc Advances the lexer according to this predicate, but escapes newline characters.
 	/// @param {script} pred The predicate to check for.
-	static advanceWhileEscapeNewlines = function(_pred) {
+	static advanceWhile = function(_pred) {
 		return advanceWhileEscape(_pred, catspeak_byte_is_newline);
 	}
 	/// @desc Advances the lexer and returns the next token. 
@@ -207,8 +211,11 @@ function CatspeakLexer(_buff) constructor {
 		case ord("\\"):
 			// this is needed for a specific case where `\` is the first character in a line
 			advanceWhile(catspeak_byte_is_newline);
-			advanceWhileEscapeNewlines(catspeak_byte_is_whitespace);
+			advanceWhile(catspeak_byte_is_whitespace);
 			return CatspeakTokenKind.WHITESPACE;
+		case ord("#"):
+			advanceWhile(catspeak_byte_is_not_newline);
+			return CatspeakTokenKind.COMMENT;
 		case ord("("):
 			return CatspeakTokenKind.LEFT_PAREN;
 		case ord(")"):
@@ -236,7 +243,7 @@ function CatspeakLexer(_buff) constructor {
 				advanceWhile(catspeak_byte_is_newline);
 				return CatspeakTokenKind.EOL;
 			} else if (catspeak_byte_is_whitespace(byte)) {
-				advanceWhileEscapeNewlines(catspeak_byte_is_whitespace);
+				advanceWhile(catspeak_byte_is_whitespace);
 				return CatspeakTokenKind.WHITESPACE;
 			} else if (catspeak_byte_is_alphabetic(byte)) {
 				advanceWhile(catspeak_byte_is_alphanumeric);
@@ -251,9 +258,10 @@ function CatspeakLexer(_buff) constructor {
 	}
 }
 
-var sess = catspeak_session_create(@'\
-def add |x y| {\
-  ret x + y\
+var sess = catspeak_session_create(@'
+def add |x y| {
+  # yo waddup
+  ret x + y
 }');
 var lex = new CatspeakLexer(sess);
 do {
