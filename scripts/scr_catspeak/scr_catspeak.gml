@@ -387,6 +387,17 @@ enum CatspeakIRKind {
 	CALL
 }
 
+/// @desc Displays the ir kind as a string.
+/// @param {CatspeakIRKind} kind The ir kind to display.
+function catspeak_ir_render(_kind) {
+	switch (_kind) {
+	case CatspeakIRKind.VALUE: return "VALUE";
+	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
+	case CatspeakIRKind.NO_OP: return "NO_OP";
+	case CatspeakIRKind.CALL: return "CALL";
+	}
+}
+
 /// @desc Represents an IR node.
 /// @param {CatspeakIRKind} kind The kind of ir node.
 /// @param {CatspeakIRKind} value The value held by the ir node.
@@ -418,7 +429,7 @@ function CatspeakParser(_buff) constructor {
 	/// @param {string} on_error The error message.
 	static error = function(_msg) {
 		advance();
-		throw new CatspeakCompilerError(_msg, span);
+		throw new CatspeakCompilerError(_msg + " (" + catspeak_token_render(token) + ")", span);
 	}
 	/// @desc Returns true if the current token matches this token kind.
 	/// @param {CatspeakTokenKind} kind The token kind to match.
@@ -503,7 +514,7 @@ function CatspeakParser(_buff) constructor {
 			expects(CatspeakTokenKind.RIGHT_PAREN, "expected closing `)` in grouping");
 			return value;
 		} else {
-			error("unexpected symbol in expression (" + catspeak_token_render(token) + ")");
+			error("unexpected symbol in expression");
 		}
 	}
 }
@@ -527,5 +538,5 @@ fun add |arr| {
   ret acc
 }
 ';
-var ast = catspeak_parse("(|)");
+var ast = catspeak_parse("(#hi\nfoo)");
 show_debug_message(ast);
