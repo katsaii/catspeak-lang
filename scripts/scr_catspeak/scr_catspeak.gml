@@ -483,6 +483,7 @@ function CatspeakParser(_buff) constructor {
 		while (matches(CatspeakTokenKind.LEFT_PAREN)
 				|| matches(CatspeakTokenKind.LEFT_BOX)
 				|| matches(CatspeakTokenKind.LEFT_BRACE)
+				|| matches(CatspeakTokenKind.COLON)
 				|| matches(CatspeakTokenKind.BAR)
 				|| matches(CatspeakTokenKind.IDENTIFIER)
 				|| matches(CatspeakTokenKind.STRING)
@@ -519,10 +520,16 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
-		if (consume(CatspeakTokenKind.LEFT_PAREN)) {
+		var span_start = span;
+		if (consume(CatspeakTokenKind.COLON)) {
+			var value = parseExpr();
+			var my_span = span_start.join(value.span);
+			return new CatspeakIRNode(
+					my_span, CatspeakIRKind.GROUPING, value);
+		} else if (consume(CatspeakTokenKind.LEFT_PAREN)) {
 			var value = parseExpr();
 			expects(CatspeakTokenKind.RIGHT_PAREN, "expected closing `)` in grouping");
-			var my_span = value.span.join(span);
+			var my_span = span_start.join(span);
 			return new CatspeakIRNode(
 					my_span, CatspeakIRKind.GROUPING, value);
 		} else {
@@ -545,11 +552,12 @@ function CatspeakCodegen(_buff, _out) constructor {
 		}
 		var ir = parser.parseStmt();
 		visitTerm(ir);
-		return false;
+		return true;
 	}
 	/// @desc Generates the code for the next IR term.
 	/// @param {CatspeakIRTerm} term The term to generate code for.
 	static visitTerm = function(_term) {
+		show_message(_term);
 		// TODO
 	}
 }
@@ -593,7 +601,7 @@ fun add |arr| {
   ret acc
 }
 ';
-var sess = catspeak_session_create("\nfoo 3 3 2");
+var sess = catspeak_session_create("\nfoo 3 : 3 2");
 var code = catspeak_session_compile(sess);
 catspeak_session_destroy(sess);
 show_message(code);
