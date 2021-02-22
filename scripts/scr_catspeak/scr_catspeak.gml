@@ -79,7 +79,7 @@ enum CatspeakTokenKind {
 }
 
 /// @desc Displays the token as a string.
-/// @param {CatspeakTokenKind} kidn The token kind to display.
+/// @param {CatspeakTokenKind} kind The token kind to display.
 function catspeak_token_render(_kind) {
 	switch (_kind) {
 	case CatspeakTokenKind.LEFT_PAREN: return "LEFT_PAREN";
@@ -300,10 +300,6 @@ function CatspeakParserLexer(_lexer) constructor {
 	static getSpan = function() {
 		return span;
 	}
-	/// @desc Peeks at the next token.
-	static peek = function() {
-		return current;
-	}
 	/// @desc Advances the lexer and returns the next token.
 	static next = function() {
 		while (true) {
@@ -381,7 +377,7 @@ function CatspeakCompilerError(_msg, _span) constructor {
 /// @desc Represents a kind of IR node.
 enum CatspeakIRKind {
 	VALUE,
-	
+	IDENTIFIER
 }
 
 /// @desc Represents an IR node.
@@ -398,26 +394,29 @@ function CatspeakParser(_buff) constructor {
 	lexer = new CatspeakParserLexer(new CatspeakLexer(_buff));
 	buff = _buff;
 	token = CatspeakTokenKind.BOF;
+	span = lexer.getSpan();
+	peeked = lexer.next();
 	/// @desc Advances the parser and returns the token.
 	static advance = function() {
-		token = lexer.next();
+		token = peeked;
+		span = lexer.getSpan();
+		peeked = lexer.next();
 		return token;
 	}
 	/// @desc Renders the current span of the parser.
 	static renderContent = function() {
-		return lexer.getSpan().render(buff);
+		return span.render(buff);
 	}
 	/// @desc Throws a `CatspeakCompilerError` for the current token.
 	/// @param {string} on_error The error message.
 	static error = function(_msg) {
 		advance();
-		var span = lexer.getSpan();
 		throw new CatspeakCompilerError(_msg, span);
 	}
 	/// @desc Returns true if the current token matches this token kind.
 	/// @param {CatspeakTokenKind} kind The token kind to match.
 	static matches = function(_kind) {
-		return lexer.peek() == _kind;
+		return peeked == _kind;
 	}
 	/// @desc Attempts to match against a token and advances the parser if this was successful.
 	/// @param {CatspeakTokenKind} kind The token kind to consume.
@@ -454,16 +453,21 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
-		var kind = CatspeakIRKind.VALUE;
-		var value;
-		if (consume(CatspeakTokenKind.STRING)) {
-			value = renderContent();
+		if (consume(CatspeakTokenKind.IDENTIFIER)) {
+			return new CatspeakIRNode(
+					CatspeakIRKind.IDENTIFIER,
+					renderContent());
+		} else if (consume(CatspeakTokenKind.STRING)) {
+			return new CatspeakIRNode(
+					CatspeakIRKind.VALUE,
+					renderContent());
 		} else if (consume(CatspeakTokenKind.NUMBER)) {
-			value = real(renderContent());
+			return new CatspeakIRNode(
+					CatspeakIRKind.VALUE,
+					real(renderContent()));
 		} else {
 			return parseGrouping();
 		}
-		return new CatspeakIRNode(kind, value);
 	}
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
@@ -472,7 +476,7 @@ function CatspeakParser(_buff) constructor {
 			expects(CatspeakTokenKind.RIGHT_PAREN, "expected closing `)` in grouping");
 			return value;
 		} else {
-			error("unexpected symbol in expression");
+			error("unexpected symbol in expression (" + catspeak_token_render(token) + ")");
 		}
 	}
 }
@@ -496,5 +500,5 @@ fun add |arr| {
   ret acc
 }
 ';
-var ast = catspeak_parse("(\"hi hello\")");
+var ast = catspeak_parse("(# hi\nfun)");
 show_debug_message(ast);
