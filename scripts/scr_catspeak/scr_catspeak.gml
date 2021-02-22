@@ -469,27 +469,43 @@ function CatspeakParser(_buff) constructor {
 			throw _e;
 		}
 	}
-	/// @desc Parses a statement.
+	/// @desc Entry point for parsing statements.
 	static parseStmt = function() {
 		if (consume(CatspeakTokenKind.SEMICOLON)) {
 			return new CatspeakIRNode(
 					CatspeakIRKind.NO_OP, undefined);
 		} else {
-			var callsite = parseValue();
-			var params = [];
-			while not (consume(CatspeakTokenKind.SEMICOLON)) {
-				var param = parseValue();
-				array_push(params, param);
-			}
-			if (array_length(params) == 0) {
-				return callsite;
-			} else {
-				return new CatspeakIRNode(
-						CatspeakIRKind.CALL, {
-							callsite : callsite,
-							params : params
-						});
-			}
+			var value = parseExpr();
+			expects(CatspeakTokenKind.SEMICOLON, "expected `;` after statement");
+			return value;
+		}
+	}
+	/// @desc Entry point for parsing expressions.
+	static parseExpr = function() {
+		return parseCall();
+	}
+	/// @desc Parses a function call.
+	static parseCall = function() {
+		var callsite = parseValue();
+		var params = [];
+		while (matches(CatspeakTokenKind.LEFT_PAREN)
+				|| matches(CatspeakTokenKind.LEFT_BOX)
+				|| matches(CatspeakTokenKind.LEFT_BRACE)
+				|| matches(CatspeakTokenKind.BAR)
+				|| matches(CatspeakTokenKind.IDENTIFIER)
+				|| matches(CatspeakTokenKind.STRING)
+				|| matches(CatspeakTokenKind.NUMBER)) {
+			var param = parseValue();
+			array_push(params, param);
+		}
+		if (array_length(params) == 0) {
+			return callsite;
+		} else {
+			return new CatspeakIRNode(
+					CatspeakIRKind.CALL, {
+						callsite : callsite,
+						params : params
+					});
 		}
 	}
 	/// @desc Parses a terminal value or expression.
@@ -510,7 +526,7 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
 		if (consume(CatspeakTokenKind.LEFT_PAREN)) {
-			var value = parseValue();
+			var value = parseExpr();
 			expects(CatspeakTokenKind.RIGHT_PAREN, "expected closing `)` in grouping");
 			return value;
 		} else {
@@ -538,5 +554,5 @@ fun add |arr| {
   ret acc
 }
 ';
-var ast = catspeak_parse("(#hi\nfoo)");
+var ast = catspeak_parse("(#hi\nfoo 3 3 2)");
 show_debug_message(ast);
