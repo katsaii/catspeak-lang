@@ -556,6 +556,30 @@ function catspeak_code_render(_kind) {
 	}
 }
 
+/// @desc An assertion that a call expression is formed correctly.
+/// @param {CatspeakIRTerm} term The term to consider.
+/// @param {real} expected The expected argument count.
+function catspeak_assert_term_arg_count(_term, _expected) {
+	var kind = _term.kind;
+	var value = _term.value;
+	var callsite = value.callsite;
+	var actual = array_length(value.params);
+	var span = _term.span;
+	if (kind != CatspeakIRKind.CALL) {
+		throw new CatspeakCompilerError("expected a call instruction (got " +
+				catspeak_ir_render(kind) + ")", span);
+	}
+	if (callsite.kind != CatspeakIRKind.IDENTIFIER) {
+		throw new CatspeakCompilerError("unexpected callsite (got " +
+				catspeak_ir_render(callsite.kind) + ")", callsite.span);
+	}
+	if (actual != _expected) {
+		throw new CatspeakCompilerError("expected " + string(_expected) +
+				" components on " + string(callsite.value) +
+				" call (got " + string(actual) + ")", span);
+	}
+}
+
 /// @desc Handles the generation of intcode from Catspeak IR.
 /// @param {real} buffer The id of the buffer to use.
 /// @param {array} out The array to populate code with.
@@ -572,11 +596,21 @@ function CatspeakCodegen(_buff, _out) constructor {
 			array_push(out, argument[i]);
 		}
 	}
+	/// @desc Asserts that some condition holds, otherwise an error is thrown with this span.
+	/// @param {bool} condition The condition to check for.
+	/// @param {string} msg The error message.
+	/// @param {CatspeakSpan} span The span where the error occurred at.
+	static assert = function(_condition, _msg, _span) {
+		if (_condition) {
+			throw new CatspeakCompilerError(_msg, _span);
+		}
+	}
 	/// @desc Generates the code for the next IR term.
 	/// @param {CatspeakIRTerm} term The term to generate code for.
 	static visitTerm = function(_term) {
 		var kind = _term.kind;
 		var value = _term.value;
+		var span = _term.span;
 		switch (_term.kind) {
 		case CatspeakIRKind.STATEMENT:
 			visitTerm(value);
@@ -594,15 +628,6 @@ function CatspeakCodegen(_buff, _out) constructor {
 			var callsite = value.callsite;
 			var params = value.params;
 			var arg_count = array_length(params);
-			if (callsite.kind == CatspeakIRKind.IDENTIFIER
-					&& arg_count != 0) {
-				// distinguish between keywords and user functions
-				switch (callsite.value) {
-				case "var": if (arg_count != 2) then break;
-					// TODO
-					return;
-				}
-			}
 			for (var i = 0; i < arg_count; i += 1) {
 				visitTerm(params[i]);
 			}
