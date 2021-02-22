@@ -3,22 +3,6 @@
  * Kat @katsaii
  */
 
-/// @desc Creates a compiler session from this string.
-/// @param {string} str The string that contains the source code.
-function catspeak_session_create(_str) {
-	var size = string_byte_length(_str);
-	var buff = buffer_create(size, buffer_fixed, 1);
-	buffer_write(buff, buffer_text, _str);
-	buffer_seek(buff, buffer_seek_start, 0);
-	return buff;
-}
-
-/// @desc Destroys this compiler session.
-/// @param {struct} sess The session to kill.
-function catspeak_session_destroy(_sess) {
-	buffer_delete(_sess);
-}
-
 /// @desc Represents a span of bytes of some buffer.
 /// @param {real} begin The start of the span.
 /// @param {real} end The end of the span.
@@ -472,19 +456,6 @@ function CatspeakParser(_buff) constructor {
 			error(_msg);
 		}
 	}
-	/// @desc Entry point for parsing terms.
-	static parse = function() {
-		try {
-			var term = parseStmt();
-			return term;
-		} catch (_e) {
-			if (instanceof(_e) == "CatspeakCompilerError") {
-				return _e;
-			}
-			// propogate other errors
-			throw _e;
-		}
-	}
 	/// @desc Entry point for parsing statements.
 	static parseStmt = function() {
 		if (consume(CatspeakTokenKind.SEMICOLON)) {
@@ -557,13 +528,56 @@ function CatspeakParser(_buff) constructor {
 	}
 }
 
-/// @desc Parses a data string and returns the top-level structure.
-/// @param {string} str The string to parse.
-function catspeak_parse(_str) {
-	var sess = catspeak_session_create(_str);
-	var ir = new CatspeakParser(sess).parse();
-	catspeak_session_destroy(sess);
-	return ir;
+/// @desc Handles the generation of intcode from Catspeak IR.
+/// @param {real} buffer The id of the buffer to use.
+/// @param {array} out The array to populate code with.
+function CatspeakCodegen(_buff, _out) constructor {
+	parser = new CatspeakParser(_buff);
+	buff = _buff;
+	out = _out;
+	/// @desc Generates the code for a single term and returns whether more terms need to be parsed.
+	static generateCode = function() {
+		if (parser.matches(CatspeakTokenKind.EOF)) {
+			return false;
+		}
+		var ir = parser.parseStmt();
+		visitTerm(ir);
+		return false;
+	}
+	/// @desc Generates the code for the next IR term.
+	/// @param {CatspeakIRTerm} term The term to generate code for.
+	static visitTerm = function(_term) {
+		// TODO
+	}
+}
+
+/// @desc Creates a compiler session from this string.
+/// @param {string} str The string that contains the source code.
+function catspeak_session_create(_str) {
+	var size = string_byte_length(_str);
+	var buff = buffer_create(size, buffer_fixed, 1);
+	buffer_write(buff, buffer_text, _str);
+	buffer_seek(buff, buffer_seek_start, 0);
+	return {
+		buff : buff
+	};
+}
+
+/// @desc Destroys this compiler session.
+/// @param {struct} sess The session to kill.
+function catspeak_session_destroy(_sess) {
+	buffer_delete(_sess.buff);
+}
+
+/// @desc Compiles this session and returns the resulting intcode program.
+/// @param {struct} sess The session to compile.
+function catspeak_session_compile(_sess) {
+	var buff = _sess.buff;
+	buffer_seek(buff, buffer_seek_start, 0);
+	var out = [];
+	var codegen = new CatspeakCodegen(buff, out);
+	while (codegen.generateCode()) { }
+	return out;
 }
 
 var program = @'
@@ -576,5 +590,7 @@ fun add |arr| {
   ret acc
 }
 ';
-var ast = catspeak_parse("foo 3 3 2");
-show_debug_message(ast);
+var sess = catspeak_session_create("\nfoo 3 3 2");
+var code = catspeak_session_compile(sess);
+catspeak_session_destroy(sess);
+show_message(code);
