@@ -541,7 +541,8 @@ function CatspeakParser(_buff) constructor {
 /// @desc Represents a kind of intcode.
 enum CatspeakOpCode {
 	PUSH_VALUE,
-	POP_VALUE
+	POP_VALUE,
+	CALL
 }
 
 /// @desc Displays the ir kind as a string.
@@ -549,6 +550,8 @@ enum CatspeakOpCode {
 function catspeak_code_render(_kind) {
 	switch (_kind) {
 	case CatspeakOpCode.PUSH_VALUE: return "PUSH_VALUE";
+	case CatspeakOpCode.POP_VALUE: return "POP_VALUE";
+	case CatspeakOpCode.CALL: return "CALL";
 	default: return "<unknown>";
 	}
 }
@@ -572,25 +575,43 @@ function CatspeakCodegen(_buff, _out) constructor {
 	/// @desc Generates the code for the next IR term.
 	/// @param {CatspeakIRTerm} term The term to generate code for.
 	static visitTerm = function(_term) {
+		var kind = _term.kind;
+		var value = _term.value;
 		switch (_term.kind) {
 		case CatspeakIRKind.STATEMENT:
-			visitTerm(_term.value);
+			visitTerm(value);
 			writeCode(CatspeakOpCode.POP_VALUE);
-			break;
+			return;
 		case CatspeakIRKind.VALUE:
-			writeCode(CatspeakOpCode.PUSH_VALUE, _term.value);
-			break;
+			writeCode(CatspeakOpCode.PUSH_VALUE, value);
+			return;
 		case CatspeakIRKind.IDENTIFIER:
 			throw "not implemented";
-			break;
+			return;
 		case CatspeakIRKind.NO_OP:
-			break;
+			return;
 		case CatspeakIRKind.CALL:
-			throw "not implemented";
-			break;
+			var callsite = value.callsite;
+			var params = value.params;
+			var arg_count = array_length(params);
+			if (callsite.kind == CatspeakIRKind.IDENTIFIER
+					&& arg_count != 0) {
+				// distinguish between keywords and user functions
+				switch (callsite.value) {
+				case "var": if (arg_count != 2) then break;
+					// TODO
+					return;
+				}
+			}
+			for (var i = 0; i < arg_count; i += 1) {
+				visitTerm(params[i]);
+			}
+			visitTerm(callsite);
+			writeCode(CatspeakOpCode.CALL);
+			return;
 		case CatspeakIRKind.GROUPING:
 			visitTerm(_term.value);
-			break;
+			return;
 		}
 	}
 	/// @desc Generates the code for a single term and returns whether more terms need to be parsed.
@@ -643,7 +664,7 @@ fun add |arr| {
   ret acc
 }
 ';
-var sess = catspeak_session_create("\n1");
+var sess = catspeak_session_create("\n3 2 1");
 var code = catspeak_session_compile(sess);
 catspeak_session_destroy(sess);
 show_message(code);
