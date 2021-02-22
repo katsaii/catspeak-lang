@@ -366,18 +366,30 @@ function CatspeakParserLexer(_lexer) constructor {
 	}
 }
 
-/// @desc Represents a parser error.
+/// @desc Represents a compiler error.
 /// @param {string} msg The error message.
-/// @param {CatspeakTokenKind} token The offending token.
 /// @param {CatspeakSpan} span The span where the error occurred at.
-function CatspeakParseError(_msg, _token, _span) constructor {
+function CatspeakCompilerError(_msg, _span) constructor {
 	msg = is_string(_msg) ? _msg : string(_msg);
-	token = _token;
 	span = _span;
 	/// @desc Displays the content of this error.
 	toString = function() {
-		return string(span) + " " + msg + " -- got " + catspeak_token_render(token);
+		return string(span) + " " + msg;
 	}
+}
+
+/// @desc Represents a kind of IR node.
+enum CatspeakIRKind {
+	VALUE,
+	
+}
+
+/// @desc Represents an IR node.
+/// @param {CatspeakIRKind} kind The kind of ir node.
+/// @param {CatspeakIRKind} value The value held by the ir node.
+function CatspeakIRNode(_kind, _value) constructor {
+	kind = _kind;
+	value = _value;
 }
 
 /// @desc Creates a new parser from this string.
@@ -395,12 +407,12 @@ function CatspeakParser(_buff) constructor {
 	static renderContent = function() {
 		return lexer.getSpan().render(buff);
 	}
-	/// @desc Throws a `CatspeakParseError` for the current token.
+	/// @desc Throws a `CatspeakCompilerError` for the current token.
 	/// @param {string} on_error The error message.
 	static error = function(_msg) {
-		var token = advance();
+		advance();
 		var span = lexer.getSpan();
-		throw new CatspeakParseError(_msg, token, span);
+		throw new CatspeakCompilerError(_msg, span);
 	}
 	/// @desc Returns true if the current token matches this token kind.
 	/// @param {CatspeakTokenKind} kind The token kind to match.
@@ -417,7 +429,7 @@ function CatspeakParser(_buff) constructor {
 			return false;
 		}
 	}
-	/// @desc Throws a `CatspeakParseError` if the current token is not the expected value. Advances the parser otherwise.
+	/// @desc Throws a `CatspeakCompilerError` if the current token is not the expected value. Advances the parser otherwise.
 	/// @param {CatspeakTokenKind} kind The token kind to expect.
 	/// @param {string} on_error The error message.
 	static expects = function(_kind, _msg) {
@@ -433,7 +445,7 @@ function CatspeakParser(_buff) constructor {
 			var term = parseValue();
 			return term;
 		} catch (_e) {
-			if (instanceof(_e) == "CatspeakParseError") {
+			if (instanceof(_e) == "CatspeakCompilerError") {
 				return _e;
 			}
 			// propogate other errors
@@ -442,14 +454,16 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
+		var kind = CatspeakIRKind.VALUE;
+		var value;
 		if (consume(CatspeakTokenKind.STRING)) {
-			return renderContent();
+			value = renderContent();
 		} else if (consume(CatspeakTokenKind.NUMBER)) {
-			var marshal = renderContent();
-			return real(marshal);
+			value = real(renderContent());
 		} else {
 			return parseGrouping();
 		}
+		return new CatspeakIRNode(kind, value);
 	}
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
