@@ -94,6 +94,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakTokenKind.BOF: return "BOF";
 	case CatspeakTokenKind.EOF: return "EOF";
 	case CatspeakTokenKind.UNKNOWN: return "UNKNOWN";
+	default: return "<unknown>";
 	}
 }
 
@@ -393,6 +394,8 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakIRKind.NO_OP: return "NO_OP";
 	case CatspeakIRKind.CALL: return "CALL";
+	case CatspeakIRKind.GROUPING: return "GROUPING";
+	default: return "<unknown>";
 	}
 }
 
