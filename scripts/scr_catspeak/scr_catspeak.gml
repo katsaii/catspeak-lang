@@ -354,6 +354,11 @@ function CatspeakParserLexer(_lexer) constructor {
 					continue;
 				}
 				break;
+			case CatspeakTokenKind.EOF:
+				if (pred != CatspeakTokenKind.SEMICOLON) {
+					current = CatspeakTokenKind.SEMICOLON;
+				}
+				break;
 			}
 			pred = current;
 			current = succ;
@@ -377,7 +382,9 @@ function CatspeakCompilerError(_msg, _span) constructor {
 /// @desc Represents a kind of IR node.
 enum CatspeakIRKind {
 	VALUE,
-	IDENTIFIER
+	IDENTIFIER,
+	NO_OP,
+	CALL
 }
 
 /// @desc Represents an IR node.
@@ -441,7 +448,7 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Entry point for parsing terms.
 	static parse = function() {
 		try {
-			var term = parseValue();
+			var term = parseStmt();
 			return term;
 		} catch (_e) {
 			if (instanceof(_e) == "CatspeakCompilerError") {
@@ -451,20 +458,40 @@ function CatspeakParser(_buff) constructor {
 			throw _e;
 		}
 	}
+	/// @desc Parses a statement.
+	static parseStmt = function() {
+		if (consume(CatspeakTokenKind.SEMICOLON)) {
+			return new CatspeakIRNode(
+					CatspeakIRKind.NO_OP, undefined);
+		} else {
+			var callsite = parseValue();
+			var params = [];
+			while not (consume(CatspeakTokenKind.SEMICOLON)) {
+				var param = parseValue();
+				array_push(params, param);
+			}
+			if (array_length(params) == 0) {
+				return callsite;
+			} else {
+				return new CatspeakIRNode(
+						CatspeakIRKind.CALL, {
+							callsite : callsite,
+							params : params
+						});
+			}
+		}
+	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
 		if (consume(CatspeakTokenKind.IDENTIFIER)) {
 			return new CatspeakIRNode(
-					CatspeakIRKind.IDENTIFIER,
-					renderContent());
+					CatspeakIRKind.IDENTIFIER, renderContent());
 		} else if (consume(CatspeakTokenKind.STRING)) {
 			return new CatspeakIRNode(
-					CatspeakIRKind.VALUE,
-					renderContent());
+					CatspeakIRKind.VALUE, renderContent());
 		} else if (consume(CatspeakTokenKind.NUMBER)) {
 			return new CatspeakIRNode(
-					CatspeakIRKind.VALUE,
-					real(renderContent()));
+					CatspeakIRKind.VALUE, real(renderContent()));
 		} else {
 			return parseGrouping();
 		}
@@ -500,5 +527,5 @@ fun add |arr| {
   ret acc
 }
 ';
-var ast = catspeak_parse("(# hi\nfun)");
+var ast = catspeak_parse("(|)");
 show_debug_message(ast);
