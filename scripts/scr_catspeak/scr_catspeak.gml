@@ -41,7 +41,7 @@ function CatspeakSpan(_begin, _end) constructor {
 }
 
 /// @desc Represents a kind of token.
-enum CatspeakTokenKind {
+enum CatspeakToken {
 	LEFT_PAREN,
 	RIGHT_PAREN,
 	LEFT_BOX,
@@ -70,30 +70,30 @@ enum CatspeakTokenKind {
 }
 
 /// @desc Displays the token as a string.
-/// @param {CatspeakTokenKind} kind The token kind to display.
+/// @param {CatspeakToken} kind The token kind to display.
 function catspeak_token_render(_kind) {
 	switch (_kind) {
-	case CatspeakTokenKind.LEFT_PAREN: return "LEFT_PAREN";
-	case CatspeakTokenKind.RIGHT_PAREN: return "RIGHT_PAREN";
-	case CatspeakTokenKind.LEFT_BOX: return "LEFT_BOX";
-	case CatspeakTokenKind.RIGHT_BOX: return "RIGHT_BOX";
-	case CatspeakTokenKind.LEFT_BRACE: return "LEFT_BRACE";
-	case CatspeakTokenKind.RIGHT_BRACE: return "RIGHT_BRACE";
-	case CatspeakTokenKind.DOT: return "DOT";
-	case CatspeakTokenKind.BAR: return "BAR";
-	case CatspeakTokenKind.COLON: return "COLON";
-	case CatspeakTokenKind.SEMICOLON: return "SEMICOLON";
-	case CatspeakTokenKind.PLUS: return "PLUS";
-	case CatspeakTokenKind.MINUS: return "MINUS";
-	case CatspeakTokenKind.IDENTIFIER: return "IDENTIFIER";
-	case CatspeakTokenKind.STRING: return "STRING";
-	case CatspeakTokenKind.NUMBER: return "NUMBER";
-	case CatspeakTokenKind.WHITESPACE: return "WHITESPACE";
-	case CatspeakTokenKind.COMMENT: return "COMMENT";
-	case CatspeakTokenKind.EOL: return "EOL";
-	case CatspeakTokenKind.BOF: return "BOF";
-	case CatspeakTokenKind.EOF: return "EOF";
-	case CatspeakTokenKind.UNKNOWN: return "UNKNOWN";
+	case CatspeakToken.LEFT_PAREN: return "LEFT_PAREN";
+	case CatspeakToken.RIGHT_PAREN: return "RIGHT_PAREN";
+	case CatspeakToken.LEFT_BOX: return "LEFT_BOX";
+	case CatspeakToken.RIGHT_BOX: return "RIGHT_BOX";
+	case CatspeakToken.LEFT_BRACE: return "LEFT_BRACE";
+	case CatspeakToken.RIGHT_BRACE: return "RIGHT_BRACE";
+	case CatspeakToken.DOT: return "DOT";
+	case CatspeakToken.BAR: return "BAR";
+	case CatspeakToken.COLON: return "COLON";
+	case CatspeakToken.SEMICOLON: return "SEMICOLON";
+	case CatspeakToken.PLUS: return "PLUS";
+	case CatspeakToken.MINUS: return "MINUS";
+	case CatspeakToken.IDENTIFIER: return "IDENTIFIER";
+	case CatspeakToken.STRING: return "STRING";
+	case CatspeakToken.NUMBER: return "NUMBER";
+	case CatspeakToken.WHITESPACE: return "WHITESPACE";
+	case CatspeakToken.COMMENT: return "COMMENT";
+	case CatspeakToken.EOL: return "EOL";
+	case CatspeakToken.BOF: return "BOF";
+	case CatspeakToken.EOF: return "EOF";
+	case CatspeakToken.UNKNOWN: return "UNKNOWN";
 	default: return "<unknown>";
 	}
 }
@@ -212,7 +212,7 @@ function CatspeakLexer(_buff) constructor {
 	static next = function() {
 		if (buffer_tell(buff) >= limit) {
 			spanBegin = limit;
-			return CatspeakTokenKind.EOF;
+			return CatspeakToken.EOF;
 		}
 		if (skipNextByte) {
 			buffer_read(buff, buffer_u8);
@@ -226,54 +226,54 @@ function CatspeakLexer(_buff) constructor {
 			// this is needed for a specific case where `\` is the first character in a line
 			advanceWhile(catspeak_byte_is_newline);
 			advanceWhile(catspeak_byte_is_whitespace);
-			return CatspeakTokenKind.WHITESPACE;
+			return CatspeakToken.WHITESPACE;
 		case ord("#"):
 			advanceWhile(catspeak_byte_is_not_newline);
-			return CatspeakTokenKind.COMMENT;
+			return CatspeakToken.COMMENT;
 		case ord("("):
-			return CatspeakTokenKind.LEFT_PAREN;
+			return CatspeakToken.LEFT_PAREN;
 		case ord(")"):
-			return CatspeakTokenKind.RIGHT_PAREN;
+			return CatspeakToken.RIGHT_PAREN;
 		case ord("["):
-			return CatspeakTokenKind.LEFT_BOX;
+			return CatspeakToken.LEFT_BOX;
 		case ord("]"):
-			return CatspeakTokenKind.RIGHT_BOX;
+			return CatspeakToken.RIGHT_BOX;
 		case ord("{"):
-			return CatspeakTokenKind.LEFT_BRACE;
+			return CatspeakToken.LEFT_BRACE;
 		case ord("}"):
-			return CatspeakTokenKind.RIGHT_BRACE;
+			return CatspeakToken.RIGHT_BRACE;
 		case ord("."):
-			return CatspeakTokenKind.DOT;
+			return CatspeakToken.DOT;
 		case ord("|"):
-			return CatspeakTokenKind.BAR;
+			return CatspeakToken.BAR;
 		case ord(":"):
-			return CatspeakTokenKind.COLON;
+			return CatspeakToken.COLON;
 		case ord(";"):
-			return CatspeakTokenKind.SEMICOLON;
+			return CatspeakToken.SEMICOLON;
 		case ord("+"):
-			return CatspeakTokenKind.PLUS;
+			return CatspeakToken.PLUS;
 		case ord("-"):
-			return CatspeakTokenKind.MINUS;
+			return CatspeakToken.MINUS;
 		case ord("\""):
 			resetSpan();
 			advanceWhileEscape(catspeak_byte_is_not_quote, catspeak_byte_is_quote);
 			skipNextByte = true;
-			return CatspeakTokenKind.STRING;
+			return CatspeakToken.STRING;
 		default:
 			if (catspeak_byte_is_newline(byte)) {
 				advanceWhile(catspeak_byte_is_newline);
-				return CatspeakTokenKind.EOL;
+				return CatspeakToken.EOL;
 			} else if (catspeak_byte_is_whitespace(byte)) {
 				advanceWhile(catspeak_byte_is_whitespace);
-				return CatspeakTokenKind.WHITESPACE;
+				return CatspeakToken.WHITESPACE;
 			} else if (catspeak_byte_is_alphabetic(byte)) {
 				advanceWhile(catspeak_byte_is_alphanumeric);
-				return CatspeakTokenKind.IDENTIFIER;
+				return CatspeakToken.IDENTIFIER;
 			} else if (catspeak_byte_is_digit(byte)) {
 				advanceWhile(catspeak_byte_is_digit);
-				return CatspeakTokenKind.NUMBER;
+				return CatspeakToken.NUMBER;
 			} else {
-				return CatspeakTokenKind.UNKNOWN;
+				return CatspeakToken.UNKNOWN;
 			}
 		}
 	}
@@ -282,8 +282,8 @@ function CatspeakLexer(_buff) constructor {
 		var token;
 		do {
 			token = next();
-		} until (token != CatspeakTokenKind.WHITESPACE
-				&& token != CatspeakTokenKind.COMMENT);
+		} until (token != CatspeakToken.WHITESPACE
+				&& token != CatspeakToken.COMMENT);
 		return token;
 	}
 }
@@ -292,7 +292,7 @@ function CatspeakLexer(_buff) constructor {
 /// @param {real} buffer The id of the buffer to use.
 function CatspeakParserLexer(_buff) constructor {
 	lexer = new CatspeakLexer(_buff);
-	pred = CatspeakTokenKind.BOF;
+	pred = CatspeakToken.BOF;
 	span = lexer.getSpan();
 	current = lexer.nextWithoutSpace();
 	parenDepth = 0;
@@ -307,53 +307,53 @@ function CatspeakParserLexer(_buff) constructor {
 			span = lexer.getSpan();
 			var succ = lexer.nextWithoutSpace();
 			switch (current) {
-			case CatspeakTokenKind.BAR:
+			case CatspeakToken.BAR:
 				seenBar = !seenBar;
-			case CatspeakTokenKind.LEFT_PAREN:
-			case CatspeakTokenKind.LEFT_BOX:
+			case CatspeakToken.LEFT_PAREN:
+			case CatspeakToken.LEFT_BOX:
 				parenDepth += 1;
 				break;
-			case CatspeakTokenKind.RIGHT_PAREN:
-			case CatspeakTokenKind.RIGHT_BOX:
+			case CatspeakToken.RIGHT_PAREN:
+			case CatspeakToken.RIGHT_BOX:
 				if (parenDepth > 0) {
 					parenDepth -= 1;
 				}
 				break;
-			case CatspeakTokenKind.EOL:
+			case CatspeakToken.EOL:
 				var implicit_semicolon = !seenBar && parenDepth <= 0;
 				switch (pred) {
-				case CatspeakTokenKind.LEFT_BRACE:
-				case CatspeakTokenKind.DOT:
-				case CatspeakTokenKind.BAR:
-				case CatspeakTokenKind.COLON:
-				case CatspeakTokenKind.SEMICOLON:
-				case CatspeakTokenKind.PLUS:
-				case CatspeakTokenKind.MINUS:
+				case CatspeakToken.LEFT_BRACE:
+				case CatspeakToken.DOT:
+				case CatspeakToken.BAR:
+				case CatspeakToken.COLON:
+				case CatspeakToken.SEMICOLON:
+				case CatspeakToken.PLUS:
+				case CatspeakToken.MINUS:
 					implicit_semicolon = false;
 					break;
 				}
 				switch (succ) {
-				case CatspeakTokenKind.LEFT_BRACE:
-				case CatspeakTokenKind.DOT:
-				case CatspeakTokenKind.BAR:
-				case CatspeakTokenKind.COLON:
-				case CatspeakTokenKind.SEMICOLON:
-				case CatspeakTokenKind.PLUS:
-				case CatspeakTokenKind.MINUS:
+				case CatspeakToken.LEFT_BRACE:
+				case CatspeakToken.DOT:
+				case CatspeakToken.BAR:
+				case CatspeakToken.COLON:
+				case CatspeakToken.SEMICOLON:
+				case CatspeakToken.PLUS:
+				case CatspeakToken.MINUS:
 					implicit_semicolon = false;
 					break;
 				}
 				if (implicit_semicolon) {
-					current = CatspeakTokenKind.SEMICOLON;
+					current = CatspeakToken.SEMICOLON;
 				} else {
 					// ignore this EOL character and try again
 					current = succ;
 					continue;
 				}
 				break;
-			case CatspeakTokenKind.EOF:
-				if (pred != CatspeakTokenKind.SEMICOLON) {
-					current = CatspeakTokenKind.SEMICOLON;
+			case CatspeakToken.EOF:
+				if (pred != CatspeakToken.SEMICOLON) {
+					current = CatspeakToken.SEMICOLON;
 				}
 				break;
 			}
@@ -414,7 +414,7 @@ function CatspeakIRNode(_span, _kind, _value) constructor {
 function CatspeakParser(_buff) constructor {
 	lexer = new CatspeakParserLexer(_buff);
 	buff = _buff;
-	token = CatspeakTokenKind.BOF;
+	token = CatspeakToken.BOF;
 	span = lexer.getSpan();
 	peeked = lexer.next();
 	/// @desc Advances the parser and returns the token.
@@ -435,12 +435,12 @@ function CatspeakParser(_buff) constructor {
 		throw new CatspeakCompilerError(_msg + " (" + catspeak_token_render(token) + ")", span);
 	}
 	/// @desc Returns true if the current token matches this token kind.
-	/// @param {CatspeakTokenKind} kind The token kind to match.
+	/// @param {CatspeakToken} kind The token kind to match.
 	static matches = function(_kind) {
 		return peeked == _kind;
 	}
 	/// @desc Attempts to match against a token and advances the parser if this was successful.
-	/// @param {CatspeakTokenKind} kind The token kind to consume.
+	/// @param {CatspeakToken} kind The token kind to consume.
 	static consume = function(_kind) {
 		if (matches(_kind)) {
 			advance();
@@ -450,7 +450,7 @@ function CatspeakParser(_buff) constructor {
 		}
 	}
 	/// @desc Throws a `CatspeakCompilerError` if the current token is not the expected value. Advances the parser otherwise.
-	/// @param {CatspeakTokenKind} kind The token kind to expect.
+	/// @param {CatspeakToken} kind The token kind to expect.
 	/// @param {string} on_error The error message.
 	static expects = function(_kind, _msg) {
 		if (consume(_kind)) {
@@ -461,12 +461,12 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Entry point for parsing statements.
 	static parseStmt = function() {
-		if (consume(CatspeakTokenKind.SEMICOLON)) {
+		if (consume(CatspeakToken.SEMICOLON)) {
 			return new CatspeakIRNode(
 					span, CatspeakIRKind.NO_OP, undefined);
 		} else {
 			var value = parseExpr();
-			expects(CatspeakTokenKind.SEMICOLON, "expected `;` after statement");
+			expects(CatspeakToken.SEMICOLON, "expected `;` after statement");
 			var my_span = value.span.join(span);
 			return new CatspeakIRNode(
 					my_span, CatspeakIRKind.STATEMENT, value);
@@ -480,14 +480,14 @@ function CatspeakParser(_buff) constructor {
 	static parseCall = function() {
 		var callsite = parseValue();
 		var params = [];
-		while (matches(CatspeakTokenKind.LEFT_PAREN)
-				|| matches(CatspeakTokenKind.LEFT_BOX)
-				|| matches(CatspeakTokenKind.LEFT_BRACE)
-				|| matches(CatspeakTokenKind.COLON)
-				|| matches(CatspeakTokenKind.BAR)
-				|| matches(CatspeakTokenKind.IDENTIFIER)
-				|| matches(CatspeakTokenKind.STRING)
-				|| matches(CatspeakTokenKind.NUMBER)) {
+		while (matches(CatspeakToken.LEFT_PAREN)
+				|| matches(CatspeakToken.LEFT_BOX)
+				|| matches(CatspeakToken.LEFT_BRACE)
+				|| matches(CatspeakToken.COLON)
+				|| matches(CatspeakToken.BAR)
+				|| matches(CatspeakToken.IDENTIFIER)
+				|| matches(CatspeakToken.STRING)
+				|| matches(CatspeakToken.NUMBER)) {
 			var param = parseValue();
 			array_push(params, param);
 		}
@@ -505,13 +505,13 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
-		if (consume(CatspeakTokenKind.IDENTIFIER)) {
+		if (consume(CatspeakToken.IDENTIFIER)) {
 			return new CatspeakIRNode(
 					span, CatspeakIRKind.IDENTIFIER, renderContent());
-		} else if (consume(CatspeakTokenKind.STRING)) {
+		} else if (consume(CatspeakToken.STRING)) {
 			return new CatspeakIRNode(
 					span, CatspeakIRKind.VALUE, renderContent());
-		} else if (consume(CatspeakTokenKind.NUMBER)) {
+		} else if (consume(CatspeakToken.NUMBER)) {
 			return new CatspeakIRNode(
 					span, CatspeakIRKind.VALUE, real(renderContent()));
 		} else {
@@ -521,20 +521,35 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
 		var span_start = span;
-		if (consume(CatspeakTokenKind.COLON)) {
+		if (consume(CatspeakToken.COLON)) {
 			var value = parseExpr();
 			var my_span = span_start.join(value.span);
 			return new CatspeakIRNode(
 					my_span, CatspeakIRKind.GROUPING, value);
-		} else if (consume(CatspeakTokenKind.LEFT_PAREN)) {
+		} else if (consume(CatspeakToken.LEFT_PAREN)) {
 			var value = parseExpr();
-			expects(CatspeakTokenKind.RIGHT_PAREN, "expected closing `)` in grouping");
+			expects(CatspeakToken.RIGHT_PAREN, "expected closing `)` in grouping");
 			var my_span = span_start.join(span);
 			return new CatspeakIRNode(
 					my_span, CatspeakIRKind.GROUPING, value);
 		} else {
 			error("unexpected symbol in expression");
 		}
+	}
+}
+
+/// @desc Represents a kind of intcode.
+enum CatspeakOpCode {
+	PUSH_VALUE,
+	POP_VALUE
+}
+
+/// @desc Displays the ir kind as a string.
+/// @param {CatspeakIRKind} kind The ir kind to display.
+function catspeak_code_render(_kind) {
+	switch (_kind) {
+	case CatspeakOpCode.PUSH_VALUE: return "PUSH_VALUE";
+	default: return "<unknown>";
 	}
 }
 
@@ -545,20 +560,47 @@ function CatspeakCodegen(_buff, _out) constructor {
 	parser = new CatspeakParser(_buff);
 	buff = _buff;
 	out = _out;
+	/// @desc Writes a list of codes to the output array.
+	/// @param {CatspeakOpCode} opcode The op code to write.
+	/// @param {value} [value] Other values to write.
+	static writeCode = function(_opcode) {
+		array_push(out, _opcode);
+		for (var i = 1; i < argument_count; i += 1) {
+			array_push(out, argument[i]);
+		}
+	}
+	/// @desc Generates the code for the next IR term.
+	/// @param {CatspeakIRTerm} term The term to generate code for.
+	static visitTerm = function(_term) {
+		switch (_term.kind) {
+		case CatspeakIRKind.STATEMENT:
+			visitTerm(_term.value);
+			writeCode(CatspeakOpCode.POP_VALUE);
+			break;
+		case CatspeakIRKind.VALUE:
+			writeCode(CatspeakOpCode.PUSH_VALUE, _term.value);
+			break;
+		case CatspeakIRKind.IDENTIFIER:
+			throw "not implemented";
+			break;
+		case CatspeakIRKind.NO_OP:
+			break;
+		case CatspeakIRKind.CALL:
+			throw "not implemented";
+			break;
+		case CatspeakIRKind.GROUPING:
+			visitTerm(_term.value);
+			break;
+		}
+	}
 	/// @desc Generates the code for a single term and returns whether more terms need to be parsed.
 	static generateCode = function() {
-		if (parser.matches(CatspeakTokenKind.EOF)) {
+		if (parser.matches(CatspeakToken.EOF)) {
 			return false;
 		}
 		var ir = parser.parseStmt();
 		visitTerm(ir);
 		return true;
-	}
-	/// @desc Generates the code for the next IR term.
-	/// @param {CatspeakIRTerm} term The term to generate code for.
-	static visitTerm = function(_term) {
-		show_message(_term);
-		// TODO
 	}
 }
 
@@ -601,7 +643,7 @@ fun add |arr| {
   ret acc
 }
 ';
-var sess = catspeak_session_create("\nfoo 3 : 3 2");
+var sess = catspeak_session_create("\n1");
 var code = catspeak_session_compile(sess);
 catspeak_session_destroy(sess);
 show_message(code);
