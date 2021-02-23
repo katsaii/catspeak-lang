@@ -554,6 +554,8 @@ function CatspeakParser(_buff) constructor {
 enum CatspeakOpCode {
 	PUSH_VALUE,
 	POP_VALUE,
+	GET_VALUE,
+	SET_VALUE,
 	CALL
 }
 
@@ -563,6 +565,8 @@ function catspeak_code_render(_kind) {
 	switch (_kind) {
 	case CatspeakOpCode.PUSH_VALUE: return "PUSH_VALUE";
 	case CatspeakOpCode.POP_VALUE: return "POP_VALUE";
+	case CatspeakOpCode.GET_VALUE: return "GET_VALUE";
+	case CatspeakOpCode.SET_VALUE: return "SET_VALUE";
 	case CatspeakOpCode.CALL: return "CALL";
 	default: return "<unknown>";
 	}
