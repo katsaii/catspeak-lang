@@ -9,10 +9,6 @@
 function CatspeakSpan(_begin, _end) constructor {
 	start = min(_begin, _end);
 	limit = max(_begin, _end) - start;
-	/// @desc Creates a clone of this span.
-	static clone = function() {
-		return new CatspeakSpan(start, start + limit);
-	}
 	/// @desc Joins two spans together.
 	/// @param {CatspeakSpan} other The other span to combine with.
 	static join = function(_other) {
@@ -172,7 +168,7 @@ function CatspeakLexer(_buff) constructor {
 	spanBegin = offset;
 	skipNextByte = false;
 	/// @desc Resets the current span.
-	static resetSpan = function() {
+	static clearSpan = function() {
 		spanBegin = buffer_tell(buff);
 	}
 	/// @desc Returns the current buffer span.
@@ -219,7 +215,7 @@ function CatspeakLexer(_buff) constructor {
 			skipNextByte = false;
 			return next();
 		}
-		resetSpan();
+		clearSpan();
 		var byte = buffer_read(buff, buffer_u8);
 		switch (byte) {
 		case ord("\\"):
@@ -255,7 +251,7 @@ function CatspeakLexer(_buff) constructor {
 		case ord("-"):
 			return CatspeakToken.MINUS;
 		case ord("\""):
-			resetSpan();
+			clearSpan();
 			advanceWhileEscape(catspeak_byte_is_not_quote, catspeak_byte_is_quote);
 			skipNextByte = true;
 			return CatspeakToken.STRING;
@@ -301,6 +297,10 @@ function CatspeakParserLexer(_buff) constructor {
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
 		return span;
+	}
+	/// @desc Returns the current buffer position.
+	static getPosition = function() {
+		return [0, 0];
 	}
 	/// @desc Advances the lexer and returns the next token.
 	static next = function() {
@@ -366,15 +366,15 @@ function CatspeakParserLexer(_buff) constructor {
 	}
 }
 
-/// @desc Represents a compiler error.
+/// @desc Represents a Catspeak error.
+/// @param {vector} pos The vector holding the row and column numbers.
 /// @param {string} msg The error message.
-/// @param {CatspeakSpan} span The span where the error occurred at.
-function CatspeakCompilerError(_msg, _span) constructor {
+function CatspeakError(_pos, _msg) constructor {
+	pos = _pos;
 	msg = is_string(_msg) ? _msg : string(_msg);
-	span = _span;
 	/// @desc Displays the content of this error.
 	toString = function() {
-		return string(span) + " " + msg;
+		return "[" + instanceof(self) + "] occurred on line " + string(pos[0]) + " at column " + string(pos[1]) + ": " + msg;
 	}
 }
 
@@ -405,11 +405,11 @@ function catspeak_ir_render(_kind) {
 }
 
 /// @desc Represents an IR node.
-/// @param {CatspeakSpan} span The span of the ir node.
+/// @param {vector} pos The vector holding the row and column numbers.
 /// @param {CatspeakIRKind} kind The kind of ir node.
 /// @param {value} value The value held by the ir node.
-function CatspeakIRNode(_span, _kind, _value) constructor {
-	span = _span;
+function CatspeakIRNode(_pos, _kind, _value) constructor {
+	pos = _pos;
 	kind = _kind;
 	value = _value;
 }
@@ -421,23 +421,25 @@ function CatspeakParser(_buff) constructor {
 	buff = _buff;
 	token = CatspeakToken.BOF;
 	span = lexer.getSpan();
+	pos = [0, 0];
 	peeked = lexer.next();
 	/// @desc Advances the parser and returns the token.
 	static advance = function() {
 		token = peeked;
 		span = lexer.getSpan();
+		pos = lexer.getPosition();
 		peeked = lexer.next();
 		return token;
 	}
 	/// @desc Renders the current span of the parser.
-	static renderContent = function() {
+	static content = function() {
 		return span.render(buff);
 	}
 	/// @desc Throws a `CatspeakCompilerError` for the current token.
 	/// @param {string} on_error The error message.
 	static error = function(_msg) {
 		advance();
-		throw new CatspeakCompilerError(_msg + " (" + catspeak_token_render(token) + ")", span);
+		throw new CatspeakError(pos, _msg + " -- got `" + string(content()) + "` (" + catspeak_token_render(token) + ")");
 	}
 	/// @desc Returns true if the current token matches this token kind.
 	/// @param {CatspeakToken} kind The token kind to match.
@@ -468,13 +470,12 @@ function CatspeakParser(_buff) constructor {
 	static parseStmt = function() {
 		if (consume(CatspeakToken.SEMICOLON)) {
 			return new CatspeakIRNode(
-					span, CatspeakIRKind.NO_OP, undefined);
+					pos, CatspeakIRKind.NO_OP, undefined);
 		} else {
 			var value = parseExpr();
 			expects(CatspeakToken.SEMICOLON, "expected `;` after statement");
-			var my_span = value.span.join(span);
 			return new CatspeakIRNode(
-					my_span, CatspeakIRKind.STATEMENT, value);
+					value.pos, CatspeakIRKind.STATEMENT, value);
 		}
 	}
 	/// @desc Entry point for parsing expressions.
@@ -489,9 +490,8 @@ function CatspeakParser(_buff) constructor {
 			switch (callsite.value) {
 			case "print":
 				var value = self.parseValue();
-				var my_span = callsite.span.join(value.span);
 				return new CatspeakIRNode(
-						my_span, CatspeakIRKind.PRINT, value);
+						callsite.pos, CatspeakIRKind.PRINT, value);
 			}
 		}
 		var params = [];
@@ -510,9 +510,8 @@ function CatspeakParser(_buff) constructor {
 		if (arg_count == 0) {
 			return callsite;
 		} else {
-			var my_span = callsite.span.join(params[arg_count - 1].span);
 			return new CatspeakIRNode(
-					my_span, CatspeakIRKind.CALL, {
+					callsite.pos, CatspeakIRKind.CALL, {
 						callsite : callsite,
 						params : params
 					});
@@ -522,31 +521,30 @@ function CatspeakParser(_buff) constructor {
 	static parseValue = function() {
 		if (consume(CatspeakToken.IDENTIFIER)) {
 			return new CatspeakIRNode(
-					span, CatspeakIRKind.IDENTIFIER, renderContent());
+					pos, CatspeakIRKind.IDENTIFIER, content());
 		} else if (consume(CatspeakToken.STRING)) {
 			return new CatspeakIRNode(
-					span, CatspeakIRKind.VALUE, renderContent());
+					pos, CatspeakIRKind.VALUE, content());
 		} else if (consume(CatspeakToken.NUMBER)) {
 			return new CatspeakIRNode(
-					span, CatspeakIRKind.VALUE, real(renderContent()));
+					pos, CatspeakIRKind.VALUE, real(content()));
 		} else {
 			return parseGrouping();
 		}
 	}
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
-		var span_start = span;
 		if (consume(CatspeakToken.COLON)) {
+			var pos_start = pos;
 			var value = parseExpr();
-			var my_span = span_start.join(value.span);
 			return new CatspeakIRNode(
-					my_span, CatspeakIRKind.GROUPING, value);
+					pos_start, CatspeakIRKind.GROUPING, value);
 		} else if (consume(CatspeakToken.LEFT_PAREN)) {
+			var pos_start = pos;
 			var value = parseExpr();
 			expects(CatspeakToken.RIGHT_PAREN, "expected closing `)` in grouping");
-			var my_span = span_start.join(span);
 			return new CatspeakIRNode(
-					my_span, CatspeakIRKind.GROUPING, value);
+					pos_start, CatspeakIRKind.GROUPING, value);
 		} else {
 			error("unexpected symbol in expression");
 		}
@@ -595,9 +593,9 @@ function CatspeakCodegen(_buff, _out) constructor {
 	/// @desc Generates the code for the next IR term.
 	/// @param {CatspeakIRTerm} term The term to generate code for.
 	static visitTerm = function(_term) {
+		var pos = _term.pos;
 		var kind = _term.kind;
 		var value = _term.value;
-		var span = _term.span;
 		switch (_term.kind) {
 		case CatspeakIRKind.STATEMENT:
 			visitTerm(value);
@@ -607,7 +605,7 @@ function CatspeakCodegen(_buff, _out) constructor {
 			writeCode(CatspeakOpCode.PUSH_VALUE, value);
 			return;
 		case CatspeakIRKind.IDENTIFIER:
-			throw "\nidentifiers not implemented";
+			throw new CatspeakError(pos, "identifiers not implemented");
 			return;
 		case CatspeakIRKind.NO_OP:
 			return;
@@ -641,34 +639,17 @@ function CatspeakCodegen(_buff, _out) constructor {
 	}
 }
 
-/// @desc Creates a compiler session from this string.
+/// @desc Compiles this string and returns the resulting intcode program.
 /// @param {string} str The string that contains the source code.
-function catspeak_session_create(_str) {
+function catspeak_compile(_str) {
 	var size = string_byte_length(_str);
 	var buff = buffer_create(size, buffer_fixed, 1);
 	buffer_write(buff, buffer_text, _str);
 	buffer_seek(buff, buffer_seek_start, 0);
-	return {
-		buff : buff,
-		stack : ds_stack_create()
-	};
-}
-
-/// @desc Destroys this compiler session.
-/// @param {struct} sess The session to kill.
-function catspeak_session_destroy(_sess) {
-	buffer_delete(_sess.buff);
-	ds_stack_destroy(_sess.stack);
-}
-
-/// @desc Compiles this session and returns the resulting intcode program.
-/// @param {struct} sess The session to compile.
-function catspeak_session_compile(_sess) {
-	var buff = _sess.buff;
-	buffer_seek(buff, buffer_seek_start, 0);
 	var out = [];
 	var codegen = new CatspeakCodegen(buff, out);
 	while (codegen.generateCode()) { }
+	buffer_delete(buff);
 	return out;
 }
 
@@ -738,11 +719,9 @@ fun add |arr| {
   ret acc
 }
 ';
-var sess = catspeak_session_create(@'
+var code = catspeak_compile(@'
 print 1
 print 2
 print 4
 ');
-var code = catspeak_session_compile(sess);
-catspeak_session_execute(sess, code);
-catspeak_session_destroy(sess);
+show_message(code);
