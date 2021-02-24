@@ -170,8 +170,30 @@ function CatspeakLexer(_buff) constructor {
 	offset = buffer_tell(_buff);
 	alignment = buffer_get_alignment(_buff);
 	limit = buffer_get_size(_buff);
+	row = 1; // assumes the buffer is always at its starting position, even if it's not
+	col = 1;
+	cr = false;
 	spanBegin = offset;
 	skipNextByte = false;
+	/// @desc Checks for a new line character and increments the source position.
+	/// @param {real} byte The byte to register.
+	static checkByte = function(_byte) {
+		if (_byte == ord("\r")) {
+			cr = true;
+			row = 0;
+			col += 1;
+		} else if (_byte == ord("\n")) {
+			row = 0;
+			if (cr) {
+				cr = false;
+			} else {
+				col += 1;
+			}
+		} else {
+			row += 1;
+			cr = false;
+		}
+	}
 	/// @desc Resets the current span.
 	static clearSpan = function() {
 		spanBegin = buffer_tell(buff);
@@ -179,6 +201,10 @@ function CatspeakLexer(_buff) constructor {
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
 		return new CatspeakSpan(spanBegin, buffer_tell(buff));
+	}
+	/// @desc Returns the current buffer position.
+	static getPosition = function() {
+		return [row, col];
 	}
 	/// @desc Advances the lexer whilst a predicate holds, or until the EoF was reached.
 	/// @param {script} pred The predicate to check for.
@@ -199,6 +225,7 @@ function CatspeakLexer(_buff) constructor {
 					do_escape = true;
 				}
 			}
+			checkByte(byte);
 			seek += alignment;
 		}
 		buffer_seek(buff, buffer_seek_start, seek);
@@ -216,12 +243,13 @@ function CatspeakLexer(_buff) constructor {
 			return CatspeakToken.EOF;
 		}
 		if (skipNextByte) {
-			buffer_read(buff, buffer_u8);
+			checkByte(buffer_read(buff, buffer_u8));
 			skipNextByte = false;
 			return next();
 		}
 		clearSpan();
 		var byte = buffer_read(buff, buffer_u8);
+		checkByte(byte);
 		switch (byte) {
 		case ord("\\"):
 			// this is needed for a specific case where `\` is the first character in a line
@@ -295,6 +323,7 @@ function CatspeakParserLexer(_buff) constructor {
 	lexer = new CatspeakLexer(_buff);
 	pred = CatspeakToken.BOF;
 	span = lexer.getSpan();
+	pos = lexer.getPosition();
 	current = lexer.nextWithoutSpace();
 	parenDepth = 0;
 	seenBar = false;
@@ -305,12 +334,13 @@ function CatspeakParserLexer(_buff) constructor {
 	}
 	/// @desc Returns the current buffer position.
 	static getPosition = function() {
-		return [0, 0];
+		return pos;
 	}
 	/// @desc Advances the lexer and returns the next token.
 	static next = function() {
 		while (true) {
 			span = lexer.getSpan();
+			pos = lexer.getPosition();
 			var succ = lexer.nextWithoutSpace();
 			switch (current) {
 			case CatspeakToken.BAR:
@@ -724,7 +754,7 @@ fun add |arr| {
 ';
 var program = catspeak_compile(@'
 print 1
-print 2
+print a
 print 4
 ');
 var vm = new CatspeakVM();
