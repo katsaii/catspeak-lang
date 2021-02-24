@@ -649,7 +649,8 @@ function catspeak_session_create(_str) {
 	buffer_write(buff, buffer_text, _str);
 	buffer_seek(buff, buffer_seek_start, 0);
 	return {
-		buff : buff
+		buff : buff,
+		stack : ds_stack_create()
 	};
 }
 
@@ -657,6 +658,7 @@ function catspeak_session_create(_str) {
 /// @param {struct} sess The session to kill.
 function catspeak_session_destroy(_sess) {
 	buffer_delete(_sess.buff);
+	ds_stack_destroy(_sess.stack);
 }
 
 /// @desc Compiles this session and returns the resulting intcode program.
@@ -668,6 +670,52 @@ function catspeak_session_compile(_sess) {
 	var codegen = new CatspeakCodegen(buff, out);
 	while (codegen.generateCode()) { }
 	return out;
+}
+
+/// @desc Pushes a value onto the stack.
+/// @param {struct} sess The session to update.
+/// @param {value} value The value to push.
+function catspeak_push(_sess, _value) {
+	ds_stack_push(_sess.stack, _value);
+}
+
+/// @desc Pops the top value from the stack.
+/// @param {struct} sess The session to update.
+function catspeak_pop(_sess, _value) {
+	var stack = _sess.stack;
+	if (ds_stack_empty(stack)) {
+		throw "\ncatspeak stack underflow";
+	}
+	return ds_stack_pop(_sess.stack);
+}
+
+/// @desc Returns the top value of the stack.
+/// @param {struct} sess The session to check.
+function catspeak_top(_sess, _value) {
+	var stack = _sess.stack;
+	if (ds_stack_empty(stack)) {
+		throw "\ncatspeak stack empty";
+	}
+	return ds_stack_top(_sess.stack);
+}
+
+/// @desc Executes this block of code using the current catspeak session.
+/// @param {struct} sess The session to update.
+/// @param {array} code The code to run.
+function catspeak_execute(_sess, _code) {
+	var n = array_length(_code);
+	for (var pc = 0; pc < n; pc += 1) { 
+		switch (_code[pc]) {
+		case CatspeakOpCode.PUSH_VALUE:
+		case CatspeakOpCode.POP_VALUE:
+		case CatspeakOpCode.GET_VALUE:
+		case CatspeakOpCode.SET_VALUE:
+		case CatspeakOpCode.PRINT:
+		case CatspeakOpCode.CALL:
+		default:
+			throw "\ncatspeak unknown opcode at index " + string(pc);
+		}
+	}
 }
 
 var program = @'
