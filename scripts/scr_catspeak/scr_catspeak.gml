@@ -3,19 +3,30 @@
  * Kat @katsaii
  */
 
+/// @desc Represents a Catspeak error.
+/// @param {vector} pos The vector holding the row and column numbers.
+/// @param {string} msg The error message.
+function CatspeakError(_pos, _msg) constructor {
+	pos = _pos;
+	reason = is_string(_msg) ? _msg : string(_msg);
+	/// @desc Displays the content of this error.
+	toString = function() {
+		var msg = "[" + instanceof(self) + "]";
+		if (pos != undefined) {
+			msg += "occurred on line " + string(pos[0]) +
+					" at column " + string(pos[1]);
+		}
+		msg += ": " + reason;
+		return msg;
+	}
+}
+
 /// @desc Represents a span of bytes of some buffer.
 /// @param {real} begin The start of the span.
 /// @param {real} end The end of the span.
 function CatspeakSpan(_begin, _end) constructor {
 	start = min(_begin, _end);
 	limit = max(_begin, _end) - start;
-	/// @desc Joins two spans together.
-	/// @param {CatspeakSpan} other The other span to combine with.
-	static join = function(_other) {
-		var best_start = min(start, _other.start);
-		var best_end = max(start + limit, _other.start + _other.limit);
-		return new CatspeakSpan(best_start, best_end);
-	}
 	/// @desc Renders this span with the content of this buffer.
 	/// @param {real} buffer The buffer to pull string data from.
 	static render = function(_buff) {
@@ -366,18 +377,6 @@ function CatspeakParserLexer(_buff) constructor {
 	}
 }
 
-/// @desc Represents a Catspeak error.
-/// @param {vector} pos The vector holding the row and column numbers.
-/// @param {string} msg The error message.
-function CatspeakError(_pos, _msg) constructor {
-	pos = _pos;
-	msg = is_string(_msg) ? _msg : string(_msg);
-	/// @desc Displays the content of this error.
-	toString = function() {
-		return "[" + instanceof(self) + "] occurred on line " + string(pos[0]) + " at column " + string(pos[1]) + ": " + msg;
-	}
-}
-
 /// @desc Represents a kind of IR node.
 enum CatspeakIRKind {
 	STATEMENT,
@@ -653,58 +652,55 @@ function catspeak_compile(_str) {
 	return out;
 }
 
-/// @desc Pushes a value onto the stack.
-/// @param {struct} sess The session to update.
-/// @param {value} value The value to push.
-function catspeak_push(_sess, _value) {
-	ds_stack_push(_sess.stack, _value);
-}
-
-/// @desc Pops the top value from the stack.
-/// @param {struct} sess The session to update.
-function catspeak_pop(_sess) {
-	var stack = _sess.stack;
-	if (ds_stack_empty(stack)) {
-		throw "\ncatspeak stack underflow";
+/// @desc Handles the execution of Catspeak intcode.
+function CatspeakVM() constructor {
+	stack = [];
+	/// @desc Pushes a value onto the stack.
+	/// @param {value} value The value to push.
+	static push = function(_value) {
+		array_push(stack, _value);
 	}
-	return ds_stack_pop(_sess.stack);
-}
-
-/// @desc Returns the top value of the stack.
-/// @param {struct} sess The session to check.
-function catspeak_top(_sess) {
-	var stack = _sess.stack;
-	if (ds_stack_empty(stack)) {
-		throw "\ncatspeak stack empty";
+	/// @desc Pops the top value from the stack.
+	static pop = function() {
+		var pos = array_length(stack) - 1;
+		if (pos < 0) {
+			throw new CatspeakError(undefined, "VM stack underflow");
+		}
+		return array_pop(stack);
 	}
-	return ds_stack_top(_sess.stack);
-}
-
-/// @desc Executes this block of code using the current catspeak session.
-/// @param {struct} sess The session to update.
-/// @param {array} code The code to run.
-function catspeak_session_execute(_sess, _code) {
-	var n = array_length(_code);
-	for (var pc = 0; pc < n; pc += 1) { 
-		switch (_code[pc]) {
-		case CatspeakOpCode.PUSH_VALUE:
-			pc += 1;
-			var value = _code[pc];
-			catspeak_push(_sess, value);
-			break;
-		case CatspeakOpCode.POP_VALUE:
-			catspeak_pop(_sess);
-			break;
-		case CatspeakOpCode.GET_VALUE:
-		case CatspeakOpCode.SET_VALUE:
-			throw "\ncatspeak unimplemented";
-		case CatspeakOpCode.PRINT:
-			var value = catspeak_top(_sess);
-			show_debug_message(value);
-			break;
-		case CatspeakOpCode.CALL:
-		default:
-			throw "\ncatspeak unknown opcode at index " + string(pc);
+	/// @desc Returns the top value of the stack.
+	static top = function() {
+		var pos = array_length(stack) - 1;
+		if (pos < 0) {
+			throw new CatspeakError(undefined, "cannot peek into empty VM stack");
+		}
+		return stack[pos];
+	}
+	/// @desc Executes this block of code using the current catspeak session.
+	/// @param {array} code The code to run.
+	static run = function(_code) {
+		var n = array_length(_code);
+		for (var pc = 0; pc < n; pc += 1) { 
+			switch (_code[pc]) {
+			case CatspeakOpCode.PUSH_VALUE:
+				pc += 1;
+				var value = _code[pc];
+				push(value);
+				break;
+			case CatspeakOpCode.POP_VALUE:
+				pop();
+				break;
+			case CatspeakOpCode.GET_VALUE:
+			case CatspeakOpCode.SET_VALUE:
+				throw new CatspeakError(undefined, "get and set instructions are not implemented");
+			case CatspeakOpCode.PRINT:
+				var value = top();
+				show_debug_message(value);
+				break;
+			case CatspeakOpCode.CALL:
+			default:
+				throw new CatspeakError(undefined, "unknown opcode at index " + string(pc));
+			}
 		}
 	}
 }
@@ -724,4 +720,5 @@ print 1
 print 2
 print 4
 ');
-show_message(code);
+var vm = new CatspeakVM();
+vm.run(code);
