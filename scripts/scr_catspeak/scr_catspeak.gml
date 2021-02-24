@@ -297,6 +297,7 @@ function CatspeakParserLexer(_buff) constructor {
 	current = lexer.nextWithoutSpace();
 	parenDepth = 0;
 	seenBar = false;
+	eof = false;
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
 		return span;
@@ -352,8 +353,9 @@ function CatspeakParserLexer(_buff) constructor {
 				}
 				break;
 			case CatspeakToken.EOF:
-				if (pred != CatspeakToken.SEMICOLON) {
+				if not (eof) {
 					current = CatspeakToken.SEMICOLON;
+					eof = true;
 				}
 				break;
 			}
@@ -479,6 +481,14 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses a function call.
 	static parseCall = function() {
 		var callsite = parseValue();
+		/*if (callsite.kind = CatspeakIRKind.IDENTIFIER) {
+			// parse keywords
+			switch (callsite.value) {
+			case "var":
+				// TODO
+				throw "not implemented";
+			}
+		}*/
 		var params = [];
 		while (matches(CatspeakToken.LEFT_PAREN)
 				|| matches(CatspeakToken.LEFT_BOX)
@@ -506,7 +516,8 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
 		if (matches(CatspeakToken.IDENTIFIER)) {
-			return parseKeyword();
+			return new CatspeakIRNode(
+					span, CatspeakIRKind.IDENTIFIER, renderContent());
 		} else if (consume(CatspeakToken.STRING)) {
 			return new CatspeakIRNode(
 					span, CatspeakIRKind.VALUE, renderContent());
@@ -533,19 +544,6 @@ function CatspeakParser(_buff) constructor {
 					my_span, CatspeakIRKind.GROUPING, value);
 		} else {
 			error("unexpected symbol in expression");
-		}
-	}
-	/// @desc Parses keywords from an identifier.
-	static parseKeyword = function() {
-		expects(CatspeakToken.IDENTIFIER, "expected identifier");
-		var ident = renderContent();
-		switch (ident) {
-		case "var":
-			// TODO
-			throw "not implemented";
-		default:
-			return new CatspeakIRNode(
-					span, CatspeakIRKind.IDENTIFIER, ident);
 		}
 	}
 }
@@ -661,18 +659,3 @@ function catspeak_session_compile(_sess) {
 	while (codegen.generateCode()) { }
 	return out;
 }
-
-var program = @'
-# adds to numbers together
-fun add |arr| {
-  var acc 0
-  for arr |x| {
-    inc acc x
-  }
-  ret acc
-}
-';
-var sess = catspeak_session_create("\n3 2 1");
-var code = catspeak_session_compile(sess);
-catspeak_session_destroy(sess);
-show_message(code);
