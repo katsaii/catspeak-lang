@@ -392,6 +392,7 @@ enum CatspeakIRKind {
 /// @param {CatspeakIRKind} kind The ir kind to display.
 function catspeak_ir_render(_kind) {
 	switch (_kind) {
+	case CatspeakIRKind.STATEMENT: return "STATEMENT";
 	case CatspeakIRKind.VALUE: return "VALUE";
 	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakIRKind.NO_OP: return "NO_OP";
