@@ -481,14 +481,14 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses a function call.
 	static parseCall = function() {
 		var callsite = parseValue();
-		/*if (callsite.kind = CatspeakIRKind.IDENTIFIER) {
+		if (callsite.kind = CatspeakIRKind.IDENTIFIER) {
 			// parse keywords
 			switch (callsite.value) {
 			case "var":
 				// TODO
 				throw "not implemented";
 			}
-		}*/
+		}
 		var params = [];
 		while (matches(CatspeakToken.LEFT_PAREN)
 				|| matches(CatspeakToken.LEFT_BOX)
@@ -499,7 +499,6 @@ function CatspeakParser(_buff) constructor {
 				|| matches(CatspeakToken.STRING)
 				|| matches(CatspeakToken.NUMBER)) {
 			var param = parseValue();
-			array_push(params, param);
 		}
 		var arg_count = array_length(params);
 		if (arg_count == 0) {
@@ -515,7 +514,7 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
-		if (matches(CatspeakToken.IDENTIFIER)) {
+		if (consume(CatspeakToken.IDENTIFIER)) {
 			return new CatspeakIRNode(
 					span, CatspeakIRKind.IDENTIFIER, renderContent());
 		} else if (consume(CatspeakToken.STRING)) {
@@ -659,3 +658,17 @@ function catspeak_session_compile(_sess) {
 	while (codegen.generateCode()) { }
 	return out;
 }
+
+var program = @'
+# adds to numbers together
+fun add |arr| {
+  var acc 0
+  for arr |x| {
+    inc acc x
+  }
+  ret acc
+}
+';
+var sess = catspeak_session_create("\nhi 3 2 1");
+var code = catspeak_session_compile(sess);
+catspeak_session_destroy(sess);
