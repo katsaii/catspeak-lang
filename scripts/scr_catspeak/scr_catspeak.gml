@@ -384,6 +384,7 @@ enum CatspeakIRKind {
 	VALUE,
 	IDENTIFIER,
 	NO_OP,
+	PRINT,
 	CALL,
 	GROUPING
 }
@@ -396,6 +397,7 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.VALUE: return "VALUE";
 	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakIRKind.NO_OP: return "NO_OP";
+	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.GROUPING: return "GROUPING";
 	default: return "<unknown>";
@@ -485,9 +487,11 @@ function CatspeakParser(_buff) constructor {
 		if (callsite.kind = CatspeakIRKind.IDENTIFIER) {
 			// parse keywords
 			switch (callsite.value) {
-			case "var":
-				// TODO
-				throw "not implemented";
+			case "print":
+				var value = self.parseValue();
+				var my_span = callsite.span.join(value.span);
+				return new CatspeakIRNode(
+						my_span, CatspeakIRKind.PRINT, value);
 			}
 		}
 		var params = [];
@@ -500,6 +504,7 @@ function CatspeakParser(_buff) constructor {
 				|| matches(CatspeakToken.STRING)
 				|| matches(CatspeakToken.NUMBER)) {
 			var param = parseValue();
+			array_push(params, param);
 		}
 		var arg_count = array_length(params);
 		if (arg_count == 0) {
@@ -554,6 +559,7 @@ enum CatspeakOpCode {
 	POP_VALUE,
 	GET_VALUE,
 	SET_VALUE,
+	PRINT,
 	CALL
 }
 
@@ -601,9 +607,13 @@ function CatspeakCodegen(_buff, _out) constructor {
 			writeCode(CatspeakOpCode.PUSH_VALUE, value);
 			return;
 		case CatspeakIRKind.IDENTIFIER:
-			throw "not implemented";
+			throw "\nidentifiers not implemented";
 			return;
 		case CatspeakIRKind.NO_OP:
+			return;
+		case CatspeakIRKind.PRINT:
+			visitTerm(value);
+			writeCode(CatspeakOpCode.PRINT);
 			return;
 		case CatspeakIRKind.CALL:
 			var callsite = value.callsite;
@@ -670,6 +680,11 @@ fun add |arr| {
   ret acc
 }
 ';
-var sess = catspeak_session_create("\nhi 3 2 1");
+var sess = catspeak_session_create(@'
+print 1
+print 2
+print 4
+');
 var code = catspeak_session_compile(sess);
 catspeak_session_destroy(sess);
+show_message(code);
