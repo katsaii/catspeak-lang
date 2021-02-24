@@ -11,13 +11,7 @@ function CatspeakError(_pos, _msg) constructor {
 	reason = is_string(_msg) ? _msg : string(_msg);
 	/// @desc Displays the content of this error.
 	toString = function() {
-		var msg = "[" + instanceof(self) + "]";
-		if (pos != undefined) {
-			msg += "occurred on line " + string(pos[0]) +
-					" at column " + string(pos[1]);
-		}
-		msg += ": " + reason;
-		return msg;
+		return instanceof(self) + " " + string(pos) + ": " + reason;
 	}
 }
 
@@ -573,22 +567,28 @@ function catspeak_code_render(_kind) {
 	}
 }
 
+/// @desc Represents a Catspeak intcode program with associated debug information.
+function CatspeakProgram() constructor {
+	diagnostic = [];
+	intcode = [];
+	size = 0;
+	/// @desc Adds a code and its positional information to the program.
+	/// @param {vector} pos The position of this piece of code.
+	/// @param {value} code The pieve of code to write.
+	static addCode = function(_pos, _code) {
+		array_push(diagnostic, _pos);
+		array_push(intcode, _code);
+		size += 1;
+	}
+}
+
 /// @desc Handles the generation of intcode from Catspeak IR.
 /// @param {real} buffer The id of the buffer to use.
-/// @param {array} out The array to populate code with.
+/// @param {CatspeakProgram} out The program to populate code with.
 function CatspeakCodegen(_buff, _out) constructor {
 	parser = new CatspeakParser(_buff);
 	buff = _buff;
 	out = _out;
-	/// @desc Writes a list of codes to the output array.
-	/// @param {CatspeakOpCode} opcode The op code to write.
-	/// @param {value} [value] Other values to write.
-	static writeCode = function(_opcode) {
-		array_push(out, _opcode);
-		for (var i = 1; i < argument_count; i += 1) {
-			array_push(out, argument[i]);
-		}
-	}
 	/// @desc Generates the code for the next IR term.
 	/// @param {CatspeakIRTerm} term The term to generate code for.
 	static visitTerm = function(_term) {
@@ -598,10 +598,11 @@ function CatspeakCodegen(_buff, _out) constructor {
 		switch (_term.kind) {
 		case CatspeakIRKind.STATEMENT:
 			visitTerm(value);
-			writeCode(CatspeakOpCode.POP_VALUE);
+			out.addCode(pos, CatspeakOpCode.POP_VALUE);
 			return;
 		case CatspeakIRKind.VALUE:
-			writeCode(CatspeakOpCode.PUSH_VALUE, value);
+			out.addCode(pos, CatspeakOpCode.PUSH_VALUE);
+			out.addCode(pos, value);
 			return;
 		case CatspeakIRKind.IDENTIFIER:
 			throw new CatspeakError(pos, "identifiers not implemented");
@@ -610,7 +611,7 @@ function CatspeakCodegen(_buff, _out) constructor {
 			return;
 		case CatspeakIRKind.PRINT:
 			visitTerm(value);
-			writeCode(CatspeakOpCode.PRINT);
+			out.addCode(pos, CatspeakOpCode.PRINT);
 			return;
 		case CatspeakIRKind.CALL:
 			var callsite = value.callsite;
@@ -620,7 +621,7 @@ function CatspeakCodegen(_buff, _out) constructor {
 				visitTerm(params[i]);
 			}
 			visitTerm(callsite);
-			writeCode(CatspeakOpCode.CALL);
+			out.addCode(pos, CatspeakOpCode.CALL);
 			return;
 		case CatspeakIRKind.GROUPING:
 			visitTerm(_term.value);
@@ -645,7 +646,7 @@ function catspeak_compile(_str) {
 	var buff = buffer_create(size, buffer_fixed, 1);
 	buffer_write(buff, buffer_text, _str);
 	buffer_seek(buff, buffer_seek_start, 0);
-	var out = [];
+	var out = new CatspeakProgram();
 	var codegen = new CatspeakCodegen(buff, out);
 	while (codegen.generateCode()) { }
 	buffer_delete(buff);
@@ -677,14 +678,18 @@ function CatspeakVM() constructor {
 		return stack[pos];
 	}
 	/// @desc Executes this block of code using the current catspeak session.
-	/// @param {array} code The code to run.
-	static run = function(_code) {
-		var n = array_length(_code);
-		for (var pc = 0; pc < n; pc += 1) { 
-			switch (_code[pc]) {
+	/// @param {CatspeakProgram} program The program to run.
+	static run = function(_program) {
+		var diagnostic = _program.diagnostic;
+		var intcode = _program.intcode;
+		var n = _program.size;
+		for (var pc = 0; pc < n; pc += 1) {
+			var code = intcode[pc];
+			var pos = diagnostic[pc];
+			switch (code) {
 			case CatspeakOpCode.PUSH_VALUE:
 				pc += 1;
-				var value = _code[pc];
+				var value = intcode[pc];
 				push(value);
 				break;
 			case CatspeakOpCode.POP_VALUE:
@@ -692,14 +697,16 @@ function CatspeakVM() constructor {
 				break;
 			case CatspeakOpCode.GET_VALUE:
 			case CatspeakOpCode.SET_VALUE:
-				throw new CatspeakError(undefined, "get and set instructions are not implemented");
+				throw new CatspeakError(pos, "get and set instructions are not implemented");
 			case CatspeakOpCode.PRINT:
 				var value = top();
 				show_debug_message(value);
 				break;
 			case CatspeakOpCode.CALL:
+				throw new CatspeakError(pos, "call instructions are not implemented");
 			default:
-				throw new CatspeakError(undefined, "unknown opcode at index " + string(pc));
+				throw new CatspeakError(pos, "unknown opcode at index " + string(pc) +
+						" (" + catspeak_code_render(code) + ")");
 			}
 		}
 	}
@@ -715,10 +722,10 @@ fun add |arr| {
   ret acc
 }
 ';
-var code = catspeak_compile(@'
+var program = catspeak_compile(@'
 print 1
 print 2
 print 4
 ');
 var vm = new CatspeakVM();
-vm.run(code);
+vm.run(program);
