@@ -681,7 +681,7 @@ function catspeak_push(_sess, _value) {
 
 /// @desc Pops the top value from the stack.
 /// @param {struct} sess The session to update.
-function catspeak_pop(_sess, _value) {
+function catspeak_pop(_sess) {
 	var stack = _sess.stack;
 	if (ds_stack_empty(stack)) {
 		throw "\ncatspeak stack underflow";
@@ -691,7 +691,7 @@ function catspeak_pop(_sess, _value) {
 
 /// @desc Returns the top value of the stack.
 /// @param {struct} sess The session to check.
-function catspeak_top(_sess, _value) {
+function catspeak_top(_sess) {
 	var stack = _sess.stack;
 	if (ds_stack_empty(stack)) {
 		throw "\ncatspeak stack empty";
@@ -702,15 +702,25 @@ function catspeak_top(_sess, _value) {
 /// @desc Executes this block of code using the current catspeak session.
 /// @param {struct} sess The session to update.
 /// @param {array} code The code to run.
-function catspeak_execute(_sess, _code) {
+function catspeak_session_execute(_sess, _code) {
 	var n = array_length(_code);
 	for (var pc = 0; pc < n; pc += 1) { 
 		switch (_code[pc]) {
 		case CatspeakOpCode.PUSH_VALUE:
+			pc += 1;
+			var value = _code[pc];
+			catspeak_push(_sess, value);
+			break;
 		case CatspeakOpCode.POP_VALUE:
+			catspeak_pop(_sess);
+			break;
 		case CatspeakOpCode.GET_VALUE:
 		case CatspeakOpCode.SET_VALUE:
+			throw "\ncatspeak unimplemented";
 		case CatspeakOpCode.PRINT:
+			var value = catspeak_top(_sess);
+			show_debug_message(value);
+			break;
 		case CatspeakOpCode.CALL:
 		default:
 			throw "\ncatspeak unknown opcode at index " + string(pc);
@@ -734,5 +744,5 @@ print 2
 print 4
 ');
 var code = catspeak_session_compile(sess);
+catspeak_session_execute(sess, code);
 catspeak_session_destroy(sess);
-show_message(code);
