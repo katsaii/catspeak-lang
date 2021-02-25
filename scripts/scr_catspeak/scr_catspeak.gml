@@ -426,6 +426,8 @@ enum CatspeakIRKind {
 	NO_OP,
 	STATEMENT,
 	ADD,
+	CONCAT,
+	SUB,
 	PRINT,
 	CALL,
 	VALUE,
@@ -440,6 +442,8 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.NO_OP: return "NO_OP";
 	case CatspeakIRKind.STATEMENT: return "STATEMENT";
 	case CatspeakIRKind.ADD: return "ADD";
+	case CatspeakIRKind.CONCAT: return "CONCAT";
+	case CatspeakIRKind.SUB: return "SUB";
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.VALUE: return "VALUE";
@@ -544,8 +548,10 @@ function CatspeakParser(_buff) constructor {
 				inst = CatspeakIRKind.ADD;
 				break;
 			case CatspeakToken.PLUS_PLUS:
+				inst = CatspeakIRKind.CONCAT;
+				break;
 			case CatspeakToken.MINUS:
-				error("unimplemented addition operator ");
+				inst = CatspeakIRKind.SUB;
 				break;
 			default:
 				error("unknown addition operator ");
@@ -635,6 +641,8 @@ enum CatspeakOpCode {
 	GET_VALUE,
 	SET_VALUE,
 	ADD,
+	CONCAT,
+	SUB,
 	PRINT,
 	CALL
 }
@@ -648,6 +656,8 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.GET_VALUE: return "GET_VALUE";
 	case CatspeakOpCode.SET_VALUE: return "SET_VALUE";
 	case CatspeakOpCode.ADD: return "ADD";
+	case CatspeakOpCode.CONCAT: return "CONCAT";
+	case CatspeakOpCode.SUB: return "SUB";
 	case CatspeakOpCode.PRINT: return "PRINT";
 	case CatspeakOpCode.CALL: return "CALL";
 	default: return "<unknown>";
@@ -693,6 +703,16 @@ function CatspeakCodegen(_buff, _out) constructor {
 			visitTerm(value.left);
 			visitTerm(value.right);
 			out.addCode(pos, CatspeakOpCode.ADD);
+			return;
+		case CatspeakIRKind.CONCAT:
+			visitTerm(value.left);
+			visitTerm(value.right);
+			out.addCode(pos, CatspeakOpCode.CONCAT);
+			return;
+		case CatspeakIRKind.SUB:
+			visitTerm(value.left);
+			visitTerm(value.right);
+			out.addCode(pos, CatspeakOpCode.SUB);
 			return;
 		case CatspeakIRKind.PRINT:
 			visitTerm(value);
@@ -793,7 +813,29 @@ function CatspeakVM() constructor {
 			case CatspeakOpCode.ADD:
 				var b = pop();
 				var a = pop();
+				if not (is_numeric(a)) {
+					a = real(a);
+				}
+				if not (is_numeric(b)) {
+					b = real(b);
+				}
 				push(a + b);
+				break;
+			case CatspeakOpCode.CONCAT:
+				var b = pop();
+				var a = pop();
+				if not (is_string(a)) {
+					a = string(a);
+				}
+				if not (is_string(b)) {
+					b = string(b);
+				}
+				push(a + b);
+				break;
+			case CatspeakOpCode.SUB:
+				var b = pop();
+				var a = pop();
+				push(a - b);
 				break;
 			case CatspeakOpCode.PRINT:
 				var value = top();
@@ -820,7 +862,7 @@ fun add |arr| {
 }
 ';
 var program = catspeak_compile(@'
-print : 3 + 1 -- prints 4
+print : "hello" ++ 0 -- prints 4
 ');
 var vm = new CatspeakVM();
 vm.run(program);
