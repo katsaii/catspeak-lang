@@ -3,6 +3,9 @@
  * Kat @katsaii
  */
 
+// TODO make lexer play nicely with multiple character operators
+// TODO implement `+`, `-` and `++` opcodes
+
 /// @desc Represents a Catspeak error.
 /// @param {vector} pos The vector holding the row and column numbers.
 /// @param {string} msg The error message.
@@ -206,6 +209,18 @@ function CatspeakLexer(_buff) constructor {
 	static getPosition = function() {
 		return [row, col];
 	}
+	/// @desc Returns whether the next byte equals this expected byte. And advances the lexer if this is the case.
+	/// @param {real} expected The byte to check for.
+	static advanceIf = function(_expected) {
+		var seek = buffer_tell(buff);
+		var actual = buffer_peek(buff, seek, buffer_u8);
+		if (actual != _expected) {
+			return false;
+		}
+		buffer_read(buff, buffer_u8);
+		checkByte(actual);
+		return true;
+	}
 	/// @desc Advances the lexer whilst a predicate holds, or until the EoF was reached.
 	/// @param {script} pred The predicate to check for.
 	/// @param {script} escape The predicate to check for escapes.
@@ -256,9 +271,6 @@ function CatspeakLexer(_buff) constructor {
 			advanceWhile(catspeak_byte_is_newline);
 			advanceWhile(catspeak_byte_is_whitespace);
 			return CatspeakToken.WHITESPACE;
-		case ord("#"):
-			advanceWhile(catspeak_byte_is_not_newline);
-			return CatspeakToken.COMMENT;
 		case ord("("):
 			return CatspeakToken.LEFT_PAREN;
 		case ord(")"):
@@ -282,6 +294,10 @@ function CatspeakLexer(_buff) constructor {
 		case ord("+"):
 			return CatspeakToken.PLUS;
 		case ord("-"):
+			if (advanceIf(ord("-"))) {
+				advanceWhile(catspeak_byte_is_not_newline);
+				return CatspeakToken.COMMENT;
+			}
 			return CatspeakToken.MINUS;
 		case ord("\""):
 			clearSpan();
@@ -753,9 +769,9 @@ fun add |arr| {
 }
 ';
 var program = catspeak_compile(@'
-print 1
-print a
-print 4
+print 1 -- prints 1
+print 3 -- prints 3
+print 4 -- prints 4
 ');
 var vm = new CatspeakVM();
 vm.run(program);
