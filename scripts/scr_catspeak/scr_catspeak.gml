@@ -293,6 +293,9 @@ function CatspeakLexer(_buff) constructor {
 		case ord(";"):
 			return CatspeakToken.SEMICOLON;
 		case ord("+"):
+			if (advanceIf(ord("+"))) {
+				return CatspeakToken.PLUS_PLUS;
+			}
 			return CatspeakToken.PLUS;
 		case ord("-"):
 			if (advanceIf(ord("-"))) {
@@ -420,12 +423,13 @@ function CatspeakParserLexer(_buff) constructor {
 
 /// @desc Represents a kind of IR node.
 enum CatspeakIRKind {
-	STATEMENT,
-	VALUE,
-	IDENTIFIER,
 	NO_OP,
+	STATEMENT,
+	ADD,
 	PRINT,
 	CALL,
+	VALUE,
+	IDENTIFIER,
 	GROUPING
 }
 
@@ -433,12 +437,13 @@ enum CatspeakIRKind {
 /// @param {CatspeakIRKind} kind The ir kind to display.
 function catspeak_ir_render(_kind) {
 	switch (_kind) {
-	case CatspeakIRKind.STATEMENT: return "STATEMENT";
-	case CatspeakIRKind.VALUE: return "VALUE";
-	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakIRKind.NO_OP: return "NO_OP";
+	case CatspeakIRKind.STATEMENT: return "STATEMENT";
+	case CatspeakIRKind.ADD: return "ADD";
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.CALL: return "CALL";
+	case CatspeakIRKind.VALUE: return "VALUE";
+	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakIRKind.GROUPING: return "GROUPING";
 	default: return "<unknown>";
 	}
@@ -478,8 +483,13 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Throws a `CatspeakCompilerError` for the current token.
 	/// @param {string} on_error The error message.
 	static error = function(_msg) {
-		advance();
 		throw new CatspeakError(pos, _msg + " -- got `" + string(content()) + "` (" + catspeak_token_render(token) + ")");
+	}
+	/// @desc Advances the parser and throws a `CatspeakCompilerError` for the current token.
+	/// @param {string} on_error The error message.
+	static errorAndAdvance = function(_msg) {
+		advance();
+		error(_msg);
 	}
 	/// @desc Returns true if the current token matches this token kind.
 	/// @param {CatspeakToken} kind The token kind to match.
@@ -503,7 +513,7 @@ function CatspeakParser(_buff) constructor {
 		if (consume(_kind)) {
 			return token;
 		} else {
-			error(_msg);
+			errorAndAdvance(_msg);
 		}
 	}
 	/// @desc Entry point for parsing statements.
@@ -520,7 +530,34 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Entry point for parsing expressions.
 	static parseExpr = function() {
-		return parseCall();
+		return parseAddition();
+	}
+	/// @desc Parses the `+`, `++` and `-` binary operators.
+	static parseAddition = function() {
+		var expr = parseCall();
+		while (consume(CatspeakToken.PLUS)
+				|| consume(CatspeakToken.PLUS_PLUS)
+				|| consume(CatspeakToken.MINUS)) {
+			var inst;
+			switch (token) {
+			case CatspeakToken.PLUS:
+				inst = CatspeakIRKind.ADD;
+				break;
+			case CatspeakToken.PLUS_PLUS:
+			case CatspeakToken.MINUS:
+				error("unimplemented addition operator ");
+				break;
+			default:
+				error("unknown addition operator ");
+				break;
+			}
+			expr = new CatspeakIRNode(
+					expr.pos, inst, {
+						left : expr,
+						right : parseCall()
+					});
+		}
+		return expr;
 	}
 	/// @desc Parses a function call.
 	static parseCall = function() {
@@ -586,7 +623,7 @@ function CatspeakParser(_buff) constructor {
 			return new CatspeakIRNode(
 					pos_start, CatspeakIRKind.GROUPING, value);
 		} else {
-			error("unexpected symbol in expression");
+			errorAndAdvance("unexpected symbol in expression");
 		}
 	}
 }
@@ -597,6 +634,7 @@ enum CatspeakOpCode {
 	POP_VALUE,
 	GET_VALUE,
 	SET_VALUE,
+	ADD,
 	PRINT,
 	CALL
 }
@@ -609,6 +647,8 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.POP_VALUE: return "POP_VALUE";
 	case CatspeakOpCode.GET_VALUE: return "GET_VALUE";
 	case CatspeakOpCode.SET_VALUE: return "SET_VALUE";
+	case CatspeakOpCode.ADD: return "ADD";
+	case CatspeakOpCode.PRINT: return "PRINT";
 	case CatspeakOpCode.CALL: return "CALL";
 	default: return "<unknown>";
 	}
@@ -643,18 +683,16 @@ function CatspeakCodegen(_buff, _out) constructor {
 		var kind = _term.kind;
 		var value = _term.value;
 		switch (_term.kind) {
+		case CatspeakIRKind.NO_OP:
+			return;
 		case CatspeakIRKind.STATEMENT:
 			visitTerm(value);
 			out.addCode(pos, CatspeakOpCode.POP_VALUE);
 			return;
-		case CatspeakIRKind.VALUE:
-			out.addCode(pos, CatspeakOpCode.PUSH_VALUE);
-			out.addCode(pos, value);
-			return;
-		case CatspeakIRKind.IDENTIFIER:
-			throw new CatspeakError(pos, "identifiers not implemented");
-			return;
-		case CatspeakIRKind.NO_OP:
+		case CatspeakIRKind.ADD:
+			visitTerm(value.left);
+			visitTerm(value.right);
+			out.addCode(pos, CatspeakOpCode.ADD);
 			return;
 		case CatspeakIRKind.PRINT:
 			visitTerm(value);
@@ -669,6 +707,13 @@ function CatspeakCodegen(_buff, _out) constructor {
 			}
 			visitTerm(callsite);
 			out.addCode(pos, CatspeakOpCode.CALL);
+			return;
+		case CatspeakIRKind.VALUE:
+			out.addCode(pos, CatspeakOpCode.PUSH_VALUE);
+			out.addCode(pos, value);
+			return;
+		case CatspeakIRKind.IDENTIFIER:
+			throw new CatspeakError(pos, "identifiers not implemented");
 			return;
 		case CatspeakIRKind.GROUPING:
 			visitTerm(_term.value);
@@ -745,6 +790,11 @@ function CatspeakVM() constructor {
 			case CatspeakOpCode.GET_VALUE:
 			case CatspeakOpCode.SET_VALUE:
 				throw new CatspeakError(pos, "get and set instructions are not implemented");
+			case CatspeakOpCode.ADD:
+				var b = pop();
+				var a = pop();
+				push(a + b);
+				break;
 			case CatspeakOpCode.PRINT:
 				var value = top();
 				show_debug_message(value);
@@ -770,9 +820,7 @@ fun add |arr| {
 }
 ';
 var program = catspeak_compile(@'
-print 1 -- prints 1
-print 3 -- prints 3
-print 4 -- prints 4
+print : 3 + 1 -- prints 4
 ');
 var vm = new CatspeakVM();
 vm.run(program);
