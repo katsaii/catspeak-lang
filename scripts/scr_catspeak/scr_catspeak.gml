@@ -3,7 +3,6 @@
  * Kat @katsaii
  */
 
-// TODO make lexer play nicely with multiple character operators
 // TODO implement `+`, `-` and `++` opcodes
 
 /// @desc Represents a Catspeak error.
@@ -61,6 +60,7 @@ enum CatspeakToken {
 	// statement terminator
 	SEMICOLON,
 	PLUS,
+	PLUS_PLUS,
 	MINUS,
 	IDENTIFIER,
 	STRING,
@@ -70,7 +70,7 @@ enum CatspeakToken {
 	EOL,
 	BOF,
 	EOF,
-	UNKNOWN
+	OTHER
 }
 
 /// @desc Displays the token as a string.
@@ -88,6 +88,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.COLON: return "COLON";
 	case CatspeakToken.SEMICOLON: return "SEMICOLON";
 	case CatspeakToken.PLUS: return "PLUS";
+	case CatspeakToken.PLUS_PLUS: return "PLUS_PLUS";
 	case CatspeakToken.MINUS: return "MINUS";
 	case CatspeakToken.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakToken.STRING: return "STRING";
@@ -97,7 +98,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.EOL: return "EOL";
 	case CatspeakToken.BOF: return "BOF";
 	case CatspeakToken.EOF: return "EOF";
-	case CatspeakToken.UNKNOWN: return "UNKNOWN";
+	case CatspeakToken.OTHER: return "OTHER";
 	default: return "<unknown>";
 	}
 }
@@ -318,7 +319,7 @@ function CatspeakLexer(_buff) constructor {
 				advanceWhile(catspeak_byte_is_digit);
 				return CatspeakToken.NUMBER;
 			} else {
-				return CatspeakToken.UNKNOWN;
+				return CatspeakToken.OTHER;
 			}
 		}
 	}
