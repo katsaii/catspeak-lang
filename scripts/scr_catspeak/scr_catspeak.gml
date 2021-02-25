@@ -428,6 +428,7 @@ enum CatspeakIRKind {
 	ADD,
 	CONCAT,
 	SUB,
+	NEG,
 	PRINT,
 	CALL,
 	VALUE,
@@ -444,6 +445,7 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.ADD: return "ADD";
 	case CatspeakIRKind.CONCAT: return "CONCAT";
 	case CatspeakIRKind.SUB: return "SUB";
+	case CatspeakIRKind.NEG: return "NEG";
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.VALUE: return "VALUE";
@@ -538,7 +540,7 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses the `+`, `++` and `-` binary operators.
 	static parseAddition = function() {
-		var expr = parseCall();
+		var expr = parseUnaryPrefix();
 		while (consume(CatspeakToken.PLUS)
 				|| consume(CatspeakToken.PLUS_PLUS)
 				|| consume(CatspeakToken.MINUS)) {
@@ -554,16 +556,35 @@ function CatspeakParser(_buff) constructor {
 				inst = CatspeakIRKind.SUB;
 				break;
 			default:
-				error("unknown addition operator ");
+				error("unknown addition operator");
 				break;
 			}
 			expr = new CatspeakIRNode(
 					expr.pos, inst, {
 						left : expr,
-						right : parseCall()
+						right : parseUnaryPrefix()
 					});
 		}
 		return expr;
+	}
+	/// @desc Parses the `-` unary operator.
+	static parseUnaryPrefix = function() {
+		if (consume(CatspeakToken.MINUS)) {
+			var start = pos;
+			var inst;
+			switch (token) {
+			case CatspeakToken.MINUS:
+				inst = CatspeakIRKind.NEG;
+				break;
+			default:
+				error("unknown prefix unary operator");
+				break;
+			}
+			return new CatspeakIRNode(
+					start, inst, parseCall());
+		} else {
+			return parseCall();
+		}
 	}
 	/// @desc Parses a function call.
 	static parseCall = function() {
@@ -618,16 +639,16 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses groupings of expressions.
 	static parseGrouping = function() {
 		if (consume(CatspeakToken.COLON)) {
-			var pos_start = pos;
+			var start = pos;
 			var value = parseExpr();
 			return new CatspeakIRNode(
-					pos_start, CatspeakIRKind.GROUPING, value);
+					start, CatspeakIRKind.GROUPING, value);
 		} else if (consume(CatspeakToken.LEFT_PAREN)) {
-			var pos_start = pos;
+			var start = pos;
 			var value = parseExpr();
 			expects(CatspeakToken.RIGHT_PAREN, "expected closing `)` in grouping");
 			return new CatspeakIRNode(
-					pos_start, CatspeakIRKind.GROUPING, value);
+					start, CatspeakIRKind.GROUPING, value);
 		} else {
 			errorAndAdvance("unexpected symbol in expression");
 		}
@@ -643,6 +664,7 @@ enum CatspeakOpCode {
 	ADD,
 	CONCAT,
 	SUB,
+	NEG,
 	PRINT,
 	CALL
 }
@@ -658,6 +680,7 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.ADD: return "ADD";
 	case CatspeakOpCode.CONCAT: return "CONCAT";
 	case CatspeakOpCode.SUB: return "SUB";
+	case CatspeakOpCode.NEG: return "NEG";
 	case CatspeakOpCode.PRINT: return "PRINT";
 	case CatspeakOpCode.CALL: return "CALL";
 	default: return "<unknown>";
@@ -713,6 +736,10 @@ function CatspeakCodegen(_buff, _out) constructor {
 			visitTerm(value.left);
 			visitTerm(value.right);
 			out.addCode(pos, CatspeakOpCode.SUB);
+			return;
+		case CatspeakIRKind.NEG:
+			visitTerm(value);
+			out.addCode(pos, CatspeakOpCode.NEG);
 			return;
 		case CatspeakIRKind.PRINT:
 			visitTerm(value);
@@ -837,6 +864,10 @@ function CatspeakVM() constructor {
 				var a = pop();
 				push(a - b);
 				break;
+			case CatspeakOpCode.NEG:
+				var a = pop();
+				push(-a);
+				break;
 			case CatspeakOpCode.PRINT:
 				var value = top();
 				show_debug_message(value);
@@ -862,7 +893,7 @@ fun add |arr| {
 }
 ';
 var program = catspeak_compile(@'
-print : "hello" ++ 0 -- prints 4
+print : "hello" ++ -1 -- prints 4
 ');
 var vm = new CatspeakVM();
 vm.run(program);
