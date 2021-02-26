@@ -3,7 +3,8 @@
  * Kat @katsaii
  */
 
-// TODO implement `+`, `-` and `++` opcodes
+// TODO refactor language so operators are equivalent to identifiers
+// TODO refactor language so that precedence of identifiers is determined entirely by user configuration
 
 /// @desc Represents a Catspeak error.
 /// @param {vector} pos The vector holding the row and column numbers.
@@ -53,8 +54,6 @@ enum CatspeakToken {
 	RIGHT_BRACE,
 	// member access
 	DOT,
-	// thunk argument
-	BAR,
 	// function application operator `f (a + b)` is equivalent to `f : a + b`
 	COLON,
 	// statement terminator
@@ -84,7 +83,6 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.LEFT_BRACE: return "LEFT_BRACE";
 	case CatspeakToken.RIGHT_BRACE: return "RIGHT_BRACE";
 	case CatspeakToken.DOT: return "DOT";
-	case CatspeakToken.BAR: return "BAR";
 	case CatspeakToken.COLON: return "COLON";
 	case CatspeakToken.SEMICOLON: return "SEMICOLON";
 	case CatspeakToken.PLUS: return "PLUS";
@@ -286,8 +284,6 @@ function CatspeakLexer(_buff) constructor {
 			return CatspeakToken.RIGHT_BRACE;
 		case ord("."):
 			return CatspeakToken.DOT;
-		case ord("|"):
-			return CatspeakToken.BAR;
 		case ord(":"):
 			return CatspeakToken.COLON;
 		case ord(";"):
@@ -346,7 +342,6 @@ function CatspeakParserLexer(_buff) constructor {
 	pos = lexer.getPosition();
 	current = lexer.nextWithoutSpace();
 	parenDepth = 0;
-	seenBar = false;
 	eof = false;
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
@@ -363,8 +358,6 @@ function CatspeakParserLexer(_buff) constructor {
 			pos = lexer.getPosition();
 			var succ = lexer.nextWithoutSpace();
 			switch (current) {
-			case CatspeakToken.BAR:
-				seenBar = !seenBar;
 			case CatspeakToken.LEFT_PAREN:
 			case CatspeakToken.LEFT_BOX:
 				parenDepth += 1;
@@ -376,11 +369,10 @@ function CatspeakParserLexer(_buff) constructor {
 				}
 				break;
 			case CatspeakToken.EOL:
-				var implicit_semicolon = !seenBar && parenDepth <= 0;
+				var implicit_semicolon = parenDepth <= 0;
 				switch (pred) {
 				case CatspeakToken.LEFT_BRACE:
 				case CatspeakToken.DOT:
-				case CatspeakToken.BAR:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
 				case CatspeakToken.PLUS:
@@ -391,7 +383,6 @@ function CatspeakParserLexer(_buff) constructor {
 				switch (succ) {
 				case CatspeakToken.LEFT_BRACE:
 				case CatspeakToken.DOT:
-				case CatspeakToken.BAR:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
 				case CatspeakToken.PLUS:
