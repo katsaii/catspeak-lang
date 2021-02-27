@@ -187,13 +187,18 @@ function CatspeakLexer(_buff) constructor {
 	col = 1;
 	cr = false;
 	commentLexeme = true;
+	commentLexemeLength = 0;
 	spanBegin = offset;
 	skipNextByte = false;
 	/// @desc Checks for a new line character and increments the source position.
 	/// @param {real} byte The byte to register.
 	static checkByte = function(_byte) {
-		if (commentLexeme && _byte != ord("-")) {
-			commentLexeme = false;
+		if (commentLexeme) {
+			if (_byte == ord("-")) {
+				commentLexemeLength += 1;
+			} else {
+				commentLexeme = false;
+			}
 		}
 		if (_byte == ord("\r")) {
 			cr = true;
@@ -215,6 +220,7 @@ function CatspeakLexer(_buff) constructor {
 	static clearSpan = function() {
 		spanBegin = buffer_tell(buff);
 		commentLexeme = true;
+		commentLexemeLength = 0;
 	}
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
@@ -307,7 +313,7 @@ function CatspeakLexer(_buff) constructor {
 		case ord("+"):
 		case ord("-"):
 			advanceWhile(catspeak_byte_is_operator);
-			if (commentLexeme) {
+			if (commentLexeme && commentLexemeLength > 1) {
 				advanceWhile(catspeak_byte_is_not_newline);
 				return CatspeakToken.COMMENT;
 			}
@@ -490,6 +496,7 @@ function CatspeakParser(_buff) constructor {
 		span = lexer.getSpan();
 		pos = lexer.getPosition();
 		peeked = lexer.next();
+		show_message(catspeak_token_render(token));
 		return token;
 	}
 	/// @desc Renders the current span of the parser.
