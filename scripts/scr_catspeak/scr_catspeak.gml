@@ -58,9 +58,7 @@ enum CatspeakToken {
 	COLON,
 	// statement terminator
 	SEMICOLON,
-	PLUS,
-	PLUS_PLUS,
-	MINUS,
+	ADDITION,
 	IDENTIFIER,
 	STRING,
 	NUMBER,
@@ -85,9 +83,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.DOT: return "DOT";
 	case CatspeakToken.COLON: return "COLON";
 	case CatspeakToken.SEMICOLON: return "SEMICOLON";
-	case CatspeakToken.PLUS: return "PLUS";
-	case CatspeakToken.PLUS_PLUS: return "PLUS_PLUS";
-	case CatspeakToken.MINUS: return "MINUS";
+	case CatspeakToken.ADDITION: return "ADDITION";
 	case CatspeakToken.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakToken.STRING: return "STRING";
 	case CatspeakToken.NUMBER: return "NUMBER";
@@ -165,6 +161,21 @@ function catspeak_byte_is_alphanumeric(_byte) {
 			|| catspeak_byte_is_digit(_byte);
 }
 
+/// @desc Returns whether a byte is a valid operator character.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_operator(_byte) {
+	return _byte == ord("!")
+			|| _byte >= ord("#") && _byte <= ord("&")
+			|| _byte == ord("*")
+			|| _byte == ord("+")
+			|| _byte == ord("-")
+			|| _byte == ord("/")
+			|| _byte >= ord("<") && _byte <= ord("@")
+			|| _byte == ord("^")
+			|| _byte == ord("|")
+			|| _byte == ord("~");
+}
+
 /// @desc Tokenises the buffer contents.
 /// @param {real} buffer The id of the buffer to use.
 function CatspeakLexer(_buff) constructor {
@@ -175,11 +186,15 @@ function CatspeakLexer(_buff) constructor {
 	row = 1; // assumes the buffer is always at its starting position, even if it's not
 	col = 1;
 	cr = false;
+	commentLexeme = true;
 	spanBegin = offset;
 	skipNextByte = false;
 	/// @desc Checks for a new line character and increments the source position.
 	/// @param {real} byte The byte to register.
 	static checkByte = function(_byte) {
+		if (commentLexeme && _byte != ord("-")) {
+			commentLexeme = false;
+		}
 		if (_byte == ord("\r")) {
 			cr = true;
 			row = 0;
@@ -199,6 +214,7 @@ function CatspeakLexer(_buff) constructor {
 	/// @desc Resets the current span.
 	static clearSpan = function() {
 		spanBegin = buffer_tell(buff);
+		commentLexeme = true;
 	}
 	/// @desc Returns the current buffer span.
 	static getSpan = function() {
@@ -289,16 +305,13 @@ function CatspeakLexer(_buff) constructor {
 		case ord(";"):
 			return CatspeakToken.SEMICOLON;
 		case ord("+"):
-			if (advanceIf(ord("+"))) {
-				return CatspeakToken.PLUS_PLUS;
-			}
-			return CatspeakToken.PLUS;
 		case ord("-"):
-			if (advanceIf(ord("-"))) {
+			advanceWhile(catspeak_byte_is_operator);
+			if (commentLexeme) {
 				advanceWhile(catspeak_byte_is_not_newline);
 				return CatspeakToken.COMMENT;
 			}
-			return CatspeakToken.MINUS;
+			return CatspeakToken.ADDITION;
 		case ord("\""):
 			clearSpan();
 			advanceWhileEscape(catspeak_byte_is_not_quote, catspeak_byte_is_quote);
@@ -375,8 +388,7 @@ function CatspeakParserLexer(_buff) constructor {
 				case CatspeakToken.DOT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
-				case CatspeakToken.PLUS:
-				case CatspeakToken.MINUS:
+				case CatspeakToken.ADDITION:
 					implicit_semicolon = false;
 					break;
 				}
@@ -385,8 +397,7 @@ function CatspeakParserLexer(_buff) constructor {
 				case CatspeakToken.DOT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
-				case CatspeakToken.PLUS:
-				case CatspeakToken.MINUS:
+				case CatspeakToken.ADDITION:
 					implicit_semicolon = false;
 					break;
 				}
@@ -416,10 +427,6 @@ function CatspeakParserLexer(_buff) constructor {
 enum CatspeakIRKind {
 	NO_OP,
 	STATEMENT,
-	ADD,
-	CONCAT,
-	SUB,
-	NEG,
 	PRINT,
 	CALL,
 	VALUE,
@@ -433,10 +440,6 @@ function catspeak_ir_render(_kind) {
 	switch (_kind) {
 	case CatspeakIRKind.NO_OP: return "NO_OP";
 	case CatspeakIRKind.STATEMENT: return "STATEMENT";
-	case CatspeakIRKind.ADD: return "ADD";
-	case CatspeakIRKind.CONCAT: return "CONCAT";
-	case CatspeakIRKind.SUB: return "SUB";
-	case CatspeakIRKind.NEG: return "NEG";
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.VALUE: return "VALUE";
@@ -465,6 +468,22 @@ function CatspeakParser(_buff) constructor {
 	span = lexer.getSpan();
 	pos = [0, 0];
 	peeked = lexer.next();
+	/// @desc Creates a call node.
+	/// @param {vector} pos The vector holding the row and column numbers.
+	/// @param {CatspeakIRNode} callsite The callsite.
+	/// @param {array} params The paramter array.
+	static genCallIR = function(_pos, _callsite, _params) {
+		return new CatspeakIRNode(
+				_pos, CatspeakIRKind.CALL, {
+					callsite : _callsite,
+					params : _params
+				});
+	}
+	/// @desc Creates an identifier node.
+	static genIdentIR = function() {
+		return new CatspeakIRNode(
+				pos, CatspeakIRKind.IDENTIFIER, content());
+	}
 	/// @desc Advances the parser and returns the token.
 	static advance = function() {
 		token = peeked;
@@ -527,55 +546,21 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Entry point for parsing expressions.
 	static parseExpr = function() {
-		return parseAddition();
+		return parseBinary(CatspeakToken.ADDITION);
 	}
-	/// @desc Parses the `+`, `++` and `-` binary operators.
-	static parseAddition = function() {
-		var expr = parseUnaryPrefix();
-		while (consume(CatspeakToken.PLUS)
-				|| consume(CatspeakToken.PLUS_PLUS)
-				|| consume(CatspeakToken.MINUS)) {
-			var inst;
-			switch (token) {
-			case CatspeakToken.PLUS:
-				inst = CatspeakIRKind.ADD;
-				break;
-			case CatspeakToken.PLUS_PLUS:
-				inst = CatspeakIRKind.CONCAT;
-				break;
-			case CatspeakToken.MINUS:
-				inst = CatspeakIRKind.SUB;
-				break;
-			default:
-				error("unknown addition operator");
-				break;
-			}
-			expr = new CatspeakIRNode(
-					expr.pos, inst, {
-						left : expr,
-						right : parseUnaryPrefix()
-					});
-		}
-		return expr;
-	}
-	/// @desc Parses the `-` unary operator.
-	static parseUnaryPrefix = function() {
-		if (consume(CatspeakToken.MINUS)) {
-			var start = pos;
-			var inst;
-			switch (token) {
-			case CatspeakToken.MINUS:
-				inst = CatspeakIRKind.NEG;
-				break;
-			default:
-				error("unknown prefix unary operator");
-				break;
-			}
-			return new CatspeakIRNode(
-					start, inst, parseCall());
-		} else {
+	/// @desc Parses binary operators.
+	/// @param {CatspeakToken} token The kind of operator token to check for.
+	static parseBinary = function(_kind) {
+		if (_kind < CatspeakToken.ADDITION) {
 			return parseCall();
 		}
+		var next_kind = _kind - 1;
+		var expr = parseBinary(next_kind);
+		while (consume(_kind)) {
+			var callsite = genIdentIR();
+			expr = genCallIR(expr.pos, callsite, [expr, parseBinary(next_kind)]);
+		}
+		return expr;
 	}
 	/// @desc Parses a function call.
 	static parseCall = function() {
@@ -594,7 +579,6 @@ function CatspeakParser(_buff) constructor {
 				|| matches(CatspeakToken.LEFT_BOX)
 				|| matches(CatspeakToken.LEFT_BRACE)
 				|| matches(CatspeakToken.COLON)
-				|| matches(CatspeakToken.BAR)
 				|| matches(CatspeakToken.IDENTIFIER)
 				|| matches(CatspeakToken.STRING)
 				|| matches(CatspeakToken.NUMBER)) {
@@ -605,18 +589,13 @@ function CatspeakParser(_buff) constructor {
 		if (arg_count == 0) {
 			return callsite;
 		} else {
-			return new CatspeakIRNode(
-					callsite.pos, CatspeakIRKind.CALL, {
-						callsite : callsite,
-						params : params
-					});
+			return genCallIR(callsite.pos, callsite, params);
 		}
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
 		if (consume(CatspeakToken.IDENTIFIER)) {
-			return new CatspeakIRNode(
-					pos, CatspeakIRKind.IDENTIFIER, content());
+			return genIdentIR();
 		} else if (consume(CatspeakToken.STRING)) {
 			return new CatspeakIRNode(
 					pos, CatspeakIRKind.VALUE, content());
@@ -712,25 +691,6 @@ function CatspeakCodegen(_buff, _out) constructor {
 		case CatspeakIRKind.STATEMENT:
 			visitTerm(value);
 			out.addCode(pos, CatspeakOpCode.POP_VALUE);
-			return;
-		case CatspeakIRKind.ADD:
-			visitTerm(value.left);
-			visitTerm(value.right);
-			out.addCode(pos, CatspeakOpCode.ADD);
-			return;
-		case CatspeakIRKind.CONCAT:
-			visitTerm(value.left);
-			visitTerm(value.right);
-			out.addCode(pos, CatspeakOpCode.CONCAT);
-			return;
-		case CatspeakIRKind.SUB:
-			visitTerm(value.left);
-			visitTerm(value.right);
-			out.addCode(pos, CatspeakOpCode.SUB);
-			return;
-		case CatspeakIRKind.NEG:
-			visitTerm(value);
-			out.addCode(pos, CatspeakOpCode.NEG);
 			return;
 		case CatspeakIRKind.PRINT:
 			visitTerm(value);
@@ -875,16 +835,17 @@ function CatspeakVM() constructor {
 
 var program = @'
 # adds to numbers together
-fun add |arr| {
+fun add : arr {
   var acc 0
-  for arr |x| {
-    inc acc x
+  for arr : [x] {
+    set acc : acc + x
   }
   ret acc
 }
 ';
 var program = catspeak_compile(@'
-print : "hello" ++ -1 -- prints 4
+print : "hello" ++ (-1) -- prints 4
 ');
-var vm = new CatspeakVM();
-vm.run(program);
+//var vm = new CatspeakVM();
+//vm.run(program);
+show_debug_message(program);
