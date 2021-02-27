@@ -496,7 +496,6 @@ function CatspeakParser(_buff) constructor {
 		span = lexer.getSpan();
 		pos = lexer.getPosition();
 		peeked = lexer.next();
-		show_message(catspeak_token_render(token));
 		return token;
 	}
 	/// @desc Renders the current span of the parser.
@@ -601,7 +600,8 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
-		if (consume(CatspeakToken.IDENTIFIER)) {
+		if (consume(CatspeakToken.IDENTIFIER)
+				|| consume(CatspeakToken.ADDITION)) {
 			return genIdentIR();
 		} else if (consume(CatspeakToken.STRING)) {
 			return new CatspeakIRNode(
@@ -731,6 +731,7 @@ function CatspeakCodegen(_buff, _out) constructor {
 			return false;
 		}
 		var ir = parser.parseStmt();
+		show_message(ir);
 		visitTerm(ir);
 		return true;
 	}
