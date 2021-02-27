@@ -58,7 +58,9 @@ enum CatspeakToken {
 	COLON,
 	// statement terminator
 	SEMICOLON,
+	__OPERATORS_BEGIN__,
 	ADDITION,
+	__OPERATORS_END__,
 	IDENTIFIER,
 	STRING,
 	NUMBER,
@@ -518,6 +520,11 @@ function CatspeakParser(_buff) constructor {
 	static matches = function(_kind) {
 		return peeked == _kind;
 	}
+	/// @desc Returns true if the current token matches any kind of operator.
+	static matchesOperator = function() {
+		return peeked > CatspeakToken.__OPERATORS_BEGIN__
+				&& peeked < CatspeakToken.__OPERATORS_END__
+	}
 	/// @desc Attempts to match against a token and advances the parser if this was successful.
 	/// @param {CatspeakToken} kind The token kind to consume.
 	static consume = function(_kind) {
@@ -552,12 +559,12 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Entry point for parsing expressions.
 	static parseExpr = function() {
-		return parseBinary(CatspeakToken.ADDITION);
+		return parseBinary(CatspeakToken.__OPERATORS_END__ - 1);
 	}
 	/// @desc Parses binary operators.
 	/// @param {CatspeakToken} token The kind of operator token to check for.
 	static parseBinary = function(_kind) {
-		if (_kind < CatspeakToken.ADDITION) {
+		if (_kind <= CatspeakToken.__OPERATORS_BEGIN__) {
 			return parseCall();
 		}
 		var next_kind = _kind - 1;
@@ -600,8 +607,10 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
-		if (consume(CatspeakToken.IDENTIFIER)
-				|| consume(CatspeakToken.ADDITION)) {
+		if (consume(CatspeakToken.IDENTIFIER)) {
+			return genIdentIR();
+		} else if (matchesOperator()) {
+			advance();
 			return genIdentIR();
 		} else if (consume(CatspeakToken.STRING)) {
 			return new CatspeakIRNode(
@@ -731,7 +740,6 @@ function CatspeakCodegen(_buff, _out) constructor {
 			return false;
 		}
 		var ir = parser.parseStmt();
-		show_message(ir);
 		visitTerm(ir);
 		return true;
 	}
@@ -854,6 +862,5 @@ fun add : arr {
 var program = catspeak_compile(@'
 print : "hello" ++ (-1) -- prints 4
 ');
-//var vm = new CatspeakVM();
-//vm.run(program);
-show_debug_message(program);
+var vm = new CatspeakVM();
+vm.run(program);
