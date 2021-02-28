@@ -3,9 +3,6 @@
  * Kat @katsaii
  */
 
-// TODO refactor language so operators are equivalent to identifiers
-// TODO refactor language so that precedence of identifiers is determined entirely by user configuration
-
 /// @desc Represents a Catspeak error.
 /// @param {vector} pos The vector holding the row and column numbers.
 /// @param {string} msg The error message.
@@ -727,7 +724,8 @@ function CatspeakCodegen(_buff, _out) constructor {
 			out.addCode(pos, value);
 			return;
 		case CatspeakIRKind.IDENTIFIER:
-			throw new CatspeakError(pos, "identifiers not implemented");
+			out.addCode(pos, CatspeakOpCode.GET_VALUE);
+			out.addCode(pos, value);
 			return;
 		case CatspeakIRKind.GROUPING:
 			visitTerm(_term.value);
