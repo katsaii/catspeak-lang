@@ -848,14 +848,25 @@ function CatspeakVM() constructor {
 }
 
 var program = @'
-# adds to numbers together
-fun add : arr {
-  var acc 0
-  for arr : [x] {
-    set acc : acc + x
-  }
-  ret acc
+# adds two numbers together
+fun add a -> b -> {
+  ret : a + b
 }
+
+fun compose f -> g -> x -> {
+  ret : f : g x
+}
+
+fun discard _ -> {
+  ret undefined
+}
+
+fun if condition -> {
+  ret : choice condition run discard
+}
+
+var fst : if true  -- fst == run
+var snd : if false -- snd == discard
 ';
 var program = catspeak_compile(@'
 print : "hello" ++ (-1) -- prints 4
