@@ -848,20 +848,23 @@ function CatspeakVM() constructor {
 }
 
 var program = @'
-# adds two numbers together
-fun add a -> b -> {
-  ret : a + b
+var add : fun a {
+  ret : fun b {
+    ret : a + b
+  }
 }
 
-fun compose f -> g -> x -> {
-  ret : f : g x
+var -~ negate
+
+var const : fun x {
+  ret : fun _ {
+    ret x
+  }
 }
 
-fun discard _ -> {
-  ret undefined
-}
+var discard : const undefined
 
-fun if condition -> {
+var if : fun condition {
   ret : choice condition run discard
 }
 
