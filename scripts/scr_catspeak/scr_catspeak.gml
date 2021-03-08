@@ -861,15 +861,6 @@ var const : fun x {
     ret x
   }
 }
-
-var discard : const undefined
-
-var if : fun condition {
-  ret : choice condition run discard
-}
-
-var fst : if true  -- fst == run
-var snd : if false -- snd == discard
 ';
 var program = catspeak_compile(@'
 print : "hello" ++ (-1) -- prints 4
