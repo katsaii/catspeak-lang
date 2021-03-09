@@ -582,6 +582,12 @@ function CatspeakParser(_buff) constructor {
 				var value = self.parseValue();
 				return new CatspeakIRNode(
 						callsite.pos, CatspeakIRKind.PRINT, value);
+			case "var":
+			case "ite":
+			case "for":
+			case "fun":
+			case "ret":
+				throw "\nkeyword not implemented";
 			}
 		}
 		var params = [];
@@ -865,6 +871,12 @@ var const : fun x -> {
 var arr [1, 2, 3]
 for arr [i, x] -> {
   print : x ++ " at index " ++ i
+}
+
+ite (a > 1) {
+  print "yo"
+} : {
+  print "waddup"
 }
 ';
 var src2 = @'
