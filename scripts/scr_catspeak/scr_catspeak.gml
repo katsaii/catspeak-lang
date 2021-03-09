@@ -847,23 +847,29 @@ function CatspeakVM() constructor {
 	}
 }
 
-var program = @'
-var add : fun a {
-  ret : fun b {
+var src = @'
+var add : fun a -> {
+  ret : fun b -> {
     ret : a + b
   }
 }
 
 var -~ negate
 
-var const : fun x {
-  ret : fun _ {
+var const : fun x -> {
+  ret : fun _ -> {
     ret x
   }
 }
+
+var arr [1, 2, 3]
+for arr [i, x] -> {
+  print : x ++ " at index " ++ i
+}
 ';
-var program = catspeak_compile(@'
+var src2 = @'
 print : "hello" ++ (-1) -- prints 4
-');
+';
+var program = catspeak_compile(src);
 var vm = new CatspeakVM();
 vm.run(program);
