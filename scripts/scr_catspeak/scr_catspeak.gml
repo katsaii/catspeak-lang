@@ -456,6 +456,54 @@ function CatspeakParserLexer(_buff) constructor {
 	}
 }
 
+/// @desc Represents a kind of IR node.
+enum CatspeakIRKind {
+	NOTHING,
+	EXPRESSION_STATEMENT,
+	VAR_DECLARATION,
+	VAR_SET,
+	CONDITIONAL,
+	LOOP,
+	PRINT,
+	CALL,
+	CONSTANT,
+	MAKE_ARRAY,
+	MAKE_OBJECT,
+	IDENTIFIER,
+	GROUPING
+}
+
+/// @desc Displays the ir kind as a string.
+/// @param {CatspeakIRKind} kind The ir kind to display.
+function catspeak_ir_render(_kind) {
+	switch (_kind) {
+	case CatspeakIRKind.NOTHING: return "NOTHING";
+	case CatspeakIRKind.EXPRESSION_STATEMENT: return "EXPRESSION_STATEMENT";
+	case CatspeakIRKind.VAR_DECLARATION: return "VAR_DECLARATION";
+	case CatspeakIRKind.VAR_SET: return "VAR_SET";
+	case CatspeakIRKind.CONDITIONAL: return "CONDITIONAL";
+	case CatspeakIRKind.LOOP: return "LOOP";
+	case CatspeakIRKind.PRINT: return "PRINT";
+	case CatspeakIRKind.CALL: return "CALL";
+	case CatspeakIRKind.CONSTANT: return "CONSTANT";
+	case CatspeakIRKind.MAKE_ARRAY: return "MAKE_ARRAY";
+	case CatspeakIRKind.MAKE_OBJECT: return "MAKE_OBJECT";
+	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
+	case CatspeakIRKind.GROUPING: return "GROUPING";
+	default: return "<unknown>";
+	}
+}
+
+/// @desc Represents an IR node.
+/// @param {vector} pos The vector holding the row and column numbers.
+/// @param {CatspeakIRKind} kind The kind of ir node.
+/// @param {value} [value] The value (if required) held by the ir node.
+function CatspeakIRNode(_pos, _kind) constructor {
+	pos = _pos;
+	kind = _kind;
+	value = argument_count > 2 ? argument[2] : undefined;
+}
+
 /// @desc Compiles this string and returns the resulting intcode program.
 /// @param {string} str The string that contains the source code.
 function catspeak_compile(_str) {
@@ -474,5 +522,9 @@ function catspeak_compile(_str) {
 
 var src = @'
 var a
+while (a < 10) {
+  print a
+  set a : a + 1
+}
 ';
 var program = catspeak_compile(src);
