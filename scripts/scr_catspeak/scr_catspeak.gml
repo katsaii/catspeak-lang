@@ -528,11 +528,10 @@ function CatspeakParser(_buff) constructor {
 	/// @param {CatspeakIRNode} callsite The callsite.
 	/// @param {array} params The paramter array.
 	static genCallIR = function(_callsite, _params) {
-		return new CatspeakIRNode(
-				_callsite.pos, CatspeakIRKind.CALL, {
-					callsite : _callsite,
-					params : _params
-				});
+		return new CatspeakIRNode(_callsite.pos, CatspeakIRKind.CALL, {
+			callsite : _callsite,
+			params : _params
+		});
 	}
 	/// @desc Creates an identifier node.
 	static genIdentIR = function() {
@@ -617,7 +616,18 @@ function CatspeakParser(_buff) constructor {
 			expectsSemicolon("variable declarations");
 			return new CatspeakIRNode(start, CatspeakIRKind.VAR_DECLARATION, idents);
 		} else if (consume(CatspeakToken.SET)) {
-			errorAndAdvance("set statements not implemented");
+			expects(CatspeakToken.IDENTIFIER, "expected identifier after `set` keyword");
+			var ident = lexeme;
+			var params = [];
+			while (matchesExpression()) {
+				var param = parseValue();
+				array_push(params, param);
+			}
+			expectsSemicolon("`set` statements");
+			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, {
+				ident : ident,
+				params : params
+			});
 		} else if (consume(CatspeakToken.IF)) {
 			errorAndAdvance("if statements not implemented");
 		} else if (consume(CatspeakToken.WHILE)) {
@@ -627,7 +637,7 @@ function CatspeakParser(_buff) constructor {
 			while (matchesExpression()) {
 				array_push(values, parseValue());
 			}
-			expectsSemicolon("print statements");
+			expectsSemicolon("`print` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, values);
 		} else {
 			var value = parseExpr();
@@ -720,5 +730,5 @@ function catspeak_compile(_str) {
 	buffer_delete(buff);
 }
 
-var src = @'var x y z w';
+var src = @'set a 12';
 var program = catspeak_compile(src);
