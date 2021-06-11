@@ -583,11 +583,13 @@ function CatspeakParser(_buff) constructor {
 				return new CatspeakIRNode(
 						callsite.pos, CatspeakIRKind.PRINT, value);
 			case "var":
-			case "ite":
+			case "set":
+			case "if":
+			case "else":
 			case "for":
 			case "fun":
 			case "ret":
-				throw "\nkeyword not implemented";
+				throw new CatspeakError(callsite.pos, "keyword `" + string(callsite.value) + "` not implemented");
 			}
 		}
 		var params = [];
@@ -763,6 +765,7 @@ function catspeak_compile(_str) {
 	return out;
 }
 
+/*
 /// @desc Handles the execution of Catspeak intcode.
 function CatspeakVM() constructor {
 	stack = [];
@@ -852,36 +855,12 @@ function CatspeakVM() constructor {
 		}
 	}
 }
+*/
 
 var src = @'
-var add : fun a -> {
-  ret : fun b -> {
-    ret : a + b
-  }
-}
-
-var -~ negate
-
-var const : fun x -> {
-  ret : fun _ -> {
-    ret x
-  }
-}
-
-var arr [1, 2, 3]
-for arr [i, x] -> {
-  print : x ++ " at index " ++ i
-}
-
-ite (a > 1) {
-  print "yo"
-} : {
-  print "waddup"
-}
-';
-var src2 = @'
-print : "hello" ++ (-1) -- prints 4
+print : 5 + (-1) -- prints 4
 ';
 var program = catspeak_compile(src);
-var vm = new CatspeakVM();
-vm.run(program);
+show_debug_message(program);
+//var vm = new CatspeakVM();
+//vm.run(program);
