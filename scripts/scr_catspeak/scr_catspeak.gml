@@ -3,6 +3,18 @@
  * Kat @katsaii
  */
 
+/// @desc Represents a Catspeak error.
+/// @param {vector} pos The vector holding the row and column numbers.
+/// @param {string} msg The error message.
+function CatspeakError(_pos, _msg) constructor {
+	pos = _pos;
+	reason = is_string(_msg) ? _msg : string(_msg);
+	/// @desc Displays the content of this error.
+	static toString = function() {
+		return instanceof(self) + " at " + string(pos) + ": " + reason;
+	}
+}
+
 /// @desc Represents a kind of token.
 enum CatspeakToken {
 	PAREN_LEFT,
@@ -504,6 +516,179 @@ function CatspeakIRNode(_pos, _kind) constructor {
 	value = argument_count > 2 ? argument[2] : undefined;
 }
 
+/// @desc Creates a new parser from this string.
+/// @param {real} buffer The id of the buffer to use.
+function CatspeakParser(_buff) constructor {
+	lexer = new CatspeakParserLexer(_buff);
+	token = CatspeakToken.BOF;
+	pos = lexer.getPosition();
+	lexeme = lexer.getLexeme();
+	peeked = lexer.next();
+	/// @desc Creates a call node.
+	/// @param {CatspeakIRNode} callsite The callsite.
+	/// @param {array} params The paramter array.
+	static genCallIR = function(_callsite, _params) {
+		return new CatspeakIRNode(
+				_callsite.pos, CatspeakIRKind.CALL, {
+					callsite : _callsite,
+					params : _params
+				});
+	}
+	/// @desc Creates an identifier node.
+	static genIdentIR = function() {
+		return new CatspeakIRNode(
+				pos, CatspeakIRKind.IDENTIFIER, lexeme);
+	}
+	/// @desc Advances the parser and returns the token.
+	static advance = function() {
+		token = peeked;
+		pos = lexer.getPosition();
+		lexeme = lexer.getLexeme();
+		peeked = lexer.next();
+		return token;
+	}
+	/// @desc Throws a `CatspeakCompilerError` for the current token.
+	/// @param {string} on_error The error message.
+	static error = function(_msg) {
+		throw new CatspeakError(pos, _msg + " -- got `" + string(lexeme) + "` (" + catspeak_token_render(token) + ")");
+	}
+	/// @desc Advances the parser and throws a `CatspeakCompilerError` for the current token.
+	/// @param {string} on_error The error message.
+	static errorAndAdvance = function(_msg) {
+		advance();
+		error(_msg);
+	}
+	/// @desc Returns true if the current token matches this token kind.
+	/// @param {CatspeakToken} kind The token kind to match.
+	static matches = function(_kind) {
+		return peeked == _kind;
+	}
+	/// @desc Returns true if the current token matches any kind of operator.
+	static matchesOperator = function() {
+		return peeked > CatspeakToken.__OPERATORS_BEGIN__
+				&& peeked < CatspeakToken.__OPERATORS_END__
+	}
+	/// @desc Attempts to match against a token and advances the parser if this was successful.
+	/// @param {CatspeakToken} kind The token kind to consume.
+	static consume = function(_kind) {
+		if (matches(_kind)) {
+			advance();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/// @desc Throws a `CatspeakCompilerError` if the current token is not the expected value. Advances the parser otherwise.
+	/// @param {CatspeakToken} kind The token kind to expect.
+	/// @param {string} on_error The error message.
+	static expects = function(_kind, _msg) {
+		if (consume(_kind)) {
+			return token;
+		} else {
+			errorAndAdvance(_msg);
+		}
+	}
+	/// @desc Entry point for parsing statements.
+	static parseStmt = function() {
+		if (consume(CatspeakToken.SEMICOLON)) {
+			return new CatspeakIRNode(
+					pos, CatspeakIRKind.NOTHING, undefined);
+		} else if (consume(CatspeakToken.VAR)) {
+			errorAndAdvance("var declarations not implemented");
+		} else if (consume(CatspeakToken.SET)) {
+			errorAndAdvance("set statements not implemented");
+		} else if (consume(CatspeakToken.IF)) {
+			errorAndAdvance("if statements not implemented");
+		} else if (consume(CatspeakToken.WHILE)) {
+			errorAndAdvance("while loops not implemented");
+		} else if (consume(CatspeakToken.PRINT)) {
+			errorAndAdvance("print statements not implemented");
+		} else {
+			var value = parseExpr();
+			expects(CatspeakToken.SEMICOLON, "expected `;` or new line after expression statements");
+			return new CatspeakIRNode(
+					value.pos, CatspeakIRKind.EXPRESSION_STATEMENT, value);
+		}
+	}
+	/// @desc Entry point for parsing expressions.
+	static parseExpr = function() {
+		return parseBinary(CatspeakToken.__OPERATORS_BEGIN__ + 1);
+	}
+	/// @desc Parses binary operators.
+	/// @param {CatspeakToken} token The kind of operator token to check for.
+	static parseBinary = function(_kind) {
+		if (_kind >= CatspeakToken.__OPERATORS_END__) {
+			return parseCall();
+		}
+		var next_kind = _kind + 1;
+		var expr = parseBinary(next_kind);
+		while (consume(_kind)) {
+			var callsite = genIdentIR();
+			expr = genCallIR(callsite, [expr, parseBinary(next_kind)]);
+		}
+		return expr;
+	}
+	/// @desc Parses a function call.
+	static parseCall = function() {
+		var callsite = parseValue();
+		var params = [];
+		while (matches(CatspeakToken.PAREN_LEFT)
+				|| matches(CatspeakToken.BOX_LEFT)
+				|| matches(CatspeakToken.BRACE_LEFT)
+				|| matches(CatspeakToken.COLON)
+				|| matches(CatspeakToken.IDENTIFIER)
+				|| matches(CatspeakToken.STRING)
+				|| matches(CatspeakToken.NUMBER)) {
+			var param = parseValue();
+			array_push(params, param);
+		}
+		var arg_count = array_length(params);
+		if (arg_count == 0) {
+			return callsite;
+		} else {
+			return genCallIR(callsite, params);
+		}
+	}
+	/// @desc Parses a terminal value or expression.
+	static parseValue = function() {
+		if (consume(CatspeakToken.IDENTIFIER)) {
+			return genIdentIR();
+		} else if (matchesOperator()) {
+			advance();
+			return genIdentIR();
+		} else if (consume(CatspeakToken.STRING)) {
+			return new CatspeakIRNode(
+					pos, CatspeakIRKind.CONSTANT, lexeme);
+		} else if (consume(CatspeakToken.NUMBER)) {
+			return new CatspeakIRNode(
+					pos, CatspeakIRKind.CONSTANT, real(lexeme));
+		} else {
+			return parseGrouping();
+		}
+	}
+	/// @desc Parses groupings of expressions.
+	static parseGrouping = function() {
+		if (consume(CatspeakToken.COLON)) {
+			var start = pos;
+			var value = parseExpr();
+			return new CatspeakIRNode(
+					start, CatspeakIRKind.GROUPING, value);
+		} else if (consume(CatspeakToken.PAREN_LEFT)) {
+			var start = pos;
+			var value = parseExpr();
+			expects(CatspeakToken.PAREN_RIGHT, "expected closing `)` in grouping");
+			return new CatspeakIRNode(
+					start, CatspeakIRKind.GROUPING, value);
+		} else if (consume(CatspeakToken.BOX_LEFT)) {
+			errorAndAdvance("array literals not implemented");
+		} else if (consume(CatspeakToken.BRACE_LEFT)) {
+			errorAndAdvance("object literals not implemented");
+		} else {
+			errorAndAdvance("unexpected symbol in expression");
+		}
+	}
+}
+
 /// @desc Compiles this string and returns the resulting intcode program.
 /// @param {string} str The string that contains the source code.
 function catspeak_compile(_str) {
@@ -511,20 +696,10 @@ function catspeak_compile(_str) {
 	var buff = buffer_create(size, buffer_fixed, 1);
 	buffer_write(buff, buffer_text, _str);
 	buffer_seek(buff, buffer_seek_start, 0);
-	var lexer = new CatspeakParserLexer(buff);
-	var token;
-	do {
-		token = lexer.next();
-		show_message([catspeak_token_render(token), lexer.getLexeme(), lexer.getPosition()]);
-	} until(token == CatspeakToken.EOF);
+	var parser = new CatspeakParser(buff);
+	show_debug_message(parser.parseStmt());
 	buffer_delete(buff);
 }
 
-var src = @'
-var a
-while (a < 10) {
-  print a
-  set a : a + 1
-}
-';
+var src = @'config (player_speed : 1)';
 var program = catspeak_compile(src);
