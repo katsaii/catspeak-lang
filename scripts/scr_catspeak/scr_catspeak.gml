@@ -563,6 +563,16 @@ function CatspeakParser(_buff) constructor {
 	static matches = function(_kind) {
 		return peeked == _kind;
 	}
+	/// @desc Returns true if the current token infers an expression.
+	static matchesExpression = function() {
+		return matches(CatspeakToken.PAREN_LEFT)
+				|| matches(CatspeakToken.BOX_LEFT)
+				|| matches(CatspeakToken.BRACE_LEFT)
+				|| matches(CatspeakToken.COLON)
+				|| matches(CatspeakToken.IDENTIFIER)
+				|| matches(CatspeakToken.STRING)
+				|| matches(CatspeakToken.NUMBER);
+	}
 	/// @desc Returns true if the current token matches any kind of operator.
 	static matchesOperator = function() {
 		return peeked > CatspeakToken.__OPERATORS_BEGIN__
@@ -588,13 +598,24 @@ function CatspeakParser(_buff) constructor {
 			errorAndAdvance(_msg);
 		}
 	}
+	/// @desc Throws a `CatspeakCompilerError` if the current token is not a semicolon. Advances the parser otherwise.
+	/// @param {string} on_error The error message.
+	static expectsSemicolon = function(_msg) {
+		return expects(CatspeakToken.SEMICOLON, "expected `;` or new line after " + _msg);
+	}
 	/// @desc Entry point for parsing statements.
 	static parseStmt = function() {
+		var start = pos;
 		if (consume(CatspeakToken.SEMICOLON)) {
 			return new CatspeakIRNode(
 					pos, CatspeakIRKind.NOTHING, undefined);
 		} else if (consume(CatspeakToken.VAR)) {
-			errorAndAdvance("var declarations not implemented");
+			var idents = [];
+			while (consume(CatspeakToken.IDENTIFIER)) {
+				array_push(idents, lexeme);
+			}
+			expectsSemicolon("variable declarations");
+			return new CatspeakIRNode(start, CatspeakIRKind.VAR_DECLARATION, idents);
 		} else if (consume(CatspeakToken.SET)) {
 			errorAndAdvance("set statements not implemented");
 		} else if (consume(CatspeakToken.IF)) {
@@ -602,12 +623,16 @@ function CatspeakParser(_buff) constructor {
 		} else if (consume(CatspeakToken.WHILE)) {
 			errorAndAdvance("while loops not implemented");
 		} else if (consume(CatspeakToken.PRINT)) {
-			errorAndAdvance("print statements not implemented");
+			var values = [];
+			while (matchesExpression()) {
+				array_push(values, parseValue());
+			}
+			expectsSemicolon("print statements");
+			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, values);
 		} else {
 			var value = parseExpr();
-			expects(CatspeakToken.SEMICOLON, "expected `;` or new line after expression statements");
-			return new CatspeakIRNode(
-					value.pos, CatspeakIRKind.EXPRESSION_STATEMENT, value);
+			expectsSemicolon("expression statements");
+			return new CatspeakIRNode(start, CatspeakIRKind.EXPRESSION_STATEMENT, value);
 		}
 	}
 	/// @desc Entry point for parsing expressions.
@@ -632,13 +657,7 @@ function CatspeakParser(_buff) constructor {
 	static parseCall = function() {
 		var callsite = parseValue();
 		var params = [];
-		while (matches(CatspeakToken.PAREN_LEFT)
-				|| matches(CatspeakToken.BOX_LEFT)
-				|| matches(CatspeakToken.BRACE_LEFT)
-				|| matches(CatspeakToken.COLON)
-				|| matches(CatspeakToken.IDENTIFIER)
-				|| matches(CatspeakToken.STRING)
-				|| matches(CatspeakToken.NUMBER)) {
+		while (matchesExpression()) {
 			var param = parseValue();
 			array_push(params, param);
 		}
@@ -701,5 +720,5 @@ function catspeak_compile(_str) {
 	buffer_delete(buff);
 }
 
-var src = @'config (player_speed : 1)';
+var src = @'var x y z w';
 var program = catspeak_compile(src);
