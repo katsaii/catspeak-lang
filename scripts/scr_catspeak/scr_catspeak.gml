@@ -747,22 +747,68 @@ function catspeak_code_render(_kind) {
 	}
 }
 
+/// @desc Represents the free variables of a Catspeak program.
+function CatspeakContext() constructor {
+	prototype = undefined;
+	vars = { };
+	/// @desc Adds a new variable to this context.
+	/// @param {string} name The name of the variable to add.
+	static addVariable = function(_name) {
+		vars[$ _name] = undefined;
+	}
+	/// @desc Sets a variable in the current context.
+	/// @param {string} name The name of the variable to add.
+	/// @param {value} value The value to assign.
+	static setVariable = function(_name, _value) {
+		if (variable_struct_exists(vars, _name)) {
+			vars[$ _name] = _value;
+		} else if (prototype != undefined) {
+			prototype.setVariable(_name, _value);
+		}
+	}
+	/// @desc Gets a variable in the current context.
+	/// @param {string} name The name of the variable to add.
+	static getVariable = function(_name) {
+		if (variable_struct_exists(vars, _name)) {
+			return vars[$ _name];
+		} else if (prototype != undefined) {
+			return prototype.getVariable(_name);
+		} else {
+			return undefined;
+		}
+	}
+	/// @desc Returns the prototype of this context.
+	static getPrototype = function() {
+		return prototype;
+	}
+	/// @desc Returns a fork of this context.
+	static fork = function() {
+		var new_context = new CatspeakContext();
+		new_context.prototype = self;
+		return new_context;
+	}
+}
 
 /// @desc Represents a Catspeak intcode program with associated debug information.
 function CatspeakChunk() constructor {
-	context = undefined;
+	context = new CatspeakContext();
 	intcode = [];
 	diagnostic = [];
-	size = 0;
 	/// @desc Adds a code and its positional information to the program.
 	/// @param {vector} pos The position of this piece of code.
-	/// @param {value} code The pieve of code to write.
+	/// @param {value} code The piece of code to write.
 	static addCode = function(_pos, _code) {
-		var i = size;
+		var i = array_length(intcode);
 		array_push(diagnostic, _pos);
 		array_push(intcode, _code);
-		size += 1;
 		return i;
+	}
+	/// @desc Patches an existing code at this program counter.
+	/// @param {vector} pc The program counter the code to patch.
+	/// @param {value} code The piece of code to write.
+	static patchCode = function(_pc, _code) {
+		intcode[_pc] = _code;
+		return _pc;
 	}
 	/// @desc Sets the current context of this chunk.
 	/// @param {struct} context The context to assign.
