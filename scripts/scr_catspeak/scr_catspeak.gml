@@ -643,7 +643,7 @@ function CatspeakParser(_buff) constructor {
 				array_push(params, param);
 			}
 			expectsSemicolon("`set` statements");
-			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, {
+			return new CatspeakIRNode(start, CatspeakIRKind.VAR_SET, {
 				ident : ident,
 				params : params
 			});
@@ -773,6 +773,7 @@ function CatspeakContext() constructor {
 	/// @param {string} name The name of the variable to add.
 	static addVariable = function(_name) {
 		vars[$ _name] = undefined;
+		return self;
 	}
 	/// @desc Attemps to set a variable in the current context and returns whether it was successful.
 	/// @param {string} name The name of the variable to add.
@@ -871,7 +872,15 @@ function CatspeakCodegen(_buff, _out) constructor {
 			}
 			break;
 		case CatspeakIRKind.VAR_SET:
-			error(_term, "variable assignment unimplemented");
+			var ident = inner.ident;
+			var args = inner.params;
+			var arg_count = array_length(args);
+			for (var i = arg_count - 1; i >= 0; i -= 1) {
+				visitTerm(args[i]);
+			}
+			out.addCode(pos, CatspeakOpCode.VAR_SET);
+			out.addCode(pos, ident);
+			out.addCode(pos, arg_count - 1);
 			break;
 		case CatspeakIRKind.CONDITIONAL:
 			error(_term, "conditional unimplemented");
@@ -1014,10 +1023,39 @@ function CatspeakVM(_chunk) constructor {
 			var name = code[pc];
 			pc += 1;
 			var subscript_count = code[pc];
-			var value = pop();
-			var success = chunk.context.setVariable(name, value);
-			if not (success) {
-				error("cannot assign to non-existent variable `" + string(name) + "`");
+			if (subscript_count < 1) {
+				var value = pop();
+				var success = chunk.context.setVariable(name, value);
+				if not (success) {
+					error("cannot assign to non-existent variable `" + string(name) + "`");
+				}
+			} else {
+				var container = chunk.context.getVariable(name);
+				for (; subscript_count >= 1; subscript_count -= 1) {
+					var subscript = pop();
+					var ty = typeof(container);
+					switch (ty) {
+					case "array":
+						if (subscript_count <= 1) {
+							var value = pop();
+							container[@ subscript] = value;
+						} else {
+							container = container[subscript];
+						}
+						break;
+					case "struct":
+						if (subscript_count <= 1) {
+							var value = pop();
+							container[$ subscript] = value;
+						} else {
+							container = container[$ string(subscript)];
+						}
+						break;
+					default:
+						error("cannot index value of type `" + ty + "`");
+						break;
+					}
+				}
 			}
 			break;
 		case CatspeakOpCode.PRINT:
@@ -1050,12 +1088,16 @@ function CatspeakVM(_chunk) constructor {
 
 var src = @'
 var x y z w
-print .hello
+set h 1 7
+print h
 ';
 var chunk = catspeak_compile(src);
+var ctx = new CatspeakContext().addVariable("h");
+ctx.setVariable("h", [1, 2, 3]);
+chunk.setContext(ctx.fork());
 var vm = new CatspeakVM(chunk);
 while (vm.inProgress()) {
 	vm.compute();
 }
-show_message(chunk);
+//show_message(chunk);
 show_message(vm.getResult());
