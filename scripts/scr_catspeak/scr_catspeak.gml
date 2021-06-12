@@ -514,11 +514,11 @@ function catspeak_ir_render(_kind) {
 /// @desc Represents an IR node.
 /// @param {vector} pos The vector holding the row and column numbers.
 /// @param {CatspeakIRKind} kind The kind of ir node.
-/// @param {value} [value] The value (if required) held by the ir node.
+/// @param {value} [inner] The inner value (if required) held by the ir node.
 function CatspeakIRNode(_pos, _kind) constructor {
 	pos = _pos;
 	kind = _kind;
-	value = argument_count > 2 ? argument[2] : undefined;
+	inner = argument_count > 2 ? argument[2] : undefined;
 }
 
 /// @desc Creates a new parser from this string.
@@ -723,6 +723,138 @@ function CatspeakParser(_buff) constructor {
 	}
 }
 
+/// @desc Represents a kind of intcode.
+enum CatspeakOpCode {
+	PUSH,
+	POP,
+	VAR_GET,
+	VAR_SET,
+	PRINT,
+	CALL
+}
+
+/// @desc Displays the ir kind as a string.
+/// @param {CatspeakIRKind} kind The ir kind to display.
+function catspeak_code_render(_kind) {
+	switch (_kind) {
+	case CatspeakOpCode.PUSH: return "PUSH";
+	case CatspeakOpCode.POP: return "POP";
+	case CatspeakOpCode.VAR_GET: return "VAR_GET";
+	case CatspeakOpCode.VAR_SET: return "VAR_SET";
+	case CatspeakOpCode.PRINT: return "PRINT";
+	case CatspeakOpCode.CALL: return "CALL";
+	default: return "<unknown>";
+	}
+}
+
+
+/// @desc Represents a Catspeak intcode program with associated debug information.
+function CatspeakChunk() constructor {
+	context = undefined;
+	intcode = [];
+	diagnostic = [];
+	size = 0;
+	/// @desc Adds a code and its positional information to the program.
+	/// @param {vector} pos The position of this piece of code.
+	/// @param {value} code The pieve of code to write.
+	static addCode = function(_pos, _code) {
+		var i = size;
+		array_push(diagnostic, _pos);
+		array_push(intcode, _code);
+		size += 1;
+		return i;
+	}
+	/// @desc Sets the current context of this chunk.
+	/// @param {struct} context The context to assign.
+	static setContext = function(_context) {
+		context = _context;
+	}
+}
+
+/// @desc Handles the generation of intcode from Catspeak IR.
+/// @param {real} buffer The id of the buffer to use.
+/// @param {CatspeakProgram} out The program to populate code with.
+function CatspeakCodegen(_buff, _out) constructor {
+	parser = new CatspeakParser(_buff);
+	out = _out;
+	/// @desc Throws a `CatspeakCompilerError` for this IR term.
+	/// @param {CatspeakIRKind} term The IR term to consider.
+	/// @param {string} on_error The error message.
+	static error = function(_term, _msg) {
+		throw new CatspeakError(_term.pos, _msg);
+	}
+	/// @desc Generates the code for the next IR term.
+	/// @param {CatspeakIRTerm} term The term to generate code for.
+	static visitTerm = function(_term) {
+		var pos = _term.pos;
+		var kind = _term.kind;
+		var inner = _term.inner;
+		switch (kind) {
+		case CatspeakIRKind.NOTHING:
+			break;
+		case CatspeakIRKind.EXPRESSION_STATEMENT:
+			visitTerm(inner);
+			out.addCode(pos, CatspeakOpCode.POP);
+			break;
+		case CatspeakIRKind.VAR_DECLARATION:
+			error(_term, "variable declaration unimplemented");
+			break;
+		case CatspeakIRKind.VAR_SET:
+			error(_term, "variable assignment unimplemented");
+			break;
+		case CatspeakIRKind.CONDITIONAL:
+			error(_term, "conditional unimplemented");
+			break;
+		case CatspeakIRKind.LOOP:
+			error(_term, "loop unimplemented");
+			break;
+		case CatspeakIRKind.PRINT:
+			var arg_count = array_length(inner);
+			for (var i = 0; i < arg_count; i += 1) {
+				visitTerm(inner[i]);
+				out.addCode(pos, CatspeakOpCode.PRINT);
+			}
+			break;
+		case CatspeakIRKind.CALL:
+			var callsite = inner.callsite;
+			var params = inner.params;
+			var arg_count = array_length(params);
+			for (var i = 0; i < arg_count; i += 1) {
+				visitTerm(params[i]);
+			}
+			visitTerm(callsite);
+			out.addCode(pos, CatspeakOpCode.CALL);
+			break;
+		case CatspeakIRKind.CONSTANT:
+			out.addCode(pos, CatspeakOpCode.PUSH);
+			out.addCode(pos, inner);
+			break;
+		case CatspeakIRKind.MAKE_ARRAY:
+			error(_term, "make array unimplemented");
+			break;
+		case CatspeakIRKind.MAKE_OBJECT:
+			error(_term, "make object unimplemented");
+			break;
+		case CatspeakIRKind.IDENTIFIER:
+			out.addCode(pos, CatspeakOpCode.VAR_GET);
+			out.addCode(pos, inner);
+			break;
+		case CatspeakIRKind.GROUPING:
+			visitTerm(inner);
+			break;
+		}
+	}
+	/// @desc Generates the code for a single term and returns whether more terms need to be parsed.
+	static generateCode = function() {
+		if (parser.matches(CatspeakToken.EOF)) {
+			return false;
+		}
+		var ir = parser.parseStmt();
+		visitTerm(ir);
+		return true;
+	}
+}
+
 /// @desc Compiles this string and returns the resulting intcode program.
 /// @param {string} str The string that contains the source code.
 function catspeak_compile(_str) {
@@ -730,15 +862,15 @@ function catspeak_compile(_str) {
 	var buff = buffer_create(size, buffer_fixed, 1);
 	buffer_write(buff, buffer_text, _str);
 	buffer_seek(buff, buffer_seek_start, 0);
-	var parser = new CatspeakParser(buff);
-	show_debug_message(parser.parseStmt());
+	var out = new CatspeakChunk();
+	var codegen = new CatspeakCodegen(buff, out);
+	while (codegen.generateCode()) { }
 	buffer_delete(buff);
+	return out;
 }
 
 var src = @'
-var a b
-set a 12
-set b 5
-print : a + b
+print : "hello world"
 ';
 var program = catspeak_compile(src);
+show_message(program);
