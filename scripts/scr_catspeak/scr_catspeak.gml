@@ -77,6 +77,13 @@ function catspeak_token_render(_kind) {
 	}
 }
 
+/// @desc Returns whether a token is a valid operator.
+/// @param {CatspeakToken} token The token to check.
+function catspeak_token_is_operator(_token) {
+	return _token > CatspeakToken.__OPERATORS_BEGIN__
+			&& _token < CatspeakToken.__OPERATORS_END__;
+}
+
 /// @desc Returns whether a byte is a valid newline character.
 /// @param {real} byte The byte to check.
 function catspeak_byte_is_newline(_byte) {
@@ -433,23 +440,27 @@ function CatspeakParserLexer(_buff) constructor {
 			case CatspeakToken.EOL:
 				var implicit_semicolon = parenDepth <= 0;
 				switch (pred) {
-				case CatspeakToken.BRACE_LEFT:
-				case CatspeakToken.BOX_LEFT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
 				case CatspeakToken.ADDITION:
 					implicit_semicolon = false;
 					break;
+				default:
+					if (catspeak_token_is_operator(pred)) {
+						implicit_semicolon = false;
+					}
 				}
 				switch (succ) {
-				case CatspeakToken.BRACE_LEFT:
-				case CatspeakToken.BOX_LEFT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.ELSE:
 				case CatspeakToken.SEMICOLON:
 				case CatspeakToken.ADDITION:
 					implicit_semicolon = false;
 					break;
+				default:
+					if (catspeak_token_is_operator(succ)) {
+						implicit_semicolon = false;
+					}
 				}
 				if (implicit_semicolon) {
 					current = CatspeakToken.SEMICOLON;
@@ -583,8 +594,7 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Returns true if the current token matches any kind of operator.
 	static matchesOperator = function() {
-		return peeked > CatspeakToken.__OPERATORS_BEGIN__
-				&& peeked < CatspeakToken.__OPERATORS_END__
+		return catspeak_token_is_operator(peeked);
 	}
 	/// @desc Attempts to match against a token and advances the parser if this was successful.
 	/// @param {CatspeakToken} kind The token kind to consume.
@@ -731,6 +741,7 @@ function CatspeakParser(_buff) constructor {
 enum CatspeakOpCode {
 	PUSH,
 	POP,
+	VAR_ADD,
 	VAR_GET,
 	VAR_SET,
 	PRINT,
@@ -744,6 +755,7 @@ function catspeak_code_render(_kind) {
 	switch (_kind) {
 	case CatspeakOpCode.PUSH: return "PUSH";
 	case CatspeakOpCode.POP: return "POP";
+	case CatspeakOpCode.VAR_ADD: return "VAR_ADD";
 	case CatspeakOpCode.VAR_GET: return "VAR_GET";
 	case CatspeakOpCode.VAR_SET: return "VAR_SET";
 	case CatspeakOpCode.PRINT: return "PRINT";
@@ -852,7 +864,11 @@ function CatspeakCodegen(_buff, _out) constructor {
 			out.addCode(pos, CatspeakOpCode.POP);
 			break;
 		case CatspeakIRKind.VAR_DECLARATION:
-			error(_term, "variable declaration unimplemented");
+			var arg_count = array_length(inner);
+			for (var i = 0; i < arg_count; i += 1) {
+				out.addCode(pos, CatspeakOpCode.VAR_ADD);
+				out.addCode(pos, inner[i]);
+			}
 			break;
 		case CatspeakIRKind.VAR_SET:
 			error(_term, "variable assignment unimplemented");
@@ -982,6 +998,11 @@ function CatspeakVM(_chunk) constructor {
 		case CatspeakOpCode.POP:
 			pop();
 			break;
+		case CatspeakOpCode.VAR_ADD:
+			pc += 1;
+			var name = code[pc];
+			chunk.context.addVariable(name);
+			break;
 		case CatspeakOpCode.VAR_GET:
 			error("get instructions are not implemented");
 			break;
@@ -1017,11 +1038,13 @@ function CatspeakVM(_chunk) constructor {
 }
 
 var src = @'
-print : "hello world"
+var x y z w
+print .hello
 ';
 var chunk = catspeak_compile(src);
 var vm = new CatspeakVM(chunk);
 while (vm.inProgress()) {
 	vm.compute();
 }
+show_message(chunk);
 show_message(vm.getResult());
