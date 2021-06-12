@@ -440,6 +440,8 @@ function CatspeakParserLexer(_buff) constructor {
 			case CatspeakToken.EOL:
 				var implicit_semicolon = parenDepth <= 0;
 				switch (pred) {
+				case CatspeakToken.BOX_LEFT:
+				case CatspeakToken.BRACE_LEFT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
 				case CatspeakToken.ADDITION:
@@ -743,8 +745,18 @@ function CatspeakParser(_buff) constructor {
 			return new CatspeakIRNode(start, CatspeakIRKind.ARRAY, params);
 		} else if (consume(CatspeakToken.BRACE_LEFT)) {
 			var start = pos;
-			errorAndAdvance("object literals not implemented");
+			var params = [];
+			while (matchesExpression()) {
+				var key = parseValue();
+				var value = parseValue();
+				array_push(params, key);
+				array_push(params, value);
+				if not (matches(CatspeakToken.BOX_RIGHT)) {
+					expectsSemicolon("between object elements");
+				}
+			}
 			expects(CatspeakToken.BRACE_RIGHT, "expected closing `}` in object literal");
+			return new CatspeakIRNode(start, CatspeakIRKind.OBJECT, params);
 		} else {
 			errorAndAdvance("unexpected symbol in expression");
 		}
@@ -936,7 +948,12 @@ function CatspeakCodegen(_buff, _out) constructor {
 			out.addCode(pos, arg_count);
 			break;
 		case CatspeakIRKind.OBJECT:
-			error(_term, "make object unimplemented");
+			var arg_count = array_length(inner);
+			for (var i = arg_count - 1; i >= 0; i -= 1) {
+				visitTerm(inner[i]);
+			}
+			out.addCode(pos, CatspeakOpCode.MAKE_OBJECT);
+			out.addCode(pos, arg_count div 2);
 			break;
 		case CatspeakIRKind.IDENTIFIER:
 			out.addCode(pos, CatspeakOpCode.VAR_GET);
@@ -1092,7 +1109,15 @@ function CatspeakVM(_chunk) constructor {
 			push(container);
 			break;
 		case CatspeakOpCode.MAKE_OBJECT:
-			error("objects are not implemented");
+			pc += 1;
+			var size = code[pc];
+			var container = { };
+			repeat (size) {
+				var key = pop();
+				var value = pop();
+				container[$ string(key)] = value;
+			}
+			push(container);
 			break;
 		case CatspeakOpCode.PRINT:
 			var value = pop();
@@ -1124,7 +1149,14 @@ function CatspeakVM(_chunk) constructor {
 
 var src = @'
 var x y z w
-set h [1;5;3]
+set h {
+	.fps : 64
+	.player_speed : 1
+	.colours : [
+		"hello"
+		12
+	]
+}
 print h
 ';
 var chunk = catspeak_compile(src);
