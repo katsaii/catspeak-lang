@@ -774,6 +774,8 @@ enum CatspeakOpCode {
 	MAKE_OBJECT,
 	PRINT,
 	CALL,
+	JUMP,
+	JUMP_FALSE,
 	RETURN
 }
 
@@ -790,6 +792,8 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
 	case CatspeakOpCode.PRINT: return "PRINT";
 	case CatspeakOpCode.CALL: return "CALL";
+	case CatspeakOpCode.JUMP: return "JUMP";
+	case CatspeakOpCode.JUMP_FALSE: return "JUMP_FALSE";
 	case CatspeakOpCode.RETURN: return "RETURN";
 	default: return "<unknown>";
 	}
@@ -1124,6 +1128,20 @@ function CatspeakVM(_chunk) constructor {
 			var value = pop();
 			show_debug_message(value);
 			break;
+		case CatspeakOpCode.JUMP:
+			pc += 1;
+			var new_pc = code[pc];
+			pc = new_pc;
+			return;
+		case CatspeakOpCode.JUMP_FALSE:
+			pc += 1;
+			var new_pc = code[pc];
+			var value = pop();
+			if not (is_numeric(value) && value) {
+				pc = new_pc;
+				return;
+			}
+			break;
 		case CatspeakOpCode.CALL:
 			pc += 1;
 			var arg_count = code[pc];
@@ -1159,7 +1177,7 @@ function CatspeakVM(_chunk) constructor {
 			var value = pop();
 			result = value;
 			active = false; // finish computation
-			break;
+			return;
 		default:
 			error("unknown program instruction `" + string(inst) + "` (" + catspeak_code_render(inst) + ")");
 			break;
