@@ -1004,10 +1004,21 @@ function CatspeakVM(_chunk) constructor {
 			chunk.context.addVariable(name);
 			break;
 		case CatspeakOpCode.VAR_GET:
-			error("get instructions are not implemented");
+			pc += 1;
+			var name = code[pc];
+			var value = chunk.context.getVariable(name);
+			push(value);
 			break;
 		case CatspeakOpCode.VAR_SET:
-			error("set instructions are not implemented");
+			pc += 1;
+			var name = code[pc];
+			pc += 1;
+			var subscript_count = code[pc];
+			var value = pop();
+			var success = chunk.context.setVariable(name, value);
+			if not (success) {
+				error("cannot assign to non-existent variable `" + string(name) + "`");
+			}
 			break;
 		case CatspeakOpCode.PRINT:
 			var value = pop();
