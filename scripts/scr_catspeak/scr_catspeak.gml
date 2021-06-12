@@ -495,8 +495,8 @@ enum CatspeakIRKind {
 	PRINT,
 	CALL,
 	CONSTANT,
-	MAKE_ARRAY,
-	MAKE_OBJECT,
+	ARRAY,
+	OBJECT,
 	IDENTIFIER,
 	GROUPING
 }
@@ -514,8 +514,8 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.CONSTANT: return "CONSTANT";
-	case CatspeakIRKind.MAKE_ARRAY: return "MAKE_ARRAY";
-	case CatspeakIRKind.MAKE_OBJECT: return "MAKE_OBJECT";
+	case CatspeakIRKind.ARRAY: return "ARRAY";
+	case CatspeakIRKind.OBJECT: return "OBJECT";
 	case CatspeakIRKind.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakIRKind.GROUPING: return "GROUPING";
 	default: return "<unknown>";
@@ -619,22 +619,23 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Throws a `CatspeakCompilerError` if the current token is not a semicolon. Advances the parser otherwise.
 	/// @param {string} on_error The error message.
 	static expectsSemicolon = function(_msg) {
-		return expects(CatspeakToken.SEMICOLON, "expected `;` or new line after " + _msg);
+		return expects(CatspeakToken.SEMICOLON, "expected `;` or new line " + _msg);
 	}
 	/// @desc Entry point for parsing statements.
 	static parseStmt = function() {
-		var start = pos;
 		if (consume(CatspeakToken.SEMICOLON)) {
 			return new CatspeakIRNode(
 					pos, CatspeakIRKind.NOTHING, undefined);
 		} else if (consume(CatspeakToken.VAR)) {
+			var start = pos;
 			var idents = [];
 			while (consume(CatspeakToken.IDENTIFIER)) {
 				array_push(idents, lexeme);
 			}
-			expectsSemicolon("variable declarations");
+			expectsSemicolon("after variable declarations");
 			return new CatspeakIRNode(start, CatspeakIRKind.VAR_DECLARATION, idents);
 		} else if (consume(CatspeakToken.SET)) {
+			var start = pos;
 			expects(CatspeakToken.IDENTIFIER, "expected identifier after `set` keyword");
 			var ident = lexeme;
 			var params = [];
@@ -642,7 +643,7 @@ function CatspeakParser(_buff) constructor {
 				var param = parseValue();
 				array_push(params, param);
 			}
-			expectsSemicolon("`set` statements");
+			expectsSemicolon("after `set` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.VAR_SET, {
 				ident : ident,
 				params : params
@@ -652,16 +653,17 @@ function CatspeakParser(_buff) constructor {
 		} else if (consume(CatspeakToken.WHILE)) {
 			errorAndAdvance("while loops not implemented");
 		} else if (consume(CatspeakToken.PRINT)) {
+			var start = pos;
 			var values = [];
 			while (matchesExpression()) {
 				array_push(values, parseValue());
 			}
-			expectsSemicolon("`print` statements");
+			expectsSemicolon("after `print` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, values);
 		} else {
 			var value = parseExpr();
-			expectsSemicolon("expression statements");
-			return new CatspeakIRNode(start, CatspeakIRKind.EXPRESSION_STATEMENT, value);
+			expectsSemicolon("after expression statements");
+			return new CatspeakIRNode(value.pos, CatspeakIRKind.EXPRESSION_STATEMENT, value);
 		}
 	}
 	/// @desc Entry point for parsing expressions.
@@ -728,9 +730,21 @@ function CatspeakParser(_buff) constructor {
 			return new CatspeakIRNode(
 					start, CatspeakIRKind.GROUPING, value);
 		} else if (consume(CatspeakToken.BOX_LEFT)) {
-			errorAndAdvance("array literals not implemented");
+			var start = pos;
+			var params = [];
+			while (matchesExpression()) {
+				var param = parseValue();
+				array_push(params, param);
+				if not (matches(CatspeakToken.BOX_RIGHT)) {
+					expectsSemicolon("between array elements");
+				}
+			}
+			expects(CatspeakToken.BOX_RIGHT, "expected closing `]` in array literal");
+			return new CatspeakIRNode(start, CatspeakIRKind.ARRAY, params);
 		} else if (consume(CatspeakToken.BRACE_LEFT)) {
+			var start = pos;
 			errorAndAdvance("object literals not implemented");
+			expects(CatspeakToken.BRACE_RIGHT, "expected closing `}` in object literal");
 		} else {
 			errorAndAdvance("unexpected symbol in expression");
 		}
@@ -744,6 +758,8 @@ enum CatspeakOpCode {
 	VAR_ADD,
 	VAR_GET,
 	VAR_SET,
+	MAKE_ARRAY,
+	MAKE_OBJECT,
 	PRINT,
 	CALL,
 	RETURN
@@ -758,6 +774,8 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.VAR_ADD: return "VAR_ADD";
 	case CatspeakOpCode.VAR_GET: return "VAR_GET";
 	case CatspeakOpCode.VAR_SET: return "VAR_SET";
+	case CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
+	case CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
 	case CatspeakOpCode.PRINT: return "PRINT";
 	case CatspeakOpCode.CALL: return "CALL";
 	case CatspeakOpCode.RETURN: return "RETURN";
@@ -909,10 +927,15 @@ function CatspeakCodegen(_buff, _out) constructor {
 			out.addCode(pos, CatspeakOpCode.PUSH);
 			out.addCode(pos, inner);
 			break;
-		case CatspeakIRKind.MAKE_ARRAY:
-			error(_term, "make array unimplemented");
+		case CatspeakIRKind.ARRAY:
+			var arg_count = array_length(inner);
+			for (var i = arg_count - 1; i >= 0; i -= 1) {
+				visitTerm(inner[i]);
+			}
+			out.addCode(pos, CatspeakOpCode.MAKE_ARRAY);
+			out.addCode(pos, arg_count);
 			break;
-		case CatspeakIRKind.MAKE_OBJECT:
+		case CatspeakIRKind.OBJECT:
 			error(_term, "make object unimplemented");
 			break;
 		case CatspeakIRKind.IDENTIFIER:
@@ -1058,6 +1081,19 @@ function CatspeakVM(_chunk) constructor {
 				}
 			}
 			break;
+		case CatspeakOpCode.MAKE_ARRAY:
+			pc += 1;
+			var size = code[pc];
+			var container = array_create(size);
+			for (var i = 0; i < size; i += 1) {
+				var value = pop();
+				container[@ i] = value;
+			}
+			push(container);
+			break;
+		case CatspeakOpCode.MAKE_OBJECT:
+			error("objects are not implemented");
+			break;
 		case CatspeakOpCode.PRINT:
 			var value = pop();
 			show_debug_message(value);
@@ -1088,7 +1124,7 @@ function CatspeakVM(_chunk) constructor {
 
 var src = @'
 var x y z w
-set h 1 7
+set h [1;5;3]
 print h
 ';
 var chunk = catspeak_compile(src);
