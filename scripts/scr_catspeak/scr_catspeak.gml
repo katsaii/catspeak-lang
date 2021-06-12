@@ -865,7 +865,7 @@ function CatspeakChunk() constructor {
 	/// @desc Sets the current context of this chunk.
 	/// @param {struct} context The context to assign.
 	static setContext = function(_context) {
-		context = _context;
+		context = _context.fork();
 	}
 }
 
@@ -929,11 +929,12 @@ function CatspeakCodegen(_buff, _out) constructor {
 			var callsite = inner.callsite;
 			var params = inner.params;
 			var arg_count = array_length(params);
-			for (var i = 0; i < arg_count; i += 1) {
+			for (var i = arg_count - 1; i >= 0; i -= 1) {
 				visitTerm(params[i]);
 			}
 			visitTerm(callsite);
 			out.addCode(pos, CatspeakOpCode.CALL);
+			out.addCode(pos, arg_count);
 			break;
 		case CatspeakIRKind.CONSTANT:
 			out.addCode(pos, CatspeakOpCode.PUSH);
@@ -1124,7 +1125,35 @@ function CatspeakVM(_chunk) constructor {
 			show_debug_message(value);
 			break;
 		case CatspeakOpCode.CALL:
-			error("calls instructions are not implemented");
+			pc += 1;
+			var arg_count = code[pc];
+			var callsite = pop();
+			var ty = typeof(callsite);
+			switch (ty) {
+			case "array":
+			case "struct":
+				var container = callsite;
+				repeat (arg_count) {
+					var value = pop();
+					var ty = typeof(container);
+					switch (ty) {
+					case "array":
+						container = container[value];
+						break;
+					case "struct":
+						container = container[$ string(value)];
+						break;
+					default:
+						error("cannot index value of type `" + ty + "`");
+					}
+					
+				}
+				push(container);
+				break;
+			default:
+				error("invalid callsite of type `" + ty + "`");
+				break;
+			}
 			break;
 		case CatspeakOpCode.RETURN:
 			var value = pop();
@@ -1157,7 +1186,7 @@ set h {
 		12
 	]
 }
-print h
+print : h .colours 0
 ';
 var chunk = catspeak_compile(src);
 var ctx = new CatspeakContext().addVariable("h");
