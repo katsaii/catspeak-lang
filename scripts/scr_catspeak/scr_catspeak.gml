@@ -331,6 +331,11 @@ function CatspeakLexer(_buff) constructor {
 			skipNextByte = true;
 			registerLexeme();
 			return CatspeakToken.STRING;
+		case ord("."):
+			clearLexeme();
+			advanceWhileEscape(catspeak_byte_is_alphanumeric);
+			registerLexeme();
+			return CatspeakToken.STRING;
 		case ord("`"):
 			clearLexeme();
 			advanceWhileEscape(catspeak_byte_is_not_accent, catspeak_byte_is_accent);
@@ -730,5 +735,10 @@ function catspeak_compile(_str) {
 	buffer_delete(buff);
 }
 
-var src = @'set a 12';
+var src = @'
+var a b
+set a 12
+set b 5
+print : a + b
+';
 var program = catspeak_compile(src);
