@@ -529,6 +529,10 @@ function CatspeakParser(_buff) constructor {
 	pos = lexer.getPosition();
 	lexeme = lexer.getLexeme();
 	peeked = lexer.next();
+	/// @desc Returns the current buffer position.
+	static getPosition = function() {
+		return pos;
+	}
 	/// @desc Creates a call node.
 	/// @param {CatspeakIRNode} callsite The callsite.
 	/// @param {array} params The paramter array.
@@ -730,7 +734,8 @@ enum CatspeakOpCode {
 	VAR_GET,
 	VAR_SET,
 	PRINT,
-	CALL
+	CALL,
+	RETURN
 }
 
 /// @desc Displays the ir kind as a string.
@@ -743,6 +748,7 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.VAR_SET: return "VAR_SET";
 	case CatspeakOpCode.PRINT: return "PRINT";
 	case CatspeakOpCode.CALL: return "CALL";
+	case CatspeakOpCode.RETURN: return "RETURN";
 	default: return "<unknown>";
 	}
 }
@@ -756,14 +762,17 @@ function CatspeakContext() constructor {
 	static addVariable = function(_name) {
 		vars[$ _name] = undefined;
 	}
-	/// @desc Sets a variable in the current context.
+	/// @desc Attemps to set a variable in the current context and returns whether it was successful.
 	/// @param {string} name The name of the variable to add.
 	/// @param {value} value The value to assign.
 	static setVariable = function(_name, _value) {
 		if (variable_struct_exists(vars, _name)) {
 			vars[$ _name] = _value;
+			return true;
 		} else if (prototype != undefined) {
-			prototype.setVariable(_name, _value);
+			return prototype.setVariable(_name, _value);
+		} else {
+			return false;
 		}
 	}
 	/// @desc Gets a variable in the current context.
@@ -893,6 +902,10 @@ function CatspeakCodegen(_buff, _out) constructor {
 	/// @desc Generates the code for a single term and returns whether more terms need to be parsed.
 	static generateCode = function() {
 		if (parser.matches(CatspeakToken.EOF)) {
+			var pos = parser.getPosition();
+			out.addCode(pos, CatspeakOpCode.PUSH);
+			out.addCode(pos, undefined);
+			out.addCode(pos, CatspeakOpCode.RETURN);
 			return false;
 		}
 		var ir = parser.parseStmt();
@@ -915,8 +928,100 @@ function catspeak_compile(_str) {
 	return out;
 }
 
+/// @desc Handles the execution of a single Catspeak chunk.
+/// @param {CatspeakChunk} chunk The chunk to execute code of.
+function CatspeakVM(_chunk) constructor {
+	active = true;
+	result = undefined;
+	chunk = _chunk;
+	pc = 0;
+	stack = [];
+	stackSize = 0;
+	/// @desc Throws a `CatspeakError` with the current program counter.
+	/// @param {string} msg The error message.
+	static error = function(_msg) {
+		throw new CatspeakError(chunk.diagnostic[pc], _msg);
+	}
+	/// @desc Pushes a value onto the stack.
+	/// @param {value} value The value to push.
+	static push = function(_value) {
+		array_push(stack, _value);
+		stackSize += 1;
+	}
+	/// @desc Pops the top value from the stack.
+	static pop = function() {
+		if (stackSize < 1) {
+			error("VM stack underflow");
+		}
+		stackSize -= 1;
+		return array_pop(stack);
+	}
+	/// @desc Returns the top value of the stack.
+	static top = function() {
+		if (stackSize < 1) {
+			error("cannot peek into empty VM stack");
+		}
+		return stack[stackSize - 1];
+	}
+	/// @desc Rewinds the VM back to the start.
+	static rewind = function() {
+		active = true;
+		result = undefined;
+		pc = 0;
+	}
+	/// @desc Executes a single instruction and updates the program counter.
+	static compute = function() {
+		var code = chunk.intcode;
+		var inst = code[pc];
+		switch (inst) {
+		case CatspeakOpCode.PUSH:
+			pc += 1;
+			var value = code[pc];
+			push(value);
+			break;
+		case CatspeakOpCode.POP:
+			pop();
+			break;
+		case CatspeakOpCode.VAR_GET:
+			error("get instructions are not implemented");
+			break;
+		case CatspeakOpCode.VAR_SET:
+			error("set instructions are not implemented");
+			break;
+		case CatspeakOpCode.PRINT:
+			var value = pop();
+			show_debug_message(value);
+			break;
+		case CatspeakOpCode.CALL:
+			error("calls instructions are not implemented");
+			break;
+		case CatspeakOpCode.RETURN:
+			var value = pop();
+			result = value;
+			active = false; // finish computation
+			break;
+		default:
+			error("unknown program instruction `" + string(inst) + "` (" + catspeak_code_render(inst) + ")");
+			break;
+		}
+		pc += 1;
+	}
+	/// @desc Returns whether the VM is in progress.
+	static inProgress = function() {
+		return active;
+	}
+	/// @desc Returns the result of the computation.
+	static getResult = function() {
+		return result;
+	}
+}
+
 var src = @'
 print : "hello world"
 ';
-var program = catspeak_compile(src);
-show_message(program);
+var chunk = catspeak_compile(src);
+var vm = new CatspeakVM(chunk);
+while (vm.inProgress()) {
+	vm.compute();
+}
+show_message(vm.getResult());
