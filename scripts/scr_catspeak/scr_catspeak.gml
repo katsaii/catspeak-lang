@@ -782,53 +782,6 @@ function catspeak_code_render(_kind) {
 	}
 }
 
-/// @desc Represents the free variables of a Catspeak program.
-/// @desc {struct} vars The map of variables to use.
-function CatspeakContext(_vars) constructor {
-	prototype = undefined;
-	vars = is_struct(_vars) ? _vars : { };
-	/// @desc Attemps to set a variable in the current context, and uses a default context if no variables match.
-	/// @param {string} name The name of the variable to add.
-	/// @param {value} value The value to assign.
-	/// @param {struct} default The default map to use.
-	static setVariableExt = function(_name, _value, _default) {
-		if (variable_struct_exists(vars, _name)) {
-			vars[$ _name] = _value;
-		} else if (prototype != undefined) {
-			prototype.setVariable(_name, _value);
-		} else {
-			_default[$ _name] = _value;
-		}
-	}
-	/// @desc Attemps to set a variable in the current context and returns whether it was successful.
-	/// @param {string} name The name of the variable to add.
-	/// @param {value} value The value to assign.
-	static setVariable = function(_name, _value) {
-		setVariableExt(_name, _value, vars);
-	}
-	/// @desc Gets a variable in the current context.
-	/// @param {string} name The name of the variable to add.
-	static getVariable = function(_name) {
-		if (variable_struct_exists(vars, _name)) {
-			return vars[$ _name];
-		} else if (prototype != undefined) {
-			return prototype.getVariable(_name);
-		} else {
-			return undefined;
-		}
-	}
-	/// @desc Returns the prototype of this context.
-	static getPrototype = function() {
-		return prototype;
-	}
-	/// @desc Returns a fork of this context.
-	static fork = function() {
-		var new_context = new CatspeakContext(undefined);
-		new_context.prototype = self;
-		return new_context;
-	}
-}
-
 /// @desc Represents a Catspeak intcode program with associated debug information.
 function CatspeakChunk() constructor {
 	intcode = [];
@@ -972,7 +925,8 @@ function catspeak_compile(_str) {
 /// @desc Handles the execution of a single Catspeak chunk.
 /// @param {CatspeakChunk} chunk The chunk to execute code of.
 function CatspeakVM(_chunk) constructor {
-	context = new CatspeakContext(undefined);
+	interface = { };
+	binding = { };
 	active = true;
 	result = undefined;
 	chunk = _chunk;
@@ -1010,6 +964,23 @@ function CatspeakVM(_chunk) constructor {
 		}
 		return stack[stackSize - 1];
 	}
+	/// @desc Attemps to set a variable in the current context and returns whether it was successful.
+	/// @param {string} name The name of the variable to add.
+	/// @param {value} value The value to assign.
+	static setVariable = function(_name, _value) {
+		binding[$ _name] = _value;
+	}
+	/// @desc Gets a variable in the current context.
+	/// @param {string} name The name of the variable to add.
+	static getVariable = function(_name) {
+		if (variable_struct_exists(binding, _name)) {
+			return binding[$ _name];
+		} else if (variable_struct_exists(interface, _name)) {
+			return interface[$ _name];
+		} else {
+			return undefined;
+		}
+	}
 	/// @desc Executes a single instruction and updates the program counter.
 	static compute = function() {
 		var code = chunk.intcode;
@@ -1026,7 +997,7 @@ function CatspeakVM(_chunk) constructor {
 		case CatspeakOpCode.VAR_GET:
 			pc += 1;
 			var name = code[pc];
-			var value = context.getVariable(name);
+			var value = getVariable(name);
 			push(value);
 			break;
 		case CatspeakOpCode.VAR_SET:
@@ -1036,9 +1007,9 @@ function CatspeakVM(_chunk) constructor {
 			var subscript_count = code[pc];
 			if (subscript_count < 1) {
 				var value = pop();
-				context.setVariable(name, value);
+				setVariable(name, value);
 			} else {
-				var container = context.getVariable(name);
+				var container = getVariable(name);
 				for (; subscript_count >= 1; subscript_count -= 1) {
 					var subscript = pop();
 					var ty = typeof(container);
@@ -1151,14 +1122,19 @@ function CatspeakVM(_chunk) constructor {
 	static inProgress = function() {
 		return active;
 	}
+	/// @desc Sets the interface for this VM.
+	/// @param {struct} vars The context to assign.
+	static setInterface = function(_vars) {
+		interface = _vars;
+		return self;
+	}
+	/// @desc Gets the variable workspace for this context.
+	static getWorkspace = function() {
+		return binding;
+	}
 	/// @desc Returns the result of the computation.
 	static getResult = function() {
 		return result;
-	}
-	/// @desc Sets the current context of this VM.
-	/// @param {struct} context The context to assign.
-	static setContext = function(_context) {
-		context = _context;
 	}
 }
 
@@ -1171,10 +1147,13 @@ set x {
 		12
 	]
 }
-print : x .colours 0
+print : x
 ';
 var chunk = catspeak_compile(src);
-var vm = new CatspeakVM(chunk);
+var vm = new CatspeakVM(chunk)
+		.setInterface({
+			h : [1,2,3]
+		});
 while (vm.inProgress()) {
 	vm.compute();
 }
