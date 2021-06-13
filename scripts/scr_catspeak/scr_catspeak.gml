@@ -735,7 +735,7 @@ function CatspeakParser(_buff) constructor {
 			var start = pos;
 			var params = [];
 			while (matchesExpression()) {
-				var param = parseValue();
+				var param = parseExpr();
 				array_push(params, param);
 				if not (matches(CatspeakToken.BOX_RIGHT)) {
 					expectsSemicolon("between array elements");
