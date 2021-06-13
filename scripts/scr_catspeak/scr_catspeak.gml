@@ -923,13 +923,12 @@ function catspeak_compile(_str) {
 }
 
 /// @desc Handles the execution of a single Catspeak chunk.
-/// @param {CatspeakChunk} chunk The chunk to execute code of.
-function CatspeakVM(_chunk) constructor {
+function CatspeakVM() constructor {
 	interface = { };
 	binding = { };
-	active = true;
-	result = undefined;
-	chunk = _chunk;
+	resultHandler = undefined;
+	chunks = [];
+	chunk = undefined;
 	pc = 0;
 	stackLimit = 8;
 	stackSize = 0;
@@ -981,8 +980,54 @@ function CatspeakVM(_chunk) constructor {
 			return undefined;
 		}
 	}
+	/// @desc Adds a new chunk to the VM to execute.
+	/// @param {CatspeakChunk} chunk The chunk to execute code of.
+	static addChunk = function(_chunk) {
+		if (chunk == undefined) {
+			chunk = _chunk;
+		} else {
+			array_insert(chunks, 0, _chunk);
+		}
+	}
+	/// @desc Removes the chunk currently being executed.
+	static terminateChunk = function() {
+		if (chunk == undefined) {
+			return;
+		}
+		pc = 0;
+		if (array_length(chunks) >= 1) {
+			chunk = array_pop(chunks);
+		} else {
+			chunk = undefined;
+		}
+	}
+	/// @desc Returns whether the VM is in progress.
+	static inProgress = function() {
+		return chunk != undefined;
+	}
+	/// @desc Gets the variable workspace for this context.
+	static getWorkspace = function() {
+		return binding;
+	}
+	/// @desc Adds an interface to this VM.
+	/// @param {struct} vars The context to assign.
+	static addInterface = function(_vars) {
+		var names = variable_struct_get_names(_vars);
+		var name_count = array_length(names);
+		for (var i = name_count - 1; i >= 0; i -= 1) {
+			var name = names[i];
+			interface[$ name] = _vars[$ name];
+		}
+		return self;
+	}
+	/// @desc Sets the function to call after program execution is complete.
+	/// @param {function} f The function to call.
+	static setResultHandler = function(_f) {
+		resultHandler = _f;
+		return self;
+	}
 	/// @desc Executes a single instruction and updates the program counter.
-	static compute = function() {
+	static computeProgram = function() {
 		var code = chunk.intcode;
 		var inst = code[pc];
 		switch (inst) {
@@ -1119,37 +1164,16 @@ function CatspeakVM(_chunk) constructor {
 			break;
 		case CatspeakOpCode.RETURN:
 			var value = pop();
-			result = value;
-			active = false; // finish computation
+			if (resultHandler != undefined) {
+				resultHandler(value);
+			}
+			terminateChunk(); // complete execution
 			return;
 		default:
 			error("unknown program instruction `" + string(inst) + "` (" + catspeak_code_render(inst) + ")");
 			break;
 		}
 		pc += 1;
-	}
-	/// @desc Returns whether the VM is in progress.
-	static inProgress = function() {
-		return active;
-	}
-	/// @desc Adds an interface to this VM.
-	/// @param {struct} vars The context to assign.
-	static addInterface = function(_vars) {
-		var names = variable_struct_get_names(_vars);
-		var name_count = array_length(names);
-		for (var i = name_count - 1; i >= 0; i -= 1) {
-			var name = names[i];
-			interface[$ name] = _vars[$ name];
-		}
-		return self;
-	}
-	/// @desc Gets the variable workspace for this context.
-	static getWorkspace = function() {
-		return binding;
-	}
-	/// @desc Returns the result of the computation.
-	static getResult = function() {
-		return result;
 	}
 }
 
@@ -1164,14 +1188,15 @@ set x {
 }
 print : x
 print : `+`
-`+` 1 2
 ';
 var chunk = catspeak_compile(src);
-var vm = new CatspeakVM(chunk)
+var vm = new CatspeakVM()
 		.addInterface(catspeak_ext_gml())
-		.addInterface(catspeak_ext_arithmetic());
+		.addInterface(catspeak_ext_arithmetic())
+		.setResultHandler(function(_result) {
+			show_message(_result);
+		});
+vm.addChunk(chunk);
 while (vm.inProgress()) {
-	vm.compute();
+	vm.computeProgram();
 }
-//show_message(chunk);
-show_message(vm.getResult());
