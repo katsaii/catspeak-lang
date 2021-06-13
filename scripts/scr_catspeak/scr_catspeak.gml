@@ -28,7 +28,6 @@ enum CatspeakToken {
 	__OPERATORS_BEGIN__,
 	ADDITION,
 	__OPERATORS_END__,
-	VAR,
 	SET,
 	IF,
 	ELSE,
@@ -58,7 +57,6 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.COLON: return "COLON";
 	case CatspeakToken.SEMICOLON: return "SEMICOLON";
 	case CatspeakToken.ADDITION: return "ADDITION";
-	case CatspeakToken.VAR: return "VAR";
 	case CatspeakToken.SET: return "SET";
 	case CatspeakToken.IF: return "IF";
 	case CatspeakToken.ELSE: return "ELSE";
@@ -361,9 +359,6 @@ function CatspeakLexer(_buff) constructor {
 				registerLexeme();
 				var keyword;
 				switch (lexeme) {
-				case "var":
-					keyword = CatspeakToken.VAR;
-					break;
 				case "set":
 					keyword = CatspeakToken.SET;
 					break;
@@ -490,8 +485,7 @@ function CatspeakParserLexer(_buff) constructor {
 enum CatspeakIRKind {
 	NOTHING,
 	EXPRESSION_STATEMENT,
-	VAR_DECLARATION,
-	VAR_SET,
+	SET,
 	CONDITIONAL,
 	LOOP,
 	PRINT,
@@ -509,8 +503,7 @@ function catspeak_ir_render(_kind) {
 	switch (_kind) {
 	case CatspeakIRKind.NOTHING: return "NOTHING";
 	case CatspeakIRKind.EXPRESSION_STATEMENT: return "EXPRESSION_STATEMENT";
-	case CatspeakIRKind.VAR_DECLARATION: return "VAR_DECLARATION";
-	case CatspeakIRKind.VAR_SET: return "VAR_SET";
+	case CatspeakIRKind.SET: return "SET";
 	case CatspeakIRKind.CONDITIONAL: return "CONDITIONAL";
 	case CatspeakIRKind.LOOP: return "LOOP";
 	case CatspeakIRKind.PRINT: return "PRINT";
@@ -628,14 +621,6 @@ function CatspeakParser(_buff) constructor {
 		if (consume(CatspeakToken.SEMICOLON)) {
 			return new CatspeakIRNode(
 					pos, CatspeakIRKind.NOTHING, undefined);
-		} else if (consume(CatspeakToken.VAR)) {
-			var start = pos;
-			var idents = [];
-			while (consume(CatspeakToken.IDENTIFIER)) {
-				array_push(idents, lexeme);
-			}
-			expectsSemicolon("after variable declarations");
-			return new CatspeakIRNode(start, CatspeakIRKind.VAR_DECLARATION, idents);
 		} else if (consume(CatspeakToken.SET)) {
 			var start = pos;
 			expects(CatspeakToken.IDENTIFIER, "expected identifier after `set` keyword");
@@ -646,7 +631,7 @@ function CatspeakParser(_buff) constructor {
 				array_push(params, param);
 			}
 			expectsSemicolon("after `set` statements");
-			return new CatspeakIRNode(start, CatspeakIRKind.VAR_SET, {
+			return new CatspeakIRNode(start, CatspeakIRKind.SET, {
 				ident : ident,
 				params : params
 			});
@@ -767,7 +752,6 @@ function CatspeakParser(_buff) constructor {
 enum CatspeakOpCode {
 	PUSH,
 	POP,
-	VAR_ADD,
 	VAR_GET,
 	VAR_SET,
 	MAKE_ARRAY,
@@ -785,7 +769,6 @@ function catspeak_code_render(_kind) {
 	switch (_kind) {
 	case CatspeakOpCode.PUSH: return "PUSH";
 	case CatspeakOpCode.POP: return "POP";
-	case CatspeakOpCode.VAR_ADD: return "VAR_ADD";
 	case CatspeakOpCode.VAR_GET: return "VAR_GET";
 	case CatspeakOpCode.VAR_SET: return "VAR_SET";
 	case CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
@@ -809,18 +792,24 @@ function CatspeakContext() constructor {
 		vars[$ _name] = undefined;
 		return self;
 	}
+	/// @desc Attemps to set a variable in the current context, and uses a default context if no variables match.
+	/// @param {string} name The name of the variable to add.
+	/// @param {value} value The value to assign.
+	/// @param {struct} default The default map to use.
+	static setVariableExt = function(_name, _value, _default) {
+		if (variable_struct_exists(vars, _name)) {
+			vars[$ _name] = _value;
+		} else if (prototype != undefined) {
+			prototype.setVariable(_name, _value);
+		} else {
+			_default[$ _name] = _value;
+		}
+	}
 	/// @desc Attemps to set a variable in the current context and returns whether it was successful.
 	/// @param {string} name The name of the variable to add.
 	/// @param {value} value The value to assign.
 	static setVariable = function(_name, _value) {
-		if (variable_struct_exists(vars, _name)) {
-			vars[$ _name] = _value;
-			return true;
-		} else if (prototype != undefined) {
-			return prototype.setVariable(_name, _value);
-		} else {
-			return false;
-		}
+		setVariableExt(_name, _value, vars);
 	}
 	/// @desc Gets a variable in the current context.
 	/// @param {string} name The name of the variable to add.
@@ -898,14 +887,7 @@ function CatspeakCodegen(_buff, _out) constructor {
 			visitTerm(inner);
 			out.addCode(pos, CatspeakOpCode.POP);
 			break;
-		case CatspeakIRKind.VAR_DECLARATION:
-			var arg_count = array_length(inner);
-			for (var i = 0; i < arg_count; i += 1) {
-				out.addCode(pos, CatspeakOpCode.VAR_ADD);
-				out.addCode(pos, inner[i]);
-			}
-			break;
-		case CatspeakIRKind.VAR_SET:
+		case CatspeakIRKind.SET:
 			var ident = inner.ident;
 			var args = inner.params;
 			var arg_count = array_length(args);
@@ -1052,11 +1034,6 @@ function CatspeakVM(_chunk) constructor {
 		case CatspeakOpCode.POP:
 			pop();
 			break;
-		case CatspeakOpCode.VAR_ADD:
-			pc += 1;
-			var name = code[pc];
-			chunk.context.addVariable(name);
-			break;
 		case CatspeakOpCode.VAR_GET:
 			pc += 1;
 			var name = code[pc];
@@ -1071,9 +1048,6 @@ function CatspeakVM(_chunk) constructor {
 			if (subscript_count < 1) {
 				var value = pop();
 				var success = chunk.context.setVariable(name, value);
-				if not (success) {
-					error("cannot assign to non-existent variable `" + string(name) + "`");
-				}
 			} else {
 				var container = chunk.context.getVariable(name);
 				for (; subscript_count >= 1; subscript_count -= 1) {
@@ -1195,8 +1169,7 @@ function CatspeakVM(_chunk) constructor {
 }
 
 var src = @'
-var x y z w
-set h {
+set x {
 	.fps : 64
 	.player_speed : 1
 	.colours : [
@@ -1204,7 +1177,7 @@ set h {
 		12
 	]
 }
-print : h .colours 0
+print : x .colours 0
 ';
 var chunk = catspeak_compile(src);
 var ctx = new CatspeakContext().addVariable("h");
