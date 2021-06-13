@@ -1102,6 +1102,16 @@ function CatspeakVM(_chunk) constructor {
 				}
 				push(container);
 				break;
+			case "method":
+				error("methods are not supported");
+				break;
+			case "number":
+			case "bool":
+			case "int32":
+			case "int64":
+				// verify the asset exists before attempting to access it
+				error("asset indexes are not supported");
+				break;
 			default:
 				error("invalid callsite of type `" + ty + "`");
 				break;
@@ -1122,10 +1132,15 @@ function CatspeakVM(_chunk) constructor {
 	static inProgress = function() {
 		return active;
 	}
-	/// @desc Sets the interface for this VM.
+	/// @desc Adds an interface to this VM.
 	/// @param {struct} vars The context to assign.
-	static setInterface = function(_vars) {
-		interface = _vars;
+	static addInterface = function(_vars) {
+		var names = variable_struct_get_names(_vars);
+		var name_count = array_length(names);
+		for (var i = name_count - 1; i >= 0; i -= 1) {
+			var name = names[i];
+			interface[$ name] = _vars[$ name];
+		}
 		return self;
 	}
 	/// @desc Gets the variable workspace for this context.
@@ -1148,12 +1163,13 @@ set x {
 	]
 }
 print : x
+print : `+`
+`+` 1 2
 ';
 var chunk = catspeak_compile(src);
 var vm = new CatspeakVM(chunk)
-		.setInterface({
-			h : [1,2,3]
-		});
+		.addInterface(catspeak_ext_gml())
+		.addInterface(catspeak_ext_arithmetic());
 while (vm.inProgress()) {
 	vm.compute();
 }
