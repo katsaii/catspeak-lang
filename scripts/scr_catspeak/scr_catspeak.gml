@@ -783,15 +783,10 @@ function catspeak_code_render(_kind) {
 }
 
 /// @desc Represents the free variables of a Catspeak program.
-function CatspeakContext() constructor {
+/// @desc {struct} vars The map of variables to use.
+function CatspeakContext(_vars) constructor {
 	prototype = undefined;
-	vars = { };
-	/// @desc Adds a new variable to this context.
-	/// @param {string} name The name of the variable to add.
-	static addVariable = function(_name) {
-		vars[$ _name] = undefined;
-		return self;
-	}
+	vars = is_struct(_vars) ? _vars : { };
 	/// @desc Attemps to set a variable in the current context, and uses a default context if no variables match.
 	/// @param {string} name The name of the variable to add.
 	/// @param {value} value The value to assign.
@@ -828,7 +823,7 @@ function CatspeakContext() constructor {
 	}
 	/// @desc Returns a fork of this context.
 	static fork = function() {
-		var new_context = new CatspeakContext();
+		var new_context = new CatspeakContext(undefined);
 		new_context.prototype = self;
 		return new_context;
 	}
@@ -836,7 +831,6 @@ function CatspeakContext() constructor {
 
 /// @desc Represents a Catspeak intcode program with associated debug information.
 function CatspeakChunk() constructor {
-	context = new CatspeakContext();
 	intcode = [];
 	diagnostic = [];
 	/// @desc Adds a code and its positional information to the program.
@@ -854,11 +848,6 @@ function CatspeakChunk() constructor {
 	static patchCode = function(_pc, _code) {
 		intcode[_pc] = _code;
 		return _pc;
-	}
-	/// @desc Sets the current context of this chunk.
-	/// @param {struct} context The context to assign.
-	static setContext = function(_context) {
-		context = _context.fork();
 	}
 }
 
@@ -983,12 +972,14 @@ function catspeak_compile(_str) {
 /// @desc Handles the execution of a single Catspeak chunk.
 /// @param {CatspeakChunk} chunk The chunk to execute code of.
 function CatspeakVM(_chunk) constructor {
+	context = new CatspeakContext(undefined);
 	active = true;
 	result = undefined;
 	chunk = _chunk;
 	pc = 0;
-	stack = [];
+	stackLimit = 8;
 	stackSize = 0;
+	stack = array_create(stackLimit);
 	/// @desc Throws a `CatspeakError` with the current program counter.
 	/// @param {string} msg The error message.
 	static error = function(_msg) {
@@ -997,8 +988,12 @@ function CatspeakVM(_chunk) constructor {
 	/// @desc Pushes a value onto the stack.
 	/// @param {value} value The value to push.
 	static push = function(_value) {
-		array_push(stack, _value);
+		stack[stackSize] = _value;
 		stackSize += 1;
+		if (stackSize >= stackLimit) {
+			stackLimit *= 2;
+			array_resize(stack, stackLimit);
+		}
 	}
 	/// @desc Pops the top value from the stack.
 	static pop = function() {
@@ -1006,7 +1001,7 @@ function CatspeakVM(_chunk) constructor {
 			error("VM stack underflow");
 		}
 		stackSize -= 1;
-		return array_pop(stack);
+		return stack[stackSize];
 	}
 	/// @desc Returns the top value of the stack.
 	static top = function() {
@@ -1014,12 +1009,6 @@ function CatspeakVM(_chunk) constructor {
 			error("cannot peek into empty VM stack");
 		}
 		return stack[stackSize - 1];
-	}
-	/// @desc Rewinds the VM back to the start.
-	static rewind = function() {
-		active = true;
-		result = undefined;
-		pc = 0;
 	}
 	/// @desc Executes a single instruction and updates the program counter.
 	static compute = function() {
@@ -1037,7 +1026,7 @@ function CatspeakVM(_chunk) constructor {
 		case CatspeakOpCode.VAR_GET:
 			pc += 1;
 			var name = code[pc];
-			var value = chunk.context.getVariable(name);
+			var value = context.getVariable(name);
 			push(value);
 			break;
 		case CatspeakOpCode.VAR_SET:
@@ -1047,9 +1036,9 @@ function CatspeakVM(_chunk) constructor {
 			var subscript_count = code[pc];
 			if (subscript_count < 1) {
 				var value = pop();
-				var success = chunk.context.setVariable(name, value);
+				context.setVariable(name, value);
 			} else {
-				var container = chunk.context.getVariable(name);
+				var container = context.getVariable(name);
 				for (; subscript_count >= 1; subscript_count -= 1) {
 					var subscript = pop();
 					var ty = typeof(container);
@@ -1166,6 +1155,11 @@ function CatspeakVM(_chunk) constructor {
 	static getResult = function() {
 		return result;
 	}
+	/// @desc Sets the current context of this VM.
+	/// @param {struct} context The context to assign.
+	static setContext = function(_context) {
+		context = _context;
+	}
 }
 
 var src = @'
@@ -1180,9 +1174,6 @@ set x {
 print : x .colours 0
 ';
 var chunk = catspeak_compile(src);
-var ctx = new CatspeakContext().addVariable("h");
-ctx.setVariable("h", [1, 2, 3]);
-chunk.setContext(ctx.fork());
 var vm = new CatspeakVM(chunk);
 while (vm.inProgress()) {
 	vm.compute();
