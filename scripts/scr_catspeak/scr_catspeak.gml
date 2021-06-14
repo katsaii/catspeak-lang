@@ -985,6 +985,10 @@ function CatspeakVM() constructor {
 		}
 		return self;
 	}
+	/// @desc Returns whether the current interface contains a variable with the expected value.
+	static interfaceContains = function(_name, _expected_value) {
+		return variable_struct_exists(interface, _name) && interface[$ _name] == _expected_value;
+	}
 	/// @desc Sets the function to call after program execution is complete.
 	/// @param {function} f The function to call.
 	static setResultHandler = function(_f) {
@@ -1173,8 +1177,21 @@ function CatspeakVM() constructor {
 			case "bool":
 			case "int32":
 			case "int64":
-				// verify the asset exists before attempting to access it
-				error("asset indexes are not supported");
+				if (instance_exists(callsite) ||
+						callsite == global && interfaceContains("global", global)) {
+					error("instances are not supported");
+					break;
+				}
+				if (callsite < 0) {
+					error("unknown asset index `" + string(callsite) + "`");
+				}
+				var name = script_get_name(callsite);
+				if not (interfaceContains(name, callsite)) {
+					error("script asset `" + name + "` with index `" + string(callsite) + "` is not public");
+				}
+				var args = popMany(arg_count);
+				var result = script_execute_ext(callsite, args);
+				push(result);
 				break;
 			default:
 				error("invalid callsite of type `" + ty + "`");
@@ -1205,9 +1222,7 @@ set x {
 		12
 	]
 }
-set x .colours 2 : 18
-print : x
-print : x .fps
+show_debug_message "what is up hello world"
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
