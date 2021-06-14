@@ -74,3 +74,25 @@ function catspeak_ext_gml_constants() {
 	})();
 	return vars;
 }
+
+/// @desc Returns the functions of the gml standard library as a struct.
+function catspeak_ext_gml_scripts() {
+	static vars = (function() {
+		var _ = { };
+		var i = 0;
+		var m = "";
+		do {
+			var name = script_get_name(i);
+			if (script_exists(i) || name != "" && name != "<unknown>") {
+				m += name + " -- " + string(i) + "\n";
+				_[$ name] = i;
+				i += 1;
+			} else {
+				break;
+			}
+		} until (false);
+		clipboard_set_text(m);
+		return _;
+	})();
+	return vars;
+}

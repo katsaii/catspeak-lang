@@ -1379,7 +1379,8 @@ return .nice
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
-		.addInterface(catspeak_ext_gml())
+		.addInterface(catspeak_ext_gml_constants())
+		.addInterface(catspeak_ext_gml_scripts())
 		.addInterface(catspeak_ext_arithmetic())
 		.setOption(CatspeakVMOption.GLOBAL_VISIBILITY, true)
 		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
