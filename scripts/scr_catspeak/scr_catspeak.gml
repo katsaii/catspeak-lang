@@ -908,13 +908,20 @@ function CatspeakCodegen(_buff, _out) constructor {
 	}
 }
 
-/// @desc Compiles this string and returns the resulting intcode program.
-/// @param {string} str The string that contains the source code.
-function catspeak_compile(_str) {
+/// @desc A helper function for converting strings into a preferred format by Catspeak.
+/// @param {string} str The string to convert into a buffer.
+function catspeak_string_to_buffer(_str) {
 	var size = string_byte_length(_str);
 	var buff = buffer_create(size, buffer_fixed, 1);
 	buffer_write(buff, buffer_text, _str);
 	buffer_seek(buff, buffer_seek_start, 0);
+	return buff;
+}
+
+/// @desc Compiles this string and returns the resulting intcode program.
+/// @param {string} str The string that contains the source code.
+function catspeak_eagar_compile(_str) {
+	var buff = catspeak_string_to_buffer(_str);
 	var out = new CatspeakChunk();
 	var codegen = new CatspeakCodegen(buff, out);
 	while (codegen.generateCode()) { }
@@ -937,48 +944,6 @@ function CatspeakVM() constructor {
 	/// @param {string} msg The error message.
 	static error = function(_msg) {
 		throw new CatspeakError(chunk.diagnostic[pc], _msg);
-	}
-	/// @desc Pushes a value onto the stack.
-	/// @param {value} value The value to push.
-	static push = function(_value) {
-		stack[stackSize] = _value;
-		stackSize += 1;
-		if (stackSize >= stackLimit) {
-			stackLimit *= 2;
-			array_resize(stack, stackLimit);
-		}
-	}
-	/// @desc Pops the top value from the stack.
-	static pop = function() {
-		if (stackSize < 1) {
-			error("VM stack underflow");
-		}
-		stackSize -= 1;
-		return stack[stackSize];
-	}
-	/// @desc Returns the top value of the stack.
-	static top = function() {
-		if (stackSize < 1) {
-			error("cannot peek into empty VM stack");
-		}
-		return stack[stackSize - 1];
-	}
-	/// @desc Attemps to set a variable in the current context and returns whether it was successful.
-	/// @param {string} name The name of the variable to add.
-	/// @param {value} value The value to assign.
-	static setVariable = function(_name, _value) {
-		binding[$ _name] = _value;
-	}
-	/// @desc Gets a variable in the current context.
-	/// @param {string} name The name of the variable to add.
-	static getVariable = function(_name) {
-		if (variable_struct_exists(binding, _name)) {
-			return binding[$ _name];
-		} else if (variable_struct_exists(interface, _name)) {
-			return interface[$ _name];
-		} else {
-			return undefined;
-		}
 	}
 	/// @desc Adds a new chunk to the VM to execute.
 	/// @param {CatspeakChunk} chunk The chunk to execute code of.
@@ -1026,6 +991,88 @@ function CatspeakVM() constructor {
 		resultHandler = _f;
 		return self;
 	}
+	/// @desc Pushes a value onto the stack.
+	/// @param {value} value The value to push.
+	static push = function(_value) {
+		stack[stackSize] = _value;
+		stackSize += 1;
+		if (stackSize >= stackLimit) {
+			stackLimit *= 2;
+			array_resize(stack, stackLimit);
+		}
+	}
+	/// @desc Pops the top value from the stack.
+	static pop = function() {
+		if (stackSize < 1) {
+			error("VM stack underflow");
+		}
+		stackSize -= 1;
+		return stack[stackSize];
+	}
+	/// @desc Pops `n`-many values from the stack.
+	/// @param {real} n The number of elements to pop from the stack.
+	static popMany = function(_n) {
+		var values = array_create(_n);
+		for (var i = 0; i < _n; i += 1) {
+			values[@ i] = pop();
+		}
+		return values
+	}
+	/// @desc Returns the top value of the stack.
+	static top = function() {
+		if (stackSize < 1) {
+			error("cannot peek into empty VM stack");
+		}
+		return stack[stackSize - 1];
+	}
+	/// @desc Assigns a value to a variable in the current context.
+	/// @param {string} name The name of the variable to add.
+	/// @param {value} value The value to assign.
+	static setVariable = function(_name, _value) {
+		binding[$ _name] = _value;
+	}
+	/// @desc Gets a variable in the current context.
+	/// @param {string} name The name of the variable to add.
+	static getVariable = function(_name) {
+		if (variable_struct_exists(binding, _name)) {
+			return binding[$ _name];
+		} else if (variable_struct_exists(interface, _name)) {
+			return interface[$ _name];
+		} else {
+			return undefined;
+		}
+	}
+	/// @desc Attempts to index into a container and returns its value.
+	/// @param {value} container The container to index.
+	/// @param {value} subscript The index to access.
+	static getIndex = function(_container, _subscript) {
+		var ty = typeof(_container);
+		switch (ty) {
+		case "array":
+			return _container[_subscript];
+		case "struct":
+			return _container[$ string(_subscript)];
+		default:
+			error("cannot index value of type `" + ty + "`");
+		}
+	}
+	/// @desc Attempts to assign a value to the index of a container.
+	/// @param {value} container The container to index.
+	/// @param {value} subscript The index to access.
+	/// @param {value} value The value to insert.
+	static setIndex = function(_container, _subscript, _value) {
+		var ty = typeof(_container);
+		switch (ty) {
+		case "array":
+			_container[@ _subscript] = _value;
+			break;
+		case "struct":
+			_container[$ string(_subscript)] = _value;
+			break;
+		default:
+			error("cannot assign to value of type `" + ty + "`");
+		}
+	}
 	/// @desc Executes a single instruction and updates the program counter.
 	static computeProgram = function() {
 		var code = chunk.intcode;
@@ -1055,31 +1102,14 @@ function CatspeakVM() constructor {
 				setVariable(name, value);
 			} else {
 				var container = getVariable(name);
-				for (; subscript_count >= 1; subscript_count -= 1) {
-					var subscript = pop();
-					var ty = typeof(container);
-					switch (ty) {
-					case "array":
-						if (subscript_count <= 1) {
-							var value = pop();
-							container[@ subscript] = value;
-						} else {
-							container = container[subscript];
-						}
-						break;
-					case "struct":
-						if (subscript_count <= 1) {
-							var value = pop();
-							container[$ subscript] = value;
-						} else {
-							container = container[$ string(subscript)];
-						}
-						break;
-					default:
-						error("cannot index value of type `" + ty + "`");
-						break;
-					}
+				var subscript;
+				repeat (subscript_count - 1) {
+					subscript = pop();
+					container = getIndex(container, subscript);
 				}
+				subscript = pop();
+				var value = pop();
+				setIndex(container, subscript, value);
 			}
 			break;
 		case CatspeakOpCode.MAKE_ARRAY:
@@ -1131,19 +1161,8 @@ function CatspeakVM() constructor {
 			case "struct":
 				var container = callsite;
 				repeat (arg_count) {
-					var value = pop();
-					var ty = typeof(container);
-					switch (ty) {
-					case "array":
-						container = container[value];
-						break;
-					case "struct":
-						container = container[$ string(value)];
-						break;
-					default:
-						error("cannot index value of type `" + ty + "`");
-					}
-					
+					var subscript = pop();
+					container = getIndex(container, subscript);
 				}
 				push(container);
 				break;
@@ -1186,10 +1205,11 @@ set x {
 		12
 	]
 }
+set x .colours 2 : 18
 print : x
-print : `+`
+print : x .fps
 ';
-var chunk = catspeak_compile(src);
+var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
 		.addInterface(catspeak_ext_gml())
 		.addInterface(catspeak_ext_arithmetic())
