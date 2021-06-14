@@ -38,6 +38,7 @@ enum CatspeakToken {
 	ELSE,
 	WHILE,
 	PRINT,
+	RETURN,
 	IDENTIFIER,
 	STRING,
 	NUMBER,
@@ -72,6 +73,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.ELSE: return "ELSE";
 	case CatspeakToken.WHILE: return "WHILE";
 	case CatspeakToken.PRINT: return "PRINT";
+	case CatspeakToken.RETURN: return "RETURN";
 	case CatspeakToken.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakToken.STRING: return "STRING";
 	case CatspeakToken.NUMBER: return "NUMBER";
@@ -422,6 +424,9 @@ function CatspeakLexer(_buff) constructor {
 				case "print":
 					keyword = CatspeakToken.PRINT;
 					break;
+				case "return":
+					keyword = CatspeakToken.RETURN;
+					break;
 				default:
 					return CatspeakToken.IDENTIFIER;
 				}
@@ -537,6 +542,7 @@ enum CatspeakIRKind {
 	CONDITIONAL,
 	LOOP,
 	PRINT,
+	RETURN,
 	CALL,
 	CONSTANT,
 	ARRAY,
@@ -555,6 +561,7 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.CONDITIONAL: return "CONDITIONAL";
 	case CatspeakIRKind.LOOP: return "LOOP";
 	case CatspeakIRKind.PRINT: return "PRINT";
+	case CatspeakIRKind.RETURN: return "RETURN";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.CONSTANT: return "CONSTANT";
 	case CatspeakIRKind.ARRAY: return "ARRAY";
@@ -695,6 +702,11 @@ function CatspeakParser(_buff) constructor {
 			}
 			expectsSemicolon("after `print` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, values);
+		} else if (consume(CatspeakToken.RETURN)) {
+			var start = pos;
+			var value = parseValue();
+			expectsSemicolon("after `return` statements");
+			return new CatspeakIRNode(start, CatspeakIRKind.RETURN, value);
 		} else {
 			var value = parseExpr();
 			expectsSemicolon("after expression statements");
@@ -805,10 +817,10 @@ enum CatspeakOpCode {
 	MAKE_ARRAY,
 	MAKE_OBJECT,
 	PRINT,
+	RETURN,
 	CALL,
 	JUMP,
-	JUMP_FALSE,
-	RETURN
+	JUMP_FALSE
 }
 
 /// @desc Displays the ir kind as a string.
@@ -822,10 +834,10 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
 	case CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
 	case CatspeakOpCode.PRINT: return "PRINT";
+	case CatspeakOpCode.RETURN: return "RETURN";
 	case CatspeakOpCode.CALL: return "CALL";
 	case CatspeakOpCode.JUMP: return "JUMP";
 	case CatspeakOpCode.JUMP_FALSE: return "JUMP_FALSE";
-	case CatspeakOpCode.RETURN: return "RETURN";
 	default: return "<unknown>";
 	}
 }
@@ -900,6 +912,10 @@ function CatspeakCodegen(_buff, _out) constructor {
 				visitTerm(inner[i]);
 				out.addCode(pos, CatspeakOpCode.PRINT);
 			}
+			break;
+		case CatspeakIRKind.RETURN:
+			visitTerm(inner);
+			out.addCode(pos, CatspeakOpCode.RETURN);
 			break;
 		case CatspeakIRKind.CALL:
 			var callsite = inner.callsite;
@@ -1359,7 +1375,7 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-print : true && !![]
+return .nice
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
