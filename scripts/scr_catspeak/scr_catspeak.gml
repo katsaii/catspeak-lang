@@ -1319,17 +1319,7 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-set x {
-	.fps : 64
-	.player_speed : 1
-	.colours : [
-		"hello"
-		12
-	]
-}
-set global .message : "very nice"
-print : global .
- message
+print : true && false
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()

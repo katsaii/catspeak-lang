@@ -7,6 +7,34 @@ function __catspeak_ext_build_arithmetic_global_interface_struct() {
 	var vars = { };
 	vars[$ "+"] = function(_l, _r) { return _l + _r };
 	vars[$ "-"] = function(_l, _r) { return _r == undefined ? -_l : _l - _r };
+	vars[$ "*"] = function(_l, _r) { return _l * _r };
+	vars[$ "/"] = function(_l, _r) { return _l / _r };
+	vars[$ "%"] = function(_l, _r) { return _l % _r };
+	vars[$ "mod"] = vars[$ "%"];
+	vars[$ "div"] = function(_l, _r) { return _l div _r };
+	vars[$ "|"] = function(_l, _r) { return _l | _r };
+	vars[$ "&"] = function(_l, _r) { return _l & _r };
+	vars[$ "^"] = function(_l, _r) { return _l ^ _r };
+	vars[$ "~"] = function(_x) { return ~_x };
+	vars[$ "<<"] = function(_l, _r) { return _l << _r };
+	vars[$ ">>"] = function(_l, _r) { return _l >> _r };
+	vars[$ "||"] = function(_l, _r) { return _l || _r };
+	vars[$ "or"] = vars[$ "||"];
+	vars[$ "&&"] = function(_l, _r) { return _l && _r };
+	vars[$ "and"] = vars[$ "&&"];
+	vars[$ "^^"] = function(_l, _r) { return _l ^^ _r };
+	vars[$ "xor"] = vars[$ "^^"];
+	vars[$ "!"] = function(_x) { return !_x };
+	vars[$ "not"] = vars[$ "!"];
+	vars[$ "=="] = function(_l, _r) { return _l == _r };
+	vars[$ "="] = vars[$ "=="];
+	vars[$ "!="] = function(_l, _r) { return _l != _r };
+	vars[$ "<>"] = vars[$ "!="];
+	vars[$ ">="] = function(_l, _r) { return _l >= _r };
+	vars[$ "<="] = function(_l, _r) { return _l <= _r };
+	vars[$ ">"] = function(_l, _r) { return _l > _r };
+	vars[$ "<"] = function(_l, _r) { return _l < _r };
+	vars[$ "!!"] = function(_x) { return is_numeric(_x) && _x };
 	return vars;
 }
 
