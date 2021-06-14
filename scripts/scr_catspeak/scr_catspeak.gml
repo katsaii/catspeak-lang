@@ -136,6 +136,12 @@ function catspeak_byte_is_whitespace(_byte) {
 	}
 }
 
+/// @desc Returns whether a byte is a valid whitespace character or newline.
+/// @param {real} byte The byte to check.
+function catspeak_byte_is_whitestuff(_byte) {
+	return catspeak_byte_is_whitespace(_byte) || catspeak_byte_is_newline(_byte);
+}
+
 /// @desc Returns whether a byte is a valid alphabetic character.
 /// @param {real} byte The byte to check.
 function catspeak_byte_is_alphabetic(_byte) {
@@ -224,6 +230,7 @@ function CatspeakLexer(_buff) constructor {
 		if (lexemeLength < 1) {
 			// always an empty slice
 			lexeme = "";
+			return;
 		}
 		var slice = buffer_create(lexemeLength, buffer_fixed, 1);
 		buffer_copy(buff, buffer_tell(buff) - lexemeLength, lexemeLength, slice, 0);
@@ -337,8 +344,9 @@ function CatspeakLexer(_buff) constructor {
 			registerLexeme();
 			return CatspeakToken.STRING;
 		case ord("."):
+			advanceWhile(catspeak_byte_is_whitestuff);
 			clearLexeme();
-			advanceWhileEscape(catspeak_byte_is_alphanumeric);
+			advanceWhile(catspeak_byte_is_alphanumeric);
 			registerLexeme();
 			return CatspeakToken.STRING;
 		case ord("`"):
@@ -1320,7 +1328,8 @@ set x {
 	]
 }
 set global .message : "very nice"
-print : global .message
+print : global .
+ message
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
