@@ -929,6 +929,13 @@ function catspeak_eagar_compile(_str) {
 	return out;
 }
 
+/// @desc Represents a type of configuration option.
+enum CatspeakVMOption {
+	GLOBAL_VISIBILITY,
+	INSTANCE_VISIBILITY,
+	RESULT_HANDLER
+}
+
 /// @desc Handles the execution of a single Catspeak chunk.
 function CatspeakVM() constructor {
 	interface = { };
@@ -940,6 +947,8 @@ function CatspeakVM() constructor {
 	stackLimit = 8;
 	stackSize = 0;
 	stack = array_create(stackLimit);
+	exposeGlobalScope = false;
+	exposeInstanceScope = false;
 	/// @desc Throws a `CatspeakError` with the current program counter.
 	/// @param {string} msg The error message.
 	static error = function(_msg) {
@@ -985,15 +994,26 @@ function CatspeakVM() constructor {
 		}
 		return self;
 	}
+	/// @desc Sets a configuration option.
+	/// @param {CatspeakVMOption} option The option to configure.
+	/// @param {bool} enable Whether to enable this option.
+	static setOption = function(_option, _enable) {
+		switch (_option) {
+		case CatspeakVMOption.GLOBAL_VISIBILITY:
+			exposeGlobalScope = is_numeric(_enable) && _enable;
+			break;
+		case CatspeakVMOption.INSTANCE_VISIBILITY:
+			exposeInstanceScope = is_numeric(_enable) && _enable;
+			break;
+		case CatspeakVMOption.RESULT_HANDLER:
+			resultHandler = _enable;
+			break;
+		}
+		return self;
+	}
 	/// @desc Returns whether the current interface contains a variable with the expected value.
 	static interfaceContains = function(_name, _expected_value) {
 		return variable_struct_exists(interface, _name) && interface[$ _name] == _expected_value;
-	}
-	/// @desc Sets the function to call after program execution is complete.
-	/// @param {function} f The function to call.
-	static setResultHandler = function(_f) {
-		resultHandler = _f;
-		return self;
 	}
 	/// @desc Pushes a value onto the stack.
 	/// @param {value} value The value to push.
@@ -1009,6 +1029,7 @@ function CatspeakVM() constructor {
 	static pop = function() {
 		if (stackSize < 1) {
 			error("VM stack underflow");
+			return undefined;
 		}
 		stackSize -= 1;
 		return stack[stackSize];
@@ -1026,6 +1047,7 @@ function CatspeakVM() constructor {
 	static top = function() {
 		if (stackSize < 1) {
 			error("cannot peek into empty VM stack");
+			return undefined;
 		}
 		return stack[stackSize - 1];
 	}
@@ -1056,9 +1078,32 @@ function CatspeakVM() constructor {
 			return _container[_subscript];
 		case "struct":
 			return _container[$ string(_subscript)];
+		case "number":
+		case "bool":
+		case "int32":
+		case "int64":
+			if (exposeInstanceScope && instance_exists(_container)) {
+				return variable_instance_get(_container, _subscript);
+			} else if (exposeGlobalScope && _container == global) {
+				return variable_global_get(_subscript);
+			} else {
+				error("unknown object index `" + string(_container) + "`");
+				return undefined;
+			}
 		default:
 			error("cannot index value of type `" + ty + "`");
+			return undefined;
 		}
+	}
+	/// @desc Attempts to index into a container `n`-many times and returns its value.
+	/// @param {value} container The container to index.
+	/// @param {real} subscript_count The number of indices on the stack.
+	static getIndexCount = function(_container, _subscript_count) {
+		repeat (_subscript_count) {
+			var subscript = pop();
+			_container = getIndex(_container, subscript);
+		}
+		return _container;
 	}
 	/// @desc Attempts to assign a value to the index of a container.
 	/// @param {value} container The container to index.
@@ -1073,8 +1118,21 @@ function CatspeakVM() constructor {
 		case "struct":
 			_container[$ string(_subscript)] = _value;
 			break;
+		case "number":
+		case "bool":
+		case "int32":
+		case "int64":
+			if (exposeInstanceScope && instance_exists(_container)) {
+				variable_instance_set(_container, _subscript, _value);
+			} else if (exposeGlobalScope && _container == global) {
+				variable_global_set(_subscript, _value);
+			} else {
+				error("unknown object index `" + string(_container) + "`");
+			}
+			break;
 		default:
 			error("cannot assign to value of type `" + ty + "`");
+			break;
 		}
 	}
 	/// @desc Executes a single instruction and updates the program counter.
@@ -1105,13 +1163,8 @@ function CatspeakVM() constructor {
 				var value = pop();
 				setVariable(name, value);
 			} else {
-				var container = getVariable(name);
-				var subscript;
-				repeat (subscript_count - 1) {
-					subscript = pop();
-					container = getIndex(container, subscript);
-				}
-				subscript = pop();
+				var container = getIndexCount(getVariable(name), subscript_count - 1);
+				var subscript = pop();
 				var value = pop();
 				setIndex(container, subscript, value);
 			}
@@ -1163,28 +1216,26 @@ function CatspeakVM() constructor {
 			switch (ty) {
 			case "array":
 			case "struct":
-				var container = callsite;
-				repeat (arg_count) {
-					var subscript = pop();
-					container = getIndex(container, subscript);
-				}
+				var container = getIndexCount(callsite, arg_count);
 				push(container);
 				break;
 			case "number":
 			case "bool":
 			case "int32":
 			case "int64":
-				if (instance_exists(callsite) ||
-						callsite == global && interfaceContains("global", global)) {
-					error("instances are not supported");
+				if (instance_exists(callsite) || callsite == global) {
+					var container = getIndexCount(callsite, arg_count);
+					push(container);
 					break;
 				}
 				if (callsite < 0) {
 					error("unknown asset index `" + string(callsite) + "`");
+					break;
 				}
 				var name = script_get_name(callsite);
 				if not (interfaceContains(name, callsite)) {
 					error("script asset `" + name + "` with index `" + string(callsite) + "` is not public");
+					break;
 				}
 			case "method":
 				var args = popMany(arg_count);
@@ -1255,6 +1306,7 @@ function CatspeakVM() constructor {
 			}
 		}
 		error("argument count of " + string(array_length(_a)) + " is not supported");
+		return undefined;
 	}
 }
 
@@ -1267,13 +1319,15 @@ set x {
 		12
 	]
 }
-show_debug_message : -1 - -4
+set global .message : "very nice"
+print : global .message
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
 		.addInterface(catspeak_ext_gml())
 		.addInterface(catspeak_ext_arithmetic())
-		.setResultHandler(function(_result) {
+		.setOption(CatspeakVMOption.GLOBAL_VISIBILITY, true)
+		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
 			show_message(_result);
 		});
 vm.addChunk(chunk);
