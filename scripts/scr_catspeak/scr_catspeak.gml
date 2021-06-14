@@ -1170,9 +1170,6 @@ function CatspeakVM() constructor {
 				}
 				push(container);
 				break;
-			case "method":
-				error("methods are not supported");
-				break;
 			case "number":
 			case "bool":
 			case "int32":
@@ -1189,8 +1186,9 @@ function CatspeakVM() constructor {
 				if not (interfaceContains(name, callsite)) {
 					error("script asset `" + name + "` with index `" + string(callsite) + "` is not public");
 				}
+			case "method":
 				var args = popMany(arg_count);
-				var result = script_execute_ext(callsite, args);
+				var result = executeScriptOrMethod(callsite, args);
 				push(result);
 				break;
 			default:
@@ -1211,6 +1209,53 @@ function CatspeakVM() constructor {
 		}
 		pc += 1;
 	}
+	/// @desc Calls a function using an array as the parameter array.
+	/// @param {script} ind The id of the script to call.
+	/// @param {array} variable The id of the array to pass as a parameter array to this script.
+	static executeScriptOrMethod = function(_f, _a) {
+		if (is_method(_f)) {
+			switch(array_length(_a)){
+			case 0: return _f();
+			case 1: return _f(_a[0]);
+			case 2: return _f(_a[0], _a[1]);
+			case 3: return _f(_a[0], _a[1], _a[2]);
+			case 4: return _f(_a[0], _a[1], _a[2], _a[3]);
+			case 5: return _f(_a[0], _a[1], _a[2], _a[3], _a[4]);
+			case 6: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5]);
+			case 7: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6]);
+			case 8: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7]);
+			case 9: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8]);
+			case 10: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9]);
+			case 11: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10]);
+			case 12: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11]);
+			case 13: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12]);
+			case 14: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13]);
+			case 15: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14]);
+			case 16: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14], _a[15]);
+			}
+		} else {
+			switch(array_length(_a)){
+			case 0: return script_execute(_f);
+			case 1: return script_execute(_f, _a[0]);
+			case 2: return script_execute(_f, _a[0], _a[1]);
+			case 3: return script_execute(_f, _a[0], _a[1], _a[2]);
+			case 4: return script_execute(_f, _a[0], _a[1], _a[2], _a[3]);
+			case 5: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4]);
+			case 6: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5]);
+			case 7: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6]);
+			case 8: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7]);
+			case 9: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8]);
+			case 10: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9]);
+			case 11: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10]);
+			case 12: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11]);
+			case 13: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12]);
+			case 14: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13]);
+			case 15: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14]);
+			case 16: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14], _a[15]);
+			}
+		}
+		error("argument count of " + string(array_length(_a)) + " is not supported");
+	}
 }
 
 var src = @'
@@ -1222,7 +1267,7 @@ set x {
 		12
 	]
 }
-show_debug_message "what is up hello world"
+show_debug_message : -1 - -4
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
