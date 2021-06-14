@@ -26,7 +26,12 @@ enum CatspeakToken {
 	COLON, // function application operator, `f (a + b)` is equivalent to `f : a + b`
 	SEMICOLON, // statement terminator
 	__OPERATORS_BEGIN__,
+	DISJUNCTION,
+	CONJUNCTION,
+	COMPARISON,
 	ADDITION,
+	MULTIPLICATION,
+	DIVISION,
 	__OPERATORS_END__,
 	SET,
 	IF,
@@ -56,7 +61,12 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.BRACE_RIGHT: return "BRACE_RIGHT";
 	case CatspeakToken.COLON: return "COLON";
 	case CatspeakToken.SEMICOLON: return "SEMICOLON";
+	case CatspeakToken.DISJUNCTION: return "DISJUNCTION";
+	case CatspeakToken.CONJUNCTION: return "CONJUNCTION";
+	case CatspeakToken.COMPARISON: return "COMPARISON";
 	case CatspeakToken.ADDITION: return "ADDITION";
+	case CatspeakToken.MULTIPLICATION: return "MULTIPLICATION";
+	case CatspeakToken.DIVISION: return "DIVISION";
 	case CatspeakToken.SET: return "SET";
 	case CatspeakToken.IF: return "IF";
 	case CatspeakToken.ELSE: return "ELSE";
@@ -328,6 +338,25 @@ function CatspeakLexer(_buff) constructor {
 			return CatspeakToken.COLON;
 		case ord(";"):
 			return CatspeakToken.SEMICOLON;
+		case ord("|"):
+		case ord("^"):
+		case ord("$"):
+			advanceWhile(catspeak_byte_is_operator);
+			registerLexeme();
+			return CatspeakToken.DISJUNCTION;
+		case ord("&"):
+			advanceWhile(catspeak_byte_is_operator);
+			registerLexeme();
+			return CatspeakToken.CONJUNCTION;
+		case ord("<"):
+		case ord(">"):
+		case ord("!"):
+		case ord("?"):
+		case ord("="):
+		case ord("~"):
+			advanceWhile(catspeak_byte_is_operator);
+			registerLexeme();
+			return CatspeakToken.COMPARISON;
 		case ord("+"):
 		case ord("-"):
 			advanceWhile(catspeak_byte_is_operator);
@@ -337,6 +366,17 @@ function CatspeakLexer(_buff) constructor {
 			}
 			registerLexeme();
 			return CatspeakToken.ADDITION;
+		case ord("*"):
+		case ord("/"):
+			advanceWhile(catspeak_byte_is_operator);
+			registerLexeme();
+			return CatspeakToken.MULTIPLICATION;
+		case ord("%"):
+		case ord("@"):
+		case ord("#"):
+			advanceWhile(catspeak_byte_is_operator);
+			registerLexeme();
+			return CatspeakToken.DIVISION;
 		case ord("\""):
 			clearLexeme();
 			advanceWhileEscape(catspeak_byte_is_not_quote, catspeak_byte_is_quote);
@@ -1319,7 +1359,7 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-print : true && false
+print : true && !![]
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
