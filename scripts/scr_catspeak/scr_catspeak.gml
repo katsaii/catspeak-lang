@@ -601,8 +601,11 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Creates an identifier node.
 	static genIdentIR = function() {
-		return new CatspeakIRNode(
-				pos, CatspeakIRKind.IDENTIFIER, lexeme);
+		return new CatspeakIRNode(pos, CatspeakIRKind.IDENTIFIER, lexeme);
+	}
+	/// @desc Creates a string node.
+	static genStringIR = function() {
+		return new CatspeakIRNode(pos, CatspeakIRKind.CONSTANT, lexeme);
 	}
 	/// @desc Advances the parser and returns the token.
 	static advance = function() {
@@ -744,7 +747,7 @@ function CatspeakParser(_buff) constructor {
 			var subscript;
 			if (consume(CatspeakToken.DOT)) {
 				expects(CatspeakToken.IDENTIFIER, "identifier after `.` operator");
-				subscript = new CatspeakIRNode(pos, CatspeakIRKind.CONSTANT, lexeme);
+				subscript = genStringIR();
 			} else if (consume(CatspeakToken.BOX_LEFT)) {
 				subscript = parseExpr();
 				expects(CatspeakToken.BOX_RIGHT, "expected closing `]` in expression indexing");
@@ -766,8 +769,7 @@ function CatspeakParser(_buff) constructor {
 			advance();
 			return genIdentIR();
 		} else if (consume(CatspeakToken.STRING)) {
-			return new CatspeakIRNode(
-					pos, CatspeakIRKind.CONSTANT, lexeme);
+			return genStringIR();
 		} else if (consume(CatspeakToken.NUMBER)) {
 			return new CatspeakIRNode(
 					pos, CatspeakIRKind.CONSTANT, real(lexeme));
@@ -803,15 +805,23 @@ function CatspeakParser(_buff) constructor {
 		} else if (consume(CatspeakToken.BRACE_LEFT)) {
 			var start = pos;
 			var params = [];
-			while (matchesExpression()) {
-				var key = parseValue();
+			do {
+				var key;
+				if (consume(CatspeakToken.DOT)) {
+					expects(CatspeakToken.IDENTIFIER, "identifier after `.` operator");
+					key = genStringIR();
+				} else if (matchesExpression()) {
+					key = parseValue();
+				} else {
+					break;
+				}
 				var value = parseValue();
 				array_push(params, key);
 				array_push(params, value);
 				if not (matches(CatspeakToken.BOX_RIGHT)) {
 					expectsSemicolon("between object elements");
 				}
-			}
+			} until (false);
 			expects(CatspeakToken.BRACE_RIGHT, "expected closing `}` in object literal");
 			return new CatspeakIRNode(start, CatspeakIRKind.OBJECT, params);
 		} else {
@@ -1386,7 +1396,8 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-set a : { "a" "hi"; "b" "hello"; };
+set a : { .a "hi"; .b "hello"; };
+set a.b : ["nice";"nice";"nice"];
 return [a["a"]; a.b];
 ';
 var chunk = catspeak_eagar_compile(src);
