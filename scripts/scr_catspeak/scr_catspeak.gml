@@ -482,6 +482,7 @@ function CatspeakParserLexer(_buff) constructor {
 				switch (pred) {
 				case CatspeakToken.BOX_LEFT:
 				case CatspeakToken.BRACE_LEFT:
+				case CatspeakToken.DOT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.SEMICOLON:
 				case CatspeakToken.ADDITION:
@@ -493,6 +494,7 @@ function CatspeakParserLexer(_buff) constructor {
 					}
 				}
 				switch (succ) {
+				case CatspeakToken.DOT:
 				case CatspeakToken.COLON:
 				case CatspeakToken.ELSE:
 				case CatspeakToken.SEMICOLON:
@@ -535,6 +537,7 @@ enum CatspeakIRKind {
 	LOOP,
 	PRINT,
 	RETURN,
+	SUBSCRIPT,
 	CALL,
 	CONSTANT,
 	ARRAY,
@@ -554,6 +557,7 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.LOOP: return "LOOP";
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.RETURN: return "RETURN";
+	case CatspeakIRKind.SUBCRIPT: return "SUBCRIPT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.CONSTANT: return "CONSTANT";
 	case CatspeakIRKind.ARRAY: return "ARRAY";
@@ -670,17 +674,12 @@ function CatspeakParser(_buff) constructor {
 					pos, CatspeakIRKind.NOTHING, undefined);
 		} else if (consume(CatspeakToken.SET)) {
 			var start = pos;
-			expects(CatspeakToken.IDENTIFIER, "expected identifier after `set` keyword");
-			var ident = lexeme;
-			var params = [];
-			while (matchesExpression()) {
-				var param = parseValue();
-				array_push(params, param);
-			}
+			var lvalue = parseExpr();
+			var rvalue = parseExpr();
 			expectsSemicolon("after `set` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.SET, {
-				ident : ident,
-				params : params
+				lvalue : lvalue,
+				rvalue : rvalue
 			});
 		} else if (consume(CatspeakToken.IF)) {
 			errorAndAdvance("if statements not implemented");
@@ -806,6 +805,8 @@ enum CatspeakOpCode {
 	POP,
 	VAR_GET,
 	VAR_SET,
+	REF_GET,
+	REF_SET,
 	MAKE_ARRAY,
 	MAKE_OBJECT,
 	PRINT,
@@ -823,6 +824,8 @@ function catspeak_code_render(_kind) {
 	case CatspeakOpCode.POP: return "POP";
 	case CatspeakOpCode.VAR_GET: return "VAR_GET";
 	case CatspeakOpCode.VAR_SET: return "VAR_SET";
+	case CatspeakOpCode.REF_GET: return "REF_GET";
+	case CatspeakOpCode.REF_SET: return "REF_SET";
 	case CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
 	case CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
 	case CatspeakOpCode.PRINT: return "PRINT";
@@ -882,15 +885,20 @@ function CatspeakCodegen(_buff, _out) constructor {
 			out.addCode(pos, CatspeakOpCode.POP);
 			break;
 		case CatspeakIRKind.SET:
-			var ident = inner.ident;
-			var args = inner.params;
-			var arg_count = array_length(args);
-			for (var i = arg_count - 1; i >= 0; i -= 1) {
-				visitTerm(args[i]);
+			var lvalue = inner.lvalue;
+			var rvalue = inner.rvalue;
+			if (lvalue.kind == CatspeakIRKind.IDENTIFIER) {
+				visitTerm(rvalue);
+				out.addCode(pos, CatspeakOpCode.VAR_SET);
+				out.addCode(pos, lvalue.inner);
+			} else if (lvalue.kind == CatspeakIRKind.SUBSCRIPT) {
+				visitTerm(lvalue.inner.container);
+				visitTerm(lvalue.inner.subscript);
+				visitTerm(rvalue);
+				out.addCode(pos, CatspeakOpCode.REF_SET);
+			} else {
+				error(_term, "invalid left value");
 			}
-			out.addCode(pos, CatspeakOpCode.VAR_SET);
-			out.addCode(pos, ident);
-			out.addCode(pos, arg_count - 1);
 			break;
 		case CatspeakIRKind.CONDITIONAL:
 			error(_term, "conditional unimplemented");
@@ -908,6 +916,13 @@ function CatspeakCodegen(_buff, _out) constructor {
 		case CatspeakIRKind.RETURN:
 			visitTerm(inner);
 			out.addCode(pos, CatspeakOpCode.RETURN);
+			break;
+		case CatspeakIRKind.SUBSCRIPT:
+			var container = inner.container;
+			var subscript = inner.subscript;
+			visitTerm(container);
+			visitTerm(subscript);
+			out.addCode(pos, CatspeakOpCode.REF_GET);
 			break;
 		case CatspeakIRKind.CALL:
 			var callsite = inner.callsite;
@@ -1213,17 +1228,20 @@ function CatspeakVM() constructor {
 		case CatspeakOpCode.VAR_SET:
 			pc += 1;
 			var name = code[pc];
-			pc += 1;
-			var subscript_count = code[pc];
-			if (subscript_count < 1) {
-				var value = pop();
-				setVariable(name, value);
-			} else {
-				var container = getIndexCount(getVariable(name), subscript_count - 1);
-				var subscript = pop();
-				var value = pop();
-				setIndex(container, subscript, value);
-			}
+			var value = pop();
+			setVariable(name, value);
+			break;
+		case CatspeakOpCode.REF_GET:
+			var subscript = pop();
+			var container = pop();
+			var value = getIndex(container, subscript);
+			push(value);
+			break;
+		case CatspeakOpCode.REF_SET:
+			var value = pop();
+			var subscript = pop();
+			var container = pop();
+			setIndex(container, subscript, value);
 			break;
 		case CatspeakOpCode.MAKE_ARRAY:
 			pc += 1;
