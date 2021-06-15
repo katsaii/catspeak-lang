@@ -23,6 +23,7 @@ enum CatspeakToken {
 	BOX_RIGHT,
 	BRACE_LEFT,
 	BRACE_RIGHT,
+	DOT, // used for accessing members
 	COLON, // function application operator, `f (a + b)` is equivalent to `f : a + b`
 	SEMICOLON, // statement terminator
 	__OPERATORS_BEGIN__,
@@ -60,6 +61,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.BOX_RIGHT: return "BOX_RIGHT";
 	case CatspeakToken.BRACE_LEFT: return "BRACE_LEFT";
 	case CatspeakToken.BRACE_RIGHT: return "BRACE_RIGHT";
+	case CatspeakToken.DOT: return "DOT";
 	case CatspeakToken.COLON: return "COLON";
 	case CatspeakToken.SEMICOLON: return "SEMICOLON";
 	case CatspeakToken.DISJUNCTION: return "DISJUNCTION";
@@ -386,11 +388,7 @@ function CatspeakLexer(_buff) constructor {
 			registerLexeme();
 			return CatspeakToken.STRING;
 		case ord("."):
-			advanceWhile(catspeak_byte_is_whitestuff);
-			clearLexeme();
-			advanceWhile(catspeak_byte_is_alphanumeric);
-			registerLexeme();
-			return CatspeakToken.STRING;
+			return CatspeakToken.DOT;
 		case ord("`"):
 			clearLexeme();
 			advanceWhileEscape(catspeak_byte_is_not_accent, catspeak_byte_is_accent);
@@ -1375,7 +1373,7 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-return .nice
+return "nice"
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
