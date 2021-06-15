@@ -674,8 +674,8 @@ function CatspeakParser(_buff) constructor {
 					pos, CatspeakIRKind.NOTHING, undefined);
 		} else if (consume(CatspeakToken.SET)) {
 			var start = pos;
-			var lvalue = parseExpr();
-			var rvalue = parseExpr();
+			var lvalue = parseSubscript();
+			var rvalue = parseSubscript();
 			expectsSemicolon("after `set` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.SET, {
 				lvalue : lvalue,
@@ -689,13 +689,13 @@ function CatspeakParser(_buff) constructor {
 			var start = pos;
 			var values = [];
 			while (matchesExpression()) {
-				array_push(values, parseValue());
+				array_push(values, parseSubscript());
 			}
 			expectsSemicolon("after `print` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, values);
 		} else if (consume(CatspeakToken.RETURN)) {
 			var start = pos;
-			var value = parseValue();
+			var value = parseSubscript();
 			expectsSemicolon("after `return` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.RETURN, value);
 		} else {
@@ -724,10 +724,10 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a function call.
 	static parseCall = function() {
-		var callsite = parseValue();
+		var callsite = parseSubscript();
 		var params = [];
 		while (matchesExpression()) {
-			var param = parseValue();
+			var param = parseSubscript();
 			array_push(params, param);
 		}
 		var arg_count = array_length(params);
@@ -736,6 +736,26 @@ function CatspeakParser(_buff) constructor {
 		} else {
 			return genCallIR(callsite, params);
 		}
+	}
+	/// @desc Parses an index operation.
+	static parseSubscript = function() {
+		var container = parseValue();
+		do {
+			var subscript;
+			if (consume(CatspeakToken.DOT)) {
+				expects(CatspeakToken.IDENTIFIER, "identifier after `.` operator");
+				subscript = new CatspeakIRNode(pos, CatspeakIRKind.CONSTANT, lexeme);
+			} else if (consume(CatspeakToken.BOX_LEFT)) {
+				error("expression access not implemented");
+			} else {
+				break;
+			}
+			container = new CatspeakIRNode(container.pos, CatspeakIRKind.SUBSCRIPT, {
+				container : container,
+				subscript : subscript
+			});
+		} until (false);
+		return container;
 	}
 	/// @desc Parses a terminal value or expression.
 	static parseValue = function() {
@@ -1166,16 +1186,6 @@ function CatspeakVM() constructor {
 			return undefined;
 		}
 	}
-	/// @desc Attempts to index into a container `n`-many times and returns its value.
-	/// @param {value} container The container to index.
-	/// @param {real} subscript_count The number of indices on the stack.
-	static getIndexCount = function(_container, _subscript_count) {
-		repeat (_subscript_count) {
-			var subscript = pop();
-			_container = getIndex(_container, subscript);
-		}
-		return _container;
-	}
 	/// @desc Attempts to assign a value to the index of a container.
 	/// @param {value} container The container to index.
 	/// @param {value} subscript The index to access.
@@ -1288,22 +1298,12 @@ function CatspeakVM() constructor {
 			var callsite = pop();
 			var ty = typeof(callsite);
 			switch (ty) {
-			case "array":
-			case "struct":
-				var container = getIndexCount(callsite, arg_count);
-				push(container);
-				break;
 			case "number":
 			case "bool":
 			case "int32":
 			case "int64":
-				if (instance_exists(callsite) || callsite == global) {
-					var container = getIndexCount(callsite, arg_count);
-					push(container);
-					break;
-				}
 				if (callsite < 0) {
-					error("unknown asset index `" + string(callsite) + "`");
+					error("unknown script index `" + string(callsite) + "`");
 					break;
 				}
 				var name = script_get_name(callsite);
@@ -1317,7 +1317,7 @@ function CatspeakVM() constructor {
 				push(result);
 				break;
 			default:
-				error("invalid callsite of type `" + ty + "`");
+				error("invalid call site of type `" + ty + "`");
 				break;
 			}
 			break;
@@ -1385,7 +1385,8 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-return "nice"
+set a : { "a" "hi"; "b" "hello"; };
+return [a.a; a.b];
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
