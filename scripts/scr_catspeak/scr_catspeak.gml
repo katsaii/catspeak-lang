@@ -98,7 +98,7 @@ function catspeak_token_is_operator(_token) {
 
 /// @desc Returns whether a byte is a valid newline character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_newline(_byte) {
+function __catspeak_byte_is_newline(_byte) {
 	switch (_byte) {
 	case ord("\n"):
 	case ord("\r"):
@@ -110,37 +110,37 @@ function catspeak_byte_is_newline(_byte) {
 
 /// @desc Returns whether a byte is NOT a valid newline character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_not_newline(_byte) {
-	return !catspeak_byte_is_newline(_byte);
+function __catspeak_byte_is_not_newline(_byte) {
+	return !__catspeak_byte_is_newline(_byte);
 }
 
 /// @desc Returns whether a byte is a valid quote character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_quote(_byte) {
+function __catspeak_byte_is_quote(_byte) {
 	return _byte == ord("\"");
 }
 
 /// @desc Returns whether a byte is NOT a valid quote character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_not_quote(_byte) {
-	return !catspeak_byte_is_quote(_byte);
+function __catspeak_byte_is_not_quote(_byte) {
+	return !__catspeak_byte_is_quote(_byte);
 }
 
 /// @desc Returns whether a byte is a valid quote character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_accent(_byte) {
+function __catspeak_byte_is_accent(_byte) {
 	return _byte == ord("`");
 }
 
 /// @desc Returns whether a byte is NOT a valid quote character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_not_accent(_byte) {
-	return !catspeak_byte_is_accent(_byte);
+function __catspeak_byte_is_not_accent(_byte) {
+	return !__catspeak_byte_is_accent(_byte);
 }
 
 /// @desc Returns whether a byte is a valid whitespace character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_whitespace(_byte) {
+function __catspeak_byte_is_whitespace(_byte) {
 	switch (_byte) {
 	case ord(" "):
 	case ord("\t"):
@@ -150,15 +150,9 @@ function catspeak_byte_is_whitespace(_byte) {
 	}
 }
 
-/// @desc Returns whether a byte is a valid whitespace character or newline.
-/// @param {real} byte The byte to check.
-function catspeak_byte_is_whitestuff(_byte) {
-	return catspeak_byte_is_whitespace(_byte) || catspeak_byte_is_newline(_byte);
-}
-
 /// @desc Returns whether a byte is a valid alphabetic character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_alphabetic(_byte) {
+function __catspeak_byte_is_alphabetic(_byte) {
 	return _byte >= ord("a") && _byte <= ord("z")
 			|| _byte >= ord("A") && _byte <= ord("Z")
 			|| _byte == ord("_")
@@ -167,20 +161,20 @@ function catspeak_byte_is_alphabetic(_byte) {
 
 /// @desc Returns whether a byte is a valid digit character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_digit(_byte) {
+function __catspeak_byte_is_digit(_byte) {
 	return _byte >= ord("0") && _byte <= ord("9");
 }
 
 /// @desc Returns whether a byte is a valid alphanumeric character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_alphanumeric(_byte) {
-	return catspeak_byte_is_alphabetic(_byte)
-			|| catspeak_byte_is_digit(_byte);
+function __catspeak_byte_is_alphanumeric(_byte) {
+	return __catspeak_byte_is_alphabetic(_byte)
+			|| __catspeak_byte_is_digit(_byte);
 }
 
 /// @desc Returns whether a byte is a valid operator character.
 /// @param {real} byte The byte to check.
-function catspeak_byte_is_operator(_byte) {
+function __catspeak_byte_is_operator(_byte) {
 	return _byte == ord("!")
 			|| _byte >= ord("#") && _byte <= ord("&")
 			|| _byte == ord("*")
@@ -306,7 +300,7 @@ function CatspeakLexer(_buff) constructor {
 	/// @desc Advances the lexer according to this predicate, but escapes newline characters.
 	/// @param {script} pred The predicate to check for.
 	static advanceWhile = function(_pred) {
-		return advanceWhileEscape(_pred, catspeak_byte_is_newline);
+		return advanceWhileEscape(_pred, __catspeak_byte_is_newline);
 	}
 	/// @desc Advances the lexer and returns the next token.
 	static next = function() {
@@ -323,8 +317,8 @@ function CatspeakLexer(_buff) constructor {
 		switch (byte) {
 		case ord("\\"):
 			// this is needed for a specific case where `\` is the first character in a line
-			advanceWhile(catspeak_byte_is_newline);
-			advanceWhile(catspeak_byte_is_whitespace);
+			advanceWhile(__catspeak_byte_is_newline);
+			advanceWhile(__catspeak_byte_is_whitespace);
 			return CatspeakToken.WHITESPACE;
 		case ord("("):
 			return CatspeakToken.PAREN_LEFT;
@@ -345,11 +339,11 @@ function CatspeakLexer(_buff) constructor {
 		case ord("|"):
 		case ord("^"):
 		case ord("$"):
-			advanceWhile(catspeak_byte_is_operator);
+			advanceWhile(__catspeak_byte_is_operator);
 			registerLexeme();
 			return CatspeakToken.DISJUNCTION;
 		case ord("&"):
-			advanceWhile(catspeak_byte_is_operator);
+			advanceWhile(__catspeak_byte_is_operator);
 			registerLexeme();
 			return CatspeakToken.CONJUNCTION;
 		case ord("<"):
@@ -358,32 +352,32 @@ function CatspeakLexer(_buff) constructor {
 		case ord("?"):
 		case ord("="):
 		case ord("~"):
-			advanceWhile(catspeak_byte_is_operator);
+			advanceWhile(__catspeak_byte_is_operator);
 			registerLexeme();
 			return CatspeakToken.COMPARISON;
 		case ord("+"):
 		case ord("-"):
-			advanceWhile(catspeak_byte_is_operator);
+			advanceWhile(__catspeak_byte_is_operator);
 			if (isCommentLexeme && lexemeLength > 1) {
-				advanceWhile(catspeak_byte_is_not_newline);
+				advanceWhile(__catspeak_byte_is_not_newline);
 				return CatspeakToken.COMMENT;
 			}
 			registerLexeme();
 			return CatspeakToken.ADDITION;
 		case ord("*"):
 		case ord("/"):
-			advanceWhile(catspeak_byte_is_operator);
+			advanceWhile(__catspeak_byte_is_operator);
 			registerLexeme();
 			return CatspeakToken.MULTIPLICATION;
 		case ord("%"):
 		case ord("@"):
 		case ord("#"):
-			advanceWhile(catspeak_byte_is_operator);
+			advanceWhile(__catspeak_byte_is_operator);
 			registerLexeme();
 			return CatspeakToken.DIVISION;
 		case ord("\""):
 			clearLexeme();
-			advanceWhileEscape(catspeak_byte_is_not_quote, catspeak_byte_is_quote);
+			advanceWhileEscape(__catspeak_byte_is_not_quote, __catspeak_byte_is_quote);
 			skipNextByte = true;
 			registerLexeme();
 			return CatspeakToken.STRING;
@@ -391,19 +385,19 @@ function CatspeakLexer(_buff) constructor {
 			return CatspeakToken.DOT;
 		case ord("`"):
 			clearLexeme();
-			advanceWhileEscape(catspeak_byte_is_not_accent, catspeak_byte_is_accent);
+			advanceWhileEscape(__catspeak_byte_is_not_accent, __catspeak_byte_is_accent);
 			skipNextByte = true;
 			registerLexeme();
 			return CatspeakToken.IDENTIFIER;
 		default:
-			if (catspeak_byte_is_newline(byte)) {
-				advanceWhile(catspeak_byte_is_newline);
+			if (__catspeak_byte_is_newline(byte)) {
+				advanceWhile(__catspeak_byte_is_newline);
 				return CatspeakToken.EOL;
-			} else if (catspeak_byte_is_whitespace(byte)) {
-				advanceWhile(catspeak_byte_is_whitespace);
+			} else if (__catspeak_byte_is_whitespace(byte)) {
+				advanceWhile(__catspeak_byte_is_whitespace);
 				return CatspeakToken.WHITESPACE;
-			} else if (catspeak_byte_is_alphabetic(byte)) {
-				advanceWhile(catspeak_byte_is_alphanumeric);
+			} else if (__catspeak_byte_is_alphabetic(byte)) {
+				advanceWhile(__catspeak_byte_is_alphanumeric);
 				registerLexeme();
 				var keyword;
 				switch (lexeme) {
@@ -430,8 +424,8 @@ function CatspeakLexer(_buff) constructor {
 				}
 				lexeme = undefined;
 				return keyword;
-			} else if (catspeak_byte_is_digit(byte)) {
-				advanceWhile(catspeak_byte_is_digit);
+			} else if (__catspeak_byte_is_digit(byte)) {
+				advanceWhile(__catspeak_byte_is_digit);
 				registerLexeme();
 				return CatspeakToken.NUMBER;
 			} else {
