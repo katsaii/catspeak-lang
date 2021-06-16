@@ -1,5 +1,40 @@
 require "set"
-$gml_names_incompatible = [
+require "erb"
+
+def generate_identifiers filepath, incompatible_names
+    names = []
+    content = File.read filepath
+    content.scan /^([A-Za-z0-9_]+)(.*)$/ do |x|
+        name = x[0]
+        modifier = x[1]
+        kind = if incompatible_names.include? name
+            :incompatible
+        elsif modifier.include? "&"
+            :obsolete
+        elsif modifier.include? "#"
+            :constant
+        elsif modifier.include? "("
+            :function
+        else
+            :other
+        end
+        names.append [name, kind]
+    end
+    constants = names
+            .filter{|_, kind| kind == :constant}
+            .map{|name, _| name}
+    functions = names
+            .filter{|_, kind| kind == :function}
+            .map{|name, _| name}
+    [constants, functions]
+end
+
+def show_map pattern, names, indent=2
+    names.filter{|x| x.include? pattern}
+            .map{|x| "_[$ \"#{x}\"] = #{x};"}.join("\n" + "\t" * indent)
+end
+
+gml_constants, gml_functions = generate_identifiers "./gml_builtins.txt", [
     "local",
     "gml_release_mode",
     "gml_pragma",
@@ -7,30 +42,11 @@ $gml_names_incompatible = [
     "phy_particle_data_flag_color",
     "font_replace"
 ].to_set
-$gml_names = []
-content = File.read "./gml_builtins.txt"
-content.scan /^([A-Za-z0-9_]+)(.*)$/ do |x|
-    ident = x[0]
-    kind = if $gml_names_incompatible.include? ident
-        :incompatible
-    elsif x[1].include? "&"
-        :obsolete
-    elsif x[1].include? "#"
-        :constant
-    elsif x[1].include? "("
-        :function
-    else
-        :other
-    end
-    $gml_names.append [ident, kind]
-end
-$gml_constant = $gml_names
-        .filter{|_, kind| kind == :constant}
-        .map{|ident, _| ident}
-$gml_function = $gml_names
-        .filter{|_, kind| kind == :function}
-        .map{|ident, _| ident}
-$gml_template = <<~HEAD
+gml_script_groups = [
+    "keyboard"
+]
+
+gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 	/* Catspeak GML Interface
 	 * ----------------------
 	 * Kat @katsaii
@@ -76,23 +92,39 @@ $gml_template = <<~HEAD
 	}
 
 	/// @desc Returns the constants of the gml standard library as a struct.
-	function catspeak_ext_gml_constants() {
-		static vars = (function() {
+	/// @param {string} class The class of constants to include.
+	function catspeak_ext_gml_constants(_class) {
+	<% gml_script_groups.each do |group| -%>
+		static vars_<%= group %> = (function() {
 			var _ = { };
-			#{$gml_constant.map{|x| "_[$ \"#{x}\"] = #{x};"}.join("\n\t\t")}
+			<%= show_map group, gml_constants %>
 			return _;
 		})();
-		return vars;
+	<% end -%>
+		switch (_class) {
+	<% gml_script_groups.each do |group| -%>
+		case "<%= group %>": return vars_<%= group %>;
+	<% end -%>
+		default: return undefined;
+		}
 	}
 
 	/// @desc Returns the functions of the gml standard library as a struct.
-	function catspeak_ext_gml_functions() {
-		static vars = (function() {
+	/// @param {string} class The class of constants to include.
+	function catspeak_ext_gml_functions(_class) {
+	<% gml_script_groups.each do |group| -%>
+		static vars_<%= group %> = (function() {
 			var _ = { };
-			#{$gml_function.map{|x| "_[$ \"#{x}\"] = #{x};"}.join("\n\t\t")}
+			<%= show_map group, gml_functions %>
 			return _;
 		})();
-		return vars;
+	<% end -%>
+		switch (_class) {
+	<% gml_script_groups.each do |group| -%>
+		case "<%= group %>": return vars_<%= group %>;
+	<% end -%>
+		default: return undefined;
+		}
 	}
 HEAD
-File.write "./scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.gml", $gml_template
+File.write "./scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.gml", gml_interface
