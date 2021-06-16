@@ -39,6 +39,7 @@ enum CatspeakToken {
 	ELSE,
 	WHILE,
 	PRINT,
+	RUN,
 	RETURN,
 	IDENTIFIER,
 	STRING,
@@ -75,6 +76,7 @@ function catspeak_token_render(_kind) {
 	case CatspeakToken.ELSE: return "ELSE";
 	case CatspeakToken.WHILE: return "WHILE";
 	case CatspeakToken.PRINT: return "PRINT";
+	case CatspeakToken.RUN: return "RUN";
 	case CatspeakToken.RETURN: return "RETURN";
 	case CatspeakToken.IDENTIFIER: return "IDENTIFIER";
 	case CatspeakToken.STRING: return "STRING";
@@ -416,6 +418,9 @@ function CatspeakLexer(_buff) constructor {
 				case "print":
 					keyword = CatspeakToken.PRINT;
 					break;
+				case "run":
+					keyword = CatspeakToken.RUN;
+					break;
 				case "return":
 					keyword = CatspeakToken.RETURN;
 					break;
@@ -557,7 +562,7 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.LOOP: return "LOOP";
 	case CatspeakIRKind.PRINT: return "PRINT";
 	case CatspeakIRKind.RETURN: return "RETURN";
-	case CatspeakIRKind.SUBCRIPT: return "SUBCRIPT";
+	case CatspeakIRKind.SUBSCRIPT: return "SUBCRIPT";
 	case CatspeakIRKind.CALL: return "CALL";
 	case CatspeakIRKind.CONSTANT: return "CONSTANT";
 	case CatspeakIRKind.ARRAY: return "ARRAY";
@@ -727,6 +732,10 @@ function CatspeakParser(_buff) constructor {
 	}
 	/// @desc Parses a function call.
 	static parseCall = function() {
+		if (consume(CatspeakToken.RUN)) {
+			var callsite = parseSubscript();
+			return genCallIR(callsite, []);
+		}
 		var callsite = parseSubscript();
 		var params = [];
 		while (matchesExpression()) {
@@ -1437,7 +1446,7 @@ function CatspeakVM() constructor {
 var src = @'
 set a : { .a "hi"; .b "hello"; };
 set a.b : ["nice1";"nice2";"nice3"];
-show_debug_message [a.{"a"}; a.b.[1]];
+run show_debug_message;
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
