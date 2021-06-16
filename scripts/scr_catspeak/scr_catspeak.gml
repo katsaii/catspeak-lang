@@ -743,22 +743,20 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses an index operation.
 	static parseSubscript = function() {
 		var container = parseValue();
-		do {
+		while (consume(CatspeakToken.DOT)) {
 			var subscript;
-			if (consume(CatspeakToken.DOT)) {
+			if (consume(CatspeakToken.PAREN_LEFT)) {
+				subscript = parseExpr();
+				expects(CatspeakToken.PAREN_RIGHT, "expected closing `)` in expression indexing");
+			} else {
 				expects(CatspeakToken.IDENTIFIER, "identifier after `.` operator");
 				subscript = genStringIR();
-			} else if (consume(CatspeakToken.BOX_LEFT)) {
-				subscript = parseExpr();
-				expects(CatspeakToken.BOX_RIGHT, "expected closing `]` in expression indexing");
-			} else {
-				break;
 			}
 			container = new CatspeakIRNode(container.pos, CatspeakIRKind.SUBSCRIPT, {
 				container : container,
 				subscript : subscript
 			});
-		} until (false);
+		}
 		return container;
 	}
 	/// @desc Parses a terminal value or expression.
@@ -1397,8 +1395,8 @@ function CatspeakVM() constructor {
 
 var src = @'
 set a : { .a "hi"; .b "hello"; };
-set a.b : ["nice";"nice";"nice"];
-return [a["a"]; a.b];
+set a.b : ["nice1";"nice2";"nice3"];
+show_debug_message [a.("a"); a.b.(1)];
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
