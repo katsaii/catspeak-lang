@@ -1442,8 +1442,8 @@ show_debug_message [a.{"a"}; a.b.[1]];
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
 		.addInterface(catspeak_ext_gml_constants())
-		.addInterface(catspeak_ext_gml_scripts())
-		.addInterface(catspeak_ext_arithmetic())
+		.addInterface(catspeak_ext_gml_functions())
+		.addInterface(catspeak_ext_gml_operators())
 		.setOption(CatspeakVMOption.GLOBAL_VISIBILITY, true)
 		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
 			show_message(_result);
