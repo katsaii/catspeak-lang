@@ -2752,8 +2752,8 @@ gp_axislv#
 gp_axisrh#
 gp_axisrv#
 
-gml_release_mode(enable)
-gml_pragma(setting,....)
+gml_release_mode(enable)X
+gml_pragma(setting,....)X
 
 //steam functions
 steam_activate_overlay(overlayIndex)
@@ -3041,7 +3041,7 @@ skeleton_get_num_bounds()!
 skeleton_get_bounds(index)!
 skeleton_animation_get_frame(track)!
 skeleton_animation_set_frame(track,index)!
-skeleton_animation_get_event_frames(anim_name,event_name)!
+skeleton_animation_get_event_frames(anim_name,event_name)!X
 
 // Instance independent!
 draw_skeleton(sprite,animname,skinname,frame,x,y,xscale,yscale,rot,col,alpha)!

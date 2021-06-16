@@ -1,8 +1,21 @@
+require "set"
+$gml_names_incompatible = [
+    "local",
+    "gml_release_mode",
+    "gml_pragma",
+    "skeleton_animation_get_event_frames",
+    "phy_particle_data_flag_color",
+    "font_replace"
+].to_set
 $gml_names = []
 content = File.read "./gml_builtins.txt"
 content.scan /^([A-Za-z0-9_]+)(.*)$/ do |x|
     ident = x[0]
-    kind = if x[1].include? "#"
+    kind = if $gml_names_incompatible.include? ident
+        :incompatible
+    elsif x[1].include? "&"
+        :obsolete
+    elsif x[1].include? "#"
         :constant
     elsif x[1].include? "("
         :function
