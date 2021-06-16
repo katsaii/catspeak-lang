@@ -1101,14 +1101,31 @@ function CatspeakVM() constructor {
 	static getWorkspace = function() {
 		return binding;
 	}
-	/// @desc Adds an interface to this VM.
+	/// @desc Adds an interface containing constants to this VM.
 	/// @param {struct} vars The context to assign.
-	static addInterface = function(_vars) {
+	static addConstantInterface = function(_vars) {
 		var names = variable_struct_get_names(_vars);
 		var name_count = array_length(names);
 		for (var i = name_count - 1; i >= 0; i -= 1) {
 			var name = names[i];
 			interface[$ name] = _vars[$ name];
+		}
+		return self;
+	}
+	/// @desc Adds an interface containing methods to this VM.
+	/// @param {struct} vars The context to assign.
+	static addFunctionInterface = function(_vars) {
+		var names = variable_struct_get_names(_vars);
+		var name_count = array_length(names);
+		for (var i = name_count - 1; i >= 0; i -= 1) {
+			var name = names[i];
+			var f = _vars[$ name];
+			if not (is_method(f)) {
+				// this is so that unexposed functions cannot be enumerated
+				// by a malicious user in order to access important functions
+				f = method(undefined, f);
+			}
+			interface[$ name] = f;
 		}
 		return self;
 	}
@@ -1128,10 +1145,6 @@ function CatspeakVM() constructor {
 			break;
 		}
 		return self;
-	}
-	/// @desc Returns whether the current interface contains a variable with the expected value.
-	static interfaceContains = function(_name, _expected_value) {
-		return variable_struct_exists(interface, _name) && interface[$ _name] == _expected_value;
 	}
 	/// @desc Pushes a value onto the stack.
 	/// @param {value} value The value to push.
@@ -1357,22 +1370,9 @@ function CatspeakVM() constructor {
 			var callsite = pop();
 			var ty = typeof(callsite);
 			switch (ty) {
-			case "number":
-			case "bool":
-			case "int32":
-			case "int64":
-				if (callsite < 0) {
-					error("unknown script index `" + string(callsite) + "`");
-					break;
-				}
-				var name = script_get_name(callsite);
-				if not (interfaceContains(name, callsite)) {
-					error("script asset `" + name + "` with index `" + string(callsite) + "` is not public");
-					break;
-				}
 			case "method":
 				var args = popMany(arg_count);
-				var result = executeScriptOrMethod(callsite, args);
+				var result = executeMethod(callsite, args);
 				push(result);
 				break;
 			default:
@@ -1394,49 +1394,27 @@ function CatspeakVM() constructor {
 		pc += 1;
 	}
 	/// @desc Calls a function using an array as the parameter array.
-	/// @param {script} ind The id of the script to call.
+	/// @param {method} ind The id of the method to call.
 	/// @param {array} variable The id of the array to pass as a parameter array to this script.
-	static executeScriptOrMethod = function(_f, _a) {
-		if (is_method(_f)) {
-			switch(array_length(_a)){
-			case 0: return _f();
-			case 1: return _f(_a[0]);
-			case 2: return _f(_a[0], _a[1]);
-			case 3: return _f(_a[0], _a[1], _a[2]);
-			case 4: return _f(_a[0], _a[1], _a[2], _a[3]);
-			case 5: return _f(_a[0], _a[1], _a[2], _a[3], _a[4]);
-			case 6: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5]);
-			case 7: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6]);
-			case 8: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7]);
-			case 9: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8]);
-			case 10: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9]);
-			case 11: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10]);
-			case 12: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11]);
-			case 13: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12]);
-			case 14: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13]);
-			case 15: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14]);
-			case 16: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14], _a[15]);
-			}
-		} else {
-			switch(array_length(_a)){
-			case 0: return script_execute(_f);
-			case 1: return script_execute(_f, _a[0]);
-			case 2: return script_execute(_f, _a[0], _a[1]);
-			case 3: return script_execute(_f, _a[0], _a[1], _a[2]);
-			case 4: return script_execute(_f, _a[0], _a[1], _a[2], _a[3]);
-			case 5: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4]);
-			case 6: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5]);
-			case 7: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6]);
-			case 8: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7]);
-			case 9: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8]);
-			case 10: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9]);
-			case 11: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10]);
-			case 12: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11]);
-			case 13: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12]);
-			case 14: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13]);
-			case 15: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14]);
-			case 16: return script_execute(_f, _a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14], _a[15]);
-			}
+	static executeMethod = function(_f, _a) {
+		switch(array_length(_a)){
+		case 0: return _f();
+		case 1: return _f(_a[0]);
+		case 2: return _f(_a[0], _a[1]);
+		case 3: return _f(_a[0], _a[1], _a[2]);
+		case 4: return _f(_a[0], _a[1], _a[2], _a[3]);
+		case 5: return _f(_a[0], _a[1], _a[2], _a[3], _a[4]);
+		case 6: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5]);
+		case 7: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6]);
+		case 8: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7]);
+		case 9: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8]);
+		case 10: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9]);
+		case 11: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10]);
+		case 12: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11]);
+		case 13: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12]);
+		case 14: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13]);
+		case 15: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14]);
+		case 16: return _f(_a[0], _a[1], _a[2], _a[3], _a[4], _a[5], _a[6], _a[7], _a[8], _a[9], _a[10], _a[11], _a[12], _a[13], _a[14], _a[15]);
 		}
 		error("argument count of " + string(array_length(_a)) + " is not supported");
 		return undefined;
@@ -1446,16 +1424,19 @@ function CatspeakVM() constructor {
 var src = @'
 set a : { .a "hi"; .b "hello"; };
 set a.b : ["nice1";"nice2";"nice3"];
-run show_debug_message;
+show_message list;
+set list.[2] : "uwah"
+show_message : [list.[0]; list.[1]; list.[2]]
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
-		.addInterface(catspeak_ext_gml_constants())
-		.addInterface(catspeak_ext_gml_functions())
-		.addInterface(catspeak_ext_gml_operators())
+		.addConstantInterface({ list : ds_list_create() })
+		.addConstantInterface(catspeak_ext_gml_constants())
+		.addFunctionInterface(catspeak_ext_gml_functions())
+		.addFunctionInterface(catspeak_ext_gml_operators())
 		.setOption(CatspeakVMOption.GLOBAL_VISIBILITY, true)
 		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
-			show_message(_result);
+			show_debug_message("result: " + string(_result));
 		});
 vm.addChunk(chunk);
 while (vm.inProgress()) {
