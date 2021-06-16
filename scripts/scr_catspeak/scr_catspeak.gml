@@ -745,16 +745,22 @@ function CatspeakParser(_buff) constructor {
 		var container = parseValue();
 		while (consume(CatspeakToken.DOT)) {
 			var subscript;
-			if (consume(CatspeakToken.PAREN_LEFT)) {
+			var unordered = true;
+			if (consume(CatspeakToken.BOX_LEFT)) {
+				unordered = false;
 				subscript = parseExpr();
-				expects(CatspeakToken.PAREN_RIGHT, "expected closing `)` in expression indexing");
+				expects(CatspeakToken.BOX_RIGHT, "expected closing `]` in ordered indexing");
+			} else if (consume(CatspeakToken.BRACE_LEFT)) {
+				subscript = parseExpr();
+				expects(CatspeakToken.BRACE_RIGHT, "expected closing `}` in unordered indexing");
 			} else {
-				expects(CatspeakToken.IDENTIFIER, "identifier after `.` operator");
+				expects(CatspeakToken.IDENTIFIER, "expected identifier after `.` operator");
 				subscript = genStringIR();
 			}
 			container = new CatspeakIRNode(container.pos, CatspeakIRKind.SUBSCRIPT, {
 				container : container,
-				subscript : subscript
+				subscript : subscript,
+				unordered : unordered
 			});
 		}
 		return container;
@@ -925,6 +931,7 @@ function CatspeakCodegen(_buff, _out) constructor {
 				visitTerm(lvalue.inner.subscript);
 				visitTerm(rvalue);
 				out.addCode(pos, CatspeakOpCode.REF_SET);
+				out.addCode(pos, lvalue.inner.unordered);
 			} else {
 				error(_term, "invalid left value");
 			}
@@ -949,9 +956,11 @@ function CatspeakCodegen(_buff, _out) constructor {
 		case CatspeakIRKind.SUBSCRIPT:
 			var container = inner.container;
 			var subscript = inner.subscript;
+			var unordered = inner.unordered;
 			visitTerm(container);
 			visitTerm(subscript);
 			out.addCode(pos, CatspeakOpCode.REF_GET);
+			out.addCode(pos, unordered);
 			break;
 		case CatspeakIRKind.CALL:
 			var callsite = inner.callsite;
@@ -1171,59 +1180,87 @@ function CatspeakVM() constructor {
 	/// @desc Attempts to index into a container and returns its value.
 	/// @param {value} container The container to index.
 	/// @param {value} subscript The index to access.
-	static getIndex = function(_container, _subscript) {
+	/// @param {bool} unordered Whether the container is unordered.
+	static getIndex = function(_container, _subscript, _unordered) {
 		var ty = typeof(_container);
-		switch (ty) {
-		case "array":
-			return _container[_subscript];
-		case "struct":
-			return _container[$ string(_subscript)];
-		case "number":
-		case "bool":
-		case "int32":
-		case "int64":
-			if (exposeInstanceScope && instance_exists(_container)) {
-				return variable_instance_get(_container, _subscript);
-			} else if (exposeGlobalScope && _container == global) {
-				return variable_global_get(_subscript);
-			} else {
-				error("unknown object index `" + string(_container) + "`");
-				return undefined;
+		if (_unordered) {
+			switch (ty) {
+			case "struct":
+				return _container[$ string(_subscript)];
+			case "number":
+			case "bool":
+			case "int32":
+			case "int64":
+				if (exposeInstanceScope && instance_exists(_container)) {
+					return variable_instance_get(_container, _subscript);
+				} else if (exposeGlobalScope && _container == global) {
+					return variable_global_get(_subscript);
+				} else if (ds_exists(_container, ds_type_map)) {
+					return _container[? _subscript];
+				}
 			}
-		default:
-			error("cannot index value of type `" + ty + "`");
-			return undefined;
+		} else {
+			switch (ty) {
+			case "array":
+				return _container[_subscript];
+			case "number":
+			case "bool":
+			case "int32":
+			case "int64":
+				if (ds_exists(_container, ds_type_list)) {
+					return _container[| _subscript];
+				}
+			}
 		}
+		var madlib = _unordered ? "un" : "";
+		error("cannot index " + madlib + "ordered collection of type `" + ty + "`");
+		return undefined;
 	}
 	/// @desc Attempts to assign a value to the index of a container.
 	/// @param {value} container The container to index.
 	/// @param {value} subscript The index to access.
+	/// @param {bool} unordered Whether the container is unordered.
 	/// @param {value} value The value to insert.
-	static setIndex = function(_container, _subscript, _value) {
+	static setIndex = function(_container, _subscript, _unordered, _value) {
 		var ty = typeof(_container);
-		switch (ty) {
-		case "array":
-			_container[@ _subscript] = _value;
-			break;
-		case "struct":
-			_container[$ string(_subscript)] = _value;
-			break;
-		case "number":
-		case "bool":
-		case "int32":
-		case "int64":
-			if (exposeInstanceScope && instance_exists(_container)) {
-				variable_instance_set(_container, _subscript, _value);
-			} else if (exposeGlobalScope && _container == global) {
-				variable_global_set(_subscript, _value);
-			} else {
-				error("unknown object index `" + string(_container) + "`");
+		if (_unordered) {
+			switch (ty) {
+			case "struct":
+				_container[$ string(_subscript)] = _value;
+				return;
+			case "number":
+			case "bool":
+			case "int32":
+			case "int64":
+				if (exposeInstanceScope && instance_exists(_container)) {
+					variable_instance_set(_container, _subscript, _value);
+					return;
+				} else if (exposeGlobalScope && _container == global) {
+					variable_global_set(_subscript, _value);
+					return;
+				} else if (ds_exists(_container, ds_type_map)) {
+					_container[? _subscript] = _value;
+					return;
+				}
 			}
-			break;
-		default:
-			error("cannot assign to value of type `" + ty + "`");
-			break;
+		} else {
+			switch (ty) {
+			case "array":
+				_container[@ _subscript] = _value;
+				return;
+			case "number":
+			case "bool":
+			case "int32":
+			case "int64":
+				if (ds_exists(_container, ds_type_list)) {
+					_container[| _subscript] = _value;
+					return;
+				}
+			}
 		}
+		var madlib = _unordered ? " un" : "";
+		error("cannot assign to " + madlib + "ordered collection of type `" + ty + "`");
+		return undefined;
 	}
 	/// @desc Executes a single instruction and updates the program counter.
 	static computeProgram = function() {
@@ -1251,16 +1288,20 @@ function CatspeakVM() constructor {
 			setVariable(name, value);
 			break;
 		case CatspeakOpCode.REF_GET:
+			pc += 1;
+			var unordered = code[pc];
 			var subscript = pop();
 			var container = pop();
-			var value = getIndex(container, subscript);
+			var value = getIndex(container, subscript, unordered);
 			push(value);
 			break;
 		case CatspeakOpCode.REF_SET:
+			pc += 1;
+			var unordered = code[pc];
 			var value = pop();
 			var subscript = pop();
 			var container = pop();
-			setIndex(container, subscript, value);
+			setIndex(container, subscript, unordered, value);
 			break;
 		case CatspeakOpCode.MAKE_ARRAY:
 			pc += 1;
@@ -1396,7 +1437,7 @@ function CatspeakVM() constructor {
 var src = @'
 set a : { .a "hi"; .b "hello"; };
 set a.b : ["nice1";"nice2";"nice3"];
-show_debug_message [a.("a"); a.b.(1)];
+show_debug_message [a.{"a"}; a.b.[1]];
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
