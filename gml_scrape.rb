@@ -29,9 +29,9 @@ def generate_identifiers filepath, incompatible_names
     [constants, functions]
 end
 
-def show_map pattern, names, indent=2
-    names.filter{|x| x.include? pattern}
-            .map{|x| "_[$ \"#{x}\"] = #{x};"}.join("\n" + "\t" * indent)
+def show_map patterns, names, indent=2
+    names.filter{|name| patterns.any?{|pattern| name.include? "_" + pattern or name.include? pattern + "_"}}
+            .map{|name| "_[$ \"#{name}\"] = #{name};"}.join("\n" + "\t" * indent)
 end
 
 gml_constants, gml_functions = generate_identifiers "./gml_builtins.txt", [
@@ -42,9 +42,9 @@ gml_constants, gml_functions = generate_identifiers "./gml_builtins.txt", [
     "phy_particle_data_flag_color",
     "font_replace"
 ].to_set
-gml_script_groups = [
-    "keyboard"
-]
+gml_script_groups = {
+    :input => ["keyboard", "mouse", "gamepad", "gp", "vk", "mb"]
+}
 
 gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 	/* Catspeak GML Interface
@@ -94,15 +94,15 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 	/// @desc Returns the constants of the gml standard library as a struct.
 	/// @param {string} class The class of constants to include.
 	function catspeak_ext_gml_constants(_class) {
-	<% gml_script_groups.each do |group| -%>
+	<% gml_script_groups.each do |group, keywords| -%>
 		static vars_<%= group %> = (function() {
 			var _ = { };
-			<%= show_map group, gml_constants %>
+			<%= show_map keywords, gml_constants %>
 			return _;
 		})();
 	<% end -%>
 		switch (_class) {
-	<% gml_script_groups.each do |group| -%>
+	<% gml_script_groups.each do |group, _| -%>
 		case "<%= group %>": return vars_<%= group %>;
 	<% end -%>
 		default: return undefined;
@@ -112,15 +112,15 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 	/// @desc Returns the functions of the gml standard library as a struct.
 	/// @param {string} class The class of constants to include.
 	function catspeak_ext_gml_functions(_class) {
-	<% gml_script_groups.each do |group| -%>
+	<% gml_script_groups.each do |group, keywords| -%>
 		static vars_<%= group %> = (function() {
 			var _ = { };
-			<%= show_map group, gml_functions %>
+			<%= show_map keywords, gml_functions %>
 			return _;
 		})();
 	<% end -%>
 		switch (_class) {
-	<% gml_script_groups.each do |group| -%>
+	<% gml_script_groups.each do |group, _| -%>
 		case "<%= group %>": return vars_<%= group %>;
 	<% end -%>
 		default: return undefined;
