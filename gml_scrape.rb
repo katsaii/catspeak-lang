@@ -30,20 +30,128 @@ def generate_identifiers filepath, incompatible_names
 end
 
 def show_map patterns, names, indent=2
-    names.filter{|name| patterns.any?{|pattern| name.include? "_" + pattern or name.include? pattern + "_"}}
+    contains = (patterns.fetch :contains, []).to_set
+    prefixes = patterns.fetch :prefixes, []
+    names.filter{|name| contains.include? name or prefixes.any?{|prefix| name.start_with? prefix + "_"}}
             .map{|name| "_[$ \"#{name}\"] = #{name};"}.join("\n" + "\t" * indent)
 end
 
 gml_constants, gml_functions = generate_identifiers "./gml_builtins.txt", [
-    "local",
-    "gml_release_mode",
-    "gml_pragma",
-    "skeleton_animation_get_event_frames",
-    "phy_particle_data_flag_color",
-    "font_replace"
+    "local", "gml_release_mode", "gml_pragma", "skeleton_animation_get_event_frames",
+    "phy_particle_data_flag_color", "font_replace", "room", "room_persistent", "score",
+    "lives", "health", "cursor_sprite"
 ].to_set
 gml_script_groups = {
-    :input => ["keyboard", "mouse", "gamepad", "gp", "vk", "mb"]
+    :instances => {
+        :contains => ["all", "noone", "global"],
+        :prefixes => [
+            "object", "instance", "motion", "place", "move", "distance",
+            "position", "collision", "point", "rectangle", "bbox", "physics",
+            "phy"
+        ]
+    },
+    :pointers => {
+        :contains => ["ptr"],
+        :prefixes => ["pointer", "weak_ref"]
+    },
+    :unsafe => {
+        :prefixes => [
+            "exception", "variable", "game", "gamespeed", "room", "event",
+            "ev", "get", "external", "ty", "dll", "of_challenge", "achievement",
+            "leaderboard", "highscore", "shop", "ads", "iap", "analytics",
+            "win8", "uwp", "winphone", "network", "steam", "ov", "lb", "ugc",
+            "push", "gc"
+        ]
+    },
+    :introspection => {
+        :contains => ["typeof", "instanceof"],
+        :prefixes => ["is", "in", "asset", "tag", "extension"]
+    },
+    :maths => {
+        :contains => [
+            "undefined", "true", "false", "NaN", "infinity", "pi", "abs",
+            "round", "floor", "ceil", "sign", "frac", "sqrt", "sqr", "exp",
+            "ln", "log2", "log10", "sin", "cos", "tan", "arcsin", "arccos",
+            "arctan", "arctan2", "dsin", "dcos", "dtan", "darcsin",
+            "darccos", "darctan", "darctan2", "degtorad", "power", "logn",
+            "min", "max", "mean", "median", "clamp", "lerp", "real", "bool",
+            "int64"
+        ],
+        :prefixes => ["dot", "math", "point", "lengthdir", "matrix"]
+    },
+    :animation => {
+        :prefixes => [
+            "path", "mp", "timeline", "skeleton", "sequence", "animcurve", "seqtracktype",
+            "seqplay", "seqdir", "seqinterpolation", "seqaudiokey",
+            "animcurvetype"
+        ]
+    },
+    :data_structures => {
+        :prefixes => [
+            "path", "mp", "array", "struct", "ds", "highscore", "buffer"
+        ]
+    },
+    :random => {
+        :contains => ["random", "irandom", "randomize", "randomise", "choose"],
+        :prefixes => ["random", "irandom"]
+    },
+    :strings => {
+        :contains => ["string", "chr", "ansi_char", "ord"],
+        :prefixes => ["string"]
+    },
+    :scripts => {
+        :contains => ["method"],
+        :prefixes => ["method", "script"]
+    },
+    :input => {
+        :prefixes => [
+            "clipboard", "date", "timezone", "keyboard", "vk", "io", "mouse",
+            "mb", "cursor", "clickable", "virtual_key", "gamepad", "gp",
+            "gesture", "kbv"
+        ]
+    },
+    :audio => {
+        :prefixes => ["audio"]
+    },
+    :drawing => {
+        :contains => [
+            "merge_color", "merge_colour", "fa_left", "fa_center", "fa_right",
+            "fa_top", "fa_middle", "fa_bottom"
+        ],
+        :prefixes => [
+            "application", "font", "sprite", "image", "bboxmode", "bboxkind",
+            "background", "draw", "c",  "make_color", "make_colour",
+            "color", "colour", "pr", "texture", "bm", "tf", "mip", "surface",
+            "texturegroup", "spritespeed", "cmpfunc", "cull", "lighttype",
+            "gpu", "shader", "vertex"
+        ]
+    },
+    :layers => {
+        :prefixes => ["layer", "layerelementtype", "tilemap", "tile"]
+    },
+    :display => {
+        :prefixes => ["display", "window", "cr", "view", "camera", "tm"]
+    },
+    :debug => {
+        :prefixes => ["show", "debug", "stacktrace"]
+    },
+    :files => {
+        :contains => [
+            "fa_readonly", "fa_hidden", "fa_sysfile", "fa_volumeid",
+            "fa_directory", "fa_archive", "load_csv"
+        ],
+        :prefixes => [
+            "file", "parameter", "ini", "text", "screen", "gif", "cloud",
+            "http", "json", "zip", "base64", "md5", "sha1"
+        ]
+    },
+    :particles => {
+        :prefixes => ["effect", "ef", "part", "pt", "ps"]
+    },
+    :device => {
+        :contains => ["code_is_compiled"],
+        :prefixes => ["GM", "os", "browser", "device"]
+    }
 }
 
 gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
@@ -101,11 +209,12 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 			return _;
 		})();
 	<% end -%>
+		static vars_default = { };
 		switch (_class) {
 	<% gml_script_groups.each do |group, _| -%>
 		case "<%= group %>": return vars_<%= group %>;
 	<% end -%>
-		default: return undefined;
+		default: return vars_default;
 		}
 	}
 
@@ -119,11 +228,12 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 			return _;
 		})();
 	<% end -%>
+		static vars_default = { };
 		switch (_class) {
 	<% gml_script_groups.each do |group, _| -%>
 		case "<%= group %>": return vars_<%= group %>;
 	<% end -%>
-		default: return undefined;
+		default: return vars_default;
 		}
 	}
 HEAD
