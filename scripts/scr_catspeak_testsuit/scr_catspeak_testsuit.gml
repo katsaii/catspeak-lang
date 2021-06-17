@@ -3,6 +3,7 @@
  * Kat @katsaii
  */
 
+/*
 var src = @'
 add list 1 2 3
 print [
@@ -23,4 +24,4 @@ var vm = new CatspeakVM()
 vm.addChunk(chunk);
 while (vm.inProgress()) {
 	vm.computeProgram();
-}
+}*/
