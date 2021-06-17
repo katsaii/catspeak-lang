@@ -7,6 +7,8 @@
 enum CatspeakCompilerState {
 	EXPRESSION,
 	ARG,
+	SUBSCRIPT_BEGIN,
+	SUBSCRIPT_END,
 	TERMINAL,
 	GROUPING_BEGIN,
 	GROUPING_END,
@@ -20,6 +22,8 @@ function catspeak_compiler_state_render(_state) {
 	switch (_state) {
 	case CatspeakCompilerState.EXPRESSION: return "EXPRESSION";
 	case CatspeakCompilerState.ARG: return "ARG";
+	case CatspeakCompilerState.SUBSCRIPT_BEGIN: return "SUBSCRIPT_BEGIN";
+	case CatspeakCompilerState.SUBSCRIPT_END: return "SUBSCRIPT_END";
 	case CatspeakCompilerState.TERMINAL: return "TERMINAL";
 	case CatspeakCompilerState.GROUPING_BEGIN: return "GROUPING_BEGIN";
 	case CatspeakCompilerState.GROUPING_END: return "GROUPING_END";
@@ -43,12 +47,8 @@ function CatspeakCompiler(_lexer, _out) constructor {
 	storageStack = [];
 	/// @desc Adds a new compiler state to the instruction stack.
 	/// @param {CatspeakCompilerState} state The state to insert.
-	/// @param {CatspeakCompilerState} ... Additional states.
-	static pushState = function() {
-		for (var i = argument_count - 1; i >= 0; i -= 1) {
-			var state = argument[i];
-			array_push(instructionStack, state);
-		}
+	static pushState = function(_state) {
+		array_push(instructionStack, _state);
 	}
 	/// @desc Pops the top state from the instruction stack.
 	static popState = function() {
@@ -148,7 +148,47 @@ function CatspeakCompiler(_lexer, _out) constructor {
 			pushState(CatspeakCompilerState.ARG);
 			break;
 		case CatspeakCompilerState.ARG:
+			pushState(CatspeakCompilerState.SUBSCRIPT_BEGIN);
 			pushState(CatspeakCompilerState.TERMINAL);
+			break;
+		case CatspeakCompilerState.SUBSCRIPT_BEGIN:
+			if (consume(CatspeakToken.DOT)) {
+				pushStorage(pos);
+				pushState(CatspeakCompilerState.SUBSCRIPT_END);
+				var access_type;
+				if (consume(CatspeakToken.BOX_LEFT)) {
+					access_type = 0x00;
+					pushState(CatspeakCompilerState.EXPRESSION);
+				} else if (consume(CatspeakToken.BRACE_LEFT)) {
+					access_type = 0x01;
+					pushState(CatspeakCompilerState.EXPRESSION);
+				} else {
+					access_type = 0x02;
+					expects(CatspeakToken.IDENTIFIER, "expected identifier after binary `.` operator");
+					out.addCode(pos, CatspeakOpCode.PUSH);
+					out.addCode(pos, lexeme);
+				}
+				pushStorage(access_type);
+			}
+			break;
+		case CatspeakCompilerState.SUBSCRIPT_END:
+			var access_type = popStorage();
+			var op_pos = popStorage();
+			var unordered;
+			switch (access_type) {
+			case 0x00:
+				unordered = false;
+				expects(CatspeakToken.BOX_RIGHT, "expected closing `]` in ordered indexing");
+				break;
+			case 0x01:
+				expects(CatspeakToken.BRACE_RIGHT, "expected closing `}` in unordered indexing");
+			default:
+				unordered = true;
+				break;
+			}
+			out.addCode(op_pos, CatspeakOpCode.REF_GET);
+			out.addCode(op_pos, unordered);
+			pushState(CatspeakCompilerState.SUBSCRIPT_BEGIN);
 			break;
 		case CatspeakCompilerState.TERMINAL:
 			if (consume(CatspeakToken.IDENTIFIER)) {
@@ -156,7 +196,8 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				out.addCode(pos, lexeme);
 			} else if (matchesOperator()) {
 				advance();
-				return genIdentIR();
+				out.addCode(pos, CatspeakOpCode.VAR_GET);
+				out.addCode(pos, lexeme);
 			} else if (consume(CatspeakToken.STRING)) {
 				out.addCode(pos, CatspeakOpCode.PUSH);
 				out.addCode(pos, lexeme);
@@ -195,8 +236,8 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				out.addCode(start_pos, size);
 			} else {
 				pushStorage(size + 1);
-				pushState(CatspeakCompilerState.EXPRESSION,
-						CatspeakCompilerState.ARRAY);
+				pushState(CatspeakCompilerState.ARRAY);
+				pushState(CatspeakCompilerState.EXPRESSION);
 			}
 			break;
 		case CatspeakCompilerState.OBJECT:
@@ -208,6 +249,8 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				out.addCode(start_pos, size);
 			} else {
 				pushStorage(size + 1);
+				pushState(CatspeakCompilerState.OBJECT);
+				pushState(CatspeakCompilerState.ARG);
 				if (consume(CatspeakToken.DOT)) {
 					expects(CatspeakToken.IDENTIFIER, "expected identifier after unary `.` operator");
 					out.addCode(pos, CatspeakOpCode.PUSH);
@@ -215,8 +258,6 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				} else {
 					pushState(CatspeakCompilerState.ARG);
 				}
-				pushState(CatspeakCompilerState.ARG,
-						CatspeakCompilerState.OBJECT);
 			}
 			break;
 		default:

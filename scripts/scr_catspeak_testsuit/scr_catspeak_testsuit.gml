@@ -3,7 +3,7 @@
  * Kat @katsaii
  */
 
-var src = @'{.a 1;.b 2}';
+var src = @'{.a "hi";.b 2}.a';
 var chunk = catspeak_eagar_compile(src);
 show_message(chunk);
 var vm = new CatspeakVM()
