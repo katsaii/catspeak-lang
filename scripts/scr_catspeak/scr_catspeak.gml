@@ -1047,6 +1047,31 @@ function catspeak_eagar_compile(_str) {
 	return out;
 }
 
+/// @desc Handles the creation of interfaces to be used by the Catspeak VM.
+function CatspeakVMInterface() constructor {
+	vars = { };
+	/// @desc Inserts a new constant into to the interface.
+	/// @param {string} name The name of the constant.
+	/// @param {value} value The value of the constant.
+	static addConstant = function(_name, _value) {
+		vars[$ _name] = _value;
+		return self;
+	}
+	/// @desc Inserts a new function into to the interface.
+	/// @param {string} name The name of the function.
+	/// @param {value} method_or_script_id The reference to the function.
+	static addFunction = function(_name, _value) {
+		var f = _value;
+		if not (is_method(f)) {
+			// this is so that unexposed functions cannot be enumerated
+			// by a malicious user in order to access important functions
+			f = method(undefined, f);
+		}
+		vars[$ _name] = f;
+		return self;
+	}
+}
+
 /// @desc Represents a type of configuration option.
 enum CatspeakVMOption {
 	GLOBAL_VISIBILITY,
@@ -1056,7 +1081,8 @@ enum CatspeakVMOption {
 
 /// @desc Handles the execution of a single Catspeak chunk.
 function CatspeakVM() constructor {
-	interface = { };
+	interfaces = [];
+	interfaceCount = 0;
 	binding = { };
 	resultHandler = undefined;
 	chunks = [];
@@ -1101,32 +1127,11 @@ function CatspeakVM() constructor {
 	static getWorkspace = function() {
 		return binding;
 	}
-	/// @desc Adds an interface containing constants to this VM.
+	/// @desc Adds an interface to this VM.
 	/// @param {struct} vars The context to assign.
-	static addConstantInterface = function(_vars) {
-		var names = variable_struct_get_names(_vars);
-		var name_count = array_length(names);
-		for (var i = name_count - 1; i >= 0; i -= 1) {
-			var name = names[i];
-			interface[$ name] = _vars[$ name];
-		}
-		return self;
-	}
-	/// @desc Adds an interface containing methods to this VM.
-	/// @param {struct} vars The context to assign.
-	static addFunctionInterface = function(_vars) {
-		var names = variable_struct_get_names(_vars);
-		var name_count = array_length(names);
-		for (var i = name_count - 1; i >= 0; i -= 1) {
-			var name = names[i];
-			var f = _vars[$ name];
-			if not (is_method(f)) {
-				// this is so that unexposed functions cannot be enumerated
-				// by a malicious user in order to access important functions
-				f = method(undefined, f);
-			}
-			interface[$ name] = f;
-		}
+	static addInterface = function(_interface) {
+		array_push(interfaces, _interface.vars);
+		interfaceCount += 1;
 		return self;
 	}
 	/// @desc Sets a configuration option.
@@ -1193,9 +1198,13 @@ function CatspeakVM() constructor {
 	static getVariable = function(_name) {
 		if (variable_struct_exists(binding, _name)) {
 			return binding[$ _name];
-		} else if (variable_struct_exists(interface, _name)) {
-			return interface[$ _name];
 		} else {
+			for (var i = interfaceCount - 1; i >= 0; i -= 1) {
+				var interface = interfaces[i];
+				if (variable_struct_exists(interface, _name)) {
+					return interface[$ _name];
+				}
+			}
 			return undefined;
 		}
 	}
@@ -1422,18 +1431,18 @@ function CatspeakVM() constructor {
 }
 
 var src = @'
-set a : { .a "hi"; .b "hello"; };
-set a.b : ["nice1";"nice2";"nice3"];
-show_message list;
-set list.[2] : "uwah"
-show_message : [list.[0]; list.[1]; list.[2]]
+add list 1 2 3
+print [
+	list.[0]
+	list.[1]
+	list.[2]
+]
 ';
 var chunk = catspeak_eagar_compile(src);
 var vm = new CatspeakVM()
-		.addConstantInterface({ list : ds_list_create() })
-		.addConstantInterface(catspeak_ext_gml_constants())
-		.addFunctionInterface(catspeak_ext_gml_functions())
-		.addFunctionInterface(catspeak_ext_gml_operators())
+		.addInterface(new CatspeakVMInterface()
+				.addConstant("list", ds_list_create())
+				.addFunction("add", ds_list_add))
 		.setOption(CatspeakVMOption.GLOBAL_VISIBILITY, true)
 		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
 			show_debug_message("result: " + string(_result));
