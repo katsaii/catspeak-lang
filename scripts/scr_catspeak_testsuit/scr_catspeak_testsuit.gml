@@ -3,10 +3,14 @@
  * Kat @katsaii
  */
 
-var src = @'{.a "hi";.b 2}.a';
+var src = @'show : [(show "hi" "hello"); "wtf"]';
 var chunk = catspeak_eagar_compile(src);
 show_message(chunk);
 var vm = new CatspeakVM()
+		.addInterface(new CatspeakVMInterface()
+				.addFunction("show", function(_a, _b) {
+					show_message([_a, _b]);
+				}))
 		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
 			show_debug_message("result: " + string(_result));
 		});

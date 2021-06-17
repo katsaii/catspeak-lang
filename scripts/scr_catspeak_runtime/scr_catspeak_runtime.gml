@@ -190,7 +190,7 @@ function CatspeakVM() constructor {
 	/// @param {real} n The number of elements to pop from the stack.
 	static popMany = function(_n) {
 		var values = array_create(_n);
-		for (var i = 0; i < _n; i += 1) {
+		for (var i = _n - 1; i >= 0; i -= 1) {
 			values[@ i] = pop();
 		}
 		return values
@@ -353,11 +353,7 @@ function CatspeakVM() constructor {
 		case CatspeakOpCode.MAKE_ARRAY:
 			pc += 1;
 			var size = code[pc];
-			var container = array_create(size);
-			for (var i = 0; i < size; i += 1) {
-				var value = pop();
-				container[@ i] = value;
-			}
+			var container = popMany(size);
 			push(container);
 			break;
 		case CatspeakOpCode.MAKE_OBJECT:
@@ -392,11 +388,11 @@ function CatspeakVM() constructor {
 		case CatspeakOpCode.CALL:
 			pc += 1;
 			var arg_count = code[pc];
+			var args = popMany(arg_count);
 			var callsite = pop();
 			var ty = typeof(callsite);
 			switch (ty) {
 			case "method":
-				var args = popMany(arg_count);
 				var result = executeMethod(callsite, args);
 				push(result);
 				break;
