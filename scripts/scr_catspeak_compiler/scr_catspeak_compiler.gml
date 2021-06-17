@@ -6,9 +6,12 @@
 /// @desc Represents a type of compiler state.
 enum CatspeakCompilerState {
 	EXPRESSION,
+	ARG,
 	TERMINAL,
 	GROUPING_BEGIN,
-	GROUPING_END
+	GROUPING_END,
+	ARRAY,
+	OBJECT
 }
 
 /// @desc Displays the compiler state as a string.
@@ -16,9 +19,12 @@ enum CatspeakCompilerState {
 function catspeak_compiler_state_render(_state) {
 	switch (_state) {
 	case CatspeakCompilerState.EXPRESSION: return "EXPRESSION";
+	case CatspeakCompilerState.ARG: return "ARG";
 	case CatspeakCompilerState.TERMINAL: return "TERMINAL";
 	case CatspeakCompilerState.GROUPING_BEGIN: return "GROUPING_BEGIN";
 	case CatspeakCompilerState.GROUPING_END: return "GROUPING_END";
+	case CatspeakCompilerState.ARRAY: return "ARRAY";
+	case CatspeakCompilerState.OBJECT: return "OBJECT";
 	default: return "<unknown>";
 	}
 }
@@ -34,7 +40,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 	lexeme = lexer.getLexeme();
 	peeked = lexer.next();
 	instructionStack = [CatspeakCompilerState.EXPRESSION];
-	diagnosticStack = [];
+	storageStack = [];
 	/// @desc Adds a new compiler state to the instruction stack.
 	/// @param {CatspeakCompilerState} state The state to insert.
 	/// @param {CatspeakCompilerState} ... Additional states.
@@ -47,6 +53,20 @@ function CatspeakCompiler(_lexer, _out) constructor {
 	/// @desc Pops the top state from the instruction stack.
 	static popState = function() {
 		return array_pop(instructionStack);
+	}
+	/// @desc Adds a new value to the storage stack.
+	/// @param {value} value The value to store.
+	/// @param {value} ... Additional values.
+	static pushStorage = function() {
+		for (var i = 0; i < argument_count; i += 1) {
+			var value = argument[i];
+			array_push(storageStack, value);
+		}
+	}
+	/// @desc Pops the top value from the storage stack.
+	/// @param {value} value The value to store.
+	static popStorage = function() {
+		return array_pop(storageStack);
 	}
 	/// @desc Returns the current buffer position.
 	static getPosition = function() {
@@ -125,6 +145,9 @@ function CatspeakCompiler(_lexer, _out) constructor {
 		var state = popState();
 		switch (state) {
 		case CatspeakCompilerState.EXPRESSION:
+			pushState(CatspeakCompilerState.ARG);
+			break;
+		case CatspeakCompilerState.ARG:
 			pushState(CatspeakCompilerState.TERMINAL);
 			break;
 		case CatspeakCompilerState.TERMINAL:
@@ -141,20 +164,86 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				out.addCode(pos, CatspeakOpCode.PUSH);
 				out.addCode(pos, real(lexeme));
 			} else {
-				pushState(CatspeakCompilerState.GROUPING_BEGIN,
-						CatspeakCompilerState.EXPRESSION,
-						CatspeakCompilerState.GROUPING_END);
+				pushState(CatspeakCompilerState.GROUPING_BEGIN);
 			}
 			break;
 		case CatspeakCompilerState.GROUPING_BEGIN:
-			expects(CatspeakToken.PAREN_LEFT, "unexpected symbol in expression");
+			if (consume(CatspeakToken.COLON)) {
+				pushState(CatspeakCompilerState.EXPRESSION);
+			} else if (consume(CatspeakToken.PAREN_LEFT)) {
+				pushState(CatspeakCompilerState.EXPRESSION,
+						CatspeakCompilerState.GROUPING_END);
+			} else if (consume(CatspeakToken.BOX_LEFT)) {
+				pushStorage(pos, 0); // store the source position and array length
+				pushState(CatspeakCompilerState.ARRAY);
+			} else if (consume(CatspeakToken.BRACE_LEFT)) {
+				pushStorage(pos, 0);
+				pushState(CatspeakCompilerState.OBJECT);
+			} else {
+				errorAndAdvance("unexpected symbol in expression");
+			}
 			break;
 		case CatspeakCompilerState.GROUPING_END:
 			expects(CatspeakToken.PAREN_RIGHT, "expected closing `)` in grouping");
+			break;
+		case CatspeakCompilerState.ARRAY:
+			var size = popStorage();
+			while (consume(CatspeakToken.SEMICOLON)) { }
+			if (consume(CatspeakToken.BOX_RIGHT)) {
+				var start_pos = popStorage();
+				out.addCode(start_pos, CatspeakOpCode.MAKE_ARRAY);
+				out.addCode(start_pos, size);
+			} else {
+				pushStorage(size + 1);
+				pushState(CatspeakCompilerState.EXPRESSION,
+						CatspeakCompilerState.ARRAY);
+			}
+			break;
+		case CatspeakCompilerState.OBJECT:
+			var size = popStorage();
+			while (consume(CatspeakToken.SEMICOLON)) { }
+			if (consume(CatspeakToken.BRACE_RIGHT)) {
+				var start_pos = popStorage();
+				out.addCode(start_pos, CatspeakOpCode.MAKE_OBJECT);
+				out.addCode(start_pos, size);
+			} else {
+				pushStorage(size + 1);
+				if (consume(CatspeakToken.DOT)) {
+					expects(CatspeakToken.IDENTIFIER, "expected identifier after unary `.` operator");
+					out.addCode(pos, CatspeakOpCode.PUSH);
+					out.addCode(pos, lexeme);
+				} else {
+					pushState(CatspeakCompilerState.ARG);
+				}
+				pushState(CatspeakCompilerState.ARG,
+						CatspeakCompilerState.OBJECT);
+			}
 			break;
 		default:
 			error("unknown compiler instruction `" + string(inst) + "` (" + catspeak_compiler_state_render(inst) + ")");
 			break;
 		}
+		if not (inProgress()) {
+			// code generation complete, add a final return code
+			out.addCode(pos, CatspeakOpCode.PRINT); // temporary
+			out.addCode(pos, CatspeakOpCode.PUSH);
+			out.addCode(pos, undefined);
+			out.addCode(pos, CatspeakOpCode.RETURN);
+		}
 	}
+}
+
+/// @desc Compiles this string and returns the resulting intcode program.
+/// @param {string} str The string that contains the source code.
+function catspeak_eagar_compile(_str) {
+	var buff = catspeak_string_to_buffer(_str);
+	var scanner = new CatspeakScanner(buff);
+	var lexer = new CatspeakLexer(scanner);
+	var out = new CatspeakChunk();
+	var compiler = new CatspeakCompiler(lexer, out);
+	while (compiler.inProgress()) {
+		compiler.generateCode();
+	}
+	buffer_delete(buff);
+	return out;
 }

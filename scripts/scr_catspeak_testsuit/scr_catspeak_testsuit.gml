@@ -3,6 +3,18 @@
  * Kat @katsaii
  */
 
+var src = @'{.a 1;.b 2}';
+var chunk = catspeak_eagar_compile(src);
+show_message(chunk);
+var vm = new CatspeakVM()
+		.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
+			show_debug_message("result: " + string(_result));
+		});
+vm.addChunk(chunk);
+while (vm.inProgress()) {
+	vm.computeProgram();
+}
+
 /*
 var src = @'
 add list 1 2 3

@@ -476,14 +476,3 @@ function CatspeakCodegen(_buff, _out) constructor {
 		return true;
 	}
 }
-
-/// @desc Compiles this string and returns the resulting intcode program.
-/// @param {string} str The string that contains the source code.
-function catspeak_eagar_compile(_str) {
-	var buff = catspeak_string_to_buffer(_str);
-	var out = new CatspeakChunk();
-	var codegen = new CatspeakCodegen(buff, out);
-	while (codegen.generateCode()) { }
-	buffer_delete(buff);
-	return out;
-}

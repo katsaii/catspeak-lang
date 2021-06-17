@@ -365,8 +365,8 @@ function CatspeakVM() constructor {
 			var size = code[pc];
 			var container = { };
 			repeat (size) {
-				var key = pop();
 				var value = pop();
+				var key = pop();
 				container[$ string(key)] = value;
 			}
 			push(container);
