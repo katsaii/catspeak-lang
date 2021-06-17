@@ -984,6 +984,11 @@ function CatspeakCodegen(_buff, _out) constructor {
 				error(_term, "invalid left value");
 			}
 			break;
+		case CatspeakIRKind.SEQUENCE:
+			var stmt_count = array_length(inner);
+			for (var i = 0; i < stmt_count; i += 1) {
+				visitTerm(inner[i]);
+			}
 		case CatspeakIRKind.CONDITIONAL:
 			error(_term, "conditional unimplemented");
 			break;
