@@ -3,7 +3,7 @@
  * Kat @katsaii
  */
 
-var src = @'1 + -2 * 3';
+var src = @'print [1;2;4];';
 var chunk = catspeak_eagar_compile(src);
 show_message(chunk);
 var vm = new CatspeakVM()

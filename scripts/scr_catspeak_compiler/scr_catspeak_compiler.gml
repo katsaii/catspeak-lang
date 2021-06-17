@@ -5,6 +5,11 @@
 
 /// @desc Represents a type of compiler state.
 enum CatspeakCompilerState {
+	PROGRAM,
+	STATEMENT,
+	PRINT,
+	RETURN,
+	POP_VALUE,
 	EXPRESSION,
 	BINARY_BEGIN,
 	BINARY_END,
@@ -25,6 +30,11 @@ enum CatspeakCompilerState {
 /// @param {CatspeakCompilerState} state The state to display.
 function catspeak_compiler_state_render(_state) {
 	switch (_state) {
+	case CatspeakCompilerState.PROGRAM: return "PROGRAM";
+	case CatspeakCompilerState.STATEMENT: return "STATEMENT";
+	case CatspeakCompilerState.PRINT: return "PRINT";
+	case CatspeakCompilerState.RETURN: return "RETURN";
+	case CatspeakCompilerState.POP_VALUE: return "POP_VALUE";
 	case CatspeakCompilerState.EXPRESSION: return "EXPRESSION";
 	case CatspeakCompilerState.BINARY_BEGIN: return "BINARY_BEGIN";
 	case CatspeakCompilerState.BINARY_END: return "BINARY_END";
@@ -53,7 +63,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 	pos = lexer.getPosition();
 	lexeme = lexer.getLexeme();
 	peeked = lexer.next();
-	instructionStack = [CatspeakCompilerState.EXPRESSION];
+	instructionStack = [CatspeakCompilerState.PROGRAM];
 	storageStack = [];
 	/// @desc Adds a new compiler state to the instruction stack.
 	/// @param {CatspeakCompilerState} state The state to insert.
@@ -154,6 +164,44 @@ function CatspeakCompiler(_lexer, _out) constructor {
 	static generateCode = function() {
 		var state = popState();
 		switch (state) {
+		case CatspeakCompilerState.PROGRAM:
+			if not (matches(CatspeakToken.EOF)) {
+				pushState(CatspeakCompilerState.PROGRAM);
+				pushState(CatspeakCompilerState.STATEMENT);
+			}
+			break;
+		case CatspeakCompilerState.STATEMENT:
+			if (consume(CatspeakToken.SEMICOLON)) {
+				// do nothing
+			} else if (consume(CatspeakToken.SET)) {
+				error("set statements not implemented");
+			} else if (consume(CatspeakToken.IF)) {
+				error("if statements not implemented");
+			} else if (consume(CatspeakToken.WHILE)) {
+				error("while loops not implemented");
+			} else if (consume(CatspeakToken.PRINT)) {
+				pushState(CatspeakCompilerState.PRINT);
+				pushState(CatspeakCompilerState.ARG);
+			} else if (consume(CatspeakToken.RETURN)) {
+				pushState(CatspeakCompilerState.RETURN);
+				pushState(CatspeakCompilerState.ARG);
+			} else {
+				pushState(CatspeakCompilerState.POP_VALUE);
+				pushState(CatspeakCompilerState.EXPRESSION);
+			}
+			break;
+		case CatspeakCompilerState.PRINT:
+			expectsSemicolon("after print statements");
+			out.addCode(pos, CatspeakOpCode.PRINT);
+			break;
+		case CatspeakCompilerState.RETURN:
+			expectsSemicolon("after return statements");
+			out.addCode(pos, CatspeakOpCode.RETURN);
+			break;
+		case CatspeakCompilerState.POP_VALUE:
+			expectsSemicolon("after expression statements");
+			out.addCode(pos, CatspeakOpCode.POP);
+			break;
 		case CatspeakCompilerState.EXPRESSION:
 			pushStorage(CatspeakToken.__OPERATORS_BEGIN__ + 1);
 			pushState(CatspeakCompilerState.BINARY_BEGIN);
@@ -332,7 +380,6 @@ function CatspeakCompiler(_lexer, _out) constructor {
 		}
 		if not (inProgress()) {
 			// code generation complete, add a final return code
-			out.addCode(pos, CatspeakOpCode.PRINT); // temporary
 			out.addCode(pos, CatspeakOpCode.PUSH);
 			out.addCode(pos, undefined);
 			out.addCode(pos, CatspeakOpCode.RETURN);
