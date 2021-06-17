@@ -29,18 +29,39 @@ def generate_identifiers filepath, incompatible_names
     [constants, functions]
 end
 
-def show_map patterns, names, indent=2
-    contains = (patterns.fetch :contains, []).to_set
-    prefixes = patterns.fetch :prefixes, []
-    names.filter{|name| contains.include? name or prefixes.any?{|prefix| name.start_with? prefix + "_"}}
-            .map{|name| "_[$ \"#{name}\"] = #{name};"}.join("\n" + "\t" * indent)
-end
-
-gml_constants, gml_functions = generate_identifiers "./gml_builtins.txt", [
+$gml_constants, $gml_functions = generate_identifiers "./gml_builtins.txt", [
     "local", "gml_release_mode", "gml_pragma", "skeleton_animation_get_event_frames",
     "phy_particle_data_flag_color", "font_replace", "room", "room_persistent", "score",
     "lives", "health", "cursor_sprite"
 ].to_set
+
+def filter_map patterns, names
+    contains = (patterns.fetch :contains, []).to_set
+    prefixes = patterns.fetch :prefixes, []
+    names.filter{|name| contains.include? name or prefixes.any?{|prefix| name.start_with? prefix + "_"}}
+end
+
+def show_map_constants patterns, indent=3
+    (filter_map patterns, $gml_constants)
+            .map{|name| ".addConstant(\"#{name}\", #{name})"}
+            .join("\n" + "\t" * indent)
+end
+
+def show_map_functions patterns, indent=3
+    (filter_map patterns, $gml_functions)
+            .map{|name| ".addFunction(\"#{name}\", #{name})"}
+            .join("\n" + "\t" * indent)
+end
+
+def show_upper_name group
+    group.to_s.upcase
+end
+
+def show_upper_names groups, indent=1
+    groups.map{|group, _| show_upper_name group}
+            .join(",\n" + "\t" * indent)
+end
+
 gml_script_groups = {
     :instances => {
         :contains => ["all", "noone", "global"],
@@ -86,7 +107,7 @@ gml_script_groups = {
             "animcurvetype"
         ]
     },
-    :data_structures => {
+    :collections => {
         :prefixes => [
             "path", "mp", "array", "struct", "ds", "highscore", "buffer"
         ]
@@ -113,7 +134,7 @@ gml_script_groups = {
     :audio => {
         :prefixes => ["audio"]
     },
-    :drawing => {
+    :graphics => {
         :contains => [
             "merge_color", "merge_colour", "fa_left", "fa_center", "fa_right",
             "fa_top", "fa_middle", "fa_bottom"
@@ -160,78 +181,49 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 	 * Kat @katsaii
 	 */
 
-	/// @desc Returns arithmetic operators as a struct.
-	function catspeak_ext_gml_operators() {
-		static vars = (function() {
-			var _ = { };
-			_[$ "+"] = function(_l, _r) { return _l + _r };
-			_[$ "-"] = function(_l, _r) { return _r == undefined ? -_l : _l - _r };
-			_[$ "*"] = function(_l, _r) { return _l * _r };
-			_[$ "/"] = function(_l, _r) { return _l / _r };
-			_[$ "%"] = function(_l, _r) { return _l % _r };
-			_[$ "mod"] = _[$ "%"];
-			_[$ "div"] = function(_l, _r) { return _l div _r };
-			_[$ "|"] = function(_l, _r) { return _l | _r };
-			_[$ "&"] = function(_l, _r) { return _l & _r };
-			_[$ "^"] = function(_l, _r) { return _l ^ _r };
-			_[$ "~"] = function(_x) { return ~_x };
-			_[$ "<<"] = function(_l, _r) { return _l << _r };
-			_[$ ">>"] = function(_l, _r) { return _l >> _r };
-			_[$ "||"] = function(_l, _r) { return _l || _r };
-			_[$ "or"] = _[$ "||"];
-			_[$ "&&"] = function(_l, _r) { return _l && _r };
-			_[$ "and"] = _[$ "&&"];
-			_[$ "^^"] = function(_l, _r) { return _l ^^ _r };
-			_[$ "xor"] = _[$ "^^"];
-			_[$ "!"] = function(_x) { return !_x };
-			_[$ "not"] = _[$ "!"];
-			_[$ "=="] = function(_l, _r) { return _l == _r };
-			_[$ "="] = _[$ "=="];
-			_[$ "!="] = function(_l, _r) { return _l != _r };
-			_[$ "<>"] = _[$ "!="];
-			_[$ ">="] = function(_l, _r) { return _l >= _r };
-			_[$ "<="] = function(_l, _r) { return _l <= _r };
-			_[$ ">"] = function(_l, _r) { return _l > _r };
-			_[$ "<"] = function(_l, _r) { return _l < _r };
-			_[$ "!!"] = function(_x) { return is_numeric(_x) && _x };
-			return _;
-		})();
-		return vars;
+	/// @desc Represents the different types of GML interface exposed by Catspeak.
+	enum CatspeakExtGMLClass {
+		OPERATORS,
+		<%= show_upper_names gml_script_groups %>
 	}
 
-	/// @desc Returns the constants of the gml standard library as a struct.
-	/// @param {string} class The class of constants to include.
-	function catspeak_ext_gml_constants(_class) {
+	/// @desc Returns an interface of the gml standard library.
+	/// @param {CatspeakExtGMLClass} class The class of constants to include.
+	function catspeak_ext_gml_interface(_class) {
+		static vars_operators = new CatspeakVMInterface()
+				.addFunction("+", function(_l, _r) { return _l + _r; })
+				.addFunction("-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; })
+				.addFunction("*", function(_l, _r) { return _l * _r; })
+				.addFunction("/", function(_l, _r) { return _l / _r; })
+				.addFunction("%", function(_l, _r) { return _l % _r; })
+				.addFunction("div", function(_l, _r) { return _l div _r; })
+				.addFunction("|", function(_l, _r) { return _l | _r; })
+				.addFunction("&", function(_l, _r) { return _l & _r; })
+				.addFunction("^", function(_l, _r) { return _l ^ _r; })
+				.addFunction("~", function(_x) { return ~_x; })
+				.addFunction("<<", function(_l, _r) { return _l << _r; })
+				.addFunction(">>", function(_l, _r) { return _l >> _r; })
+				.addFunction("||", function(_l, _r) { return _l || _r; })
+				.addFunction("&&", function(_l, _r) { return _l && _r; })
+				.addFunction("^^", function(_l, _r) { return _l ^^ _r; })
+				.addFunction("!", function(_x) { return !_x; })
+				.addFunction("==", function(_l, _r) { return _l == _r; })
+				.addFunction("!=", function(_l, _r) { return _l != _r; })
+				.addFunction(">=", function(_l, _r) { return _l >= _r; })
+				.addFunction("<=", function(_l, _r) { return _l <= _r; })
+				.addFunction(">", function(_l, _r) { return _l > _r; })
+				.addFunction("<", function(_l, _r) { return _l < _r; })
+				.addFunction("!!", function(_x) { return is_numeric(_x) && _x; });
 	<% gml_script_groups.each do |group, keywords| -%>
-		static vars_<%= group %> = (function() {
-			var _ = { };
-			<%= show_map keywords, gml_constants %>
-			return _;
-		})();
+		static vars_<%= group %> = new CatspeakVMInterface()
+				<%= show_map_constants keywords %>
+				<%= show_map_functions keywords %>;
 	<% end -%>
-		static vars_default = { };
+		static vars_default = new CatspeakVMInterface();
 		switch (_class) {
+		case CatspeakExtGMLClass.OPERATORS: return vars_operators;
 	<% gml_script_groups.each do |group, _| -%>
-		case "<%= group %>": return vars_<%= group %>;
-	<% end -%>
-		default: return vars_default;
-		}
-	}
-
-	/// @desc Returns the functions of the gml standard library as a struct.
-	/// @param {string} class The class of constants to include.
-	function catspeak_ext_gml_functions(_class) {
-	<% gml_script_groups.each do |group, keywords| -%>
-		static vars_<%= group %> = (function() {
-			var _ = { };
-			<%= show_map keywords, gml_functions %>
-			return _;
-		})();
-	<% end -%>
-		static vars_default = { };
-		switch (_class) {
-	<% gml_script_groups.each do |group, _| -%>
-		case "<%= group %>": return vars_<%= group %>;
+		case CatspeakExtGMLClass.<%= show_upper_name group %>: return vars_<%= group %>;
 	<% end -%>
 		default: return vars_default;
 		}

@@ -3,2939 +3,2788 @@
  * Kat @katsaii
  */
 
-/// @desc Returns arithmetic operators as a struct.
-function catspeak_ext_gml_operators() {
-	static vars = (function() {
-		var _ = { };
-		_[$ "+"] = function(_l, _r) { return _l + _r };
-		_[$ "-"] = function(_l, _r) { return _r == undefined ? -_l : _l - _r };
-		_[$ "*"] = function(_l, _r) { return _l * _r };
-		_[$ "/"] = function(_l, _r) { return _l / _r };
-		_[$ "%"] = function(_l, _r) { return _l % _r };
-		_[$ "mod"] = _[$ "%"];
-		_[$ "div"] = function(_l, _r) { return _l div _r };
-		_[$ "|"] = function(_l, _r) { return _l | _r };
-		_[$ "&"] = function(_l, _r) { return _l & _r };
-		_[$ "^"] = function(_l, _r) { return _l ^ _r };
-		_[$ "~"] = function(_x) { return ~_x };
-		_[$ "<<"] = function(_l, _r) { return _l << _r };
-		_[$ ">>"] = function(_l, _r) { return _l >> _r };
-		_[$ "||"] = function(_l, _r) { return _l || _r };
-		_[$ "or"] = _[$ "||"];
-		_[$ "&&"] = function(_l, _r) { return _l && _r };
-		_[$ "and"] = _[$ "&&"];
-		_[$ "^^"] = function(_l, _r) { return _l ^^ _r };
-		_[$ "xor"] = _[$ "^^"];
-		_[$ "!"] = function(_x) { return !_x };
-		_[$ "not"] = _[$ "!"];
-		_[$ "=="] = function(_l, _r) { return _l == _r };
-		_[$ "="] = _[$ "=="];
-		_[$ "!="] = function(_l, _r) { return _l != _r };
-		_[$ "<>"] = _[$ "!="];
-		_[$ ">="] = function(_l, _r) { return _l >= _r };
-		_[$ "<="] = function(_l, _r) { return _l <= _r };
-		_[$ ">"] = function(_l, _r) { return _l > _r };
-		_[$ "<"] = function(_l, _r) { return _l < _r };
-		_[$ "!!"] = function(_x) { return is_numeric(_x) && _x };
-		return _;
-	})();
-	return vars;
+/// @desc Represents the different types of GML interface exposed by Catspeak.
+enum CatspeakExtGMLClass {
+	OPERATORS,
+	INSTANCES,
+	POINTERS,
+	UNSAFE,
+	INTROSPECTION,
+	MATHS,
+	ANIMATION,
+	COLLECTIONS,
+	RANDOM,
+	STRINGS,
+	SCRIPTS,
+	INPUT,
+	AUDIO,
+	GRAPHICS,
+	LAYERS,
+	DISPLAY,
+	DEBUG,
+	FILES,
+	PARTICLES,
+	DEVICE
 }
 
-/// @desc Returns the constants of the gml standard library as a struct.
-/// @param {string} class The class of constants to include.
-function catspeak_ext_gml_constants(_class) {
-	static vars_instances = (function() {
-		var _ = { };
-		_[$ "all"] = all;
-		_[$ "noone"] = noone;
-		_[$ "global"] = global;
-		_[$ "phy_joint_anchor_1_x"] = phy_joint_anchor_1_x;
-		_[$ "phy_joint_anchor_1_y"] = phy_joint_anchor_1_y;
-		_[$ "phy_joint_anchor_2_x"] = phy_joint_anchor_2_x;
-		_[$ "phy_joint_anchor_2_y"] = phy_joint_anchor_2_y;
-		_[$ "phy_joint_reaction_force_x"] = phy_joint_reaction_force_x;
-		_[$ "phy_joint_reaction_force_y"] = phy_joint_reaction_force_y;
-		_[$ "phy_joint_reaction_torque"] = phy_joint_reaction_torque;
-		_[$ "phy_joint_motor_speed"] = phy_joint_motor_speed;
-		_[$ "phy_joint_angle"] = phy_joint_angle;
-		_[$ "phy_joint_motor_torque"] = phy_joint_motor_torque;
-		_[$ "phy_joint_max_motor_torque"] = phy_joint_max_motor_torque;
-		_[$ "phy_joint_translation"] = phy_joint_translation;
-		_[$ "phy_joint_speed"] = phy_joint_speed;
-		_[$ "phy_joint_motor_force"] = phy_joint_motor_force;
-		_[$ "phy_joint_max_motor_force"] = phy_joint_max_motor_force;
-		_[$ "phy_joint_length_1"] = phy_joint_length_1;
-		_[$ "phy_joint_length_2"] = phy_joint_length_2;
-		_[$ "phy_joint_damping_ratio"] = phy_joint_damping_ratio;
-		_[$ "phy_joint_frequency"] = phy_joint_frequency;
-		_[$ "phy_joint_lower_angle_limit"] = phy_joint_lower_angle_limit;
-		_[$ "phy_joint_upper_angle_limit"] = phy_joint_upper_angle_limit;
-		_[$ "phy_joint_angle_limits"] = phy_joint_angle_limits;
-		_[$ "phy_joint_max_length"] = phy_joint_max_length;
-		_[$ "phy_joint_max_torque"] = phy_joint_max_torque;
-		_[$ "phy_joint_max_force"] = phy_joint_max_force;
-		_[$ "phy_debug_render_aabb"] = phy_debug_render_aabb;
-		_[$ "phy_debug_render_collision_pairs"] = phy_debug_render_collision_pairs;
-		_[$ "phy_debug_render_coms"] = phy_debug_render_coms;
-		_[$ "phy_debug_render_core_shapes"] = phy_debug_render_core_shapes;
-		_[$ "phy_debug_render_joints"] = phy_debug_render_joints;
-		_[$ "phy_debug_render_obb"] = phy_debug_render_obb;
-		_[$ "phy_debug_render_shapes"] = phy_debug_render_shapes;
-		_[$ "phy_particle_flag_water"] = phy_particle_flag_water;
-		_[$ "phy_particle_flag_zombie"] = phy_particle_flag_zombie;
-		_[$ "phy_particle_flag_wall"] = phy_particle_flag_wall;
-		_[$ "phy_particle_flag_spring"] = phy_particle_flag_spring;
-		_[$ "phy_particle_flag_elastic"] = phy_particle_flag_elastic;
-		_[$ "phy_particle_flag_viscous"] = phy_particle_flag_viscous;
-		_[$ "phy_particle_flag_powder"] = phy_particle_flag_powder;
-		_[$ "phy_particle_flag_tensile"] = phy_particle_flag_tensile;
-		_[$ "phy_particle_flag_colourmixing"] = phy_particle_flag_colourmixing;
-		_[$ "phy_particle_flag_colormixing"] = phy_particle_flag_colormixing;
-		_[$ "phy_particle_group_flag_solid"] = phy_particle_group_flag_solid;
-		_[$ "phy_particle_group_flag_rigid"] = phy_particle_group_flag_rigid;
-		_[$ "phy_particle_data_flag_typeflags"] = phy_particle_data_flag_typeflags;
-		_[$ "phy_particle_data_flag_position"] = phy_particle_data_flag_position;
-		_[$ "phy_particle_data_flag_velocity"] = phy_particle_data_flag_velocity;
-		_[$ "phy_particle_data_flag_colour"] = phy_particle_data_flag_colour;
-		_[$ "phy_particle_data_flag_category"] = phy_particle_data_flag_category;
-		return _;
-	})();
-	static vars_pointers = (function() {
-		var _ = { };
-		_[$ "pointer_invalid"] = pointer_invalid;
-		_[$ "pointer_null"] = pointer_null;
-		return _;
-	})();
-	static vars_unsafe = (function() {
-		var _ = { };
-		_[$ "gamespeed_fps"] = gamespeed_fps;
-		_[$ "gamespeed_microseconds"] = gamespeed_microseconds;
-		_[$ "ev_create"] = ev_create;
-		_[$ "ev_destroy"] = ev_destroy;
-		_[$ "ev_step"] = ev_step;
-		_[$ "ev_alarm"] = ev_alarm;
-		_[$ "ev_keyboard"] = ev_keyboard;
-		_[$ "ev_mouse"] = ev_mouse;
-		_[$ "ev_collision"] = ev_collision;
-		_[$ "ev_other"] = ev_other;
-		_[$ "ev_draw"] = ev_draw;
-		_[$ "ev_draw_begin"] = ev_draw_begin;
-		_[$ "ev_draw_end"] = ev_draw_end;
-		_[$ "ev_draw_pre"] = ev_draw_pre;
-		_[$ "ev_draw_post"] = ev_draw_post;
-		_[$ "ev_keypress"] = ev_keypress;
-		_[$ "ev_keyrelease"] = ev_keyrelease;
-		_[$ "ev_trigger"] = ev_trigger;
-		_[$ "ev_left_button"] = ev_left_button;
-		_[$ "ev_right_button"] = ev_right_button;
-		_[$ "ev_middle_button"] = ev_middle_button;
-		_[$ "ev_no_button"] = ev_no_button;
-		_[$ "ev_left_press"] = ev_left_press;
-		_[$ "ev_right_press"] = ev_right_press;
-		_[$ "ev_middle_press"] = ev_middle_press;
-		_[$ "ev_left_release"] = ev_left_release;
-		_[$ "ev_right_release"] = ev_right_release;
-		_[$ "ev_middle_release"] = ev_middle_release;
-		_[$ "ev_mouse_enter"] = ev_mouse_enter;
-		_[$ "ev_mouse_leave"] = ev_mouse_leave;
-		_[$ "ev_mouse_wheel_up"] = ev_mouse_wheel_up;
-		_[$ "ev_mouse_wheel_down"] = ev_mouse_wheel_down;
-		_[$ "ev_global_left_button"] = ev_global_left_button;
-		_[$ "ev_global_right_button"] = ev_global_right_button;
-		_[$ "ev_global_middle_button"] = ev_global_middle_button;
-		_[$ "ev_global_left_press"] = ev_global_left_press;
-		_[$ "ev_global_right_press"] = ev_global_right_press;
-		_[$ "ev_global_middle_press"] = ev_global_middle_press;
-		_[$ "ev_global_left_release"] = ev_global_left_release;
-		_[$ "ev_global_right_release"] = ev_global_right_release;
-		_[$ "ev_global_middle_release"] = ev_global_middle_release;
-		_[$ "ev_joystick1_left"] = ev_joystick1_left;
-		_[$ "ev_joystick1_right"] = ev_joystick1_right;
-		_[$ "ev_joystick1_up"] = ev_joystick1_up;
-		_[$ "ev_joystick1_down"] = ev_joystick1_down;
-		_[$ "ev_joystick1_button1"] = ev_joystick1_button1;
-		_[$ "ev_joystick1_button2"] = ev_joystick1_button2;
-		_[$ "ev_joystick1_button3"] = ev_joystick1_button3;
-		_[$ "ev_joystick1_button4"] = ev_joystick1_button4;
-		_[$ "ev_joystick1_button5"] = ev_joystick1_button5;
-		_[$ "ev_joystick1_button6"] = ev_joystick1_button6;
-		_[$ "ev_joystick1_button7"] = ev_joystick1_button7;
-		_[$ "ev_joystick1_button8"] = ev_joystick1_button8;
-		_[$ "ev_joystick2_left"] = ev_joystick2_left;
-		_[$ "ev_joystick2_right"] = ev_joystick2_right;
-		_[$ "ev_joystick2_up"] = ev_joystick2_up;
-		_[$ "ev_joystick2_down"] = ev_joystick2_down;
-		_[$ "ev_joystick2_button1"] = ev_joystick2_button1;
-		_[$ "ev_joystick2_button2"] = ev_joystick2_button2;
-		_[$ "ev_joystick2_button3"] = ev_joystick2_button3;
-		_[$ "ev_joystick2_button4"] = ev_joystick2_button4;
-		_[$ "ev_joystick2_button5"] = ev_joystick2_button5;
-		_[$ "ev_joystick2_button6"] = ev_joystick2_button6;
-		_[$ "ev_joystick2_button7"] = ev_joystick2_button7;
-		_[$ "ev_joystick2_button8"] = ev_joystick2_button8;
-		_[$ "ev_outside"] = ev_outside;
-		_[$ "ev_boundary"] = ev_boundary;
-		_[$ "ev_game_start"] = ev_game_start;
-		_[$ "ev_game_end"] = ev_game_end;
-		_[$ "ev_room_start"] = ev_room_start;
-		_[$ "ev_room_end"] = ev_room_end;
-		_[$ "ev_no_more_lives"] = ev_no_more_lives;
-		_[$ "ev_animation_end"] = ev_animation_end;
-		_[$ "ev_end_of_path"] = ev_end_of_path;
-		_[$ "ev_no_more_health"] = ev_no_more_health;
-		_[$ "ev_user0"] = ev_user0;
-		_[$ "ev_user1"] = ev_user1;
-		_[$ "ev_user2"] = ev_user2;
-		_[$ "ev_user3"] = ev_user3;
-		_[$ "ev_user4"] = ev_user4;
-		_[$ "ev_user5"] = ev_user5;
-		_[$ "ev_user6"] = ev_user6;
-		_[$ "ev_user7"] = ev_user7;
-		_[$ "ev_user8"] = ev_user8;
-		_[$ "ev_user9"] = ev_user9;
-		_[$ "ev_user10"] = ev_user10;
-		_[$ "ev_user11"] = ev_user11;
-		_[$ "ev_user12"] = ev_user12;
-		_[$ "ev_user13"] = ev_user13;
-		_[$ "ev_user14"] = ev_user14;
-		_[$ "ev_user15"] = ev_user15;
-		_[$ "ev_outside_view0"] = ev_outside_view0;
-		_[$ "ev_outside_view1"] = ev_outside_view1;
-		_[$ "ev_outside_view2"] = ev_outside_view2;
-		_[$ "ev_outside_view3"] = ev_outside_view3;
-		_[$ "ev_outside_view4"] = ev_outside_view4;
-		_[$ "ev_outside_view5"] = ev_outside_view5;
-		_[$ "ev_outside_view6"] = ev_outside_view6;
-		_[$ "ev_outside_view7"] = ev_outside_view7;
-		_[$ "ev_boundary_view0"] = ev_boundary_view0;
-		_[$ "ev_boundary_view1"] = ev_boundary_view1;
-		_[$ "ev_boundary_view2"] = ev_boundary_view2;
-		_[$ "ev_boundary_view3"] = ev_boundary_view3;
-		_[$ "ev_boundary_view4"] = ev_boundary_view4;
-		_[$ "ev_boundary_view5"] = ev_boundary_view5;
-		_[$ "ev_boundary_view6"] = ev_boundary_view6;
-		_[$ "ev_boundary_view7"] = ev_boundary_view7;
-		_[$ "ev_animation_update"] = ev_animation_update;
-		_[$ "ev_animation_event"] = ev_animation_event;
-		_[$ "ev_web_image_load"] = ev_web_image_load;
-		_[$ "ev_web_sound_load"] = ev_web_sound_load;
-		_[$ "ev_web_async"] = ev_web_async;
-		_[$ "ev_dialog_async"] = ev_dialog_async;
-		_[$ "ev_web_iap"] = ev_web_iap;
-		_[$ "ev_web_cloud"] = ev_web_cloud;
-		_[$ "ev_web_networking"] = ev_web_networking;
-		_[$ "ev_web_steam"] = ev_web_steam;
-		_[$ "ev_social"] = ev_social;
-		_[$ "ev_push_notification"] = ev_push_notification;
-		_[$ "ev_async_save_load"] = ev_async_save_load;
-		_[$ "ev_audio_recording"] = ev_audio_recording;
-		_[$ "ev_audio_playback"] = ev_audio_playback;
-		_[$ "ev_system_event"] = ev_system_event;
-		_[$ "ev_broadcast_message"] = ev_broadcast_message;
-		_[$ "ev_step_normal"] = ev_step_normal;
-		_[$ "ev_step_begin"] = ev_step_begin;
-		_[$ "ev_step_end"] = ev_step_end;
-		_[$ "ev_gui"] = ev_gui;
-		_[$ "ev_gui_begin"] = ev_gui_begin;
-		_[$ "ev_gui_end"] = ev_gui_end;
-		_[$ "ev_cleanup"] = ev_cleanup;
-		_[$ "ev_gesture"] = ev_gesture;
-		_[$ "ev_gesture_tap"] = ev_gesture_tap;
-		_[$ "ev_gesture_double_tap"] = ev_gesture_double_tap;
-		_[$ "ev_gesture_drag_start"] = ev_gesture_drag_start;
-		_[$ "ev_gesture_dragging"] = ev_gesture_dragging;
-		_[$ "ev_gesture_drag_end"] = ev_gesture_drag_end;
-		_[$ "ev_gesture_flick"] = ev_gesture_flick;
-		_[$ "ev_gesture_pinch_start"] = ev_gesture_pinch_start;
-		_[$ "ev_gesture_pinch_in"] = ev_gesture_pinch_in;
-		_[$ "ev_gesture_pinch_out"] = ev_gesture_pinch_out;
-		_[$ "ev_gesture_pinch_end"] = ev_gesture_pinch_end;
-		_[$ "ev_gesture_rotate_start"] = ev_gesture_rotate_start;
-		_[$ "ev_gesture_rotating"] = ev_gesture_rotating;
-		_[$ "ev_gesture_rotate_end"] = ev_gesture_rotate_end;
-		_[$ "ev_global_gesture_tap"] = ev_global_gesture_tap;
-		_[$ "ev_global_gesture_double_tap"] = ev_global_gesture_double_tap;
-		_[$ "ev_global_gesture_drag_start"] = ev_global_gesture_drag_start;
-		_[$ "ev_global_gesture_dragging"] = ev_global_gesture_dragging;
-		_[$ "ev_global_gesture_drag_end"] = ev_global_gesture_drag_end;
-		_[$ "ev_global_gesture_flick"] = ev_global_gesture_flick;
-		_[$ "ev_global_gesture_pinch_start"] = ev_global_gesture_pinch_start;
-		_[$ "ev_global_gesture_pinch_in"] = ev_global_gesture_pinch_in;
-		_[$ "ev_global_gesture_pinch_out"] = ev_global_gesture_pinch_out;
-		_[$ "ev_global_gesture_pinch_end"] = ev_global_gesture_pinch_end;
-		_[$ "ev_global_gesture_rotate_start"] = ev_global_gesture_rotate_start;
-		_[$ "ev_global_gesture_rotating"] = ev_global_gesture_rotating;
-		_[$ "ev_global_gesture_rotate_end"] = ev_global_gesture_rotate_end;
-		_[$ "ty_real"] = ty_real;
-		_[$ "ty_string"] = ty_string;
-		_[$ "dll_cdecl"] = dll_cdecl;
-		_[$ "dll_stdcall"] = dll_stdcall;
-		_[$ "of_challenge_win"] = of_challenge_win;
-		_[$ "of_challenge_lose"] = of_challenge_lose;
-		_[$ "of_challenge_tie"] = of_challenge_tie;
-		_[$ "leaderboard_type_number"] = leaderboard_type_number;
-		_[$ "leaderboard_type_time_mins_secs"] = leaderboard_type_time_mins_secs;
-		_[$ "iap_ev_storeload"] = iap_ev_storeload;
-		_[$ "iap_ev_product"] = iap_ev_product;
-		_[$ "iap_ev_purchase"] = iap_ev_purchase;
-		_[$ "iap_ev_consume"] = iap_ev_consume;
-		_[$ "iap_ev_restore"] = iap_ev_restore;
-		_[$ "iap_storeload_ok"] = iap_storeload_ok;
-		_[$ "iap_storeload_failed"] = iap_storeload_failed;
-		_[$ "iap_status_uninitialised"] = iap_status_uninitialised;
-		_[$ "iap_status_unavailable"] = iap_status_unavailable;
-		_[$ "iap_status_loading"] = iap_status_loading;
-		_[$ "iap_status_available"] = iap_status_available;
-		_[$ "iap_status_processing"] = iap_status_processing;
-		_[$ "iap_status_restoring"] = iap_status_restoring;
-		_[$ "iap_failed"] = iap_failed;
-		_[$ "iap_unavailable"] = iap_unavailable;
-		_[$ "iap_available"] = iap_available;
-		_[$ "iap_purchased"] = iap_purchased;
-		_[$ "iap_canceled"] = iap_canceled;
-		_[$ "iap_refunded"] = iap_refunded;
-		_[$ "achievement_our_info"] = achievement_our_info;
-		_[$ "achievement_friends_info"] = achievement_friends_info;
-		_[$ "achievement_leaderboard_info"] = achievement_leaderboard_info;
-		_[$ "achievement_achievement_info"] = achievement_achievement_info;
-		_[$ "achievement_filter_all_players"] = achievement_filter_all_players;
-		_[$ "achievement_filter_friends_only"] = achievement_filter_friends_only;
-		_[$ "achievement_filter_favorites_only"] = achievement_filter_favorites_only;
-		_[$ "achievement_type_achievement_challenge"] = achievement_type_achievement_challenge;
-		_[$ "achievement_type_score_challenge"] = achievement_type_score_challenge;
-		_[$ "achievement_pic_loaded"] = achievement_pic_loaded;
-		_[$ "achievement_show_ui"] = achievement_show_ui;
-		_[$ "achievement_show_profile"] = achievement_show_profile;
-		_[$ "achievement_show_leaderboard"] = achievement_show_leaderboard;
-		_[$ "achievement_show_achievement"] = achievement_show_achievement;
-		_[$ "achievement_show_bank"] = achievement_show_bank;
-		_[$ "achievement_show_friend_picker"] = achievement_show_friend_picker;
-		_[$ "achievement_show_purchase_prompt"] = achievement_show_purchase_prompt;
-		_[$ "network_socket_tcp"] = network_socket_tcp;
-		_[$ "network_socket_udp"] = network_socket_udp;
-		_[$ "network_socket_ws"] = network_socket_ws;
-		_[$ "network_socket_bluetooth"] = network_socket_bluetooth;
-		_[$ "network_type_connect"] = network_type_connect;
-		_[$ "network_type_disconnect"] = network_type_disconnect;
-		_[$ "network_type_data"] = network_type_data;
-		_[$ "network_type_non_blocking_connect"] = network_type_non_blocking_connect;
-		_[$ "network_config_connect_timeout"] = network_config_connect_timeout;
-		_[$ "network_config_use_non_blocking_socket"] = network_config_use_non_blocking_socket;
-		_[$ "network_config_enable_reliable_udp"] = network_config_enable_reliable_udp;
-		_[$ "network_config_disable_reliable_udp"] = network_config_disable_reliable_udp;
-		_[$ "network_config_avoid_time_wait"] = network_config_avoid_time_wait;
-		_[$ "ov_friends"] = ov_friends;
-		_[$ "ov_community"] = ov_community;
-		_[$ "ov_players"] = ov_players;
-		_[$ "ov_settings"] = ov_settings;
-		_[$ "ov_gamegroup"] = ov_gamegroup;
-		_[$ "ov_achievements"] = ov_achievements;
-		_[$ "lb_sort_none"] = lb_sort_none;
-		_[$ "lb_sort_ascending"] = lb_sort_ascending;
-		_[$ "lb_sort_descending"] = lb_sort_descending;
-		_[$ "lb_disp_none"] = lb_disp_none;
-		_[$ "lb_disp_numeric"] = lb_disp_numeric;
-		_[$ "lb_disp_time_sec"] = lb_disp_time_sec;
-		_[$ "lb_disp_time_ms"] = lb_disp_time_ms;
-		_[$ "ugc_result_success"] = ugc_result_success;
-		_[$ "ugc_filetype_community"] = ugc_filetype_community;
-		_[$ "ugc_filetype_microtrans"] = ugc_filetype_microtrans;
-		_[$ "ugc_visibility_public"] = ugc_visibility_public;
-		_[$ "ugc_visibility_friends_only"] = ugc_visibility_friends_only;
-		_[$ "ugc_visibility_private"] = ugc_visibility_private;
-		_[$ "ugc_query_RankedByVote"] = ugc_query_RankedByVote;
-		_[$ "ugc_query_RankedByPublicationDate"] = ugc_query_RankedByPublicationDate;
-		_[$ "ugc_query_AcceptedForGameRankedByAcceptanceDate"] = ugc_query_AcceptedForGameRankedByAcceptanceDate;
-		_[$ "ugc_query_RankedByTrend"] = ugc_query_RankedByTrend;
-		_[$ "ugc_query_FavoritedByFriendsRankedByPublicationDate"] = ugc_query_FavoritedByFriendsRankedByPublicationDate;
-		_[$ "ugc_query_CreatedByFriendsRankedByPublicationDate"] = ugc_query_CreatedByFriendsRankedByPublicationDate;
-		_[$ "ugc_query_RankedByNumTimesReported"] = ugc_query_RankedByNumTimesReported;
-		_[$ "ugc_query_CreatedByFollowedUsersRankedByPublicationDate"] = ugc_query_CreatedByFollowedUsersRankedByPublicationDate;
-		_[$ "ugc_query_NotYetRated"] = ugc_query_NotYetRated;
-		_[$ "ugc_query_RankedByTotalVotesAsc"] = ugc_query_RankedByTotalVotesAsc;
-		_[$ "ugc_query_RankedByVotesUp"] = ugc_query_RankedByVotesUp;
-		_[$ "ugc_query_RankedByTextSearch"] = ugc_query_RankedByTextSearch;
-		_[$ "ugc_sortorder_CreationOrderDesc"] = ugc_sortorder_CreationOrderDesc;
-		_[$ "ugc_sortorder_CreationOrderAsc"] = ugc_sortorder_CreationOrderAsc;
-		_[$ "ugc_sortorder_TitleAsc"] = ugc_sortorder_TitleAsc;
-		_[$ "ugc_sortorder_LastUpdatedDesc"] = ugc_sortorder_LastUpdatedDesc;
-		_[$ "ugc_sortorder_SubscriptionDateDesc"] = ugc_sortorder_SubscriptionDateDesc;
-		_[$ "ugc_sortorder_VoteScoreDesc"] = ugc_sortorder_VoteScoreDesc;
-		_[$ "ugc_sortorder_ForModeration"] = ugc_sortorder_ForModeration;
-		_[$ "ugc_list_Published"] = ugc_list_Published;
-		_[$ "ugc_list_VotedOn"] = ugc_list_VotedOn;
-		_[$ "ugc_list_VotedUp"] = ugc_list_VotedUp;
-		_[$ "ugc_list_VotedDown"] = ugc_list_VotedDown;
-		_[$ "ugc_list_WillVoteLater"] = ugc_list_WillVoteLater;
-		_[$ "ugc_list_Favorited"] = ugc_list_Favorited;
-		_[$ "ugc_list_Subscribed"] = ugc_list_Subscribed;
-		_[$ "ugc_list_UsedOrPlayed"] = ugc_list_UsedOrPlayed;
-		_[$ "ugc_list_Followed"] = ugc_list_Followed;
-		_[$ "ugc_match_Items"] = ugc_match_Items;
-		_[$ "ugc_match_Items_Mtx"] = ugc_match_Items_Mtx;
-		_[$ "ugc_match_Items_ReadyToUse"] = ugc_match_Items_ReadyToUse;
-		_[$ "ugc_match_Collections"] = ugc_match_Collections;
-		_[$ "ugc_match_Artwork"] = ugc_match_Artwork;
-		_[$ "ugc_match_Videos"] = ugc_match_Videos;
-		_[$ "ugc_match_Screenshots"] = ugc_match_Screenshots;
-		_[$ "ugc_match_AllGuides"] = ugc_match_AllGuides;
-		_[$ "ugc_match_WebGuides"] = ugc_match_WebGuides;
-		_[$ "ugc_match_IntegratedGuides"] = ugc_match_IntegratedGuides;
-		_[$ "ugc_match_UsableInGame"] = ugc_match_UsableInGame;
-		_[$ "ugc_match_ControllerBindings"] = ugc_match_ControllerBindings;
-		return _;
-	})();
-	static vars_introspection = (function() {
-		var _ = { };
-		_[$ "asset_object"] = asset_object;
-		_[$ "asset_unknown"] = asset_unknown;
-		_[$ "asset_sprite"] = asset_sprite;
-		_[$ "asset_sound"] = asset_sound;
-		_[$ "asset_room"] = asset_room;
-		_[$ "asset_path"] = asset_path;
-		_[$ "asset_script"] = asset_script;
-		_[$ "asset_font"] = asset_font;
-		_[$ "asset_timeline"] = asset_timeline;
-		_[$ "asset_tiles"] = asset_tiles;
-		_[$ "asset_shader"] = asset_shader;
-		_[$ "asset_sequence"] = asset_sequence;
-		_[$ "asset_animationcurve"] = asset_animationcurve;
-		return _;
-	})();
-	static vars_maths = (function() {
-		var _ = { };
-		_[$ "undefined"] = undefined;
-		_[$ "true"] = true;
-		_[$ "false"] = false;
-		_[$ "pi"] = pi;
-		_[$ "NaN"] = NaN;
-		_[$ "infinity"] = infinity;
-		_[$ "matrix_view"] = matrix_view;
-		_[$ "matrix_projection"] = matrix_projection;
-		_[$ "matrix_world"] = matrix_world;
-		return _;
-	})();
-	static vars_animation = (function() {
-		var _ = { };
-		_[$ "path_action_stop"] = path_action_stop;
-		_[$ "path_action_restart"] = path_action_restart;
-		_[$ "path_action_continue"] = path_action_continue;
-		_[$ "path_action_reverse"] = path_action_reverse;
-		_[$ "seqtracktype_graphic"] = seqtracktype_graphic;
-		_[$ "seqtracktype_audio"] = seqtracktype_audio;
-		_[$ "seqtracktype_real"] = seqtracktype_real;
-		_[$ "seqtracktype_color"] = seqtracktype_color;
-		_[$ "seqtracktype_colour"] = seqtracktype_colour;
-		_[$ "seqtracktype_bool"] = seqtracktype_bool;
-		_[$ "seqtracktype_string"] = seqtracktype_string;
-		_[$ "seqtracktype_sequence"] = seqtracktype_sequence;
-		_[$ "seqtracktype_clipmask"] = seqtracktype_clipmask;
-		_[$ "seqtracktype_clipmask_mask"] = seqtracktype_clipmask_mask;
-		_[$ "seqtracktype_clipmask_subject"] = seqtracktype_clipmask_subject;
-		_[$ "seqtracktype_group"] = seqtracktype_group;
-		_[$ "seqtracktype_empty"] = seqtracktype_empty;
-		_[$ "seqtracktype_spriteframes"] = seqtracktype_spriteframes;
-		_[$ "seqtracktype_instance"] = seqtracktype_instance;
-		_[$ "seqtracktype_message"] = seqtracktype_message;
-		_[$ "seqtracktype_moment"] = seqtracktype_moment;
-		_[$ "seqplay_oneshot"] = seqplay_oneshot;
-		_[$ "seqplay_loop"] = seqplay_loop;
-		_[$ "seqplay_pingpong"] = seqplay_pingpong;
-		_[$ "seqdir_right"] = seqdir_right;
-		_[$ "seqdir_left"] = seqdir_left;
-		_[$ "seqinterpolation_assign"] = seqinterpolation_assign;
-		_[$ "seqinterpolation_lerp"] = seqinterpolation_lerp;
-		_[$ "seqaudiokey_loop"] = seqaudiokey_loop;
-		_[$ "seqaudiokey_oneshot"] = seqaudiokey_oneshot;
-		_[$ "animcurvetype_linear"] = animcurvetype_linear;
-		_[$ "animcurvetype_catmullrom"] = animcurvetype_catmullrom;
-		return _;
-	})();
-	static vars_data_structures = (function() {
-		var _ = { };
-		_[$ "path_action_stop"] = path_action_stop;
-		_[$ "path_action_restart"] = path_action_restart;
-		_[$ "path_action_continue"] = path_action_continue;
-		_[$ "path_action_reverse"] = path_action_reverse;
-		_[$ "ds_type_map"] = ds_type_map;
-		_[$ "ds_type_list"] = ds_type_list;
-		_[$ "ds_type_stack"] = ds_type_stack;
-		_[$ "ds_type_queue"] = ds_type_queue;
-		_[$ "ds_type_grid"] = ds_type_grid;
-		_[$ "ds_type_priority"] = ds_type_priority;
-		_[$ "buffer_fixed"] = buffer_fixed;
-		_[$ "buffer_grow"] = buffer_grow;
-		_[$ "buffer_wrap"] = buffer_wrap;
-		_[$ "buffer_fast"] = buffer_fast;
-		_[$ "buffer_vbuffer"] = buffer_vbuffer;
-		_[$ "buffer_u8"] = buffer_u8;
-		_[$ "buffer_s8"] = buffer_s8;
-		_[$ "buffer_u16"] = buffer_u16;
-		_[$ "buffer_s16"] = buffer_s16;
-		_[$ "buffer_u32"] = buffer_u32;
-		_[$ "buffer_s32"] = buffer_s32;
-		_[$ "buffer_u64"] = buffer_u64;
-		_[$ "buffer_f16"] = buffer_f16;
-		_[$ "buffer_f32"] = buffer_f32;
-		_[$ "buffer_f64"] = buffer_f64;
-		_[$ "buffer_bool"] = buffer_bool;
-		_[$ "buffer_text"] = buffer_text;
-		_[$ "buffer_string"] = buffer_string;
-		_[$ "buffer_seek_start"] = buffer_seek_start;
-		_[$ "buffer_seek_relative"] = buffer_seek_relative;
-		_[$ "buffer_seek_end"] = buffer_seek_end;
-		return _;
-	})();
-	static vars_random = (function() {
-		var _ = { };
-		
-		return _;
-	})();
-	static vars_strings = (function() {
-		var _ = { };
-		
-		return _;
-	})();
-	static vars_scripts = (function() {
-		var _ = { };
-		
-		return _;
-	})();
-	static vars_input = (function() {
-		var _ = { };
-		_[$ "timezone_local"] = timezone_local;
-		_[$ "timezone_utc"] = timezone_utc;
-		_[$ "vk_nokey"] = vk_nokey;
-		_[$ "vk_anykey"] = vk_anykey;
-		_[$ "vk_enter"] = vk_enter;
-		_[$ "vk_return"] = vk_return;
-		_[$ "vk_shift"] = vk_shift;
-		_[$ "vk_control"] = vk_control;
-		_[$ "vk_alt"] = vk_alt;
-		_[$ "vk_escape"] = vk_escape;
-		_[$ "vk_space"] = vk_space;
-		_[$ "vk_backspace"] = vk_backspace;
-		_[$ "vk_tab"] = vk_tab;
-		_[$ "vk_pause"] = vk_pause;
-		_[$ "vk_printscreen"] = vk_printscreen;
-		_[$ "vk_left"] = vk_left;
-		_[$ "vk_right"] = vk_right;
-		_[$ "vk_up"] = vk_up;
-		_[$ "vk_down"] = vk_down;
-		_[$ "vk_home"] = vk_home;
-		_[$ "vk_end"] = vk_end;
-		_[$ "vk_delete"] = vk_delete;
-		_[$ "vk_insert"] = vk_insert;
-		_[$ "vk_pageup"] = vk_pageup;
-		_[$ "vk_pagedown"] = vk_pagedown;
-		_[$ "vk_f1"] = vk_f1;
-		_[$ "vk_f2"] = vk_f2;
-		_[$ "vk_f3"] = vk_f3;
-		_[$ "vk_f4"] = vk_f4;
-		_[$ "vk_f5"] = vk_f5;
-		_[$ "vk_f6"] = vk_f6;
-		_[$ "vk_f7"] = vk_f7;
-		_[$ "vk_f8"] = vk_f8;
-		_[$ "vk_f9"] = vk_f9;
-		_[$ "vk_f10"] = vk_f10;
-		_[$ "vk_f11"] = vk_f11;
-		_[$ "vk_f12"] = vk_f12;
-		_[$ "vk_numpad0"] = vk_numpad0;
-		_[$ "vk_numpad1"] = vk_numpad1;
-		_[$ "vk_numpad2"] = vk_numpad2;
-		_[$ "vk_numpad3"] = vk_numpad3;
-		_[$ "vk_numpad4"] = vk_numpad4;
-		_[$ "vk_numpad5"] = vk_numpad5;
-		_[$ "vk_numpad6"] = vk_numpad6;
-		_[$ "vk_numpad7"] = vk_numpad7;
-		_[$ "vk_numpad8"] = vk_numpad8;
-		_[$ "vk_numpad9"] = vk_numpad9;
-		_[$ "vk_divide"] = vk_divide;
-		_[$ "vk_multiply"] = vk_multiply;
-		_[$ "vk_subtract"] = vk_subtract;
-		_[$ "vk_add"] = vk_add;
-		_[$ "vk_decimal"] = vk_decimal;
-		_[$ "vk_lshift"] = vk_lshift;
-		_[$ "vk_lcontrol"] = vk_lcontrol;
-		_[$ "vk_lalt"] = vk_lalt;
-		_[$ "vk_rshift"] = vk_rshift;
-		_[$ "vk_rcontrol"] = vk_rcontrol;
-		_[$ "vk_ralt"] = vk_ralt;
-		_[$ "mb_any"] = mb_any;
-		_[$ "mb_none"] = mb_none;
-		_[$ "mb_left"] = mb_left;
-		_[$ "mb_right"] = mb_right;
-		_[$ "mb_middle"] = mb_middle;
-		_[$ "gp_face1"] = gp_face1;
-		_[$ "gp_face2"] = gp_face2;
-		_[$ "gp_face3"] = gp_face3;
-		_[$ "gp_face4"] = gp_face4;
-		_[$ "gp_shoulderl"] = gp_shoulderl;
-		_[$ "gp_shoulderr"] = gp_shoulderr;
-		_[$ "gp_shoulderlb"] = gp_shoulderlb;
-		_[$ "gp_shoulderrb"] = gp_shoulderrb;
-		_[$ "gp_select"] = gp_select;
-		_[$ "gp_start"] = gp_start;
-		_[$ "gp_stickl"] = gp_stickl;
-		_[$ "gp_stickr"] = gp_stickr;
-		_[$ "gp_padu"] = gp_padu;
-		_[$ "gp_padd"] = gp_padd;
-		_[$ "gp_padl"] = gp_padl;
-		_[$ "gp_padr"] = gp_padr;
-		_[$ "gp_axislh"] = gp_axislh;
-		_[$ "gp_axislv"] = gp_axislv;
-		_[$ "gp_axisrh"] = gp_axisrh;
-		_[$ "gp_axisrv"] = gp_axisrv;
-		_[$ "kbv_type_default"] = kbv_type_default;
-		_[$ "kbv_type_ascii"] = kbv_type_ascii;
-		_[$ "kbv_type_url"] = kbv_type_url;
-		_[$ "kbv_type_email"] = kbv_type_email;
-		_[$ "kbv_type_numbers"] = kbv_type_numbers;
-		_[$ "kbv_type_phone"] = kbv_type_phone;
-		_[$ "kbv_type_phone_name"] = kbv_type_phone_name;
-		_[$ "kbv_returnkey_default"] = kbv_returnkey_default;
-		_[$ "kbv_returnkey_go"] = kbv_returnkey_go;
-		_[$ "kbv_returnkey_google"] = kbv_returnkey_google;
-		_[$ "kbv_returnkey_join"] = kbv_returnkey_join;
-		_[$ "kbv_returnkey_next"] = kbv_returnkey_next;
-		_[$ "kbv_returnkey_route"] = kbv_returnkey_route;
-		_[$ "kbv_returnkey_search"] = kbv_returnkey_search;
-		_[$ "kbv_returnkey_send"] = kbv_returnkey_send;
-		_[$ "kbv_returnkey_yahoo"] = kbv_returnkey_yahoo;
-		_[$ "kbv_returnkey_done"] = kbv_returnkey_done;
-		_[$ "kbv_returnkey_continue"] = kbv_returnkey_continue;
-		_[$ "kbv_returnkey_emergency"] = kbv_returnkey_emergency;
-		_[$ "kbv_autocapitalize_none"] = kbv_autocapitalize_none;
-		_[$ "kbv_autocapitalize_words"] = kbv_autocapitalize_words;
-		_[$ "kbv_autocapitalize_sentences"] = kbv_autocapitalize_sentences;
-		_[$ "kbv_autocapitalize_characters"] = kbv_autocapitalize_characters;
-		return _;
-	})();
-	static vars_audio = (function() {
-		var _ = { };
-		_[$ "audio_falloff_none"] = audio_falloff_none;
-		_[$ "audio_falloff_inverse_distance"] = audio_falloff_inverse_distance;
-		_[$ "audio_falloff_inverse_distance_clamped"] = audio_falloff_inverse_distance_clamped;
-		_[$ "audio_falloff_linear_distance"] = audio_falloff_linear_distance;
-		_[$ "audio_falloff_linear_distance_clamped"] = audio_falloff_linear_distance_clamped;
-		_[$ "audio_falloff_exponent_distance"] = audio_falloff_exponent_distance;
-		_[$ "audio_falloff_exponent_distance_clamped"] = audio_falloff_exponent_distance_clamped;
-		_[$ "audio_mono"] = audio_mono;
-		_[$ "audio_stereo"] = audio_stereo;
-		_[$ "audio_3d"] = audio_3d;
-		return _;
-	})();
-	static vars_drawing = (function() {
-		var _ = { };
-		_[$ "bboxmode_automatic"] = bboxmode_automatic;
-		_[$ "bboxmode_fullimage"] = bboxmode_fullimage;
-		_[$ "bboxmode_manual"] = bboxmode_manual;
-		_[$ "bboxkind_precise"] = bboxkind_precise;
-		_[$ "bboxkind_rectangular"] = bboxkind_rectangular;
-		_[$ "bboxkind_ellipse"] = bboxkind_ellipse;
-		_[$ "bboxkind_diamond"] = bboxkind_diamond;
-		_[$ "c_aqua"] = c_aqua;
-		_[$ "c_black"] = c_black;
-		_[$ "c_blue"] = c_blue;
-		_[$ "c_dkgray"] = c_dkgray;
-		_[$ "c_fuchsia"] = c_fuchsia;
-		_[$ "c_gray"] = c_gray;
-		_[$ "c_green"] = c_green;
-		_[$ "c_lime"] = c_lime;
-		_[$ "c_ltgray"] = c_ltgray;
-		_[$ "c_maroon"] = c_maroon;
-		_[$ "c_navy"] = c_navy;
-		_[$ "c_olive"] = c_olive;
-		_[$ "c_purple"] = c_purple;
-		_[$ "c_red"] = c_red;
-		_[$ "c_silver"] = c_silver;
-		_[$ "c_teal"] = c_teal;
-		_[$ "c_white"] = c_white;
-		_[$ "c_yellow"] = c_yellow;
-		_[$ "c_orange"] = c_orange;
-		_[$ "fa_left"] = fa_left;
-		_[$ "fa_center"] = fa_center;
-		_[$ "fa_right"] = fa_right;
-		_[$ "fa_top"] = fa_top;
-		_[$ "fa_middle"] = fa_middle;
-		_[$ "fa_bottom"] = fa_bottom;
-		_[$ "pr_pointlist"] = pr_pointlist;
-		_[$ "pr_linelist"] = pr_linelist;
-		_[$ "pr_linestrip"] = pr_linestrip;
-		_[$ "pr_trianglelist"] = pr_trianglelist;
-		_[$ "pr_trianglestrip"] = pr_trianglestrip;
-		_[$ "pr_trianglefan"] = pr_trianglefan;
-		_[$ "bm_normal"] = bm_normal;
-		_[$ "bm_add"] = bm_add;
-		_[$ "bm_max"] = bm_max;
-		_[$ "bm_subtract"] = bm_subtract;
-		_[$ "bm_zero"] = bm_zero;
-		_[$ "bm_one"] = bm_one;
-		_[$ "bm_src_colour"] = bm_src_colour;
-		_[$ "bm_inv_src_colour"] = bm_inv_src_colour;
-		_[$ "bm_src_color"] = bm_src_color;
-		_[$ "bm_inv_src_color"] = bm_inv_src_color;
-		_[$ "bm_src_alpha"] = bm_src_alpha;
-		_[$ "bm_inv_src_alpha"] = bm_inv_src_alpha;
-		_[$ "bm_dest_alpha"] = bm_dest_alpha;
-		_[$ "bm_inv_dest_alpha"] = bm_inv_dest_alpha;
-		_[$ "bm_dest_colour"] = bm_dest_colour;
-		_[$ "bm_inv_dest_colour"] = bm_inv_dest_colour;
-		_[$ "bm_dest_color"] = bm_dest_color;
-		_[$ "bm_inv_dest_color"] = bm_inv_dest_color;
-		_[$ "bm_src_alpha_sat"] = bm_src_alpha_sat;
-		_[$ "tf_point"] = tf_point;
-		_[$ "tf_linear"] = tf_linear;
-		_[$ "tf_anisotropic"] = tf_anisotropic;
-		_[$ "mip_off"] = mip_off;
-		_[$ "mip_on"] = mip_on;
-		_[$ "mip_markedonly"] = mip_markedonly;
-		_[$ "spritespeed_framespersecond"] = spritespeed_framespersecond;
-		_[$ "spritespeed_framespergameframe"] = spritespeed_framespergameframe;
-		_[$ "cmpfunc_never"] = cmpfunc_never;
-		_[$ "cmpfunc_less"] = cmpfunc_less;
-		_[$ "cmpfunc_equal"] = cmpfunc_equal;
-		_[$ "cmpfunc_lessequal"] = cmpfunc_lessequal;
-		_[$ "cmpfunc_greater"] = cmpfunc_greater;
-		_[$ "cmpfunc_notequal"] = cmpfunc_notequal;
-		_[$ "cmpfunc_greaterequal"] = cmpfunc_greaterequal;
-		_[$ "cmpfunc_always"] = cmpfunc_always;
-		_[$ "cull_noculling"] = cull_noculling;
-		_[$ "cull_clockwise"] = cull_clockwise;
-		_[$ "cull_counterclockwise"] = cull_counterclockwise;
-		_[$ "lighttype_dir"] = lighttype_dir;
-		_[$ "lighttype_point"] = lighttype_point;
-		_[$ "vertex_usage_position"] = vertex_usage_position;
-		_[$ "vertex_usage_colour"] = vertex_usage_colour;
-		_[$ "vertex_usage_color"] = vertex_usage_color;
-		_[$ "vertex_usage_normal"] = vertex_usage_normal;
-		_[$ "vertex_usage_texcoord"] = vertex_usage_texcoord;
-		_[$ "vertex_usage_blendweight"] = vertex_usage_blendweight;
-		_[$ "vertex_usage_blendindices"] = vertex_usage_blendindices;
-		_[$ "vertex_usage_psize"] = vertex_usage_psize;
-		_[$ "vertex_usage_tangent"] = vertex_usage_tangent;
-		_[$ "vertex_usage_binormal"] = vertex_usage_binormal;
-		_[$ "vertex_usage_fog"] = vertex_usage_fog;
-		_[$ "vertex_usage_depth"] = vertex_usage_depth;
-		_[$ "vertex_usage_sample"] = vertex_usage_sample;
-		_[$ "vertex_type_float1"] = vertex_type_float1;
-		_[$ "vertex_type_float2"] = vertex_type_float2;
-		_[$ "vertex_type_float3"] = vertex_type_float3;
-		_[$ "vertex_type_float4"] = vertex_type_float4;
-		_[$ "vertex_type_colour"] = vertex_type_colour;
-		_[$ "vertex_type_color"] = vertex_type_color;
-		_[$ "vertex_type_ubyte4"] = vertex_type_ubyte4;
-		return _;
-	})();
-	static vars_layers = (function() {
-		var _ = { };
-		_[$ "layerelementtype_undefined"] = layerelementtype_undefined;
-		_[$ "layerelementtype_background"] = layerelementtype_background;
-		_[$ "layerelementtype_instance"] = layerelementtype_instance;
-		_[$ "layerelementtype_oldtilemap"] = layerelementtype_oldtilemap;
-		_[$ "layerelementtype_sprite"] = layerelementtype_sprite;
-		_[$ "layerelementtype_tilemap"] = layerelementtype_tilemap;
-		_[$ "layerelementtype_particlesystem"] = layerelementtype_particlesystem;
-		_[$ "layerelementtype_tile"] = layerelementtype_tile;
-		_[$ "layerelementtype_sequence"] = layerelementtype_sequence;
-		_[$ "tile_rotate"] = tile_rotate;
-		_[$ "tile_flip"] = tile_flip;
-		_[$ "tile_mirror"] = tile_mirror;
-		_[$ "tile_index_mask"] = tile_index_mask;
-		return _;
-	})();
-	static vars_display = (function() {
-		var _ = { };
-		_[$ "cr_default"] = cr_default;
-		_[$ "cr_none"] = cr_none;
-		_[$ "cr_arrow"] = cr_arrow;
-		_[$ "cr_cross"] = cr_cross;
-		_[$ "cr_beam"] = cr_beam;
-		_[$ "cr_size_nesw"] = cr_size_nesw;
-		_[$ "cr_size_ns"] = cr_size_ns;
-		_[$ "cr_size_nwse"] = cr_size_nwse;
-		_[$ "cr_size_we"] = cr_size_we;
-		_[$ "cr_uparrow"] = cr_uparrow;
-		_[$ "cr_hourglass"] = cr_hourglass;
-		_[$ "cr_drag"] = cr_drag;
-		_[$ "cr_appstart"] = cr_appstart;
-		_[$ "cr_handpoint"] = cr_handpoint;
-		_[$ "cr_size_all"] = cr_size_all;
-		_[$ "display_landscape"] = display_landscape;
-		_[$ "display_landscape_flipped"] = display_landscape_flipped;
-		_[$ "display_portrait"] = display_portrait;
-		_[$ "display_portrait_flipped"] = display_portrait_flipped;
-		_[$ "tm_sleep"] = tm_sleep;
-		_[$ "tm_countvsyncs"] = tm_countvsyncs;
-		return _;
-	})();
-	static vars_debug = (function() {
-		var _ = { };
-		
-		return _;
-	})();
-	static vars_files = (function() {
-		var _ = { };
-		_[$ "fa_readonly"] = fa_readonly;
-		_[$ "fa_hidden"] = fa_hidden;
-		_[$ "fa_sysfile"] = fa_sysfile;
-		_[$ "fa_volumeid"] = fa_volumeid;
-		_[$ "fa_directory"] = fa_directory;
-		_[$ "fa_archive"] = fa_archive;
-		return _;
-	})();
-	static vars_particles = (function() {
-		var _ = { };
-		_[$ "ef_explosion"] = ef_explosion;
-		_[$ "ef_ring"] = ef_ring;
-		_[$ "ef_ellipse"] = ef_ellipse;
-		_[$ "ef_firework"] = ef_firework;
-		_[$ "ef_smoke"] = ef_smoke;
-		_[$ "ef_smokeup"] = ef_smokeup;
-		_[$ "ef_star"] = ef_star;
-		_[$ "ef_spark"] = ef_spark;
-		_[$ "ef_flare"] = ef_flare;
-		_[$ "ef_cloud"] = ef_cloud;
-		_[$ "ef_rain"] = ef_rain;
-		_[$ "ef_snow"] = ef_snow;
-		_[$ "pt_shape_pixel"] = pt_shape_pixel;
-		_[$ "pt_shape_disk"] = pt_shape_disk;
-		_[$ "pt_shape_square"] = pt_shape_square;
-		_[$ "pt_shape_line"] = pt_shape_line;
-		_[$ "pt_shape_star"] = pt_shape_star;
-		_[$ "pt_shape_circle"] = pt_shape_circle;
-		_[$ "pt_shape_ring"] = pt_shape_ring;
-		_[$ "pt_shape_sphere"] = pt_shape_sphere;
-		_[$ "pt_shape_flare"] = pt_shape_flare;
-		_[$ "pt_shape_spark"] = pt_shape_spark;
-		_[$ "pt_shape_explosion"] = pt_shape_explosion;
-		_[$ "pt_shape_cloud"] = pt_shape_cloud;
-		_[$ "pt_shape_smoke"] = pt_shape_smoke;
-		_[$ "pt_shape_snow"] = pt_shape_snow;
-		_[$ "ps_distr_linear"] = ps_distr_linear;
-		_[$ "ps_distr_gaussian"] = ps_distr_gaussian;
-		_[$ "ps_distr_invgaussian"] = ps_distr_invgaussian;
-		_[$ "ps_shape_rectangle"] = ps_shape_rectangle;
-		_[$ "ps_shape_ellipse"] = ps_shape_ellipse;
-		_[$ "ps_shape_diamond"] = ps_shape_diamond;
-		_[$ "ps_shape_line"] = ps_shape_line;
-		return _;
-	})();
-	static vars_device = (function() {
-		var _ = { };
-		_[$ "GM_build_date"] = GM_build_date;
-		_[$ "GM_version"] = GM_version;
-		_[$ "GM_runtime_version"] = GM_runtime_version;
-		_[$ "os_windows"] = os_windows;
-		_[$ "os_macosx"] = os_macosx;
-		_[$ "os_ios"] = os_ios;
-		_[$ "os_android"] = os_android;
-		_[$ "os_linux"] = os_linux;
-		_[$ "os_unknown"] = os_unknown;
-		_[$ "os_winphone"] = os_winphone;
-		_[$ "os_win8native"] = os_win8native;
-		_[$ "os_psvita"] = os_psvita;
-		_[$ "os_ps4"] = os_ps4;
-		_[$ "os_xboxone"] = os_xboxone;
-		_[$ "os_ps3"] = os_ps3;
-		_[$ "os_uwp"] = os_uwp;
-		_[$ "os_tvos"] = os_tvos;
-		_[$ "os_switch"] = os_switch;
-		_[$ "browser_not_a_browser"] = browser_not_a_browser;
-		_[$ "browser_unknown"] = browser_unknown;
-		_[$ "browser_ie"] = browser_ie;
-		_[$ "browser_firefox"] = browser_firefox;
-		_[$ "browser_chrome"] = browser_chrome;
-		_[$ "browser_safari"] = browser_safari;
-		_[$ "browser_safari_mobile"] = browser_safari_mobile;
-		_[$ "browser_opera"] = browser_opera;
-		_[$ "browser_tizen"] = browser_tizen;
-		_[$ "browser_edge"] = browser_edge;
-		_[$ "browser_windows_store"] = browser_windows_store;
-		_[$ "browser_ie_mobile"] = browser_ie_mobile;
-		_[$ "device_ios_unknown"] = device_ios_unknown;
-		_[$ "device_ios_iphone"] = device_ios_iphone;
-		_[$ "device_ios_iphone_retina"] = device_ios_iphone_retina;
-		_[$ "device_ios_ipad"] = device_ios_ipad;
-		_[$ "device_ios_ipad_retina"] = device_ios_ipad_retina;
-		_[$ "device_ios_iphone5"] = device_ios_iphone5;
-		_[$ "device_ios_iphone6"] = device_ios_iphone6;
-		_[$ "device_ios_iphone6plus"] = device_ios_iphone6plus;
-		_[$ "device_emulator"] = device_emulator;
-		_[$ "device_tablet"] = device_tablet;
-		_[$ "os_permission_denied_dont_request"] = os_permission_denied_dont_request;
-		_[$ "os_permission_denied"] = os_permission_denied;
-		_[$ "os_permission_granted"] = os_permission_granted;
-		return _;
-	})();
-	static vars_default = { };
+/// @desc Returns an interface of the gml standard library.
+/// @param {CatspeakExtGMLClass} class The class of constants to include.
+function catspeak_ext_gml_interface(_class) {
+	static vars_operators = new CatspeakVMInterface()
+			.addFunction("+", function(_l, _r) { return _l + _r; })
+			.addFunction("-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; })
+			.addFunction("*", function(_l, _r) { return _l * _r; })
+			.addFunction("/", function(_l, _r) { return _l / _r; })
+			.addFunction("%", function(_l, _r) { return _l % _r; })
+			.addFunction("div", function(_l, _r) { return _l div _r; })
+			.addFunction("|", function(_l, _r) { return _l | _r; })
+			.addFunction("&", function(_l, _r) { return _l & _r; })
+			.addFunction("^", function(_l, _r) { return _l ^ _r; })
+			.addFunction("~", function(_x) { return ~_x; })
+			.addFunction("<<", function(_l, _r) { return _l << _r; })
+			.addFunction(">>", function(_l, _r) { return _l >> _r; })
+			.addFunction("||", function(_l, _r) { return _l || _r; })
+			.addFunction("&&", function(_l, _r) { return _l && _r; })
+			.addFunction("^^", function(_l, _r) { return _l ^^ _r; })
+			.addFunction("!", function(_x) { return !_x; })
+			.addFunction("==", function(_l, _r) { return _l == _r; })
+			.addFunction("!=", function(_l, _r) { return _l != _r; })
+			.addFunction(">=", function(_l, _r) { return _l >= _r; })
+			.addFunction("<=", function(_l, _r) { return _l <= _r; })
+			.addFunction(">", function(_l, _r) { return _l > _r; })
+			.addFunction("<", function(_l, _r) { return _l < _r; })
+			.addFunction("!!", function(_x) { return is_numeric(_x) && _x; });
+	static vars_instances = new CatspeakVMInterface()
+			.addConstant("all", all)
+			.addConstant("noone", noone)
+			.addConstant("global", global)
+			.addConstant("phy_joint_anchor_1_x", phy_joint_anchor_1_x)
+			.addConstant("phy_joint_anchor_1_y", phy_joint_anchor_1_y)
+			.addConstant("phy_joint_anchor_2_x", phy_joint_anchor_2_x)
+			.addConstant("phy_joint_anchor_2_y", phy_joint_anchor_2_y)
+			.addConstant("phy_joint_reaction_force_x", phy_joint_reaction_force_x)
+			.addConstant("phy_joint_reaction_force_y", phy_joint_reaction_force_y)
+			.addConstant("phy_joint_reaction_torque", phy_joint_reaction_torque)
+			.addConstant("phy_joint_motor_speed", phy_joint_motor_speed)
+			.addConstant("phy_joint_angle", phy_joint_angle)
+			.addConstant("phy_joint_motor_torque", phy_joint_motor_torque)
+			.addConstant("phy_joint_max_motor_torque", phy_joint_max_motor_torque)
+			.addConstant("phy_joint_translation", phy_joint_translation)
+			.addConstant("phy_joint_speed", phy_joint_speed)
+			.addConstant("phy_joint_motor_force", phy_joint_motor_force)
+			.addConstant("phy_joint_max_motor_force", phy_joint_max_motor_force)
+			.addConstant("phy_joint_length_1", phy_joint_length_1)
+			.addConstant("phy_joint_length_2", phy_joint_length_2)
+			.addConstant("phy_joint_damping_ratio", phy_joint_damping_ratio)
+			.addConstant("phy_joint_frequency", phy_joint_frequency)
+			.addConstant("phy_joint_lower_angle_limit", phy_joint_lower_angle_limit)
+			.addConstant("phy_joint_upper_angle_limit", phy_joint_upper_angle_limit)
+			.addConstant("phy_joint_angle_limits", phy_joint_angle_limits)
+			.addConstant("phy_joint_max_length", phy_joint_max_length)
+			.addConstant("phy_joint_max_torque", phy_joint_max_torque)
+			.addConstant("phy_joint_max_force", phy_joint_max_force)
+			.addConstant("phy_debug_render_aabb", phy_debug_render_aabb)
+			.addConstant("phy_debug_render_collision_pairs", phy_debug_render_collision_pairs)
+			.addConstant("phy_debug_render_coms", phy_debug_render_coms)
+			.addConstant("phy_debug_render_core_shapes", phy_debug_render_core_shapes)
+			.addConstant("phy_debug_render_joints", phy_debug_render_joints)
+			.addConstant("phy_debug_render_obb", phy_debug_render_obb)
+			.addConstant("phy_debug_render_shapes", phy_debug_render_shapes)
+			.addConstant("phy_particle_flag_water", phy_particle_flag_water)
+			.addConstant("phy_particle_flag_zombie", phy_particle_flag_zombie)
+			.addConstant("phy_particle_flag_wall", phy_particle_flag_wall)
+			.addConstant("phy_particle_flag_spring", phy_particle_flag_spring)
+			.addConstant("phy_particle_flag_elastic", phy_particle_flag_elastic)
+			.addConstant("phy_particle_flag_viscous", phy_particle_flag_viscous)
+			.addConstant("phy_particle_flag_powder", phy_particle_flag_powder)
+			.addConstant("phy_particle_flag_tensile", phy_particle_flag_tensile)
+			.addConstant("phy_particle_flag_colourmixing", phy_particle_flag_colourmixing)
+			.addConstant("phy_particle_flag_colormixing", phy_particle_flag_colormixing)
+			.addConstant("phy_particle_group_flag_solid", phy_particle_group_flag_solid)
+			.addConstant("phy_particle_group_flag_rigid", phy_particle_group_flag_rigid)
+			.addConstant("phy_particle_data_flag_typeflags", phy_particle_data_flag_typeflags)
+			.addConstant("phy_particle_data_flag_position", phy_particle_data_flag_position)
+			.addConstant("phy_particle_data_flag_velocity", phy_particle_data_flag_velocity)
+			.addConstant("phy_particle_data_flag_colour", phy_particle_data_flag_colour)
+			.addConstant("phy_particle_data_flag_category", phy_particle_data_flag_category)
+			.addFunction("point_distance_3d", point_distance_3d)
+			.addFunction("point_distance", point_distance)
+			.addFunction("point_direction", point_direction)
+			.addFunction("motion_set", motion_set)
+			.addFunction("motion_add", motion_add)
+			.addFunction("place_free", place_free)
+			.addFunction("place_empty", place_empty)
+			.addFunction("place_meeting", place_meeting)
+			.addFunction("place_snapped", place_snapped)
+			.addFunction("move_random", move_random)
+			.addFunction("move_snap", move_snap)
+			.addFunction("move_towards_point", move_towards_point)
+			.addFunction("move_contact_solid", move_contact_solid)
+			.addFunction("move_contact_all", move_contact_all)
+			.addFunction("move_outside_solid", move_outside_solid)
+			.addFunction("move_outside_all", move_outside_all)
+			.addFunction("move_bounce_solid", move_bounce_solid)
+			.addFunction("move_bounce_all", move_bounce_all)
+			.addFunction("move_wrap", move_wrap)
+			.addFunction("distance_to_point", distance_to_point)
+			.addFunction("distance_to_object", distance_to_object)
+			.addFunction("position_empty", position_empty)
+			.addFunction("position_meeting", position_meeting)
+			.addFunction("collision_point", collision_point)
+			.addFunction("collision_rectangle", collision_rectangle)
+			.addFunction("collision_circle", collision_circle)
+			.addFunction("collision_ellipse", collision_ellipse)
+			.addFunction("collision_line", collision_line)
+			.addFunction("collision_point_list", collision_point_list)
+			.addFunction("collision_rectangle_list", collision_rectangle_list)
+			.addFunction("collision_circle_list", collision_circle_list)
+			.addFunction("collision_ellipse_list", collision_ellipse_list)
+			.addFunction("collision_line_list", collision_line_list)
+			.addFunction("instance_position_list", instance_position_list)
+			.addFunction("instance_place_list", instance_place_list)
+			.addFunction("point_in_rectangle", point_in_rectangle)
+			.addFunction("point_in_triangle", point_in_triangle)
+			.addFunction("point_in_circle", point_in_circle)
+			.addFunction("rectangle_in_rectangle", rectangle_in_rectangle)
+			.addFunction("rectangle_in_triangle", rectangle_in_triangle)
+			.addFunction("rectangle_in_circle", rectangle_in_circle)
+			.addFunction("instance_find", instance_find)
+			.addFunction("instance_exists", instance_exists)
+			.addFunction("instance_number", instance_number)
+			.addFunction("instance_position", instance_position)
+			.addFunction("instance_nearest", instance_nearest)
+			.addFunction("instance_furthest", instance_furthest)
+			.addFunction("instance_place", instance_place)
+			.addFunction("instance_create_depth", instance_create_depth)
+			.addFunction("instance_create_layer", instance_create_layer)
+			.addFunction("instance_copy", instance_copy)
+			.addFunction("instance_change", instance_change)
+			.addFunction("instance_destroy", instance_destroy)
+			.addFunction("position_destroy", position_destroy)
+			.addFunction("position_change", position_change)
+			.addFunction("instance_id_get", instance_id_get)
+			.addFunction("instance_deactivate_all", instance_deactivate_all)
+			.addFunction("instance_deactivate_object", instance_deactivate_object)
+			.addFunction("instance_deactivate_region", instance_deactivate_region)
+			.addFunction("instance_activate_all", instance_activate_all)
+			.addFunction("instance_activate_object", instance_activate_object)
+			.addFunction("instance_activate_region", instance_activate_region)
+			.addFunction("object_exists", object_exists)
+			.addFunction("object_get_name", object_get_name)
+			.addFunction("object_get_sprite", object_get_sprite)
+			.addFunction("object_get_solid", object_get_solid)
+			.addFunction("object_get_visible", object_get_visible)
+			.addFunction("object_get_persistent", object_get_persistent)
+			.addFunction("object_get_mask", object_get_mask)
+			.addFunction("object_get_parent", object_get_parent)
+			.addFunction("object_get_physics", object_get_physics)
+			.addFunction("object_is_ancestor", object_is_ancestor)
+			.addFunction("object_set_sprite", object_set_sprite)
+			.addFunction("object_set_solid", object_set_solid)
+			.addFunction("object_set_visible", object_set_visible)
+			.addFunction("object_set_persistent", object_set_persistent)
+			.addFunction("object_set_mask", object_set_mask)
+			.addFunction("physics_world_create", physics_world_create)
+			.addFunction("physics_world_gravity", physics_world_gravity)
+			.addFunction("physics_world_update_speed", physics_world_update_speed)
+			.addFunction("physics_world_update_iterations", physics_world_update_iterations)
+			.addFunction("physics_world_draw_debug", physics_world_draw_debug)
+			.addFunction("physics_pause_enable", physics_pause_enable)
+			.addFunction("physics_fixture_create", physics_fixture_create)
+			.addFunction("physics_fixture_set_kinematic", physics_fixture_set_kinematic)
+			.addFunction("physics_fixture_set_density", physics_fixture_set_density)
+			.addFunction("physics_fixture_set_awake", physics_fixture_set_awake)
+			.addFunction("physics_fixture_set_restitution", physics_fixture_set_restitution)
+			.addFunction("physics_fixture_set_friction", physics_fixture_set_friction)
+			.addFunction("physics_fixture_set_collision_group", physics_fixture_set_collision_group)
+			.addFunction("physics_fixture_set_sensor", physics_fixture_set_sensor)
+			.addFunction("physics_fixture_set_linear_damping", physics_fixture_set_linear_damping)
+			.addFunction("physics_fixture_set_angular_damping", physics_fixture_set_angular_damping)
+			.addFunction("physics_fixture_set_circle_shape", physics_fixture_set_circle_shape)
+			.addFunction("physics_fixture_set_box_shape", physics_fixture_set_box_shape)
+			.addFunction("physics_fixture_set_edge_shape", physics_fixture_set_edge_shape)
+			.addFunction("physics_fixture_set_polygon_shape", physics_fixture_set_polygon_shape)
+			.addFunction("physics_fixture_set_chain_shape", physics_fixture_set_chain_shape)
+			.addFunction("physics_fixture_add_point", physics_fixture_add_point)
+			.addFunction("physics_fixture_bind", physics_fixture_bind)
+			.addFunction("physics_fixture_bind_ext", physics_fixture_bind_ext)
+			.addFunction("physics_fixture_delete", physics_fixture_delete)
+			.addFunction("physics_apply_force", physics_apply_force)
+			.addFunction("physics_apply_impulse", physics_apply_impulse)
+			.addFunction("physics_apply_angular_impulse", physics_apply_angular_impulse)
+			.addFunction("physics_apply_local_force", physics_apply_local_force)
+			.addFunction("physics_apply_local_impulse", physics_apply_local_impulse)
+			.addFunction("physics_apply_torque", physics_apply_torque)
+			.addFunction("physics_mass_properties", physics_mass_properties)
+			.addFunction("physics_draw_debug", physics_draw_debug)
+			.addFunction("physics_test_overlap", physics_test_overlap)
+			.addFunction("physics_remove_fixture", physics_remove_fixture)
+			.addFunction("physics_set_friction", physics_set_friction)
+			.addFunction("physics_set_density", physics_set_density)
+			.addFunction("physics_set_restitution", physics_set_restitution)
+			.addFunction("physics_get_friction", physics_get_friction)
+			.addFunction("physics_get_density", physics_get_density)
+			.addFunction("physics_get_restitution", physics_get_restitution)
+			.addFunction("physics_joint_distance_create", physics_joint_distance_create)
+			.addFunction("physics_joint_rope_create", physics_joint_rope_create)
+			.addFunction("physics_joint_revolute_create", physics_joint_revolute_create)
+			.addFunction("physics_joint_prismatic_create", physics_joint_prismatic_create)
+			.addFunction("physics_joint_pulley_create", physics_joint_pulley_create)
+			.addFunction("physics_joint_wheel_create", physics_joint_wheel_create)
+			.addFunction("physics_joint_weld_create", physics_joint_weld_create)
+			.addFunction("physics_joint_friction_create", physics_joint_friction_create)
+			.addFunction("physics_joint_gear_create", physics_joint_gear_create)
+			.addFunction("physics_joint_enable_motor", physics_joint_enable_motor)
+			.addFunction("physics_joint_get_value", physics_joint_get_value)
+			.addFunction("physics_joint_set_value", physics_joint_set_value)
+			.addFunction("physics_joint_delete", physics_joint_delete)
+			.addFunction("physics_particle_create", physics_particle_create)
+			.addFunction("physics_particle_delete", physics_particle_delete)
+			.addFunction("physics_particle_delete_region_circle", physics_particle_delete_region_circle)
+			.addFunction("physics_particle_delete_region_box", physics_particle_delete_region_box)
+			.addFunction("physics_particle_delete_region_poly", physics_particle_delete_region_poly)
+			.addFunction("physics_particle_set_flags", physics_particle_set_flags)
+			.addFunction("physics_particle_set_category_flags", physics_particle_set_category_flags)
+			.addFunction("physics_particle_draw", physics_particle_draw)
+			.addFunction("physics_particle_draw_ext", physics_particle_draw_ext)
+			.addFunction("physics_particle_count", physics_particle_count)
+			.addFunction("physics_particle_get_data", physics_particle_get_data)
+			.addFunction("physics_particle_get_data_particle", physics_particle_get_data_particle)
+			.addFunction("physics_particle_group_begin", physics_particle_group_begin)
+			.addFunction("physics_particle_group_circle", physics_particle_group_circle)
+			.addFunction("physics_particle_group_box", physics_particle_group_box)
+			.addFunction("physics_particle_group_polygon", physics_particle_group_polygon)
+			.addFunction("physics_particle_group_add_point", physics_particle_group_add_point)
+			.addFunction("physics_particle_group_end", physics_particle_group_end)
+			.addFunction("physics_particle_group_join", physics_particle_group_join)
+			.addFunction("physics_particle_group_delete", physics_particle_group_delete)
+			.addFunction("physics_particle_group_count", physics_particle_group_count)
+			.addFunction("physics_particle_group_get_data", physics_particle_group_get_data)
+			.addFunction("physics_particle_group_get_mass", physics_particle_group_get_mass)
+			.addFunction("physics_particle_group_get_inertia", physics_particle_group_get_inertia)
+			.addFunction("physics_particle_group_get_centre_x", physics_particle_group_get_centre_x)
+			.addFunction("physics_particle_group_get_centre_y", physics_particle_group_get_centre_y)
+			.addFunction("physics_particle_group_get_vel_x", physics_particle_group_get_vel_x)
+			.addFunction("physics_particle_group_get_vel_y", physics_particle_group_get_vel_y)
+			.addFunction("physics_particle_group_get_ang_vel", physics_particle_group_get_ang_vel)
+			.addFunction("physics_particle_group_get_x", physics_particle_group_get_x)
+			.addFunction("physics_particle_group_get_y", physics_particle_group_get_y)
+			.addFunction("physics_particle_group_get_angle", physics_particle_group_get_angle)
+			.addFunction("physics_particle_set_group_flags", physics_particle_set_group_flags)
+			.addFunction("physics_particle_get_group_flags", physics_particle_get_group_flags)
+			.addFunction("physics_particle_get_max_count", physics_particle_get_max_count)
+			.addFunction("physics_particle_get_radius", physics_particle_get_radius)
+			.addFunction("physics_particle_get_density", physics_particle_get_density)
+			.addFunction("physics_particle_get_damping", physics_particle_get_damping)
+			.addFunction("physics_particle_get_gravity_scale", physics_particle_get_gravity_scale)
+			.addFunction("physics_particle_set_max_count", physics_particle_set_max_count)
+			.addFunction("physics_particle_set_radius", physics_particle_set_radius)
+			.addFunction("physics_particle_set_density", physics_particle_set_density)
+			.addFunction("physics_particle_set_damping", physics_particle_set_damping)
+			.addFunction("physics_particle_set_gravity_scale", physics_particle_set_gravity_scale)
+			.addFunction("instance_activate_layer", instance_activate_layer)
+			.addFunction("instance_deactivate_layer", instance_deactivate_layer);
+	static vars_pointers = new CatspeakVMInterface()
+			.addConstant("pointer_invalid", pointer_invalid)
+			.addConstant("pointer_null", pointer_null)
+			.addFunction("weak_ref_create", weak_ref_create)
+			.addFunction("weak_ref_alive", weak_ref_alive)
+			.addFunction("weak_ref_any_alive", weak_ref_any_alive)
+			.addFunction("ptr", ptr);
+	static vars_unsafe = new CatspeakVMInterface()
+			.addConstant("gamespeed_fps", gamespeed_fps)
+			.addConstant("gamespeed_microseconds", gamespeed_microseconds)
+			.addConstant("ev_create", ev_create)
+			.addConstant("ev_destroy", ev_destroy)
+			.addConstant("ev_step", ev_step)
+			.addConstant("ev_alarm", ev_alarm)
+			.addConstant("ev_keyboard", ev_keyboard)
+			.addConstant("ev_mouse", ev_mouse)
+			.addConstant("ev_collision", ev_collision)
+			.addConstant("ev_other", ev_other)
+			.addConstant("ev_draw", ev_draw)
+			.addConstant("ev_draw_begin", ev_draw_begin)
+			.addConstant("ev_draw_end", ev_draw_end)
+			.addConstant("ev_draw_pre", ev_draw_pre)
+			.addConstant("ev_draw_post", ev_draw_post)
+			.addConstant("ev_keypress", ev_keypress)
+			.addConstant("ev_keyrelease", ev_keyrelease)
+			.addConstant("ev_trigger", ev_trigger)
+			.addConstant("ev_left_button", ev_left_button)
+			.addConstant("ev_right_button", ev_right_button)
+			.addConstant("ev_middle_button", ev_middle_button)
+			.addConstant("ev_no_button", ev_no_button)
+			.addConstant("ev_left_press", ev_left_press)
+			.addConstant("ev_right_press", ev_right_press)
+			.addConstant("ev_middle_press", ev_middle_press)
+			.addConstant("ev_left_release", ev_left_release)
+			.addConstant("ev_right_release", ev_right_release)
+			.addConstant("ev_middle_release", ev_middle_release)
+			.addConstant("ev_mouse_enter", ev_mouse_enter)
+			.addConstant("ev_mouse_leave", ev_mouse_leave)
+			.addConstant("ev_mouse_wheel_up", ev_mouse_wheel_up)
+			.addConstant("ev_mouse_wheel_down", ev_mouse_wheel_down)
+			.addConstant("ev_global_left_button", ev_global_left_button)
+			.addConstant("ev_global_right_button", ev_global_right_button)
+			.addConstant("ev_global_middle_button", ev_global_middle_button)
+			.addConstant("ev_global_left_press", ev_global_left_press)
+			.addConstant("ev_global_right_press", ev_global_right_press)
+			.addConstant("ev_global_middle_press", ev_global_middle_press)
+			.addConstant("ev_global_left_release", ev_global_left_release)
+			.addConstant("ev_global_right_release", ev_global_right_release)
+			.addConstant("ev_global_middle_release", ev_global_middle_release)
+			.addConstant("ev_joystick1_left", ev_joystick1_left)
+			.addConstant("ev_joystick1_right", ev_joystick1_right)
+			.addConstant("ev_joystick1_up", ev_joystick1_up)
+			.addConstant("ev_joystick1_down", ev_joystick1_down)
+			.addConstant("ev_joystick1_button1", ev_joystick1_button1)
+			.addConstant("ev_joystick1_button2", ev_joystick1_button2)
+			.addConstant("ev_joystick1_button3", ev_joystick1_button3)
+			.addConstant("ev_joystick1_button4", ev_joystick1_button4)
+			.addConstant("ev_joystick1_button5", ev_joystick1_button5)
+			.addConstant("ev_joystick1_button6", ev_joystick1_button6)
+			.addConstant("ev_joystick1_button7", ev_joystick1_button7)
+			.addConstant("ev_joystick1_button8", ev_joystick1_button8)
+			.addConstant("ev_joystick2_left", ev_joystick2_left)
+			.addConstant("ev_joystick2_right", ev_joystick2_right)
+			.addConstant("ev_joystick2_up", ev_joystick2_up)
+			.addConstant("ev_joystick2_down", ev_joystick2_down)
+			.addConstant("ev_joystick2_button1", ev_joystick2_button1)
+			.addConstant("ev_joystick2_button2", ev_joystick2_button2)
+			.addConstant("ev_joystick2_button3", ev_joystick2_button3)
+			.addConstant("ev_joystick2_button4", ev_joystick2_button4)
+			.addConstant("ev_joystick2_button5", ev_joystick2_button5)
+			.addConstant("ev_joystick2_button6", ev_joystick2_button6)
+			.addConstant("ev_joystick2_button7", ev_joystick2_button7)
+			.addConstant("ev_joystick2_button8", ev_joystick2_button8)
+			.addConstant("ev_outside", ev_outside)
+			.addConstant("ev_boundary", ev_boundary)
+			.addConstant("ev_game_start", ev_game_start)
+			.addConstant("ev_game_end", ev_game_end)
+			.addConstant("ev_room_start", ev_room_start)
+			.addConstant("ev_room_end", ev_room_end)
+			.addConstant("ev_no_more_lives", ev_no_more_lives)
+			.addConstant("ev_animation_end", ev_animation_end)
+			.addConstant("ev_end_of_path", ev_end_of_path)
+			.addConstant("ev_no_more_health", ev_no_more_health)
+			.addConstant("ev_user0", ev_user0)
+			.addConstant("ev_user1", ev_user1)
+			.addConstant("ev_user2", ev_user2)
+			.addConstant("ev_user3", ev_user3)
+			.addConstant("ev_user4", ev_user4)
+			.addConstant("ev_user5", ev_user5)
+			.addConstant("ev_user6", ev_user6)
+			.addConstant("ev_user7", ev_user7)
+			.addConstant("ev_user8", ev_user8)
+			.addConstant("ev_user9", ev_user9)
+			.addConstant("ev_user10", ev_user10)
+			.addConstant("ev_user11", ev_user11)
+			.addConstant("ev_user12", ev_user12)
+			.addConstant("ev_user13", ev_user13)
+			.addConstant("ev_user14", ev_user14)
+			.addConstant("ev_user15", ev_user15)
+			.addConstant("ev_outside_view0", ev_outside_view0)
+			.addConstant("ev_outside_view1", ev_outside_view1)
+			.addConstant("ev_outside_view2", ev_outside_view2)
+			.addConstant("ev_outside_view3", ev_outside_view3)
+			.addConstant("ev_outside_view4", ev_outside_view4)
+			.addConstant("ev_outside_view5", ev_outside_view5)
+			.addConstant("ev_outside_view6", ev_outside_view6)
+			.addConstant("ev_outside_view7", ev_outside_view7)
+			.addConstant("ev_boundary_view0", ev_boundary_view0)
+			.addConstant("ev_boundary_view1", ev_boundary_view1)
+			.addConstant("ev_boundary_view2", ev_boundary_view2)
+			.addConstant("ev_boundary_view3", ev_boundary_view3)
+			.addConstant("ev_boundary_view4", ev_boundary_view4)
+			.addConstant("ev_boundary_view5", ev_boundary_view5)
+			.addConstant("ev_boundary_view6", ev_boundary_view6)
+			.addConstant("ev_boundary_view7", ev_boundary_view7)
+			.addConstant("ev_animation_update", ev_animation_update)
+			.addConstant("ev_animation_event", ev_animation_event)
+			.addConstant("ev_web_image_load", ev_web_image_load)
+			.addConstant("ev_web_sound_load", ev_web_sound_load)
+			.addConstant("ev_web_async", ev_web_async)
+			.addConstant("ev_dialog_async", ev_dialog_async)
+			.addConstant("ev_web_iap", ev_web_iap)
+			.addConstant("ev_web_cloud", ev_web_cloud)
+			.addConstant("ev_web_networking", ev_web_networking)
+			.addConstant("ev_web_steam", ev_web_steam)
+			.addConstant("ev_social", ev_social)
+			.addConstant("ev_push_notification", ev_push_notification)
+			.addConstant("ev_async_save_load", ev_async_save_load)
+			.addConstant("ev_audio_recording", ev_audio_recording)
+			.addConstant("ev_audio_playback", ev_audio_playback)
+			.addConstant("ev_system_event", ev_system_event)
+			.addConstant("ev_broadcast_message", ev_broadcast_message)
+			.addConstant("ev_step_normal", ev_step_normal)
+			.addConstant("ev_step_begin", ev_step_begin)
+			.addConstant("ev_step_end", ev_step_end)
+			.addConstant("ev_gui", ev_gui)
+			.addConstant("ev_gui_begin", ev_gui_begin)
+			.addConstant("ev_gui_end", ev_gui_end)
+			.addConstant("ev_cleanup", ev_cleanup)
+			.addConstant("ev_gesture", ev_gesture)
+			.addConstant("ev_gesture_tap", ev_gesture_tap)
+			.addConstant("ev_gesture_double_tap", ev_gesture_double_tap)
+			.addConstant("ev_gesture_drag_start", ev_gesture_drag_start)
+			.addConstant("ev_gesture_dragging", ev_gesture_dragging)
+			.addConstant("ev_gesture_drag_end", ev_gesture_drag_end)
+			.addConstant("ev_gesture_flick", ev_gesture_flick)
+			.addConstant("ev_gesture_pinch_start", ev_gesture_pinch_start)
+			.addConstant("ev_gesture_pinch_in", ev_gesture_pinch_in)
+			.addConstant("ev_gesture_pinch_out", ev_gesture_pinch_out)
+			.addConstant("ev_gesture_pinch_end", ev_gesture_pinch_end)
+			.addConstant("ev_gesture_rotate_start", ev_gesture_rotate_start)
+			.addConstant("ev_gesture_rotating", ev_gesture_rotating)
+			.addConstant("ev_gesture_rotate_end", ev_gesture_rotate_end)
+			.addConstant("ev_global_gesture_tap", ev_global_gesture_tap)
+			.addConstant("ev_global_gesture_double_tap", ev_global_gesture_double_tap)
+			.addConstant("ev_global_gesture_drag_start", ev_global_gesture_drag_start)
+			.addConstant("ev_global_gesture_dragging", ev_global_gesture_dragging)
+			.addConstant("ev_global_gesture_drag_end", ev_global_gesture_drag_end)
+			.addConstant("ev_global_gesture_flick", ev_global_gesture_flick)
+			.addConstant("ev_global_gesture_pinch_start", ev_global_gesture_pinch_start)
+			.addConstant("ev_global_gesture_pinch_in", ev_global_gesture_pinch_in)
+			.addConstant("ev_global_gesture_pinch_out", ev_global_gesture_pinch_out)
+			.addConstant("ev_global_gesture_pinch_end", ev_global_gesture_pinch_end)
+			.addConstant("ev_global_gesture_rotate_start", ev_global_gesture_rotate_start)
+			.addConstant("ev_global_gesture_rotating", ev_global_gesture_rotating)
+			.addConstant("ev_global_gesture_rotate_end", ev_global_gesture_rotate_end)
+			.addConstant("ty_real", ty_real)
+			.addConstant("ty_string", ty_string)
+			.addConstant("dll_cdecl", dll_cdecl)
+			.addConstant("dll_stdcall", dll_stdcall)
+			.addConstant("of_challenge_win", of_challenge_win)
+			.addConstant("of_challenge_lose", of_challenge_lose)
+			.addConstant("of_challenge_tie", of_challenge_tie)
+			.addConstant("leaderboard_type_number", leaderboard_type_number)
+			.addConstant("leaderboard_type_time_mins_secs", leaderboard_type_time_mins_secs)
+			.addConstant("iap_ev_storeload", iap_ev_storeload)
+			.addConstant("iap_ev_product", iap_ev_product)
+			.addConstant("iap_ev_purchase", iap_ev_purchase)
+			.addConstant("iap_ev_consume", iap_ev_consume)
+			.addConstant("iap_ev_restore", iap_ev_restore)
+			.addConstant("iap_storeload_ok", iap_storeload_ok)
+			.addConstant("iap_storeload_failed", iap_storeload_failed)
+			.addConstant("iap_status_uninitialised", iap_status_uninitialised)
+			.addConstant("iap_status_unavailable", iap_status_unavailable)
+			.addConstant("iap_status_loading", iap_status_loading)
+			.addConstant("iap_status_available", iap_status_available)
+			.addConstant("iap_status_processing", iap_status_processing)
+			.addConstant("iap_status_restoring", iap_status_restoring)
+			.addConstant("iap_failed", iap_failed)
+			.addConstant("iap_unavailable", iap_unavailable)
+			.addConstant("iap_available", iap_available)
+			.addConstant("iap_purchased", iap_purchased)
+			.addConstant("iap_canceled", iap_canceled)
+			.addConstant("iap_refunded", iap_refunded)
+			.addConstant("achievement_our_info", achievement_our_info)
+			.addConstant("achievement_friends_info", achievement_friends_info)
+			.addConstant("achievement_leaderboard_info", achievement_leaderboard_info)
+			.addConstant("achievement_achievement_info", achievement_achievement_info)
+			.addConstant("achievement_filter_all_players", achievement_filter_all_players)
+			.addConstant("achievement_filter_friends_only", achievement_filter_friends_only)
+			.addConstant("achievement_filter_favorites_only", achievement_filter_favorites_only)
+			.addConstant("achievement_type_achievement_challenge", achievement_type_achievement_challenge)
+			.addConstant("achievement_type_score_challenge", achievement_type_score_challenge)
+			.addConstant("achievement_pic_loaded", achievement_pic_loaded)
+			.addConstant("achievement_show_ui", achievement_show_ui)
+			.addConstant("achievement_show_profile", achievement_show_profile)
+			.addConstant("achievement_show_leaderboard", achievement_show_leaderboard)
+			.addConstant("achievement_show_achievement", achievement_show_achievement)
+			.addConstant("achievement_show_bank", achievement_show_bank)
+			.addConstant("achievement_show_friend_picker", achievement_show_friend_picker)
+			.addConstant("achievement_show_purchase_prompt", achievement_show_purchase_prompt)
+			.addConstant("network_socket_tcp", network_socket_tcp)
+			.addConstant("network_socket_udp", network_socket_udp)
+			.addConstant("network_socket_ws", network_socket_ws)
+			.addConstant("network_socket_bluetooth", network_socket_bluetooth)
+			.addConstant("network_type_connect", network_type_connect)
+			.addConstant("network_type_disconnect", network_type_disconnect)
+			.addConstant("network_type_data", network_type_data)
+			.addConstant("network_type_non_blocking_connect", network_type_non_blocking_connect)
+			.addConstant("network_config_connect_timeout", network_config_connect_timeout)
+			.addConstant("network_config_use_non_blocking_socket", network_config_use_non_blocking_socket)
+			.addConstant("network_config_enable_reliable_udp", network_config_enable_reliable_udp)
+			.addConstant("network_config_disable_reliable_udp", network_config_disable_reliable_udp)
+			.addConstant("network_config_avoid_time_wait", network_config_avoid_time_wait)
+			.addConstant("ov_friends", ov_friends)
+			.addConstant("ov_community", ov_community)
+			.addConstant("ov_players", ov_players)
+			.addConstant("ov_settings", ov_settings)
+			.addConstant("ov_gamegroup", ov_gamegroup)
+			.addConstant("ov_achievements", ov_achievements)
+			.addConstant("lb_sort_none", lb_sort_none)
+			.addConstant("lb_sort_ascending", lb_sort_ascending)
+			.addConstant("lb_sort_descending", lb_sort_descending)
+			.addConstant("lb_disp_none", lb_disp_none)
+			.addConstant("lb_disp_numeric", lb_disp_numeric)
+			.addConstant("lb_disp_time_sec", lb_disp_time_sec)
+			.addConstant("lb_disp_time_ms", lb_disp_time_ms)
+			.addConstant("ugc_result_success", ugc_result_success)
+			.addConstant("ugc_filetype_community", ugc_filetype_community)
+			.addConstant("ugc_filetype_microtrans", ugc_filetype_microtrans)
+			.addConstant("ugc_visibility_public", ugc_visibility_public)
+			.addConstant("ugc_visibility_friends_only", ugc_visibility_friends_only)
+			.addConstant("ugc_visibility_private", ugc_visibility_private)
+			.addConstant("ugc_query_RankedByVote", ugc_query_RankedByVote)
+			.addConstant("ugc_query_RankedByPublicationDate", ugc_query_RankedByPublicationDate)
+			.addConstant("ugc_query_AcceptedForGameRankedByAcceptanceDate", ugc_query_AcceptedForGameRankedByAcceptanceDate)
+			.addConstant("ugc_query_RankedByTrend", ugc_query_RankedByTrend)
+			.addConstant("ugc_query_FavoritedByFriendsRankedByPublicationDate", ugc_query_FavoritedByFriendsRankedByPublicationDate)
+			.addConstant("ugc_query_CreatedByFriendsRankedByPublicationDate", ugc_query_CreatedByFriendsRankedByPublicationDate)
+			.addConstant("ugc_query_RankedByNumTimesReported", ugc_query_RankedByNumTimesReported)
+			.addConstant("ugc_query_CreatedByFollowedUsersRankedByPublicationDate", ugc_query_CreatedByFollowedUsersRankedByPublicationDate)
+			.addConstant("ugc_query_NotYetRated", ugc_query_NotYetRated)
+			.addConstant("ugc_query_RankedByTotalVotesAsc", ugc_query_RankedByTotalVotesAsc)
+			.addConstant("ugc_query_RankedByVotesUp", ugc_query_RankedByVotesUp)
+			.addConstant("ugc_query_RankedByTextSearch", ugc_query_RankedByTextSearch)
+			.addConstant("ugc_sortorder_CreationOrderDesc", ugc_sortorder_CreationOrderDesc)
+			.addConstant("ugc_sortorder_CreationOrderAsc", ugc_sortorder_CreationOrderAsc)
+			.addConstant("ugc_sortorder_TitleAsc", ugc_sortorder_TitleAsc)
+			.addConstant("ugc_sortorder_LastUpdatedDesc", ugc_sortorder_LastUpdatedDesc)
+			.addConstant("ugc_sortorder_SubscriptionDateDesc", ugc_sortorder_SubscriptionDateDesc)
+			.addConstant("ugc_sortorder_VoteScoreDesc", ugc_sortorder_VoteScoreDesc)
+			.addConstant("ugc_sortorder_ForModeration", ugc_sortorder_ForModeration)
+			.addConstant("ugc_list_Published", ugc_list_Published)
+			.addConstant("ugc_list_VotedOn", ugc_list_VotedOn)
+			.addConstant("ugc_list_VotedUp", ugc_list_VotedUp)
+			.addConstant("ugc_list_VotedDown", ugc_list_VotedDown)
+			.addConstant("ugc_list_WillVoteLater", ugc_list_WillVoteLater)
+			.addConstant("ugc_list_Favorited", ugc_list_Favorited)
+			.addConstant("ugc_list_Subscribed", ugc_list_Subscribed)
+			.addConstant("ugc_list_UsedOrPlayed", ugc_list_UsedOrPlayed)
+			.addConstant("ugc_list_Followed", ugc_list_Followed)
+			.addConstant("ugc_match_Items", ugc_match_Items)
+			.addConstant("ugc_match_Items_Mtx", ugc_match_Items_Mtx)
+			.addConstant("ugc_match_Items_ReadyToUse", ugc_match_Items_ReadyToUse)
+			.addConstant("ugc_match_Collections", ugc_match_Collections)
+			.addConstant("ugc_match_Artwork", ugc_match_Artwork)
+			.addConstant("ugc_match_Videos", ugc_match_Videos)
+			.addConstant("ugc_match_Screenshots", ugc_match_Screenshots)
+			.addConstant("ugc_match_AllGuides", ugc_match_AllGuides)
+			.addConstant("ugc_match_WebGuides", ugc_match_WebGuides)
+			.addConstant("ugc_match_IntegratedGuides", ugc_match_IntegratedGuides)
+			.addConstant("ugc_match_UsableInGame", ugc_match_UsableInGame)
+			.addConstant("ugc_match_ControllerBindings", ugc_match_ControllerBindings)
+			.addFunction("exception_unhandled_handler", exception_unhandled_handler)
+			.addFunction("variable_global_exists", variable_global_exists)
+			.addFunction("variable_global_get", variable_global_get)
+			.addFunction("variable_global_set", variable_global_set)
+			.addFunction("variable_instance_exists", variable_instance_exists)
+			.addFunction("variable_instance_get", variable_instance_get)
+			.addFunction("variable_instance_set", variable_instance_set)
+			.addFunction("variable_instance_get_names", variable_instance_get_names)
+			.addFunction("variable_instance_names_count", variable_instance_names_count)
+			.addFunction("variable_struct_exists", variable_struct_exists)
+			.addFunction("variable_struct_get", variable_struct_get)
+			.addFunction("variable_struct_set", variable_struct_set)
+			.addFunction("variable_struct_get_names", variable_struct_get_names)
+			.addFunction("variable_struct_names_count", variable_struct_names_count)
+			.addFunction("variable_struct_remove", variable_struct_remove)
+			.addFunction("game_set_speed", game_set_speed)
+			.addFunction("game_get_speed", game_get_speed)
+			.addFunction("room_goto", room_goto)
+			.addFunction("room_goto_previous", room_goto_previous)
+			.addFunction("room_goto_next", room_goto_next)
+			.addFunction("room_previous", room_previous)
+			.addFunction("room_next", room_next)
+			.addFunction("room_restart", room_restart)
+			.addFunction("game_end", game_end)
+			.addFunction("game_restart", game_restart)
+			.addFunction("game_load", game_load)
+			.addFunction("game_save", game_save)
+			.addFunction("game_save_buffer", game_save_buffer)
+			.addFunction("game_load_buffer", game_load_buffer)
+			.addFunction("event_perform", event_perform)
+			.addFunction("event_user", event_user)
+			.addFunction("event_perform_object", event_perform_object)
+			.addFunction("event_inherited", event_inherited)
+			.addFunction("get_integer", get_integer)
+			.addFunction("get_string", get_string)
+			.addFunction("get_integer_async", get_integer_async)
+			.addFunction("get_string_async", get_string_async)
+			.addFunction("get_login_async", get_login_async)
+			.addFunction("get_open_filename", get_open_filename)
+			.addFunction("get_save_filename", get_save_filename)
+			.addFunction("get_open_filename_ext", get_open_filename_ext)
+			.addFunction("get_save_filename_ext", get_save_filename_ext)
+			.addFunction("highscore_clear", highscore_clear)
+			.addFunction("highscore_add", highscore_add)
+			.addFunction("highscore_value", highscore_value)
+			.addFunction("highscore_name", highscore_name)
+			.addFunction("room_exists", room_exists)
+			.addFunction("room_get_name", room_get_name)
+			.addFunction("room_set_width", room_set_width)
+			.addFunction("room_set_height", room_set_height)
+			.addFunction("room_set_persistent", room_set_persistent)
+			.addFunction("room_set_viewport", room_set_viewport)
+			.addFunction("room_get_viewport", room_get_viewport)
+			.addFunction("room_set_view_enabled", room_set_view_enabled)
+			.addFunction("room_add", room_add)
+			.addFunction("room_duplicate", room_duplicate)
+			.addFunction("room_assign", room_assign)
+			.addFunction("room_instance_add", room_instance_add)
+			.addFunction("room_instance_clear", room_instance_clear)
+			.addFunction("room_get_camera", room_get_camera)
+			.addFunction("room_set_camera", room_set_camera)
+			.addFunction("external_call", external_call)
+			.addFunction("external_define", external_define)
+			.addFunction("external_free", external_free)
+			.addFunction("shop_leave_rating", shop_leave_rating)
+			.addFunction("get_timer", get_timer)
+			.addFunction("achievement_login", achievement_login)
+			.addFunction("achievement_logout", achievement_logout)
+			.addFunction("achievement_post", achievement_post)
+			.addFunction("achievement_increment", achievement_increment)
+			.addFunction("achievement_post_score", achievement_post_score)
+			.addFunction("achievement_available", achievement_available)
+			.addFunction("achievement_show_achievements", achievement_show_achievements)
+			.addFunction("achievement_show_leaderboards", achievement_show_leaderboards)
+			.addFunction("achievement_load_friends", achievement_load_friends)
+			.addFunction("achievement_load_leaderboard", achievement_load_leaderboard)
+			.addFunction("achievement_send_challenge", achievement_send_challenge)
+			.addFunction("achievement_load_progress", achievement_load_progress)
+			.addFunction("achievement_reset", achievement_reset)
+			.addFunction("achievement_login_status", achievement_login_status)
+			.addFunction("achievement_get_pic", achievement_get_pic)
+			.addFunction("achievement_show_challenge_notifications", achievement_show_challenge_notifications)
+			.addFunction("achievement_get_challenges", achievement_get_challenges)
+			.addFunction("achievement_event", achievement_event)
+			.addFunction("achievement_show", achievement_show)
+			.addFunction("achievement_get_info", achievement_get_info)
+			.addFunction("iap_activate", iap_activate)
+			.addFunction("iap_status", iap_status)
+			.addFunction("iap_enumerate_products", iap_enumerate_products)
+			.addFunction("iap_restore_all", iap_restore_all)
+			.addFunction("iap_acquire", iap_acquire)
+			.addFunction("iap_consume", iap_consume)
+			.addFunction("iap_product_details", iap_product_details)
+			.addFunction("iap_purchase_details", iap_purchase_details)
+			.addFunction("uwp_livetile_tile_clear", uwp_livetile_tile_clear)
+			.addFunction("uwp_livetile_badge_notification", uwp_livetile_badge_notification)
+			.addFunction("uwp_livetile_badge_clear", uwp_livetile_badge_clear)
+			.addFunction("uwp_livetile_queue_enable", uwp_livetile_queue_enable)
+			.addFunction("uwp_secondarytile_pin", uwp_secondarytile_pin)
+			.addFunction("uwp_secondarytile_badge_notification", uwp_secondarytile_badge_notification)
+			.addFunction("uwp_secondarytile_delete", uwp_secondarytile_delete)
+			.addFunction("uwp_secondarytile_badge_clear", uwp_secondarytile_badge_clear)
+			.addFunction("uwp_secondarytile_tile_clear", uwp_secondarytile_tile_clear)
+			.addFunction("uwp_livetile_notification_begin", uwp_livetile_notification_begin)
+			.addFunction("uwp_livetile_notification_secondary_begin", uwp_livetile_notification_secondary_begin)
+			.addFunction("uwp_livetile_notification_expiry", uwp_livetile_notification_expiry)
+			.addFunction("uwp_livetile_notification_tag", uwp_livetile_notification_tag)
+			.addFunction("uwp_livetile_notification_text_add", uwp_livetile_notification_text_add)
+			.addFunction("uwp_livetile_notification_image_add", uwp_livetile_notification_image_add)
+			.addFunction("uwp_livetile_notification_end", uwp_livetile_notification_end)
+			.addFunction("uwp_livetile_notification_template_add", uwp_livetile_notification_template_add)
+			.addFunction("uwp_appbar_enable", uwp_appbar_enable)
+			.addFunction("uwp_appbar_add_element", uwp_appbar_add_element)
+			.addFunction("uwp_appbar_remove_element", uwp_appbar_remove_element)
+			.addFunction("uwp_device_touchscreen_available", uwp_device_touchscreen_available)
+			.addFunction("winphone_license_trial_version", winphone_license_trial_version)
+			.addFunction("winphone_tile_title", winphone_tile_title)
+			.addFunction("winphone_tile_count", winphone_tile_count)
+			.addFunction("winphone_tile_back_title", winphone_tile_back_title)
+			.addFunction("winphone_tile_back_content", winphone_tile_back_content)
+			.addFunction("winphone_tile_back_content_wide", winphone_tile_back_content_wide)
+			.addFunction("winphone_tile_front_image", winphone_tile_front_image)
+			.addFunction("winphone_tile_front_image_small", winphone_tile_front_image_small)
+			.addFunction("winphone_tile_front_image_wide", winphone_tile_front_image_wide)
+			.addFunction("winphone_tile_back_image", winphone_tile_back_image)
+			.addFunction("winphone_tile_back_image_wide", winphone_tile_back_image_wide)
+			.addFunction("winphone_tile_background_colour", winphone_tile_background_colour)
+			.addFunction("winphone_tile_background_color", winphone_tile_background_color)
+			.addFunction("winphone_tile_icon_image", winphone_tile_icon_image)
+			.addFunction("winphone_tile_small_icon_image", winphone_tile_small_icon_image)
+			.addFunction("winphone_tile_wide_content", winphone_tile_wide_content)
+			.addFunction("winphone_tile_cycle_images", winphone_tile_cycle_images)
+			.addFunction("winphone_tile_small_background_image", winphone_tile_small_background_image)
+			.addFunction("network_create_socket", network_create_socket)
+			.addFunction("network_create_socket_ext", network_create_socket_ext)
+			.addFunction("network_create_server", network_create_server)
+			.addFunction("network_create_server_raw", network_create_server_raw)
+			.addFunction("network_connect", network_connect)
+			.addFunction("network_connect_raw", network_connect_raw)
+			.addFunction("network_connect_async", network_connect_async)
+			.addFunction("network_connect_raw_async", network_connect_raw_async)
+			.addFunction("network_send_packet", network_send_packet)
+			.addFunction("network_send_raw", network_send_raw)
+			.addFunction("network_send_broadcast", network_send_broadcast)
+			.addFunction("network_send_udp", network_send_udp)
+			.addFunction("network_send_udp_raw", network_send_udp_raw)
+			.addFunction("network_set_timeout", network_set_timeout)
+			.addFunction("network_set_config", network_set_config)
+			.addFunction("network_resolve", network_resolve)
+			.addFunction("network_destroy", network_destroy)
+			.addFunction("steam_activate_overlay", steam_activate_overlay)
+			.addFunction("steam_is_overlay_enabled", steam_is_overlay_enabled)
+			.addFunction("steam_is_overlay_activated", steam_is_overlay_activated)
+			.addFunction("steam_get_persona_name", steam_get_persona_name)
+			.addFunction("steam_initialised", steam_initialised)
+			.addFunction("steam_is_cloud_enabled_for_app", steam_is_cloud_enabled_for_app)
+			.addFunction("steam_is_cloud_enabled_for_account", steam_is_cloud_enabled_for_account)
+			.addFunction("steam_file_persisted", steam_file_persisted)
+			.addFunction("steam_get_quota_total", steam_get_quota_total)
+			.addFunction("steam_get_quota_free", steam_get_quota_free)
+			.addFunction("steam_file_write", steam_file_write)
+			.addFunction("steam_file_write_file", steam_file_write_file)
+			.addFunction("steam_file_read", steam_file_read)
+			.addFunction("steam_file_delete", steam_file_delete)
+			.addFunction("steam_file_exists", steam_file_exists)
+			.addFunction("steam_file_size", steam_file_size)
+			.addFunction("steam_file_share", steam_file_share)
+			.addFunction("steam_is_screenshot_requested", steam_is_screenshot_requested)
+			.addFunction("steam_send_screenshot", steam_send_screenshot)
+			.addFunction("steam_is_user_logged_on", steam_is_user_logged_on)
+			.addFunction("steam_get_user_steam_id", steam_get_user_steam_id)
+			.addFunction("steam_user_owns_dlc", steam_user_owns_dlc)
+			.addFunction("steam_user_installed_dlc", steam_user_installed_dlc)
+			.addFunction("steam_set_achievement", steam_set_achievement)
+			.addFunction("steam_get_achievement", steam_get_achievement)
+			.addFunction("steam_clear_achievement", steam_clear_achievement)
+			.addFunction("steam_set_stat_int", steam_set_stat_int)
+			.addFunction("steam_set_stat_float", steam_set_stat_float)
+			.addFunction("steam_set_stat_avg_rate", steam_set_stat_avg_rate)
+			.addFunction("steam_get_stat_int", steam_get_stat_int)
+			.addFunction("steam_get_stat_float", steam_get_stat_float)
+			.addFunction("steam_get_stat_avg_rate", steam_get_stat_avg_rate)
+			.addFunction("steam_reset_all_stats", steam_reset_all_stats)
+			.addFunction("steam_reset_all_stats_achievements", steam_reset_all_stats_achievements)
+			.addFunction("steam_stats_ready", steam_stats_ready)
+			.addFunction("steam_create_leaderboard", steam_create_leaderboard)
+			.addFunction("steam_upload_score", steam_upload_score)
+			.addFunction("steam_upload_score_ext", steam_upload_score_ext)
+			.addFunction("steam_download_scores_around_user", steam_download_scores_around_user)
+			.addFunction("steam_download_scores", steam_download_scores)
+			.addFunction("steam_download_friends_scores", steam_download_friends_scores)
+			.addFunction("steam_upload_score_buffer", steam_upload_score_buffer)
+			.addFunction("steam_upload_score_buffer_ext", steam_upload_score_buffer_ext)
+			.addFunction("steam_current_game_language", steam_current_game_language)
+			.addFunction("steam_available_languages", steam_available_languages)
+			.addFunction("steam_activate_overlay_browser", steam_activate_overlay_browser)
+			.addFunction("steam_activate_overlay_user", steam_activate_overlay_user)
+			.addFunction("steam_activate_overlay_store", steam_activate_overlay_store)
+			.addFunction("steam_get_user_persona_name", steam_get_user_persona_name)
+			.addFunction("steam_get_app_id", steam_get_app_id)
+			.addFunction("steam_get_user_account_id", steam_get_user_account_id)
+			.addFunction("steam_ugc_download", steam_ugc_download)
+			.addFunction("steam_ugc_create_item", steam_ugc_create_item)
+			.addFunction("steam_ugc_start_item_update", steam_ugc_start_item_update)
+			.addFunction("steam_ugc_set_item_title", steam_ugc_set_item_title)
+			.addFunction("steam_ugc_set_item_description", steam_ugc_set_item_description)
+			.addFunction("steam_ugc_set_item_visibility", steam_ugc_set_item_visibility)
+			.addFunction("steam_ugc_set_item_tags", steam_ugc_set_item_tags)
+			.addFunction("steam_ugc_set_item_content", steam_ugc_set_item_content)
+			.addFunction("steam_ugc_set_item_preview", steam_ugc_set_item_preview)
+			.addFunction("steam_ugc_submit_item_update", steam_ugc_submit_item_update)
+			.addFunction("steam_ugc_get_item_update_progress", steam_ugc_get_item_update_progress)
+			.addFunction("steam_ugc_subscribe_item", steam_ugc_subscribe_item)
+			.addFunction("steam_ugc_unsubscribe_item", steam_ugc_unsubscribe_item)
+			.addFunction("steam_ugc_num_subscribed_items", steam_ugc_num_subscribed_items)
+			.addFunction("steam_ugc_get_subscribed_items", steam_ugc_get_subscribed_items)
+			.addFunction("steam_ugc_get_item_install_info", steam_ugc_get_item_install_info)
+			.addFunction("steam_ugc_get_item_update_info", steam_ugc_get_item_update_info)
+			.addFunction("steam_ugc_request_item_details", steam_ugc_request_item_details)
+			.addFunction("steam_ugc_create_query_user", steam_ugc_create_query_user)
+			.addFunction("steam_ugc_create_query_user_ex", steam_ugc_create_query_user_ex)
+			.addFunction("steam_ugc_create_query_all", steam_ugc_create_query_all)
+			.addFunction("steam_ugc_create_query_all_ex", steam_ugc_create_query_all_ex)
+			.addFunction("steam_ugc_query_set_cloud_filename_filter", steam_ugc_query_set_cloud_filename_filter)
+			.addFunction("steam_ugc_query_set_match_any_tag", steam_ugc_query_set_match_any_tag)
+			.addFunction("steam_ugc_query_set_search_text", steam_ugc_query_set_search_text)
+			.addFunction("steam_ugc_query_set_ranked_by_trend_days", steam_ugc_query_set_ranked_by_trend_days)
+			.addFunction("steam_ugc_query_add_required_tag", steam_ugc_query_add_required_tag)
+			.addFunction("steam_ugc_query_add_excluded_tag", steam_ugc_query_add_excluded_tag)
+			.addFunction("steam_ugc_query_set_return_long_description", steam_ugc_query_set_return_long_description)
+			.addFunction("steam_ugc_query_set_return_total_only", steam_ugc_query_set_return_total_only)
+			.addFunction("steam_ugc_query_set_allow_cached_response", steam_ugc_query_set_allow_cached_response)
+			.addFunction("steam_ugc_send_query", steam_ugc_send_query)
+			.addFunction("push_local_notification", push_local_notification)
+			.addFunction("push_get_first_local_notification", push_get_first_local_notification)
+			.addFunction("push_get_next_local_notification", push_get_next_local_notification)
+			.addFunction("push_cancel_local_notification", push_cancel_local_notification)
+			.addFunction("push_get_application_badge_number", push_get_application_badge_number)
+			.addFunction("push_set_application_badge_number", push_set_application_badge_number)
+			.addFunction("gc_collect", gc_collect)
+			.addFunction("gc_enable", gc_enable)
+			.addFunction("gc_is_enabled", gc_is_enabled)
+			.addFunction("gc_get_stats", gc_get_stats)
+			.addFunction("gc_target_frame_time", gc_target_frame_time)
+			.addFunction("gc_get_target_frame_time", gc_get_target_frame_time);
+	static vars_introspection = new CatspeakVMInterface()
+			.addConstant("asset_object", asset_object)
+			.addConstant("asset_unknown", asset_unknown)
+			.addConstant("asset_sprite", asset_sprite)
+			.addConstant("asset_sound", asset_sound)
+			.addConstant("asset_room", asset_room)
+			.addConstant("asset_path", asset_path)
+			.addConstant("asset_script", asset_script)
+			.addConstant("asset_font", asset_font)
+			.addConstant("asset_timeline", asset_timeline)
+			.addConstant("asset_tiles", asset_tiles)
+			.addConstant("asset_shader", asset_shader)
+			.addConstant("asset_sequence", asset_sequence)
+			.addConstant("asset_animationcurve", asset_animationcurve)
+			.addFunction("is_real", is_real)
+			.addFunction("is_numeric", is_numeric)
+			.addFunction("is_string", is_string)
+			.addFunction("is_array", is_array)
+			.addFunction("is_undefined", is_undefined)
+			.addFunction("is_int32", is_int32)
+			.addFunction("is_int64", is_int64)
+			.addFunction("is_ptr", is_ptr)
+			.addFunction("is_vec3", is_vec3)
+			.addFunction("is_vec4", is_vec4)
+			.addFunction("is_bool", is_bool)
+			.addFunction("is_nan", is_nan)
+			.addFunction("is_infinity", is_infinity)
+			.addFunction("is_struct", is_struct)
+			.addFunction("is_method", is_method)
+			.addFunction("typeof", typeof)
+			.addFunction("instanceof", instanceof)
+			.addFunction("asset_get_index", asset_get_index)
+			.addFunction("asset_get_type", asset_get_type)
+			.addFunction("tag_get_asset_ids", tag_get_asset_ids)
+			.addFunction("tag_get_assets", tag_get_assets)
+			.addFunction("asset_get_tags", asset_get_tags)
+			.addFunction("asset_add_tags", asset_add_tags)
+			.addFunction("asset_remove_tags", asset_remove_tags)
+			.addFunction("asset_has_tags", asset_has_tags)
+			.addFunction("asset_has_any_tag", asset_has_any_tag)
+			.addFunction("asset_clear_tags", asset_clear_tags)
+			.addFunction("extension_get_string", extension_get_string);
+	static vars_maths = new CatspeakVMInterface()
+			.addConstant("undefined", undefined)
+			.addConstant("true", true)
+			.addConstant("false", false)
+			.addConstant("pi", pi)
+			.addConstant("NaN", NaN)
+			.addConstant("infinity", infinity)
+			.addConstant("matrix_view", matrix_view)
+			.addConstant("matrix_projection", matrix_projection)
+			.addConstant("matrix_world", matrix_world)
+			.addFunction("abs", abs)
+			.addFunction("round", round)
+			.addFunction("floor", floor)
+			.addFunction("ceil", ceil)
+			.addFunction("sign", sign)
+			.addFunction("frac", frac)
+			.addFunction("sqrt", sqrt)
+			.addFunction("sqr", sqr)
+			.addFunction("exp", exp)
+			.addFunction("ln", ln)
+			.addFunction("log2", log2)
+			.addFunction("log10", log10)
+			.addFunction("sin", sin)
+			.addFunction("cos", cos)
+			.addFunction("tan", tan)
+			.addFunction("arcsin", arcsin)
+			.addFunction("arccos", arccos)
+			.addFunction("arctan", arctan)
+			.addFunction("arctan2", arctan2)
+			.addFunction("dsin", dsin)
+			.addFunction("dcos", dcos)
+			.addFunction("dtan", dtan)
+			.addFunction("darcsin", darcsin)
+			.addFunction("darccos", darccos)
+			.addFunction("darctan", darctan)
+			.addFunction("darctan2", darctan2)
+			.addFunction("degtorad", degtorad)
+			.addFunction("power", power)
+			.addFunction("logn", logn)
+			.addFunction("min", min)
+			.addFunction("max", max)
+			.addFunction("mean", mean)
+			.addFunction("median", median)
+			.addFunction("clamp", clamp)
+			.addFunction("lerp", lerp)
+			.addFunction("dot_product", dot_product)
+			.addFunction("dot_product_3d", dot_product_3d)
+			.addFunction("dot_product_normalised", dot_product_normalised)
+			.addFunction("dot_product_3d_normalised", dot_product_3d_normalised)
+			.addFunction("dot_product_normalized", dot_product_normalized)
+			.addFunction("dot_product_3d_normalized", dot_product_3d_normalized)
+			.addFunction("math_set_epsilon", math_set_epsilon)
+			.addFunction("math_get_epsilon", math_get_epsilon)
+			.addFunction("point_distance_3d", point_distance_3d)
+			.addFunction("point_distance", point_distance)
+			.addFunction("point_direction", point_direction)
+			.addFunction("lengthdir_x", lengthdir_x)
+			.addFunction("lengthdir_y", lengthdir_y)
+			.addFunction("real", real)
+			.addFunction("bool", bool)
+			.addFunction("int64", int64)
+			.addFunction("point_in_rectangle", point_in_rectangle)
+			.addFunction("point_in_triangle", point_in_triangle)
+			.addFunction("point_in_circle", point_in_circle)
+			.addFunction("matrix_get", matrix_get)
+			.addFunction("matrix_set", matrix_set)
+			.addFunction("matrix_build_identity", matrix_build_identity)
+			.addFunction("matrix_build", matrix_build)
+			.addFunction("matrix_build_lookat", matrix_build_lookat)
+			.addFunction("matrix_build_projection_ortho", matrix_build_projection_ortho)
+			.addFunction("matrix_build_projection_perspective", matrix_build_projection_perspective)
+			.addFunction("matrix_build_projection_perspective_fov", matrix_build_projection_perspective_fov)
+			.addFunction("matrix_multiply", matrix_multiply)
+			.addFunction("matrix_transform_vertex", matrix_transform_vertex)
+			.addFunction("matrix_stack_push", matrix_stack_push)
+			.addFunction("matrix_stack_pop", matrix_stack_pop)
+			.addFunction("matrix_stack_set", matrix_stack_set)
+			.addFunction("matrix_stack_clear", matrix_stack_clear)
+			.addFunction("matrix_stack_top", matrix_stack_top)
+			.addFunction("matrix_stack_is_empty", matrix_stack_is_empty);
+	static vars_animation = new CatspeakVMInterface()
+			.addConstant("path_action_stop", path_action_stop)
+			.addConstant("path_action_restart", path_action_restart)
+			.addConstant("path_action_continue", path_action_continue)
+			.addConstant("path_action_reverse", path_action_reverse)
+			.addConstant("seqtracktype_graphic", seqtracktype_graphic)
+			.addConstant("seqtracktype_audio", seqtracktype_audio)
+			.addConstant("seqtracktype_real", seqtracktype_real)
+			.addConstant("seqtracktype_color", seqtracktype_color)
+			.addConstant("seqtracktype_colour", seqtracktype_colour)
+			.addConstant("seqtracktype_bool", seqtracktype_bool)
+			.addConstant("seqtracktype_string", seqtracktype_string)
+			.addConstant("seqtracktype_sequence", seqtracktype_sequence)
+			.addConstant("seqtracktype_clipmask", seqtracktype_clipmask)
+			.addConstant("seqtracktype_clipmask_mask", seqtracktype_clipmask_mask)
+			.addConstant("seqtracktype_clipmask_subject", seqtracktype_clipmask_subject)
+			.addConstant("seqtracktype_group", seqtracktype_group)
+			.addConstant("seqtracktype_empty", seqtracktype_empty)
+			.addConstant("seqtracktype_spriteframes", seqtracktype_spriteframes)
+			.addConstant("seqtracktype_instance", seqtracktype_instance)
+			.addConstant("seqtracktype_message", seqtracktype_message)
+			.addConstant("seqtracktype_moment", seqtracktype_moment)
+			.addConstant("seqplay_oneshot", seqplay_oneshot)
+			.addConstant("seqplay_loop", seqplay_loop)
+			.addConstant("seqplay_pingpong", seqplay_pingpong)
+			.addConstant("seqdir_right", seqdir_right)
+			.addConstant("seqdir_left", seqdir_left)
+			.addConstant("seqinterpolation_assign", seqinterpolation_assign)
+			.addConstant("seqinterpolation_lerp", seqinterpolation_lerp)
+			.addConstant("seqaudiokey_loop", seqaudiokey_loop)
+			.addConstant("seqaudiokey_oneshot", seqaudiokey_oneshot)
+			.addConstant("animcurvetype_linear", animcurvetype_linear)
+			.addConstant("animcurvetype_catmullrom", animcurvetype_catmullrom)
+			.addFunction("path_start", path_start)
+			.addFunction("path_end", path_end)
+			.addFunction("mp_linear_step", mp_linear_step)
+			.addFunction("mp_potential_step", mp_potential_step)
+			.addFunction("mp_linear_step_object", mp_linear_step_object)
+			.addFunction("mp_potential_step_object", mp_potential_step_object)
+			.addFunction("mp_potential_settings", mp_potential_settings)
+			.addFunction("mp_linear_path", mp_linear_path)
+			.addFunction("mp_potential_path", mp_potential_path)
+			.addFunction("mp_linear_path_object", mp_linear_path_object)
+			.addFunction("mp_potential_path_object", mp_potential_path_object)
+			.addFunction("mp_grid_create", mp_grid_create)
+			.addFunction("mp_grid_destroy", mp_grid_destroy)
+			.addFunction("mp_grid_clear_all", mp_grid_clear_all)
+			.addFunction("mp_grid_clear_cell", mp_grid_clear_cell)
+			.addFunction("mp_grid_clear_rectangle", mp_grid_clear_rectangle)
+			.addFunction("mp_grid_add_cell", mp_grid_add_cell)
+			.addFunction("mp_grid_get_cell", mp_grid_get_cell)
+			.addFunction("mp_grid_add_rectangle", mp_grid_add_rectangle)
+			.addFunction("mp_grid_add_instances", mp_grid_add_instances)
+			.addFunction("mp_grid_path", mp_grid_path)
+			.addFunction("mp_grid_draw", mp_grid_draw)
+			.addFunction("mp_grid_to_ds_grid", mp_grid_to_ds_grid)
+			.addFunction("path_exists", path_exists)
+			.addFunction("path_get_name", path_get_name)
+			.addFunction("path_get_length", path_get_length)
+			.addFunction("path_get_kind", path_get_kind)
+			.addFunction("path_get_closed", path_get_closed)
+			.addFunction("path_get_precision", path_get_precision)
+			.addFunction("path_get_number", path_get_number)
+			.addFunction("path_get_point_x", path_get_point_x)
+			.addFunction("path_get_point_y", path_get_point_y)
+			.addFunction("path_get_point_speed", path_get_point_speed)
+			.addFunction("path_get_x", path_get_x)
+			.addFunction("path_get_y", path_get_y)
+			.addFunction("path_get_speed", path_get_speed)
+			.addFunction("timeline_add", timeline_add)
+			.addFunction("timeline_delete", timeline_delete)
+			.addFunction("timeline_clear", timeline_clear)
+			.addFunction("timeline_exists", timeline_exists)
+			.addFunction("timeline_get_name", timeline_get_name)
+			.addFunction("timeline_moment_clear", timeline_moment_clear)
+			.addFunction("timeline_moment_add_script", timeline_moment_add_script)
+			.addFunction("timeline_size", timeline_size)
+			.addFunction("timeline_max_moment", timeline_max_moment)
+			.addFunction("path_set_kind", path_set_kind)
+			.addFunction("path_set_closed", path_set_closed)
+			.addFunction("path_set_precision", path_set_precision)
+			.addFunction("path_add", path_add)
+			.addFunction("path_assign", path_assign)
+			.addFunction("path_duplicate", path_duplicate)
+			.addFunction("path_append", path_append)
+			.addFunction("path_delete", path_delete)
+			.addFunction("path_add_point", path_add_point)
+			.addFunction("path_insert_point", path_insert_point)
+			.addFunction("path_change_point", path_change_point)
+			.addFunction("path_delete_point", path_delete_point)
+			.addFunction("path_clear_points", path_clear_points)
+			.addFunction("path_reverse", path_reverse)
+			.addFunction("path_mirror", path_mirror)
+			.addFunction("path_flip", path_flip)
+			.addFunction("path_rotate", path_rotate)
+			.addFunction("path_rescale", path_rescale)
+			.addFunction("path_shift", path_shift)
+			.addFunction("skeleton_animation_set", skeleton_animation_set)
+			.addFunction("skeleton_animation_get", skeleton_animation_get)
+			.addFunction("skeleton_animation_mix", skeleton_animation_mix)
+			.addFunction("skeleton_animation_set_ext", skeleton_animation_set_ext)
+			.addFunction("skeleton_animation_get_ext", skeleton_animation_get_ext)
+			.addFunction("skeleton_animation_get_duration", skeleton_animation_get_duration)
+			.addFunction("skeleton_animation_get_frames", skeleton_animation_get_frames)
+			.addFunction("skeleton_animation_clear", skeleton_animation_clear)
+			.addFunction("skeleton_skin_set", skeleton_skin_set)
+			.addFunction("skeleton_skin_get", skeleton_skin_get)
+			.addFunction("skeleton_attachment_set", skeleton_attachment_set)
+			.addFunction("skeleton_attachment_get", skeleton_attachment_get)
+			.addFunction("skeleton_attachment_create", skeleton_attachment_create)
+			.addFunction("skeleton_attachment_create_colour", skeleton_attachment_create_colour)
+			.addFunction("skeleton_attachment_create_color", skeleton_attachment_create_color)
+			.addFunction("skeleton_collision_draw_set", skeleton_collision_draw_set)
+			.addFunction("skeleton_bone_data_get", skeleton_bone_data_get)
+			.addFunction("skeleton_bone_data_set", skeleton_bone_data_set)
+			.addFunction("skeleton_bone_state_get", skeleton_bone_state_get)
+			.addFunction("skeleton_bone_state_set", skeleton_bone_state_set)
+			.addFunction("skeleton_slot_colour_set", skeleton_slot_colour_set)
+			.addFunction("skeleton_slot_color_set", skeleton_slot_color_set)
+			.addFunction("skeleton_slot_colour_get", skeleton_slot_colour_get)
+			.addFunction("skeleton_slot_color_get", skeleton_slot_color_get)
+			.addFunction("skeleton_slot_alpha_get", skeleton_slot_alpha_get)
+			.addFunction("skeleton_find_slot", skeleton_find_slot)
+			.addFunction("skeleton_get_minmax", skeleton_get_minmax)
+			.addFunction("skeleton_get_num_bounds", skeleton_get_num_bounds)
+			.addFunction("skeleton_get_bounds", skeleton_get_bounds)
+			.addFunction("skeleton_animation_get_frame", skeleton_animation_get_frame)
+			.addFunction("skeleton_animation_set_frame", skeleton_animation_set_frame)
+			.addFunction("skeleton_animation_list", skeleton_animation_list)
+			.addFunction("skeleton_skin_list", skeleton_skin_list)
+			.addFunction("skeleton_bone_list", skeleton_bone_list)
+			.addFunction("skeleton_slot_list", skeleton_slot_list)
+			.addFunction("skeleton_slot_data", skeleton_slot_data)
+			.addFunction("skeleton_slot_data_instance", skeleton_slot_data_instance)
+			.addFunction("sequence_exists", sequence_exists)
+			.addFunction("animcurve_get", animcurve_get)
+			.addFunction("animcurve_get_channel", animcurve_get_channel)
+			.addFunction("animcurve_get_channel_index", animcurve_get_channel_index)
+			.addFunction("animcurve_channel_evaluate", animcurve_channel_evaluate)
+			.addFunction("sequence_create", sequence_create)
+			.addFunction("sequence_destroy", sequence_destroy)
+			.addFunction("sequence_exists", sequence_exists)
+			.addFunction("sequence_get", sequence_get)
+			.addFunction("sequence_keyframe_new", sequence_keyframe_new)
+			.addFunction("sequence_keyframedata_new", sequence_keyframedata_new)
+			.addFunction("sequence_track_new", sequence_track_new)
+			.addFunction("sequence_get_objects", sequence_get_objects)
+			.addFunction("sequence_instance_override_object", sequence_instance_override_object)
+			.addFunction("animcurve_create", animcurve_create)
+			.addFunction("animcurve_destroy", animcurve_destroy)
+			.addFunction("animcurve_exists", animcurve_exists)
+			.addFunction("animcurve_channel_new", animcurve_channel_new)
+			.addFunction("animcurve_point_new", animcurve_point_new);
+	static vars_collections = new CatspeakVMInterface()
+			.addConstant("path_action_stop", path_action_stop)
+			.addConstant("path_action_restart", path_action_restart)
+			.addConstant("path_action_continue", path_action_continue)
+			.addConstant("path_action_reverse", path_action_reverse)
+			.addConstant("ds_type_map", ds_type_map)
+			.addConstant("ds_type_list", ds_type_list)
+			.addConstant("ds_type_stack", ds_type_stack)
+			.addConstant("ds_type_queue", ds_type_queue)
+			.addConstant("ds_type_grid", ds_type_grid)
+			.addConstant("ds_type_priority", ds_type_priority)
+			.addConstant("buffer_fixed", buffer_fixed)
+			.addConstant("buffer_grow", buffer_grow)
+			.addConstant("buffer_wrap", buffer_wrap)
+			.addConstant("buffer_fast", buffer_fast)
+			.addConstant("buffer_vbuffer", buffer_vbuffer)
+			.addConstant("buffer_u8", buffer_u8)
+			.addConstant("buffer_s8", buffer_s8)
+			.addConstant("buffer_u16", buffer_u16)
+			.addConstant("buffer_s16", buffer_s16)
+			.addConstant("buffer_u32", buffer_u32)
+			.addConstant("buffer_s32", buffer_s32)
+			.addConstant("buffer_u64", buffer_u64)
+			.addConstant("buffer_f16", buffer_f16)
+			.addConstant("buffer_f32", buffer_f32)
+			.addConstant("buffer_f64", buffer_f64)
+			.addConstant("buffer_bool", buffer_bool)
+			.addConstant("buffer_text", buffer_text)
+			.addConstant("buffer_string", buffer_string)
+			.addConstant("buffer_seek_start", buffer_seek_start)
+			.addConstant("buffer_seek_relative", buffer_seek_relative)
+			.addConstant("buffer_seek_end", buffer_seek_end)
+			.addFunction("array_length", array_length)
+			.addFunction("array_equals", array_equals)
+			.addFunction("array_create", array_create)
+			.addFunction("array_copy", array_copy)
+			.addFunction("array_resize", array_resize)
+			.addFunction("array_get", array_get)
+			.addFunction("array_set", array_set)
+			.addFunction("array_push", array_push)
+			.addFunction("array_pop", array_pop)
+			.addFunction("array_insert", array_insert)
+			.addFunction("array_delete", array_delete)
+			.addFunction("array_sort", array_sort)
+			.addFunction("path_start", path_start)
+			.addFunction("path_end", path_end)
+			.addFunction("mp_linear_step", mp_linear_step)
+			.addFunction("mp_potential_step", mp_potential_step)
+			.addFunction("mp_linear_step_object", mp_linear_step_object)
+			.addFunction("mp_potential_step_object", mp_potential_step_object)
+			.addFunction("mp_potential_settings", mp_potential_settings)
+			.addFunction("mp_linear_path", mp_linear_path)
+			.addFunction("mp_potential_path", mp_potential_path)
+			.addFunction("mp_linear_path_object", mp_linear_path_object)
+			.addFunction("mp_potential_path_object", mp_potential_path_object)
+			.addFunction("mp_grid_create", mp_grid_create)
+			.addFunction("mp_grid_destroy", mp_grid_destroy)
+			.addFunction("mp_grid_clear_all", mp_grid_clear_all)
+			.addFunction("mp_grid_clear_cell", mp_grid_clear_cell)
+			.addFunction("mp_grid_clear_rectangle", mp_grid_clear_rectangle)
+			.addFunction("mp_grid_add_cell", mp_grid_add_cell)
+			.addFunction("mp_grid_get_cell", mp_grid_get_cell)
+			.addFunction("mp_grid_add_rectangle", mp_grid_add_rectangle)
+			.addFunction("mp_grid_add_instances", mp_grid_add_instances)
+			.addFunction("mp_grid_path", mp_grid_path)
+			.addFunction("mp_grid_draw", mp_grid_draw)
+			.addFunction("mp_grid_to_ds_grid", mp_grid_to_ds_grid)
+			.addFunction("highscore_clear", highscore_clear)
+			.addFunction("highscore_add", highscore_add)
+			.addFunction("highscore_value", highscore_value)
+			.addFunction("highscore_name", highscore_name)
+			.addFunction("path_exists", path_exists)
+			.addFunction("path_get_name", path_get_name)
+			.addFunction("path_get_length", path_get_length)
+			.addFunction("path_get_kind", path_get_kind)
+			.addFunction("path_get_closed", path_get_closed)
+			.addFunction("path_get_precision", path_get_precision)
+			.addFunction("path_get_number", path_get_number)
+			.addFunction("path_get_point_x", path_get_point_x)
+			.addFunction("path_get_point_y", path_get_point_y)
+			.addFunction("path_get_point_speed", path_get_point_speed)
+			.addFunction("path_get_x", path_get_x)
+			.addFunction("path_get_y", path_get_y)
+			.addFunction("path_get_speed", path_get_speed)
+			.addFunction("path_set_kind", path_set_kind)
+			.addFunction("path_set_closed", path_set_closed)
+			.addFunction("path_set_precision", path_set_precision)
+			.addFunction("path_add", path_add)
+			.addFunction("path_assign", path_assign)
+			.addFunction("path_duplicate", path_duplicate)
+			.addFunction("path_append", path_append)
+			.addFunction("path_delete", path_delete)
+			.addFunction("path_add_point", path_add_point)
+			.addFunction("path_insert_point", path_insert_point)
+			.addFunction("path_change_point", path_change_point)
+			.addFunction("path_delete_point", path_delete_point)
+			.addFunction("path_clear_points", path_clear_points)
+			.addFunction("path_reverse", path_reverse)
+			.addFunction("path_mirror", path_mirror)
+			.addFunction("path_flip", path_flip)
+			.addFunction("path_rotate", path_rotate)
+			.addFunction("path_rescale", path_rescale)
+			.addFunction("path_shift", path_shift)
+			.addFunction("ds_set_precision", ds_set_precision)
+			.addFunction("ds_exists", ds_exists)
+			.addFunction("ds_stack_create", ds_stack_create)
+			.addFunction("ds_stack_destroy", ds_stack_destroy)
+			.addFunction("ds_stack_clear", ds_stack_clear)
+			.addFunction("ds_stack_copy", ds_stack_copy)
+			.addFunction("ds_stack_size", ds_stack_size)
+			.addFunction("ds_stack_empty", ds_stack_empty)
+			.addFunction("ds_stack_push", ds_stack_push)
+			.addFunction("ds_stack_pop", ds_stack_pop)
+			.addFunction("ds_stack_top", ds_stack_top)
+			.addFunction("ds_stack_write", ds_stack_write)
+			.addFunction("ds_stack_read", ds_stack_read)
+			.addFunction("ds_queue_create", ds_queue_create)
+			.addFunction("ds_queue_destroy", ds_queue_destroy)
+			.addFunction("ds_queue_clear", ds_queue_clear)
+			.addFunction("ds_queue_copy", ds_queue_copy)
+			.addFunction("ds_queue_size", ds_queue_size)
+			.addFunction("ds_queue_empty", ds_queue_empty)
+			.addFunction("ds_queue_enqueue", ds_queue_enqueue)
+			.addFunction("ds_queue_dequeue", ds_queue_dequeue)
+			.addFunction("ds_queue_head", ds_queue_head)
+			.addFunction("ds_queue_tail", ds_queue_tail)
+			.addFunction("ds_queue_write", ds_queue_write)
+			.addFunction("ds_queue_read", ds_queue_read)
+			.addFunction("ds_list_create", ds_list_create)
+			.addFunction("ds_list_destroy", ds_list_destroy)
+			.addFunction("ds_list_clear", ds_list_clear)
+			.addFunction("ds_list_copy", ds_list_copy)
+			.addFunction("ds_list_size", ds_list_size)
+			.addFunction("ds_list_empty", ds_list_empty)
+			.addFunction("ds_list_add", ds_list_add)
+			.addFunction("ds_list_insert", ds_list_insert)
+			.addFunction("ds_list_replace", ds_list_replace)
+			.addFunction("ds_list_delete", ds_list_delete)
+			.addFunction("ds_list_find_index", ds_list_find_index)
+			.addFunction("ds_list_find_value", ds_list_find_value)
+			.addFunction("ds_list_is_map", ds_list_is_map)
+			.addFunction("ds_list_is_list", ds_list_is_list)
+			.addFunction("ds_list_mark_as_list", ds_list_mark_as_list)
+			.addFunction("ds_list_mark_as_map", ds_list_mark_as_map)
+			.addFunction("ds_list_sort", ds_list_sort)
+			.addFunction("ds_list_shuffle", ds_list_shuffle)
+			.addFunction("ds_list_write", ds_list_write)
+			.addFunction("ds_list_read", ds_list_read)
+			.addFunction("ds_list_set", ds_list_set)
+			.addFunction("ds_map_create", ds_map_create)
+			.addFunction("ds_map_destroy", ds_map_destroy)
+			.addFunction("ds_map_clear", ds_map_clear)
+			.addFunction("ds_map_copy", ds_map_copy)
+			.addFunction("ds_map_size", ds_map_size)
+			.addFunction("ds_map_empty", ds_map_empty)
+			.addFunction("ds_map_add", ds_map_add)
+			.addFunction("ds_map_add_list", ds_map_add_list)
+			.addFunction("ds_map_add_map", ds_map_add_map)
+			.addFunction("ds_map_replace", ds_map_replace)
+			.addFunction("ds_map_replace_map", ds_map_replace_map)
+			.addFunction("ds_map_replace_list", ds_map_replace_list)
+			.addFunction("ds_map_delete", ds_map_delete)
+			.addFunction("ds_map_exists", ds_map_exists)
+			.addFunction("ds_map_values_to_array", ds_map_values_to_array)
+			.addFunction("ds_map_keys_to_array", ds_map_keys_to_array)
+			.addFunction("ds_map_find_value", ds_map_find_value)
+			.addFunction("ds_map_is_map", ds_map_is_map)
+			.addFunction("ds_map_is_list", ds_map_is_list)
+			.addFunction("ds_map_find_previous", ds_map_find_previous)
+			.addFunction("ds_map_find_next", ds_map_find_next)
+			.addFunction("ds_map_find_first", ds_map_find_first)
+			.addFunction("ds_map_find_last", ds_map_find_last)
+			.addFunction("ds_map_write", ds_map_write)
+			.addFunction("ds_map_read", ds_map_read)
+			.addFunction("ds_map_secure_save", ds_map_secure_save)
+			.addFunction("ds_map_secure_load", ds_map_secure_load)
+			.addFunction("ds_map_secure_load_buffer", ds_map_secure_load_buffer)
+			.addFunction("ds_map_secure_save_buffer", ds_map_secure_save_buffer)
+			.addFunction("ds_map_set", ds_map_set)
+			.addFunction("ds_priority_create", ds_priority_create)
+			.addFunction("ds_priority_destroy", ds_priority_destroy)
+			.addFunction("ds_priority_clear", ds_priority_clear)
+			.addFunction("ds_priority_copy", ds_priority_copy)
+			.addFunction("ds_priority_size", ds_priority_size)
+			.addFunction("ds_priority_empty", ds_priority_empty)
+			.addFunction("ds_priority_add", ds_priority_add)
+			.addFunction("ds_priority_change_priority", ds_priority_change_priority)
+			.addFunction("ds_priority_find_priority", ds_priority_find_priority)
+			.addFunction("ds_priority_delete_value", ds_priority_delete_value)
+			.addFunction("ds_priority_delete_min", ds_priority_delete_min)
+			.addFunction("ds_priority_find_min", ds_priority_find_min)
+			.addFunction("ds_priority_delete_max", ds_priority_delete_max)
+			.addFunction("ds_priority_find_max", ds_priority_find_max)
+			.addFunction("ds_priority_write", ds_priority_write)
+			.addFunction("ds_priority_read", ds_priority_read)
+			.addFunction("ds_grid_create", ds_grid_create)
+			.addFunction("ds_grid_destroy", ds_grid_destroy)
+			.addFunction("ds_grid_copy", ds_grid_copy)
+			.addFunction("ds_grid_resize", ds_grid_resize)
+			.addFunction("ds_grid_width", ds_grid_width)
+			.addFunction("ds_grid_height", ds_grid_height)
+			.addFunction("ds_grid_clear", ds_grid_clear)
+			.addFunction("ds_grid_set", ds_grid_set)
+			.addFunction("ds_grid_add", ds_grid_add)
+			.addFunction("ds_grid_multiply", ds_grid_multiply)
+			.addFunction("ds_grid_set_region", ds_grid_set_region)
+			.addFunction("ds_grid_add_region", ds_grid_add_region)
+			.addFunction("ds_grid_multiply_region", ds_grid_multiply_region)
+			.addFunction("ds_grid_set_disk", ds_grid_set_disk)
+			.addFunction("ds_grid_add_disk", ds_grid_add_disk)
+			.addFunction("ds_grid_multiply_disk", ds_grid_multiply_disk)
+			.addFunction("ds_grid_set_grid_region", ds_grid_set_grid_region)
+			.addFunction("ds_grid_add_grid_region", ds_grid_add_grid_region)
+			.addFunction("ds_grid_multiply_grid_region", ds_grid_multiply_grid_region)
+			.addFunction("ds_grid_get", ds_grid_get)
+			.addFunction("ds_grid_get_sum", ds_grid_get_sum)
+			.addFunction("ds_grid_get_max", ds_grid_get_max)
+			.addFunction("ds_grid_get_min", ds_grid_get_min)
+			.addFunction("ds_grid_get_mean", ds_grid_get_mean)
+			.addFunction("ds_grid_get_disk_sum", ds_grid_get_disk_sum)
+			.addFunction("ds_grid_get_disk_min", ds_grid_get_disk_min)
+			.addFunction("ds_grid_get_disk_max", ds_grid_get_disk_max)
+			.addFunction("ds_grid_get_disk_mean", ds_grid_get_disk_mean)
+			.addFunction("ds_grid_value_exists", ds_grid_value_exists)
+			.addFunction("ds_grid_value_x", ds_grid_value_x)
+			.addFunction("ds_grid_value_y", ds_grid_value_y)
+			.addFunction("ds_grid_value_disk_exists", ds_grid_value_disk_exists)
+			.addFunction("ds_grid_value_disk_x", ds_grid_value_disk_x)
+			.addFunction("ds_grid_value_disk_y", ds_grid_value_disk_y)
+			.addFunction("ds_grid_shuffle", ds_grid_shuffle)
+			.addFunction("ds_grid_write", ds_grid_write)
+			.addFunction("ds_grid_read", ds_grid_read)
+			.addFunction("ds_grid_sort", ds_grid_sort)
+			.addFunction("ds_grid_set", ds_grid_set)
+			.addFunction("ds_grid_get", ds_grid_get)
+			.addFunction("buffer_create", buffer_create)
+			.addFunction("buffer_write", buffer_write)
+			.addFunction("buffer_read", buffer_read)
+			.addFunction("buffer_seek", buffer_seek)
+			.addFunction("buffer_get_surface", buffer_get_surface)
+			.addFunction("buffer_set_surface", buffer_set_surface)
+			.addFunction("buffer_delete", buffer_delete)
+			.addFunction("buffer_exists", buffer_exists)
+			.addFunction("buffer_get_type", buffer_get_type)
+			.addFunction("buffer_get_alignment", buffer_get_alignment)
+			.addFunction("buffer_poke", buffer_poke)
+			.addFunction("buffer_peek", buffer_peek)
+			.addFunction("buffer_save", buffer_save)
+			.addFunction("buffer_save_ext", buffer_save_ext)
+			.addFunction("buffer_load", buffer_load)
+			.addFunction("buffer_load_ext", buffer_load_ext)
+			.addFunction("buffer_load_partial", buffer_load_partial)
+			.addFunction("buffer_copy", buffer_copy)
+			.addFunction("buffer_fill", buffer_fill)
+			.addFunction("buffer_get_size", buffer_get_size)
+			.addFunction("buffer_tell", buffer_tell)
+			.addFunction("buffer_resize", buffer_resize)
+			.addFunction("buffer_md5", buffer_md5)
+			.addFunction("buffer_sha1", buffer_sha1)
+			.addFunction("buffer_crc32", buffer_crc32)
+			.addFunction("buffer_base64_encode", buffer_base64_encode)
+			.addFunction("buffer_base64_decode", buffer_base64_decode)
+			.addFunction("buffer_base64_decode_ext", buffer_base64_decode_ext)
+			.addFunction("buffer_sizeof", buffer_sizeof)
+			.addFunction("buffer_get_address", buffer_get_address)
+			.addFunction("buffer_create_from_vertex_buffer", buffer_create_from_vertex_buffer)
+			.addFunction("buffer_create_from_vertex_buffer_ext", buffer_create_from_vertex_buffer_ext)
+			.addFunction("buffer_copy_from_vertex_buffer", buffer_copy_from_vertex_buffer)
+			.addFunction("buffer_async_group_begin", buffer_async_group_begin)
+			.addFunction("buffer_async_group_option", buffer_async_group_option)
+			.addFunction("buffer_async_group_end", buffer_async_group_end)
+			.addFunction("buffer_load_async", buffer_load_async)
+			.addFunction("buffer_save_async", buffer_save_async)
+			.addFunction("buffer_compress", buffer_compress)
+			.addFunction("buffer_decompress", buffer_decompress);
+	static vars_random = new CatspeakVMInterface()
+			
+			.addFunction("random", random)
+			.addFunction("random_range", random_range)
+			.addFunction("irandom", irandom)
+			.addFunction("irandom_range", irandom_range)
+			.addFunction("random_set_seed", random_set_seed)
+			.addFunction("random_get_seed", random_get_seed)
+			.addFunction("randomize", randomize)
+			.addFunction("randomise", randomise)
+			.addFunction("choose", choose);
+	static vars_strings = new CatspeakVMInterface()
+			
+			.addFunction("string", string)
+			.addFunction("string_format", string_format)
+			.addFunction("chr", chr)
+			.addFunction("ansi_char", ansi_char)
+			.addFunction("ord", ord)
+			.addFunction("string_length", string_length)
+			.addFunction("string_byte_length", string_byte_length)
+			.addFunction("string_pos", string_pos)
+			.addFunction("string_pos_ext", string_pos_ext)
+			.addFunction("string_last_pos", string_last_pos)
+			.addFunction("string_last_pos_ext", string_last_pos_ext)
+			.addFunction("string_copy", string_copy)
+			.addFunction("string_char_at", string_char_at)
+			.addFunction("string_ord_at", string_ord_at)
+			.addFunction("string_byte_at", string_byte_at)
+			.addFunction("string_set_byte_at", string_set_byte_at)
+			.addFunction("string_delete", string_delete)
+			.addFunction("string_insert", string_insert)
+			.addFunction("string_lower", string_lower)
+			.addFunction("string_upper", string_upper)
+			.addFunction("string_repeat", string_repeat)
+			.addFunction("string_letters", string_letters)
+			.addFunction("string_digits", string_digits)
+			.addFunction("string_lettersdigits", string_lettersdigits)
+			.addFunction("string_replace", string_replace)
+			.addFunction("string_replace_all", string_replace_all)
+			.addFunction("string_count", string_count)
+			.addFunction("string_hash_to_newline", string_hash_to_newline)
+			.addFunction("string_width", string_width)
+			.addFunction("string_height", string_height)
+			.addFunction("string_width_ext", string_width_ext)
+			.addFunction("string_height_ext", string_height_ext);
+	static vars_scripts = new CatspeakVMInterface()
+			
+			.addFunction("method", method)
+			.addFunction("method_get_index", method_get_index)
+			.addFunction("method_get_self", method_get_self)
+			.addFunction("script_exists", script_exists)
+			.addFunction("script_get_name", script_get_name)
+			.addFunction("script_execute", script_execute)
+			.addFunction("script_execute_ext", script_execute_ext);
+	static vars_input = new CatspeakVMInterface()
+			.addConstant("timezone_local", timezone_local)
+			.addConstant("timezone_utc", timezone_utc)
+			.addConstant("vk_nokey", vk_nokey)
+			.addConstant("vk_anykey", vk_anykey)
+			.addConstant("vk_enter", vk_enter)
+			.addConstant("vk_return", vk_return)
+			.addConstant("vk_shift", vk_shift)
+			.addConstant("vk_control", vk_control)
+			.addConstant("vk_alt", vk_alt)
+			.addConstant("vk_escape", vk_escape)
+			.addConstant("vk_space", vk_space)
+			.addConstant("vk_backspace", vk_backspace)
+			.addConstant("vk_tab", vk_tab)
+			.addConstant("vk_pause", vk_pause)
+			.addConstant("vk_printscreen", vk_printscreen)
+			.addConstant("vk_left", vk_left)
+			.addConstant("vk_right", vk_right)
+			.addConstant("vk_up", vk_up)
+			.addConstant("vk_down", vk_down)
+			.addConstant("vk_home", vk_home)
+			.addConstant("vk_end", vk_end)
+			.addConstant("vk_delete", vk_delete)
+			.addConstant("vk_insert", vk_insert)
+			.addConstant("vk_pageup", vk_pageup)
+			.addConstant("vk_pagedown", vk_pagedown)
+			.addConstant("vk_f1", vk_f1)
+			.addConstant("vk_f2", vk_f2)
+			.addConstant("vk_f3", vk_f3)
+			.addConstant("vk_f4", vk_f4)
+			.addConstant("vk_f5", vk_f5)
+			.addConstant("vk_f6", vk_f6)
+			.addConstant("vk_f7", vk_f7)
+			.addConstant("vk_f8", vk_f8)
+			.addConstant("vk_f9", vk_f9)
+			.addConstant("vk_f10", vk_f10)
+			.addConstant("vk_f11", vk_f11)
+			.addConstant("vk_f12", vk_f12)
+			.addConstant("vk_numpad0", vk_numpad0)
+			.addConstant("vk_numpad1", vk_numpad1)
+			.addConstant("vk_numpad2", vk_numpad2)
+			.addConstant("vk_numpad3", vk_numpad3)
+			.addConstant("vk_numpad4", vk_numpad4)
+			.addConstant("vk_numpad5", vk_numpad5)
+			.addConstant("vk_numpad6", vk_numpad6)
+			.addConstant("vk_numpad7", vk_numpad7)
+			.addConstant("vk_numpad8", vk_numpad8)
+			.addConstant("vk_numpad9", vk_numpad9)
+			.addConstant("vk_divide", vk_divide)
+			.addConstant("vk_multiply", vk_multiply)
+			.addConstant("vk_subtract", vk_subtract)
+			.addConstant("vk_add", vk_add)
+			.addConstant("vk_decimal", vk_decimal)
+			.addConstant("vk_lshift", vk_lshift)
+			.addConstant("vk_lcontrol", vk_lcontrol)
+			.addConstant("vk_lalt", vk_lalt)
+			.addConstant("vk_rshift", vk_rshift)
+			.addConstant("vk_rcontrol", vk_rcontrol)
+			.addConstant("vk_ralt", vk_ralt)
+			.addConstant("mb_any", mb_any)
+			.addConstant("mb_none", mb_none)
+			.addConstant("mb_left", mb_left)
+			.addConstant("mb_right", mb_right)
+			.addConstant("mb_middle", mb_middle)
+			.addConstant("gp_face1", gp_face1)
+			.addConstant("gp_face2", gp_face2)
+			.addConstant("gp_face3", gp_face3)
+			.addConstant("gp_face4", gp_face4)
+			.addConstant("gp_shoulderl", gp_shoulderl)
+			.addConstant("gp_shoulderr", gp_shoulderr)
+			.addConstant("gp_shoulderlb", gp_shoulderlb)
+			.addConstant("gp_shoulderrb", gp_shoulderrb)
+			.addConstant("gp_select", gp_select)
+			.addConstant("gp_start", gp_start)
+			.addConstant("gp_stickl", gp_stickl)
+			.addConstant("gp_stickr", gp_stickr)
+			.addConstant("gp_padu", gp_padu)
+			.addConstant("gp_padd", gp_padd)
+			.addConstant("gp_padl", gp_padl)
+			.addConstant("gp_padr", gp_padr)
+			.addConstant("gp_axislh", gp_axislh)
+			.addConstant("gp_axislv", gp_axislv)
+			.addConstant("gp_axisrh", gp_axisrh)
+			.addConstant("gp_axisrv", gp_axisrv)
+			.addConstant("kbv_type_default", kbv_type_default)
+			.addConstant("kbv_type_ascii", kbv_type_ascii)
+			.addConstant("kbv_type_url", kbv_type_url)
+			.addConstant("kbv_type_email", kbv_type_email)
+			.addConstant("kbv_type_numbers", kbv_type_numbers)
+			.addConstant("kbv_type_phone", kbv_type_phone)
+			.addConstant("kbv_type_phone_name", kbv_type_phone_name)
+			.addConstant("kbv_returnkey_default", kbv_returnkey_default)
+			.addConstant("kbv_returnkey_go", kbv_returnkey_go)
+			.addConstant("kbv_returnkey_google", kbv_returnkey_google)
+			.addConstant("kbv_returnkey_join", kbv_returnkey_join)
+			.addConstant("kbv_returnkey_next", kbv_returnkey_next)
+			.addConstant("kbv_returnkey_route", kbv_returnkey_route)
+			.addConstant("kbv_returnkey_search", kbv_returnkey_search)
+			.addConstant("kbv_returnkey_send", kbv_returnkey_send)
+			.addConstant("kbv_returnkey_yahoo", kbv_returnkey_yahoo)
+			.addConstant("kbv_returnkey_done", kbv_returnkey_done)
+			.addConstant("kbv_returnkey_continue", kbv_returnkey_continue)
+			.addConstant("kbv_returnkey_emergency", kbv_returnkey_emergency)
+			.addConstant("kbv_autocapitalize_none", kbv_autocapitalize_none)
+			.addConstant("kbv_autocapitalize_words", kbv_autocapitalize_words)
+			.addConstant("kbv_autocapitalize_sentences", kbv_autocapitalize_sentences)
+			.addConstant("kbv_autocapitalize_characters", kbv_autocapitalize_characters)
+			.addFunction("clipboard_has_text", clipboard_has_text)
+			.addFunction("clipboard_set_text", clipboard_set_text)
+			.addFunction("clipboard_get_text", clipboard_get_text)
+			.addFunction("date_current_datetime", date_current_datetime)
+			.addFunction("date_create_datetime", date_create_datetime)
+			.addFunction("date_valid_datetime", date_valid_datetime)
+			.addFunction("date_inc_year", date_inc_year)
+			.addFunction("date_inc_month", date_inc_month)
+			.addFunction("date_inc_week", date_inc_week)
+			.addFunction("date_inc_day", date_inc_day)
+			.addFunction("date_inc_hour", date_inc_hour)
+			.addFunction("date_inc_minute", date_inc_minute)
+			.addFunction("date_inc_second", date_inc_second)
+			.addFunction("date_get_year", date_get_year)
+			.addFunction("date_get_month", date_get_month)
+			.addFunction("date_get_week", date_get_week)
+			.addFunction("date_get_day", date_get_day)
+			.addFunction("date_get_hour", date_get_hour)
+			.addFunction("date_get_minute", date_get_minute)
+			.addFunction("date_get_second", date_get_second)
+			.addFunction("date_get_weekday", date_get_weekday)
+			.addFunction("date_get_day_of_year", date_get_day_of_year)
+			.addFunction("date_get_hour_of_year", date_get_hour_of_year)
+			.addFunction("date_get_minute_of_year", date_get_minute_of_year)
+			.addFunction("date_get_second_of_year", date_get_second_of_year)
+			.addFunction("date_year_span", date_year_span)
+			.addFunction("date_month_span", date_month_span)
+			.addFunction("date_week_span", date_week_span)
+			.addFunction("date_day_span", date_day_span)
+			.addFunction("date_hour_span", date_hour_span)
+			.addFunction("date_minute_span", date_minute_span)
+			.addFunction("date_second_span", date_second_span)
+			.addFunction("date_compare_datetime", date_compare_datetime)
+			.addFunction("date_compare_date", date_compare_date)
+			.addFunction("date_compare_time", date_compare_time)
+			.addFunction("date_date_of", date_date_of)
+			.addFunction("date_time_of", date_time_of)
+			.addFunction("date_datetime_string", date_datetime_string)
+			.addFunction("date_date_string", date_date_string)
+			.addFunction("date_time_string", date_time_string)
+			.addFunction("date_days_in_month", date_days_in_month)
+			.addFunction("date_days_in_year", date_days_in_year)
+			.addFunction("date_leap_year", date_leap_year)
+			.addFunction("date_is_today", date_is_today)
+			.addFunction("date_set_timezone", date_set_timezone)
+			.addFunction("date_get_timezone", date_get_timezone)
+			.addFunction("keyboard_set_map", keyboard_set_map)
+			.addFunction("keyboard_get_map", keyboard_get_map)
+			.addFunction("keyboard_unset_map", keyboard_unset_map)
+			.addFunction("keyboard_check", keyboard_check)
+			.addFunction("keyboard_check_pressed", keyboard_check_pressed)
+			.addFunction("keyboard_check_released", keyboard_check_released)
+			.addFunction("keyboard_check_direct", keyboard_check_direct)
+			.addFunction("keyboard_get_numlock", keyboard_get_numlock)
+			.addFunction("keyboard_set_numlock", keyboard_set_numlock)
+			.addFunction("keyboard_key_press", keyboard_key_press)
+			.addFunction("keyboard_key_release", keyboard_key_release)
+			.addFunction("keyboard_clear", keyboard_clear)
+			.addFunction("io_clear", io_clear)
+			.addFunction("mouse_check_button", mouse_check_button)
+			.addFunction("mouse_check_button_pressed", mouse_check_button_pressed)
+			.addFunction("mouse_check_button_released", mouse_check_button_released)
+			.addFunction("mouse_wheel_up", mouse_wheel_up)
+			.addFunction("mouse_wheel_down", mouse_wheel_down)
+			.addFunction("mouse_clear", mouse_clear)
+			.addFunction("clickable_add", clickable_add)
+			.addFunction("clickable_add_ext", clickable_add_ext)
+			.addFunction("clickable_change", clickable_change)
+			.addFunction("clickable_change_ext", clickable_change_ext)
+			.addFunction("clickable_delete", clickable_delete)
+			.addFunction("clickable_exists", clickable_exists)
+			.addFunction("clickable_set_style", clickable_set_style)
+			.addFunction("virtual_key_add", virtual_key_add)
+			.addFunction("virtual_key_hide", virtual_key_hide)
+			.addFunction("virtual_key_delete", virtual_key_delete)
+			.addFunction("virtual_key_show", virtual_key_show)
+			.addFunction("gamepad_is_supported", gamepad_is_supported)
+			.addFunction("gamepad_get_device_count", gamepad_get_device_count)
+			.addFunction("gamepad_is_connected", gamepad_is_connected)
+			.addFunction("gamepad_get_description", gamepad_get_description)
+			.addFunction("gamepad_get_button_threshold", gamepad_get_button_threshold)
+			.addFunction("gamepad_set_button_threshold", gamepad_set_button_threshold)
+			.addFunction("gamepad_get_axis_deadzone", gamepad_get_axis_deadzone)
+			.addFunction("gamepad_set_axis_deadzone", gamepad_set_axis_deadzone)
+			.addFunction("gamepad_button_count", gamepad_button_count)
+			.addFunction("gamepad_button_check", gamepad_button_check)
+			.addFunction("gamepad_button_check_pressed", gamepad_button_check_pressed)
+			.addFunction("gamepad_button_check_released", gamepad_button_check_released)
+			.addFunction("gamepad_button_value", gamepad_button_value)
+			.addFunction("gamepad_axis_count", gamepad_axis_count)
+			.addFunction("gamepad_axis_value", gamepad_axis_value)
+			.addFunction("gamepad_set_vibration", gamepad_set_vibration)
+			.addFunction("gamepad_set_colour", gamepad_set_colour)
+			.addFunction("gamepad_set_color", gamepad_set_color)
+			.addFunction("gamepad_hat_count", gamepad_hat_count)
+			.addFunction("gamepad_hat_value", gamepad_hat_value)
+			.addFunction("gamepad_remove_mapping", gamepad_remove_mapping)
+			.addFunction("gamepad_test_mapping", gamepad_test_mapping)
+			.addFunction("gamepad_get_mapping", gamepad_get_mapping)
+			.addFunction("gamepad_get_guid", gamepad_get_guid)
+			.addFunction("gamepad_set_option", gamepad_set_option)
+			.addFunction("gamepad_get_option", gamepad_get_option)
+			.addFunction("gesture_drag_time", gesture_drag_time)
+			.addFunction("gesture_drag_distance", gesture_drag_distance)
+			.addFunction("gesture_flick_speed", gesture_flick_speed)
+			.addFunction("gesture_double_tap_time", gesture_double_tap_time)
+			.addFunction("gesture_double_tap_distance", gesture_double_tap_distance)
+			.addFunction("gesture_pinch_distance", gesture_pinch_distance)
+			.addFunction("gesture_pinch_angle_towards", gesture_pinch_angle_towards)
+			.addFunction("gesture_pinch_angle_away", gesture_pinch_angle_away)
+			.addFunction("gesture_rotate_time", gesture_rotate_time)
+			.addFunction("gesture_rotate_angle", gesture_rotate_angle)
+			.addFunction("gesture_tap_count", gesture_tap_count)
+			.addFunction("gesture_get_drag_time", gesture_get_drag_time)
+			.addFunction("gesture_get_drag_distance", gesture_get_drag_distance)
+			.addFunction("gesture_get_flick_speed", gesture_get_flick_speed)
+			.addFunction("gesture_get_double_tap_time", gesture_get_double_tap_time)
+			.addFunction("gesture_get_double_tap_distance", gesture_get_double_tap_distance)
+			.addFunction("gesture_get_pinch_distance", gesture_get_pinch_distance)
+			.addFunction("gesture_get_pinch_angle_towards", gesture_get_pinch_angle_towards)
+			.addFunction("gesture_get_pinch_angle_away", gesture_get_pinch_angle_away)
+			.addFunction("gesture_get_rotate_time", gesture_get_rotate_time)
+			.addFunction("gesture_get_rotate_angle", gesture_get_rotate_angle)
+			.addFunction("gesture_get_tap_count", gesture_get_tap_count)
+			.addFunction("keyboard_virtual_show", keyboard_virtual_show)
+			.addFunction("keyboard_virtual_hide", keyboard_virtual_hide)
+			.addFunction("keyboard_virtual_status", keyboard_virtual_status)
+			.addFunction("keyboard_virtual_height", keyboard_virtual_height);
+	static vars_audio = new CatspeakVMInterface()
+			.addConstant("audio_falloff_none", audio_falloff_none)
+			.addConstant("audio_falloff_inverse_distance", audio_falloff_inverse_distance)
+			.addConstant("audio_falloff_inverse_distance_clamped", audio_falloff_inverse_distance_clamped)
+			.addConstant("audio_falloff_linear_distance", audio_falloff_linear_distance)
+			.addConstant("audio_falloff_linear_distance_clamped", audio_falloff_linear_distance_clamped)
+			.addConstant("audio_falloff_exponent_distance", audio_falloff_exponent_distance)
+			.addConstant("audio_falloff_exponent_distance_clamped", audio_falloff_exponent_distance_clamped)
+			.addConstant("audio_mono", audio_mono)
+			.addConstant("audio_stereo", audio_stereo)
+			.addConstant("audio_3d", audio_3d)
+			.addFunction("audio_listener_position", audio_listener_position)
+			.addFunction("audio_listener_velocity", audio_listener_velocity)
+			.addFunction("audio_listener_orientation", audio_listener_orientation)
+			.addFunction("audio_emitter_position", audio_emitter_position)
+			.addFunction("audio_emitter_create", audio_emitter_create)
+			.addFunction("audio_emitter_free", audio_emitter_free)
+			.addFunction("audio_emitter_exists", audio_emitter_exists)
+			.addFunction("audio_emitter_pitch", audio_emitter_pitch)
+			.addFunction("audio_emitter_velocity", audio_emitter_velocity)
+			.addFunction("audio_emitter_falloff", audio_emitter_falloff)
+			.addFunction("audio_emitter_gain", audio_emitter_gain)
+			.addFunction("audio_play_sound", audio_play_sound)
+			.addFunction("audio_play_sound_on", audio_play_sound_on)
+			.addFunction("audio_play_sound_at", audio_play_sound_at)
+			.addFunction("audio_stop_sound", audio_stop_sound)
+			.addFunction("audio_resume_sound", audio_resume_sound)
+			.addFunction("audio_pause_sound", audio_pause_sound)
+			.addFunction("audio_channel_num", audio_channel_num)
+			.addFunction("audio_sound_length", audio_sound_length)
+			.addFunction("audio_get_type", audio_get_type)
+			.addFunction("audio_falloff_set_model", audio_falloff_set_model)
+			.addFunction("audio_master_gain", audio_master_gain)
+			.addFunction("audio_sound_gain", audio_sound_gain)
+			.addFunction("audio_sound_pitch", audio_sound_pitch)
+			.addFunction("audio_stop_all", audio_stop_all)
+			.addFunction("audio_resume_all", audio_resume_all)
+			.addFunction("audio_pause_all", audio_pause_all)
+			.addFunction("audio_is_playing", audio_is_playing)
+			.addFunction("audio_is_paused", audio_is_paused)
+			.addFunction("audio_exists", audio_exists)
+			.addFunction("audio_system_is_available", audio_system_is_available)
+			.addFunction("audio_sound_is_playable", audio_sound_is_playable)
+			.addFunction("audio_emitter_get_gain", audio_emitter_get_gain)
+			.addFunction("audio_emitter_get_pitch", audio_emitter_get_pitch)
+			.addFunction("audio_emitter_get_x", audio_emitter_get_x)
+			.addFunction("audio_emitter_get_y", audio_emitter_get_y)
+			.addFunction("audio_emitter_get_z", audio_emitter_get_z)
+			.addFunction("audio_emitter_get_vx", audio_emitter_get_vx)
+			.addFunction("audio_emitter_get_vy", audio_emitter_get_vy)
+			.addFunction("audio_emitter_get_vz", audio_emitter_get_vz)
+			.addFunction("audio_listener_set_position", audio_listener_set_position)
+			.addFunction("audio_listener_set_velocity", audio_listener_set_velocity)
+			.addFunction("audio_listener_set_orientation", audio_listener_set_orientation)
+			.addFunction("audio_listener_get_data", audio_listener_get_data)
+			.addFunction("audio_set_master_gain", audio_set_master_gain)
+			.addFunction("audio_get_master_gain", audio_get_master_gain)
+			.addFunction("audio_sound_get_gain", audio_sound_get_gain)
+			.addFunction("audio_sound_get_pitch", audio_sound_get_pitch)
+			.addFunction("audio_get_name", audio_get_name)
+			.addFunction("audio_sound_set_track_position", audio_sound_set_track_position)
+			.addFunction("audio_sound_get_track_position", audio_sound_get_track_position)
+			.addFunction("audio_create_stream", audio_create_stream)
+			.addFunction("audio_destroy_stream", audio_destroy_stream)
+			.addFunction("audio_create_sync_group", audio_create_sync_group)
+			.addFunction("audio_destroy_sync_group", audio_destroy_sync_group)
+			.addFunction("audio_play_in_sync_group", audio_play_in_sync_group)
+			.addFunction("audio_start_sync_group", audio_start_sync_group)
+			.addFunction("audio_stop_sync_group", audio_stop_sync_group)
+			.addFunction("audio_pause_sync_group", audio_pause_sync_group)
+			.addFunction("audio_resume_sync_group", audio_resume_sync_group)
+			.addFunction("audio_sync_group_get_track_pos", audio_sync_group_get_track_pos)
+			.addFunction("audio_sync_group_debug", audio_sync_group_debug)
+			.addFunction("audio_sync_group_is_playing", audio_sync_group_is_playing)
+			.addFunction("audio_debug", audio_debug)
+			.addFunction("audio_group_load", audio_group_load)
+			.addFunction("audio_group_unload", audio_group_unload)
+			.addFunction("audio_group_is_loaded", audio_group_is_loaded)
+			.addFunction("audio_group_load_progress", audio_group_load_progress)
+			.addFunction("audio_group_name", audio_group_name)
+			.addFunction("audio_group_stop_all", audio_group_stop_all)
+			.addFunction("audio_group_set_gain", audio_group_set_gain)
+			.addFunction("audio_create_buffer_sound", audio_create_buffer_sound)
+			.addFunction("audio_free_buffer_sound", audio_free_buffer_sound)
+			.addFunction("audio_create_play_queue", audio_create_play_queue)
+			.addFunction("audio_free_play_queue", audio_free_play_queue)
+			.addFunction("audio_queue_sound", audio_queue_sound)
+			.addFunction("audio_get_recorder_count", audio_get_recorder_count)
+			.addFunction("audio_get_recorder_info", audio_get_recorder_info)
+			.addFunction("audio_start_recording", audio_start_recording)
+			.addFunction("audio_stop_recording", audio_stop_recording)
+			.addFunction("audio_sound_get_listener_mask", audio_sound_get_listener_mask)
+			.addFunction("audio_emitter_get_listener_mask", audio_emitter_get_listener_mask)
+			.addFunction("audio_get_listener_mask", audio_get_listener_mask)
+			.addFunction("audio_sound_set_listener_mask", audio_sound_set_listener_mask)
+			.addFunction("audio_emitter_set_listener_mask", audio_emitter_set_listener_mask)
+			.addFunction("audio_set_listener_mask", audio_set_listener_mask)
+			.addFunction("audio_get_listener_count", audio_get_listener_count)
+			.addFunction("audio_get_listener_info", audio_get_listener_info);
+	static vars_graphics = new CatspeakVMInterface()
+			.addConstant("bboxmode_automatic", bboxmode_automatic)
+			.addConstant("bboxmode_fullimage", bboxmode_fullimage)
+			.addConstant("bboxmode_manual", bboxmode_manual)
+			.addConstant("bboxkind_precise", bboxkind_precise)
+			.addConstant("bboxkind_rectangular", bboxkind_rectangular)
+			.addConstant("bboxkind_ellipse", bboxkind_ellipse)
+			.addConstant("bboxkind_diamond", bboxkind_diamond)
+			.addConstant("c_aqua", c_aqua)
+			.addConstant("c_black", c_black)
+			.addConstant("c_blue", c_blue)
+			.addConstant("c_dkgray", c_dkgray)
+			.addConstant("c_fuchsia", c_fuchsia)
+			.addConstant("c_gray", c_gray)
+			.addConstant("c_green", c_green)
+			.addConstant("c_lime", c_lime)
+			.addConstant("c_ltgray", c_ltgray)
+			.addConstant("c_maroon", c_maroon)
+			.addConstant("c_navy", c_navy)
+			.addConstant("c_olive", c_olive)
+			.addConstant("c_purple", c_purple)
+			.addConstant("c_red", c_red)
+			.addConstant("c_silver", c_silver)
+			.addConstant("c_teal", c_teal)
+			.addConstant("c_white", c_white)
+			.addConstant("c_yellow", c_yellow)
+			.addConstant("c_orange", c_orange)
+			.addConstant("fa_left", fa_left)
+			.addConstant("fa_center", fa_center)
+			.addConstant("fa_right", fa_right)
+			.addConstant("fa_top", fa_top)
+			.addConstant("fa_middle", fa_middle)
+			.addConstant("fa_bottom", fa_bottom)
+			.addConstant("pr_pointlist", pr_pointlist)
+			.addConstant("pr_linelist", pr_linelist)
+			.addConstant("pr_linestrip", pr_linestrip)
+			.addConstant("pr_trianglelist", pr_trianglelist)
+			.addConstant("pr_trianglestrip", pr_trianglestrip)
+			.addConstant("pr_trianglefan", pr_trianglefan)
+			.addConstant("bm_normal", bm_normal)
+			.addConstant("bm_add", bm_add)
+			.addConstant("bm_max", bm_max)
+			.addConstant("bm_subtract", bm_subtract)
+			.addConstant("bm_zero", bm_zero)
+			.addConstant("bm_one", bm_one)
+			.addConstant("bm_src_colour", bm_src_colour)
+			.addConstant("bm_inv_src_colour", bm_inv_src_colour)
+			.addConstant("bm_src_color", bm_src_color)
+			.addConstant("bm_inv_src_color", bm_inv_src_color)
+			.addConstant("bm_src_alpha", bm_src_alpha)
+			.addConstant("bm_inv_src_alpha", bm_inv_src_alpha)
+			.addConstant("bm_dest_alpha", bm_dest_alpha)
+			.addConstant("bm_inv_dest_alpha", bm_inv_dest_alpha)
+			.addConstant("bm_dest_colour", bm_dest_colour)
+			.addConstant("bm_inv_dest_colour", bm_inv_dest_colour)
+			.addConstant("bm_dest_color", bm_dest_color)
+			.addConstant("bm_inv_dest_color", bm_inv_dest_color)
+			.addConstant("bm_src_alpha_sat", bm_src_alpha_sat)
+			.addConstant("tf_point", tf_point)
+			.addConstant("tf_linear", tf_linear)
+			.addConstant("tf_anisotropic", tf_anisotropic)
+			.addConstant("mip_off", mip_off)
+			.addConstant("mip_on", mip_on)
+			.addConstant("mip_markedonly", mip_markedonly)
+			.addConstant("spritespeed_framespersecond", spritespeed_framespersecond)
+			.addConstant("spritespeed_framespergameframe", spritespeed_framespergameframe)
+			.addConstant("cmpfunc_never", cmpfunc_never)
+			.addConstant("cmpfunc_less", cmpfunc_less)
+			.addConstant("cmpfunc_equal", cmpfunc_equal)
+			.addConstant("cmpfunc_lessequal", cmpfunc_lessequal)
+			.addConstant("cmpfunc_greater", cmpfunc_greater)
+			.addConstant("cmpfunc_notequal", cmpfunc_notequal)
+			.addConstant("cmpfunc_greaterequal", cmpfunc_greaterequal)
+			.addConstant("cmpfunc_always", cmpfunc_always)
+			.addConstant("cull_noculling", cull_noculling)
+			.addConstant("cull_clockwise", cull_clockwise)
+			.addConstant("cull_counterclockwise", cull_counterclockwise)
+			.addConstant("lighttype_dir", lighttype_dir)
+			.addConstant("lighttype_point", lighttype_point)
+			.addConstant("vertex_usage_position", vertex_usage_position)
+			.addConstant("vertex_usage_colour", vertex_usage_colour)
+			.addConstant("vertex_usage_color", vertex_usage_color)
+			.addConstant("vertex_usage_normal", vertex_usage_normal)
+			.addConstant("vertex_usage_texcoord", vertex_usage_texcoord)
+			.addConstant("vertex_usage_blendweight", vertex_usage_blendweight)
+			.addConstant("vertex_usage_blendindices", vertex_usage_blendindices)
+			.addConstant("vertex_usage_psize", vertex_usage_psize)
+			.addConstant("vertex_usage_tangent", vertex_usage_tangent)
+			.addConstant("vertex_usage_binormal", vertex_usage_binormal)
+			.addConstant("vertex_usage_fog", vertex_usage_fog)
+			.addConstant("vertex_usage_depth", vertex_usage_depth)
+			.addConstant("vertex_usage_sample", vertex_usage_sample)
+			.addConstant("vertex_type_float1", vertex_type_float1)
+			.addConstant("vertex_type_float2", vertex_type_float2)
+			.addConstant("vertex_type_float3", vertex_type_float3)
+			.addConstant("vertex_type_float4", vertex_type_float4)
+			.addConstant("vertex_type_colour", vertex_type_colour)
+			.addConstant("vertex_type_color", vertex_type_color)
+			.addConstant("vertex_type_ubyte4", vertex_type_ubyte4)
+			.addFunction("draw_self", draw_self)
+			.addFunction("draw_sprite", draw_sprite)
+			.addFunction("draw_sprite_pos", draw_sprite_pos)
+			.addFunction("draw_sprite_ext", draw_sprite_ext)
+			.addFunction("draw_sprite_stretched", draw_sprite_stretched)
+			.addFunction("draw_sprite_stretched_ext", draw_sprite_stretched_ext)
+			.addFunction("draw_sprite_tiled", draw_sprite_tiled)
+			.addFunction("draw_sprite_tiled_ext", draw_sprite_tiled_ext)
+			.addFunction("draw_sprite_part", draw_sprite_part)
+			.addFunction("draw_sprite_part_ext", draw_sprite_part_ext)
+			.addFunction("draw_sprite_general", draw_sprite_general)
+			.addFunction("draw_clear", draw_clear)
+			.addFunction("draw_clear_alpha", draw_clear_alpha)
+			.addFunction("draw_point", draw_point)
+			.addFunction("draw_line", draw_line)
+			.addFunction("draw_line_width", draw_line_width)
+			.addFunction("draw_rectangle", draw_rectangle)
+			.addFunction("draw_roundrect", draw_roundrect)
+			.addFunction("draw_roundrect_ext", draw_roundrect_ext)
+			.addFunction("draw_triangle", draw_triangle)
+			.addFunction("draw_circle", draw_circle)
+			.addFunction("draw_ellipse", draw_ellipse)
+			.addFunction("draw_set_circle_precision", draw_set_circle_precision)
+			.addFunction("draw_arrow", draw_arrow)
+			.addFunction("draw_button", draw_button)
+			.addFunction("draw_path", draw_path)
+			.addFunction("draw_healthbar", draw_healthbar)
+			.addFunction("draw_getpixel", draw_getpixel)
+			.addFunction("draw_getpixel_ext", draw_getpixel_ext)
+			.addFunction("draw_set_colour", draw_set_colour)
+			.addFunction("draw_set_color", draw_set_color)
+			.addFunction("draw_set_alpha", draw_set_alpha)
+			.addFunction("draw_get_colour", draw_get_colour)
+			.addFunction("draw_get_color", draw_get_color)
+			.addFunction("draw_get_alpha", draw_get_alpha)
+			.addFunction("merge_colour", merge_colour)
+			.addFunction("make_colour_rgb", make_colour_rgb)
+			.addFunction("make_colour_hsv", make_colour_hsv)
+			.addFunction("colour_get_red", colour_get_red)
+			.addFunction("colour_get_green", colour_get_green)
+			.addFunction("colour_get_blue", colour_get_blue)
+			.addFunction("colour_get_hue", colour_get_hue)
+			.addFunction("colour_get_saturation", colour_get_saturation)
+			.addFunction("colour_get_value", colour_get_value)
+			.addFunction("merge_color", merge_color)
+			.addFunction("make_color_rgb", make_color_rgb)
+			.addFunction("make_color_hsv", make_color_hsv)
+			.addFunction("color_get_red", color_get_red)
+			.addFunction("color_get_green", color_get_green)
+			.addFunction("color_get_blue", color_get_blue)
+			.addFunction("color_get_hue", color_get_hue)
+			.addFunction("color_get_saturation", color_get_saturation)
+			.addFunction("color_get_value", color_get_value)
+			.addFunction("merge_color", merge_color)
+			.addFunction("draw_set_font", draw_set_font)
+			.addFunction("draw_get_font", draw_get_font)
+			.addFunction("draw_set_halign", draw_set_halign)
+			.addFunction("draw_get_halign", draw_get_halign)
+			.addFunction("draw_set_valign", draw_set_valign)
+			.addFunction("draw_get_valign", draw_get_valign)
+			.addFunction("draw_text", draw_text)
+			.addFunction("draw_text_ext", draw_text_ext)
+			.addFunction("draw_text_transformed", draw_text_transformed)
+			.addFunction("draw_text_ext_transformed", draw_text_ext_transformed)
+			.addFunction("draw_text_colour", draw_text_colour)
+			.addFunction("draw_text_ext_colour", draw_text_ext_colour)
+			.addFunction("draw_text_transformed_colour", draw_text_transformed_colour)
+			.addFunction("draw_text_ext_transformed_colour", draw_text_ext_transformed_colour)
+			.addFunction("draw_text_color", draw_text_color)
+			.addFunction("draw_text_ext_color", draw_text_ext_color)
+			.addFunction("draw_text_transformed_color", draw_text_transformed_color)
+			.addFunction("draw_text_ext_transformed_color", draw_text_ext_transformed_color)
+			.addFunction("draw_point_colour", draw_point_colour)
+			.addFunction("draw_line_colour", draw_line_colour)
+			.addFunction("draw_line_width_colour", draw_line_width_colour)
+			.addFunction("draw_rectangle_colour", draw_rectangle_colour)
+			.addFunction("draw_roundrect_colour", draw_roundrect_colour)
+			.addFunction("draw_roundrect_colour_ext", draw_roundrect_colour_ext)
+			.addFunction("draw_triangle_colour", draw_triangle_colour)
+			.addFunction("draw_circle_colour", draw_circle_colour)
+			.addFunction("draw_ellipse_colour", draw_ellipse_colour)
+			.addFunction("draw_point_color", draw_point_color)
+			.addFunction("draw_line_color", draw_line_color)
+			.addFunction("draw_line_width_color", draw_line_width_color)
+			.addFunction("draw_rectangle_color", draw_rectangle_color)
+			.addFunction("draw_roundrect_color", draw_roundrect_color)
+			.addFunction("draw_roundrect_color_ext", draw_roundrect_color_ext)
+			.addFunction("draw_triangle_color", draw_triangle_color)
+			.addFunction("draw_circle_color", draw_circle_color)
+			.addFunction("draw_ellipse_color", draw_ellipse_color)
+			.addFunction("draw_primitive_begin", draw_primitive_begin)
+			.addFunction("draw_vertex", draw_vertex)
+			.addFunction("draw_vertex_colour", draw_vertex_colour)
+			.addFunction("draw_vertex_color", draw_vertex_color)
+			.addFunction("draw_primitive_end", draw_primitive_end)
+			.addFunction("sprite_get_uvs", sprite_get_uvs)
+			.addFunction("font_get_uvs", font_get_uvs)
+			.addFunction("sprite_get_texture", sprite_get_texture)
+			.addFunction("font_get_texture", font_get_texture)
+			.addFunction("texture_get_width", texture_get_width)
+			.addFunction("texture_get_height", texture_get_height)
+			.addFunction("texture_get_uvs", texture_get_uvs)
+			.addFunction("draw_primitive_begin_texture", draw_primitive_begin_texture)
+			.addFunction("draw_vertex_texture", draw_vertex_texture)
+			.addFunction("draw_vertex_texture_colour", draw_vertex_texture_colour)
+			.addFunction("draw_vertex_texture_color", draw_vertex_texture_color)
+			.addFunction("texture_global_scale", texture_global_scale)
+			.addFunction("surface_create", surface_create)
+			.addFunction("surface_create_ext", surface_create_ext)
+			.addFunction("surface_resize", surface_resize)
+			.addFunction("surface_free", surface_free)
+			.addFunction("surface_exists", surface_exists)
+			.addFunction("surface_get_width", surface_get_width)
+			.addFunction("surface_get_height", surface_get_height)
+			.addFunction("surface_get_texture", surface_get_texture)
+			.addFunction("surface_set_target", surface_set_target)
+			.addFunction("surface_set_target_ext", surface_set_target_ext)
+			.addFunction("surface_get_target", surface_get_target)
+			.addFunction("surface_get_target_ext", surface_get_target_ext)
+			.addFunction("surface_reset_target", surface_reset_target)
+			.addFunction("surface_depth_disable", surface_depth_disable)
+			.addFunction("surface_get_depth_disable", surface_get_depth_disable)
+			.addFunction("draw_surface", draw_surface)
+			.addFunction("draw_surface_stretched", draw_surface_stretched)
+			.addFunction("draw_surface_tiled", draw_surface_tiled)
+			.addFunction("draw_surface_part", draw_surface_part)
+			.addFunction("draw_surface_ext", draw_surface_ext)
+			.addFunction("draw_surface_stretched_ext", draw_surface_stretched_ext)
+			.addFunction("draw_surface_tiled_ext", draw_surface_tiled_ext)
+			.addFunction("draw_surface_part_ext", draw_surface_part_ext)
+			.addFunction("draw_surface_general", draw_surface_general)
+			.addFunction("surface_getpixel", surface_getpixel)
+			.addFunction("surface_getpixel_ext", surface_getpixel_ext)
+			.addFunction("surface_save", surface_save)
+			.addFunction("surface_save_part", surface_save_part)
+			.addFunction("surface_copy", surface_copy)
+			.addFunction("surface_copy_part", surface_copy_part)
+			.addFunction("application_surface_draw_enable", application_surface_draw_enable)
+			.addFunction("application_get_position", application_get_position)
+			.addFunction("application_surface_enable", application_surface_enable)
+			.addFunction("application_surface_is_enabled", application_surface_is_enabled)
+			.addFunction("draw_highscore", draw_highscore)
+			.addFunction("sprite_exists", sprite_exists)
+			.addFunction("sprite_get_name", sprite_get_name)
+			.addFunction("sprite_get_number", sprite_get_number)
+			.addFunction("sprite_get_width", sprite_get_width)
+			.addFunction("sprite_get_height", sprite_get_height)
+			.addFunction("sprite_get_xoffset", sprite_get_xoffset)
+			.addFunction("sprite_get_yoffset", sprite_get_yoffset)
+			.addFunction("sprite_get_bbox_mode", sprite_get_bbox_mode)
+			.addFunction("sprite_get_bbox_left", sprite_get_bbox_left)
+			.addFunction("sprite_get_bbox_right", sprite_get_bbox_right)
+			.addFunction("sprite_get_bbox_top", sprite_get_bbox_top)
+			.addFunction("sprite_get_bbox_bottom", sprite_get_bbox_bottom)
+			.addFunction("sprite_set_bbox_mode", sprite_set_bbox_mode)
+			.addFunction("sprite_set_bbox", sprite_set_bbox)
+			.addFunction("sprite_save", sprite_save)
+			.addFunction("sprite_save_strip", sprite_save_strip)
+			.addFunction("sprite_set_cache_size", sprite_set_cache_size)
+			.addFunction("sprite_set_cache_size_ext", sprite_set_cache_size_ext)
+			.addFunction("sprite_get_tpe", sprite_get_tpe)
+			.addFunction("sprite_prefetch", sprite_prefetch)
+			.addFunction("sprite_prefetch_multi", sprite_prefetch_multi)
+			.addFunction("sprite_flush", sprite_flush)
+			.addFunction("sprite_flush_multi", sprite_flush_multi)
+			.addFunction("sprite_set_speed", sprite_set_speed)
+			.addFunction("sprite_get_speed_type", sprite_get_speed_type)
+			.addFunction("sprite_get_speed", sprite_get_speed)
+			.addFunction("texture_is_ready", texture_is_ready)
+			.addFunction("texture_prefetch", texture_prefetch)
+			.addFunction("texture_flush", texture_flush)
+			.addFunction("texturegroup_get_textures", texturegroup_get_textures)
+			.addFunction("texturegroup_get_sprites", texturegroup_get_sprites)
+			.addFunction("texturegroup_get_fonts", texturegroup_get_fonts)
+			.addFunction("texturegroup_get_tilesets", texturegroup_get_tilesets)
+			.addFunction("texture_debug_messages", texture_debug_messages)
+			.addFunction("font_exists", font_exists)
+			.addFunction("font_get_name", font_get_name)
+			.addFunction("font_get_fontname", font_get_fontname)
+			.addFunction("font_get_bold", font_get_bold)
+			.addFunction("font_get_italic", font_get_italic)
+			.addFunction("font_get_first", font_get_first)
+			.addFunction("font_get_last", font_get_last)
+			.addFunction("font_get_size", font_get_size)
+			.addFunction("font_set_cache_size", font_set_cache_size)
+			.addFunction("sprite_set_offset", sprite_set_offset)
+			.addFunction("sprite_duplicate", sprite_duplicate)
+			.addFunction("sprite_assign", sprite_assign)
+			.addFunction("sprite_merge", sprite_merge)
+			.addFunction("sprite_add", sprite_add)
+			.addFunction("sprite_replace", sprite_replace)
+			.addFunction("sprite_create_from_surface", sprite_create_from_surface)
+			.addFunction("sprite_add_from_surface", sprite_add_from_surface)
+			.addFunction("sprite_delete", sprite_delete)
+			.addFunction("sprite_set_alpha_from_sprite", sprite_set_alpha_from_sprite)
+			.addFunction("sprite_collision_mask", sprite_collision_mask)
+			.addFunction("font_add_enable_aa", font_add_enable_aa)
+			.addFunction("font_add_get_enable_aa", font_add_get_enable_aa)
+			.addFunction("font_add", font_add)
+			.addFunction("font_add_sprite", font_add_sprite)
+			.addFunction("font_add_sprite_ext", font_add_sprite_ext)
+			.addFunction("font_replace_sprite", font_replace_sprite)
+			.addFunction("font_replace_sprite_ext", font_replace_sprite_ext)
+			.addFunction("font_delete", font_delete)
+			.addFunction("draw_enable_drawevent", draw_enable_drawevent)
+			.addFunction("draw_enable_swf_aa", draw_enable_swf_aa)
+			.addFunction("draw_set_swf_aa_level", draw_set_swf_aa_level)
+			.addFunction("draw_get_swf_aa_level", draw_get_swf_aa_level)
+			.addFunction("draw_texture_flush", draw_texture_flush)
+			.addFunction("draw_flush", draw_flush)
+			.addFunction("gpu_set_blendenable", gpu_set_blendenable)
+			.addFunction("gpu_set_ztestenable", gpu_set_ztestenable)
+			.addFunction("gpu_set_zfunc", gpu_set_zfunc)
+			.addFunction("gpu_set_zwriteenable", gpu_set_zwriteenable)
+			.addFunction("gpu_set_fog", gpu_set_fog)
+			.addFunction("gpu_set_cullmode", gpu_set_cullmode)
+			.addFunction("gpu_set_blendmode", gpu_set_blendmode)
+			.addFunction("gpu_set_blendmode_ext", gpu_set_blendmode_ext)
+			.addFunction("gpu_set_blendmode_ext_sepalpha", gpu_set_blendmode_ext_sepalpha)
+			.addFunction("gpu_set_colorwriteenable", gpu_set_colorwriteenable)
+			.addFunction("gpu_set_colourwriteenable", gpu_set_colourwriteenable)
+			.addFunction("gpu_set_alphatestenable", gpu_set_alphatestenable)
+			.addFunction("gpu_set_alphatestref", gpu_set_alphatestref)
+			.addFunction("gpu_set_texfilter", gpu_set_texfilter)
+			.addFunction("gpu_set_texfilter_ext", gpu_set_texfilter_ext)
+			.addFunction("gpu_set_texrepeat", gpu_set_texrepeat)
+			.addFunction("gpu_set_texrepeat_ext", gpu_set_texrepeat_ext)
+			.addFunction("gpu_set_tex_filter", gpu_set_tex_filter)
+			.addFunction("gpu_set_tex_filter_ext", gpu_set_tex_filter_ext)
+			.addFunction("gpu_set_tex_repeat", gpu_set_tex_repeat)
+			.addFunction("gpu_set_tex_repeat_ext", gpu_set_tex_repeat_ext)
+			.addFunction("gpu_set_tex_mip_filter", gpu_set_tex_mip_filter)
+			.addFunction("gpu_set_tex_mip_filter_ext", gpu_set_tex_mip_filter_ext)
+			.addFunction("gpu_set_tex_mip_bias", gpu_set_tex_mip_bias)
+			.addFunction("gpu_set_tex_mip_bias_ext", gpu_set_tex_mip_bias_ext)
+			.addFunction("gpu_set_tex_min_mip", gpu_set_tex_min_mip)
+			.addFunction("gpu_set_tex_min_mip_ext", gpu_set_tex_min_mip_ext)
+			.addFunction("gpu_set_tex_max_mip", gpu_set_tex_max_mip)
+			.addFunction("gpu_set_tex_max_mip_ext", gpu_set_tex_max_mip_ext)
+			.addFunction("gpu_set_tex_max_aniso", gpu_set_tex_max_aniso)
+			.addFunction("gpu_set_tex_max_aniso_ext", gpu_set_tex_max_aniso_ext)
+			.addFunction("gpu_set_tex_mip_enable", gpu_set_tex_mip_enable)
+			.addFunction("gpu_set_tex_mip_enable_ext", gpu_set_tex_mip_enable_ext)
+			.addFunction("gpu_get_blendenable", gpu_get_blendenable)
+			.addFunction("gpu_get_ztestenable", gpu_get_ztestenable)
+			.addFunction("gpu_get_zfunc", gpu_get_zfunc)
+			.addFunction("gpu_get_zwriteenable", gpu_get_zwriteenable)
+			.addFunction("gpu_get_fog", gpu_get_fog)
+			.addFunction("gpu_get_cullmode", gpu_get_cullmode)
+			.addFunction("gpu_get_blendmode", gpu_get_blendmode)
+			.addFunction("gpu_get_blendmode_ext", gpu_get_blendmode_ext)
+			.addFunction("gpu_get_blendmode_ext_sepalpha", gpu_get_blendmode_ext_sepalpha)
+			.addFunction("gpu_get_blendmode_src", gpu_get_blendmode_src)
+			.addFunction("gpu_get_blendmode_dest", gpu_get_blendmode_dest)
+			.addFunction("gpu_get_blendmode_srcalpha", gpu_get_blendmode_srcalpha)
+			.addFunction("gpu_get_blendmode_destalpha", gpu_get_blendmode_destalpha)
+			.addFunction("gpu_get_colorwriteenable", gpu_get_colorwriteenable)
+			.addFunction("gpu_get_colourwriteenable", gpu_get_colourwriteenable)
+			.addFunction("gpu_get_alphatestenable", gpu_get_alphatestenable)
+			.addFunction("gpu_get_alphatestref", gpu_get_alphatestref)
+			.addFunction("gpu_get_texfilter", gpu_get_texfilter)
+			.addFunction("gpu_get_texfilter_ext", gpu_get_texfilter_ext)
+			.addFunction("gpu_get_texrepeat", gpu_get_texrepeat)
+			.addFunction("gpu_get_texrepeat_ext", gpu_get_texrepeat_ext)
+			.addFunction("gpu_get_tex_filter", gpu_get_tex_filter)
+			.addFunction("gpu_get_tex_filter_ext", gpu_get_tex_filter_ext)
+			.addFunction("gpu_get_tex_repeat", gpu_get_tex_repeat)
+			.addFunction("gpu_get_tex_repeat_ext", gpu_get_tex_repeat_ext)
+			.addFunction("gpu_get_tex_mip_filter", gpu_get_tex_mip_filter)
+			.addFunction("gpu_get_tex_mip_filter_ext", gpu_get_tex_mip_filter_ext)
+			.addFunction("gpu_get_tex_mip_bias", gpu_get_tex_mip_bias)
+			.addFunction("gpu_get_tex_mip_bias_ext", gpu_get_tex_mip_bias_ext)
+			.addFunction("gpu_get_tex_min_mip", gpu_get_tex_min_mip)
+			.addFunction("gpu_get_tex_min_mip_ext", gpu_get_tex_min_mip_ext)
+			.addFunction("gpu_get_tex_max_mip", gpu_get_tex_max_mip)
+			.addFunction("gpu_get_tex_max_mip_ext", gpu_get_tex_max_mip_ext)
+			.addFunction("gpu_get_tex_max_aniso", gpu_get_tex_max_aniso)
+			.addFunction("gpu_get_tex_max_aniso_ext", gpu_get_tex_max_aniso_ext)
+			.addFunction("gpu_get_tex_mip_enable", gpu_get_tex_mip_enable)
+			.addFunction("gpu_get_tex_mip_enable_ext", gpu_get_tex_mip_enable_ext)
+			.addFunction("gpu_push_state", gpu_push_state)
+			.addFunction("gpu_pop_state", gpu_pop_state)
+			.addFunction("gpu_get_state", gpu_get_state)
+			.addFunction("gpu_set_state", gpu_set_state)
+			.addFunction("draw_light_define_ambient", draw_light_define_ambient)
+			.addFunction("draw_light_define_direction", draw_light_define_direction)
+			.addFunction("draw_light_define_point", draw_light_define_point)
+			.addFunction("draw_light_enable", draw_light_enable)
+			.addFunction("draw_set_lighting", draw_set_lighting)
+			.addFunction("draw_light_get_ambient", draw_light_get_ambient)
+			.addFunction("draw_light_get", draw_light_get)
+			.addFunction("draw_get_lighting", draw_get_lighting)
+			.addFunction("shader_set", shader_set)
+			.addFunction("shader_get_name", shader_get_name)
+			.addFunction("shader_reset", shader_reset)
+			.addFunction("shader_current", shader_current)
+			.addFunction("shader_is_compiled", shader_is_compiled)
+			.addFunction("shader_get_sampler_index", shader_get_sampler_index)
+			.addFunction("shader_get_uniform", shader_get_uniform)
+			.addFunction("shader_set_uniform_i", shader_set_uniform_i)
+			.addFunction("shader_set_uniform_i_array", shader_set_uniform_i_array)
+			.addFunction("shader_set_uniform_f", shader_set_uniform_f)
+			.addFunction("shader_set_uniform_f_array", shader_set_uniform_f_array)
+			.addFunction("shader_set_uniform_matrix", shader_set_uniform_matrix)
+			.addFunction("shader_set_uniform_matrix_array", shader_set_uniform_matrix_array)
+			.addFunction("shader_enable_corner_id", shader_enable_corner_id)
+			.addFunction("texture_set_stage", texture_set_stage)
+			.addFunction("texture_get_texel_width", texture_get_texel_width)
+			.addFunction("texture_get_texel_height", texture_get_texel_height)
+			.addFunction("vertex_format_begin", vertex_format_begin)
+			.addFunction("vertex_format_end", vertex_format_end)
+			.addFunction("vertex_format_delete", vertex_format_delete)
+			.addFunction("vertex_format_add_position", vertex_format_add_position)
+			.addFunction("vertex_format_add_position_3d", vertex_format_add_position_3d)
+			.addFunction("vertex_format_add_colour", vertex_format_add_colour)
+			.addFunction("vertex_format_add_color", vertex_format_add_color)
+			.addFunction("vertex_format_add_normal", vertex_format_add_normal)
+			.addFunction("vertex_format_add_texcoord", vertex_format_add_texcoord)
+			.addFunction("vertex_format_add_custom", vertex_format_add_custom)
+			.addFunction("vertex_create_buffer", vertex_create_buffer)
+			.addFunction("vertex_create_buffer_ext", vertex_create_buffer_ext)
+			.addFunction("vertex_delete_buffer", vertex_delete_buffer)
+			.addFunction("vertex_begin", vertex_begin)
+			.addFunction("vertex_end", vertex_end)
+			.addFunction("vertex_position", vertex_position)
+			.addFunction("vertex_position_3d", vertex_position_3d)
+			.addFunction("vertex_colour", vertex_colour)
+			.addFunction("vertex_color", vertex_color)
+			.addFunction("vertex_argb", vertex_argb)
+			.addFunction("vertex_texcoord", vertex_texcoord)
+			.addFunction("vertex_normal", vertex_normal)
+			.addFunction("vertex_float1", vertex_float1)
+			.addFunction("vertex_float2", vertex_float2)
+			.addFunction("vertex_float3", vertex_float3)
+			.addFunction("vertex_float4", vertex_float4)
+			.addFunction("vertex_ubyte4", vertex_ubyte4)
+			.addFunction("vertex_submit", vertex_submit)
+			.addFunction("vertex_freeze", vertex_freeze)
+			.addFunction("vertex_get_number", vertex_get_number)
+			.addFunction("vertex_get_buffer_size", vertex_get_buffer_size)
+			.addFunction("vertex_create_buffer_from_buffer", vertex_create_buffer_from_buffer)
+			.addFunction("vertex_create_buffer_from_buffer_ext", vertex_create_buffer_from_buffer_ext)
+			.addFunction("draw_skeleton", draw_skeleton)
+			.addFunction("draw_skeleton_time", draw_skeleton_time)
+			.addFunction("draw_skeleton_instance", draw_skeleton_instance)
+			.addFunction("draw_skeleton_collision", draw_skeleton_collision)
+			.addFunction("draw_enable_skeleton_blendmodes", draw_enable_skeleton_blendmodes)
+			.addFunction("draw_get_enable_skeleton_blendmodes", draw_get_enable_skeleton_blendmodes)
+			.addFunction("draw_tilemap", draw_tilemap)
+			.addFunction("draw_tile", draw_tile);
+	static vars_layers = new CatspeakVMInterface()
+			.addConstant("layerelementtype_undefined", layerelementtype_undefined)
+			.addConstant("layerelementtype_background", layerelementtype_background)
+			.addConstant("layerelementtype_instance", layerelementtype_instance)
+			.addConstant("layerelementtype_oldtilemap", layerelementtype_oldtilemap)
+			.addConstant("layerelementtype_sprite", layerelementtype_sprite)
+			.addConstant("layerelementtype_tilemap", layerelementtype_tilemap)
+			.addConstant("layerelementtype_particlesystem", layerelementtype_particlesystem)
+			.addConstant("layerelementtype_tile", layerelementtype_tile)
+			.addConstant("layerelementtype_sequence", layerelementtype_sequence)
+			.addConstant("tile_rotate", tile_rotate)
+			.addConstant("tile_flip", tile_flip)
+			.addConstant("tile_mirror", tile_mirror)
+			.addConstant("tile_index_mask", tile_index_mask)
+			.addFunction("layer_get_id", layer_get_id)
+			.addFunction("layer_get_id_at_depth", layer_get_id_at_depth)
+			.addFunction("layer_get_depth", layer_get_depth)
+			.addFunction("layer_create", layer_create)
+			.addFunction("layer_destroy", layer_destroy)
+			.addFunction("layer_destroy_instances", layer_destroy_instances)
+			.addFunction("layer_add_instance", layer_add_instance)
+			.addFunction("layer_has_instance", layer_has_instance)
+			.addFunction("layer_set_visible", layer_set_visible)
+			.addFunction("layer_get_visible", layer_get_visible)
+			.addFunction("layer_exists", layer_exists)
+			.addFunction("layer_x", layer_x)
+			.addFunction("layer_y", layer_y)
+			.addFunction("layer_get_x", layer_get_x)
+			.addFunction("layer_get_y", layer_get_y)
+			.addFunction("layer_hspeed", layer_hspeed)
+			.addFunction("layer_vspeed", layer_vspeed)
+			.addFunction("layer_get_hspeed", layer_get_hspeed)
+			.addFunction("layer_get_vspeed", layer_get_vspeed)
+			.addFunction("layer_script_begin", layer_script_begin)
+			.addFunction("layer_script_end", layer_script_end)
+			.addFunction("layer_shader", layer_shader)
+			.addFunction("layer_get_script_begin", layer_get_script_begin)
+			.addFunction("layer_get_script_end", layer_get_script_end)
+			.addFunction("layer_get_shader", layer_get_shader)
+			.addFunction("layer_set_target_room", layer_set_target_room)
+			.addFunction("layer_get_target_room", layer_get_target_room)
+			.addFunction("layer_reset_target_room", layer_reset_target_room)
+			.addFunction("layer_get_all", layer_get_all)
+			.addFunction("layer_get_all_elements", layer_get_all_elements)
+			.addFunction("layer_get_name", layer_get_name)
+			.addFunction("layer_depth", layer_depth)
+			.addFunction("layer_get_element_layer", layer_get_element_layer)
+			.addFunction("layer_get_element_type", layer_get_element_type)
+			.addFunction("layer_element_move", layer_element_move)
+			.addFunction("layer_force_draw_depth", layer_force_draw_depth)
+			.addFunction("layer_is_draw_depth_forced", layer_is_draw_depth_forced)
+			.addFunction("layer_get_forced_depth", layer_get_forced_depth)
+			.addFunction("layer_background_get_id", layer_background_get_id)
+			.addFunction("layer_background_exists", layer_background_exists)
+			.addFunction("layer_background_create", layer_background_create)
+			.addFunction("layer_background_destroy", layer_background_destroy)
+			.addFunction("layer_background_visible", layer_background_visible)
+			.addFunction("layer_background_change", layer_background_change)
+			.addFunction("layer_background_sprite", layer_background_sprite)
+			.addFunction("layer_background_htiled", layer_background_htiled)
+			.addFunction("layer_background_vtiled", layer_background_vtiled)
+			.addFunction("layer_background_stretch", layer_background_stretch)
+			.addFunction("layer_background_yscale", layer_background_yscale)
+			.addFunction("layer_background_xscale", layer_background_xscale)
+			.addFunction("layer_background_blend", layer_background_blend)
+			.addFunction("layer_background_alpha", layer_background_alpha)
+			.addFunction("layer_background_index", layer_background_index)
+			.addFunction("layer_background_speed", layer_background_speed)
+			.addFunction("layer_background_get_visible", layer_background_get_visible)
+			.addFunction("layer_background_get_sprite", layer_background_get_sprite)
+			.addFunction("layer_background_get_htiled", layer_background_get_htiled)
+			.addFunction("layer_background_get_vtiled", layer_background_get_vtiled)
+			.addFunction("layer_background_get_stretch", layer_background_get_stretch)
+			.addFunction("layer_background_get_yscale", layer_background_get_yscale)
+			.addFunction("layer_background_get_xscale", layer_background_get_xscale)
+			.addFunction("layer_background_get_blend", layer_background_get_blend)
+			.addFunction("layer_background_get_alpha", layer_background_get_alpha)
+			.addFunction("layer_background_get_index", layer_background_get_index)
+			.addFunction("layer_background_get_speed", layer_background_get_speed)
+			.addFunction("layer_sprite_get_id", layer_sprite_get_id)
+			.addFunction("layer_sprite_exists", layer_sprite_exists)
+			.addFunction("layer_sprite_create", layer_sprite_create)
+			.addFunction("layer_sprite_destroy", layer_sprite_destroy)
+			.addFunction("layer_sprite_change", layer_sprite_change)
+			.addFunction("layer_sprite_index", layer_sprite_index)
+			.addFunction("layer_sprite_speed", layer_sprite_speed)
+			.addFunction("layer_sprite_xscale", layer_sprite_xscale)
+			.addFunction("layer_sprite_yscale", layer_sprite_yscale)
+			.addFunction("layer_sprite_angle", layer_sprite_angle)
+			.addFunction("layer_sprite_blend", layer_sprite_blend)
+			.addFunction("layer_sprite_alpha", layer_sprite_alpha)
+			.addFunction("layer_sprite_x", layer_sprite_x)
+			.addFunction("layer_sprite_y", layer_sprite_y)
+			.addFunction("layer_sprite_get_sprite", layer_sprite_get_sprite)
+			.addFunction("layer_sprite_get_index", layer_sprite_get_index)
+			.addFunction("layer_sprite_get_speed", layer_sprite_get_speed)
+			.addFunction("layer_sprite_get_xscale", layer_sprite_get_xscale)
+			.addFunction("layer_sprite_get_yscale", layer_sprite_get_yscale)
+			.addFunction("layer_sprite_get_angle", layer_sprite_get_angle)
+			.addFunction("layer_sprite_get_blend", layer_sprite_get_blend)
+			.addFunction("layer_sprite_get_alpha", layer_sprite_get_alpha)
+			.addFunction("layer_sprite_get_x", layer_sprite_get_x)
+			.addFunction("layer_sprite_get_y", layer_sprite_get_y)
+			.addFunction("layer_tilemap_get_id", layer_tilemap_get_id)
+			.addFunction("layer_tilemap_exists", layer_tilemap_exists)
+			.addFunction("layer_tilemap_create", layer_tilemap_create)
+			.addFunction("layer_tilemap_destroy", layer_tilemap_destroy)
+			.addFunction("tilemap_tileset", tilemap_tileset)
+			.addFunction("tilemap_x", tilemap_x)
+			.addFunction("tilemap_y", tilemap_y)
+			.addFunction("tilemap_set", tilemap_set)
+			.addFunction("tilemap_set_at_pixel", tilemap_set_at_pixel)
+			.addFunction("tilemap_get_tileset", tilemap_get_tileset)
+			.addFunction("tilemap_get_tile_width", tilemap_get_tile_width)
+			.addFunction("tilemap_get_tile_height", tilemap_get_tile_height)
+			.addFunction("tilemap_get_width", tilemap_get_width)
+			.addFunction("tilemap_get_height", tilemap_get_height)
+			.addFunction("tilemap_set_width", tilemap_set_width)
+			.addFunction("tilemap_set_height", tilemap_set_height)
+			.addFunction("tilemap_get_x", tilemap_get_x)
+			.addFunction("tilemap_get_y", tilemap_get_y)
+			.addFunction("tilemap_get", tilemap_get)
+			.addFunction("tilemap_get_at_pixel", tilemap_get_at_pixel)
+			.addFunction("tilemap_get_cell_x_at_pixel", tilemap_get_cell_x_at_pixel)
+			.addFunction("tilemap_get_cell_y_at_pixel", tilemap_get_cell_y_at_pixel)
+			.addFunction("tilemap_clear", tilemap_clear)
+			.addFunction("tilemap_set_global_mask", tilemap_set_global_mask)
+			.addFunction("tilemap_get_global_mask", tilemap_get_global_mask)
+			.addFunction("tilemap_set_mask", tilemap_set_mask)
+			.addFunction("tilemap_get_mask", tilemap_get_mask)
+			.addFunction("tilemap_get_frame", tilemap_get_frame)
+			.addFunction("tile_set_empty", tile_set_empty)
+			.addFunction("tile_set_index", tile_set_index)
+			.addFunction("tile_set_flip", tile_set_flip)
+			.addFunction("tile_set_mirror", tile_set_mirror)
+			.addFunction("tile_set_rotate", tile_set_rotate)
+			.addFunction("tile_get_empty", tile_get_empty)
+			.addFunction("tile_get_index", tile_get_index)
+			.addFunction("tile_get_flip", tile_get_flip)
+			.addFunction("tile_get_mirror", tile_get_mirror)
+			.addFunction("tile_get_rotate", tile_get_rotate)
+			.addFunction("layer_tile_exists", layer_tile_exists)
+			.addFunction("layer_tile_create", layer_tile_create)
+			.addFunction("layer_tile_destroy", layer_tile_destroy)
+			.addFunction("layer_tile_change", layer_tile_change)
+			.addFunction("layer_tile_xscale", layer_tile_xscale)
+			.addFunction("layer_tile_yscale", layer_tile_yscale)
+			.addFunction("layer_tile_blend", layer_tile_blend)
+			.addFunction("layer_tile_alpha", layer_tile_alpha)
+			.addFunction("layer_tile_x", layer_tile_x)
+			.addFunction("layer_tile_y", layer_tile_y)
+			.addFunction("layer_tile_region", layer_tile_region)
+			.addFunction("layer_tile_visible", layer_tile_visible)
+			.addFunction("layer_tile_get_sprite", layer_tile_get_sprite)
+			.addFunction("layer_tile_get_xscale", layer_tile_get_xscale)
+			.addFunction("layer_tile_get_yscale", layer_tile_get_yscale)
+			.addFunction("layer_tile_get_blend", layer_tile_get_blend)
+			.addFunction("layer_tile_get_alpha", layer_tile_get_alpha)
+			.addFunction("layer_tile_get_x", layer_tile_get_x)
+			.addFunction("layer_tile_get_y", layer_tile_get_y)
+			.addFunction("layer_tile_get_region", layer_tile_get_region)
+			.addFunction("layer_tile_get_visible", layer_tile_get_visible)
+			.addFunction("layer_instance_get_instance", layer_instance_get_instance)
+			.addFunction("layer_sequence_get_instance", layer_sequence_get_instance)
+			.addFunction("layer_sequence_create", layer_sequence_create)
+			.addFunction("layer_sequence_destroy", layer_sequence_destroy)
+			.addFunction("layer_sequence_exists", layer_sequence_exists)
+			.addFunction("layer_sequence_x", layer_sequence_x)
+			.addFunction("layer_sequence_y", layer_sequence_y)
+			.addFunction("layer_sequence_angle", layer_sequence_angle)
+			.addFunction("layer_sequence_xscale", layer_sequence_xscale)
+			.addFunction("layer_sequence_yscale", layer_sequence_yscale)
+			.addFunction("layer_sequence_headpos", layer_sequence_headpos)
+			.addFunction("layer_sequence_headdir", layer_sequence_headdir)
+			.addFunction("layer_sequence_pause", layer_sequence_pause)
+			.addFunction("layer_sequence_play", layer_sequence_play)
+			.addFunction("layer_sequence_speedscale", layer_sequence_speedscale)
+			.addFunction("layer_sequence_get_x", layer_sequence_get_x)
+			.addFunction("layer_sequence_get_y", layer_sequence_get_y)
+			.addFunction("layer_sequence_get_angle", layer_sequence_get_angle)
+			.addFunction("layer_sequence_get_xscale", layer_sequence_get_xscale)
+			.addFunction("layer_sequence_get_yscale", layer_sequence_get_yscale)
+			.addFunction("layer_sequence_get_headpos", layer_sequence_get_headpos)
+			.addFunction("layer_sequence_get_headdir", layer_sequence_get_headdir)
+			.addFunction("layer_sequence_get_sequence", layer_sequence_get_sequence)
+			.addFunction("layer_sequence_is_paused", layer_sequence_is_paused)
+			.addFunction("layer_sequence_is_finished", layer_sequence_is_finished)
+			.addFunction("layer_sequence_get_speedscale", layer_sequence_get_speedscale)
+			.addFunction("layer_sequence_get_length", layer_sequence_get_length);
+	static vars_display = new CatspeakVMInterface()
+			.addConstant("cr_default", cr_default)
+			.addConstant("cr_none", cr_none)
+			.addConstant("cr_arrow", cr_arrow)
+			.addConstant("cr_cross", cr_cross)
+			.addConstant("cr_beam", cr_beam)
+			.addConstant("cr_size_nesw", cr_size_nesw)
+			.addConstant("cr_size_ns", cr_size_ns)
+			.addConstant("cr_size_nwse", cr_size_nwse)
+			.addConstant("cr_size_we", cr_size_we)
+			.addConstant("cr_uparrow", cr_uparrow)
+			.addConstant("cr_hourglass", cr_hourglass)
+			.addConstant("cr_drag", cr_drag)
+			.addConstant("cr_appstart", cr_appstart)
+			.addConstant("cr_handpoint", cr_handpoint)
+			.addConstant("cr_size_all", cr_size_all)
+			.addConstant("display_landscape", display_landscape)
+			.addConstant("display_landscape_flipped", display_landscape_flipped)
+			.addConstant("display_portrait", display_portrait)
+			.addConstant("display_portrait_flipped", display_portrait_flipped)
+			.addConstant("tm_sleep", tm_sleep)
+			.addConstant("tm_countvsyncs", tm_countvsyncs)
+			.addFunction("display_get_width", display_get_width)
+			.addFunction("display_get_height", display_get_height)
+			.addFunction("display_get_orientation", display_get_orientation)
+			.addFunction("display_get_gui_width", display_get_gui_width)
+			.addFunction("display_get_gui_height", display_get_gui_height)
+			.addFunction("display_reset", display_reset)
+			.addFunction("display_mouse_get_x", display_mouse_get_x)
+			.addFunction("display_mouse_get_y", display_mouse_get_y)
+			.addFunction("display_mouse_set", display_mouse_set)
+			.addFunction("display_set_ui_visibility", display_set_ui_visibility)
+			.addFunction("window_set_fullscreen", window_set_fullscreen)
+			.addFunction("window_get_fullscreen", window_get_fullscreen)
+			.addFunction("window_set_caption", window_set_caption)
+			.addFunction("window_set_min_width", window_set_min_width)
+			.addFunction("window_set_max_width", window_set_max_width)
+			.addFunction("window_set_min_height", window_set_min_height)
+			.addFunction("window_set_max_height", window_set_max_height)
+			.addFunction("window_get_visible_rects", window_get_visible_rects)
+			.addFunction("window_get_caption", window_get_caption)
+			.addFunction("window_set_cursor", window_set_cursor)
+			.addFunction("window_get_cursor", window_get_cursor)
+			.addFunction("window_set_colour", window_set_colour)
+			.addFunction("window_get_colour", window_get_colour)
+			.addFunction("window_set_color", window_set_color)
+			.addFunction("window_get_color", window_get_color)
+			.addFunction("window_set_position", window_set_position)
+			.addFunction("window_set_size", window_set_size)
+			.addFunction("window_set_rectangle", window_set_rectangle)
+			.addFunction("window_center", window_center)
+			.addFunction("window_get_x", window_get_x)
+			.addFunction("window_get_y", window_get_y)
+			.addFunction("window_get_width", window_get_width)
+			.addFunction("window_get_height", window_get_height)
+			.addFunction("window_mouse_get_x", window_mouse_get_x)
+			.addFunction("window_mouse_get_y", window_mouse_get_y)
+			.addFunction("window_mouse_set", window_mouse_set)
+			.addFunction("window_view_mouse_get_x", window_view_mouse_get_x)
+			.addFunction("window_view_mouse_get_y", window_view_mouse_get_y)
+			.addFunction("window_views_mouse_get_x", window_views_mouse_get_x)
+			.addFunction("window_views_mouse_get_y", window_views_mouse_get_y)
+			.addFunction("window_handle", window_handle)
+			.addFunction("window_device", window_device)
+			.addFunction("display_get_dpi_x", display_get_dpi_x)
+			.addFunction("display_get_dpi_y", display_get_dpi_y)
+			.addFunction("display_set_gui_size", display_set_gui_size)
+			.addFunction("display_set_gui_maximise", display_set_gui_maximise)
+			.addFunction("display_set_gui_maximize", display_set_gui_maximize)
+			.addFunction("display_set_timing_method", display_set_timing_method)
+			.addFunction("display_get_timing_method", display_get_timing_method)
+			.addFunction("display_set_sleep_margin", display_set_sleep_margin)
+			.addFunction("display_get_sleep_margin", display_get_sleep_margin)
+			.addFunction("window_has_focus", window_has_focus)
+			.addFunction("camera_create", camera_create)
+			.addFunction("camera_create_view", camera_create_view)
+			.addFunction("camera_destroy", camera_destroy)
+			.addFunction("camera_apply", camera_apply)
+			.addFunction("camera_get_active", camera_get_active)
+			.addFunction("camera_get_default", camera_get_default)
+			.addFunction("camera_set_default", camera_set_default)
+			.addFunction("camera_set_view_mat", camera_set_view_mat)
+			.addFunction("camera_set_proj_mat", camera_set_proj_mat)
+			.addFunction("camera_set_update_script", camera_set_update_script)
+			.addFunction("camera_set_begin_script", camera_set_begin_script)
+			.addFunction("camera_set_end_script", camera_set_end_script)
+			.addFunction("camera_set_view_pos", camera_set_view_pos)
+			.addFunction("camera_set_view_size", camera_set_view_size)
+			.addFunction("camera_set_view_speed", camera_set_view_speed)
+			.addFunction("camera_set_view_border", camera_set_view_border)
+			.addFunction("camera_set_view_angle", camera_set_view_angle)
+			.addFunction("camera_set_view_target", camera_set_view_target)
+			.addFunction("camera_get_view_mat", camera_get_view_mat)
+			.addFunction("camera_get_proj_mat", camera_get_proj_mat)
+			.addFunction("camera_get_update_script", camera_get_update_script)
+			.addFunction("camera_get_begin_script", camera_get_begin_script)
+			.addFunction("camera_get_end_script", camera_get_end_script)
+			.addFunction("camera_get_view_x", camera_get_view_x)
+			.addFunction("camera_get_view_y", camera_get_view_y)
+			.addFunction("camera_get_view_width", camera_get_view_width)
+			.addFunction("camera_get_view_height", camera_get_view_height)
+			.addFunction("camera_get_view_speed_x", camera_get_view_speed_x)
+			.addFunction("camera_get_view_speed_y", camera_get_view_speed_y)
+			.addFunction("camera_get_view_border_x", camera_get_view_border_x)
+			.addFunction("camera_get_view_border_y", camera_get_view_border_y)
+			.addFunction("camera_get_view_angle", camera_get_view_angle)
+			.addFunction("camera_get_view_target", camera_get_view_target)
+			.addFunction("view_get_camera", view_get_camera)
+			.addFunction("view_get_visible", view_get_visible)
+			.addFunction("view_get_xport", view_get_xport)
+			.addFunction("view_get_yport", view_get_yport)
+			.addFunction("view_get_wport", view_get_wport)
+			.addFunction("view_get_hport", view_get_hport)
+			.addFunction("view_get_surface_id", view_get_surface_id)
+			.addFunction("view_set_camera", view_set_camera)
+			.addFunction("view_set_visible", view_set_visible)
+			.addFunction("view_set_xport", view_set_xport)
+			.addFunction("view_set_yport", view_set_yport)
+			.addFunction("view_set_wport", view_set_wport)
+			.addFunction("view_set_hport", view_set_hport)
+			.addFunction("view_set_surface_id", view_set_surface_id);
+	static vars_debug = new CatspeakVMInterface()
+			
+			.addFunction("show_debug_message", show_debug_message)
+			.addFunction("show_debug_overlay", show_debug_overlay)
+			.addFunction("debug_event", debug_event)
+			.addFunction("debug_get_callstack", debug_get_callstack)
+			.addFunction("show_message", show_message)
+			.addFunction("show_message_async", show_message_async)
+			.addFunction("show_question", show_question)
+			.addFunction("show_question_async", show_question_async)
+			.addFunction("show_error", show_error);
+	static vars_files = new CatspeakVMInterface()
+			.addConstant("fa_readonly", fa_readonly)
+			.addConstant("fa_hidden", fa_hidden)
+			.addConstant("fa_sysfile", fa_sysfile)
+			.addConstant("fa_volumeid", fa_volumeid)
+			.addConstant("fa_directory", fa_directory)
+			.addConstant("fa_archive", fa_archive)
+			.addFunction("screen_save", screen_save)
+			.addFunction("screen_save_part", screen_save_part)
+			.addFunction("gif_open", gif_open)
+			.addFunction("gif_add_surface", gif_add_surface)
+			.addFunction("gif_save", gif_save)
+			.addFunction("gif_save_buffer", gif_save_buffer)
+			.addFunction("file_text_open_from_string", file_text_open_from_string)
+			.addFunction("file_text_open_read", file_text_open_read)
+			.addFunction("file_text_open_write", file_text_open_write)
+			.addFunction("file_text_open_append", file_text_open_append)
+			.addFunction("file_text_close", file_text_close)
+			.addFunction("file_text_write_string", file_text_write_string)
+			.addFunction("file_text_write_real", file_text_write_real)
+			.addFunction("file_text_writeln", file_text_writeln)
+			.addFunction("file_text_read_string", file_text_read_string)
+			.addFunction("file_text_read_real", file_text_read_real)
+			.addFunction("file_text_readln", file_text_readln)
+			.addFunction("file_text_eof", file_text_eof)
+			.addFunction("file_text_eoln", file_text_eoln)
+			.addFunction("file_exists", file_exists)
+			.addFunction("file_delete", file_delete)
+			.addFunction("file_rename", file_rename)
+			.addFunction("file_copy", file_copy)
+			.addFunction("file_find_first", file_find_first)
+			.addFunction("file_find_next", file_find_next)
+			.addFunction("file_find_close", file_find_close)
+			.addFunction("file_attributes", file_attributes)
+			.addFunction("file_bin_open", file_bin_open)
+			.addFunction("file_bin_rewrite", file_bin_rewrite)
+			.addFunction("file_bin_close", file_bin_close)
+			.addFunction("file_bin_position", file_bin_position)
+			.addFunction("file_bin_size", file_bin_size)
+			.addFunction("file_bin_seek", file_bin_seek)
+			.addFunction("file_bin_write_byte", file_bin_write_byte)
+			.addFunction("file_bin_read_byte", file_bin_read_byte)
+			.addFunction("parameter_count", parameter_count)
+			.addFunction("parameter_string", parameter_string)
+			.addFunction("ini_open_from_string", ini_open_from_string)
+			.addFunction("ini_open", ini_open)
+			.addFunction("ini_close", ini_close)
+			.addFunction("ini_read_string", ini_read_string)
+			.addFunction("ini_read_real", ini_read_real)
+			.addFunction("ini_write_string", ini_write_string)
+			.addFunction("ini_write_real", ini_write_real)
+			.addFunction("ini_key_exists", ini_key_exists)
+			.addFunction("ini_section_exists", ini_section_exists)
+			.addFunction("ini_key_delete", ini_key_delete)
+			.addFunction("ini_section_delete", ini_section_delete)
+			.addFunction("cloud_file_save", cloud_file_save)
+			.addFunction("cloud_string_save", cloud_string_save)
+			.addFunction("cloud_synchronise", cloud_synchronise)
+			.addFunction("http_get", http_get)
+			.addFunction("http_get_file", http_get_file)
+			.addFunction("http_post_string", http_post_string)
+			.addFunction("http_request", http_request)
+			.addFunction("http_get_request_crossorigin", http_get_request_crossorigin)
+			.addFunction("http_set_request_crossorigin", http_set_request_crossorigin)
+			.addFunction("json_encode", json_encode)
+			.addFunction("json_decode", json_decode)
+			.addFunction("json_stringify", json_stringify)
+			.addFunction("json_parse", json_parse)
+			.addFunction("zip_unzip", zip_unzip)
+			.addFunction("load_csv", load_csv)
+			.addFunction("base64_encode", base64_encode)
+			.addFunction("base64_decode", base64_decode)
+			.addFunction("md5_string_unicode", md5_string_unicode)
+			.addFunction("md5_string_utf8", md5_string_utf8)
+			.addFunction("md5_file", md5_file)
+			.addFunction("sha1_string_unicode", sha1_string_unicode)
+			.addFunction("sha1_string_utf8", sha1_string_utf8)
+			.addFunction("sha1_file", sha1_file);
+	static vars_particles = new CatspeakVMInterface()
+			.addConstant("ef_explosion", ef_explosion)
+			.addConstant("ef_ring", ef_ring)
+			.addConstant("ef_ellipse", ef_ellipse)
+			.addConstant("ef_firework", ef_firework)
+			.addConstant("ef_smoke", ef_smoke)
+			.addConstant("ef_smokeup", ef_smokeup)
+			.addConstant("ef_star", ef_star)
+			.addConstant("ef_spark", ef_spark)
+			.addConstant("ef_flare", ef_flare)
+			.addConstant("ef_cloud", ef_cloud)
+			.addConstant("ef_rain", ef_rain)
+			.addConstant("ef_snow", ef_snow)
+			.addConstant("pt_shape_pixel", pt_shape_pixel)
+			.addConstant("pt_shape_disk", pt_shape_disk)
+			.addConstant("pt_shape_square", pt_shape_square)
+			.addConstant("pt_shape_line", pt_shape_line)
+			.addConstant("pt_shape_star", pt_shape_star)
+			.addConstant("pt_shape_circle", pt_shape_circle)
+			.addConstant("pt_shape_ring", pt_shape_ring)
+			.addConstant("pt_shape_sphere", pt_shape_sphere)
+			.addConstant("pt_shape_flare", pt_shape_flare)
+			.addConstant("pt_shape_spark", pt_shape_spark)
+			.addConstant("pt_shape_explosion", pt_shape_explosion)
+			.addConstant("pt_shape_cloud", pt_shape_cloud)
+			.addConstant("pt_shape_smoke", pt_shape_smoke)
+			.addConstant("pt_shape_snow", pt_shape_snow)
+			.addConstant("ps_distr_linear", ps_distr_linear)
+			.addConstant("ps_distr_gaussian", ps_distr_gaussian)
+			.addConstant("ps_distr_invgaussian", ps_distr_invgaussian)
+			.addConstant("ps_shape_rectangle", ps_shape_rectangle)
+			.addConstant("ps_shape_ellipse", ps_shape_ellipse)
+			.addConstant("ps_shape_diamond", ps_shape_diamond)
+			.addConstant("ps_shape_line", ps_shape_line)
+			.addFunction("effect_create_below", effect_create_below)
+			.addFunction("effect_create_above", effect_create_above)
+			.addFunction("effect_clear", effect_clear)
+			.addFunction("part_type_create", part_type_create)
+			.addFunction("part_type_destroy", part_type_destroy)
+			.addFunction("part_type_exists", part_type_exists)
+			.addFunction("part_type_clear", part_type_clear)
+			.addFunction("part_type_shape", part_type_shape)
+			.addFunction("part_type_sprite", part_type_sprite)
+			.addFunction("part_type_size", part_type_size)
+			.addFunction("part_type_scale", part_type_scale)
+			.addFunction("part_type_orientation", part_type_orientation)
+			.addFunction("part_type_life", part_type_life)
+			.addFunction("part_type_step", part_type_step)
+			.addFunction("part_type_death", part_type_death)
+			.addFunction("part_type_speed", part_type_speed)
+			.addFunction("part_type_direction", part_type_direction)
+			.addFunction("part_type_gravity", part_type_gravity)
+			.addFunction("part_type_colour1", part_type_colour1)
+			.addFunction("part_type_colour2", part_type_colour2)
+			.addFunction("part_type_colour3", part_type_colour3)
+			.addFunction("part_type_colour_mix", part_type_colour_mix)
+			.addFunction("part_type_colour_rgb", part_type_colour_rgb)
+			.addFunction("part_type_colour_hsv", part_type_colour_hsv)
+			.addFunction("part_type_color1", part_type_color1)
+			.addFunction("part_type_color2", part_type_color2)
+			.addFunction("part_type_color3", part_type_color3)
+			.addFunction("part_type_color_mix", part_type_color_mix)
+			.addFunction("part_type_color_rgb", part_type_color_rgb)
+			.addFunction("part_type_color_hsv", part_type_color_hsv)
+			.addFunction("part_type_alpha1", part_type_alpha1)
+			.addFunction("part_type_alpha2", part_type_alpha2)
+			.addFunction("part_type_alpha3", part_type_alpha3)
+			.addFunction("part_type_blend", part_type_blend)
+			.addFunction("part_system_create", part_system_create)
+			.addFunction("part_system_create_layer", part_system_create_layer)
+			.addFunction("part_system_destroy", part_system_destroy)
+			.addFunction("part_system_exists", part_system_exists)
+			.addFunction("part_system_clear", part_system_clear)
+			.addFunction("part_system_draw_order", part_system_draw_order)
+			.addFunction("part_system_depth", part_system_depth)
+			.addFunction("part_system_position", part_system_position)
+			.addFunction("part_system_automatic_update", part_system_automatic_update)
+			.addFunction("part_system_automatic_draw", part_system_automatic_draw)
+			.addFunction("part_system_update", part_system_update)
+			.addFunction("part_system_drawit", part_system_drawit)
+			.addFunction("part_system_get_layer", part_system_get_layer)
+			.addFunction("part_system_layer", part_system_layer)
+			.addFunction("part_particles_create", part_particles_create)
+			.addFunction("part_particles_create_colour", part_particles_create_colour)
+			.addFunction("part_particles_create_color", part_particles_create_color)
+			.addFunction("part_particles_clear", part_particles_clear)
+			.addFunction("part_particles_count", part_particles_count)
+			.addFunction("part_emitter_create", part_emitter_create)
+			.addFunction("part_emitter_destroy", part_emitter_destroy)
+			.addFunction("part_emitter_destroy_all", part_emitter_destroy_all)
+			.addFunction("part_emitter_exists", part_emitter_exists)
+			.addFunction("part_emitter_clear", part_emitter_clear)
+			.addFunction("part_emitter_region", part_emitter_region)
+			.addFunction("part_emitter_burst", part_emitter_burst)
+			.addFunction("part_emitter_stream", part_emitter_stream);
+	static vars_device = new CatspeakVMInterface()
+			.addConstant("GM_build_date", GM_build_date)
+			.addConstant("GM_version", GM_version)
+			.addConstant("GM_runtime_version", GM_runtime_version)
+			.addConstant("os_windows", os_windows)
+			.addConstant("os_macosx", os_macosx)
+			.addConstant("os_ios", os_ios)
+			.addConstant("os_android", os_android)
+			.addConstant("os_linux", os_linux)
+			.addConstant("os_unknown", os_unknown)
+			.addConstant("os_winphone", os_winphone)
+			.addConstant("os_win8native", os_win8native)
+			.addConstant("os_psvita", os_psvita)
+			.addConstant("os_ps4", os_ps4)
+			.addConstant("os_xboxone", os_xboxone)
+			.addConstant("os_ps3", os_ps3)
+			.addConstant("os_uwp", os_uwp)
+			.addConstant("os_tvos", os_tvos)
+			.addConstant("os_switch", os_switch)
+			.addConstant("browser_not_a_browser", browser_not_a_browser)
+			.addConstant("browser_unknown", browser_unknown)
+			.addConstant("browser_ie", browser_ie)
+			.addConstant("browser_firefox", browser_firefox)
+			.addConstant("browser_chrome", browser_chrome)
+			.addConstant("browser_safari", browser_safari)
+			.addConstant("browser_safari_mobile", browser_safari_mobile)
+			.addConstant("browser_opera", browser_opera)
+			.addConstant("browser_tizen", browser_tizen)
+			.addConstant("browser_edge", browser_edge)
+			.addConstant("browser_windows_store", browser_windows_store)
+			.addConstant("browser_ie_mobile", browser_ie_mobile)
+			.addConstant("device_ios_unknown", device_ios_unknown)
+			.addConstant("device_ios_iphone", device_ios_iphone)
+			.addConstant("device_ios_iphone_retina", device_ios_iphone_retina)
+			.addConstant("device_ios_ipad", device_ios_ipad)
+			.addConstant("device_ios_ipad_retina", device_ios_ipad_retina)
+			.addConstant("device_ios_iphone5", device_ios_iphone5)
+			.addConstant("device_ios_iphone6", device_ios_iphone6)
+			.addConstant("device_ios_iphone6plus", device_ios_iphone6plus)
+			.addConstant("device_emulator", device_emulator)
+			.addConstant("device_tablet", device_tablet)
+			.addConstant("os_permission_denied_dont_request", os_permission_denied_dont_request)
+			.addConstant("os_permission_denied", os_permission_denied)
+			.addConstant("os_permission_granted", os_permission_granted)
+			.addFunction("browser_input_capture", browser_input_capture)
+			.addFunction("os_get_config", os_get_config)
+			.addFunction("os_get_info", os_get_info)
+			.addFunction("os_get_language", os_get_language)
+			.addFunction("os_get_region", os_get_region)
+			.addFunction("os_check_permission", os_check_permission)
+			.addFunction("os_request_permission", os_request_permission)
+			.addFunction("os_lock_orientation", os_lock_orientation)
+			.addFunction("device_mouse_dbclick_enable", device_mouse_dbclick_enable)
+			.addFunction("device_get_tilt_x", device_get_tilt_x)
+			.addFunction("device_get_tilt_y", device_get_tilt_y)
+			.addFunction("device_get_tilt_z", device_get_tilt_z)
+			.addFunction("device_is_keypad_open", device_is_keypad_open)
+			.addFunction("device_mouse_check_button", device_mouse_check_button)
+			.addFunction("device_mouse_check_button_pressed", device_mouse_check_button_pressed)
+			.addFunction("device_mouse_check_button_released", device_mouse_check_button_released)
+			.addFunction("device_mouse_x", device_mouse_x)
+			.addFunction("device_mouse_y", device_mouse_y)
+			.addFunction("device_mouse_raw_x", device_mouse_raw_x)
+			.addFunction("device_mouse_raw_y", device_mouse_raw_y)
+			.addFunction("device_mouse_x_to_gui", device_mouse_x_to_gui)
+			.addFunction("device_mouse_y_to_gui", device_mouse_y_to_gui)
+			.addFunction("os_is_paused", os_is_paused)
+			.addFunction("code_is_compiled", code_is_compiled)
+			.addFunction("os_is_network_connected", os_is_network_connected)
+			.addFunction("os_powersave_enable", os_powersave_enable);
+	static vars_default = new CatspeakVMInterface();
 	switch (_class) {
-	case "instances": return vars_instances;
-	case "pointers": return vars_pointers;
-	case "unsafe": return vars_unsafe;
-	case "introspection": return vars_introspection;
-	case "maths": return vars_maths;
-	case "animation": return vars_animation;
-	case "data_structures": return vars_data_structures;
-	case "random": return vars_random;
-	case "strings": return vars_strings;
-	case "scripts": return vars_scripts;
-	case "input": return vars_input;
-	case "audio": return vars_audio;
-	case "drawing": return vars_drawing;
-	case "layers": return vars_layers;
-	case "display": return vars_display;
-	case "debug": return vars_debug;
-	case "files": return vars_files;
-	case "particles": return vars_particles;
-	case "device": return vars_device;
-	default: return vars_default;
-	}
-}
-
-/// @desc Returns the functions of the gml standard library as a struct.
-/// @param {string} class The class of constants to include.
-function catspeak_ext_gml_functions(_class) {
-	static vars_instances = (function() {
-		var _ = { };
-		_[$ "point_distance_3d"] = point_distance_3d;
-		_[$ "point_distance"] = point_distance;
-		_[$ "point_direction"] = point_direction;
-		_[$ "motion_set"] = motion_set;
-		_[$ "motion_add"] = motion_add;
-		_[$ "place_free"] = place_free;
-		_[$ "place_empty"] = place_empty;
-		_[$ "place_meeting"] = place_meeting;
-		_[$ "place_snapped"] = place_snapped;
-		_[$ "move_random"] = move_random;
-		_[$ "move_snap"] = move_snap;
-		_[$ "move_towards_point"] = move_towards_point;
-		_[$ "move_contact_solid"] = move_contact_solid;
-		_[$ "move_contact_all"] = move_contact_all;
-		_[$ "move_outside_solid"] = move_outside_solid;
-		_[$ "move_outside_all"] = move_outside_all;
-		_[$ "move_bounce_solid"] = move_bounce_solid;
-		_[$ "move_bounce_all"] = move_bounce_all;
-		_[$ "move_wrap"] = move_wrap;
-		_[$ "distance_to_point"] = distance_to_point;
-		_[$ "distance_to_object"] = distance_to_object;
-		_[$ "position_empty"] = position_empty;
-		_[$ "position_meeting"] = position_meeting;
-		_[$ "collision_point"] = collision_point;
-		_[$ "collision_rectangle"] = collision_rectangle;
-		_[$ "collision_circle"] = collision_circle;
-		_[$ "collision_ellipse"] = collision_ellipse;
-		_[$ "collision_line"] = collision_line;
-		_[$ "collision_point_list"] = collision_point_list;
-		_[$ "collision_rectangle_list"] = collision_rectangle_list;
-		_[$ "collision_circle_list"] = collision_circle_list;
-		_[$ "collision_ellipse_list"] = collision_ellipse_list;
-		_[$ "collision_line_list"] = collision_line_list;
-		_[$ "instance_position_list"] = instance_position_list;
-		_[$ "instance_place_list"] = instance_place_list;
-		_[$ "point_in_rectangle"] = point_in_rectangle;
-		_[$ "point_in_triangle"] = point_in_triangle;
-		_[$ "point_in_circle"] = point_in_circle;
-		_[$ "rectangle_in_rectangle"] = rectangle_in_rectangle;
-		_[$ "rectangle_in_triangle"] = rectangle_in_triangle;
-		_[$ "rectangle_in_circle"] = rectangle_in_circle;
-		_[$ "instance_find"] = instance_find;
-		_[$ "instance_exists"] = instance_exists;
-		_[$ "instance_number"] = instance_number;
-		_[$ "instance_position"] = instance_position;
-		_[$ "instance_nearest"] = instance_nearest;
-		_[$ "instance_furthest"] = instance_furthest;
-		_[$ "instance_place"] = instance_place;
-		_[$ "instance_create_depth"] = instance_create_depth;
-		_[$ "instance_create_layer"] = instance_create_layer;
-		_[$ "instance_copy"] = instance_copy;
-		_[$ "instance_change"] = instance_change;
-		_[$ "instance_destroy"] = instance_destroy;
-		_[$ "position_destroy"] = position_destroy;
-		_[$ "position_change"] = position_change;
-		_[$ "instance_id_get"] = instance_id_get;
-		_[$ "instance_deactivate_all"] = instance_deactivate_all;
-		_[$ "instance_deactivate_object"] = instance_deactivate_object;
-		_[$ "instance_deactivate_region"] = instance_deactivate_region;
-		_[$ "instance_activate_all"] = instance_activate_all;
-		_[$ "instance_activate_object"] = instance_activate_object;
-		_[$ "instance_activate_region"] = instance_activate_region;
-		_[$ "object_exists"] = object_exists;
-		_[$ "object_get_name"] = object_get_name;
-		_[$ "object_get_sprite"] = object_get_sprite;
-		_[$ "object_get_solid"] = object_get_solid;
-		_[$ "object_get_visible"] = object_get_visible;
-		_[$ "object_get_persistent"] = object_get_persistent;
-		_[$ "object_get_mask"] = object_get_mask;
-		_[$ "object_get_parent"] = object_get_parent;
-		_[$ "object_get_physics"] = object_get_physics;
-		_[$ "object_is_ancestor"] = object_is_ancestor;
-		_[$ "object_set_sprite"] = object_set_sprite;
-		_[$ "object_set_solid"] = object_set_solid;
-		_[$ "object_set_visible"] = object_set_visible;
-		_[$ "object_set_persistent"] = object_set_persistent;
-		_[$ "object_set_mask"] = object_set_mask;
-		_[$ "physics_world_create"] = physics_world_create;
-		_[$ "physics_world_gravity"] = physics_world_gravity;
-		_[$ "physics_world_update_speed"] = physics_world_update_speed;
-		_[$ "physics_world_update_iterations"] = physics_world_update_iterations;
-		_[$ "physics_world_draw_debug"] = physics_world_draw_debug;
-		_[$ "physics_pause_enable"] = physics_pause_enable;
-		_[$ "physics_fixture_create"] = physics_fixture_create;
-		_[$ "physics_fixture_set_kinematic"] = physics_fixture_set_kinematic;
-		_[$ "physics_fixture_set_density"] = physics_fixture_set_density;
-		_[$ "physics_fixture_set_awake"] = physics_fixture_set_awake;
-		_[$ "physics_fixture_set_restitution"] = physics_fixture_set_restitution;
-		_[$ "physics_fixture_set_friction"] = physics_fixture_set_friction;
-		_[$ "physics_fixture_set_collision_group"] = physics_fixture_set_collision_group;
-		_[$ "physics_fixture_set_sensor"] = physics_fixture_set_sensor;
-		_[$ "physics_fixture_set_linear_damping"] = physics_fixture_set_linear_damping;
-		_[$ "physics_fixture_set_angular_damping"] = physics_fixture_set_angular_damping;
-		_[$ "physics_fixture_set_circle_shape"] = physics_fixture_set_circle_shape;
-		_[$ "physics_fixture_set_box_shape"] = physics_fixture_set_box_shape;
-		_[$ "physics_fixture_set_edge_shape"] = physics_fixture_set_edge_shape;
-		_[$ "physics_fixture_set_polygon_shape"] = physics_fixture_set_polygon_shape;
-		_[$ "physics_fixture_set_chain_shape"] = physics_fixture_set_chain_shape;
-		_[$ "physics_fixture_add_point"] = physics_fixture_add_point;
-		_[$ "physics_fixture_bind"] = physics_fixture_bind;
-		_[$ "physics_fixture_bind_ext"] = physics_fixture_bind_ext;
-		_[$ "physics_fixture_delete"] = physics_fixture_delete;
-		_[$ "physics_apply_force"] = physics_apply_force;
-		_[$ "physics_apply_impulse"] = physics_apply_impulse;
-		_[$ "physics_apply_angular_impulse"] = physics_apply_angular_impulse;
-		_[$ "physics_apply_local_force"] = physics_apply_local_force;
-		_[$ "physics_apply_local_impulse"] = physics_apply_local_impulse;
-		_[$ "physics_apply_torque"] = physics_apply_torque;
-		_[$ "physics_mass_properties"] = physics_mass_properties;
-		_[$ "physics_draw_debug"] = physics_draw_debug;
-		_[$ "physics_test_overlap"] = physics_test_overlap;
-		_[$ "physics_remove_fixture"] = physics_remove_fixture;
-		_[$ "physics_set_friction"] = physics_set_friction;
-		_[$ "physics_set_density"] = physics_set_density;
-		_[$ "physics_set_restitution"] = physics_set_restitution;
-		_[$ "physics_get_friction"] = physics_get_friction;
-		_[$ "physics_get_density"] = physics_get_density;
-		_[$ "physics_get_restitution"] = physics_get_restitution;
-		_[$ "physics_joint_distance_create"] = physics_joint_distance_create;
-		_[$ "physics_joint_rope_create"] = physics_joint_rope_create;
-		_[$ "physics_joint_revolute_create"] = physics_joint_revolute_create;
-		_[$ "physics_joint_prismatic_create"] = physics_joint_prismatic_create;
-		_[$ "physics_joint_pulley_create"] = physics_joint_pulley_create;
-		_[$ "physics_joint_wheel_create"] = physics_joint_wheel_create;
-		_[$ "physics_joint_weld_create"] = physics_joint_weld_create;
-		_[$ "physics_joint_friction_create"] = physics_joint_friction_create;
-		_[$ "physics_joint_gear_create"] = physics_joint_gear_create;
-		_[$ "physics_joint_enable_motor"] = physics_joint_enable_motor;
-		_[$ "physics_joint_get_value"] = physics_joint_get_value;
-		_[$ "physics_joint_set_value"] = physics_joint_set_value;
-		_[$ "physics_joint_delete"] = physics_joint_delete;
-		_[$ "physics_particle_create"] = physics_particle_create;
-		_[$ "physics_particle_delete"] = physics_particle_delete;
-		_[$ "physics_particle_delete_region_circle"] = physics_particle_delete_region_circle;
-		_[$ "physics_particle_delete_region_box"] = physics_particle_delete_region_box;
-		_[$ "physics_particle_delete_region_poly"] = physics_particle_delete_region_poly;
-		_[$ "physics_particle_set_flags"] = physics_particle_set_flags;
-		_[$ "physics_particle_set_category_flags"] = physics_particle_set_category_flags;
-		_[$ "physics_particle_draw"] = physics_particle_draw;
-		_[$ "physics_particle_draw_ext"] = physics_particle_draw_ext;
-		_[$ "physics_particle_count"] = physics_particle_count;
-		_[$ "physics_particle_get_data"] = physics_particle_get_data;
-		_[$ "physics_particle_get_data_particle"] = physics_particle_get_data_particle;
-		_[$ "physics_particle_group_begin"] = physics_particle_group_begin;
-		_[$ "physics_particle_group_circle"] = physics_particle_group_circle;
-		_[$ "physics_particle_group_box"] = physics_particle_group_box;
-		_[$ "physics_particle_group_polygon"] = physics_particle_group_polygon;
-		_[$ "physics_particle_group_add_point"] = physics_particle_group_add_point;
-		_[$ "physics_particle_group_end"] = physics_particle_group_end;
-		_[$ "physics_particle_group_join"] = physics_particle_group_join;
-		_[$ "physics_particle_group_delete"] = physics_particle_group_delete;
-		_[$ "physics_particle_group_count"] = physics_particle_group_count;
-		_[$ "physics_particle_group_get_data"] = physics_particle_group_get_data;
-		_[$ "physics_particle_group_get_mass"] = physics_particle_group_get_mass;
-		_[$ "physics_particle_group_get_inertia"] = physics_particle_group_get_inertia;
-		_[$ "physics_particle_group_get_centre_x"] = physics_particle_group_get_centre_x;
-		_[$ "physics_particle_group_get_centre_y"] = physics_particle_group_get_centre_y;
-		_[$ "physics_particle_group_get_vel_x"] = physics_particle_group_get_vel_x;
-		_[$ "physics_particle_group_get_vel_y"] = physics_particle_group_get_vel_y;
-		_[$ "physics_particle_group_get_ang_vel"] = physics_particle_group_get_ang_vel;
-		_[$ "physics_particle_group_get_x"] = physics_particle_group_get_x;
-		_[$ "physics_particle_group_get_y"] = physics_particle_group_get_y;
-		_[$ "physics_particle_group_get_angle"] = physics_particle_group_get_angle;
-		_[$ "physics_particle_set_group_flags"] = physics_particle_set_group_flags;
-		_[$ "physics_particle_get_group_flags"] = physics_particle_get_group_flags;
-		_[$ "physics_particle_get_max_count"] = physics_particle_get_max_count;
-		_[$ "physics_particle_get_radius"] = physics_particle_get_radius;
-		_[$ "physics_particle_get_density"] = physics_particle_get_density;
-		_[$ "physics_particle_get_damping"] = physics_particle_get_damping;
-		_[$ "physics_particle_get_gravity_scale"] = physics_particle_get_gravity_scale;
-		_[$ "physics_particle_set_max_count"] = physics_particle_set_max_count;
-		_[$ "physics_particle_set_radius"] = physics_particle_set_radius;
-		_[$ "physics_particle_set_density"] = physics_particle_set_density;
-		_[$ "physics_particle_set_damping"] = physics_particle_set_damping;
-		_[$ "physics_particle_set_gravity_scale"] = physics_particle_set_gravity_scale;
-		_[$ "instance_activate_layer"] = instance_activate_layer;
-		_[$ "instance_deactivate_layer"] = instance_deactivate_layer;
-		return _;
-	})();
-	static vars_pointers = (function() {
-		var _ = { };
-		_[$ "weak_ref_create"] = weak_ref_create;
-		_[$ "weak_ref_alive"] = weak_ref_alive;
-		_[$ "weak_ref_any_alive"] = weak_ref_any_alive;
-		_[$ "ptr"] = ptr;
-		return _;
-	})();
-	static vars_unsafe = (function() {
-		var _ = { };
-		_[$ "exception_unhandled_handler"] = exception_unhandled_handler;
-		_[$ "variable_global_exists"] = variable_global_exists;
-		_[$ "variable_global_get"] = variable_global_get;
-		_[$ "variable_global_set"] = variable_global_set;
-		_[$ "variable_instance_exists"] = variable_instance_exists;
-		_[$ "variable_instance_get"] = variable_instance_get;
-		_[$ "variable_instance_set"] = variable_instance_set;
-		_[$ "variable_instance_get_names"] = variable_instance_get_names;
-		_[$ "variable_instance_names_count"] = variable_instance_names_count;
-		_[$ "variable_struct_exists"] = variable_struct_exists;
-		_[$ "variable_struct_get"] = variable_struct_get;
-		_[$ "variable_struct_set"] = variable_struct_set;
-		_[$ "variable_struct_get_names"] = variable_struct_get_names;
-		_[$ "variable_struct_names_count"] = variable_struct_names_count;
-		_[$ "variable_struct_remove"] = variable_struct_remove;
-		_[$ "game_set_speed"] = game_set_speed;
-		_[$ "game_get_speed"] = game_get_speed;
-		_[$ "room_goto"] = room_goto;
-		_[$ "room_goto_previous"] = room_goto_previous;
-		_[$ "room_goto_next"] = room_goto_next;
-		_[$ "room_previous"] = room_previous;
-		_[$ "room_next"] = room_next;
-		_[$ "room_restart"] = room_restart;
-		_[$ "game_end"] = game_end;
-		_[$ "game_restart"] = game_restart;
-		_[$ "game_load"] = game_load;
-		_[$ "game_save"] = game_save;
-		_[$ "game_save_buffer"] = game_save_buffer;
-		_[$ "game_load_buffer"] = game_load_buffer;
-		_[$ "event_perform"] = event_perform;
-		_[$ "event_user"] = event_user;
-		_[$ "event_perform_object"] = event_perform_object;
-		_[$ "event_inherited"] = event_inherited;
-		_[$ "get_integer"] = get_integer;
-		_[$ "get_string"] = get_string;
-		_[$ "get_integer_async"] = get_integer_async;
-		_[$ "get_string_async"] = get_string_async;
-		_[$ "get_login_async"] = get_login_async;
-		_[$ "get_open_filename"] = get_open_filename;
-		_[$ "get_save_filename"] = get_save_filename;
-		_[$ "get_open_filename_ext"] = get_open_filename_ext;
-		_[$ "get_save_filename_ext"] = get_save_filename_ext;
-		_[$ "highscore_clear"] = highscore_clear;
-		_[$ "highscore_add"] = highscore_add;
-		_[$ "highscore_value"] = highscore_value;
-		_[$ "highscore_name"] = highscore_name;
-		_[$ "room_exists"] = room_exists;
-		_[$ "room_get_name"] = room_get_name;
-		_[$ "room_set_width"] = room_set_width;
-		_[$ "room_set_height"] = room_set_height;
-		_[$ "room_set_persistent"] = room_set_persistent;
-		_[$ "room_set_viewport"] = room_set_viewport;
-		_[$ "room_get_viewport"] = room_get_viewport;
-		_[$ "room_set_view_enabled"] = room_set_view_enabled;
-		_[$ "room_add"] = room_add;
-		_[$ "room_duplicate"] = room_duplicate;
-		_[$ "room_assign"] = room_assign;
-		_[$ "room_instance_add"] = room_instance_add;
-		_[$ "room_instance_clear"] = room_instance_clear;
-		_[$ "room_get_camera"] = room_get_camera;
-		_[$ "room_set_camera"] = room_set_camera;
-		_[$ "external_call"] = external_call;
-		_[$ "external_define"] = external_define;
-		_[$ "external_free"] = external_free;
-		_[$ "shop_leave_rating"] = shop_leave_rating;
-		_[$ "get_timer"] = get_timer;
-		_[$ "achievement_login"] = achievement_login;
-		_[$ "achievement_logout"] = achievement_logout;
-		_[$ "achievement_post"] = achievement_post;
-		_[$ "achievement_increment"] = achievement_increment;
-		_[$ "achievement_post_score"] = achievement_post_score;
-		_[$ "achievement_available"] = achievement_available;
-		_[$ "achievement_show_achievements"] = achievement_show_achievements;
-		_[$ "achievement_show_leaderboards"] = achievement_show_leaderboards;
-		_[$ "achievement_load_friends"] = achievement_load_friends;
-		_[$ "achievement_load_leaderboard"] = achievement_load_leaderboard;
-		_[$ "achievement_send_challenge"] = achievement_send_challenge;
-		_[$ "achievement_load_progress"] = achievement_load_progress;
-		_[$ "achievement_reset"] = achievement_reset;
-		_[$ "achievement_login_status"] = achievement_login_status;
-		_[$ "achievement_get_pic"] = achievement_get_pic;
-		_[$ "achievement_show_challenge_notifications"] = achievement_show_challenge_notifications;
-		_[$ "achievement_get_challenges"] = achievement_get_challenges;
-		_[$ "achievement_event"] = achievement_event;
-		_[$ "achievement_show"] = achievement_show;
-		_[$ "achievement_get_info"] = achievement_get_info;
-		_[$ "iap_activate"] = iap_activate;
-		_[$ "iap_status"] = iap_status;
-		_[$ "iap_enumerate_products"] = iap_enumerate_products;
-		_[$ "iap_restore_all"] = iap_restore_all;
-		_[$ "iap_acquire"] = iap_acquire;
-		_[$ "iap_consume"] = iap_consume;
-		_[$ "iap_product_details"] = iap_product_details;
-		_[$ "iap_purchase_details"] = iap_purchase_details;
-		_[$ "uwp_livetile_tile_clear"] = uwp_livetile_tile_clear;
-		_[$ "uwp_livetile_badge_notification"] = uwp_livetile_badge_notification;
-		_[$ "uwp_livetile_badge_clear"] = uwp_livetile_badge_clear;
-		_[$ "uwp_livetile_queue_enable"] = uwp_livetile_queue_enable;
-		_[$ "uwp_secondarytile_pin"] = uwp_secondarytile_pin;
-		_[$ "uwp_secondarytile_badge_notification"] = uwp_secondarytile_badge_notification;
-		_[$ "uwp_secondarytile_delete"] = uwp_secondarytile_delete;
-		_[$ "uwp_secondarytile_badge_clear"] = uwp_secondarytile_badge_clear;
-		_[$ "uwp_secondarytile_tile_clear"] = uwp_secondarytile_tile_clear;
-		_[$ "uwp_livetile_notification_begin"] = uwp_livetile_notification_begin;
-		_[$ "uwp_livetile_notification_secondary_begin"] = uwp_livetile_notification_secondary_begin;
-		_[$ "uwp_livetile_notification_expiry"] = uwp_livetile_notification_expiry;
-		_[$ "uwp_livetile_notification_tag"] = uwp_livetile_notification_tag;
-		_[$ "uwp_livetile_notification_text_add"] = uwp_livetile_notification_text_add;
-		_[$ "uwp_livetile_notification_image_add"] = uwp_livetile_notification_image_add;
-		_[$ "uwp_livetile_notification_end"] = uwp_livetile_notification_end;
-		_[$ "uwp_livetile_notification_template_add"] = uwp_livetile_notification_template_add;
-		_[$ "uwp_appbar_enable"] = uwp_appbar_enable;
-		_[$ "uwp_appbar_add_element"] = uwp_appbar_add_element;
-		_[$ "uwp_appbar_remove_element"] = uwp_appbar_remove_element;
-		_[$ "uwp_device_touchscreen_available"] = uwp_device_touchscreen_available;
-		_[$ "winphone_license_trial_version"] = winphone_license_trial_version;
-		_[$ "winphone_tile_title"] = winphone_tile_title;
-		_[$ "winphone_tile_count"] = winphone_tile_count;
-		_[$ "winphone_tile_back_title"] = winphone_tile_back_title;
-		_[$ "winphone_tile_back_content"] = winphone_tile_back_content;
-		_[$ "winphone_tile_back_content_wide"] = winphone_tile_back_content_wide;
-		_[$ "winphone_tile_front_image"] = winphone_tile_front_image;
-		_[$ "winphone_tile_front_image_small"] = winphone_tile_front_image_small;
-		_[$ "winphone_tile_front_image_wide"] = winphone_tile_front_image_wide;
-		_[$ "winphone_tile_back_image"] = winphone_tile_back_image;
-		_[$ "winphone_tile_back_image_wide"] = winphone_tile_back_image_wide;
-		_[$ "winphone_tile_background_colour"] = winphone_tile_background_colour;
-		_[$ "winphone_tile_background_color"] = winphone_tile_background_color;
-		_[$ "winphone_tile_icon_image"] = winphone_tile_icon_image;
-		_[$ "winphone_tile_small_icon_image"] = winphone_tile_small_icon_image;
-		_[$ "winphone_tile_wide_content"] = winphone_tile_wide_content;
-		_[$ "winphone_tile_cycle_images"] = winphone_tile_cycle_images;
-		_[$ "winphone_tile_small_background_image"] = winphone_tile_small_background_image;
-		_[$ "network_create_socket"] = network_create_socket;
-		_[$ "network_create_socket_ext"] = network_create_socket_ext;
-		_[$ "network_create_server"] = network_create_server;
-		_[$ "network_create_server_raw"] = network_create_server_raw;
-		_[$ "network_connect"] = network_connect;
-		_[$ "network_connect_raw"] = network_connect_raw;
-		_[$ "network_connect_async"] = network_connect_async;
-		_[$ "network_connect_raw_async"] = network_connect_raw_async;
-		_[$ "network_send_packet"] = network_send_packet;
-		_[$ "network_send_raw"] = network_send_raw;
-		_[$ "network_send_broadcast"] = network_send_broadcast;
-		_[$ "network_send_udp"] = network_send_udp;
-		_[$ "network_send_udp_raw"] = network_send_udp_raw;
-		_[$ "network_set_timeout"] = network_set_timeout;
-		_[$ "network_set_config"] = network_set_config;
-		_[$ "network_resolve"] = network_resolve;
-		_[$ "network_destroy"] = network_destroy;
-		_[$ "steam_activate_overlay"] = steam_activate_overlay;
-		_[$ "steam_is_overlay_enabled"] = steam_is_overlay_enabled;
-		_[$ "steam_is_overlay_activated"] = steam_is_overlay_activated;
-		_[$ "steam_get_persona_name"] = steam_get_persona_name;
-		_[$ "steam_initialised"] = steam_initialised;
-		_[$ "steam_is_cloud_enabled_for_app"] = steam_is_cloud_enabled_for_app;
-		_[$ "steam_is_cloud_enabled_for_account"] = steam_is_cloud_enabled_for_account;
-		_[$ "steam_file_persisted"] = steam_file_persisted;
-		_[$ "steam_get_quota_total"] = steam_get_quota_total;
-		_[$ "steam_get_quota_free"] = steam_get_quota_free;
-		_[$ "steam_file_write"] = steam_file_write;
-		_[$ "steam_file_write_file"] = steam_file_write_file;
-		_[$ "steam_file_read"] = steam_file_read;
-		_[$ "steam_file_delete"] = steam_file_delete;
-		_[$ "steam_file_exists"] = steam_file_exists;
-		_[$ "steam_file_size"] = steam_file_size;
-		_[$ "steam_file_share"] = steam_file_share;
-		_[$ "steam_is_screenshot_requested"] = steam_is_screenshot_requested;
-		_[$ "steam_send_screenshot"] = steam_send_screenshot;
-		_[$ "steam_is_user_logged_on"] = steam_is_user_logged_on;
-		_[$ "steam_get_user_steam_id"] = steam_get_user_steam_id;
-		_[$ "steam_user_owns_dlc"] = steam_user_owns_dlc;
-		_[$ "steam_user_installed_dlc"] = steam_user_installed_dlc;
-		_[$ "steam_set_achievement"] = steam_set_achievement;
-		_[$ "steam_get_achievement"] = steam_get_achievement;
-		_[$ "steam_clear_achievement"] = steam_clear_achievement;
-		_[$ "steam_set_stat_int"] = steam_set_stat_int;
-		_[$ "steam_set_stat_float"] = steam_set_stat_float;
-		_[$ "steam_set_stat_avg_rate"] = steam_set_stat_avg_rate;
-		_[$ "steam_get_stat_int"] = steam_get_stat_int;
-		_[$ "steam_get_stat_float"] = steam_get_stat_float;
-		_[$ "steam_get_stat_avg_rate"] = steam_get_stat_avg_rate;
-		_[$ "steam_reset_all_stats"] = steam_reset_all_stats;
-		_[$ "steam_reset_all_stats_achievements"] = steam_reset_all_stats_achievements;
-		_[$ "steam_stats_ready"] = steam_stats_ready;
-		_[$ "steam_create_leaderboard"] = steam_create_leaderboard;
-		_[$ "steam_upload_score"] = steam_upload_score;
-		_[$ "steam_upload_score_ext"] = steam_upload_score_ext;
-		_[$ "steam_download_scores_around_user"] = steam_download_scores_around_user;
-		_[$ "steam_download_scores"] = steam_download_scores;
-		_[$ "steam_download_friends_scores"] = steam_download_friends_scores;
-		_[$ "steam_upload_score_buffer"] = steam_upload_score_buffer;
-		_[$ "steam_upload_score_buffer_ext"] = steam_upload_score_buffer_ext;
-		_[$ "steam_current_game_language"] = steam_current_game_language;
-		_[$ "steam_available_languages"] = steam_available_languages;
-		_[$ "steam_activate_overlay_browser"] = steam_activate_overlay_browser;
-		_[$ "steam_activate_overlay_user"] = steam_activate_overlay_user;
-		_[$ "steam_activate_overlay_store"] = steam_activate_overlay_store;
-		_[$ "steam_get_user_persona_name"] = steam_get_user_persona_name;
-		_[$ "steam_get_app_id"] = steam_get_app_id;
-		_[$ "steam_get_user_account_id"] = steam_get_user_account_id;
-		_[$ "steam_ugc_download"] = steam_ugc_download;
-		_[$ "steam_ugc_create_item"] = steam_ugc_create_item;
-		_[$ "steam_ugc_start_item_update"] = steam_ugc_start_item_update;
-		_[$ "steam_ugc_set_item_title"] = steam_ugc_set_item_title;
-		_[$ "steam_ugc_set_item_description"] = steam_ugc_set_item_description;
-		_[$ "steam_ugc_set_item_visibility"] = steam_ugc_set_item_visibility;
-		_[$ "steam_ugc_set_item_tags"] = steam_ugc_set_item_tags;
-		_[$ "steam_ugc_set_item_content"] = steam_ugc_set_item_content;
-		_[$ "steam_ugc_set_item_preview"] = steam_ugc_set_item_preview;
-		_[$ "steam_ugc_submit_item_update"] = steam_ugc_submit_item_update;
-		_[$ "steam_ugc_get_item_update_progress"] = steam_ugc_get_item_update_progress;
-		_[$ "steam_ugc_subscribe_item"] = steam_ugc_subscribe_item;
-		_[$ "steam_ugc_unsubscribe_item"] = steam_ugc_unsubscribe_item;
-		_[$ "steam_ugc_num_subscribed_items"] = steam_ugc_num_subscribed_items;
-		_[$ "steam_ugc_get_subscribed_items"] = steam_ugc_get_subscribed_items;
-		_[$ "steam_ugc_get_item_install_info"] = steam_ugc_get_item_install_info;
-		_[$ "steam_ugc_get_item_update_info"] = steam_ugc_get_item_update_info;
-		_[$ "steam_ugc_request_item_details"] = steam_ugc_request_item_details;
-		_[$ "steam_ugc_create_query_user"] = steam_ugc_create_query_user;
-		_[$ "steam_ugc_create_query_user_ex"] = steam_ugc_create_query_user_ex;
-		_[$ "steam_ugc_create_query_all"] = steam_ugc_create_query_all;
-		_[$ "steam_ugc_create_query_all_ex"] = steam_ugc_create_query_all_ex;
-		_[$ "steam_ugc_query_set_cloud_filename_filter"] = steam_ugc_query_set_cloud_filename_filter;
-		_[$ "steam_ugc_query_set_match_any_tag"] = steam_ugc_query_set_match_any_tag;
-		_[$ "steam_ugc_query_set_search_text"] = steam_ugc_query_set_search_text;
-		_[$ "steam_ugc_query_set_ranked_by_trend_days"] = steam_ugc_query_set_ranked_by_trend_days;
-		_[$ "steam_ugc_query_add_required_tag"] = steam_ugc_query_add_required_tag;
-		_[$ "steam_ugc_query_add_excluded_tag"] = steam_ugc_query_add_excluded_tag;
-		_[$ "steam_ugc_query_set_return_long_description"] = steam_ugc_query_set_return_long_description;
-		_[$ "steam_ugc_query_set_return_total_only"] = steam_ugc_query_set_return_total_only;
-		_[$ "steam_ugc_query_set_allow_cached_response"] = steam_ugc_query_set_allow_cached_response;
-		_[$ "steam_ugc_send_query"] = steam_ugc_send_query;
-		_[$ "push_local_notification"] = push_local_notification;
-		_[$ "push_get_first_local_notification"] = push_get_first_local_notification;
-		_[$ "push_get_next_local_notification"] = push_get_next_local_notification;
-		_[$ "push_cancel_local_notification"] = push_cancel_local_notification;
-		_[$ "push_get_application_badge_number"] = push_get_application_badge_number;
-		_[$ "push_set_application_badge_number"] = push_set_application_badge_number;
-		_[$ "gc_collect"] = gc_collect;
-		_[$ "gc_enable"] = gc_enable;
-		_[$ "gc_is_enabled"] = gc_is_enabled;
-		_[$ "gc_get_stats"] = gc_get_stats;
-		_[$ "gc_target_frame_time"] = gc_target_frame_time;
-		_[$ "gc_get_target_frame_time"] = gc_get_target_frame_time;
-		return _;
-	})();
-	static vars_introspection = (function() {
-		var _ = { };
-		_[$ "is_real"] = is_real;
-		_[$ "is_numeric"] = is_numeric;
-		_[$ "is_string"] = is_string;
-		_[$ "is_array"] = is_array;
-		_[$ "is_undefined"] = is_undefined;
-		_[$ "is_int32"] = is_int32;
-		_[$ "is_int64"] = is_int64;
-		_[$ "is_ptr"] = is_ptr;
-		_[$ "is_vec3"] = is_vec3;
-		_[$ "is_vec4"] = is_vec4;
-		_[$ "is_bool"] = is_bool;
-		_[$ "is_nan"] = is_nan;
-		_[$ "is_infinity"] = is_infinity;
-		_[$ "is_struct"] = is_struct;
-		_[$ "is_method"] = is_method;
-		_[$ "typeof"] = typeof;
-		_[$ "instanceof"] = instanceof;
-		_[$ "asset_get_index"] = asset_get_index;
-		_[$ "asset_get_type"] = asset_get_type;
-		_[$ "tag_get_asset_ids"] = tag_get_asset_ids;
-		_[$ "tag_get_assets"] = tag_get_assets;
-		_[$ "asset_get_tags"] = asset_get_tags;
-		_[$ "asset_add_tags"] = asset_add_tags;
-		_[$ "asset_remove_tags"] = asset_remove_tags;
-		_[$ "asset_has_tags"] = asset_has_tags;
-		_[$ "asset_has_any_tag"] = asset_has_any_tag;
-		_[$ "asset_clear_tags"] = asset_clear_tags;
-		_[$ "extension_get_string"] = extension_get_string;
-		return _;
-	})();
-	static vars_maths = (function() {
-		var _ = { };
-		_[$ "abs"] = abs;
-		_[$ "round"] = round;
-		_[$ "floor"] = floor;
-		_[$ "ceil"] = ceil;
-		_[$ "sign"] = sign;
-		_[$ "frac"] = frac;
-		_[$ "sqrt"] = sqrt;
-		_[$ "sqr"] = sqr;
-		_[$ "exp"] = exp;
-		_[$ "ln"] = ln;
-		_[$ "log2"] = log2;
-		_[$ "log10"] = log10;
-		_[$ "sin"] = sin;
-		_[$ "cos"] = cos;
-		_[$ "tan"] = tan;
-		_[$ "arcsin"] = arcsin;
-		_[$ "arccos"] = arccos;
-		_[$ "arctan"] = arctan;
-		_[$ "arctan2"] = arctan2;
-		_[$ "dsin"] = dsin;
-		_[$ "dcos"] = dcos;
-		_[$ "dtan"] = dtan;
-		_[$ "darcsin"] = darcsin;
-		_[$ "darccos"] = darccos;
-		_[$ "darctan"] = darctan;
-		_[$ "darctan2"] = darctan2;
-		_[$ "degtorad"] = degtorad;
-		_[$ "power"] = power;
-		_[$ "logn"] = logn;
-		_[$ "min"] = min;
-		_[$ "max"] = max;
-		_[$ "mean"] = mean;
-		_[$ "median"] = median;
-		_[$ "clamp"] = clamp;
-		_[$ "lerp"] = lerp;
-		_[$ "dot_product"] = dot_product;
-		_[$ "dot_product_3d"] = dot_product_3d;
-		_[$ "dot_product_normalised"] = dot_product_normalised;
-		_[$ "dot_product_3d_normalised"] = dot_product_3d_normalised;
-		_[$ "dot_product_normalized"] = dot_product_normalized;
-		_[$ "dot_product_3d_normalized"] = dot_product_3d_normalized;
-		_[$ "math_set_epsilon"] = math_set_epsilon;
-		_[$ "math_get_epsilon"] = math_get_epsilon;
-		_[$ "point_distance_3d"] = point_distance_3d;
-		_[$ "point_distance"] = point_distance;
-		_[$ "point_direction"] = point_direction;
-		_[$ "lengthdir_x"] = lengthdir_x;
-		_[$ "lengthdir_y"] = lengthdir_y;
-		_[$ "real"] = real;
-		_[$ "bool"] = bool;
-		_[$ "int64"] = int64;
-		_[$ "point_in_rectangle"] = point_in_rectangle;
-		_[$ "point_in_triangle"] = point_in_triangle;
-		_[$ "point_in_circle"] = point_in_circle;
-		_[$ "matrix_get"] = matrix_get;
-		_[$ "matrix_set"] = matrix_set;
-		_[$ "matrix_build_identity"] = matrix_build_identity;
-		_[$ "matrix_build"] = matrix_build;
-		_[$ "matrix_build_lookat"] = matrix_build_lookat;
-		_[$ "matrix_build_projection_ortho"] = matrix_build_projection_ortho;
-		_[$ "matrix_build_projection_perspective"] = matrix_build_projection_perspective;
-		_[$ "matrix_build_projection_perspective_fov"] = matrix_build_projection_perspective_fov;
-		_[$ "matrix_multiply"] = matrix_multiply;
-		_[$ "matrix_transform_vertex"] = matrix_transform_vertex;
-		_[$ "matrix_stack_push"] = matrix_stack_push;
-		_[$ "matrix_stack_pop"] = matrix_stack_pop;
-		_[$ "matrix_stack_set"] = matrix_stack_set;
-		_[$ "matrix_stack_clear"] = matrix_stack_clear;
-		_[$ "matrix_stack_top"] = matrix_stack_top;
-		_[$ "matrix_stack_is_empty"] = matrix_stack_is_empty;
-		return _;
-	})();
-	static vars_animation = (function() {
-		var _ = { };
-		_[$ "path_start"] = path_start;
-		_[$ "path_end"] = path_end;
-		_[$ "mp_linear_step"] = mp_linear_step;
-		_[$ "mp_potential_step"] = mp_potential_step;
-		_[$ "mp_linear_step_object"] = mp_linear_step_object;
-		_[$ "mp_potential_step_object"] = mp_potential_step_object;
-		_[$ "mp_potential_settings"] = mp_potential_settings;
-		_[$ "mp_linear_path"] = mp_linear_path;
-		_[$ "mp_potential_path"] = mp_potential_path;
-		_[$ "mp_linear_path_object"] = mp_linear_path_object;
-		_[$ "mp_potential_path_object"] = mp_potential_path_object;
-		_[$ "mp_grid_create"] = mp_grid_create;
-		_[$ "mp_grid_destroy"] = mp_grid_destroy;
-		_[$ "mp_grid_clear_all"] = mp_grid_clear_all;
-		_[$ "mp_grid_clear_cell"] = mp_grid_clear_cell;
-		_[$ "mp_grid_clear_rectangle"] = mp_grid_clear_rectangle;
-		_[$ "mp_grid_add_cell"] = mp_grid_add_cell;
-		_[$ "mp_grid_get_cell"] = mp_grid_get_cell;
-		_[$ "mp_grid_add_rectangle"] = mp_grid_add_rectangle;
-		_[$ "mp_grid_add_instances"] = mp_grid_add_instances;
-		_[$ "mp_grid_path"] = mp_grid_path;
-		_[$ "mp_grid_draw"] = mp_grid_draw;
-		_[$ "mp_grid_to_ds_grid"] = mp_grid_to_ds_grid;
-		_[$ "path_exists"] = path_exists;
-		_[$ "path_get_name"] = path_get_name;
-		_[$ "path_get_length"] = path_get_length;
-		_[$ "path_get_kind"] = path_get_kind;
-		_[$ "path_get_closed"] = path_get_closed;
-		_[$ "path_get_precision"] = path_get_precision;
-		_[$ "path_get_number"] = path_get_number;
-		_[$ "path_get_point_x"] = path_get_point_x;
-		_[$ "path_get_point_y"] = path_get_point_y;
-		_[$ "path_get_point_speed"] = path_get_point_speed;
-		_[$ "path_get_x"] = path_get_x;
-		_[$ "path_get_y"] = path_get_y;
-		_[$ "path_get_speed"] = path_get_speed;
-		_[$ "timeline_add"] = timeline_add;
-		_[$ "timeline_delete"] = timeline_delete;
-		_[$ "timeline_clear"] = timeline_clear;
-		_[$ "timeline_exists"] = timeline_exists;
-		_[$ "timeline_get_name"] = timeline_get_name;
-		_[$ "timeline_moment_clear"] = timeline_moment_clear;
-		_[$ "timeline_moment_add_script"] = timeline_moment_add_script;
-		_[$ "timeline_size"] = timeline_size;
-		_[$ "timeline_max_moment"] = timeline_max_moment;
-		_[$ "path_set_kind"] = path_set_kind;
-		_[$ "path_set_closed"] = path_set_closed;
-		_[$ "path_set_precision"] = path_set_precision;
-		_[$ "path_add"] = path_add;
-		_[$ "path_assign"] = path_assign;
-		_[$ "path_duplicate"] = path_duplicate;
-		_[$ "path_append"] = path_append;
-		_[$ "path_delete"] = path_delete;
-		_[$ "path_add_point"] = path_add_point;
-		_[$ "path_insert_point"] = path_insert_point;
-		_[$ "path_change_point"] = path_change_point;
-		_[$ "path_delete_point"] = path_delete_point;
-		_[$ "path_clear_points"] = path_clear_points;
-		_[$ "path_reverse"] = path_reverse;
-		_[$ "path_mirror"] = path_mirror;
-		_[$ "path_flip"] = path_flip;
-		_[$ "path_rotate"] = path_rotate;
-		_[$ "path_rescale"] = path_rescale;
-		_[$ "path_shift"] = path_shift;
-		_[$ "skeleton_animation_set"] = skeleton_animation_set;
-		_[$ "skeleton_animation_get"] = skeleton_animation_get;
-		_[$ "skeleton_animation_mix"] = skeleton_animation_mix;
-		_[$ "skeleton_animation_set_ext"] = skeleton_animation_set_ext;
-		_[$ "skeleton_animation_get_ext"] = skeleton_animation_get_ext;
-		_[$ "skeleton_animation_get_duration"] = skeleton_animation_get_duration;
-		_[$ "skeleton_animation_get_frames"] = skeleton_animation_get_frames;
-		_[$ "skeleton_animation_clear"] = skeleton_animation_clear;
-		_[$ "skeleton_skin_set"] = skeleton_skin_set;
-		_[$ "skeleton_skin_get"] = skeleton_skin_get;
-		_[$ "skeleton_attachment_set"] = skeleton_attachment_set;
-		_[$ "skeleton_attachment_get"] = skeleton_attachment_get;
-		_[$ "skeleton_attachment_create"] = skeleton_attachment_create;
-		_[$ "skeleton_attachment_create_colour"] = skeleton_attachment_create_colour;
-		_[$ "skeleton_attachment_create_color"] = skeleton_attachment_create_color;
-		_[$ "skeleton_collision_draw_set"] = skeleton_collision_draw_set;
-		_[$ "skeleton_bone_data_get"] = skeleton_bone_data_get;
-		_[$ "skeleton_bone_data_set"] = skeleton_bone_data_set;
-		_[$ "skeleton_bone_state_get"] = skeleton_bone_state_get;
-		_[$ "skeleton_bone_state_set"] = skeleton_bone_state_set;
-		_[$ "skeleton_slot_colour_set"] = skeleton_slot_colour_set;
-		_[$ "skeleton_slot_color_set"] = skeleton_slot_color_set;
-		_[$ "skeleton_slot_colour_get"] = skeleton_slot_colour_get;
-		_[$ "skeleton_slot_color_get"] = skeleton_slot_color_get;
-		_[$ "skeleton_slot_alpha_get"] = skeleton_slot_alpha_get;
-		_[$ "skeleton_find_slot"] = skeleton_find_slot;
-		_[$ "skeleton_get_minmax"] = skeleton_get_minmax;
-		_[$ "skeleton_get_num_bounds"] = skeleton_get_num_bounds;
-		_[$ "skeleton_get_bounds"] = skeleton_get_bounds;
-		_[$ "skeleton_animation_get_frame"] = skeleton_animation_get_frame;
-		_[$ "skeleton_animation_set_frame"] = skeleton_animation_set_frame;
-		_[$ "skeleton_animation_list"] = skeleton_animation_list;
-		_[$ "skeleton_skin_list"] = skeleton_skin_list;
-		_[$ "skeleton_bone_list"] = skeleton_bone_list;
-		_[$ "skeleton_slot_list"] = skeleton_slot_list;
-		_[$ "skeleton_slot_data"] = skeleton_slot_data;
-		_[$ "skeleton_slot_data_instance"] = skeleton_slot_data_instance;
-		_[$ "sequence_exists"] = sequence_exists;
-		_[$ "animcurve_get"] = animcurve_get;
-		_[$ "animcurve_get_channel"] = animcurve_get_channel;
-		_[$ "animcurve_get_channel_index"] = animcurve_get_channel_index;
-		_[$ "animcurve_channel_evaluate"] = animcurve_channel_evaluate;
-		_[$ "sequence_create"] = sequence_create;
-		_[$ "sequence_destroy"] = sequence_destroy;
-		_[$ "sequence_exists"] = sequence_exists;
-		_[$ "sequence_get"] = sequence_get;
-		_[$ "sequence_keyframe_new"] = sequence_keyframe_new;
-		_[$ "sequence_keyframedata_new"] = sequence_keyframedata_new;
-		_[$ "sequence_track_new"] = sequence_track_new;
-		_[$ "sequence_get_objects"] = sequence_get_objects;
-		_[$ "sequence_instance_override_object"] = sequence_instance_override_object;
-		_[$ "animcurve_create"] = animcurve_create;
-		_[$ "animcurve_destroy"] = animcurve_destroy;
-		_[$ "animcurve_exists"] = animcurve_exists;
-		_[$ "animcurve_channel_new"] = animcurve_channel_new;
-		_[$ "animcurve_point_new"] = animcurve_point_new;
-		return _;
-	})();
-	static vars_data_structures = (function() {
-		var _ = { };
-		_[$ "array_length"] = array_length;
-		_[$ "array_equals"] = array_equals;
-		_[$ "array_create"] = array_create;
-		_[$ "array_copy"] = array_copy;
-		_[$ "array_resize"] = array_resize;
-		_[$ "array_get"] = array_get;
-		_[$ "array_set"] = array_set;
-		_[$ "array_push"] = array_push;
-		_[$ "array_pop"] = array_pop;
-		_[$ "array_insert"] = array_insert;
-		_[$ "array_delete"] = array_delete;
-		_[$ "array_sort"] = array_sort;
-		_[$ "path_start"] = path_start;
-		_[$ "path_end"] = path_end;
-		_[$ "mp_linear_step"] = mp_linear_step;
-		_[$ "mp_potential_step"] = mp_potential_step;
-		_[$ "mp_linear_step_object"] = mp_linear_step_object;
-		_[$ "mp_potential_step_object"] = mp_potential_step_object;
-		_[$ "mp_potential_settings"] = mp_potential_settings;
-		_[$ "mp_linear_path"] = mp_linear_path;
-		_[$ "mp_potential_path"] = mp_potential_path;
-		_[$ "mp_linear_path_object"] = mp_linear_path_object;
-		_[$ "mp_potential_path_object"] = mp_potential_path_object;
-		_[$ "mp_grid_create"] = mp_grid_create;
-		_[$ "mp_grid_destroy"] = mp_grid_destroy;
-		_[$ "mp_grid_clear_all"] = mp_grid_clear_all;
-		_[$ "mp_grid_clear_cell"] = mp_grid_clear_cell;
-		_[$ "mp_grid_clear_rectangle"] = mp_grid_clear_rectangle;
-		_[$ "mp_grid_add_cell"] = mp_grid_add_cell;
-		_[$ "mp_grid_get_cell"] = mp_grid_get_cell;
-		_[$ "mp_grid_add_rectangle"] = mp_grid_add_rectangle;
-		_[$ "mp_grid_add_instances"] = mp_grid_add_instances;
-		_[$ "mp_grid_path"] = mp_grid_path;
-		_[$ "mp_grid_draw"] = mp_grid_draw;
-		_[$ "mp_grid_to_ds_grid"] = mp_grid_to_ds_grid;
-		_[$ "highscore_clear"] = highscore_clear;
-		_[$ "highscore_add"] = highscore_add;
-		_[$ "highscore_value"] = highscore_value;
-		_[$ "highscore_name"] = highscore_name;
-		_[$ "path_exists"] = path_exists;
-		_[$ "path_get_name"] = path_get_name;
-		_[$ "path_get_length"] = path_get_length;
-		_[$ "path_get_kind"] = path_get_kind;
-		_[$ "path_get_closed"] = path_get_closed;
-		_[$ "path_get_precision"] = path_get_precision;
-		_[$ "path_get_number"] = path_get_number;
-		_[$ "path_get_point_x"] = path_get_point_x;
-		_[$ "path_get_point_y"] = path_get_point_y;
-		_[$ "path_get_point_speed"] = path_get_point_speed;
-		_[$ "path_get_x"] = path_get_x;
-		_[$ "path_get_y"] = path_get_y;
-		_[$ "path_get_speed"] = path_get_speed;
-		_[$ "path_set_kind"] = path_set_kind;
-		_[$ "path_set_closed"] = path_set_closed;
-		_[$ "path_set_precision"] = path_set_precision;
-		_[$ "path_add"] = path_add;
-		_[$ "path_assign"] = path_assign;
-		_[$ "path_duplicate"] = path_duplicate;
-		_[$ "path_append"] = path_append;
-		_[$ "path_delete"] = path_delete;
-		_[$ "path_add_point"] = path_add_point;
-		_[$ "path_insert_point"] = path_insert_point;
-		_[$ "path_change_point"] = path_change_point;
-		_[$ "path_delete_point"] = path_delete_point;
-		_[$ "path_clear_points"] = path_clear_points;
-		_[$ "path_reverse"] = path_reverse;
-		_[$ "path_mirror"] = path_mirror;
-		_[$ "path_flip"] = path_flip;
-		_[$ "path_rotate"] = path_rotate;
-		_[$ "path_rescale"] = path_rescale;
-		_[$ "path_shift"] = path_shift;
-		_[$ "ds_set_precision"] = ds_set_precision;
-		_[$ "ds_exists"] = ds_exists;
-		_[$ "ds_stack_create"] = ds_stack_create;
-		_[$ "ds_stack_destroy"] = ds_stack_destroy;
-		_[$ "ds_stack_clear"] = ds_stack_clear;
-		_[$ "ds_stack_copy"] = ds_stack_copy;
-		_[$ "ds_stack_size"] = ds_stack_size;
-		_[$ "ds_stack_empty"] = ds_stack_empty;
-		_[$ "ds_stack_push"] = ds_stack_push;
-		_[$ "ds_stack_pop"] = ds_stack_pop;
-		_[$ "ds_stack_top"] = ds_stack_top;
-		_[$ "ds_stack_write"] = ds_stack_write;
-		_[$ "ds_stack_read"] = ds_stack_read;
-		_[$ "ds_queue_create"] = ds_queue_create;
-		_[$ "ds_queue_destroy"] = ds_queue_destroy;
-		_[$ "ds_queue_clear"] = ds_queue_clear;
-		_[$ "ds_queue_copy"] = ds_queue_copy;
-		_[$ "ds_queue_size"] = ds_queue_size;
-		_[$ "ds_queue_empty"] = ds_queue_empty;
-		_[$ "ds_queue_enqueue"] = ds_queue_enqueue;
-		_[$ "ds_queue_dequeue"] = ds_queue_dequeue;
-		_[$ "ds_queue_head"] = ds_queue_head;
-		_[$ "ds_queue_tail"] = ds_queue_tail;
-		_[$ "ds_queue_write"] = ds_queue_write;
-		_[$ "ds_queue_read"] = ds_queue_read;
-		_[$ "ds_list_create"] = ds_list_create;
-		_[$ "ds_list_destroy"] = ds_list_destroy;
-		_[$ "ds_list_clear"] = ds_list_clear;
-		_[$ "ds_list_copy"] = ds_list_copy;
-		_[$ "ds_list_size"] = ds_list_size;
-		_[$ "ds_list_empty"] = ds_list_empty;
-		_[$ "ds_list_add"] = ds_list_add;
-		_[$ "ds_list_insert"] = ds_list_insert;
-		_[$ "ds_list_replace"] = ds_list_replace;
-		_[$ "ds_list_delete"] = ds_list_delete;
-		_[$ "ds_list_find_index"] = ds_list_find_index;
-		_[$ "ds_list_find_value"] = ds_list_find_value;
-		_[$ "ds_list_is_map"] = ds_list_is_map;
-		_[$ "ds_list_is_list"] = ds_list_is_list;
-		_[$ "ds_list_mark_as_list"] = ds_list_mark_as_list;
-		_[$ "ds_list_mark_as_map"] = ds_list_mark_as_map;
-		_[$ "ds_list_sort"] = ds_list_sort;
-		_[$ "ds_list_shuffle"] = ds_list_shuffle;
-		_[$ "ds_list_write"] = ds_list_write;
-		_[$ "ds_list_read"] = ds_list_read;
-		_[$ "ds_list_set"] = ds_list_set;
-		_[$ "ds_map_create"] = ds_map_create;
-		_[$ "ds_map_destroy"] = ds_map_destroy;
-		_[$ "ds_map_clear"] = ds_map_clear;
-		_[$ "ds_map_copy"] = ds_map_copy;
-		_[$ "ds_map_size"] = ds_map_size;
-		_[$ "ds_map_empty"] = ds_map_empty;
-		_[$ "ds_map_add"] = ds_map_add;
-		_[$ "ds_map_add_list"] = ds_map_add_list;
-		_[$ "ds_map_add_map"] = ds_map_add_map;
-		_[$ "ds_map_replace"] = ds_map_replace;
-		_[$ "ds_map_replace_map"] = ds_map_replace_map;
-		_[$ "ds_map_replace_list"] = ds_map_replace_list;
-		_[$ "ds_map_delete"] = ds_map_delete;
-		_[$ "ds_map_exists"] = ds_map_exists;
-		_[$ "ds_map_values_to_array"] = ds_map_values_to_array;
-		_[$ "ds_map_keys_to_array"] = ds_map_keys_to_array;
-		_[$ "ds_map_find_value"] = ds_map_find_value;
-		_[$ "ds_map_is_map"] = ds_map_is_map;
-		_[$ "ds_map_is_list"] = ds_map_is_list;
-		_[$ "ds_map_find_previous"] = ds_map_find_previous;
-		_[$ "ds_map_find_next"] = ds_map_find_next;
-		_[$ "ds_map_find_first"] = ds_map_find_first;
-		_[$ "ds_map_find_last"] = ds_map_find_last;
-		_[$ "ds_map_write"] = ds_map_write;
-		_[$ "ds_map_read"] = ds_map_read;
-		_[$ "ds_map_secure_save"] = ds_map_secure_save;
-		_[$ "ds_map_secure_load"] = ds_map_secure_load;
-		_[$ "ds_map_secure_load_buffer"] = ds_map_secure_load_buffer;
-		_[$ "ds_map_secure_save_buffer"] = ds_map_secure_save_buffer;
-		_[$ "ds_map_set"] = ds_map_set;
-		_[$ "ds_priority_create"] = ds_priority_create;
-		_[$ "ds_priority_destroy"] = ds_priority_destroy;
-		_[$ "ds_priority_clear"] = ds_priority_clear;
-		_[$ "ds_priority_copy"] = ds_priority_copy;
-		_[$ "ds_priority_size"] = ds_priority_size;
-		_[$ "ds_priority_empty"] = ds_priority_empty;
-		_[$ "ds_priority_add"] = ds_priority_add;
-		_[$ "ds_priority_change_priority"] = ds_priority_change_priority;
-		_[$ "ds_priority_find_priority"] = ds_priority_find_priority;
-		_[$ "ds_priority_delete_value"] = ds_priority_delete_value;
-		_[$ "ds_priority_delete_min"] = ds_priority_delete_min;
-		_[$ "ds_priority_find_min"] = ds_priority_find_min;
-		_[$ "ds_priority_delete_max"] = ds_priority_delete_max;
-		_[$ "ds_priority_find_max"] = ds_priority_find_max;
-		_[$ "ds_priority_write"] = ds_priority_write;
-		_[$ "ds_priority_read"] = ds_priority_read;
-		_[$ "ds_grid_create"] = ds_grid_create;
-		_[$ "ds_grid_destroy"] = ds_grid_destroy;
-		_[$ "ds_grid_copy"] = ds_grid_copy;
-		_[$ "ds_grid_resize"] = ds_grid_resize;
-		_[$ "ds_grid_width"] = ds_grid_width;
-		_[$ "ds_grid_height"] = ds_grid_height;
-		_[$ "ds_grid_clear"] = ds_grid_clear;
-		_[$ "ds_grid_set"] = ds_grid_set;
-		_[$ "ds_grid_add"] = ds_grid_add;
-		_[$ "ds_grid_multiply"] = ds_grid_multiply;
-		_[$ "ds_grid_set_region"] = ds_grid_set_region;
-		_[$ "ds_grid_add_region"] = ds_grid_add_region;
-		_[$ "ds_grid_multiply_region"] = ds_grid_multiply_region;
-		_[$ "ds_grid_set_disk"] = ds_grid_set_disk;
-		_[$ "ds_grid_add_disk"] = ds_grid_add_disk;
-		_[$ "ds_grid_multiply_disk"] = ds_grid_multiply_disk;
-		_[$ "ds_grid_set_grid_region"] = ds_grid_set_grid_region;
-		_[$ "ds_grid_add_grid_region"] = ds_grid_add_grid_region;
-		_[$ "ds_grid_multiply_grid_region"] = ds_grid_multiply_grid_region;
-		_[$ "ds_grid_get"] = ds_grid_get;
-		_[$ "ds_grid_get_sum"] = ds_grid_get_sum;
-		_[$ "ds_grid_get_max"] = ds_grid_get_max;
-		_[$ "ds_grid_get_min"] = ds_grid_get_min;
-		_[$ "ds_grid_get_mean"] = ds_grid_get_mean;
-		_[$ "ds_grid_get_disk_sum"] = ds_grid_get_disk_sum;
-		_[$ "ds_grid_get_disk_min"] = ds_grid_get_disk_min;
-		_[$ "ds_grid_get_disk_max"] = ds_grid_get_disk_max;
-		_[$ "ds_grid_get_disk_mean"] = ds_grid_get_disk_mean;
-		_[$ "ds_grid_value_exists"] = ds_grid_value_exists;
-		_[$ "ds_grid_value_x"] = ds_grid_value_x;
-		_[$ "ds_grid_value_y"] = ds_grid_value_y;
-		_[$ "ds_grid_value_disk_exists"] = ds_grid_value_disk_exists;
-		_[$ "ds_grid_value_disk_x"] = ds_grid_value_disk_x;
-		_[$ "ds_grid_value_disk_y"] = ds_grid_value_disk_y;
-		_[$ "ds_grid_shuffle"] = ds_grid_shuffle;
-		_[$ "ds_grid_write"] = ds_grid_write;
-		_[$ "ds_grid_read"] = ds_grid_read;
-		_[$ "ds_grid_sort"] = ds_grid_sort;
-		_[$ "ds_grid_set"] = ds_grid_set;
-		_[$ "ds_grid_get"] = ds_grid_get;
-		_[$ "buffer_create"] = buffer_create;
-		_[$ "buffer_write"] = buffer_write;
-		_[$ "buffer_read"] = buffer_read;
-		_[$ "buffer_seek"] = buffer_seek;
-		_[$ "buffer_get_surface"] = buffer_get_surface;
-		_[$ "buffer_set_surface"] = buffer_set_surface;
-		_[$ "buffer_delete"] = buffer_delete;
-		_[$ "buffer_exists"] = buffer_exists;
-		_[$ "buffer_get_type"] = buffer_get_type;
-		_[$ "buffer_get_alignment"] = buffer_get_alignment;
-		_[$ "buffer_poke"] = buffer_poke;
-		_[$ "buffer_peek"] = buffer_peek;
-		_[$ "buffer_save"] = buffer_save;
-		_[$ "buffer_save_ext"] = buffer_save_ext;
-		_[$ "buffer_load"] = buffer_load;
-		_[$ "buffer_load_ext"] = buffer_load_ext;
-		_[$ "buffer_load_partial"] = buffer_load_partial;
-		_[$ "buffer_copy"] = buffer_copy;
-		_[$ "buffer_fill"] = buffer_fill;
-		_[$ "buffer_get_size"] = buffer_get_size;
-		_[$ "buffer_tell"] = buffer_tell;
-		_[$ "buffer_resize"] = buffer_resize;
-		_[$ "buffer_md5"] = buffer_md5;
-		_[$ "buffer_sha1"] = buffer_sha1;
-		_[$ "buffer_crc32"] = buffer_crc32;
-		_[$ "buffer_base64_encode"] = buffer_base64_encode;
-		_[$ "buffer_base64_decode"] = buffer_base64_decode;
-		_[$ "buffer_base64_decode_ext"] = buffer_base64_decode_ext;
-		_[$ "buffer_sizeof"] = buffer_sizeof;
-		_[$ "buffer_get_address"] = buffer_get_address;
-		_[$ "buffer_create_from_vertex_buffer"] = buffer_create_from_vertex_buffer;
-		_[$ "buffer_create_from_vertex_buffer_ext"] = buffer_create_from_vertex_buffer_ext;
-		_[$ "buffer_copy_from_vertex_buffer"] = buffer_copy_from_vertex_buffer;
-		_[$ "buffer_async_group_begin"] = buffer_async_group_begin;
-		_[$ "buffer_async_group_option"] = buffer_async_group_option;
-		_[$ "buffer_async_group_end"] = buffer_async_group_end;
-		_[$ "buffer_load_async"] = buffer_load_async;
-		_[$ "buffer_save_async"] = buffer_save_async;
-		_[$ "buffer_compress"] = buffer_compress;
-		_[$ "buffer_decompress"] = buffer_decompress;
-		return _;
-	})();
-	static vars_random = (function() {
-		var _ = { };
-		_[$ "random"] = random;
-		_[$ "random_range"] = random_range;
-		_[$ "irandom"] = irandom;
-		_[$ "irandom_range"] = irandom_range;
-		_[$ "random_set_seed"] = random_set_seed;
-		_[$ "random_get_seed"] = random_get_seed;
-		_[$ "randomize"] = randomize;
-		_[$ "randomise"] = randomise;
-		_[$ "choose"] = choose;
-		return _;
-	})();
-	static vars_strings = (function() {
-		var _ = { };
-		_[$ "string"] = string;
-		_[$ "string_format"] = string_format;
-		_[$ "chr"] = chr;
-		_[$ "ansi_char"] = ansi_char;
-		_[$ "ord"] = ord;
-		_[$ "string_length"] = string_length;
-		_[$ "string_byte_length"] = string_byte_length;
-		_[$ "string_pos"] = string_pos;
-		_[$ "string_pos_ext"] = string_pos_ext;
-		_[$ "string_last_pos"] = string_last_pos;
-		_[$ "string_last_pos_ext"] = string_last_pos_ext;
-		_[$ "string_copy"] = string_copy;
-		_[$ "string_char_at"] = string_char_at;
-		_[$ "string_ord_at"] = string_ord_at;
-		_[$ "string_byte_at"] = string_byte_at;
-		_[$ "string_set_byte_at"] = string_set_byte_at;
-		_[$ "string_delete"] = string_delete;
-		_[$ "string_insert"] = string_insert;
-		_[$ "string_lower"] = string_lower;
-		_[$ "string_upper"] = string_upper;
-		_[$ "string_repeat"] = string_repeat;
-		_[$ "string_letters"] = string_letters;
-		_[$ "string_digits"] = string_digits;
-		_[$ "string_lettersdigits"] = string_lettersdigits;
-		_[$ "string_replace"] = string_replace;
-		_[$ "string_replace_all"] = string_replace_all;
-		_[$ "string_count"] = string_count;
-		_[$ "string_hash_to_newline"] = string_hash_to_newline;
-		_[$ "string_width"] = string_width;
-		_[$ "string_height"] = string_height;
-		_[$ "string_width_ext"] = string_width_ext;
-		_[$ "string_height_ext"] = string_height_ext;
-		return _;
-	})();
-	static vars_scripts = (function() {
-		var _ = { };
-		_[$ "method"] = method;
-		_[$ "method_get_index"] = method_get_index;
-		_[$ "method_get_self"] = method_get_self;
-		_[$ "script_exists"] = script_exists;
-		_[$ "script_get_name"] = script_get_name;
-		_[$ "script_execute"] = script_execute;
-		_[$ "script_execute_ext"] = script_execute_ext;
-		return _;
-	})();
-	static vars_input = (function() {
-		var _ = { };
-		_[$ "clipboard_has_text"] = clipboard_has_text;
-		_[$ "clipboard_set_text"] = clipboard_set_text;
-		_[$ "clipboard_get_text"] = clipboard_get_text;
-		_[$ "date_current_datetime"] = date_current_datetime;
-		_[$ "date_create_datetime"] = date_create_datetime;
-		_[$ "date_valid_datetime"] = date_valid_datetime;
-		_[$ "date_inc_year"] = date_inc_year;
-		_[$ "date_inc_month"] = date_inc_month;
-		_[$ "date_inc_week"] = date_inc_week;
-		_[$ "date_inc_day"] = date_inc_day;
-		_[$ "date_inc_hour"] = date_inc_hour;
-		_[$ "date_inc_minute"] = date_inc_minute;
-		_[$ "date_inc_second"] = date_inc_second;
-		_[$ "date_get_year"] = date_get_year;
-		_[$ "date_get_month"] = date_get_month;
-		_[$ "date_get_week"] = date_get_week;
-		_[$ "date_get_day"] = date_get_day;
-		_[$ "date_get_hour"] = date_get_hour;
-		_[$ "date_get_minute"] = date_get_minute;
-		_[$ "date_get_second"] = date_get_second;
-		_[$ "date_get_weekday"] = date_get_weekday;
-		_[$ "date_get_day_of_year"] = date_get_day_of_year;
-		_[$ "date_get_hour_of_year"] = date_get_hour_of_year;
-		_[$ "date_get_minute_of_year"] = date_get_minute_of_year;
-		_[$ "date_get_second_of_year"] = date_get_second_of_year;
-		_[$ "date_year_span"] = date_year_span;
-		_[$ "date_month_span"] = date_month_span;
-		_[$ "date_week_span"] = date_week_span;
-		_[$ "date_day_span"] = date_day_span;
-		_[$ "date_hour_span"] = date_hour_span;
-		_[$ "date_minute_span"] = date_minute_span;
-		_[$ "date_second_span"] = date_second_span;
-		_[$ "date_compare_datetime"] = date_compare_datetime;
-		_[$ "date_compare_date"] = date_compare_date;
-		_[$ "date_compare_time"] = date_compare_time;
-		_[$ "date_date_of"] = date_date_of;
-		_[$ "date_time_of"] = date_time_of;
-		_[$ "date_datetime_string"] = date_datetime_string;
-		_[$ "date_date_string"] = date_date_string;
-		_[$ "date_time_string"] = date_time_string;
-		_[$ "date_days_in_month"] = date_days_in_month;
-		_[$ "date_days_in_year"] = date_days_in_year;
-		_[$ "date_leap_year"] = date_leap_year;
-		_[$ "date_is_today"] = date_is_today;
-		_[$ "date_set_timezone"] = date_set_timezone;
-		_[$ "date_get_timezone"] = date_get_timezone;
-		_[$ "keyboard_set_map"] = keyboard_set_map;
-		_[$ "keyboard_get_map"] = keyboard_get_map;
-		_[$ "keyboard_unset_map"] = keyboard_unset_map;
-		_[$ "keyboard_check"] = keyboard_check;
-		_[$ "keyboard_check_pressed"] = keyboard_check_pressed;
-		_[$ "keyboard_check_released"] = keyboard_check_released;
-		_[$ "keyboard_check_direct"] = keyboard_check_direct;
-		_[$ "keyboard_get_numlock"] = keyboard_get_numlock;
-		_[$ "keyboard_set_numlock"] = keyboard_set_numlock;
-		_[$ "keyboard_key_press"] = keyboard_key_press;
-		_[$ "keyboard_key_release"] = keyboard_key_release;
-		_[$ "keyboard_clear"] = keyboard_clear;
-		_[$ "io_clear"] = io_clear;
-		_[$ "mouse_check_button"] = mouse_check_button;
-		_[$ "mouse_check_button_pressed"] = mouse_check_button_pressed;
-		_[$ "mouse_check_button_released"] = mouse_check_button_released;
-		_[$ "mouse_wheel_up"] = mouse_wheel_up;
-		_[$ "mouse_wheel_down"] = mouse_wheel_down;
-		_[$ "mouse_clear"] = mouse_clear;
-		_[$ "clickable_add"] = clickable_add;
-		_[$ "clickable_add_ext"] = clickable_add_ext;
-		_[$ "clickable_change"] = clickable_change;
-		_[$ "clickable_change_ext"] = clickable_change_ext;
-		_[$ "clickable_delete"] = clickable_delete;
-		_[$ "clickable_exists"] = clickable_exists;
-		_[$ "clickable_set_style"] = clickable_set_style;
-		_[$ "virtual_key_add"] = virtual_key_add;
-		_[$ "virtual_key_hide"] = virtual_key_hide;
-		_[$ "virtual_key_delete"] = virtual_key_delete;
-		_[$ "virtual_key_show"] = virtual_key_show;
-		_[$ "gamepad_is_supported"] = gamepad_is_supported;
-		_[$ "gamepad_get_device_count"] = gamepad_get_device_count;
-		_[$ "gamepad_is_connected"] = gamepad_is_connected;
-		_[$ "gamepad_get_description"] = gamepad_get_description;
-		_[$ "gamepad_get_button_threshold"] = gamepad_get_button_threshold;
-		_[$ "gamepad_set_button_threshold"] = gamepad_set_button_threshold;
-		_[$ "gamepad_get_axis_deadzone"] = gamepad_get_axis_deadzone;
-		_[$ "gamepad_set_axis_deadzone"] = gamepad_set_axis_deadzone;
-		_[$ "gamepad_button_count"] = gamepad_button_count;
-		_[$ "gamepad_button_check"] = gamepad_button_check;
-		_[$ "gamepad_button_check_pressed"] = gamepad_button_check_pressed;
-		_[$ "gamepad_button_check_released"] = gamepad_button_check_released;
-		_[$ "gamepad_button_value"] = gamepad_button_value;
-		_[$ "gamepad_axis_count"] = gamepad_axis_count;
-		_[$ "gamepad_axis_value"] = gamepad_axis_value;
-		_[$ "gamepad_set_vibration"] = gamepad_set_vibration;
-		_[$ "gamepad_set_colour"] = gamepad_set_colour;
-		_[$ "gamepad_set_color"] = gamepad_set_color;
-		_[$ "gamepad_hat_count"] = gamepad_hat_count;
-		_[$ "gamepad_hat_value"] = gamepad_hat_value;
-		_[$ "gamepad_remove_mapping"] = gamepad_remove_mapping;
-		_[$ "gamepad_test_mapping"] = gamepad_test_mapping;
-		_[$ "gamepad_get_mapping"] = gamepad_get_mapping;
-		_[$ "gamepad_get_guid"] = gamepad_get_guid;
-		_[$ "gamepad_set_option"] = gamepad_set_option;
-		_[$ "gamepad_get_option"] = gamepad_get_option;
-		_[$ "gesture_drag_time"] = gesture_drag_time;
-		_[$ "gesture_drag_distance"] = gesture_drag_distance;
-		_[$ "gesture_flick_speed"] = gesture_flick_speed;
-		_[$ "gesture_double_tap_time"] = gesture_double_tap_time;
-		_[$ "gesture_double_tap_distance"] = gesture_double_tap_distance;
-		_[$ "gesture_pinch_distance"] = gesture_pinch_distance;
-		_[$ "gesture_pinch_angle_towards"] = gesture_pinch_angle_towards;
-		_[$ "gesture_pinch_angle_away"] = gesture_pinch_angle_away;
-		_[$ "gesture_rotate_time"] = gesture_rotate_time;
-		_[$ "gesture_rotate_angle"] = gesture_rotate_angle;
-		_[$ "gesture_tap_count"] = gesture_tap_count;
-		_[$ "gesture_get_drag_time"] = gesture_get_drag_time;
-		_[$ "gesture_get_drag_distance"] = gesture_get_drag_distance;
-		_[$ "gesture_get_flick_speed"] = gesture_get_flick_speed;
-		_[$ "gesture_get_double_tap_time"] = gesture_get_double_tap_time;
-		_[$ "gesture_get_double_tap_distance"] = gesture_get_double_tap_distance;
-		_[$ "gesture_get_pinch_distance"] = gesture_get_pinch_distance;
-		_[$ "gesture_get_pinch_angle_towards"] = gesture_get_pinch_angle_towards;
-		_[$ "gesture_get_pinch_angle_away"] = gesture_get_pinch_angle_away;
-		_[$ "gesture_get_rotate_time"] = gesture_get_rotate_time;
-		_[$ "gesture_get_rotate_angle"] = gesture_get_rotate_angle;
-		_[$ "gesture_get_tap_count"] = gesture_get_tap_count;
-		_[$ "keyboard_virtual_show"] = keyboard_virtual_show;
-		_[$ "keyboard_virtual_hide"] = keyboard_virtual_hide;
-		_[$ "keyboard_virtual_status"] = keyboard_virtual_status;
-		_[$ "keyboard_virtual_height"] = keyboard_virtual_height;
-		return _;
-	})();
-	static vars_audio = (function() {
-		var _ = { };
-		_[$ "audio_listener_position"] = audio_listener_position;
-		_[$ "audio_listener_velocity"] = audio_listener_velocity;
-		_[$ "audio_listener_orientation"] = audio_listener_orientation;
-		_[$ "audio_emitter_position"] = audio_emitter_position;
-		_[$ "audio_emitter_create"] = audio_emitter_create;
-		_[$ "audio_emitter_free"] = audio_emitter_free;
-		_[$ "audio_emitter_exists"] = audio_emitter_exists;
-		_[$ "audio_emitter_pitch"] = audio_emitter_pitch;
-		_[$ "audio_emitter_velocity"] = audio_emitter_velocity;
-		_[$ "audio_emitter_falloff"] = audio_emitter_falloff;
-		_[$ "audio_emitter_gain"] = audio_emitter_gain;
-		_[$ "audio_play_sound"] = audio_play_sound;
-		_[$ "audio_play_sound_on"] = audio_play_sound_on;
-		_[$ "audio_play_sound_at"] = audio_play_sound_at;
-		_[$ "audio_stop_sound"] = audio_stop_sound;
-		_[$ "audio_resume_sound"] = audio_resume_sound;
-		_[$ "audio_pause_sound"] = audio_pause_sound;
-		_[$ "audio_channel_num"] = audio_channel_num;
-		_[$ "audio_sound_length"] = audio_sound_length;
-		_[$ "audio_get_type"] = audio_get_type;
-		_[$ "audio_falloff_set_model"] = audio_falloff_set_model;
-		_[$ "audio_master_gain"] = audio_master_gain;
-		_[$ "audio_sound_gain"] = audio_sound_gain;
-		_[$ "audio_sound_pitch"] = audio_sound_pitch;
-		_[$ "audio_stop_all"] = audio_stop_all;
-		_[$ "audio_resume_all"] = audio_resume_all;
-		_[$ "audio_pause_all"] = audio_pause_all;
-		_[$ "audio_is_playing"] = audio_is_playing;
-		_[$ "audio_is_paused"] = audio_is_paused;
-		_[$ "audio_exists"] = audio_exists;
-		_[$ "audio_system_is_available"] = audio_system_is_available;
-		_[$ "audio_sound_is_playable"] = audio_sound_is_playable;
-		_[$ "audio_emitter_get_gain"] = audio_emitter_get_gain;
-		_[$ "audio_emitter_get_pitch"] = audio_emitter_get_pitch;
-		_[$ "audio_emitter_get_x"] = audio_emitter_get_x;
-		_[$ "audio_emitter_get_y"] = audio_emitter_get_y;
-		_[$ "audio_emitter_get_z"] = audio_emitter_get_z;
-		_[$ "audio_emitter_get_vx"] = audio_emitter_get_vx;
-		_[$ "audio_emitter_get_vy"] = audio_emitter_get_vy;
-		_[$ "audio_emitter_get_vz"] = audio_emitter_get_vz;
-		_[$ "audio_listener_set_position"] = audio_listener_set_position;
-		_[$ "audio_listener_set_velocity"] = audio_listener_set_velocity;
-		_[$ "audio_listener_set_orientation"] = audio_listener_set_orientation;
-		_[$ "audio_listener_get_data"] = audio_listener_get_data;
-		_[$ "audio_set_master_gain"] = audio_set_master_gain;
-		_[$ "audio_get_master_gain"] = audio_get_master_gain;
-		_[$ "audio_sound_get_gain"] = audio_sound_get_gain;
-		_[$ "audio_sound_get_pitch"] = audio_sound_get_pitch;
-		_[$ "audio_get_name"] = audio_get_name;
-		_[$ "audio_sound_set_track_position"] = audio_sound_set_track_position;
-		_[$ "audio_sound_get_track_position"] = audio_sound_get_track_position;
-		_[$ "audio_create_stream"] = audio_create_stream;
-		_[$ "audio_destroy_stream"] = audio_destroy_stream;
-		_[$ "audio_create_sync_group"] = audio_create_sync_group;
-		_[$ "audio_destroy_sync_group"] = audio_destroy_sync_group;
-		_[$ "audio_play_in_sync_group"] = audio_play_in_sync_group;
-		_[$ "audio_start_sync_group"] = audio_start_sync_group;
-		_[$ "audio_stop_sync_group"] = audio_stop_sync_group;
-		_[$ "audio_pause_sync_group"] = audio_pause_sync_group;
-		_[$ "audio_resume_sync_group"] = audio_resume_sync_group;
-		_[$ "audio_sync_group_get_track_pos"] = audio_sync_group_get_track_pos;
-		_[$ "audio_sync_group_debug"] = audio_sync_group_debug;
-		_[$ "audio_sync_group_is_playing"] = audio_sync_group_is_playing;
-		_[$ "audio_debug"] = audio_debug;
-		_[$ "audio_group_load"] = audio_group_load;
-		_[$ "audio_group_unload"] = audio_group_unload;
-		_[$ "audio_group_is_loaded"] = audio_group_is_loaded;
-		_[$ "audio_group_load_progress"] = audio_group_load_progress;
-		_[$ "audio_group_name"] = audio_group_name;
-		_[$ "audio_group_stop_all"] = audio_group_stop_all;
-		_[$ "audio_group_set_gain"] = audio_group_set_gain;
-		_[$ "audio_create_buffer_sound"] = audio_create_buffer_sound;
-		_[$ "audio_free_buffer_sound"] = audio_free_buffer_sound;
-		_[$ "audio_create_play_queue"] = audio_create_play_queue;
-		_[$ "audio_free_play_queue"] = audio_free_play_queue;
-		_[$ "audio_queue_sound"] = audio_queue_sound;
-		_[$ "audio_get_recorder_count"] = audio_get_recorder_count;
-		_[$ "audio_get_recorder_info"] = audio_get_recorder_info;
-		_[$ "audio_start_recording"] = audio_start_recording;
-		_[$ "audio_stop_recording"] = audio_stop_recording;
-		_[$ "audio_sound_get_listener_mask"] = audio_sound_get_listener_mask;
-		_[$ "audio_emitter_get_listener_mask"] = audio_emitter_get_listener_mask;
-		_[$ "audio_get_listener_mask"] = audio_get_listener_mask;
-		_[$ "audio_sound_set_listener_mask"] = audio_sound_set_listener_mask;
-		_[$ "audio_emitter_set_listener_mask"] = audio_emitter_set_listener_mask;
-		_[$ "audio_set_listener_mask"] = audio_set_listener_mask;
-		_[$ "audio_get_listener_count"] = audio_get_listener_count;
-		_[$ "audio_get_listener_info"] = audio_get_listener_info;
-		return _;
-	})();
-	static vars_drawing = (function() {
-		var _ = { };
-		_[$ "draw_self"] = draw_self;
-		_[$ "draw_sprite"] = draw_sprite;
-		_[$ "draw_sprite_pos"] = draw_sprite_pos;
-		_[$ "draw_sprite_ext"] = draw_sprite_ext;
-		_[$ "draw_sprite_stretched"] = draw_sprite_stretched;
-		_[$ "draw_sprite_stretched_ext"] = draw_sprite_stretched_ext;
-		_[$ "draw_sprite_tiled"] = draw_sprite_tiled;
-		_[$ "draw_sprite_tiled_ext"] = draw_sprite_tiled_ext;
-		_[$ "draw_sprite_part"] = draw_sprite_part;
-		_[$ "draw_sprite_part_ext"] = draw_sprite_part_ext;
-		_[$ "draw_sprite_general"] = draw_sprite_general;
-		_[$ "draw_clear"] = draw_clear;
-		_[$ "draw_clear_alpha"] = draw_clear_alpha;
-		_[$ "draw_point"] = draw_point;
-		_[$ "draw_line"] = draw_line;
-		_[$ "draw_line_width"] = draw_line_width;
-		_[$ "draw_rectangle"] = draw_rectangle;
-		_[$ "draw_roundrect"] = draw_roundrect;
-		_[$ "draw_roundrect_ext"] = draw_roundrect_ext;
-		_[$ "draw_triangle"] = draw_triangle;
-		_[$ "draw_circle"] = draw_circle;
-		_[$ "draw_ellipse"] = draw_ellipse;
-		_[$ "draw_set_circle_precision"] = draw_set_circle_precision;
-		_[$ "draw_arrow"] = draw_arrow;
-		_[$ "draw_button"] = draw_button;
-		_[$ "draw_path"] = draw_path;
-		_[$ "draw_healthbar"] = draw_healthbar;
-		_[$ "draw_getpixel"] = draw_getpixel;
-		_[$ "draw_getpixel_ext"] = draw_getpixel_ext;
-		_[$ "draw_set_colour"] = draw_set_colour;
-		_[$ "draw_set_color"] = draw_set_color;
-		_[$ "draw_set_alpha"] = draw_set_alpha;
-		_[$ "draw_get_colour"] = draw_get_colour;
-		_[$ "draw_get_color"] = draw_get_color;
-		_[$ "draw_get_alpha"] = draw_get_alpha;
-		_[$ "merge_colour"] = merge_colour;
-		_[$ "make_colour_rgb"] = make_colour_rgb;
-		_[$ "make_colour_hsv"] = make_colour_hsv;
-		_[$ "colour_get_red"] = colour_get_red;
-		_[$ "colour_get_green"] = colour_get_green;
-		_[$ "colour_get_blue"] = colour_get_blue;
-		_[$ "colour_get_hue"] = colour_get_hue;
-		_[$ "colour_get_saturation"] = colour_get_saturation;
-		_[$ "colour_get_value"] = colour_get_value;
-		_[$ "merge_color"] = merge_color;
-		_[$ "make_color_rgb"] = make_color_rgb;
-		_[$ "make_color_hsv"] = make_color_hsv;
-		_[$ "color_get_red"] = color_get_red;
-		_[$ "color_get_green"] = color_get_green;
-		_[$ "color_get_blue"] = color_get_blue;
-		_[$ "color_get_hue"] = color_get_hue;
-		_[$ "color_get_saturation"] = color_get_saturation;
-		_[$ "color_get_value"] = color_get_value;
-		_[$ "merge_color"] = merge_color;
-		_[$ "draw_set_font"] = draw_set_font;
-		_[$ "draw_get_font"] = draw_get_font;
-		_[$ "draw_set_halign"] = draw_set_halign;
-		_[$ "draw_get_halign"] = draw_get_halign;
-		_[$ "draw_set_valign"] = draw_set_valign;
-		_[$ "draw_get_valign"] = draw_get_valign;
-		_[$ "draw_text"] = draw_text;
-		_[$ "draw_text_ext"] = draw_text_ext;
-		_[$ "draw_text_transformed"] = draw_text_transformed;
-		_[$ "draw_text_ext_transformed"] = draw_text_ext_transformed;
-		_[$ "draw_text_colour"] = draw_text_colour;
-		_[$ "draw_text_ext_colour"] = draw_text_ext_colour;
-		_[$ "draw_text_transformed_colour"] = draw_text_transformed_colour;
-		_[$ "draw_text_ext_transformed_colour"] = draw_text_ext_transformed_colour;
-		_[$ "draw_text_color"] = draw_text_color;
-		_[$ "draw_text_ext_color"] = draw_text_ext_color;
-		_[$ "draw_text_transformed_color"] = draw_text_transformed_color;
-		_[$ "draw_text_ext_transformed_color"] = draw_text_ext_transformed_color;
-		_[$ "draw_point_colour"] = draw_point_colour;
-		_[$ "draw_line_colour"] = draw_line_colour;
-		_[$ "draw_line_width_colour"] = draw_line_width_colour;
-		_[$ "draw_rectangle_colour"] = draw_rectangle_colour;
-		_[$ "draw_roundrect_colour"] = draw_roundrect_colour;
-		_[$ "draw_roundrect_colour_ext"] = draw_roundrect_colour_ext;
-		_[$ "draw_triangle_colour"] = draw_triangle_colour;
-		_[$ "draw_circle_colour"] = draw_circle_colour;
-		_[$ "draw_ellipse_colour"] = draw_ellipse_colour;
-		_[$ "draw_point_color"] = draw_point_color;
-		_[$ "draw_line_color"] = draw_line_color;
-		_[$ "draw_line_width_color"] = draw_line_width_color;
-		_[$ "draw_rectangle_color"] = draw_rectangle_color;
-		_[$ "draw_roundrect_color"] = draw_roundrect_color;
-		_[$ "draw_roundrect_color_ext"] = draw_roundrect_color_ext;
-		_[$ "draw_triangle_color"] = draw_triangle_color;
-		_[$ "draw_circle_color"] = draw_circle_color;
-		_[$ "draw_ellipse_color"] = draw_ellipse_color;
-		_[$ "draw_primitive_begin"] = draw_primitive_begin;
-		_[$ "draw_vertex"] = draw_vertex;
-		_[$ "draw_vertex_colour"] = draw_vertex_colour;
-		_[$ "draw_vertex_color"] = draw_vertex_color;
-		_[$ "draw_primitive_end"] = draw_primitive_end;
-		_[$ "sprite_get_uvs"] = sprite_get_uvs;
-		_[$ "font_get_uvs"] = font_get_uvs;
-		_[$ "sprite_get_texture"] = sprite_get_texture;
-		_[$ "font_get_texture"] = font_get_texture;
-		_[$ "texture_get_width"] = texture_get_width;
-		_[$ "texture_get_height"] = texture_get_height;
-		_[$ "texture_get_uvs"] = texture_get_uvs;
-		_[$ "draw_primitive_begin_texture"] = draw_primitive_begin_texture;
-		_[$ "draw_vertex_texture"] = draw_vertex_texture;
-		_[$ "draw_vertex_texture_colour"] = draw_vertex_texture_colour;
-		_[$ "draw_vertex_texture_color"] = draw_vertex_texture_color;
-		_[$ "texture_global_scale"] = texture_global_scale;
-		_[$ "surface_create"] = surface_create;
-		_[$ "surface_create_ext"] = surface_create_ext;
-		_[$ "surface_resize"] = surface_resize;
-		_[$ "surface_free"] = surface_free;
-		_[$ "surface_exists"] = surface_exists;
-		_[$ "surface_get_width"] = surface_get_width;
-		_[$ "surface_get_height"] = surface_get_height;
-		_[$ "surface_get_texture"] = surface_get_texture;
-		_[$ "surface_set_target"] = surface_set_target;
-		_[$ "surface_set_target_ext"] = surface_set_target_ext;
-		_[$ "surface_get_target"] = surface_get_target;
-		_[$ "surface_get_target_ext"] = surface_get_target_ext;
-		_[$ "surface_reset_target"] = surface_reset_target;
-		_[$ "surface_depth_disable"] = surface_depth_disable;
-		_[$ "surface_get_depth_disable"] = surface_get_depth_disable;
-		_[$ "draw_surface"] = draw_surface;
-		_[$ "draw_surface_stretched"] = draw_surface_stretched;
-		_[$ "draw_surface_tiled"] = draw_surface_tiled;
-		_[$ "draw_surface_part"] = draw_surface_part;
-		_[$ "draw_surface_ext"] = draw_surface_ext;
-		_[$ "draw_surface_stretched_ext"] = draw_surface_stretched_ext;
-		_[$ "draw_surface_tiled_ext"] = draw_surface_tiled_ext;
-		_[$ "draw_surface_part_ext"] = draw_surface_part_ext;
-		_[$ "draw_surface_general"] = draw_surface_general;
-		_[$ "surface_getpixel"] = surface_getpixel;
-		_[$ "surface_getpixel_ext"] = surface_getpixel_ext;
-		_[$ "surface_save"] = surface_save;
-		_[$ "surface_save_part"] = surface_save_part;
-		_[$ "surface_copy"] = surface_copy;
-		_[$ "surface_copy_part"] = surface_copy_part;
-		_[$ "application_surface_draw_enable"] = application_surface_draw_enable;
-		_[$ "application_get_position"] = application_get_position;
-		_[$ "application_surface_enable"] = application_surface_enable;
-		_[$ "application_surface_is_enabled"] = application_surface_is_enabled;
-		_[$ "draw_highscore"] = draw_highscore;
-		_[$ "sprite_exists"] = sprite_exists;
-		_[$ "sprite_get_name"] = sprite_get_name;
-		_[$ "sprite_get_number"] = sprite_get_number;
-		_[$ "sprite_get_width"] = sprite_get_width;
-		_[$ "sprite_get_height"] = sprite_get_height;
-		_[$ "sprite_get_xoffset"] = sprite_get_xoffset;
-		_[$ "sprite_get_yoffset"] = sprite_get_yoffset;
-		_[$ "sprite_get_bbox_mode"] = sprite_get_bbox_mode;
-		_[$ "sprite_get_bbox_left"] = sprite_get_bbox_left;
-		_[$ "sprite_get_bbox_right"] = sprite_get_bbox_right;
-		_[$ "sprite_get_bbox_top"] = sprite_get_bbox_top;
-		_[$ "sprite_get_bbox_bottom"] = sprite_get_bbox_bottom;
-		_[$ "sprite_set_bbox_mode"] = sprite_set_bbox_mode;
-		_[$ "sprite_set_bbox"] = sprite_set_bbox;
-		_[$ "sprite_save"] = sprite_save;
-		_[$ "sprite_save_strip"] = sprite_save_strip;
-		_[$ "sprite_set_cache_size"] = sprite_set_cache_size;
-		_[$ "sprite_set_cache_size_ext"] = sprite_set_cache_size_ext;
-		_[$ "sprite_get_tpe"] = sprite_get_tpe;
-		_[$ "sprite_prefetch"] = sprite_prefetch;
-		_[$ "sprite_prefetch_multi"] = sprite_prefetch_multi;
-		_[$ "sprite_flush"] = sprite_flush;
-		_[$ "sprite_flush_multi"] = sprite_flush_multi;
-		_[$ "sprite_set_speed"] = sprite_set_speed;
-		_[$ "sprite_get_speed_type"] = sprite_get_speed_type;
-		_[$ "sprite_get_speed"] = sprite_get_speed;
-		_[$ "texture_is_ready"] = texture_is_ready;
-		_[$ "texture_prefetch"] = texture_prefetch;
-		_[$ "texture_flush"] = texture_flush;
-		_[$ "texturegroup_get_textures"] = texturegroup_get_textures;
-		_[$ "texturegroup_get_sprites"] = texturegroup_get_sprites;
-		_[$ "texturegroup_get_fonts"] = texturegroup_get_fonts;
-		_[$ "texturegroup_get_tilesets"] = texturegroup_get_tilesets;
-		_[$ "texture_debug_messages"] = texture_debug_messages;
-		_[$ "font_exists"] = font_exists;
-		_[$ "font_get_name"] = font_get_name;
-		_[$ "font_get_fontname"] = font_get_fontname;
-		_[$ "font_get_bold"] = font_get_bold;
-		_[$ "font_get_italic"] = font_get_italic;
-		_[$ "font_get_first"] = font_get_first;
-		_[$ "font_get_last"] = font_get_last;
-		_[$ "font_get_size"] = font_get_size;
-		_[$ "font_set_cache_size"] = font_set_cache_size;
-		_[$ "sprite_set_offset"] = sprite_set_offset;
-		_[$ "sprite_duplicate"] = sprite_duplicate;
-		_[$ "sprite_assign"] = sprite_assign;
-		_[$ "sprite_merge"] = sprite_merge;
-		_[$ "sprite_add"] = sprite_add;
-		_[$ "sprite_replace"] = sprite_replace;
-		_[$ "sprite_create_from_surface"] = sprite_create_from_surface;
-		_[$ "sprite_add_from_surface"] = sprite_add_from_surface;
-		_[$ "sprite_delete"] = sprite_delete;
-		_[$ "sprite_set_alpha_from_sprite"] = sprite_set_alpha_from_sprite;
-		_[$ "sprite_collision_mask"] = sprite_collision_mask;
-		_[$ "font_add_enable_aa"] = font_add_enable_aa;
-		_[$ "font_add_get_enable_aa"] = font_add_get_enable_aa;
-		_[$ "font_add"] = font_add;
-		_[$ "font_add_sprite"] = font_add_sprite;
-		_[$ "font_add_sprite_ext"] = font_add_sprite_ext;
-		_[$ "font_replace_sprite"] = font_replace_sprite;
-		_[$ "font_replace_sprite_ext"] = font_replace_sprite_ext;
-		_[$ "font_delete"] = font_delete;
-		_[$ "draw_enable_drawevent"] = draw_enable_drawevent;
-		_[$ "draw_enable_swf_aa"] = draw_enable_swf_aa;
-		_[$ "draw_set_swf_aa_level"] = draw_set_swf_aa_level;
-		_[$ "draw_get_swf_aa_level"] = draw_get_swf_aa_level;
-		_[$ "draw_texture_flush"] = draw_texture_flush;
-		_[$ "draw_flush"] = draw_flush;
-		_[$ "gpu_set_blendenable"] = gpu_set_blendenable;
-		_[$ "gpu_set_ztestenable"] = gpu_set_ztestenable;
-		_[$ "gpu_set_zfunc"] = gpu_set_zfunc;
-		_[$ "gpu_set_zwriteenable"] = gpu_set_zwriteenable;
-		_[$ "gpu_set_fog"] = gpu_set_fog;
-		_[$ "gpu_set_cullmode"] = gpu_set_cullmode;
-		_[$ "gpu_set_blendmode"] = gpu_set_blendmode;
-		_[$ "gpu_set_blendmode_ext"] = gpu_set_blendmode_ext;
-		_[$ "gpu_set_blendmode_ext_sepalpha"] = gpu_set_blendmode_ext_sepalpha;
-		_[$ "gpu_set_colorwriteenable"] = gpu_set_colorwriteenable;
-		_[$ "gpu_set_colourwriteenable"] = gpu_set_colourwriteenable;
-		_[$ "gpu_set_alphatestenable"] = gpu_set_alphatestenable;
-		_[$ "gpu_set_alphatestref"] = gpu_set_alphatestref;
-		_[$ "gpu_set_texfilter"] = gpu_set_texfilter;
-		_[$ "gpu_set_texfilter_ext"] = gpu_set_texfilter_ext;
-		_[$ "gpu_set_texrepeat"] = gpu_set_texrepeat;
-		_[$ "gpu_set_texrepeat_ext"] = gpu_set_texrepeat_ext;
-		_[$ "gpu_set_tex_filter"] = gpu_set_tex_filter;
-		_[$ "gpu_set_tex_filter_ext"] = gpu_set_tex_filter_ext;
-		_[$ "gpu_set_tex_repeat"] = gpu_set_tex_repeat;
-		_[$ "gpu_set_tex_repeat_ext"] = gpu_set_tex_repeat_ext;
-		_[$ "gpu_set_tex_mip_filter"] = gpu_set_tex_mip_filter;
-		_[$ "gpu_set_tex_mip_filter_ext"] = gpu_set_tex_mip_filter_ext;
-		_[$ "gpu_set_tex_mip_bias"] = gpu_set_tex_mip_bias;
-		_[$ "gpu_set_tex_mip_bias_ext"] = gpu_set_tex_mip_bias_ext;
-		_[$ "gpu_set_tex_min_mip"] = gpu_set_tex_min_mip;
-		_[$ "gpu_set_tex_min_mip_ext"] = gpu_set_tex_min_mip_ext;
-		_[$ "gpu_set_tex_max_mip"] = gpu_set_tex_max_mip;
-		_[$ "gpu_set_tex_max_mip_ext"] = gpu_set_tex_max_mip_ext;
-		_[$ "gpu_set_tex_max_aniso"] = gpu_set_tex_max_aniso;
-		_[$ "gpu_set_tex_max_aniso_ext"] = gpu_set_tex_max_aniso_ext;
-		_[$ "gpu_set_tex_mip_enable"] = gpu_set_tex_mip_enable;
-		_[$ "gpu_set_tex_mip_enable_ext"] = gpu_set_tex_mip_enable_ext;
-		_[$ "gpu_get_blendenable"] = gpu_get_blendenable;
-		_[$ "gpu_get_ztestenable"] = gpu_get_ztestenable;
-		_[$ "gpu_get_zfunc"] = gpu_get_zfunc;
-		_[$ "gpu_get_zwriteenable"] = gpu_get_zwriteenable;
-		_[$ "gpu_get_fog"] = gpu_get_fog;
-		_[$ "gpu_get_cullmode"] = gpu_get_cullmode;
-		_[$ "gpu_get_blendmode"] = gpu_get_blendmode;
-		_[$ "gpu_get_blendmode_ext"] = gpu_get_blendmode_ext;
-		_[$ "gpu_get_blendmode_ext_sepalpha"] = gpu_get_blendmode_ext_sepalpha;
-		_[$ "gpu_get_blendmode_src"] = gpu_get_blendmode_src;
-		_[$ "gpu_get_blendmode_dest"] = gpu_get_blendmode_dest;
-		_[$ "gpu_get_blendmode_srcalpha"] = gpu_get_blendmode_srcalpha;
-		_[$ "gpu_get_blendmode_destalpha"] = gpu_get_blendmode_destalpha;
-		_[$ "gpu_get_colorwriteenable"] = gpu_get_colorwriteenable;
-		_[$ "gpu_get_colourwriteenable"] = gpu_get_colourwriteenable;
-		_[$ "gpu_get_alphatestenable"] = gpu_get_alphatestenable;
-		_[$ "gpu_get_alphatestref"] = gpu_get_alphatestref;
-		_[$ "gpu_get_texfilter"] = gpu_get_texfilter;
-		_[$ "gpu_get_texfilter_ext"] = gpu_get_texfilter_ext;
-		_[$ "gpu_get_texrepeat"] = gpu_get_texrepeat;
-		_[$ "gpu_get_texrepeat_ext"] = gpu_get_texrepeat_ext;
-		_[$ "gpu_get_tex_filter"] = gpu_get_tex_filter;
-		_[$ "gpu_get_tex_filter_ext"] = gpu_get_tex_filter_ext;
-		_[$ "gpu_get_tex_repeat"] = gpu_get_tex_repeat;
-		_[$ "gpu_get_tex_repeat_ext"] = gpu_get_tex_repeat_ext;
-		_[$ "gpu_get_tex_mip_filter"] = gpu_get_tex_mip_filter;
-		_[$ "gpu_get_tex_mip_filter_ext"] = gpu_get_tex_mip_filter_ext;
-		_[$ "gpu_get_tex_mip_bias"] = gpu_get_tex_mip_bias;
-		_[$ "gpu_get_tex_mip_bias_ext"] = gpu_get_tex_mip_bias_ext;
-		_[$ "gpu_get_tex_min_mip"] = gpu_get_tex_min_mip;
-		_[$ "gpu_get_tex_min_mip_ext"] = gpu_get_tex_min_mip_ext;
-		_[$ "gpu_get_tex_max_mip"] = gpu_get_tex_max_mip;
-		_[$ "gpu_get_tex_max_mip_ext"] = gpu_get_tex_max_mip_ext;
-		_[$ "gpu_get_tex_max_aniso"] = gpu_get_tex_max_aniso;
-		_[$ "gpu_get_tex_max_aniso_ext"] = gpu_get_tex_max_aniso_ext;
-		_[$ "gpu_get_tex_mip_enable"] = gpu_get_tex_mip_enable;
-		_[$ "gpu_get_tex_mip_enable_ext"] = gpu_get_tex_mip_enable_ext;
-		_[$ "gpu_push_state"] = gpu_push_state;
-		_[$ "gpu_pop_state"] = gpu_pop_state;
-		_[$ "gpu_get_state"] = gpu_get_state;
-		_[$ "gpu_set_state"] = gpu_set_state;
-		_[$ "draw_light_define_ambient"] = draw_light_define_ambient;
-		_[$ "draw_light_define_direction"] = draw_light_define_direction;
-		_[$ "draw_light_define_point"] = draw_light_define_point;
-		_[$ "draw_light_enable"] = draw_light_enable;
-		_[$ "draw_set_lighting"] = draw_set_lighting;
-		_[$ "draw_light_get_ambient"] = draw_light_get_ambient;
-		_[$ "draw_light_get"] = draw_light_get;
-		_[$ "draw_get_lighting"] = draw_get_lighting;
-		_[$ "shader_set"] = shader_set;
-		_[$ "shader_get_name"] = shader_get_name;
-		_[$ "shader_reset"] = shader_reset;
-		_[$ "shader_current"] = shader_current;
-		_[$ "shader_is_compiled"] = shader_is_compiled;
-		_[$ "shader_get_sampler_index"] = shader_get_sampler_index;
-		_[$ "shader_get_uniform"] = shader_get_uniform;
-		_[$ "shader_set_uniform_i"] = shader_set_uniform_i;
-		_[$ "shader_set_uniform_i_array"] = shader_set_uniform_i_array;
-		_[$ "shader_set_uniform_f"] = shader_set_uniform_f;
-		_[$ "shader_set_uniform_f_array"] = shader_set_uniform_f_array;
-		_[$ "shader_set_uniform_matrix"] = shader_set_uniform_matrix;
-		_[$ "shader_set_uniform_matrix_array"] = shader_set_uniform_matrix_array;
-		_[$ "shader_enable_corner_id"] = shader_enable_corner_id;
-		_[$ "texture_set_stage"] = texture_set_stage;
-		_[$ "texture_get_texel_width"] = texture_get_texel_width;
-		_[$ "texture_get_texel_height"] = texture_get_texel_height;
-		_[$ "vertex_format_begin"] = vertex_format_begin;
-		_[$ "vertex_format_end"] = vertex_format_end;
-		_[$ "vertex_format_delete"] = vertex_format_delete;
-		_[$ "vertex_format_add_position"] = vertex_format_add_position;
-		_[$ "vertex_format_add_position_3d"] = vertex_format_add_position_3d;
-		_[$ "vertex_format_add_colour"] = vertex_format_add_colour;
-		_[$ "vertex_format_add_color"] = vertex_format_add_color;
-		_[$ "vertex_format_add_normal"] = vertex_format_add_normal;
-		_[$ "vertex_format_add_texcoord"] = vertex_format_add_texcoord;
-		_[$ "vertex_format_add_custom"] = vertex_format_add_custom;
-		_[$ "vertex_create_buffer"] = vertex_create_buffer;
-		_[$ "vertex_create_buffer_ext"] = vertex_create_buffer_ext;
-		_[$ "vertex_delete_buffer"] = vertex_delete_buffer;
-		_[$ "vertex_begin"] = vertex_begin;
-		_[$ "vertex_end"] = vertex_end;
-		_[$ "vertex_position"] = vertex_position;
-		_[$ "vertex_position_3d"] = vertex_position_3d;
-		_[$ "vertex_colour"] = vertex_colour;
-		_[$ "vertex_color"] = vertex_color;
-		_[$ "vertex_argb"] = vertex_argb;
-		_[$ "vertex_texcoord"] = vertex_texcoord;
-		_[$ "vertex_normal"] = vertex_normal;
-		_[$ "vertex_float1"] = vertex_float1;
-		_[$ "vertex_float2"] = vertex_float2;
-		_[$ "vertex_float3"] = vertex_float3;
-		_[$ "vertex_float4"] = vertex_float4;
-		_[$ "vertex_ubyte4"] = vertex_ubyte4;
-		_[$ "vertex_submit"] = vertex_submit;
-		_[$ "vertex_freeze"] = vertex_freeze;
-		_[$ "vertex_get_number"] = vertex_get_number;
-		_[$ "vertex_get_buffer_size"] = vertex_get_buffer_size;
-		_[$ "vertex_create_buffer_from_buffer"] = vertex_create_buffer_from_buffer;
-		_[$ "vertex_create_buffer_from_buffer_ext"] = vertex_create_buffer_from_buffer_ext;
-		_[$ "draw_skeleton"] = draw_skeleton;
-		_[$ "draw_skeleton_time"] = draw_skeleton_time;
-		_[$ "draw_skeleton_instance"] = draw_skeleton_instance;
-		_[$ "draw_skeleton_collision"] = draw_skeleton_collision;
-		_[$ "draw_enable_skeleton_blendmodes"] = draw_enable_skeleton_blendmodes;
-		_[$ "draw_get_enable_skeleton_blendmodes"] = draw_get_enable_skeleton_blendmodes;
-		_[$ "draw_tilemap"] = draw_tilemap;
-		_[$ "draw_tile"] = draw_tile;
-		return _;
-	})();
-	static vars_layers = (function() {
-		var _ = { };
-		_[$ "layer_get_id"] = layer_get_id;
-		_[$ "layer_get_id_at_depth"] = layer_get_id_at_depth;
-		_[$ "layer_get_depth"] = layer_get_depth;
-		_[$ "layer_create"] = layer_create;
-		_[$ "layer_destroy"] = layer_destroy;
-		_[$ "layer_destroy_instances"] = layer_destroy_instances;
-		_[$ "layer_add_instance"] = layer_add_instance;
-		_[$ "layer_has_instance"] = layer_has_instance;
-		_[$ "layer_set_visible"] = layer_set_visible;
-		_[$ "layer_get_visible"] = layer_get_visible;
-		_[$ "layer_exists"] = layer_exists;
-		_[$ "layer_x"] = layer_x;
-		_[$ "layer_y"] = layer_y;
-		_[$ "layer_get_x"] = layer_get_x;
-		_[$ "layer_get_y"] = layer_get_y;
-		_[$ "layer_hspeed"] = layer_hspeed;
-		_[$ "layer_vspeed"] = layer_vspeed;
-		_[$ "layer_get_hspeed"] = layer_get_hspeed;
-		_[$ "layer_get_vspeed"] = layer_get_vspeed;
-		_[$ "layer_script_begin"] = layer_script_begin;
-		_[$ "layer_script_end"] = layer_script_end;
-		_[$ "layer_shader"] = layer_shader;
-		_[$ "layer_get_script_begin"] = layer_get_script_begin;
-		_[$ "layer_get_script_end"] = layer_get_script_end;
-		_[$ "layer_get_shader"] = layer_get_shader;
-		_[$ "layer_set_target_room"] = layer_set_target_room;
-		_[$ "layer_get_target_room"] = layer_get_target_room;
-		_[$ "layer_reset_target_room"] = layer_reset_target_room;
-		_[$ "layer_get_all"] = layer_get_all;
-		_[$ "layer_get_all_elements"] = layer_get_all_elements;
-		_[$ "layer_get_name"] = layer_get_name;
-		_[$ "layer_depth"] = layer_depth;
-		_[$ "layer_get_element_layer"] = layer_get_element_layer;
-		_[$ "layer_get_element_type"] = layer_get_element_type;
-		_[$ "layer_element_move"] = layer_element_move;
-		_[$ "layer_force_draw_depth"] = layer_force_draw_depth;
-		_[$ "layer_is_draw_depth_forced"] = layer_is_draw_depth_forced;
-		_[$ "layer_get_forced_depth"] = layer_get_forced_depth;
-		_[$ "layer_background_get_id"] = layer_background_get_id;
-		_[$ "layer_background_exists"] = layer_background_exists;
-		_[$ "layer_background_create"] = layer_background_create;
-		_[$ "layer_background_destroy"] = layer_background_destroy;
-		_[$ "layer_background_visible"] = layer_background_visible;
-		_[$ "layer_background_change"] = layer_background_change;
-		_[$ "layer_background_sprite"] = layer_background_sprite;
-		_[$ "layer_background_htiled"] = layer_background_htiled;
-		_[$ "layer_background_vtiled"] = layer_background_vtiled;
-		_[$ "layer_background_stretch"] = layer_background_stretch;
-		_[$ "layer_background_yscale"] = layer_background_yscale;
-		_[$ "layer_background_xscale"] = layer_background_xscale;
-		_[$ "layer_background_blend"] = layer_background_blend;
-		_[$ "layer_background_alpha"] = layer_background_alpha;
-		_[$ "layer_background_index"] = layer_background_index;
-		_[$ "layer_background_speed"] = layer_background_speed;
-		_[$ "layer_background_get_visible"] = layer_background_get_visible;
-		_[$ "layer_background_get_sprite"] = layer_background_get_sprite;
-		_[$ "layer_background_get_htiled"] = layer_background_get_htiled;
-		_[$ "layer_background_get_vtiled"] = layer_background_get_vtiled;
-		_[$ "layer_background_get_stretch"] = layer_background_get_stretch;
-		_[$ "layer_background_get_yscale"] = layer_background_get_yscale;
-		_[$ "layer_background_get_xscale"] = layer_background_get_xscale;
-		_[$ "layer_background_get_blend"] = layer_background_get_blend;
-		_[$ "layer_background_get_alpha"] = layer_background_get_alpha;
-		_[$ "layer_background_get_index"] = layer_background_get_index;
-		_[$ "layer_background_get_speed"] = layer_background_get_speed;
-		_[$ "layer_sprite_get_id"] = layer_sprite_get_id;
-		_[$ "layer_sprite_exists"] = layer_sprite_exists;
-		_[$ "layer_sprite_create"] = layer_sprite_create;
-		_[$ "layer_sprite_destroy"] = layer_sprite_destroy;
-		_[$ "layer_sprite_change"] = layer_sprite_change;
-		_[$ "layer_sprite_index"] = layer_sprite_index;
-		_[$ "layer_sprite_speed"] = layer_sprite_speed;
-		_[$ "layer_sprite_xscale"] = layer_sprite_xscale;
-		_[$ "layer_sprite_yscale"] = layer_sprite_yscale;
-		_[$ "layer_sprite_angle"] = layer_sprite_angle;
-		_[$ "layer_sprite_blend"] = layer_sprite_blend;
-		_[$ "layer_sprite_alpha"] = layer_sprite_alpha;
-		_[$ "layer_sprite_x"] = layer_sprite_x;
-		_[$ "layer_sprite_y"] = layer_sprite_y;
-		_[$ "layer_sprite_get_sprite"] = layer_sprite_get_sprite;
-		_[$ "layer_sprite_get_index"] = layer_sprite_get_index;
-		_[$ "layer_sprite_get_speed"] = layer_sprite_get_speed;
-		_[$ "layer_sprite_get_xscale"] = layer_sprite_get_xscale;
-		_[$ "layer_sprite_get_yscale"] = layer_sprite_get_yscale;
-		_[$ "layer_sprite_get_angle"] = layer_sprite_get_angle;
-		_[$ "layer_sprite_get_blend"] = layer_sprite_get_blend;
-		_[$ "layer_sprite_get_alpha"] = layer_sprite_get_alpha;
-		_[$ "layer_sprite_get_x"] = layer_sprite_get_x;
-		_[$ "layer_sprite_get_y"] = layer_sprite_get_y;
-		_[$ "layer_tilemap_get_id"] = layer_tilemap_get_id;
-		_[$ "layer_tilemap_exists"] = layer_tilemap_exists;
-		_[$ "layer_tilemap_create"] = layer_tilemap_create;
-		_[$ "layer_tilemap_destroy"] = layer_tilemap_destroy;
-		_[$ "tilemap_tileset"] = tilemap_tileset;
-		_[$ "tilemap_x"] = tilemap_x;
-		_[$ "tilemap_y"] = tilemap_y;
-		_[$ "tilemap_set"] = tilemap_set;
-		_[$ "tilemap_set_at_pixel"] = tilemap_set_at_pixel;
-		_[$ "tilemap_get_tileset"] = tilemap_get_tileset;
-		_[$ "tilemap_get_tile_width"] = tilemap_get_tile_width;
-		_[$ "tilemap_get_tile_height"] = tilemap_get_tile_height;
-		_[$ "tilemap_get_width"] = tilemap_get_width;
-		_[$ "tilemap_get_height"] = tilemap_get_height;
-		_[$ "tilemap_set_width"] = tilemap_set_width;
-		_[$ "tilemap_set_height"] = tilemap_set_height;
-		_[$ "tilemap_get_x"] = tilemap_get_x;
-		_[$ "tilemap_get_y"] = tilemap_get_y;
-		_[$ "tilemap_get"] = tilemap_get;
-		_[$ "tilemap_get_at_pixel"] = tilemap_get_at_pixel;
-		_[$ "tilemap_get_cell_x_at_pixel"] = tilemap_get_cell_x_at_pixel;
-		_[$ "tilemap_get_cell_y_at_pixel"] = tilemap_get_cell_y_at_pixel;
-		_[$ "tilemap_clear"] = tilemap_clear;
-		_[$ "tilemap_set_global_mask"] = tilemap_set_global_mask;
-		_[$ "tilemap_get_global_mask"] = tilemap_get_global_mask;
-		_[$ "tilemap_set_mask"] = tilemap_set_mask;
-		_[$ "tilemap_get_mask"] = tilemap_get_mask;
-		_[$ "tilemap_get_frame"] = tilemap_get_frame;
-		_[$ "tile_set_empty"] = tile_set_empty;
-		_[$ "tile_set_index"] = tile_set_index;
-		_[$ "tile_set_flip"] = tile_set_flip;
-		_[$ "tile_set_mirror"] = tile_set_mirror;
-		_[$ "tile_set_rotate"] = tile_set_rotate;
-		_[$ "tile_get_empty"] = tile_get_empty;
-		_[$ "tile_get_index"] = tile_get_index;
-		_[$ "tile_get_flip"] = tile_get_flip;
-		_[$ "tile_get_mirror"] = tile_get_mirror;
-		_[$ "tile_get_rotate"] = tile_get_rotate;
-		_[$ "layer_tile_exists"] = layer_tile_exists;
-		_[$ "layer_tile_create"] = layer_tile_create;
-		_[$ "layer_tile_destroy"] = layer_tile_destroy;
-		_[$ "layer_tile_change"] = layer_tile_change;
-		_[$ "layer_tile_xscale"] = layer_tile_xscale;
-		_[$ "layer_tile_yscale"] = layer_tile_yscale;
-		_[$ "layer_tile_blend"] = layer_tile_blend;
-		_[$ "layer_tile_alpha"] = layer_tile_alpha;
-		_[$ "layer_tile_x"] = layer_tile_x;
-		_[$ "layer_tile_y"] = layer_tile_y;
-		_[$ "layer_tile_region"] = layer_tile_region;
-		_[$ "layer_tile_visible"] = layer_tile_visible;
-		_[$ "layer_tile_get_sprite"] = layer_tile_get_sprite;
-		_[$ "layer_tile_get_xscale"] = layer_tile_get_xscale;
-		_[$ "layer_tile_get_yscale"] = layer_tile_get_yscale;
-		_[$ "layer_tile_get_blend"] = layer_tile_get_blend;
-		_[$ "layer_tile_get_alpha"] = layer_tile_get_alpha;
-		_[$ "layer_tile_get_x"] = layer_tile_get_x;
-		_[$ "layer_tile_get_y"] = layer_tile_get_y;
-		_[$ "layer_tile_get_region"] = layer_tile_get_region;
-		_[$ "layer_tile_get_visible"] = layer_tile_get_visible;
-		_[$ "layer_instance_get_instance"] = layer_instance_get_instance;
-		_[$ "layer_sequence_get_instance"] = layer_sequence_get_instance;
-		_[$ "layer_sequence_create"] = layer_sequence_create;
-		_[$ "layer_sequence_destroy"] = layer_sequence_destroy;
-		_[$ "layer_sequence_exists"] = layer_sequence_exists;
-		_[$ "layer_sequence_x"] = layer_sequence_x;
-		_[$ "layer_sequence_y"] = layer_sequence_y;
-		_[$ "layer_sequence_angle"] = layer_sequence_angle;
-		_[$ "layer_sequence_xscale"] = layer_sequence_xscale;
-		_[$ "layer_sequence_yscale"] = layer_sequence_yscale;
-		_[$ "layer_sequence_headpos"] = layer_sequence_headpos;
-		_[$ "layer_sequence_headdir"] = layer_sequence_headdir;
-		_[$ "layer_sequence_pause"] = layer_sequence_pause;
-		_[$ "layer_sequence_play"] = layer_sequence_play;
-		_[$ "layer_sequence_speedscale"] = layer_sequence_speedscale;
-		_[$ "layer_sequence_get_x"] = layer_sequence_get_x;
-		_[$ "layer_sequence_get_y"] = layer_sequence_get_y;
-		_[$ "layer_sequence_get_angle"] = layer_sequence_get_angle;
-		_[$ "layer_sequence_get_xscale"] = layer_sequence_get_xscale;
-		_[$ "layer_sequence_get_yscale"] = layer_sequence_get_yscale;
-		_[$ "layer_sequence_get_headpos"] = layer_sequence_get_headpos;
-		_[$ "layer_sequence_get_headdir"] = layer_sequence_get_headdir;
-		_[$ "layer_sequence_get_sequence"] = layer_sequence_get_sequence;
-		_[$ "layer_sequence_is_paused"] = layer_sequence_is_paused;
-		_[$ "layer_sequence_is_finished"] = layer_sequence_is_finished;
-		_[$ "layer_sequence_get_speedscale"] = layer_sequence_get_speedscale;
-		_[$ "layer_sequence_get_length"] = layer_sequence_get_length;
-		return _;
-	})();
-	static vars_display = (function() {
-		var _ = { };
-		_[$ "display_get_width"] = display_get_width;
-		_[$ "display_get_height"] = display_get_height;
-		_[$ "display_get_orientation"] = display_get_orientation;
-		_[$ "display_get_gui_width"] = display_get_gui_width;
-		_[$ "display_get_gui_height"] = display_get_gui_height;
-		_[$ "display_reset"] = display_reset;
-		_[$ "display_mouse_get_x"] = display_mouse_get_x;
-		_[$ "display_mouse_get_y"] = display_mouse_get_y;
-		_[$ "display_mouse_set"] = display_mouse_set;
-		_[$ "display_set_ui_visibility"] = display_set_ui_visibility;
-		_[$ "window_set_fullscreen"] = window_set_fullscreen;
-		_[$ "window_get_fullscreen"] = window_get_fullscreen;
-		_[$ "window_set_caption"] = window_set_caption;
-		_[$ "window_set_min_width"] = window_set_min_width;
-		_[$ "window_set_max_width"] = window_set_max_width;
-		_[$ "window_set_min_height"] = window_set_min_height;
-		_[$ "window_set_max_height"] = window_set_max_height;
-		_[$ "window_get_visible_rects"] = window_get_visible_rects;
-		_[$ "window_get_caption"] = window_get_caption;
-		_[$ "window_set_cursor"] = window_set_cursor;
-		_[$ "window_get_cursor"] = window_get_cursor;
-		_[$ "window_set_colour"] = window_set_colour;
-		_[$ "window_get_colour"] = window_get_colour;
-		_[$ "window_set_color"] = window_set_color;
-		_[$ "window_get_color"] = window_get_color;
-		_[$ "window_set_position"] = window_set_position;
-		_[$ "window_set_size"] = window_set_size;
-		_[$ "window_set_rectangle"] = window_set_rectangle;
-		_[$ "window_center"] = window_center;
-		_[$ "window_get_x"] = window_get_x;
-		_[$ "window_get_y"] = window_get_y;
-		_[$ "window_get_width"] = window_get_width;
-		_[$ "window_get_height"] = window_get_height;
-		_[$ "window_mouse_get_x"] = window_mouse_get_x;
-		_[$ "window_mouse_get_y"] = window_mouse_get_y;
-		_[$ "window_mouse_set"] = window_mouse_set;
-		_[$ "window_view_mouse_get_x"] = window_view_mouse_get_x;
-		_[$ "window_view_mouse_get_y"] = window_view_mouse_get_y;
-		_[$ "window_views_mouse_get_x"] = window_views_mouse_get_x;
-		_[$ "window_views_mouse_get_y"] = window_views_mouse_get_y;
-		_[$ "window_handle"] = window_handle;
-		_[$ "window_device"] = window_device;
-		_[$ "display_get_dpi_x"] = display_get_dpi_x;
-		_[$ "display_get_dpi_y"] = display_get_dpi_y;
-		_[$ "display_set_gui_size"] = display_set_gui_size;
-		_[$ "display_set_gui_maximise"] = display_set_gui_maximise;
-		_[$ "display_set_gui_maximize"] = display_set_gui_maximize;
-		_[$ "display_set_timing_method"] = display_set_timing_method;
-		_[$ "display_get_timing_method"] = display_get_timing_method;
-		_[$ "display_set_sleep_margin"] = display_set_sleep_margin;
-		_[$ "display_get_sleep_margin"] = display_get_sleep_margin;
-		_[$ "window_has_focus"] = window_has_focus;
-		_[$ "camera_create"] = camera_create;
-		_[$ "camera_create_view"] = camera_create_view;
-		_[$ "camera_destroy"] = camera_destroy;
-		_[$ "camera_apply"] = camera_apply;
-		_[$ "camera_get_active"] = camera_get_active;
-		_[$ "camera_get_default"] = camera_get_default;
-		_[$ "camera_set_default"] = camera_set_default;
-		_[$ "camera_set_view_mat"] = camera_set_view_mat;
-		_[$ "camera_set_proj_mat"] = camera_set_proj_mat;
-		_[$ "camera_set_update_script"] = camera_set_update_script;
-		_[$ "camera_set_begin_script"] = camera_set_begin_script;
-		_[$ "camera_set_end_script"] = camera_set_end_script;
-		_[$ "camera_set_view_pos"] = camera_set_view_pos;
-		_[$ "camera_set_view_size"] = camera_set_view_size;
-		_[$ "camera_set_view_speed"] = camera_set_view_speed;
-		_[$ "camera_set_view_border"] = camera_set_view_border;
-		_[$ "camera_set_view_angle"] = camera_set_view_angle;
-		_[$ "camera_set_view_target"] = camera_set_view_target;
-		_[$ "camera_get_view_mat"] = camera_get_view_mat;
-		_[$ "camera_get_proj_mat"] = camera_get_proj_mat;
-		_[$ "camera_get_update_script"] = camera_get_update_script;
-		_[$ "camera_get_begin_script"] = camera_get_begin_script;
-		_[$ "camera_get_end_script"] = camera_get_end_script;
-		_[$ "camera_get_view_x"] = camera_get_view_x;
-		_[$ "camera_get_view_y"] = camera_get_view_y;
-		_[$ "camera_get_view_width"] = camera_get_view_width;
-		_[$ "camera_get_view_height"] = camera_get_view_height;
-		_[$ "camera_get_view_speed_x"] = camera_get_view_speed_x;
-		_[$ "camera_get_view_speed_y"] = camera_get_view_speed_y;
-		_[$ "camera_get_view_border_x"] = camera_get_view_border_x;
-		_[$ "camera_get_view_border_y"] = camera_get_view_border_y;
-		_[$ "camera_get_view_angle"] = camera_get_view_angle;
-		_[$ "camera_get_view_target"] = camera_get_view_target;
-		_[$ "view_get_camera"] = view_get_camera;
-		_[$ "view_get_visible"] = view_get_visible;
-		_[$ "view_get_xport"] = view_get_xport;
-		_[$ "view_get_yport"] = view_get_yport;
-		_[$ "view_get_wport"] = view_get_wport;
-		_[$ "view_get_hport"] = view_get_hport;
-		_[$ "view_get_surface_id"] = view_get_surface_id;
-		_[$ "view_set_camera"] = view_set_camera;
-		_[$ "view_set_visible"] = view_set_visible;
-		_[$ "view_set_xport"] = view_set_xport;
-		_[$ "view_set_yport"] = view_set_yport;
-		_[$ "view_set_wport"] = view_set_wport;
-		_[$ "view_set_hport"] = view_set_hport;
-		_[$ "view_set_surface_id"] = view_set_surface_id;
-		return _;
-	})();
-	static vars_debug = (function() {
-		var _ = { };
-		_[$ "show_debug_message"] = show_debug_message;
-		_[$ "show_debug_overlay"] = show_debug_overlay;
-		_[$ "debug_event"] = debug_event;
-		_[$ "debug_get_callstack"] = debug_get_callstack;
-		_[$ "show_message"] = show_message;
-		_[$ "show_message_async"] = show_message_async;
-		_[$ "show_question"] = show_question;
-		_[$ "show_question_async"] = show_question_async;
-		_[$ "show_error"] = show_error;
-		return _;
-	})();
-	static vars_files = (function() {
-		var _ = { };
-		_[$ "screen_save"] = screen_save;
-		_[$ "screen_save_part"] = screen_save_part;
-		_[$ "gif_open"] = gif_open;
-		_[$ "gif_add_surface"] = gif_add_surface;
-		_[$ "gif_save"] = gif_save;
-		_[$ "gif_save_buffer"] = gif_save_buffer;
-		_[$ "file_text_open_from_string"] = file_text_open_from_string;
-		_[$ "file_text_open_read"] = file_text_open_read;
-		_[$ "file_text_open_write"] = file_text_open_write;
-		_[$ "file_text_open_append"] = file_text_open_append;
-		_[$ "file_text_close"] = file_text_close;
-		_[$ "file_text_write_string"] = file_text_write_string;
-		_[$ "file_text_write_real"] = file_text_write_real;
-		_[$ "file_text_writeln"] = file_text_writeln;
-		_[$ "file_text_read_string"] = file_text_read_string;
-		_[$ "file_text_read_real"] = file_text_read_real;
-		_[$ "file_text_readln"] = file_text_readln;
-		_[$ "file_text_eof"] = file_text_eof;
-		_[$ "file_text_eoln"] = file_text_eoln;
-		_[$ "file_exists"] = file_exists;
-		_[$ "file_delete"] = file_delete;
-		_[$ "file_rename"] = file_rename;
-		_[$ "file_copy"] = file_copy;
-		_[$ "file_find_first"] = file_find_first;
-		_[$ "file_find_next"] = file_find_next;
-		_[$ "file_find_close"] = file_find_close;
-		_[$ "file_attributes"] = file_attributes;
-		_[$ "file_bin_open"] = file_bin_open;
-		_[$ "file_bin_rewrite"] = file_bin_rewrite;
-		_[$ "file_bin_close"] = file_bin_close;
-		_[$ "file_bin_position"] = file_bin_position;
-		_[$ "file_bin_size"] = file_bin_size;
-		_[$ "file_bin_seek"] = file_bin_seek;
-		_[$ "file_bin_write_byte"] = file_bin_write_byte;
-		_[$ "file_bin_read_byte"] = file_bin_read_byte;
-		_[$ "parameter_count"] = parameter_count;
-		_[$ "parameter_string"] = parameter_string;
-		_[$ "ini_open_from_string"] = ini_open_from_string;
-		_[$ "ini_open"] = ini_open;
-		_[$ "ini_close"] = ini_close;
-		_[$ "ini_read_string"] = ini_read_string;
-		_[$ "ini_read_real"] = ini_read_real;
-		_[$ "ini_write_string"] = ini_write_string;
-		_[$ "ini_write_real"] = ini_write_real;
-		_[$ "ini_key_exists"] = ini_key_exists;
-		_[$ "ini_section_exists"] = ini_section_exists;
-		_[$ "ini_key_delete"] = ini_key_delete;
-		_[$ "ini_section_delete"] = ini_section_delete;
-		_[$ "cloud_file_save"] = cloud_file_save;
-		_[$ "cloud_string_save"] = cloud_string_save;
-		_[$ "cloud_synchronise"] = cloud_synchronise;
-		_[$ "http_get"] = http_get;
-		_[$ "http_get_file"] = http_get_file;
-		_[$ "http_post_string"] = http_post_string;
-		_[$ "http_request"] = http_request;
-		_[$ "http_get_request_crossorigin"] = http_get_request_crossorigin;
-		_[$ "http_set_request_crossorigin"] = http_set_request_crossorigin;
-		_[$ "json_encode"] = json_encode;
-		_[$ "json_decode"] = json_decode;
-		_[$ "json_stringify"] = json_stringify;
-		_[$ "json_parse"] = json_parse;
-		_[$ "zip_unzip"] = zip_unzip;
-		_[$ "load_csv"] = load_csv;
-		_[$ "base64_encode"] = base64_encode;
-		_[$ "base64_decode"] = base64_decode;
-		_[$ "md5_string_unicode"] = md5_string_unicode;
-		_[$ "md5_string_utf8"] = md5_string_utf8;
-		_[$ "md5_file"] = md5_file;
-		_[$ "sha1_string_unicode"] = sha1_string_unicode;
-		_[$ "sha1_string_utf8"] = sha1_string_utf8;
-		_[$ "sha1_file"] = sha1_file;
-		return _;
-	})();
-	static vars_particles = (function() {
-		var _ = { };
-		_[$ "effect_create_below"] = effect_create_below;
-		_[$ "effect_create_above"] = effect_create_above;
-		_[$ "effect_clear"] = effect_clear;
-		_[$ "part_type_create"] = part_type_create;
-		_[$ "part_type_destroy"] = part_type_destroy;
-		_[$ "part_type_exists"] = part_type_exists;
-		_[$ "part_type_clear"] = part_type_clear;
-		_[$ "part_type_shape"] = part_type_shape;
-		_[$ "part_type_sprite"] = part_type_sprite;
-		_[$ "part_type_size"] = part_type_size;
-		_[$ "part_type_scale"] = part_type_scale;
-		_[$ "part_type_orientation"] = part_type_orientation;
-		_[$ "part_type_life"] = part_type_life;
-		_[$ "part_type_step"] = part_type_step;
-		_[$ "part_type_death"] = part_type_death;
-		_[$ "part_type_speed"] = part_type_speed;
-		_[$ "part_type_direction"] = part_type_direction;
-		_[$ "part_type_gravity"] = part_type_gravity;
-		_[$ "part_type_colour1"] = part_type_colour1;
-		_[$ "part_type_colour2"] = part_type_colour2;
-		_[$ "part_type_colour3"] = part_type_colour3;
-		_[$ "part_type_colour_mix"] = part_type_colour_mix;
-		_[$ "part_type_colour_rgb"] = part_type_colour_rgb;
-		_[$ "part_type_colour_hsv"] = part_type_colour_hsv;
-		_[$ "part_type_color1"] = part_type_color1;
-		_[$ "part_type_color2"] = part_type_color2;
-		_[$ "part_type_color3"] = part_type_color3;
-		_[$ "part_type_color_mix"] = part_type_color_mix;
-		_[$ "part_type_color_rgb"] = part_type_color_rgb;
-		_[$ "part_type_color_hsv"] = part_type_color_hsv;
-		_[$ "part_type_alpha1"] = part_type_alpha1;
-		_[$ "part_type_alpha2"] = part_type_alpha2;
-		_[$ "part_type_alpha3"] = part_type_alpha3;
-		_[$ "part_type_blend"] = part_type_blend;
-		_[$ "part_system_create"] = part_system_create;
-		_[$ "part_system_create_layer"] = part_system_create_layer;
-		_[$ "part_system_destroy"] = part_system_destroy;
-		_[$ "part_system_exists"] = part_system_exists;
-		_[$ "part_system_clear"] = part_system_clear;
-		_[$ "part_system_draw_order"] = part_system_draw_order;
-		_[$ "part_system_depth"] = part_system_depth;
-		_[$ "part_system_position"] = part_system_position;
-		_[$ "part_system_automatic_update"] = part_system_automatic_update;
-		_[$ "part_system_automatic_draw"] = part_system_automatic_draw;
-		_[$ "part_system_update"] = part_system_update;
-		_[$ "part_system_drawit"] = part_system_drawit;
-		_[$ "part_system_get_layer"] = part_system_get_layer;
-		_[$ "part_system_layer"] = part_system_layer;
-		_[$ "part_particles_create"] = part_particles_create;
-		_[$ "part_particles_create_colour"] = part_particles_create_colour;
-		_[$ "part_particles_create_color"] = part_particles_create_color;
-		_[$ "part_particles_clear"] = part_particles_clear;
-		_[$ "part_particles_count"] = part_particles_count;
-		_[$ "part_emitter_create"] = part_emitter_create;
-		_[$ "part_emitter_destroy"] = part_emitter_destroy;
-		_[$ "part_emitter_destroy_all"] = part_emitter_destroy_all;
-		_[$ "part_emitter_exists"] = part_emitter_exists;
-		_[$ "part_emitter_clear"] = part_emitter_clear;
-		_[$ "part_emitter_region"] = part_emitter_region;
-		_[$ "part_emitter_burst"] = part_emitter_burst;
-		_[$ "part_emitter_stream"] = part_emitter_stream;
-		return _;
-	})();
-	static vars_device = (function() {
-		var _ = { };
-		_[$ "browser_input_capture"] = browser_input_capture;
-		_[$ "os_get_config"] = os_get_config;
-		_[$ "os_get_info"] = os_get_info;
-		_[$ "os_get_language"] = os_get_language;
-		_[$ "os_get_region"] = os_get_region;
-		_[$ "os_check_permission"] = os_check_permission;
-		_[$ "os_request_permission"] = os_request_permission;
-		_[$ "os_lock_orientation"] = os_lock_orientation;
-		_[$ "device_mouse_dbclick_enable"] = device_mouse_dbclick_enable;
-		_[$ "device_get_tilt_x"] = device_get_tilt_x;
-		_[$ "device_get_tilt_y"] = device_get_tilt_y;
-		_[$ "device_get_tilt_z"] = device_get_tilt_z;
-		_[$ "device_is_keypad_open"] = device_is_keypad_open;
-		_[$ "device_mouse_check_button"] = device_mouse_check_button;
-		_[$ "device_mouse_check_button_pressed"] = device_mouse_check_button_pressed;
-		_[$ "device_mouse_check_button_released"] = device_mouse_check_button_released;
-		_[$ "device_mouse_x"] = device_mouse_x;
-		_[$ "device_mouse_y"] = device_mouse_y;
-		_[$ "device_mouse_raw_x"] = device_mouse_raw_x;
-		_[$ "device_mouse_raw_y"] = device_mouse_raw_y;
-		_[$ "device_mouse_x_to_gui"] = device_mouse_x_to_gui;
-		_[$ "device_mouse_y_to_gui"] = device_mouse_y_to_gui;
-		_[$ "os_is_paused"] = os_is_paused;
-		_[$ "code_is_compiled"] = code_is_compiled;
-		_[$ "os_is_network_connected"] = os_is_network_connected;
-		_[$ "os_powersave_enable"] = os_powersave_enable;
-		return _;
-	})();
-	static vars_default = { };
-	switch (_class) {
-	case "instances": return vars_instances;
-	case "pointers": return vars_pointers;
-	case "unsafe": return vars_unsafe;
-	case "introspection": return vars_introspection;
-	case "maths": return vars_maths;
-	case "animation": return vars_animation;
-	case "data_structures": return vars_data_structures;
-	case "random": return vars_random;
-	case "strings": return vars_strings;
-	case "scripts": return vars_scripts;
-	case "input": return vars_input;
-	case "audio": return vars_audio;
-	case "drawing": return vars_drawing;
-	case "layers": return vars_layers;
-	case "display": return vars_display;
-	case "debug": return vars_debug;
-	case "files": return vars_files;
-	case "particles": return vars_particles;
-	case "device": return vars_device;
+	case CatspeakExtGMLClass.OPERATORS: return vars_operators;
+	case CatspeakExtGMLClass.INSTANCES: return vars_instances;
+	case CatspeakExtGMLClass.POINTERS: return vars_pointers;
+	case CatspeakExtGMLClass.UNSAFE: return vars_unsafe;
+	case CatspeakExtGMLClass.INTROSPECTION: return vars_introspection;
+	case CatspeakExtGMLClass.MATHS: return vars_maths;
+	case CatspeakExtGMLClass.ANIMATION: return vars_animation;
+	case CatspeakExtGMLClass.COLLECTIONS: return vars_collections;
+	case CatspeakExtGMLClass.RANDOM: return vars_random;
+	case CatspeakExtGMLClass.STRINGS: return vars_strings;
+	case CatspeakExtGMLClass.SCRIPTS: return vars_scripts;
+	case CatspeakExtGMLClass.INPUT: return vars_input;
+	case CatspeakExtGMLClass.AUDIO: return vars_audio;
+	case CatspeakExtGMLClass.GRAPHICS: return vars_graphics;
+	case CatspeakExtGMLClass.LAYERS: return vars_layers;
+	case CatspeakExtGMLClass.DISPLAY: return vars_display;
+	case CatspeakExtGMLClass.DEBUG: return vars_debug;
+	case CatspeakExtGMLClass.FILES: return vars_files;
+	case CatspeakExtGMLClass.PARTICLES: return vars_particles;
+	case CatspeakExtGMLClass.DEVICE: return vars_device;
 	default: return vars_default;
 	}
 }
