@@ -193,7 +193,18 @@ function CatspeakVM() constructor {
 		for (var i = _n - 1; i >= 0; i -= 1) {
 			values[@ i] = pop();
 		}
-		return values
+		return values;
+	}
+	/// @desc Pops `n`-many values from the stack and inserts them into a struct.
+	/// @param {real} n The number of pairs to pop from the stack.
+	static popManyKWArgs = function(_n) {
+		var values = { };
+		repeat (_n) {
+			var value = pop();
+			var key = pop();
+			values[$ string(key)] = value;
+		}
+		return values;
 	}
 	/// @desc Returns the top value of the stack.
 	static top = function() {
@@ -359,12 +370,7 @@ function CatspeakVM() constructor {
 		case CatspeakOpCode.MAKE_OBJECT:
 			pc += 1;
 			var size = code[pc];
-			var container = { };
-			repeat (size) {
-				var value = pop();
-				var key = pop();
-				container[$ string(key)] = value;
-			}
+			var container = popManyKWArgs(size);
 			push(container);
 			break;
 		case CatspeakOpCode.PRINT:

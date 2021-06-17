@@ -3,7 +3,7 @@
  * Kat @katsaii
  */
 
-var src = @'show : [(show "hi" "hello"); "wtf"]';
+var src = @'show [(show "hi" "hello"); "wtf"] (run show)';
 var chunk = catspeak_eagar_compile(src);
 show_message(chunk);
 var vm = new CatspeakVM()
