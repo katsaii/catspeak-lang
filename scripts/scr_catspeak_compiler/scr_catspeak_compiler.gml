@@ -183,10 +183,17 @@ function CatspeakCompiler(_lexer, _out) constructor {
 			}
 			break;
 		case CatspeakCompilerState.RUN:
-			pushStorage(0);
 			if (consume(CatspeakToken.RUN)) {
+				pushStorage(0);
+				pushState(CatspeakCompilerState.CALL_END);
+			} else if (matchesOperator()) {
+				advance();
+				out.addCode(pos, CatspeakOpCode.VAR_GET);
+				out.addCode(pos, lexeme);
+				pushStorage(1);
 				pushState(CatspeakCompilerState.CALL_END);
 			} else {
+				pushStorage(0);
 				pushState(CatspeakCompilerState.CALL_BEGIN);
 			}
 			pushState(CatspeakCompilerState.ARG);
