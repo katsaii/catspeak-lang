@@ -6,6 +6,8 @@
 /// @desc Represents a type of compiler state.
 enum CatspeakCompilerState {
 	EXPRESSION,
+	BINARY_BEGIN,
+	BINARY_END,
 	RUN,
 	CALL_BEGIN,
 	CALL_END,
@@ -24,6 +26,8 @@ enum CatspeakCompilerState {
 function catspeak_compiler_state_render(_state) {
 	switch (_state) {
 	case CatspeakCompilerState.EXPRESSION: return "EXPRESSION";
+	case CatspeakCompilerState.BINARY_BEGIN: return "BINARY_BEGIN";
+	case CatspeakCompilerState.BINARY_END: return "BINARY_END";
 	case CatspeakCompilerState.RUN: return "RUN";
 	case CatspeakCompilerState.CALL_BEGIN: return "CALL_BEGIN";
 	case CatspeakCompilerState.CALL_END: return "CALL_END";
@@ -151,7 +155,32 @@ function CatspeakCompiler(_lexer, _out) constructor {
 		var state = popState();
 		switch (state) {
 		case CatspeakCompilerState.EXPRESSION:
-			pushState(CatspeakCompilerState.RUN);
+			pushStorage(CatspeakToken.__OPERATORS_BEGIN__ + 1);
+			pushState(CatspeakCompilerState.BINARY_BEGIN);
+			break;
+		case CatspeakCompilerState.BINARY_BEGIN:
+			var precedence = popStorage();
+			if (precedence >= CatspeakToken.__OPERATORS_END__) {
+				pushState(CatspeakCompilerState.RUN);
+				break;
+			}
+			pushStorage(precedence);
+			pushState(CatspeakCompilerState.BINARY_END);
+			pushStorage(precedence + 1);
+			pushState(CatspeakCompilerState.BINARY_BEGIN);
+			break;
+		case CatspeakCompilerState.BINARY_END:
+			var precedence = popStorage();
+			if (consume(precedence)) {
+				out.addCode(pos, CatspeakOpCode.VAR_GET);
+				out.addCode(pos, lexeme);
+				pushStorage(precedence);
+				pushState(CatspeakCompilerState.BINARY_END);
+				pushStorage(-1);
+				pushState(CatspeakCompilerState.CALL_END);
+				pushStorage(precedence + 1);
+				pushState(CatspeakCompilerState.BINARY_BEGIN);
+			}
 			break;
 		case CatspeakCompilerState.RUN:
 			pushStorage(0);

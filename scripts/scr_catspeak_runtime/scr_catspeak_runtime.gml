@@ -394,8 +394,18 @@ function CatspeakVM() constructor {
 		case CatspeakOpCode.CALL:
 			pc += 1;
 			var arg_count = code[pc];
-			var args = popMany(arg_count);
-			var callsite = pop();
+			var callsite, args;
+			if (arg_count < 0) {
+				// due to how the compiler is implemented, code for operators
+				// is generated infix as `a op b`
+				var b = pop();
+				callsite = pop();
+				var a = pop();
+				args = [a, b];
+			} else {
+				args = popMany(arg_count);
+				callsite = pop();
+			}
 			var ty = typeof(callsite);
 			switch (ty) {
 			case "method":
