@@ -538,6 +538,7 @@ enum CatspeakIRKind {
 	NOTHING,
 	EXPRESSION_STATEMENT,
 	SET,
+	SEQUENCE,
 	CONDITIONAL,
 	LOOP,
 	PRINT,
@@ -558,6 +559,7 @@ function catspeak_ir_render(_kind) {
 	case CatspeakIRKind.NOTHING: return "NOTHING";
 	case CatspeakIRKind.EXPRESSION_STATEMENT: return "EXPRESSION_STATEMENT";
 	case CatspeakIRKind.SET: return "SET";
+	case CatspeakIRKind.SEQUENCE: return "SEQUENCE";
 	case CatspeakIRKind.CONDITIONAL: return "CONDITIONAL";
 	case CatspeakIRKind.LOOP: return "LOOP";
 	case CatspeakIRKind.PRINT: return "PRINT";
@@ -682,28 +684,49 @@ function CatspeakParser(_buff) constructor {
 					pos, CatspeakIRKind.NOTHING, undefined);
 		} else if (consume(CatspeakToken.SET)) {
 			var start = pos;
-			var lvalue = parseSubscript();
-			var rvalue = parseSubscript();
+			var lvalue = parseArg();
+			var rvalue = parseArg();
 			expectsSemicolon("after `set` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.SET, {
 				lvalue : lvalue,
 				rvalue : rvalue
 			});
 		} else if (consume(CatspeakToken.IF)) {
-			errorAndAdvance("if statements not implemented");
+			var start = pos;
+			var condition = parseArg();
+			var if_true = parseSequence();
+			var if_false = undefined;
+			if (consume(CatspeakToken.ELSE)) {
+				if (matches(CatspeakToken.IF)) {
+					if_false = parseStmt();
+				} else {
+					if_false = parseSequence();
+				}
+			}
+			return new CatspeakIRNode(start, CatspeakIRKind.CONDITIONAL, {
+				condition : condition,
+				ifTrue : if_true,
+				ifFalse : if_false
+			});
 		} else if (consume(CatspeakToken.WHILE)) {
-			errorAndAdvance("while loops not implemented");
+			var start = pos;
+			var condition = parseArg();
+			var body = parseSequence();
+			return new CatspeakIRNode(start, CatspeakIRKind.LOOP, {
+				condition : condition,
+				body : body
+			});
 		} else if (consume(CatspeakToken.PRINT)) {
 			var start = pos;
 			var values = [];
 			while (matchesExpression()) {
-				array_push(values, parseSubscript());
+				array_push(values, parseArg());
 			}
 			expectsSemicolon("after `print` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.PRINT, values);
 		} else if (consume(CatspeakToken.RETURN)) {
 			var start = pos;
-			var value = parseSubscript();
+			var value = parseArg();
 			expectsSemicolon("after `return` statements");
 			return new CatspeakIRNode(start, CatspeakIRKind.RETURN, value);
 		} else {
@@ -711,6 +734,18 @@ function CatspeakParser(_buff) constructor {
 			expectsSemicolon("after expression statements");
 			return new CatspeakIRNode(value.pos, CatspeakIRKind.EXPRESSION_STATEMENT, value);
 		}
+	}
+	/// @desc Parses a sequence of statements.
+	static parseSequence = function() {
+		var start = pos;
+		expects(CatspeakToken.BRACE_LEFT, "expected opening `{` in statement sequence");
+		var stmts = [];
+		while not (matches(CatspeakToken.BRACE_RIGHT)) {
+			var stmt = parseStmt();
+			array_push(stmts, stmt);
+		}
+		expects(CatspeakToken.BRACE_RIGHT, "expected closing `}` in statement sequence");
+		return new CatspeakIRNode(start, CatspeakIRKind.SEQUENCE, stmts);
 	}
 	/// @desc Entry point for parsing expressions.
 	static parseExpr = function() {
@@ -733,13 +768,13 @@ function CatspeakParser(_buff) constructor {
 	/// @desc Parses a function call.
 	static parseCall = function() {
 		if (consume(CatspeakToken.RUN)) {
-			var callsite = parseSubscript();
+			var callsite = parseArg();
 			return genCallIR(callsite, []);
 		}
-		var callsite = parseSubscript();
+		var callsite = parseArg();
 		var params = [];
 		while (matchesExpression()) {
-			var param = parseSubscript();
+			var param = parseArg();
 			array_push(params, param);
 		}
 		var arg_count = array_length(params);
@@ -748,6 +783,10 @@ function CatspeakParser(_buff) constructor {
 		} else {
 			return genCallIR(callsite, params);
 		}
+	}
+	/// @desc Entry point for parsing function parameters.
+	static parseArg = function() {
+		return parseSubscript();
 	}
 	/// @desc Parses an index operation.
 	static parseSubscript = function() {
