@@ -387,17 +387,54 @@ function CatspeakCompiler(_lexer, _out) constructor {
 	}
 }
 
-/// @desc Compiles this string and returns the resulting intcode program.
+/// @desc Creates a new asynchronous compiler session.
 /// @param {string} str The string that contains the source code.
-function catspeak_eagar_compile(_str) {
+function catspeak_async_compile_begin(_str) {
 	var buff = catspeak_string_to_buffer(_str);
 	var scanner = new CatspeakScanner(buff);
 	var lexer = new CatspeakLexer(scanner);
-	var out = new CatspeakChunk();
-	var compiler = new CatspeakCompiler(lexer, out);
-	while (compiler.inProgress()) {
-		compiler.generateCode();
+	var chunk = new CatspeakChunk();
+	var compiler = new CatspeakCompiler(lexer, chunk);
+	return {
+		buff : buff,
+		chunk : chunk,
+		compiler : compiler
+	};
+}
+
+/// @desc Returns the current progress of the compiler as a percentage.
+/// @param {struct} session The compiler session to consider.
+function catspeak_async_compile_in_progress(_session) {
+	return _session.compiler.inProgress();
+}
+
+/// @desc Returns the current progress of the compiler as a percentage.
+/// @param {struct} session The compiler session to consider.
+function catspeak_async_compile_get_progress(_session) {
+	var buff = _session.buff;
+	return buffer_tell(buff) / buffer_get_size(buff);
+}
+
+/// @desc Updates the compiler progress.
+/// @param {struct} session The compiler session to consider.
+function catspeak_async_compile_update(_session) {
+	return _session.compiler.generateCode();
+}
+
+/// @desc Finishes the current compiler session and destroys any dynamically allocated resources.
+/// @param {struct} session The compiler session to finalise.
+function catspeak_async_compile_end(_session) {
+	var chunk = _session.chunk;
+	buffer_delete(_session.buff);
+	return chunk;
+}
+
+/// @desc Compiles this string and returns the resulting intcode program.
+/// @param {string} str The string that contains the source code.
+function catspeak_eagar_compile(_str) {
+	var session = catspeak_async_compile_begin(_str);
+	while (catspeak_async_compile_in_progress(session)) {
+		catspeak_async_compile_update(session);
 	}
-	buffer_delete(buff);
-	return out;
+	return catspeak_async_compile_end(session);
 }
