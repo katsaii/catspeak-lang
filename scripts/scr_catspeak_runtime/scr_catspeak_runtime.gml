@@ -45,6 +45,16 @@ function catspeak_code_render(_kind) {
 function CatspeakChunk() constructor {
 	intcode = [];
 	diagnostic = [];
+	size = 0;
+	/// @desc Returns the size of this chunk.
+	static getPC = function() {
+		return size;
+	}
+	/// @desc Returns an existing code at this program counter.
+	/// @param {vector} pos The position of this piece of code.
+	static getCode = function(_pos) {
+		return intcode[_pos];
+	}
 	/// @desc Adds a code and its positional information to the program.
 	/// @param {vector} pos The position of this piece of code.
 	/// @param {value} code The piece of code to write.
@@ -52,6 +62,7 @@ function CatspeakChunk() constructor {
 		var i = array_length(intcode);
 		array_push(diagnostic, _pos);
 		array_push(intcode, _code);
+		size += 1;
 		return i;
 	}
 	/// @desc Patches an existing code at this program counter.
