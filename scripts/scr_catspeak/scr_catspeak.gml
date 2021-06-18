@@ -108,6 +108,18 @@ function catspeak_session_add_source(_session, _src) {
     }
 }
 
+/// @desc Discards a recently queued piece of source code.
+/// @param {struct} session The Catspeak session to consider.
+function catspeak_session_discard_source(_session) {
+    buffer_delete(_session.currentSource.buff);
+    var source_queue = _session.sourceQueue;
+    if (array_length(source_queue) > 0) {
+        _session.currentSource = array_pop(source_queue);
+    } else {
+        _session.currentSource = undefined;
+    }
+}
+
 /// @desc Performs a single update step for the compiler.
 /// @param {struct} session The Catspeak session to consider.
 function catspeak_session_update(_session) {
@@ -128,17 +140,13 @@ function catspeak_session_update(_session) {
             compiler.generateCode();
         } catch (_e) {
             handle_catspeak_error(_e, _session.errorHandler);
+            // discard this chunk since it's spicy
+            catspeak_session_discard_source(_session);
         }
         if not (compiler.inProgress()) {
             // start progress on the new compiler
-            buffer_delete(source.buff);
             runtime.addChunk(source.chunk);
-            var source_queue = _session.sourceQueue;
-            if (array_length(source_queue) > 0) {
-                _session.currentSource = array_pop(source_queue);
-            } else {
-                _session.currentSource = undefined;
-            }
+            catspeak_session_discard_source(_session);
         }
     } else {
         try {
@@ -157,7 +165,7 @@ function __CatspeakError(_pos, _msg) constructor {
     reason = is_string(_msg) ? _msg : string(_msg);
     /// @desc Displays the content of this error.
     static toString = function() {
-        return instanceof(self) + " at " + string(pos) + ": " + reason;
+        return "Fatal Error at (row. " + string(pos[0]) + ", col. " + string(pos[1]) + "): " + reason;
     }
 }
 

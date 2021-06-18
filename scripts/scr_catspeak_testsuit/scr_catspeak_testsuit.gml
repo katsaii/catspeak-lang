@@ -17,6 +17,9 @@ catspeak_session_add_source(sess, src);
 catspeak_session_set_result_handler(sess, function(_result) {
     show_message(_result);
 });
+catspeak_session_set_error_handler(sess, function(_error) {
+    show_message(_error);
+});
 while (catspeak_session_in_progress(sess)) {
     catspeak_session_update(sess);
 }
