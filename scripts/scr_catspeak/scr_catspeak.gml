@@ -879,7 +879,8 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushState(__CatspeakCompilerState.SET_BEGIN);
                 pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.IF)) {
-                error("if statements not implemented");
+                pushState(__CatspeakCompilerState.IF_BEGIN);
+                pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.WHILE)) {
                 pushStorage(out.getCurrentSize());
                 pushState(__CatspeakCompilerState.WHILE_BEGIN);
@@ -931,14 +932,25 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             out.addCode(pos, code, param);
             break;
         case __CatspeakCompilerState.IF_BEGIN:
+            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP_FALSE, undefined));
+            pushState(__CatspeakCompilerState.IF_ELSE);
+            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
             break;
         case __CatspeakCompilerState.IF_ELSE:
+            pushState(__CatspeakCompilerState.IF_END);
+            if (consume(__CatspeakToken.ELSE)) {
+                var jump_if_pc = popStorage();
+                pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
+                out.getCode(jump_if_pc).param = out.getCurrentSize();
+                pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+            }
             break;
         case __CatspeakCompilerState.IF_END:
+            var jump_if_pc = popStorage();
+            out.getCode(jump_if_pc).param = out.getCurrentSize();
             break;
         case __CatspeakCompilerState.WHILE_BEGIN:
-            pushStorage(out.getCurrentSize());
-            out.addCode(pos, __CatspeakOpCode.JUMP_FALSE, undefined);
+            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP_FALSE, undefined));
             pushState(__CatspeakCompilerState.WHILE_END);
             pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
             break;
