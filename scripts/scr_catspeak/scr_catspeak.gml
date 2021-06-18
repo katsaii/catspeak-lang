@@ -1,68 +1,188 @@
 /* Catspeak Core Compiler
-    * ----------------------
-    * Kat @katsaii
-    */
+ * ----------------------
+ * Kat @katsaii
+ */
 
-/// @desc A helper function for converting strings into a preferred format by Catspeak.
-/// @param {string} str The string to convert into a buffer.
-function catspeak_string_to_buffer(_str) {
-    var size = string_byte_length(_str);
-    var buff = buffer_create(size, buffer_fixed, 1);
-    buffer_write(buff, buffer_text, _str);
-    buffer_seek(buff, buffer_seek_start, 0);
-    return buff;
+/// @desc Handles the creation of interfaces to be used by the Catspeak VM.
+function CatspeakInterface() constructor {
+    vars = { };
+    /// @desc Inserts a new constant into to the interface.
+    /// @param {string} name The name of the constant.
+    /// @param {value} value The value of the constant.
+    static addConstant = function(_name, _value) {
+        vars[$ _name] = _value;
+        return self;
+    }
+    /// @desc Inserts a new function into to the interface.
+    /// @param {string} name The name of the function.
+    /// @param {value} method_or_script_id The reference to the function.
+    static addFunction = function(_name, _value) {
+        var f = _value;
+        if not (is_method(f)) {
+            // this is so that unexposed functions cannot be enumerated
+            // by a malicious user in order to access important functions
+            f = method(undefined, f);
+        }
+        vars[$ _name] = f;
+        return self;
+    }
+}
+
+/// @desc Represents a type of configuration option.
+enum CatspeakOption {
+    GLOBAL_VISIBILITY,
+    INSTANCE_VISIBILITY,
+    RESULT_HANDLER
+}
+
+/// @desc Creates a new Catspeak session.
+function catspeak_session_create() {
+    return {
+        sourceQueue : [],
+        currentSource : undefined,
+        errorHandler : undefined,
+        runtime : new __CatspeakVM()
+    };
+}
+
+/// @desc Destroys an existing catspeak session.
+/// @param {struct} session The Catspeak session to destroy.
+function catspeak_session_destroy(_session) {
+    buffer_delete(_session.currentSource.buff);
+    var source_queue = _session.sourceQueue;
+    for (var i = array_length(source_queue) - 1; i >= 0; i -= 1) {
+        var source = source_queue[i];
+        buffer_delete(source.buff);
+    }
+    variable_struct_remove(_session, "sourceQueue");
+    variable_struct_remove(_session, "currentSource");
+    variable_struct_remove(_session, "errorHandler");
+    variable_struct_remove(_session, "runtime");
+}
+
+/// @desc Returns whether the session is processing.
+/// @param {struct} session The Catspeak session to consider.
+function catspeak_session_in_progress(_session) {
+    return _session.currentSource != undefined || _session.runtime.inProgress();
+}
+
+/// @desc Sets the error handler for this Catspeak session.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {script} id The id of the script to execute upon receiving a Catspeak error.
+function catspeak_session_set_error_handler(_session, _f) {
+    _session.errorHandler = _f;
+}
+
+/// @desc Adds a new piece of source code to the current Catspeak session.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {string} src The source code to compiler and evaluate.
+function catspeak_session_add_source(_session, _src) {
+    var src_size = string_byte_length(_src);
+    var src_buff = buffer_create(src_size, buffer_fixed, 1);
+    buffer_write(src_buff, buffer_text, _src);
+    buffer_seek(src_buff, buffer_seek_start, 0);
+    var src_scanner = new __CatspeakScanner(src_buff);
+    var src_lexer = new __CatspeakLexer(src_scanner);
+    var src_chunk = new __CatspeakChunk();
+    var src_compiler = new __CatspeakCompiler(src_lexer, src_chunk);
+    var source = {
+        buff : src_buff,
+        chunk : src_chunk,
+        compiler : src_compiler
+    };
+    if (_session.currentSource == undefined) {
+        _session.currentSource = source;
+    } else {
+        array_insert(_session.sourceQueue, 0, source);
+    }
+}
+
+/// @desc Performs a single update step for the compiler.
+/// @param {struct} session The Catspeak session to consider.
+function catspeak_session_update(_session) {
+    var source = _session.currentSource;
+    var runtime = _session.runtime;
+    if (source != undefined) {
+        var compiler = source.compiler;
+        try {
+            compiler.generateCode();
+        } catch (_e) {
+            if (errorHandler != undefined) {
+                errorHandler(_e);
+            }
+        }
+        if not (compiler.inProgress()) {
+            // start progress on the new compiler
+            buffer_delete(source.buff);
+            runtime.addChunk(source.chunk);
+            var source_queue = _session.sourceQueue;
+            if (array_length(source_queue) > 0) {
+                _session.currentSource = array_pop(source_queue);
+            } else {
+                _session.currentSource = undefined;
+            }
+        }
+    } else {
+        try {
+            runtime.computeProgram();
+        } catch (_e) {
+            if (errorHandler != undefined) {
+                errorHandler(_e);
+            }
+        }
+    }
 }
 
 /// @desc Creates a new asynchronous compiler session.
 /// @param {string} str The string that contains the source code.
 function catspeak_async_compile_begin(_str) {
-	var buff = catspeak_string_to_buffer(_str);
-	var scanner = new __CatspeakScanner(buff);
-	var lexer = new __CatspeakLexer(scanner);
-	var chunk = new __CatspeakChunk();
-	var compiler = new __CatspeakCompiler(lexer, chunk);
-	return {
-		buff : buff,
-		chunk : chunk,
-		compiler : compiler
-	};
+    var buff = catspeak_string_to_buffer(_str);
+    var scanner = new __CatspeakScanner(buff);
+    var lexer = new __CatspeakLexer(scanner);
+    var chunk = new __CatspeakChunk();
+    var compiler = new __CatspeakCompiler(lexer, chunk);
+    return {
+        buff : buff,
+        chunk : chunk,
+        compiler : compiler
+    };
 }
 
 /// @desc Returns the current progress of the compiler as a percentage.
 /// @param {struct} session The compiler session to consider.
 function catspeak_async_compile_in_progress(_session) {
-	return _session.compiler.inProgress();
+    return _session.compiler.inProgress();
 }
 
 /// @desc Returns the current progress of the compiler as a percentage.
 /// @param {struct} session The compiler session to consider.
 function catspeak_async_compile_get_progress(_session) {
-	var buff = _session.buff;
-	return buffer_tell(buff) / buffer_get_size(buff);
+    var buff = _session.buff;
+    return buffer_tell(buff) / buffer_get_size(buff);
 }
 
 /// @desc Updates the compiler progress.
 /// @param {struct} session The compiler session to consider.
 function catspeak_async_compile_update(_session) {
-	return _session.compiler.generateCode();
+    return _session.compiler.generateCode();
 }
 
 /// @desc Finishes the current compiler session and destroys any dynamically allocated resources.
 /// @param {struct} session The compiler session to finalise.
 function catspeak_async_compile_end(_session) {
-	var chunk = _session.chunk;
-	buffer_delete(_session.buff);
-	return chunk;
+    var chunk = _session.chunk;
+    buffer_delete(_session.buff);
+    return chunk;
 }
 
 /// @desc Compiles this string and returns the resulting intcode program.
 /// @param {string} str The string that contains the source code.
 function catspeak_eagar_compile(_str) {
-	var session = catspeak_async_compile_begin(_str);
-	while (catspeak_async_compile_in_progress(session)) {
-		catspeak_async_compile_update(session);
-	}
-	return catspeak_async_compile_end(session);
+    var session = catspeak_async_compile_begin(_str);
+    while (catspeak_async_compile_in_progress(session)) {
+        catspeak_async_compile_update(session);
+    }
+    return catspeak_async_compile_end(session);
 }
 
 /// @desc Represents a Catspeak error.
@@ -155,7 +275,7 @@ function __catspeak_token_render(_kind) {
 
 /// @desc Returns whether a token is a valid operator.
 /// @param {__CatspeakToken} token The token to check.
-function catspeak_token_is_operator(_token) {
+function __catspeak_token_is_operator(_token) {
     return _token > __CatspeakToken.__OPERATORS_BEGIN__
             && _token < __CatspeakToken.__OPERATORS_END__;
 }
@@ -556,7 +676,7 @@ function __CatspeakLexer(_scanner) constructor {
                     implicit_semicolon = false;
                     break;
                 default:
-                    if (catspeak_token_is_operator(pred)) {
+                    if (__catspeak_token_is_operator(pred)) {
                         implicit_semicolon = false;
                     }
                 }
@@ -569,7 +689,7 @@ function __CatspeakLexer(_scanner) constructor {
                     implicit_semicolon = false;
                     break;
                 default:
-                    if (catspeak_token_is_operator(succ)) {
+                    if (__catspeak_token_is_operator(succ)) {
                         implicit_semicolon = false;
                     }
                 }
@@ -597,403 +717,403 @@ function __CatspeakLexer(_scanner) constructor {
 
 /// @desc Represents a type of compiler state.
 enum __CatspeakCompilerState {
-	PROGRAM,
-	STATEMENT,
-	SET_BEGIN,
-	SET_END,
-	PRINT,
-	RETURN,
-	POP_VALUE,
-	EXPRESSION,
-	BINARY_BEGIN,
-	BINARY_END,
-	RUN,
-	CALL_BEGIN,
-	CALL_END,
-	ARG,
-	SUBSCRIPT_BEGIN,
-	SUBSCRIPT_END,
-	TERMINAL,
-	GROUPING_BEGIN,
-	GROUPING_END,
-	ARRAY,
-	OBJECT
+    PROGRAM,
+    STATEMENT,
+    SET_BEGIN,
+    SET_END,
+    PRINT,
+    RETURN,
+    POP_VALUE,
+    EXPRESSION,
+    BINARY_BEGIN,
+    BINARY_END,
+    RUN,
+    CALL_BEGIN,
+    CALL_END,
+    ARG,
+    SUBSCRIPT_BEGIN,
+    SUBSCRIPT_END,
+    TERMINAL,
+    GROUPING_BEGIN,
+    GROUPING_END,
+    ARRAY,
+    OBJECT
 }
 
 /// @desc Displays the compiler state as a string.
 /// @param {__CatspeakCompilerState} state The state to display.
 function __catspeak_compiler_state_render(_state) {
-	switch (_state) {
-	case __CatspeakCompilerState.PROGRAM: return "PROGRAM";
-	case __CatspeakCompilerState.STATEMENT: return "STATEMENT";
-	case __CatspeakCompilerState.SET_BEGIN: return "SET_BEGIN";
-	case __CatspeakCompilerState.SET_END: return "SET_END";
-	case __CatspeakCompilerState.PRINT: return "PRINT";
-	case __CatspeakCompilerState.RETURN: return "RETURN";
-	case __CatspeakCompilerState.POP_VALUE: return "POP_VALUE";
-	case __CatspeakCompilerState.EXPRESSION: return "EXPRESSION";
-	case __CatspeakCompilerState.BINARY_BEGIN: return "BINARY_BEGIN";
-	case __CatspeakCompilerState.BINARY_END: return "BINARY_END";
-	case __CatspeakCompilerState.RUN: return "RUN";
-	case __CatspeakCompilerState.CALL_BEGIN: return "CALL_BEGIN";
-	case __CatspeakCompilerState.CALL_END: return "CALL_END";
-	case __CatspeakCompilerState.ARG: return "ARG";
-	case __CatspeakCompilerState.SUBSCRIPT_BEGIN: return "SUBSCRIPT_BEGIN";
-	case __CatspeakCompilerState.SUBSCRIPT_END: return "SUBSCRIPT_END";
-	case __CatspeakCompilerState.TERMINAL: return "TERMINAL";
-	case __CatspeakCompilerState.GROUPING_BEGIN: return "GROUPING_BEGIN";
-	case __CatspeakCompilerState.GROUPING_END: return "GROUPING_END";
-	case __CatspeakCompilerState.ARRAY: return "ARRAY";
-	case __CatspeakCompilerState.OBJECT: return "OBJECT";
-	default: return "<unknown>";
-	}
+    switch (_state) {
+    case __CatspeakCompilerState.PROGRAM: return "PROGRAM";
+    case __CatspeakCompilerState.STATEMENT: return "STATEMENT";
+    case __CatspeakCompilerState.SET_BEGIN: return "SET_BEGIN";
+    case __CatspeakCompilerState.SET_END: return "SET_END";
+    case __CatspeakCompilerState.PRINT: return "PRINT";
+    case __CatspeakCompilerState.RETURN: return "RETURN";
+    case __CatspeakCompilerState.POP_VALUE: return "POP_VALUE";
+    case __CatspeakCompilerState.EXPRESSION: return "EXPRESSION";
+    case __CatspeakCompilerState.BINARY_BEGIN: return "BINARY_BEGIN";
+    case __CatspeakCompilerState.BINARY_END: return "BINARY_END";
+    case __CatspeakCompilerState.RUN: return "RUN";
+    case __CatspeakCompilerState.CALL_BEGIN: return "CALL_BEGIN";
+    case __CatspeakCompilerState.CALL_END: return "CALL_END";
+    case __CatspeakCompilerState.ARG: return "ARG";
+    case __CatspeakCompilerState.SUBSCRIPT_BEGIN: return "SUBSCRIPT_BEGIN";
+    case __CatspeakCompilerState.SUBSCRIPT_END: return "SUBSCRIPT_END";
+    case __CatspeakCompilerState.TERMINAL: return "TERMINAL";
+    case __CatspeakCompilerState.GROUPING_BEGIN: return "GROUPING_BEGIN";
+    case __CatspeakCompilerState.GROUPING_END: return "GROUPING_END";
+    case __CatspeakCompilerState.ARRAY: return "ARRAY";
+    case __CatspeakCompilerState.OBJECT: return "OBJECT";
+    default: return "<unknown>";
+    }
 }
 
 /// @desc Creates a new compiler that handles syntactic analysis and code generation.
 /// @param {__CatspeakLexer} lexer The lexer to use to generate the intcode program.
 /// @param {__CatspeakChunk} out The program to write code to.
 function __CatspeakCompiler(_lexer, _out) constructor {
-	lexer = _lexer;
-	out = _out;
-	token = __CatspeakToken.BOF;
-	pos = lexer.getPosition();
-	lexeme = lexer.getLexeme();
-	peeked = lexer.next();
-	instructionStack = [__CatspeakCompilerState.PROGRAM];
-	storageStack = [];
-	/// @desc Adds a new compiler state to the instruction stack.
-	/// @param {__CatspeakCompilerState} state The state to insert.
-	static pushState = function(_state) {
-		array_push(instructionStack, _state);
-	}
-	/// @desc Pops the top state from the instruction stack.
-	static popState = function() {
-		return array_pop(instructionStack);
-	}
-	/// @desc Adds a new value to the storage stack.
-	/// @param {value} value The value to store.
-	/// @param {value} ... Additional values.
-	static pushStorage = function() {
-		for (var i = 0; i < argument_count; i += 1) {
-			var value = argument[i];
-			array_push(storageStack, value);
-		}
-	}
-	/// @desc Pops the top value from the storage stack.
-	/// @param {value} value The value to store.
-	static popStorage = function() {
-		return array_pop(storageStack);
-	}
-	/// @desc Returns the current buffer position.
-	static getPosition = function() {
-		return pos;
-	}
-	/// @desc Advances the parser and returns the token.
-	static advance = function() {
-		token = peeked;
-		pos = lexer.getPosition();
-		lexeme = lexer.getLexeme();
-		peeked = lexer.next();
-		return token;
-	}
-	/// @desc Returns true if the current token matches this token kind.
-	/// @param {__CatspeakToken} kind The token kind to match.
-	static matches = function(_kind) {
-		return peeked == _kind;
-	}
-	/// @desc Returns true if the current token infers an expression.
-	static matchesExpression = function() {
-		return matches(__CatspeakToken.PAREN_LEFT)
-				|| matches(__CatspeakToken.BOX_LEFT)
-				|| matches(__CatspeakToken.BRACE_LEFT)
-				|| matches(__CatspeakToken.COLON)
-				|| matches(__CatspeakToken.IDENTIFIER)
-				|| matches(__CatspeakToken.STRING)
-				|| matches(__CatspeakToken.NUMBER);
-	}
-	/// @desc Returns true if the current token matches any kind of operator.
-	static matchesOperator = function() {
-		return catspeak_token_is_operator(peeked);
-	}
-	/// @desc Attempts to match against a token and advances the parser if this was successful.
-	/// @param {__CatspeakToken} kind The token kind to consume.
-	static consume = function(_kind) {
-		if (matches(_kind)) {
-			advance();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	/// @desc Throws a `__CatspeakError` for the current token.
-	/// @param {string} on_error The error message.
-	static error = function(_msg) {
-		throw new __CatspeakError(pos, _msg + " -- got `" + string(lexeme) + "` (" + __catspeak_token_render(token) + ")");
-	}
-	/// @desc Advances the parser and throws a `CatspeakCompilerError` for the current token.
-	/// @param {string} on_error The error message.
-	static errorAndAdvance = function(_msg) {
-		advance();
-		error(_msg);
-	}
-	/// @desc Throws a `CatspeakCompilerError` if the current token is not the expected value. Advances the parser otherwise.
-	/// @param {__CatspeakToken} kind The token kind to expect.
-	/// @param {string} on_error The error message.
-	static expects = function(_kind, _msg) {
-		if (consume(_kind)) {
-			return token;
-		} else {
-			errorAndAdvance(_msg);
-			return undefined;
-		}
-	}
-	/// @desc Throws a `CatspeakCompilerError` if the current token is not a semicolon. Advances the parser otherwise.
-	/// @param {string} on_error The error message.
-	static expectsSemicolon = function(_msg) {
-		return expects(__CatspeakToken.SEMICOLON, "expected `;` or new line " + _msg);
-	}
-	/// @desc Returns whether the compiler is in progress.
-	static inProgress = function() {
-		return array_length(instructionStack) > 0;
-	}
-	/// @desc Performs a single step of parsing and code generation.
-	static generateCode = function() {
-		var state = popState();
-		switch (state) {
-		case __CatspeakCompilerState.PROGRAM:
-			if not (matches(__CatspeakToken.EOF)) {
-				pushState(__CatspeakCompilerState.PROGRAM);
-				pushState(__CatspeakCompilerState.STATEMENT);
-			}
-			break;
-		case __CatspeakCompilerState.STATEMENT:
-			if (consume(__CatspeakToken.SEMICOLON)) {
-				// do nothing
-			} else if (consume(__CatspeakToken.SET)) {
-				pushState(__CatspeakCompilerState.SET_BEGIN);
-				pushState(__CatspeakCompilerState.ARG);
-			} else if (consume(__CatspeakToken.IF)) {
-				error("if statements not implemented");
-			} else if (consume(__CatspeakToken.WHILE)) {
-				error("while loops not implemented");
-			} else if (consume(__CatspeakToken.PRINT)) {
-				pushState(__CatspeakCompilerState.PRINT);
-				pushState(__CatspeakCompilerState.ARG);
-			} else if (consume(__CatspeakToken.RETURN)) {
-				pushState(__CatspeakCompilerState.RETURN);
-				pushState(__CatspeakCompilerState.ARG);
-			} else {
-				pushState(__CatspeakCompilerState.POP_VALUE);
-				pushState(__CatspeakCompilerState.EXPRESSION);
-			}
-			break;
-		case __CatspeakCompilerState.SET_BEGIN:
-			var top_pc = out.getCurrentSize() - 1;
-			var top_inst = out.getCode(top_pc);
-			switch (top_inst.code) {
-			case __CatspeakOpCode.VAR_GET:
-				pushStorage(__CatspeakOpCode.VAR_SET);
-				break;
-			case __CatspeakOpCode.REF_GET:
-				pushStorage(__CatspeakOpCode.REF_SET);
-				break;
-			default:
-				error("invalid assignment target");
-				break;
-			}
-			out.removeCode(top_pc);
-			pushStorage(top_inst.param);
-			pushState(__CatspeakCompilerState.SET_END);
-			pushState(__CatspeakCompilerState.ARG);
-			break;
-		case __CatspeakCompilerState.SET_END:
-			expectsSemicolon("after assignment statements");
-			var param = popStorage();
-			var code = popStorage();
-			out.addCode(pos, code, param);
-			break;
-		case __CatspeakCompilerState.PRINT:
-			expectsSemicolon("after print statements");
-			out.addCode(pos, __CatspeakOpCode.PRINT);
-			break;
-		case __CatspeakCompilerState.RETURN:
-			expectsSemicolon("after return statements");
-			out.addCode(pos, __CatspeakOpCode.RETURN);
-			break;
-		case __CatspeakCompilerState.POP_VALUE:
-			expectsSemicolon("after expression statements");
-			out.addCode(pos, __CatspeakOpCode.POP);
-			break;
-		case __CatspeakCompilerState.EXPRESSION:
-			pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
-			pushState(__CatspeakCompilerState.BINARY_BEGIN);
-			break;
-		case __CatspeakCompilerState.BINARY_BEGIN:
-			var precedence = popStorage();
-			if (precedence >= __CatspeakToken.__OPERATORS_END__) {
-				pushState(__CatspeakCompilerState.RUN);
-				break;
-			}
-			pushStorage(precedence);
-			pushState(__CatspeakCompilerState.BINARY_END);
-			pushStorage(precedence + 1);
-			pushState(__CatspeakCompilerState.BINARY_BEGIN);
-			break;
-		case __CatspeakCompilerState.BINARY_END:
-			var precedence = popStorage();
-			if (consume(precedence)) {
-				out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
-				pushStorage(precedence);
-				pushState(__CatspeakCompilerState.BINARY_END);
-				pushStorage(-1);
-				pushState(__CatspeakCompilerState.CALL_END);
-				pushStorage(precedence + 1);
-				pushState(__CatspeakCompilerState.BINARY_BEGIN);
-			}
-			break;
-		case __CatspeakCompilerState.RUN:
-			if (consume(__CatspeakToken.RUN)) {
-				pushStorage(0);
-				pushState(__CatspeakCompilerState.CALL_END);
-			} else if (matchesOperator()) {
-				advance();
-				out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
-				pushStorage(1);
-				pushState(__CatspeakCompilerState.CALL_END);
-			} else {
-				pushStorage(0);
-				pushState(__CatspeakCompilerState.CALL_BEGIN);
-			}
-			pushState(__CatspeakCompilerState.ARG);
-			break;
-		case __CatspeakCompilerState.CALL_BEGIN:
-			var arg_count = popStorage();
-			if (matchesExpression()) {
-				arg_count += 1;
-				pushState(__CatspeakCompilerState.CALL_BEGIN);
-				pushState(__CatspeakCompilerState.ARG);
-			} else {
-				if (arg_count <= 0) {
-					break;
-				}
-				pushState(__CatspeakCompilerState.CALL_END);
-			}
-			pushStorage(arg_count);
-			break;
-		case __CatspeakCompilerState.CALL_END:
-			var arg_count = popStorage();
-			out.addCode(pos, __CatspeakOpCode.CALL, arg_count);
-			break;
-		case __CatspeakCompilerState.ARG:
-			pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
-			pushState(__CatspeakCompilerState.TERMINAL);
-			break;
-		case __CatspeakCompilerState.SUBSCRIPT_BEGIN:
-			if (consume(__CatspeakToken.DOT)) {
-				pushState(__CatspeakCompilerState.SUBSCRIPT_END);
-				var access_type;
-				if (consume(__CatspeakToken.BOX_LEFT)) {
-					access_type = 0x00;
-					pushState(__CatspeakCompilerState.EXPRESSION);
-				} else if (consume(__CatspeakToken.BRACE_LEFT)) {
-					access_type = 0x01;
-					pushState(__CatspeakCompilerState.EXPRESSION);
-				} else {
-					access_type = 0x02;
-					expects(__CatspeakToken.IDENTIFIER, "expected identifier after binary `.` operator");
-					out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
-				}
-				pushStorage(access_type);
-			}
-			break;
-		case __CatspeakCompilerState.SUBSCRIPT_END:
-			var access_type = popStorage();
-			var unordered;
-			switch (access_type) {
-			case 0x00:
-				unordered = false;
-				expects(__CatspeakToken.BOX_RIGHT, "expected closing `]` in ordered indexing");
-				break;
-			case 0x01:
-				expects(__CatspeakToken.BRACE_RIGHT, "expected closing `}` in unordered indexing");
-			default:
-				unordered = true;
-				break;
-			}
-			out.addCode(pos, __CatspeakOpCode.REF_GET, unordered);
-			pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
-			break;
-		case __CatspeakCompilerState.TERMINAL:
-			if (consume(__CatspeakToken.IDENTIFIER)) {
-				out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
-			} else if (matchesOperator()) {
-				advance();
-				out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
-			} else if (consume(__CatspeakToken.STRING)) {
-				out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
-			} else if (consume(__CatspeakToken.NUMBER)) {
-				out.addCode(pos, __CatspeakOpCode.PUSH, real(lexeme));
-			} else {
-				pushState(__CatspeakCompilerState.GROUPING_BEGIN);
-			}
-			break;
-		case __CatspeakCompilerState.GROUPING_BEGIN:
-			if (consume(__CatspeakToken.COLON)) {
-				pushState(__CatspeakCompilerState.EXPRESSION);
-			} else if (consume(__CatspeakToken.PAREN_LEFT)) {
-				pushState(__CatspeakCompilerState.GROUPING_END);
-				pushState(__CatspeakCompilerState.EXPRESSION);
-			} else if (consume(__CatspeakToken.BOX_LEFT)) {
-				pushStorage(0); // store the source position and array length
-				pushState(__CatspeakCompilerState.ARRAY);
-			} else if (consume(__CatspeakToken.BRACE_LEFT)) {
-				pushStorage(0);
-				pushState(__CatspeakCompilerState.OBJECT);
-			} else {
-				errorAndAdvance("unexpected symbol in expression");
-			}
-			break;
-		case __CatspeakCompilerState.GROUPING_END:
-			expects(__CatspeakToken.PAREN_RIGHT, "expected closing `)` in grouping");
-			break;
-		case __CatspeakCompilerState.ARRAY:
-			var size = popStorage();
-			while (consume(__CatspeakToken.SEMICOLON)) { }
-			if (consume(__CatspeakToken.BOX_RIGHT)) {
-				out.addCode(pos, __CatspeakOpCode.MAKE_ARRAY, size);
-			} else {
-				pushStorage(size + 1);
-				pushState(__CatspeakCompilerState.ARRAY);
-				pushState(__CatspeakCompilerState.EXPRESSION);
-			}
-			break;
-		case __CatspeakCompilerState.OBJECT:
-			var size = popStorage();
-			while (consume(__CatspeakToken.SEMICOLON)) { }
-			if (consume(__CatspeakToken.BRACE_RIGHT)) {
-				out.addCode(pos, __CatspeakOpCode.MAKE_OBJECT, size);
-			} else {
-				pushStorage(size + 1);
-				pushState(__CatspeakCompilerState.OBJECT);
-				pushState(__CatspeakCompilerState.ARG);
-				if (consume(__CatspeakToken.DOT)) {
-					expects(__CatspeakToken.IDENTIFIER, "expected identifier after unary `.` operator");
-					out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
-				} else {
-					pushState(__CatspeakCompilerState.ARG);
-				}
-			}
-			break;
-		default:
-			error("unknown compiler instruction `" + string(state) + "` (" + __catspeak_compiler_state_render(state) + ")");
-			break;
-		}
-		if not (inProgress()) {
-			// code generation complete, add a final return code
-			out.addCode(pos, __CatspeakOpCode.PUSH, undefined);
-			out.addCode(pos, __CatspeakOpCode.RETURN);
-		}
-	}
+    lexer = _lexer;
+    out = _out;
+    token = __CatspeakToken.BOF;
+    pos = lexer.getPosition();
+    lexeme = lexer.getLexeme();
+    peeked = lexer.next();
+    instructionStack = [__CatspeakCompilerState.PROGRAM];
+    storageStack = [];
+    /// @desc Adds a new compiler state to the instruction stack.
+    /// @param {__CatspeakCompilerState} state The state to insert.
+    static pushState = function(_state) {
+        array_push(instructionStack, _state);
+    }
+    /// @desc Pops the top state from the instruction stack.
+    static popState = function() {
+        return array_pop(instructionStack);
+    }
+    /// @desc Adds a new value to the storage stack.
+    /// @param {value} value The value to store.
+    /// @param {value} ... Additional values.
+    static pushStorage = function() {
+        for (var i = 0; i < argument_count; i += 1) {
+            var value = argument[i];
+            array_push(storageStack, value);
+        }
+    }
+    /// @desc Pops the top value from the storage stack.
+    /// @param {value} value The value to store.
+    static popStorage = function() {
+        return array_pop(storageStack);
+    }
+    /// @desc Returns the current buffer position.
+    static getPosition = function() {
+        return pos;
+    }
+    /// @desc Advances the parser and returns the token.
+    static advance = function() {
+        token = peeked;
+        pos = lexer.getPosition();
+        lexeme = lexer.getLexeme();
+        peeked = lexer.next();
+        return token;
+    }
+    /// @desc Returns true if the current token matches this token kind.
+    /// @param {__CatspeakToken} kind The token kind to match.
+    static matches = function(_kind) {
+        return peeked == _kind;
+    }
+    /// @desc Returns true if the current token infers an expression.
+    static matchesExpression = function() {
+        return matches(__CatspeakToken.PAREN_LEFT)
+                || matches(__CatspeakToken.BOX_LEFT)
+                || matches(__CatspeakToken.BRACE_LEFT)
+                || matches(__CatspeakToken.COLON)
+                || matches(__CatspeakToken.IDENTIFIER)
+                || matches(__CatspeakToken.STRING)
+                || matches(__CatspeakToken.NUMBER);
+    }
+    /// @desc Returns true if the current token matches any kind of operator.
+    static matchesOperator = function() {
+        return __catspeak_token_is_operator(peeked);
+    }
+    /// @desc Attempts to match against a token and advances the parser if this was successful.
+    /// @param {__CatspeakToken} kind The token kind to consume.
+    static consume = function(_kind) {
+        if (matches(_kind)) {
+            advance();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /// @desc Throws a `__CatspeakError` for the current token.
+    /// @param {string} on_error The error message.
+    static error = function(_msg) {
+        throw new __CatspeakError(pos, _msg + " -- got `" + string(lexeme) + "` (" + __catspeak_token_render(token) + ")");
+    }
+    /// @desc Advances the parser and throws a `CatspeakCompilerError` for the current token.
+    /// @param {string} on_error The error message.
+    static errorAndAdvance = function(_msg) {
+        advance();
+        error(_msg);
+    }
+    /// @desc Throws a `CatspeakCompilerError` if the current token is not the expected value. Advances the parser otherwise.
+    /// @param {__CatspeakToken} kind The token kind to expect.
+    /// @param {string} on_error The error message.
+    static expects = function(_kind, _msg) {
+        if (consume(_kind)) {
+            return token;
+        } else {
+            errorAndAdvance(_msg);
+            return undefined;
+        }
+    }
+    /// @desc Throws a `CatspeakCompilerError` if the current token is not a semicolon. Advances the parser otherwise.
+    /// @param {string} on_error The error message.
+    static expectsSemicolon = function(_msg) {
+        return expects(__CatspeakToken.SEMICOLON, "expected `;` or new line " + _msg);
+    }
+    /// @desc Returns whether the compiler is in progress.
+    static inProgress = function() {
+        return array_length(instructionStack) > 0;
+    }
+    /// @desc Performs a single step of parsing and code generation.
+    static generateCode = function() {
+        var state = popState();
+        switch (state) {
+        case __CatspeakCompilerState.PROGRAM:
+            if not (matches(__CatspeakToken.EOF)) {
+                pushState(__CatspeakCompilerState.PROGRAM);
+                pushState(__CatspeakCompilerState.STATEMENT);
+            }
+            break;
+        case __CatspeakCompilerState.STATEMENT:
+            if (consume(__CatspeakToken.SEMICOLON)) {
+                // do nothing
+            } else if (consume(__CatspeakToken.SET)) {
+                pushState(__CatspeakCompilerState.SET_BEGIN);
+                pushState(__CatspeakCompilerState.ARG);
+            } else if (consume(__CatspeakToken.IF)) {
+                error("if statements not implemented");
+            } else if (consume(__CatspeakToken.WHILE)) {
+                error("while loops not implemented");
+            } else if (consume(__CatspeakToken.PRINT)) {
+                pushState(__CatspeakCompilerState.PRINT);
+                pushState(__CatspeakCompilerState.ARG);
+            } else if (consume(__CatspeakToken.RETURN)) {
+                pushState(__CatspeakCompilerState.RETURN);
+                pushState(__CatspeakCompilerState.ARG);
+            } else {
+                pushState(__CatspeakCompilerState.POP_VALUE);
+                pushState(__CatspeakCompilerState.EXPRESSION);
+            }
+            break;
+        case __CatspeakCompilerState.SET_BEGIN:
+            var top_pc = out.getCurrentSize() - 1;
+            var top_inst = out.getCode(top_pc);
+            switch (top_inst.code) {
+            case __CatspeakOpCode.VAR_GET:
+                pushStorage(__CatspeakOpCode.VAR_SET);
+                break;
+            case __CatspeakOpCode.REF_GET:
+                pushStorage(__CatspeakOpCode.REF_SET);
+                break;
+            default:
+                error("invalid assignment target");
+                break;
+            }
+            out.removeCode(top_pc);
+            pushStorage(top_inst.param);
+            pushState(__CatspeakCompilerState.SET_END);
+            pushState(__CatspeakCompilerState.ARG);
+            break;
+        case __CatspeakCompilerState.SET_END:
+            expectsSemicolon("after assignment statements");
+            var param = popStorage();
+            var code = popStorage();
+            out.addCode(pos, code, param);
+            break;
+        case __CatspeakCompilerState.PRINT:
+            expectsSemicolon("after print statements");
+            out.addCode(pos, __CatspeakOpCode.PRINT);
+            break;
+        case __CatspeakCompilerState.RETURN:
+            expectsSemicolon("after return statements");
+            out.addCode(pos, __CatspeakOpCode.RETURN);
+            break;
+        case __CatspeakCompilerState.POP_VALUE:
+            expectsSemicolon("after expression statements");
+            out.addCode(pos, __CatspeakOpCode.POP);
+            break;
+        case __CatspeakCompilerState.EXPRESSION:
+            pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
+            pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            break;
+        case __CatspeakCompilerState.BINARY_BEGIN:
+            var precedence = popStorage();
+            if (precedence >= __CatspeakToken.__OPERATORS_END__) {
+                pushState(__CatspeakCompilerState.RUN);
+                break;
+            }
+            pushStorage(precedence);
+            pushState(__CatspeakCompilerState.BINARY_END);
+            pushStorage(precedence + 1);
+            pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            break;
+        case __CatspeakCompilerState.BINARY_END:
+            var precedence = popStorage();
+            if (consume(precedence)) {
+                out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
+                pushStorage(precedence);
+                pushState(__CatspeakCompilerState.BINARY_END);
+                pushStorage(-1);
+                pushState(__CatspeakCompilerState.CALL_END);
+                pushStorage(precedence + 1);
+                pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            }
+            break;
+        case __CatspeakCompilerState.RUN:
+            if (consume(__CatspeakToken.RUN)) {
+                pushStorage(0);
+                pushState(__CatspeakCompilerState.CALL_END);
+            } else if (matchesOperator()) {
+                advance();
+                out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
+                pushStorage(1);
+                pushState(__CatspeakCompilerState.CALL_END);
+            } else {
+                pushStorage(0);
+                pushState(__CatspeakCompilerState.CALL_BEGIN);
+            }
+            pushState(__CatspeakCompilerState.ARG);
+            break;
+        case __CatspeakCompilerState.CALL_BEGIN:
+            var arg_count = popStorage();
+            if (matchesExpression()) {
+                arg_count += 1;
+                pushState(__CatspeakCompilerState.CALL_BEGIN);
+                pushState(__CatspeakCompilerState.ARG);
+            } else {
+                if (arg_count <= 0) {
+                    break;
+                }
+                pushState(__CatspeakCompilerState.CALL_END);
+            }
+            pushStorage(arg_count);
+            break;
+        case __CatspeakCompilerState.CALL_END:
+            var arg_count = popStorage();
+            out.addCode(pos, __CatspeakOpCode.CALL, arg_count);
+            break;
+        case __CatspeakCompilerState.ARG:
+            pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
+            pushState(__CatspeakCompilerState.TERMINAL);
+            break;
+        case __CatspeakCompilerState.SUBSCRIPT_BEGIN:
+            if (consume(__CatspeakToken.DOT)) {
+                pushState(__CatspeakCompilerState.SUBSCRIPT_END);
+                var access_type;
+                if (consume(__CatspeakToken.BOX_LEFT)) {
+                    access_type = 0x00;
+                    pushState(__CatspeakCompilerState.EXPRESSION);
+                } else if (consume(__CatspeakToken.BRACE_LEFT)) {
+                    access_type = 0x01;
+                    pushState(__CatspeakCompilerState.EXPRESSION);
+                } else {
+                    access_type = 0x02;
+                    expects(__CatspeakToken.IDENTIFIER, "expected identifier after binary `.` operator");
+                    out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
+                }
+                pushStorage(access_type);
+            }
+            break;
+        case __CatspeakCompilerState.SUBSCRIPT_END:
+            var access_type = popStorage();
+            var unordered;
+            switch (access_type) {
+            case 0x00:
+                unordered = false;
+                expects(__CatspeakToken.BOX_RIGHT, "expected closing `]` in ordered indexing");
+                break;
+            case 0x01:
+                expects(__CatspeakToken.BRACE_RIGHT, "expected closing `}` in unordered indexing");
+            default:
+                unordered = true;
+                break;
+            }
+            out.addCode(pos, __CatspeakOpCode.REF_GET, unordered);
+            pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
+            break;
+        case __CatspeakCompilerState.TERMINAL:
+            if (consume(__CatspeakToken.IDENTIFIER)) {
+                out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
+            } else if (matchesOperator()) {
+                advance();
+                out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
+            } else if (consume(__CatspeakToken.STRING)) {
+                out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
+            } else if (consume(__CatspeakToken.NUMBER)) {
+                out.addCode(pos, __CatspeakOpCode.PUSH, real(lexeme));
+            } else {
+                pushState(__CatspeakCompilerState.GROUPING_BEGIN);
+            }
+            break;
+        case __CatspeakCompilerState.GROUPING_BEGIN:
+            if (consume(__CatspeakToken.COLON)) {
+                pushState(__CatspeakCompilerState.EXPRESSION);
+            } else if (consume(__CatspeakToken.PAREN_LEFT)) {
+                pushState(__CatspeakCompilerState.GROUPING_END);
+                pushState(__CatspeakCompilerState.EXPRESSION);
+            } else if (consume(__CatspeakToken.BOX_LEFT)) {
+                pushStorage(0); // store the source position and array length
+                pushState(__CatspeakCompilerState.ARRAY);
+            } else if (consume(__CatspeakToken.BRACE_LEFT)) {
+                pushStorage(0);
+                pushState(__CatspeakCompilerState.OBJECT);
+            } else {
+                errorAndAdvance("unexpected symbol in expression");
+            }
+            break;
+        case __CatspeakCompilerState.GROUPING_END:
+            expects(__CatspeakToken.PAREN_RIGHT, "expected closing `)` in grouping");
+            break;
+        case __CatspeakCompilerState.ARRAY:
+            var size = popStorage();
+            while (consume(__CatspeakToken.SEMICOLON)) { }
+            if (consume(__CatspeakToken.BOX_RIGHT)) {
+                out.addCode(pos, __CatspeakOpCode.MAKE_ARRAY, size);
+            } else {
+                pushStorage(size + 1);
+                pushState(__CatspeakCompilerState.ARRAY);
+                pushState(__CatspeakCompilerState.EXPRESSION);
+            }
+            break;
+        case __CatspeakCompilerState.OBJECT:
+            var size = popStorage();
+            while (consume(__CatspeakToken.SEMICOLON)) { }
+            if (consume(__CatspeakToken.BRACE_RIGHT)) {
+                out.addCode(pos, __CatspeakOpCode.MAKE_OBJECT, size);
+            } else {
+                pushStorage(size + 1);
+                pushState(__CatspeakCompilerState.OBJECT);
+                pushState(__CatspeakCompilerState.ARG);
+                if (consume(__CatspeakToken.DOT)) {
+                    expects(__CatspeakToken.IDENTIFIER, "expected identifier after unary `.` operator");
+                    out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
+                } else {
+                    pushState(__CatspeakCompilerState.ARG);
+                }
+            }
+            break;
+        default:
+            error("unknown compiler instruction `" + string(state) + "` (" + __catspeak_compiler_state_render(state) + ")");
+            break;
+        }
+        if not (inProgress()) {
+            // code generation complete, add a final return code
+            out.addCode(pos, __CatspeakOpCode.PUSH, undefined);
+            out.addCode(pos, __CatspeakOpCode.RETURN);
+        }
+    }
 }
 
 /// @desc Represents a kind of intcode.
@@ -1067,38 +1187,6 @@ function __CatspeakChunk() constructor {
         array_delete(program, _pos, 1);
         size -= 1;
     }
-}
-
-/// @desc Handles the creation of interfaces to be used by the Catspeak VM.
-function CatspeakVMInterface() constructor {
-    vars = { };
-    /// @desc Inserts a new constant into to the interface.
-    /// @param {string} name The name of the constant.
-    /// @param {value} value The value of the constant.
-    static addConstant = function(_name, _value) {
-        vars[$ _name] = _value;
-        return self;
-    }
-    /// @desc Inserts a new function into to the interface.
-    /// @param {string} name The name of the function.
-    /// @param {value} method_or_script_id The reference to the function.
-    static addFunction = function(_name, _value) {
-        var f = _value;
-        if not (is_method(f)) {
-            // this is so that unexposed functions cannot be enumerated
-            // by a malicious user in order to access important functions
-            f = method(undefined, f);
-        }
-        vars[$ _name] = f;
-        return self;
-    }
-}
-
-/// @desc Represents a type of configuration option.
-enum CatspeakVMOption {
-    GLOBAL_VISIBILITY,
-    INSTANCE_VISIBILITY,
-    RESULT_HANDLER
 }
 
 /// @desc Handles the execution of a single Catspeak chunk.

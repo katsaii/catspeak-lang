@@ -12,14 +12,8 @@ set arr [
 set arr.[1].{"b"} "hello"
 print arr
 ';
-var chunk = catspeak_eagar_compile(src);
-show_message(chunk);
-var vm = new __CatspeakVM();
-vm.addInterface(catspeak_ext_gml_interface(CatspeakExtGMLClass.OPERATORS))
-vm.setOption(CatspeakVMOption.RESULT_HANDLER, function(_result) {
-            show_debug_message("result: " + string(_result));
-        });
-vm.addChunk(chunk);
-while (vm.inProgress()) {
-    vm.computeProgram();
+var sess = catspeak_session_create();
+catspeak_session_add_source(sess, src);
+while (catspeak_session_in_progress(sess)) {
+    catspeak_session_update(sess);
 }
