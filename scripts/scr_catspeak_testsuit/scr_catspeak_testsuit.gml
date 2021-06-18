@@ -3,7 +3,15 @@
  * Kat @katsaii
  */
 
-var src = @'print [1;2;4];';
+var src = @'
+set arr [
+	1
+	{ .b 5 }
+	3
+]
+set arr.[1].{"b"} "hello"
+print arr
+';
 var chunk = catspeak_eagar_compile(src);
 show_message(chunk);
 var vm = new CatspeakVM()

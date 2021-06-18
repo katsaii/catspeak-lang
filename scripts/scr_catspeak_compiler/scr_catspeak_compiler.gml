@@ -7,6 +7,8 @@
 enum CatspeakCompilerState {
 	PROGRAM,
 	STATEMENT,
+	SET_BEGIN,
+	SET_END,
 	PRINT,
 	RETURN,
 	POP_VALUE,
@@ -32,6 +34,8 @@ function catspeak_compiler_state_render(_state) {
 	switch (_state) {
 	case CatspeakCompilerState.PROGRAM: return "PROGRAM";
 	case CatspeakCompilerState.STATEMENT: return "STATEMENT";
+	case CatspeakCompilerState.SET_BEGIN: return "SET_BEGIN";
+	case CatspeakCompilerState.SET_END: return "SET_END";
 	case CatspeakCompilerState.PRINT: return "PRINT";
 	case CatspeakCompilerState.RETURN: return "RETURN";
 	case CatspeakCompilerState.POP_VALUE: return "POP_VALUE";
@@ -174,7 +178,8 @@ function CatspeakCompiler(_lexer, _out) constructor {
 			if (consume(CatspeakToken.SEMICOLON)) {
 				// do nothing
 			} else if (consume(CatspeakToken.SET)) {
-				error("set statements not implemented");
+				pushState(CatspeakCompilerState.SET_BEGIN);
+				pushState(CatspeakCompilerState.ARG);
 			} else if (consume(CatspeakToken.IF)) {
 				error("if statements not implemented");
 			} else if (consume(CatspeakToken.WHILE)) {
@@ -189,6 +194,31 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				pushState(CatspeakCompilerState.POP_VALUE);
 				pushState(CatspeakCompilerState.EXPRESSION);
 			}
+			break;
+		case CatspeakCompilerState.SET_BEGIN:
+			var top_pc = out.getCurrentSize() - 1;
+			var top_inst = out.getCode(top_pc);
+			switch (top_inst.code) {
+			case CatspeakOpCode.VAR_GET:
+				pushStorage(CatspeakOpCode.VAR_SET);
+				break;
+			case CatspeakOpCode.REF_GET:
+				pushStorage(CatspeakOpCode.REF_SET);
+				break;
+			default:
+				error("invalid assignment target");
+				break;
+			}
+			out.removeCode(top_pc);
+			pushStorage(top_inst.param);
+			pushState(CatspeakCompilerState.SET_END);
+			pushState(CatspeakCompilerState.ARG);
+			break;
+		case CatspeakCompilerState.SET_END:
+			expectsSemicolon("after assignment statements");
+			var param = popStorage();
+			var code = popStorage();
+			out.addCode(pos, code, param);
 			break;
 		case CatspeakCompilerState.PRINT:
 			expectsSemicolon("after print statements");

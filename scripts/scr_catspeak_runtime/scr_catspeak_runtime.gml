@@ -68,6 +68,12 @@ function CatspeakChunk() constructor {
 		size += 1;
 		return pc;
 	}
+	/// @desc Permanently removes a code from the program. Don't use this unless you know what you're doing.
+	/// @param {vector} pos The position of this piece of code.
+	static removeCode = function(_pos) {
+		array_delete(program, _pos, 1);
+		size -= 1;
+	}
 }
 
 /// @desc Handles the creation of interfaces to be used by the Catspeak VM.
