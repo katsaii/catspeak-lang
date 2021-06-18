@@ -3,38 +3,6 @@
  * Kat @katsaii
  */
 
-/// @desc Handles the creation of interfaces to be used by the Catspeak VM.
-function CatspeakInterface() constructor {
-    vars = { };
-    /// @desc Inserts a new constant into to the interface.
-    /// @param {string} name The name of the constant.
-    /// @param {value} value The value of the constant.
-    static addConstant = function(_name, _value) {
-        vars[$ _name] = _value;
-        return self;
-    }
-    /// @desc Inserts a new function into to the interface.
-    /// @param {string} name The name of the function.
-    /// @param {value} method_or_script_id The reference to the function.
-    static addFunction = function(_name, _value) {
-        var f = _value;
-        if not (is_method(f)) {
-            // this is so that unexposed functions cannot be enumerated
-            // by a malicious user in order to access important functions
-            f = method(undefined, f);
-        }
-        vars[$ _name] = f;
-        return self;
-    }
-}
-
-/// @desc Represents a type of configuration option.
-enum CatspeakOption {
-    GLOBAL_VISIBILITY,
-    INSTANCE_VISIBILITY,
-    RESULT_HANDLER
-}
-
 /// @desc Creates a new Catspeak session.
 function catspeak_session_create() {
     return {
@@ -66,11 +34,54 @@ function catspeak_session_in_progress(_session) {
     return _session.currentSource != undefined || _session.runtime.inProgress();
 }
 
+/// @desc Returns the current variable workspace for this Catspeak session.
+/// @param {struct} session The Catspeak session to consider.
+function catspeak_session_get_workspace(_session) {
+    return _session.runtime.getWorkspace();
+}
+
 /// @desc Sets the error handler for this Catspeak session.
 /// @param {struct} session The Catspeak session to consider.
-/// @param {script} id The id of the script to execute upon receiving a Catspeak error.
+/// @param {script} method_or_script_id The id of the script to execute upon receiving a Catspeak error.
 function catspeak_session_set_error_handler(_session, _f) {
     _session.errorHandler = _f;
+}
+
+/// @desc Sets the error handler for this Catspeak session.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {script} method_or_script_id The id of the script to execute upon receiving a Catspeak error.
+function catspeak_session_set_result_handler(_session, _f) {
+    _session.runtime.setOption(__CatspeakVMOption.RESULT_HANDLER, _f);
+}
+
+/// @desc Enables access to global variables from within Catspeak.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {bool} enable Whether to enable this option.
+function catspeak_session_enable_global_access(_session, _enable) {
+    _session.runtime.setOption(__CatspeakVMOption.GLOBAL_VISIBILITY, _enable);
+}
+
+/// @desc Enables access to instance variables from within Catspeak.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {bool} enable Whether to enable this option.
+function catspeak_session_enable_instance_access(_session, _enable) {
+    _session.runtime.setOption(__CatspeakVMOption.INSTANCE_VISIBILITY, _enable);
+}
+
+/// @desc Inserts a new read-only global variable into the interface.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {string} name The name of the variable.
+/// @param {value} value The value of the variable.
+function catspeak_session_add_constant(_session, _name, _value) {
+    _session.runtime.addConstant(_name, _value);
+}
+
+/// @desc Inserts a new function into to the interface.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {string} name The name of the function.
+/// @param {value} method_or_script_id The reference to the function.
+function catspeak_session_add_function(_session, _name, _value) {
+    _session.runtime.addFunction(_name, _value);
 }
 
 /// @desc Adds a new piece of source code to the current Catspeak session.
@@ -100,6 +111,15 @@ function catspeak_session_add_source(_session, _src) {
 /// @desc Performs a single update step for the compiler.
 /// @param {struct} session The Catspeak session to consider.
 function catspeak_session_update(_session) {
+    static handle_catspeak_error = function(_e, _f) {
+        if (instanceof(_e) == "__CatspeakError") {
+            if (_f != undefined) {
+                _f(_e);
+            }
+        } else {
+            throw _e;
+        }
+    };
     var source = _session.currentSource;
     var runtime = _session.runtime;
     if (source != undefined) {
@@ -107,9 +127,7 @@ function catspeak_session_update(_session) {
         try {
             compiler.generateCode();
         } catch (_e) {
-            if (errorHandler != undefined) {
-                errorHandler(_e);
-            }
+            handle_catspeak_error(_e, _session.errorHandler);
         }
         if not (compiler.inProgress()) {
             // start progress on the new compiler
@@ -126,63 +144,9 @@ function catspeak_session_update(_session) {
         try {
             runtime.computeProgram();
         } catch (_e) {
-            if (errorHandler != undefined) {
-                errorHandler(_e);
-            }
+            handle_catspeak_error(_e, _session.errorHandler);
         }
     }
-}
-
-/// @desc Creates a new asynchronous compiler session.
-/// @param {string} str The string that contains the source code.
-function catspeak_async_compile_begin(_str) {
-    var buff = catspeak_string_to_buffer(_str);
-    var scanner = new __CatspeakScanner(buff);
-    var lexer = new __CatspeakLexer(scanner);
-    var chunk = new __CatspeakChunk();
-    var compiler = new __CatspeakCompiler(lexer, chunk);
-    return {
-        buff : buff,
-        chunk : chunk,
-        compiler : compiler
-    };
-}
-
-/// @desc Returns the current progress of the compiler as a percentage.
-/// @param {struct} session The compiler session to consider.
-function catspeak_async_compile_in_progress(_session) {
-    return _session.compiler.inProgress();
-}
-
-/// @desc Returns the current progress of the compiler as a percentage.
-/// @param {struct} session The compiler session to consider.
-function catspeak_async_compile_get_progress(_session) {
-    var buff = _session.buff;
-    return buffer_tell(buff) / buffer_get_size(buff);
-}
-
-/// @desc Updates the compiler progress.
-/// @param {struct} session The compiler session to consider.
-function catspeak_async_compile_update(_session) {
-    return _session.compiler.generateCode();
-}
-
-/// @desc Finishes the current compiler session and destroys any dynamically allocated resources.
-/// @param {struct} session The compiler session to finalise.
-function catspeak_async_compile_end(_session) {
-    var chunk = _session.chunk;
-    buffer_delete(_session.buff);
-    return chunk;
-}
-
-/// @desc Compiles this string and returns the resulting intcode program.
-/// @param {string} str The string that contains the source code.
-function catspeak_eagar_compile(_str) {
-    var session = catspeak_async_compile_begin(_str);
-    while (catspeak_async_compile_in_progress(session)) {
-        catspeak_async_compile_update(session);
-    }
-    return catspeak_async_compile_end(session);
 }
 
 /// @desc Represents a Catspeak error.
@@ -1189,10 +1153,16 @@ function __CatspeakChunk() constructor {
     }
 }
 
+/// @desc Represents a type of configuration option.
+enum __CatspeakVMOption {
+    GLOBAL_VISIBILITY,
+    INSTANCE_VISIBILITY,
+    RESULT_HANDLER
+}
+
 /// @desc Handles the execution of a single Catspeak chunk.
 function __CatspeakVM() constructor {
-    interfaces = [];
-    interfaceCount = 0;
+    interface = { };
     binding = { };
     resultHandler = undefined;
     chunks = [];
@@ -1237,24 +1207,36 @@ function __CatspeakVM() constructor {
     static getWorkspace = function() {
         return binding;
     }
-    /// @desc Adds an interface to this VM.
-    /// @param {struct} vars The context to assign.
-    static addInterface = function(_interface) {
-        array_push(interfaces, _interface.vars);
-        interfaceCount += 1;
+    /// @desc Inserts a new read-only global variable into the interface.
+    /// @param {string} name The name of the variable.
+    /// @param {value} value The value of the variable.
+    static addConstant = function(_name, _value) {
+        interface[$ _name] = _value;
+    }
+    /// @desc Inserts a new function into to the interface.
+    /// @param {string} name The name of the function.
+    /// @param {value} method_or_script_id The reference to the function.
+    static addFunction = function(_name, _value) {
+        var f = _value;
+        if not (is_method(f)) {
+            // this is so that unexposed functions cannot be enumerated
+            // by a malicious user in order to access important functions
+            f = method(undefined, f);
+        }
+        vars[$ _name] = f;
     }
     /// @desc Sets a configuration option.
     /// @param {CatspeakVMOption} option The option to configure.
     /// @param {bool} enable Whether to enable this option.
     static setOption = function(_option, _enable) {
         switch (_option) {
-        case CatspeakVMOption.GLOBAL_VISIBILITY:
+        case __CatspeakVMOption.GLOBAL_VISIBILITY:
             exposeGlobalScope = is_numeric(_enable) && _enable;
             break;
-        case CatspeakVMOption.INSTANCE_VISIBILITY:
+        case __CatspeakVMOption.INSTANCE_VISIBILITY:
             exposeInstanceScope = is_numeric(_enable) && _enable;
             break;
-        case CatspeakVMOption.RESULT_HANDLER:
+        case __CatspeakVMOption.RESULT_HANDLER:
             resultHandler = _enable;
             break;
         }
