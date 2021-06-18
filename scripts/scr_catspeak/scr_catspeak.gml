@@ -55,9 +55,16 @@ function catspeak_session_set_error_handler(_session, _f) {
 
 /// @desc Sets the error handler for this Catspeak session.
 /// @param {struct} session The Catspeak session to consider.
-/// @param {script} method_or_script_id The id of the script to execute upon receiving a Catspeak error.
+/// @param {script} method_or_script_id The id of the script to execute upon receiving a result.
 function catspeak_session_set_result_handler(_session, _f) {
     _session.runtime.setOption(__CatspeakVMOption.RESULT_HANDLER, _f);
+}
+
+/// @desc Sets a function to call on popped expression statementes.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {script} method_or_script_id The id of the script to execute upon popping an expression statement.
+function catspeak_session_set_expression_statement_handler(_session, _f) {
+    _session.runtime.setOption(__CatspeakVMOption.POP_HANDLER, _f);
 }
 
 /// @desc Enables access to global variables from within Catspeak.
@@ -1227,7 +1234,8 @@ function __CatspeakChunk() constructor {
 enum __CatspeakVMOption {
     GLOBAL_VISIBILITY,
     INSTANCE_VISIBILITY,
-    RESULT_HANDLER
+    RESULT_HANDLER,
+    POP_HANDLER
 }
 
 /// @desc Handles the execution of a single Catspeak chunk.
@@ -1235,6 +1243,7 @@ function __CatspeakVM() constructor {
     interface = { };
     binding = { };
     resultHandler = undefined;
+    popHandler = undefined;
     chunks = [];
     chunkCount = 0;
     chunkID = 0;
@@ -1304,6 +1313,9 @@ function __CatspeakVM() constructor {
             break;
         case __CatspeakVMOption.RESULT_HANDLER:
             resultHandler = _enable;
+            break;
+        case __CatspeakVMOption.POP_HANDLER:
+            popHandler = _enable;
             break;
         }
     }
@@ -1465,7 +1477,10 @@ function __CatspeakVM() constructor {
             push(value);
             break;
         case __CatspeakOpCode.POP:
-            pop();
+            var value = pop();
+            if (popHandler != undefined) {
+                popHandler(value);
+            }
             break;
         case __CatspeakOpCode.VAR_GET:
             var name = inst.param;
