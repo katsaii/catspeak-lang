@@ -691,8 +691,15 @@ function __CatspeakLexer(_scanner) constructor {
 enum __CatspeakCompilerState {
     PROGRAM,
     STATEMENT,
+    SEQUENCE_BEGIN,
+    SEQUENCE_END,
     SET_BEGIN,
     SET_END,
+    IF_BEGIN,
+    IF_ELSE,
+    IF_END,
+    WHILE_BEGIN,
+    WHILE_END,
     PRINT,
     RETURN,
     POP_VALUE,
@@ -718,8 +725,15 @@ function __catspeak_compiler_state_render(_state) {
     switch (_state) {
     case __CatspeakCompilerState.PROGRAM: return "PROGRAM";
     case __CatspeakCompilerState.STATEMENT: return "STATEMENT";
+    case __CatspeakCompilerState.SEQUENCE_BEGIN: return "SEQUENCE_BEGIN";
+    case __CatspeakCompilerState.SEQUENCE_END: return "SEQUENCE_END";
     case __CatspeakCompilerState.SET_BEGIN: return "SET_BEGIN";
     case __CatspeakCompilerState.SET_END: return "SET_END";
+    case __CatspeakCompilerState.IF_BEGIN: return "IF_BEGIN";
+    case __CatspeakCompilerState.IF_ELSE: return "IF_ELSE";
+    case __CatspeakCompilerState.IF_END: return "IF_END";
+    case __CatspeakCompilerState.WHILE_BEGIN: return "WHILE_BEGIN";
+    case __CatspeakCompilerState.WHILE_END: return "WHILE_END";
     case __CatspeakCompilerState.PRINT: return "PRINT";
     case __CatspeakCompilerState.RETURN: return "RETURN";
     case __CatspeakCompilerState.POP_VALUE: return "POP_VALUE";
@@ -867,7 +881,9 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             } else if (consume(__CatspeakToken.IF)) {
                 error("if statements not implemented");
             } else if (consume(__CatspeakToken.WHILE)) {
-                error("while loops not implemented");
+                pushStorage(out.getCurrentSize());
+                pushState(__CatspeakCompilerState.WHILE_BEGIN);
+                pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.PRINT)) {
                 pushState(__CatspeakCompilerState.PRINT);
                 pushState(__CatspeakCompilerState.ARG);
@@ -877,6 +893,16 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             } else {
                 pushState(__CatspeakCompilerState.POP_VALUE);
                 pushState(__CatspeakCompilerState.EXPRESSION);
+            }
+            break;
+        case __CatspeakCompilerState.SEQUENCE_BEGIN:
+            expects(__CatspeakToken.BRACE_LEFT, "expected opening `{` in sequence");
+            pushState(__CatspeakCompilerState.SEQUENCE_END);
+            break;
+        case __CatspeakCompilerState.SEQUENCE_END:
+            if not (consume(__CatspeakToken.BRACE_RIGHT)) {
+                pushState(__CatspeakCompilerState.SEQUENCE_END);
+                pushState(__CatspeakCompilerState.STATEMENT);
             }
             break;
         case __CatspeakCompilerState.SET_BEGIN:
@@ -903,6 +929,24 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             var param = popStorage();
             var code = popStorage();
             out.addCode(pos, code, param);
+            break;
+        case __CatspeakCompilerState.IF_BEGIN:
+            break;
+        case __CatspeakCompilerState.IF_ELSE:
+            break;
+        case __CatspeakCompilerState.IF_END:
+            break;
+        case __CatspeakCompilerState.WHILE_BEGIN:
+            pushStorage(out.getCurrentSize());
+            out.addCode(pos, __CatspeakOpCode.JUMP_FALSE, undefined);
+            pushState(__CatspeakCompilerState.WHILE_END);
+            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+            break;
+        case __CatspeakCompilerState.WHILE_END:
+            var jump_false_pc = popStorage();
+            var start_pc = popStorage();
+            out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
+            out.getCode(jump_false_pc).param = out.getCurrentSize();
             break;
         case __CatspeakCompilerState.PRINT:
             expectsSemicolon("after print statements");
@@ -1184,7 +1228,7 @@ function __CatspeakVM() constructor {
     /// @desc Throws a `__CatspeakError` with the current program counter.
     /// @param {string} msg The error message.
     static error = function(_msg) {
-        throw new __CatspeakError(chunk.diagnostic[pc], _msg);
+        throw new __CatspeakError(chunk.getCode(pc).pos, _msg);
     }
     /// @desc Adds a new chunk to the VM to execute.
     /// @param {__CatspeakChunk} chunk The chunk to execute code of.
@@ -1231,7 +1275,7 @@ function __CatspeakVM() constructor {
             // by a malicious user in order to access important functions
             f = method(undefined, f);
         }
-        vars[$ _name] = f;
+        interface[$ _name] = f;
     }
     /// @desc Sets a configuration option.
     /// @param {CatspeakVMOption} option The option to configure.
@@ -1307,13 +1351,9 @@ function __CatspeakVM() constructor {
     static getVariable = function(_name) {
         if (variable_struct_exists(binding, _name)) {
             return binding[$ _name];
+        } else if (variable_struct_exists(interface, _name)) {
+            return interface[$ _name];
         } else {
-            for (var i = interfaceCount - 1; i >= 0; i -= 1) {
-                var interface = interfaces[i];
-                if (variable_struct_exists(interface, _name)) {
-                    return interface[$ _name];
-                }
-            }
             return undefined;
         }
     }
