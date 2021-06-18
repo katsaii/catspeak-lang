@@ -28,10 +28,16 @@ function catspeak_session_destroy(_session) {
     variable_struct_remove(_session, "runtime");
 }
 
-/// @desc Returns whether the session is processing.
+/// @desc Returns whether this Catspeak session is processing.
 /// @param {struct} session The Catspeak session to consider.
 function catspeak_session_in_progress(_session) {
     return _session.currentSource != undefined || _session.runtime.inProgress();
+}
+
+/// @desc Rewinds this Catspeak session back to the start of the program.
+/// @param {struct} session The Catspeak session to rewind.
+function catspeak_session_rewind(_session, _f) {
+    _session.runtime.rewind();
 }
 
 /// @desc Returns the current variable workspace for this Catspeak session.
@@ -1230,7 +1236,8 @@ function __CatspeakVM() constructor {
     binding = { };
     resultHandler = undefined;
     chunks = [];
-    chunk = undefined;
+    chunkCount = 0;
+    chunkID = 0;
     pc = 0;
     stackLimit = 8;
     stackSize = 0;
@@ -1240,32 +1247,27 @@ function __CatspeakVM() constructor {
     /// @desc Throws a `__CatspeakError` with the current program counter.
     /// @param {string} msg The error message.
     static error = function(_msg) {
-        throw new __CatspeakError(chunk.getCode(pc).pos, _msg);
+        throw new __CatspeakError(chunks[chunkID].getCode(pc).pos, _msg);
     }
     /// @desc Adds a new chunk to the VM to execute.
     /// @param {__CatspeakChunk} chunk The chunk to execute code of.
     static addChunk = function(_chunk) {
-        if (chunk == undefined) {
-            chunk = _chunk;
-        } else {
-            array_insert(chunks, 0, _chunk);
-        }
+        array_push(chunks, _chunk);
+        chunkCount += 1;
     }
-    /// @desc Removes the chunk currently being executed.
-    static terminateChunk = function() {
-        if (chunk == undefined) {
-            return;
-        }
+    /// @desc Rewinds the VM back to the first chunk.
+    static rewind = function() {
         pc = 0;
-        if (array_length(chunks) >= 1) {
-            chunk = array_pop(chunks);
-        } else {
-            chunk = undefined;
-        }
+        chunkID = 0;
+    }
+    /// @desc Terminates the chunk that is currently being executed and moves to the next one.
+    static terminateChunk = function() {
+        pc = 0;
+        chunkID += 1;
     }
     /// @desc Returns whether the VM is in progress.
     static inProgress = function() {
-        return chunk != undefined;
+        return chunkID < chunkCount;
     }
     /// @desc Gets the variable workspace for this context.
     static getWorkspace = function() {
@@ -1456,7 +1458,7 @@ function __CatspeakVM() constructor {
     }
     /// @desc Executes a single instruction and updates the program counter.
     static computeProgram = function() {
-        var inst = chunk.getCode(pc);
+        var inst = chunks[chunkID].getCode(pc);
         switch (inst.code) {
         case __CatspeakOpCode.PUSH:
             var value = inst.param;

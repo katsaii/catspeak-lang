@@ -30,3 +30,10 @@ catspeak_session_add_function(sess, "-", function(_l, _r) { return _l - _r; });
 while (catspeak_session_in_progress(sess)) {
     catspeak_session_update(sess);
 }
+while (catspeak_session_in_progress(sess)) {
+    catspeak_session_update(sess);
+}
+catspeak_session_rewind(sess);
+while (catspeak_session_in_progress(sess)) {
+    catspeak_session_update(sess);
+}
