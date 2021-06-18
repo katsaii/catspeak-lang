@@ -220,8 +220,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 		case CatspeakCompilerState.BINARY_END:
 			var precedence = popStorage();
 			if (consume(precedence)) {
-				out.addCode(pos, CatspeakOpCode.VAR_GET);
-				out.addCode(pos, lexeme);
+				out.addCode(pos, CatspeakOpCode.VAR_GET, lexeme);
 				pushStorage(precedence);
 				pushState(CatspeakCompilerState.BINARY_END);
 				pushStorage(-1);
@@ -236,8 +235,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				pushState(CatspeakCompilerState.CALL_END);
 			} else if (matchesOperator()) {
 				advance();
-				out.addCode(pos, CatspeakOpCode.VAR_GET);
-				out.addCode(pos, lexeme);
+				out.addCode(pos, CatspeakOpCode.VAR_GET, lexeme);
 				pushStorage(1);
 				pushState(CatspeakCompilerState.CALL_END);
 			} else {
@@ -262,8 +260,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 			break;
 		case CatspeakCompilerState.CALL_END:
 			var arg_count = popStorage();
-			out.addCode(pos, CatspeakOpCode.CALL);
-			out.addCode(pos, arg_count);
+			out.addCode(pos, CatspeakOpCode.CALL, arg_count);
 			break;
 		case CatspeakCompilerState.ARG:
 			pushState(CatspeakCompilerState.SUBSCRIPT_BEGIN);
@@ -282,8 +279,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				} else {
 					access_type = 0x02;
 					expects(CatspeakToken.IDENTIFIER, "expected identifier after binary `.` operator");
-					out.addCode(pos, CatspeakOpCode.PUSH);
-					out.addCode(pos, lexeme);
+					out.addCode(pos, CatspeakOpCode.PUSH, lexeme);
 				}
 				pushStorage(access_type);
 			}
@@ -302,24 +298,19 @@ function CatspeakCompiler(_lexer, _out) constructor {
 				unordered = true;
 				break;
 			}
-			out.addCode(pos, CatspeakOpCode.REF_GET);
-			out.addCode(pos, unordered);
+			out.addCode(pos, CatspeakOpCode.REF_GET, unordered);
 			pushState(CatspeakCompilerState.SUBSCRIPT_BEGIN);
 			break;
 		case CatspeakCompilerState.TERMINAL:
 			if (consume(CatspeakToken.IDENTIFIER)) {
-				out.addCode(pos, CatspeakOpCode.VAR_GET);
-				out.addCode(pos, lexeme);
+				out.addCode(pos, CatspeakOpCode.VAR_GET, lexeme);
 			} else if (matchesOperator()) {
 				advance();
-				out.addCode(pos, CatspeakOpCode.VAR_GET);
-				out.addCode(pos, lexeme);
+				out.addCode(pos, CatspeakOpCode.VAR_GET, lexeme);
 			} else if (consume(CatspeakToken.STRING)) {
-				out.addCode(pos, CatspeakOpCode.PUSH);
-				out.addCode(pos, lexeme);
+				out.addCode(pos, CatspeakOpCode.PUSH, lexeme);
 			} else if (consume(CatspeakToken.NUMBER)) {
-				out.addCode(pos, CatspeakOpCode.PUSH);
-				out.addCode(pos, real(lexeme));
+				out.addCode(pos, CatspeakOpCode.PUSH, real(lexeme));
 			} else {
 				pushState(CatspeakCompilerState.GROUPING_BEGIN);
 			}
@@ -347,8 +338,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 			var size = popStorage();
 			while (consume(CatspeakToken.SEMICOLON)) { }
 			if (consume(CatspeakToken.BOX_RIGHT)) {
-				out.addCode(pos, CatspeakOpCode.MAKE_ARRAY);
-				out.addCode(pos, size);
+				out.addCode(pos, CatspeakOpCode.MAKE_ARRAY, size);
 			} else {
 				pushStorage(size + 1);
 				pushState(CatspeakCompilerState.ARRAY);
@@ -359,16 +349,14 @@ function CatspeakCompiler(_lexer, _out) constructor {
 			var size = popStorage();
 			while (consume(CatspeakToken.SEMICOLON)) { }
 			if (consume(CatspeakToken.BRACE_RIGHT)) {
-				out.addCode(pos, CatspeakOpCode.MAKE_OBJECT);
-				out.addCode(pos, size);
+				out.addCode(pos, CatspeakOpCode.MAKE_OBJECT, size);
 			} else {
 				pushStorage(size + 1);
 				pushState(CatspeakCompilerState.OBJECT);
 				pushState(CatspeakCompilerState.ARG);
 				if (consume(CatspeakToken.DOT)) {
 					expects(CatspeakToken.IDENTIFIER, "expected identifier after unary `.` operator");
-					out.addCode(pos, CatspeakOpCode.PUSH);
-					out.addCode(pos, lexeme);
+					out.addCode(pos, CatspeakOpCode.PUSH, lexeme);
 				} else {
 					pushState(CatspeakCompilerState.ARG);
 				}
@@ -380,8 +368,7 @@ function CatspeakCompiler(_lexer, _out) constructor {
 		}
 		if not (inProgress()) {
 			// code generation complete, add a final return code
-			out.addCode(pos, CatspeakOpCode.PUSH);
-			out.addCode(pos, undefined);
+			out.addCode(pos, CatspeakOpCode.PUSH, undefined);
 			out.addCode(pos, CatspeakOpCode.RETURN);
 		}
 	}

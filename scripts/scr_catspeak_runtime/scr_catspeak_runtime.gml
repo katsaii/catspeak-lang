@@ -43,34 +43,30 @@ function catspeak_code_render(_kind) {
 
 /// @desc Represents a Catspeak intcode program with associated debug information.
 function CatspeakChunk() constructor {
-	intcode = [];
-	diagnostic = [];
+	program = [];
 	size = 0;
 	/// @desc Returns the size of this chunk.
-	static getPC = function() {
+	static getCurrentSize = function() {
 		return size;
 	}
 	/// @desc Returns an existing code at this program counter.
 	/// @param {vector} pos The position of this piece of code.
 	static getCode = function(_pos) {
-		return intcode[_pos];
+		return program[_pos];
 	}
 	/// @desc Adds a code and its positional information to the program.
 	/// @param {vector} pos The position of this piece of code.
 	/// @param {value} code The piece of code to write.
-	static addCode = function(_pos, _code) {
-		var i = array_length(intcode);
-		array_push(diagnostic, _pos);
-		array_push(intcode, _code);
+	/// @param {value} param The parameter (if any) associated with this instruction.
+	static addCode = function(_pos, _code, _param) {
+		array_push(program, {
+			pos : _pos,
+			code : _code,
+			param : _param
+		});
+		var pc = size;
 		size += 1;
-		return i;
-	}
-	/// @desc Patches an existing code at this program counter.
-	/// @param {vector} pc The program counter the code to patch.
-	/// @param {value} code The piece of code to write.
-	static patchCode = function(_pc, _code) {
-		intcode[_pc] = _code;
-		return _pc;
+		return pc;
 	}
 }
 
@@ -333,54 +329,46 @@ function CatspeakVM() constructor {
 	}
 	/// @desc Executes a single instruction and updates the program counter.
 	static computeProgram = function() {
-		var code = chunk.intcode;
-		var inst = code[pc];
-		switch (inst) {
+		var inst = chunk.getCode(pc);
+		switch (inst.code) {
 		case CatspeakOpCode.PUSH:
-			pc += 1;
-			var value = code[pc];
+			var value = inst.param;
 			push(value);
 			break;
 		case CatspeakOpCode.POP:
 			pop();
 			break;
 		case CatspeakOpCode.VAR_GET:
-			pc += 1;
-			var name = code[pc];
+			var name = inst.param;
 			var value = getVariable(name);
 			push(value);
 			break;
 		case CatspeakOpCode.VAR_SET:
-			pc += 1;
-			var name = code[pc];
+			var name = inst.param;
 			var value = pop();
 			setVariable(name, value);
 			break;
 		case CatspeakOpCode.REF_GET:
-			pc += 1;
-			var unordered = code[pc];
+			var unordered = inst.param;
 			var subscript = pop();
 			var container = pop();
 			var value = getIndex(container, subscript, unordered);
 			push(value);
 			break;
 		case CatspeakOpCode.REF_SET:
-			pc += 1;
-			var unordered = code[pc];
+			var unordered = inst.param;
 			var value = pop();
 			var subscript = pop();
 			var container = pop();
 			setIndex(container, subscript, unordered, value);
 			break;
 		case CatspeakOpCode.MAKE_ARRAY:
-			pc += 1;
-			var size = code[pc];
+			var size = inst.param;
 			var container = popMany(size);
 			push(container);
 			break;
 		case CatspeakOpCode.MAKE_OBJECT:
-			pc += 1;
-			var size = code[pc];
+			var size = inst.param;
 			var container = popManyKWArgs(size);
 			push(container);
 			break;
@@ -389,13 +377,11 @@ function CatspeakVM() constructor {
 			show_debug_message(value);
 			break;
 		case CatspeakOpCode.JUMP:
-			pc += 1;
-			var new_pc = code[pc];
+			var new_pc = inst.param;
 			pc = new_pc;
 			return;
 		case CatspeakOpCode.JUMP_FALSE:
-			pc += 1;
-			var new_pc = code[pc];
+			var new_pc = inst.param;
 			var value = pop();
 			if not (is_numeric(value) && value) {
 				pc = new_pc;
@@ -403,8 +389,7 @@ function CatspeakVM() constructor {
 			}
 			break;
 		case CatspeakOpCode.CALL:
-			pc += 1;
-			var arg_count = code[pc];
+			var arg_count = inst.param;
 			var callsite, args;
 			if (arg_count < 0) {
 				// due to how the compiler is implemented, code for operators
@@ -436,7 +421,7 @@ function CatspeakVM() constructor {
 			terminateChunk(); // complete execution
 			return;
 		default:
-			error("unknown program instruction `" + string(inst) + "` (" + catspeak_code_render(inst) + ")");
+			error("unknown program instruction `" + string(inst.code) + "` (" + catspeak_code_render(inst.code) + ")");
 			break;
 		}
 		pc += 1;
