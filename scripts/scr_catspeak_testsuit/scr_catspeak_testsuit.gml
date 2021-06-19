@@ -9,12 +9,15 @@ while (count > 0) {
     set count : count - 1
     if (count == 5) {
         print "hey, its five"
+        while false {
+            break
+        }
     } else {
-        continue
         print "boring..."
     }
     print count
 }
+break
 return "blast off!"
 ';
 var sess = catspeak_session_create();

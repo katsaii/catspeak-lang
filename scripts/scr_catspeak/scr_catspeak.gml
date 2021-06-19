@@ -1008,8 +1008,14 @@ function __CatspeakCompiler(_lexer, _out) constructor {
         case __CatspeakCompilerState.WHILE_END:
             var jump_false_pc = popStorage();
             var start_pc = loopCurrent.pc;
+            var breaks = loopCurrent.breaks;
             out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
-            out.getCode(jump_false_pc).param = out.getCurrentSize();
+            var end_pc = out.getCurrentSize();
+            out.getCode(jump_false_pc).param = end_pc;
+            for (var i = array_length(breaks) - 1; i >= 0; i -= 1) {
+                var break_pc = breaks[i];
+                out.getCode(break_pc).param = end_pc;
+            }
             popLoop();
             break;
         case __CatspeakCompilerState.BREAK:
@@ -1018,6 +1024,8 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 error("cannot use break statements outside of loops");
                 break;
             }
+            array_push(loopCurrent.breaks,
+                    out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
             break;
         case __CatspeakCompilerState.CONTINUE:
             expectsSemicolon("after continue statements");
