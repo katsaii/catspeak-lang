@@ -4,21 +4,7 @@
  */
 
 var src = @'
-set count 10
-while (count > 0) {
-    set count : count - 1
-    if (count == 5) {
-        print "hey, its five"
-        while false {
-            break
-        }
-    } else {
-        print "boring..."
-    }
-    print count
-}
-break
-return "blast off!"
+print 1.0
 ';
 var sess = catspeak_session_create();
 catspeak_ext_session_add_gml_operators(sess);

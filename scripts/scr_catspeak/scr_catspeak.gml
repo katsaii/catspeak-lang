@@ -433,6 +433,13 @@ function __CatspeakScanner(_buff) constructor {
         registerByte(byte);
         return byte;
     }
+    /// @desc Peeks `n` bytes ahead of the current head.
+    /// @param {real} n The number of bytes to look ahead.
+    static peek = function(_n) {
+        var offset = buffer_tell(buff) + _n - 1;
+        var byte = offset >= limit ? -1 : buffer_peek(buff, offset, buffer_u8);
+        return byte;
+    }
     /// @desc Returns whether the next byte equals this expected byte. And advances the scanner if this is the case.
     /// @param {real} expected The byte to check for.
     static advanceIf = function(_expected) {
@@ -608,6 +615,10 @@ function __CatspeakScanner(_buff) constructor {
                 return keyword;
             } else if (__catspeak_byte_is_digit(byte)) {
                 advanceWhile(__catspeak_byte_is_digit);
+                if (peek(1) == ord(".") && __catspeak_byte_is_digit(peek(2))) {
+                    advance();
+                    advanceWhile(__catspeak_byte_is_digit);
+                }
                 registerLexeme();
                 return __CatspeakToken.NUMBER;
             } else {
