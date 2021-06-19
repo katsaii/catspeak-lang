@@ -4,10 +4,6 @@
  */
 
 var src = @'
-["default"]
-{
-  1 2
-}
 set count 10
 while (count > 0) {
     set count : count - 1

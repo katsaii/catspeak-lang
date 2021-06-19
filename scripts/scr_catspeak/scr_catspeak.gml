@@ -780,6 +780,8 @@ function __CatspeakCompiler(_lexer, _out) constructor {
     peeked = lexer.next();
     instructionStack = [__CatspeakCompilerState.PROGRAM];
     storageStack = [];
+    loopStack = [];
+    loopCurrent = undefined;
     /// @desc Adds a new compiler state to the instruction stack.
     /// @param {__CatspeakCompilerState} state The state to insert.
     static pushState = function(_state) {
@@ -802,6 +804,24 @@ function __CatspeakCompiler(_lexer, _out) constructor {
     /// @param {value} value The value to store.
     static popStorage = function() {
         return array_pop(storageStack);
+    }
+    /// @desc Adds a loop frame to the loop stack.
+    static pushLoop = function(_state) {
+        if (loopCurrent != undefined) {
+            array_push(loopStack, loopCurrent);
+        }
+        loopCurrent = {
+            pc : out.getCurrentSize(),
+            breaks : []
+        };
+    }
+    /// @desc Pops the top loop frame from the loop stack.
+    static popLoop = function() {
+        if (array_length(loopStack) > 0) {
+            loopCurrent = array_pop(loopStack);
+        } else {
+            loopCurrent = undefined;
+        }
     }
     /// @desc Returns the current buffer position.
     static getPosition = function() {
@@ -895,7 +915,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushState(__CatspeakCompilerState.IF_BEGIN);
                 pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.WHILE)) {
-                pushStorage(out.getCurrentSize());
+                pushLoop();
                 pushState(__CatspeakCompilerState.WHILE_BEGIN);
                 pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.PRINT)) {
@@ -969,9 +989,10 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             break;
         case __CatspeakCompilerState.WHILE_END:
             var jump_false_pc = popStorage();
-            var start_pc = popStorage();
+            var start_pc = loopCurrent.pc;
             out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
             out.getCode(jump_false_pc).param = out.getCurrentSize();
+            popLoop();
             break;
         case __CatspeakCompilerState.PRINT:
             expectsSemicolon("after print statements");
