@@ -16,11 +16,13 @@ function catspeak_session_create() {
 /// @desc Destroys an existing catspeak session.
 /// @param {struct} session The Catspeak session to destroy.
 function catspeak_session_destroy(_session) {
-    buffer_delete(_session.currentSource.buff);
-    var source_queue = _session.sourceQueue;
-    for (var i = array_length(source_queue) - 1; i >= 0; i -= 1) {
-        var source = source_queue[i];
-        buffer_delete(source.buff);
+    if (_session.currentSource != undefined) {
+        buffer_delete(_session.currentSource.buff);
+        var source_queue = _session.sourceQueue;
+        for (var i = array_length(source_queue) - 1; i >= 0; i -= 1) {
+            var source = source_queue[i];
+            buffer_delete(source.buff);
+        }
     }
     variable_struct_remove(_session, "sourceQueue");
     variable_struct_remove(_session, "currentSource");
@@ -140,10 +142,10 @@ function catspeak_session_update(_session) {
         if (instanceof(_e) == "__CatspeakError") {
             if (_f != undefined) {
                 _f(_e);
+                return;
             }
-        } else {
-            throw _e;
         }
+        throw _e;
     };
     var source = _session.currentSource;
     var runtime = _session.runtime;
@@ -166,7 +168,17 @@ function catspeak_session_update(_session) {
             runtime.computeProgram();
         } catch (_e) {
             handle_catspeak_error(_e, _session.errorHandler);
+            // discard the current chunk
+            runtime.terminateChunk();
         }
+    }
+}
+
+/// @desc Eagarly compiles and evalutes the current Catspeak session.
+/// @param {struct} session The Catspeak session to evaluate.
+function catspeak_session_update_eagar(_session) {
+    while (catspeak_session_in_progress(_session)) {
+        catspeak_session_update(_session);
     }
 }
 
@@ -728,7 +740,6 @@ function __CatspeakLexer(_scanner) constructor {
                     }
                 }
                 switch (succ) {
-                case __CatspeakToken.DOT:
                 case __CatspeakToken.COLON:
                 case __CatspeakToken.ELSE:
                 case __CatspeakToken.SEMICOLON:
