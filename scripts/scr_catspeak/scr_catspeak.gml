@@ -213,6 +213,8 @@ enum __CatspeakToken {
     IDENTIFIER,
     STRING,
     NUMBER,
+    NUMBER_HEX,
+    NUMBER_BIN,
     WHITESPACE,
     COMMENT,
     EOL,
@@ -252,6 +254,8 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.IDENTIFIER: return "IDENTIFIER";
     case __CatspeakToken.STRING: return "STRING";
     case __CatspeakToken.NUMBER: return "NUMBER";
+    case __CatspeakToken.NUMBER_HEX: return "NUMBER_HEX";
+    case __CatspeakToken.NUMBER_BIN: return "NUMBER_BIN";
     case __CatspeakToken.WHITESPACE: return "WHITESPACE";
     case __CatspeakToken.COMMENT: return "COMMENT";
     case __CatspeakToken.EOL: return "EOL";
@@ -336,6 +340,20 @@ function __catspeak_byte_is_alphabetic(_byte) {
 /// @param {real} byte The byte to check.
 function __catspeak_byte_is_digit(_byte) {
     return _byte >= ord("0") && _byte <= ord("9");
+}
+
+/// @desc Returns whether a byte is a valid hexadecimal digit character.
+/// @param {real} byte The byte to check.
+function __catspeak_byte_is_hex_digit(_byte) {
+    return __catspeak_byte_is_digit(_byte)
+            || _byte >= ord("a") && _byte <= ord("z")
+            || _byte >= ord("A") && _byte <= ord("Z");
+}
+
+/// @desc Returns whether a byte is a valid binary digit character.
+/// @param {real} byte The byte to check.
+function __catspeak_byte_is_bin_digit(_byte) {
+    return _byte == ord("0") || _byte == ord("1");
 }
 
 /// @desc Returns whether a byte is a valid alphanumeric character.
@@ -614,6 +632,29 @@ function __CatspeakScanner(_buff) constructor {
                 lexeme = undefined;
                 return keyword;
             } else if (__catspeak_byte_is_digit(byte)) {
+                if (byte == ord("0")) {
+                    switch (peek(1)) {
+                    case ord("x"):
+                        if not (__catspeak_byte_is_hex_digit(peek(2))) {
+                            break;
+                        }
+                        advance();
+                        clearLexeme();
+                        advanceWhile(__catspeak_byte_is_hex_digit);
+                        registerLexeme();
+                        show_message(lexeme);
+                        return __CatspeakToken.NUMBER_HEX;
+                    case ord("b"):
+                        if not (__catspeak_byte_is_bin_digit(peek(2))) {
+                            break;
+                        }
+                        advance();
+                        clearLexeme();
+                        advanceWhile(__catspeak_byte_is_bin_digit);
+                        registerLexeme();
+                        return __CatspeakToken.NUMBER_BIN;
+                    }
+                }
                 advanceWhile(__catspeak_byte_is_digit);
                 if (peek(1) == ord(".") && __catspeak_byte_is_digit(peek(2))) {
                     advance();
@@ -1168,6 +1209,19 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
             } else if (consume(__CatspeakToken.NUMBER)) {
                 out.addCode(pos, __CatspeakOpCode.PUSH, real(lexeme));
+            } else if (consume(__CatspeakToken.NUMBER_HEX)) {
+                out.addCode(pos, __CatspeakOpCode.PUSH, real(ptr(lexeme))); // crasy hack by DragoniteSpam
+            } else if (consume(__CatspeakToken.NUMBER_BIN)) {
+                var number = 0;
+                var s = lexeme;
+                var n = string_byte_length(s);
+                for (var i = n; i >= 1; i -= 1) {
+                    if (string_byte_at(s, i) == ord("0")) {
+                        continue;
+                    }
+                    number += power(2, n - i);
+                }
+                out.addCode(pos, __CatspeakOpCode.PUSH, number);
             } else {
                 pushState(__CatspeakCompilerState.GROUPING_BEGIN);
             }

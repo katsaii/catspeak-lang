@@ -4,7 +4,7 @@
  */
 
 var src = @'
-print 1.0
+print 0x0000ff
 ';
 var sess = catspeak_session_create();
 catspeak_ext_session_add_gml_operators(sess);
