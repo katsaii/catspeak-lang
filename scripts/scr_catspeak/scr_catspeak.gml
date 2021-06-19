@@ -1056,7 +1056,11 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 var jump_if_pc = popStorage();
                 pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
                 out.getCode(jump_if_pc).param = out.getCurrentSize();
-                pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+                if (matches(__CatspeakToken.IF)) {
+                    pushState(__CatspeakCompilerState.STATEMENT);
+                } else {
+                    pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+                }
             }
             break;
         case __CatspeakCompilerState.IF_END:
