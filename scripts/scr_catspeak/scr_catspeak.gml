@@ -881,13 +881,13 @@ function __CatspeakCompiler(_lexer, _out) constructor {
     /// @desc Throws a `__CatspeakError` for the current token.
     /// @param {string} on_error The error message.
     static error = function(_msg) {
-        throw new __CatspeakError(pos, _msg + " -- got `" + string(lexeme) + "` (" + __catspeak_token_render(token) + ")");
+        throw new __CatspeakError(pos, _msg);
     }
     /// @desc Advances the parser and throws a `CatspeakCompilerError` for the current token.
     /// @param {string} on_error The error message.
     static errorAndAdvance = function(_msg) {
         advance();
-        error(_msg);
+        error(_msg + " -- got `" + string(lexeme) + "` (" + __catspeak_token_render(token) + ")");
     }
     /// @desc Throws a `CatspeakCompilerError` if the current token is not the expected value. Advances the parser otherwise.
     /// @param {__CatspeakToken} kind The token kind to expect.
