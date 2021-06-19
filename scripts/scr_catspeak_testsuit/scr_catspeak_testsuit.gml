@@ -10,6 +10,7 @@ while (count > 0) {
     if (count == 5) {
         print "hey, its five"
     } else {
+        continue
         print "boring..."
     }
     print count

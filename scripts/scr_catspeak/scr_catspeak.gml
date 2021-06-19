@@ -207,6 +207,8 @@ enum __CatspeakToken {
     WHILE,
     PRINT,
     RUN,
+    BREAK,
+    CONTINUE,
     RETURN,
     IDENTIFIER,
     STRING,
@@ -244,6 +246,8 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.WHILE: return "WHILE";
     case __CatspeakToken.PRINT: return "PRINT";
     case __CatspeakToken.RUN: return "RUN";
+    case __CatspeakToken.BREAK: return "BREAK";
+    case __CatspeakToken.CONTINUE: return "CONTINUE";
     case __CatspeakToken.RETURN: return "RETURN";
     case __CatspeakToken.IDENTIFIER: return "IDENTIFIER";
     case __CatspeakToken.STRING: return "STRING";
@@ -588,6 +592,12 @@ function __CatspeakScanner(_buff) constructor {
                 case "run":
                     keyword = __CatspeakToken.RUN;
                     break;
+                case "break":
+                    keyword = __CatspeakToken.BREAK;
+                    break;
+                case "continue":
+                    keyword = __CatspeakToken.CONTINUE;
+                    break;
                 case "return":
                     keyword = __CatspeakToken.RETURN;
                     break;
@@ -713,6 +723,8 @@ enum __CatspeakCompilerState {
     IF_END,
     WHILE_BEGIN,
     WHILE_END,
+    BREAK,
+    CONTINUE,
     PRINT,
     RETURN,
     POP_VALUE,
@@ -747,6 +759,8 @@ function __catspeak_compiler_state_render(_state) {
     case __CatspeakCompilerState.IF_END: return "IF_END";
     case __CatspeakCompilerState.WHILE_BEGIN: return "WHILE_BEGIN";
     case __CatspeakCompilerState.WHILE_END: return "WHILE_END";
+    case __CatspeakCompilerState.BREAK: return "BREAK";
+    case __CatspeakCompilerState.CONTINUE: return "CONTINUE";
     case __CatspeakCompilerState.PRINT: return "PRINT";
     case __CatspeakCompilerState.RETURN: return "RETURN";
     case __CatspeakCompilerState.POP_VALUE: return "POP_VALUE";
@@ -918,6 +932,10 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushLoop();
                 pushState(__CatspeakCompilerState.WHILE_BEGIN);
                 pushState(__CatspeakCompilerState.ARG);
+            } else if (consume(__CatspeakToken.BREAK)) {
+                pushState(__CatspeakCompilerState.BREAK);
+            } else if (consume(__CatspeakToken.CONTINUE)) {
+                pushState(__CatspeakCompilerState.CONTINUE);
             } else if (consume(__CatspeakToken.PRINT)) {
                 pushState(__CatspeakCompilerState.PRINT);
                 pushState(__CatspeakCompilerState.ARG);
@@ -993,6 +1011,22 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
             out.getCode(jump_false_pc).param = out.getCurrentSize();
             popLoop();
+            break;
+        case __CatspeakCompilerState.BREAK:
+            expectsSemicolon("after break statements");
+            if (loopCurrent == undefined) {
+                error("cannot use break statements outside of loops");
+                break;
+            }
+            break;
+        case __CatspeakCompilerState.CONTINUE:
+            expectsSemicolon("after continue statements");
+            if (loopCurrent == undefined) {
+                error("cannot use continue statements outside of loops");
+                break;
+            }
+            var start_pc = loopCurrent.pc;
+            out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
             break;
         case __CatspeakCompilerState.PRINT:
             expectsSemicolon("after print statements");
