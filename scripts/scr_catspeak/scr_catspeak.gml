@@ -8,7 +8,7 @@ function catspeak_session_create() {
     return {
         sourceQueue : [],
         currentSource : undefined,
-        errorHandler : undefined,
+        errorHandler : new __CatspeakEventList(),
         runtime : new __CatspeakVM()
     };
 }
@@ -51,21 +51,21 @@ function catspeak_session_get_workspace(_session) {
 /// @desc Sets the error handler for this Catspeak session.
 /// @param {struct} session The Catspeak session to consider.
 /// @param {script} method_or_script_id The id of the script to execute upon receiving a Catspeak error.
-function catspeak_session_set_error_handler(_session, _f) {
-    _session.errorHandler = _f;
+function catspeak_session_add_error_handler(_session, _f) {
+    _session.errorHandler.add(_f);
 }
 
 /// @desc Sets the error handler for this Catspeak session.
 /// @param {struct} session The Catspeak session to consider.
 /// @param {script} method_or_script_id The id of the script to execute upon receiving a result.
-function catspeak_session_set_result_handler(_session, _f) {
+function catspeak_session_add_result_handler(_session, _f) {
     _session.runtime.setOption(__CatspeakVMOption.RESULT_HANDLER, _f);
 }
 
 /// @desc Sets a function to call on popped expression statementes.
 /// @param {struct} session The Catspeak session to consider.
 /// @param {script} method_or_script_id The id of the script to execute upon popping an expression statement.
-function catspeak_session_set_expression_statement_handler(_session, _f) {
+function catspeak_session_add_expression_statement_handler(_session, _f) {
     _session.runtime.setOption(__CatspeakVMOption.POP_HANDLER, _f);
 }
 
@@ -140,8 +140,8 @@ function catspeak_session_discard_source(_session) {
 function catspeak_session_update(_session) {
     static handle_catspeak_error = function(_e, _f) {
         if (instanceof(_e) == "__CatspeakError") {
-            if (_f != undefined) {
-                _f(_e);
+            if not (_f.isEmpty()) {
+                _f.run(_e);
                 return;
             }
         }
@@ -179,6 +179,37 @@ function catspeak_session_update(_session) {
 function catspeak_session_update_eager(_session) {
     while (catspeak_session_in_progress(_session)) {
         catspeak_session_update(_session);
+    }
+}
+
+/// @desc Represents a list of events that are called.
+function __CatspeakEventList() constructor {
+    eventCount = 0;
+    events = [];
+    /// @desc Returns whether the list of events is empty.
+    static isEmpty = function() {
+        return eventCount == 0;
+    }
+    /// @desc Adds a new event to the event list.
+    /// @param {method} script The id of the script to call.
+    static add = function(_event) {
+        if (is_method(_event) || is_real(_event) && script_exists(_event)) {
+            array_push(events, _event);
+            eventCount += 1;
+        }
+    }
+    /// @desc Runs the list of events.
+    /// @param {value} arg The argument to call the events with.
+    static run = function(_arg) {
+        var n = eventCount;
+        for (var i = 0; i < n; i += 1) {
+            var event = events[i];
+            if (is_method(event)) {
+                event(_arg);
+            } else {
+                script_execute(event, _arg);
+            }
+        }
     }
 }
 
@@ -1408,8 +1439,8 @@ enum __CatspeakVMOption {
 function __CatspeakVM() constructor {
     interface = { };
     binding = { };
-    resultHandler = undefined;
-    popHandler = undefined;
+    resultHandler = new __CatspeakEventList();
+    popHandler = new __CatspeakEventList();
     chunks = [];
     chunkCount = 0;
     chunkID = 0;
@@ -1478,10 +1509,10 @@ function __CatspeakVM() constructor {
             exposeInstanceScope = is_numeric(_enable) && _enable;
             break;
         case __CatspeakVMOption.RESULT_HANDLER:
-            resultHandler = _enable;
+            resultHandler.add(_enable);
             break;
         case __CatspeakVMOption.POP_HANDLER:
-            popHandler = _enable;
+            popHandler.add(_enable);
             break;
         }
     }
@@ -1644,9 +1675,7 @@ function __CatspeakVM() constructor {
             break;
         case __CatspeakOpCode.POP:
             var value = pop();
-            if (popHandler != undefined) {
-                popHandler(value);
-            }
+            popHandler.run(value);
             break;
         case __CatspeakOpCode.VAR_GET:
             var name = inst.param;
@@ -1725,9 +1754,7 @@ function __CatspeakVM() constructor {
             break;
         case __CatspeakOpCode.RETURN:
             var value = pop();
-            if (resultHandler != undefined) {
-                resultHandler(value);
-            }
+            resultHandler.run(value);
             terminateChunk(); // complete execution
             return;
         default:

@@ -8,7 +8,7 @@ function catspeak_ext_json_session_create() {
     var session = catspeak_session_create();
     var workspace = catspeak_session_get_workspace(session);
     workspace.json_objects = [];
-    catspeak_session_set_expression_statement_handler(session, method(workspace, function(_value) {
+    catspeak_session_add_expression_statement_handler(session, method(workspace, function(_value) {
         if (is_array(_value) || is_struct(_value) && instanceof(_value) == "struct") {
             array_push(json_objects, _value);
         }

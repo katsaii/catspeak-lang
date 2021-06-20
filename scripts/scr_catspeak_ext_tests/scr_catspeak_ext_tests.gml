@@ -31,7 +31,7 @@ try {
     // basic functionality
     var session = catspeak_session_create();
     var this = { result : undefined };
-    catspeak_session_set_result_handler(session, method(this, function(_result) {
+    catspeak_session_add_result_handler(session, method(this, function(_result) {
         result = _result;
     }));
     catspeak_session_add_source(session, "return 12");
@@ -42,7 +42,7 @@ try {
     // empty source code and comments
     var session = catspeak_session_create();
     var this = { error : false };
-    catspeak_session_set_error_handler(session, method(this, function(_) {
+    catspeak_session_add_error_handler(session, method(this, function(_) {
         error = true;
     }));
     catspeak_session_add_source(session, "");
@@ -57,7 +57,7 @@ try {
     // expression statement handler
     var session = catspeak_session_create();
     var this = { value : undefined };
-    catspeak_session_set_expression_statement_handler(session, method(this, function(_value) {
+    catspeak_session_add_expression_statement_handler(session, method(this, function(_value) {
         value = _value;
     }));
     catspeak_session_add_source(session, "18");
