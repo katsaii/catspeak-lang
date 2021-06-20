@@ -16,14 +16,7 @@ function catspeak_session_create() {
 /// @desc Destroys an existing catspeak session.
 /// @param {struct} session The Catspeak session to destroy.
 function catspeak_session_destroy(_session) {
-    if (_session.currentSource != undefined) {
-        buffer_delete(_session.currentSource.buff);
-        var source_queue = _session.sourceQueue;
-        for (var i = array_length(source_queue) - 1; i >= 0; i -= 1) {
-            var source = source_queue[i];
-            buffer_delete(source.buff);
-        }
-    }
+    catspeak_session_delete_program(_session);
     variable_struct_remove(_session, "sourceQueue");
     variable_struct_remove(_session, "currentSource");
     variable_struct_remove(_session, "errorHandler");
@@ -38,8 +31,22 @@ function catspeak_session_in_progress(_session) {
 
 /// @desc Rewinds this Catspeak session back to the start of the program.
 /// @param {struct} session The Catspeak session to rewind.
-function catspeak_session_rewind(_session, _f) {
+function catspeak_session_rewind_program(_session) {
     _session.runtime.rewind();
+}
+
+/// @desc Permanently removes the current program from this Catspeak session.
+/// @param {struct} session The Catspeak session to rewind.
+function catspeak_session_delete_program(_session) {
+    if (_session.currentSource != undefined) {
+        buffer_delete(_session.currentSource.buff);
+        var source_queue = _session.sourceQueue;
+        for (var i = array_length(source_queue) - 1; i >= 0; i -= 1) {
+            var source = source_queue[i];
+            buffer_delete(source.buff);
+        }
+    }
+    _session.runtime.reset();
 }
 
 /// @desc Returns the current variable workspace for this Catspeak session.
@@ -1472,6 +1479,13 @@ function __CatspeakVM() constructor {
     static rewind = function() {
         pc = 0;
         chunkID = 0;
+        stackSize = 0;
+    }
+    /// @desc Deletes all chunks from the VM memory.
+    static reset = function() {
+        rewind();
+        chunks = [];
+        binding = { };
     }
     /// @desc Terminates the chunk that is currently being executed and moves to the next one.
     static terminateChunk = function() {
