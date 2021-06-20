@@ -37,7 +37,7 @@ try {
     catspeak_session_add_source(session, "return 12");
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(this.result, 12);
+    __catspeak_ext_tests_assert_eq(12, this.result);
 
     // empty source code and comments
     var session = catspeak_session_create();
@@ -63,7 +63,7 @@ try {
     catspeak_session_add_source(session, "18");
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(this.value, 18);
+    __catspeak_ext_tests_assert_eq(18, this.value);
 
     // assignment statements
     var session = catspeak_session_create();
@@ -71,8 +71,8 @@ try {
     catspeak_session_add_source(session, "set var 3; set var' var");
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(workspace[$ "var"], 3);
-    __catspeak_ext_tests_assert_eq(workspace[$ "var'"], workspace[$ "var"]);
+    __catspeak_ext_tests_assert_eq(3, workspace[$ "var"]);
+    __catspeak_ext_tests_assert_eq(workspace[$ "var"], workspace[$ "var'"]);
 
     // foreign functions and values
     var session = catspeak_session_create();
@@ -82,8 +82,8 @@ try {
     catspeak_session_add_source(session, "set const' const; set funct' funct");
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(workspace[$ "const'"], -12);
-    __catspeak_ext_tests_assert_eq(method_get_index(workspace[$ "funct'"]), max);
+    __catspeak_ext_tests_assert_eq(-12, workspace[$ "const'"]);
+    __catspeak_ext_tests_assert_eq(max, method_get_index(workspace[$ "funct'"]));
 
     // gml interface
     var session = catspeak_session_create();
@@ -98,11 +98,12 @@ try {
     ');
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(workspace[$ "a"], -3);
-    __catspeak_ext_tests_assert_eq(workspace[$ "b"], 12);
-    __catspeak_ext_tests_assert_eq(workspace[$ "c"], workspace[$ "a"] * workspace[$ "b"] + -workspace[$ "a"]);
-    __catspeak_ext_tests_assert_eq(workspace[$ "d"], max(workspace[$ "a"], workspace[$ "b"],
-            workspace[$ "a"] * workspace[$ "b"] + -workspace[$ "a"]));
+    __catspeak_ext_tests_assert_eq(-3, workspace[$ "a"]);
+    __catspeak_ext_tests_assert_eq(12, workspace[$ "b"]);
+    __catspeak_ext_tests_assert_eq(workspace[$ "a"] * workspace[$ "b"] + -workspace[$ "a"], workspace[$ "c"]);
+    __catspeak_ext_tests_assert_eq(max(
+            workspace[$ "a"], workspace[$ "b"], workspace[$ "a"] * workspace[$ "b"] + -workspace[$ "a"]),
+            workspace[$ "d"]);
 
     // data types
     var session = catspeak_session_create();
@@ -124,12 +125,12 @@ try {
     ');
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(workspace[$ "int"], 1);
-    __catspeak_ext_tests_assert_eq(workspace[$ "float"], 1.5);
+    __catspeak_ext_tests_assert_eq(1, workspace[$ "int"]);
+    __catspeak_ext_tests_assert_eq(1.5, workspace[$ "float"]);
     __catspeak_ext_tests_assert_true(is_nan(workspace[$ "nan"]));
-    __catspeak_ext_tests_assert_eq(workspace[$ "array"], ["hello world", true, false]);
-    __catspeak_ext_tests_assert_eq(workspace[$ "object"].x, undefined);
-    __catspeak_ext_tests_assert_eq(workspace[$ "object"].y, infinity);
+    __catspeak_ext_tests_assert_eq(["hello world", true, false], workspace[$ "array"]);
+    __catspeak_ext_tests_assert_eq(undefined, workspace[$ "object"].x);
+    __catspeak_ext_tests_assert_eq(infinity, workspace[$ "object"].y);
 
     // if statements
     var session = catspeak_session_create();
@@ -148,9 +149,9 @@ try {
     ');
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(workspace[$ "a"], 3);
-    __catspeak_ext_tests_assert_eq(workspace[$ "b"], 5);
-    __catspeak_ext_tests_assert_eq(workspace[$ "c"], "less");
+    __catspeak_ext_tests_assert_eq(3, workspace[$ "a"]);
+    __catspeak_ext_tests_assert_eq(5, workspace[$ "b"]);
+    __catspeak_ext_tests_assert_eq("less", workspace[$ "c"]);
 
     // while loops
     var session = catspeak_session_create();
@@ -170,9 +171,9 @@ try {
     ');
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    __catspeak_ext_tests_assert_eq(workspace[$ "limit"], 10);
-    __catspeak_ext_tests_assert_eq(workspace[$ "count"], workspace[$ "limit"]);
-    __catspeak_ext_tests_assert_eq(this.count, workspace[$ "count"]);
+    __catspeak_ext_tests_assert_eq(10, workspace[$ "limit"]);
+    __catspeak_ext_tests_assert_eq(workspace[$ "limit"], workspace[$ "count"]);
+    __catspeak_ext_tests_assert_eq(workspace[$ "count"], this.count);
 
     // break points
     var session = catspeak_session_create();
