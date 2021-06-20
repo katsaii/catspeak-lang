@@ -174,9 +174,9 @@ function catspeak_session_update(_session) {
     }
 }
 
-/// @desc Eagarly compiles and evalutes the current Catspeak session.
+/// @desc Eagerly compiles and evalutes the current Catspeak session.
 /// @param {struct} session The Catspeak session to evaluate.
-function catspeak_session_update_eagar(_session) {
+function catspeak_session_update_eager(_session) {
     while (catspeak_session_in_progress(_session)) {
         catspeak_session_update(_session);
     }

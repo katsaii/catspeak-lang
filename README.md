@@ -17,7 +17,7 @@ The language is entirely customisable, with only a few primitive constructs. The
 
 Custom operators and functions are exposed to the Catspeak virtual machine under the discretion of developers, in order to limit how much access a modder has to the game environment. This is done using the `catspeak_session_add_function` script; a full list of script names and their uses will be added eventually.
 
-Furthermore, Catspeak is implemented in GameMaker Language in order to be stable across many different platforms. The language is designed be evaluated over multiple frames in order to avoid intentionally (or unintionally) freezing the game. In order to achieve this, both the compiler and virtual machine use a flat execution model; that is, no recursive descent parsing or tree-walk interpreters. This enables Catspeak programs to be passively compiled, executed, and paused at any time. Despite this, it is still possible for Catspeak scripts to be compiled and evaluated eagarly within a single step using the `catspeak_session_update_eagar`, if desired.
+Furthermore, Catspeak is implemented in GameMaker Language in order to be stable across many different platforms. The language is designed be evaluated over multiple frames in order to avoid intentionally (or unintionally) freezing the game. In order to achieve this, both the compiler and virtual machine use a flat execution model; that is, no recursive descent parsing or tree-walk interpreters. This enables Catspeak programs to be passively compiled, executed, and paused at any time. Despite this, it is still possible for Catspeak scripts to be compiled and evaluated eagerly within a single step using the `catspeak_session_update_eager`, if desired.
 
 ## Getting Started
 

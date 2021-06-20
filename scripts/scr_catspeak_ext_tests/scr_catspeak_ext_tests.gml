@@ -35,7 +35,7 @@ try {
         result = _result;
     }));
     catspeak_session_add_source(session, "return 12");
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(this.result, 12);
 
@@ -50,7 +50,7 @@ try {
     catspeak_session_add_source(session, @'-- hello
     --another comment');
     catspeak_session_add_source(session, "\r\n\n");
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_false(this.error);
 
@@ -61,7 +61,7 @@ try {
         value = _value;
     }));
     catspeak_session_add_source(session, "18");
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(this.value, 18);
 
@@ -69,7 +69,7 @@ try {
     var session = catspeak_session_create();
     var workspace = catspeak_session_get_workspace(session);
     catspeak_session_add_source(session, "set var 3; set var' var");
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(workspace[$ "var"], 3);
     __catspeak_ext_tests_assert_eq(workspace[$ "var'"], workspace[$ "var"]);
@@ -80,7 +80,7 @@ try {
     catspeak_session_add_constant(session, "const", -12);
     catspeak_session_add_function(session, "funct", max);
     catspeak_session_add_source(session, "set const' const; set funct' funct");
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(workspace[$ "const'"], -12);
     __catspeak_ext_tests_assert_eq(method_get_index(workspace[$ "funct'"]), max);
@@ -96,7 +96,7 @@ try {
     set c : a * b + -a
     set d : max a b c
     ');
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(workspace[$ "a"], -3);
     __catspeak_ext_tests_assert_eq(workspace[$ "b"], 12);
@@ -122,7 +122,7 @@ try {
         .y infinity
     }
     ');
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(workspace[$ "int"], 1);
     __catspeak_ext_tests_assert_eq(workspace[$ "float"], 1.5);
@@ -146,7 +146,7 @@ try {
         set c "equal"
     }
     ');
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(workspace[$ "a"], 3);
     __catspeak_ext_tests_assert_eq(workspace[$ "b"], 5);
@@ -168,7 +168,7 @@ try {
         set count : count + 1
     }
     ');
-    catspeak_session_update_eagar(session);
+    catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(workspace[$ "limit"], 10);
     __catspeak_ext_tests_assert_eq(workspace[$ "count"], workspace[$ "limit"]);
