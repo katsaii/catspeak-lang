@@ -196,14 +196,14 @@ try {
     ');
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
-    
+
     // continue points
     var session = catspeak_session_create();
     var workspace = catspeak_session_get_workspace(session);
     catspeak_ext_session_add_gml_operators(session);
     catspeak_ext_session_add_gml_maths(session);
     catspeak_session_add_function(session, "failure", function(_number) {
-        throw "failed to continue to loop " + string(_number);
+        throw "failed to continue outside of loop " + string(_number);
     });
     catspeak_session_add_source(session, @'
     set count 10
@@ -217,6 +217,59 @@ try {
     ');
     catspeak_session_update_eager(session);
     catspeak_session_destroy(session);
+
+    // JSON-like syntax
+    var obj_truth = @'{ glossary : { title : "example glossary", GlossDiv : { GlossList : { GlossEntry : { GlossSee : "markup", GlossDef : { GlossSeeAlso : [ "GML","XML" ], para : "A meta-markup language, used to create markup languages such as DocBook." }, Abbrev : "ISO 8879:1986", Acronym : "SGML", GlossTerm : "Standard Generalized Markup Language", SortAs : "SGML", ID : "SGML" } }, title : "S" } } }';
+    var obj_json = catspeak_ext_json_parse(@'
+    {
+        "glossary": {
+            "title": "example glossary",
+            "GlossDiv": {
+                "title": "S",
+                "GlossList": {
+                    "GlossEntry": {
+                        "ID": "SGML",
+                        "SortAs": "SGML",
+                        "GlossTerm": "Standard Generalized Markup Language",
+                        "Acronym": "SGML",
+                        "Abbrev": "ISO 8879:1986",
+                        "GlossDef": {
+                            "para": "A meta-markup language, used to create markup languages such as DocBook.",
+                            "GlossSeeAlso": ["GML", "XML"]
+                        },
+                        "GlossSee": "markup"
+                    }
+                }
+            }
+        }
+    }
+    ');
+    var obj_catspeak_object = catspeak_ext_json_parse(@'
+    {
+        .glossary {
+            .title "example glossary"
+            .GlossDiv {
+                .title "S",
+                .GlossList {
+                    .GlossEntry {
+                        .ID "SGML"
+                        .SortAs "SGML"
+                        .GlossTerm "Standard Generalized Markup Language"
+                        .Acronym "SGML"
+                        .Abbrev "ISO 8879:1986"
+                        .GlossDef {
+                            .para "A meta-markup language, used to create markup languages such as DocBook.",
+                            .GlossSeeAlso ["GML", "XML"]
+                        }
+                        .GlossSee "markup"
+                    }
+                }
+            }
+        }
+    }
+    ');
+    __catspeak_ext_tests_assert_eq(obj_truth, string(obj_json));
+    __catspeak_ext_tests_assert_eq(obj_truth, string(obj_catspeak_object));
 
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
