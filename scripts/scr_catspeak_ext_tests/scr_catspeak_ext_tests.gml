@@ -176,12 +176,11 @@ try {
 
     // break points
     var session = catspeak_session_create();
-    var this = { count : 0 };
     var workspace = catspeak_session_get_workspace(session);
-    catspeak_ext_session_add_gml_operators(session);
-    catspeak_session_add_function(session, "failure", method(this, function(_number) {
+    catspeak_ext_session_add_gml_maths(session);
+    catspeak_session_add_function(session, "failure", function(_number) {
         throw "failed to break out of loop " + string(_number);
-    }));
+    });
     catspeak_session_add_source(session, @'
     while true {
         break
@@ -193,6 +192,27 @@ try {
             failure 2
         }
         failure 3
+    }
+    ');
+    catspeak_session_update_eager(session);
+    catspeak_session_destroy(session);
+    
+    // continue points
+    var session = catspeak_session_create();
+    var workspace = catspeak_session_get_workspace(session);
+    catspeak_ext_session_add_gml_operators(session);
+    catspeak_ext_session_add_gml_maths(session);
+    catspeak_session_add_function(session, "failure", function(_number) {
+        throw "failed to continue to loop " + string(_number);
+    });
+    catspeak_session_add_source(session, @'
+    set count 10
+    while (count > 0) {
+        set count : count - 1
+        while true {
+            continue 2
+            failure 1
+        }
     }
     ');
     catspeak_session_update_eager(session);
