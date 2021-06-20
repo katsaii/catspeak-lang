@@ -1,0 +1,43 @@
+{
+  "resources": [
+    {"id":{"name":"scr_catspeak_ext_json","path":"scripts/scr_catspeak_ext_json/scr_catspeak_ext_json.yy",},"order":9,},
+    {"id":{"name":"scr_catspeak","path":"scripts/scr_catspeak/scr_catspeak.yy",},"order":8,},
+    {"id":{"name":"scr_catspeak_ext_gml","path":"scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.yy",},"order":2,},
+    {"id":{"name":"scr_catspeak_ext_tests","path":"scripts/scr_catspeak_ext_tests/scr_catspeak_ext_tests.yy",},"order":3,},
+    {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":0,},
+  ],
+  "Options": [
+    {"name":"Linux","path":"options/linux/options_linux.yy",},
+    {"name":"macOS","path":"options/mac/options_mac.yy",},
+    {"name":"Main","path":"options/main/options_main.yy",},
+    {"name":"Windows","path":"options/windows/options_windows.yy",},
+  ],
+  "isDnDProject": false,
+  "isEcma": false,
+  "tutorialPath": "",
+  "configs": {
+    "name": "Default",
+    "children": [],
+  },
+  "RoomOrderNodes": [
+    {"roomId":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},},
+  ],
+  "Folders": [
+    {"folderPath":"folders/Scripts.yy","order":0,"resourceVersion":"1.0","name":"Scripts","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Rooms.yy","order":1,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
+  ],
+  "AudioGroups": [
+    {"targets":461609314234257646,"resourceVersion":"1.0","name":"audiogroup_default","resourceType":"GMAudioGroup",},
+  ],
+  "TextureGroups": [
+    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"targets":461609314234257646,"resourceVersion":"1.0","name":"Default","resourceType":"GMTextureGroup",},
+  ],
+  "IncludedFiles": [],
+  "MetaData": {
+    "IDEVersion": "23.1.1.193",
+  },
+  "resourceVersion": "1.4",
+  "name": "catspeak",
+  "tags": [],
+  "resourceType": "GMProject",
+}

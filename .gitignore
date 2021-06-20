@@ -2,14 +2,3 @@
 bin/*
 release/*
 TODO
-*.yy
-*.yyp
-datafiles/*
-fonts/*
-objects/*
-rooms/*
-saves/*
-sequences/*
-shaders/*
-sounds/*
-sprites/*
