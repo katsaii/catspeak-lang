@@ -863,7 +863,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
     instructionStack = [__CatspeakCompilerState.PROGRAM];
     storageStack = [];
     loopStack = [];
-    loopCurrent = undefined;
+    loopDepth = 0;
     /// @desc Adds a new compiler state to the instruction stack.
     /// @param {__CatspeakCompilerState} state The state to insert.
     static pushState = function(_state) {
@@ -888,22 +888,25 @@ function __CatspeakCompiler(_lexer, _out) constructor {
         return array_pop(storageStack);
     }
     /// @desc Adds a loop frame to the loop stack.
-    static pushLoop = function(_state) {
-        if (loopCurrent != undefined) {
-            array_push(loopStack, loopCurrent);
-        }
-        loopCurrent = {
+    static pushLoop = function() {
+        loopDepth += 1;
+        array_push(loopStack, {
             pc : out.getCurrentSize(),
             breaks : []
-        };
+        });
+    }
+    /// @desc Locates the loop at a specific position.
+    /// @param {real} n The depth of the loop to find.
+    static getLoop = function(_n) {
+        if (_n < 1 || _n > loopDepth) {
+            return undefined;
+        }
+        return loopStack[loopDepth - _n];
     }
     /// @desc Pops the top loop frame from the loop stack.
     static popLoop = function() {
-        if (array_length(loopStack) > 0) {
-            loopCurrent = array_pop(loopStack);
-        } else {
-            loopCurrent = undefined;
-        }
+        loopDepth -= 1;
+        array_pop(loopStack);
     }
     /// @desc Returns the current buffer position.
     static getPosition = function() {
@@ -1082,8 +1085,9 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             break;
         case __CatspeakCompilerState.WHILE_END:
             var jump_false_pc = popStorage();
-            var start_pc = loopCurrent.pc;
-            var breaks = loopCurrent.breaks;
+            var loop_current = getLoop(1);
+            var start_pc = loop_current.pc;
+            var breaks = loop_current.breaks;
             out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
             var end_pc = out.getCurrentSize();
             out.getCode(jump_false_pc).param = end_pc;
@@ -1094,21 +1098,31 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             popLoop();
             break;
         case __CatspeakCompilerState.BREAK:
+            var loop_depth = 1;
+            if (consume(__CatspeakToken.NUMBER_INT)) {
+                loop_depth = real(lexeme);
+            }
             expectsSemicolon("after break statements");
-            if (loopCurrent == undefined) {
-                error("cannot use break statements outside of loops");
+            var loop_current = getLoop(loop_depth);
+            if (loop_current == undefined) {
+                error("break statement depth exceeds current loop depth");
                 break;
             }
-            array_push(loopCurrent.breaks,
+            array_push(loop_current.breaks,
                     out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
             break;
         case __CatspeakCompilerState.CONTINUE:
+            var loop_depth = 1;
+            if (consume(__CatspeakToken.NUMBER_INT)) {
+                loop_depth = real(lexeme);
+            }
             expectsSemicolon("after continue statements");
-            if (loopCurrent == undefined) {
-                error("cannot use continue statements outside of loops");
+            var loop_current = getLoop(loop_depth);
+            if (loop_current == undefined) {
+                error("continue statement depth exceeds current loop depth");
                 break;
             }
-            var start_pc = loopCurrent.pc;
+            var start_pc = loop_current.pc;
             out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
             break;
         case __CatspeakCompilerState.PRINT:
