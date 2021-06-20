@@ -547,6 +547,7 @@ function __CatspeakScanner(_buff) constructor {
         case ord(":"):
             return __CatspeakToken.COLON;
         case ord(";"):
+        case ord(","): // weirdness, basically only for full JSON support and better array/object syntax
             return __CatspeakToken.SEMICOLON;
         case ord("|"):
         case ord("^"):
@@ -977,7 +978,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
     /// @desc Throws a `CatspeakCompilerError` if the current token is not a semicolon. Advances the parser otherwise.
     /// @param {string} on_error The error message.
     static expectsSemicolon = function(_msg) {
-        return expects(__CatspeakToken.SEMICOLON, "expected `;` or new line " + _msg);
+        return expects(__CatspeakToken.SEMICOLON, "expected `;`, a comma, or new line " + _msg);
     }
     /// @desc Returns whether the compiler is in progress.
     static inProgress = function() {
