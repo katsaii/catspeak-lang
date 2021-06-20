@@ -225,6 +225,7 @@ enum __CatspeakToken {
     IDENTIFIER,
     STRING,
     NUMBER,
+    NUMBER_INT,
     NUMBER_HEX,
     NUMBER_BIN,
     WHITESPACE,
@@ -266,6 +267,7 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.IDENTIFIER: return "IDENTIFIER";
     case __CatspeakToken.STRING: return "STRING";
     case __CatspeakToken.NUMBER: return "NUMBER";
+    case __CatspeakToken.NUMBER_INT: return "NUMBER_INT";
     case __CatspeakToken.NUMBER_HEX: return "NUMBER_HEX";
     case __CatspeakToken.NUMBER_BIN: return "NUMBER_BIN";
     case __CatspeakToken.WHITESPACE: return "WHITESPACE";
@@ -671,9 +673,12 @@ function __CatspeakScanner(_buff) constructor {
                 if (peek(1) == ord(".") && __catspeak_byte_is_digit(peek(2))) {
                     advance();
                     advanceWhile(__catspeak_byte_is_digit);
+                    registerLexeme();
+                    return __CatspeakToken.NUMBER;
+                } else {
+                    registerLexeme();
+                    return __CatspeakToken.NUMBER_INT;
                 }
-                registerLexeme();
-                return __CatspeakToken.NUMBER;
             } else {
                 return __CatspeakToken.OTHER;
             }
@@ -925,7 +930,10 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 || matches(__CatspeakToken.COLON)
                 || matches(__CatspeakToken.IDENTIFIER)
                 || matches(__CatspeakToken.STRING)
-                || matches(__CatspeakToken.NUMBER);
+                || matches(__CatspeakToken.NUMBER)
+                || matches(__CatspeakToken.NUMBER_INT)
+                || matches(__CatspeakToken.NUMBER_HEX)
+                || matches(__CatspeakToken.NUMBER_BIN);
     }
     /// @desc Returns true if the current token matches any kind of operator.
     static matchesOperator = function() {
@@ -1222,7 +1230,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
             } else if (consume(__CatspeakToken.STRING)) {
                 out.addCode(pos, __CatspeakOpCode.PUSH, lexeme);
-            } else if (consume(__CatspeakToken.NUMBER)) {
+            } else if (consume(__CatspeakToken.NUMBER) || consume(__CatspeakToken.NUMBER_INT)) {
                 out.addCode(pos, __CatspeakOpCode.PUSH, real(lexeme));
             } else if (consume(__CatspeakToken.NUMBER_HEX)) {
                 out.addCode(pos, __CatspeakOpCode.PUSH, real(ptr(lexeme))); // crasy hack by DragoniteSpam
