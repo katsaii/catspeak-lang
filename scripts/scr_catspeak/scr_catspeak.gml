@@ -702,7 +702,6 @@ function __CatspeakScanner(_buff) constructor {
                         clearLexeme();
                         advanceWhile(__catspeak_byte_is_hex_digit);
                         registerLexeme();
-                        show_message(lexeme);
                         return __CatspeakToken.NUMBER_HEX;
                     case ord("b"):
                         if not (__catspeak_byte_is_bin_digit(peek(2))) {
