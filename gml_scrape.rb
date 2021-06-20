@@ -41,13 +41,13 @@ def filter_map patterns, names
     names.filter{|name| contains.include? name or prefixes.any?{|prefix| name.start_with? prefix + "_"}}
 end
 
-def show_map_constants patterns, indent=4
+def show_map_constants patterns, indent=8
     (filter_map patterns, $gml_constants)
             .map{|name| "c(_session, \"#{name}\", #{name});"}
             .join("\n" + " " * indent)
 end
 
-def show_map_functions patterns, indent=4
+def show_map_functions patterns, indent=8
     (filter_map patterns, $gml_functions)
             .map{|name| "f(_session, \"#{name}\", #{name});"}
             .join("\n" + " " * indent)
@@ -178,6 +178,7 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
         var f = catspeak_session_add_function;
         var c = catspeak_session_add_constant;
         f(_session, "+", function(_l, _r) { return _l + _r; });
+        f(_session, "++", function(_l, _r) { return (is_string(_l) ? _l : string(_l)) + (is_string(_r) ? _r : string(_r)); });
         f(_session, "-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; });
         f(_session, "*", function(_l, _r) { return _l * _r; });
         f(_session, "/", function(_l, _r) { return _l / _r; });
@@ -202,14 +203,26 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
         f(_session, "!!", function(_x) { return is_numeric(_x) && _x; });
     }
 
+    #macro CATSPEAK_EXT_GML_FUNCTIONS (1 << 0)
+    #macro CATSPEAK_EXT_GML_CONSTANTS (1 << 1)
+    #macro CATSPEAK_EXT_GML_ALL (CATSPEAK_EXT_GML_FUNCTIONS | CATSPEAK_EXT_GML_CONSTANTS)
+
     <% gml_script_groups.each do |group, keywords| -%>
     /// @desc Applies a GML interface to this Catspeak session.
     /// @param {struct} session The Catspeak session to update.
-    function catspeak_ext_session_add_gml_<%= group %>(_session) {
-        var f = catspeak_session_add_function;
-        var c = catspeak_session_add_constant;
-        <%= show_map_constants keywords %>
-        <%= show_map_functions keywords %>
+    /// @param {real} [mode] Whether to include functions, constants, or both.
+    function catspeak_ext_session_add_gml_<%= group %>(_session, _mode) {
+        if (_mode == undefined) {
+            _mode = CATSPEAK_EXT_GML_ALL;
+        }
+        if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
+            var f = catspeak_session_add_function;
+            <%= show_map_functions keywords %>
+        }
+        if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
+            var c = catspeak_session_add_constant;
+            <%= show_map_constants keywords %>
+        }
     }
 
     <% end -%>
