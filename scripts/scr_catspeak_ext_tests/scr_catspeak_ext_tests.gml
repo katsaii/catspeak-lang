@@ -174,6 +174,30 @@ try {
     __catspeak_ext_tests_assert_eq(workspace[$ "count"], workspace[$ "limit"]);
     __catspeak_ext_tests_assert_eq(this.count, workspace[$ "count"]);
 
+    // break points
+    var session = catspeak_session_create();
+    var this = { count : 0 };
+    var workspace = catspeak_session_get_workspace(session);
+    catspeak_ext_session_add_gml_operators(session);
+    catspeak_session_add_function(session, "failure", method(this, function(_number) {
+        throw "failed to break out of loop " + string(_number);
+    }));
+    catspeak_session_add_source(session, @'
+    while true {
+        break
+        failure 1
+    }
+    while true {
+        while true {
+            break 2
+            failure 2
+        }
+        failure 3
+    }
+    ');
+    catspeak_session_update_eager(session);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
