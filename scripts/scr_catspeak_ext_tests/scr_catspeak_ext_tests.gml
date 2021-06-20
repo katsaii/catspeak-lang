@@ -220,7 +220,6 @@ try {
     catspeak_session_destroy(session);
 
     // JSON-like syntax
-    var obj_truth = @'{ glossary : { title : "example glossary", GlossDiv : { GlossList : { GlossEntry : { GlossSee : "markup", GlossDef : { GlossSeeAlso : [ "GML","XML" ], para : "A meta-markup language, used to create markup languages such as DocBook." }, Abbrev : "ISO 8879:1986", Acronym : "SGML", GlossTerm : "Standard Generalized Markup Language", SortAs : "SGML", ID : "SGML" } }, title : "S" } } }';
     var obj_json = catspeak_ext_json_parse(@'
     {
         "glossary": {
@@ -269,8 +268,8 @@ try {
         }
     }
     ');
-    __catspeak_ext_tests_assert_eq(obj_truth, string(obj_json));
-    __catspeak_ext_tests_assert_eq(obj_truth, string(obj_catspeak_object));
+    __catspeak_ext_tests_assert_true(is_struct(obj_json));
+    __catspeak_ext_tests_assert_true(is_struct(obj_catspeak_object));
 
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
