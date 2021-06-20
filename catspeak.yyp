@@ -2,6 +2,7 @@
   "resources": [
     {"id":{"name":"scr_catspeak_ext_json","path":"scripts/scr_catspeak_ext_json/scr_catspeak_ext_json.yy",},"order":9,},
     {"id":{"name":"scr_catspeak","path":"scripts/scr_catspeak/scr_catspeak.yy",},"order":8,},
+    {"id":{"name":"obj_catspeak_example_multi_step","path":"objects/obj_catspeak_example_multi_step/obj_catspeak_example_multi_step.yy",},"order":12,},
     {"id":{"name":"obj_catspeak_example_ini","path":"objects/obj_catspeak_example_ini/obj_catspeak_example_ini.yy",},"order":10,},
     {"id":{"name":"scr_catspeak_ext_gml","path":"scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.yy",},"order":2,},
     {"id":{"name":"scr_catspeak_ext_tests","path":"scripts/scr_catspeak_ext_tests/scr_catspeak_ext_tests.yy",},"order":3,},
