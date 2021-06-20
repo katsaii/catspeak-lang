@@ -48,6 +48,13 @@ function catspeak_session_get_workspace(_session) {
     return _session.runtime.getWorkspace();
 }
 
+/// @desc Sets the current variable workspace for this Catspeak session.
+/// @param {struct} session The Catspeak session to consider.
+/// @param {struct} workspace The variable workspace to assign.
+function catspeak_session_set_workspace(_session, _vars) {
+    _session.runtime.setWorkspace(_vars);
+}
+
 /// @desc Sets the error handler for this Catspeak session.
 /// @param {struct} session The Catspeak session to consider.
 /// @param {script} method_or_script_id The id of the script to execute upon receiving a Catspeak error.
@@ -1478,6 +1485,11 @@ function __CatspeakVM() constructor {
     /// @desc Gets the variable workspace for this context.
     static getWorkspace = function() {
         return binding;
+    }
+    /// @desc Sets the variable workspace for this context.
+    /// @param {struct} workspace The variable workspace to assign.
+    static setWorkspace = function(_vars) {
+        binding = _vars;
     }
     /// @desc Inserts a new read-only global variable into the interface.
     /// @param {string} name The name of the variable.
