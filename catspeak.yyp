@@ -1,10 +1,11 @@
 {
   "resources": [
     {"id":{"name":"scr_catspeak_ext_json","path":"scripts/scr_catspeak_ext_json/scr_catspeak_ext_json.yy",},"order":9,},
-    {"id":{"name":"scr_catspeak","path":"scripts/scr_catspeak/scr_catspeak.yy",},"order":8,},
+    {"id":{"name":"scr_catspeak_core","path":"scripts/scr_catspeak_core/scr_catspeak_core.yy",},"order":8,},
     {"id":{"name":"obj_catspeak_example_multi_step","path":"objects/obj_catspeak_example_multi_step/obj_catspeak_example_multi_step.yy",},"order":12,},
     {"id":{"name":"obj_catspeak_example_ini","path":"objects/obj_catspeak_example_ini/obj_catspeak_example_ini.yy",},"order":10,},
     {"id":{"name":"scr_catspeak_ext_gml","path":"scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.yy",},"order":2,},
+    {"id":{"name":"scr_catspeak","path":"scripts/scr_catspeak/scr_catspeak.yy",},"order":13,},
     {"id":{"name":"scr_catspeak_ext_tests","path":"scripts/scr_catspeak_ext_tests/scr_catspeak_ext_tests.yy",},"order":3,},
     {"id":{"name":"obj_catspeak_example_config","path":"objects/obj_catspeak_example_config/obj_catspeak_example_config.yy",},"order":11,},
     {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":0,},
@@ -30,14 +31,14 @@
     {"folderPath":"folders/Rooms.yy","order":1,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
-    {"targets":461609314234257646,"resourceVersion":"1.0","name":"audiogroup_default","resourceType":"GMAudioGroup",},
+    {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
   ],
   "TextureGroups": [
-    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"targets":461609314234257646,"resourceVersion":"1.0","name":"Default","resourceType":"GMTextureGroup",},
+    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
   ],
   "IncludedFiles": [],
   "MetaData": {
-    "IDEVersion": "23.1.1.193",
+    "IDEVersion": "23.1.1.300",
   },
   "resourceVersion": "1.4",
   "name": "catspeak",
