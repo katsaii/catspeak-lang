@@ -2,7 +2,7 @@
  * --------------
  * Kat @katsaii
  */
-
+/*
 function __catspeak_ext_tests_assert_eq(_expects, _got) {
     var callstack_pos = argument_count > 2 ? argument[2] : 1;
     var pass;
@@ -277,3 +277,4 @@ try {
     var msg = is_struct(_e) && variable_struct_exists(_e, "message") ? _e[$ "message"] : string(_e);
     show_debug_message("AN ERROR OCCURRED WHEN RUNNING CATSPEAK UNIT TESTS:\n" + msg);
 }
+*/

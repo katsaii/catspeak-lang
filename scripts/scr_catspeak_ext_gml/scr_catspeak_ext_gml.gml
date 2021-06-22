@@ -2,7 +2,7 @@
  * ----------------------
  * Kat @katsaii
  */
-
+/*
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 function catspeak_ext_session_add_gml_operators(_session) {
@@ -3012,4 +3012,4 @@ function catspeak_ext_session_add_gml_device(_session, _mode) {
         c(_session, "os_permission_granted", os_permission_granted);
     }
 }
-
+*/

@@ -2,7 +2,7 @@
  * -----------------------
  * Kat @katsaii
  */
-
+/*
 /// @desc Creates a new Catspeak session for parsing JSON-like syntax.
 function catspeak_ext_json_session_create() {
     var session = catspeak_session_create();
@@ -33,3 +33,4 @@ function catspeak_ext_json_parse(_src) {
     catspeak_session_destroy(session);
     return objects;
 }
+*/
