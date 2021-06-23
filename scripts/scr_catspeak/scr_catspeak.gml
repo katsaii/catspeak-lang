@@ -19,7 +19,7 @@ function __catspeak_manager() {
 }
 
 /// @desc Sets the error handler for Catspeak errors.
-/// @param {script} method_or_script_id The id of the script to execute upon encountering an error.
+/// @param {script} script_id_or_method The id of the script to execute upon encountering an error.
 function catspeak_set_error_script(_f) {
     __CATSPEAK_UNIMPLEMENTED;
 }
@@ -36,6 +36,12 @@ function catspeak_update(_frame_start) {
             break;
         }
     } until (get_timer() >= time_limit);
+}
+
+/// @desc Sets the maximum number of iterations a process can perform before being stopped.
+/// @param {real} iteration_count The number of maximum number of iterations to perform. Use `-1` for unlimited.
+function catspeak_set_max_iterations(_iteration_count) {
+    __CATSPEAK_UNIMPLEMENTED;
 }
 
 /// @desc Creates a new Catspeak session and returns its ID.
@@ -56,16 +62,9 @@ function catspeak_session_set_source(_session, _str) {
     __CATSPEAK_UNIMPLEMENTED;
 }
 
-/// @desc Sets the result handler for this session.
-/// @param {struct} session_id The ID of the session to update.
-/// @param {script} method_or_script_id The id of the script to execute upon receiving a result.
-function catspeak_session_set_result_script(_session, _f) {
-    __CATSPEAK_UNIMPLEMENTED;
-}
-
 /// @desc Sets the VM pop handler for this session.
 /// @param {struct} session_id The ID of the session to update.
-/// @param {script} method_or_script_id The id of the script to execute upon popping a value.
+/// @param {script} script_id_or_method The id of the script to execute upon popping a value.
 function catspeak_session_set_pop_script(_session, _f) {
     __CATSPEAK_UNIMPLEMENTED;
 }
@@ -84,6 +83,13 @@ function catspeak_session_enable_instance_access(_session, _enable) {
     __CATSPEAK_UNIMPLEMENTED;
 }
 
+/// @desc Makes all processes of this session use the same workspace.
+/// @param {struct} session_id The ID of the session to update.
+/// @param {bool} enable Whether to enable this option.
+function catspeak_session_enable_shared_workspace(_session, _enable) {
+    __CATSPEAK_UNIMPLEMENTED;
+}
+
 /// @desc Inserts a new read-only global variable into the interface of this session.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {string} name The name of the variable.
@@ -95,39 +101,15 @@ function catspeak_session_add_constant(_session, _name, _value) {
 /// @desc Inserts a new function into to the interface of this session.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {string} name The name of the function.
-/// @param {value} method_or_script_id The reference to the function.
+/// @param {value} script_id_or_method The reference to the function.
 function catspeak_session_add_function(_session, _name, _value) {
     __CATSPEAK_UNIMPLEMENTED;
 }
 
-/// @desc Spawns a process from this session and returns its ID.
+/// @desc Spawns a process from this session.
 /// @param {real} session_id The ID of the session to spawn a process for.
-function catspeak_session_create_process(_session) {
-    __CATSPEAK_UNIMPLEMENTED;
-}
-
-/// @desc Terminates a process with this ID.
-/// @param {real} process_id The ID of the process to terminate.
-function catspeak_process_destroy(_process) {
-    __CATSPEAK_UNIMPLEMENTED;
-}
-
-/// @desc Returns the current iteration of this process.
-/// @param {real} process_id The ID of the process to consider.
-function catspeak_process_get_iteration_count(_process) {
-    __CATSPEAK_UNIMPLEMENTED;
-}
-
-/// @desc Returns the current variable workspace for this process.
-/// @param {real} process_id The ID of the process to consider.
-function catspeak_process_get_workspace(_process) {
-    __CATSPEAK_UNIMPLEMENTED;
-}
-
-/// @desc Sets the current variable workspace for this process.
-/// @param {real} process_id The ID of the process to update.
-/// @param {struct} workspace The variable workspace to assign.
-function catspeak_session_set_workspace(_process, _vars) {
+/// @param {script} script_id_or_method The id of the script to execute upon completing the process.
+function catspeak_session_create_process(_session, _callback_return) {
     __CATSPEAK_UNIMPLEMENTED;
 }
 
