@@ -13,15 +13,11 @@ function __catspeak_manager() {
         processes : [],
         processCount : 0,
         processID : 0,
+        errorScript : undefined,
+        maxIterations : -1,
         frameAllocation : 0.5 // compute for 50% of frame time
     };
     return catspeak;
-}
-
-/// @desc Sets the error handler for Catspeak errors.
-/// @param {script} script_id_or_method The id of the script to execute upon encountering an error.
-function catspeak_set_error_script(_f) {
-    __CATSPEAK_UNIMPLEMENTED;
 }
 
 /// @desc Updates the catspeak manager.
@@ -38,10 +34,18 @@ function catspeak_update(_frame_start) {
     } until (get_timer() >= time_limit);
 }
 
+/// @desc Sets the error handler for Catspeak errors.
+/// @param {script} script_id_or_method The id of the script to execute upon encountering an error.
+function catspeak_set_error_script(_f) {
+    var catspeak = __catspeak_manager();
+    catspeak.errorScript = is_method(_f) || is_numeric(_f) && script_exists(_f) ? _f : undefined;
+}
+
 /// @desc Sets the maximum number of iterations a process can perform before being stopped.
 /// @param {real} iteration_count The number of maximum number of iterations to perform. Use `-1` for unlimited.
 function catspeak_set_max_iterations(_iteration_count) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var catspeak = __catspeak_manager();
+    catspeak.maxIterations = is_numeric(_f) && _f >= 0 ? _f : -1;
 }
 
 /// @desc Creates a new Catspeak session and returns its ID.
