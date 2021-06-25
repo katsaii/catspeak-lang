@@ -32,7 +32,23 @@ function catspeak_update(_frame_start) {
     var time_limit = _frame_start + catspeak.frameAllocation *
             game_get_speed(gamespeed_microseconds);
     do {
-        if (catspeak.processCount < 1) {
+        if (catspeak.compilerProcessCount > 0) {
+            // update compiler processes
+            var process_id = catspeak.compilerProcessID;
+            if (process_id < 1) {
+                catspeak.compilerProcessID = catspeak.compilerProcessCount - 1;
+            } else {
+                catspeak.compilerProcessID -= 1;
+            }
+        } else if (catspeak.runtimeProcessCount > 0) {
+            // update runtime processes
+            var process_id = catspeak.runtimeProcessID;
+            if (process_id < 1) {
+                catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
+            } else {
+                catspeak.runtimeProcessID -= 1;
+            }
+        } else {
             break;
         }
     } until (get_timer() >= time_limit);
