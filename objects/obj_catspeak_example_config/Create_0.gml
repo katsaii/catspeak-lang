@@ -1,15 +1,15 @@
 /// @desc Initialise Catspeak.
-catspeak = catspeak_session_create();
+catspeak = catspeak_session_id_create();
 playerData = undefined;
 worldData = undefined;
-catspeak_ext_session_add_gml_operators(catspeak);
-catspeak_session_add_function(catspeak, "player", function(_value) {
+catspeak_ext_session_id_add_gml_operators(catspeak);
+catspeak_session_id_add_function(catspeak, "player", function(_value) {
     playerData = _value;
 });
-catspeak_session_add_function(catspeak, "world", function(_value) {
+catspeak_session_id_add_function(catspeak, "world", function(_value) {
     worldData = _value;
 });
-catspeak_session_add_source(catspeak, @'
+catspeak_session_id_add_source(catspeak, @'
 player {
     .name : "Angie"
     .x : -12
@@ -22,6 +22,6 @@ world {
     .background_colour : 0x00FF00
 }
 ');
-catspeak_session_update_eager(catspeak);
+catspeak_session_id_update_eager(catspeak);
 show_message(playerData);
 show_message(worldData);

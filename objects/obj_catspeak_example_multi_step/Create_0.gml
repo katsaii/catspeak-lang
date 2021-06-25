@@ -1,11 +1,11 @@
 /// @desc Initialise Catspeak.
-catspeak = catspeak_session_create();
-workspace = catspeak_session_get_workspace(catspeak);
-catspeak_ext_session_add_gml_operators(catspeak);
-catspeak_session_add_result_handler(catspeak, function(_result) {
+catspeak = catspeak_session_id_create();
+workspace = catspeak_session_id_get_workspace(catspeak);
+catspeak_ext_session_id_add_gml_operators(catspeak);
+catspeak_session_id_add_result_handler(catspeak, function(_result) {
     show_message(_result);
 });
-catspeak_session_add_source(catspeak, @'
+catspeak_session_id_add_source(catspeak, @'
 set n 0
 set factorial_n 1
 while (n < 100) {

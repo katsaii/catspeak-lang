@@ -1,2 +1,2 @@
 /// @desc Clean up Catspeak.
-catspeak_session_destroy(catspeak);
+catspeak_session_id_destroy(catspeak);
