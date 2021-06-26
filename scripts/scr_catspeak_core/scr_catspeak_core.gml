@@ -3,37 +3,6 @@
  * Kat @katsaii
  */
 
-/// @desc Represents a list of events that are called.
-function __CatspeakEventList() constructor {
-    eventCount = 0;
-    events = [];
-    /// @desc Returns whether the list of events is empty.
-    static isEmpty = function() {
-        return eventCount == 0;
-    }
-    /// @desc Adds a new event to the event list.
-    /// @param {method} script The id of the script to call.
-    static add = function(_event) {
-        if (is_method(_event) || is_real(_event) && script_exists(_event)) {
-            array_push(events, _event);
-            eventCount += 1;
-        }
-    }
-    /// @desc Runs the list of events.
-    /// @param {value} arg The argument to call the events with.
-    static run = function(_arg) {
-        var n = eventCount;
-        for (var i = 0; i < n; i += 1) {
-            var event = events[i];
-            if (is_method(event)) {
-                event(_arg);
-            } else {
-                script_execute(event, _arg);
-            }
-        }
-    }
-}
-
 /// @desc Represents a Catspeak error.
 /// @param {vector} pos The vector holding the row and column numbers.
 /// @param {string} msg The error message.
@@ -323,18 +292,6 @@ function __CatspeakScanner(_buff) constructor {
         var offset = buffer_tell(buff) + _n - 1;
         var byte = offset >= limit ? -1 : buffer_peek(buff, offset, buffer_u8);
         return byte;
-    }
-    /// @desc Returns whether the next byte equals this expected byte. And advances the scanner if this is the case.
-    /// @param {real} expected The byte to check for.
-    static advanceIf = function(_expected) {
-        var seek = buffer_tell(buff);
-        var actual = buffer_peek(buff, seek, buffer_u8);
-        if (actual != _expected) {
-            return false;
-        }
-        buffer_read(buff, buffer_u8);
-        registerByte(actual);
-        return true;
     }
     /// @desc Advances the scanner whilst a predicate holds, or until the EoF was reached.
     /// @param {script} pred The predicate to check for.
@@ -1245,14 +1202,6 @@ function __CatspeakChunk() constructor {
         array_delete(program, _pos, 1);
         size -= 1;
     }
-}
-
-/// @desc Represents a type of configuration option.
-enum __CatspeakVMOption {
-    GLOBAL_VISIBILITY,
-    INSTANCE_VISIBILITY,
-    RESULT_HANDLER,
-    POP_HANDLER
 }
 
 /// @desc Handles the execution of a single Catspeak chunk.
