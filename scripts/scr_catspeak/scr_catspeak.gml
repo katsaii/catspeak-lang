@@ -58,7 +58,6 @@ function catspeak_update(_frame_start) {
                     catspeak.compilerProcessCurrent = array_pop(compiler_processes);
                 } else {
                     catspeak.compilerProcessCurrent = undefined;
-                    show_message(catspeak);
                 }
             }
         } else if (catspeak.runtimeProcessCount > 0) {
@@ -92,14 +91,6 @@ function catspeak_update(_frame_start) {
         }
     } until (get_timer() >= time_limit);
 }
-
-var sess = catspeak_session_create();
-catspeak_session_set_source(sess, @'
-print "hi"
-');
-catspeak_session_create_process(sess, function(_result) {
-    show_message("what is up katsaii nation");
-})
 
 /// @desc Sets the error handler for Catspeak errors.
 /// @param {script} script_id_or_method The id of the script to execute upon encountering an error.
@@ -215,7 +206,9 @@ function catspeak_session_enable_shared_workspace(_session_id, _enable) {
 /// @param {string} name The name of the variable.
 /// @param {value} value The value of the variable.
 function catspeak_session_add_constant(_session_id, _name, _value) {
-    interface[$ _name] = _value;
+    var catspeak = __catspeak_manager();
+    var session = catspeak.sessions[@ _session_id];
+    session.interface[$ _name] = _value;
 }
 
 /// @desc Inserts a new function into to the interface of this session.
@@ -223,16 +216,18 @@ function catspeak_session_add_constant(_session_id, _name, _value) {
 /// @param {string} name The name of the function.
 /// @param {value} script_id_or_method The reference to the function.
 function catspeak_session_add_function(_session_id, _name, _value) {
+    var catspeak = __catspeak_manager();
+    var session = catspeak.sessions[@ _session_id];
     var f = _value;
     if not (is_method(f)) {
-        if not (is_numeric(_f) && script_exists(_f)) {
+        if not (is_numeric(f)) {
             return;
         }
         // this is so that unexposed functions cannot be enumerated
         // by a malicious user in order to access important functions
         f = method(undefined, f);
     }
-    interface[$ _name] = f;
+    session.interface[$ _name] = f;
 }
 
 /// @desc Spawns a process from this session.
