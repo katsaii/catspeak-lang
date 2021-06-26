@@ -237,12 +237,8 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
-    var process = new __CatspeakVM();
-    process.setOption(__CatspeakVMOption.GLOBAL_VISIBILITY, session.globalAccess);
-    process.setOption(__CatspeakVMOption.INSTANCE_VISIBILITY, session.instanceAccess);
-    process.setOption(__CatspeakVMOption.POP_HANDLER, session.popScript);
-    process.setOption(__CatspeakVMOption.RESULT_HANDLER, _callback_return);
-    process.addChunk(session.chunk);
+    var process = new __CatspeakVM(session.chunk, session.globalAccess,
+            session.instanceAccess, session.popScript, _callback_return);
     array_push(catspeak.runtimeProcesses, process);
     catspeak.runtimeProcessCount += 1;
 }

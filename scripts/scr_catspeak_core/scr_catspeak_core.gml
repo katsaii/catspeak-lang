@@ -1256,20 +1256,25 @@ enum __CatspeakVMOption {
 }
 
 /// @desc Handles the execution of a single Catspeak chunk.
-function __CatspeakVM() constructor {
+/// @param {__CatspeakChunk} chunk The chunk to evaluate.
+/// @param {bool} global_access Whether to enable global variable access.
+/// @param {bool} instance_access Whether to enable instance variable access.
+/// @param {bool} pop_script The reference to the script that handles popped values.
+/// @param {bool} return_script The reference to the script that handles returned values.
+function __CatspeakVM(_chunk, _global_access, _instance_access, _pop_script, _return_script) constructor {
     interface = { };
     binding = { };
-    resultHandler = new __CatspeakEventList();
-    popHandler = new __CatspeakEventList();
-    chunks = [];
-    chunkCount = 0;
+    resultHandler = _return_script;
+    popHandler = _pop_script;
+    chunks = [_chunk];
+    chunkCount = 1;
     chunkID = 0;
     pc = 0;
     stackLimit = 8;
     stackSize = 0;
     stack = array_create(stackLimit);
-    exposeGlobalScope = false;
-    exposeInstanceScope = false;
+    exposeGlobalScope = is_numeric(_global_access) && _global_access;
+    exposeInstanceScope = is_numeric(_instance_access) && _instance_access;
     /// @desc Throws a `__CatspeakError` with the current program counter.
     /// @param {string} msg The error message.
     static error = function(_msg) {
@@ -1507,7 +1512,9 @@ function __CatspeakVM() constructor {
             break;
         case __CatspeakOpCode.POP:
             var value = pop();
-            popHandler.run(value);
+            if (popHandler != undefined) {
+                popHandler(value);
+            }
             break;
         case __CatspeakOpCode.VAR_GET:
             var name = inst.param;
@@ -1586,7 +1593,9 @@ function __CatspeakVM() constructor {
             break;
         case __CatspeakOpCode.RETURN:
             var value = pop();
-            resultHandler.run(value);
+            if (resultHandler != undefined) {
+                resultHandler(value);
+            }
             terminateChunk(); // complete execution
             return;
         default:
