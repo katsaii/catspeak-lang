@@ -1125,8 +1125,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
         }
         if not (inProgress()) {
             // code generation complete, add a final return code
-            out.addCode(pos, __CatspeakOpCode.PUSH, undefined);
-            out.addCode(pos, __CatspeakOpCode.RETURN);
+            out.addCode(pos, __CatspeakOpCode.RETURN_IMPLICIT);
         }
     }
 }
@@ -1143,6 +1142,7 @@ enum __CatspeakOpCode {
     MAKE_OBJECT,
     PRINT,
     RETURN,
+    RETURN_IMPLICIT,
     CALL,
     JUMP,
     JUMP_FALSE
@@ -1162,6 +1162,7 @@ function __catspeak_code_render(_kind) {
     case __CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
     case __CatspeakOpCode.PRINT: return "PRINT";
     case __CatspeakOpCode.RETURN: return "RETURN";
+    case __CatspeakOpCode.RETURN_IMPLICIT: return "RETURN_IMPLICIT";
     case __CatspeakOpCode.CALL: return "CALL";
     case __CatspeakOpCode.JUMP: return "JUMP";
     case __CatspeakOpCode.JUMP_FALSE: return "JUMP_FALSE";
@@ -1208,15 +1209,15 @@ function __CatspeakChunk() constructor {
 /// @param {__CatspeakChunk} chunk The chunk to evaluate.
 /// @param {bool} global_access Whether to enable global variable access.
 /// @param {bool} instance_access Whether to enable instance variable access.
+/// @param {bool} implicit_return Whether to enable instance variable access.
 /// @param {struct} interface The variable interface to assign.
 /// @param {struct} workspace The variable workspace to assign.
-/// @param {bool} pop_script The reference to the script that handles popped values.
 /// @param {bool} return_script The reference to the script that handles returned values.
-function __CatspeakVM(_chunk, _global_access, _instance_access, _interface, _workspace, _pop_script, _return_script) constructor {
+function __CatspeakVM(_chunk, _global_access, _instance_access, _implicit_return,
+        _interface, _workspace, _return_script) constructor {
     interface = is_struct(_interface) ? _interface : { };
     binding = is_struct(_workspace) ? _workspace : { };
     resultHandler = _return_script;
-    popHandler = _pop_script;
     chunk = _chunk;
     pc = 0;
     running = true;
@@ -1225,6 +1226,7 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _interface, _wor
     stack = array_create(stackLimit);
     exposeGlobalScope = is_numeric(_global_access) && _global_access;
     exposeInstanceScope = is_numeric(_instance_access) && _instance_access;
+    implicitReturn = is_numeric(_implicit_return) && _implicit_return;
     /// @desc Throws a `__CatspeakError` with the current program counter.
     /// @param {string} msg The error message.
     static error = function(_msg) {
@@ -1385,9 +1387,7 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _interface, _wor
             break;
         case __CatspeakOpCode.POP:
             var value = pop();
-            if (popHandler != undefined) {
-                popHandler(value);
-            }
+            setVariable("ans", value);
             break;
         case __CatspeakOpCode.VAR_GET:
             var name = inst.param;
@@ -1464,6 +1464,12 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _interface, _wor
                 break;
             }
             break;
+        case __CatspeakOpCode.RETURN_IMPLICIT:
+            if (implicitReturn) {
+                push(getVariable("ans"));
+            } else {
+                push(undefined);
+            }
         case __CatspeakOpCode.RETURN:
             var value = pop();
             if (resultHandler != undefined) {

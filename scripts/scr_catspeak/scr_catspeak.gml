@@ -110,9 +110,9 @@ function catspeak_set_max_iterations(_iteration_count) {
 function catspeak_session_create() {
     var catspeak = __catspeak_manager();
     var session = {
-        popScript : undefined,
         globalAccess : false,
         instanceAccess : false,
+        implicitReturn : false,
         sharedWorkspace : undefined,
         interface : { },
         chunk : new __CatspeakChunk()
@@ -165,15 +165,6 @@ function catspeak_session_set_source(_session_id, _src) {
     }
 }
 
-/// @desc Sets the VM pop handler for this session.
-/// @param {struct} session_id The ID of the session to update.
-/// @param {script} script_id_or_method The id of the script to execute upon popping a value.
-function catspeak_session_set_pop_script(_session_id, _f) {
-    var sessions = __catspeak_manager().sessions;
-    var session = sessions[@ _session_id];
-    session.popScript = is_method(_f) || is_numeric(_f) && script_exists(_f) ? _f : undefined;
-}
-
 /// @desc Enables access to global variables for this session.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {bool} enable Whether to enable this option.
@@ -190,6 +181,15 @@ function catspeak_session_enable_instance_access(_session_id, _enable) {
     var sessions = __catspeak_manager().sessions;
     var session = sessions[@ _session_id];
     session.instanceAccess = is_numeric(_enable) && _enable;
+}
+
+/// @desc Enables implicit returns for this session.
+/// @param {struct} session_id The ID of the session to update.
+/// @param {bool} enable Whether to enable this option.
+function catspeak_session_enable_implicit_return(_session_id, _enable) {
+    var sessions = __catspeak_manager().sessions;
+    var session = sessions[@ _session_id];
+    session.implicitReturn = is_numeric(_enable) && _enable;
 }
 
 /// @desc Makes all processes of this session use the same workspace.
@@ -237,7 +237,7 @@ function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
     var runtime = new __CatspeakVM(session.chunk, session.globalAccess, session.instanceAccess,
-            session.interface, session.sharedWorkspace, session.popScript, _callback_return);
+            session.implicitReturn, session.interface, session.sharedWorkspace, _callback_return);
     var runtime_process = {
         runtime : runtime,
         iterationCount : 0
