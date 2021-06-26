@@ -114,7 +114,7 @@ function catspeak_session_create() {
         implicitReturn : false,
         sharedWorkspace : undefined,
         interface : { },
-        chunk : new __CatspeakChunk()
+        compilerProcess : undefined
     };
     var sessions = catspeak.sessions;
     var empty_sessions = catspeak.sessionEmpty;
@@ -153,10 +153,11 @@ function catspeak_session_set_source(_session_id, _src) {
     var compiler = new __CatspeakCompiler(lexer, chunk);
     var compiler_process = {
         buff : buff,
+        chunk : chunk,
         compiler : compiler
     };
     var session = catspeak.sessions[_session_id];
-    session.chunk = chunk;
+    session.compilerProcess = compiler_process;
     if (catspeak.compilerProcessCurrent == undefined) {
         catspeak.compilerProcessCurrent = compiler_process;
     } else {
@@ -235,7 +236,8 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
-    var runtime = new __CatspeakVM(session.chunk, catspeak.maxIterations, session.globalAccess,
+    var chunk = session.compilerProcess == undefined ? new __CatspeakChunk() : session.compilerProcess.chunk;
+    var runtime = new __CatspeakVM(chunk, catspeak.maxIterations, session.globalAccess,
             session.instanceAccess, session.implicitReturn, session.interface,
             session.sharedWorkspace, _callback_return);
     var runtime_process = {
@@ -244,4 +246,3 @@ function catspeak_session_create_process(_session_id, _callback_return) {
     array_push(catspeak.runtimeProcesses, runtime_process);
     catspeak.runtimeProcessCount += 1;
 }
-
