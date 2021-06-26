@@ -1,13 +1,10 @@
 {
   "resources": [
-    {"id":{"name":"obj_catspeak_example","path":"objects/obj_catspeak_example/obj_catspeak_example.yy",},"order":14,},
     {"id":{"name":"scr_catspeak_core","path":"scripts/scr_catspeak_core/scr_catspeak_core.yy",},"order":8,},
-    {"id":{"name":"obj_catspeak_example_multi_step","path":"objects/obj_catspeak_example_multi_step/obj_catspeak_example_multi_step.yy",},"order":12,},
-    {"id":{"name":"obj_catspeak_example_ini","path":"objects/obj_catspeak_example_ini/obj_catspeak_example_ini.yy",},"order":10,},
+    {"id":{"name":"obj_catspeak_examples","path":"objects/obj_catspeak_examples/obj_catspeak_examples.yy",},"order":15,},
     {"id":{"name":"scr_catspeak_ext_gml","path":"scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.yy",},"order":2,},
     {"id":{"name":"scr_catspeak","path":"scripts/scr_catspeak/scr_catspeak.yy",},"order":13,},
     {"id":{"name":"scr_catspeak_ext_tests","path":"scripts/scr_catspeak_ext_tests/scr_catspeak_ext_tests.yy",},"order":3,},
-    {"id":{"name":"obj_catspeak_example_config","path":"objects/obj_catspeak_example_config/obj_catspeak_example_config.yy",},"order":11,},
     {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":0,},
   ],
   "Options": [
