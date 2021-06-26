@@ -10,10 +10,8 @@ function __catspeak_manager() {
     static catspeak = {
         sessions : [],
         sessionEmpty : [],
-        sessionCount : 0,
         compilerProcesses : [],
-        compilerProcessCount : 0,
-        compilerProcessID : 0,
+        compilerProcessCurrent : undefined,
         runtimeProcesses : [],
         runtimeProcessCount : 0,
         runtimeProcessID : 0,
@@ -71,7 +69,14 @@ function catspeak_set_max_iterations(_iteration_count) {
 /// @desc Creates a new Catspeak session and returns its ID.
 function catspeak_session_create() {
     var catspeak = __catspeak_manager();
-    var session = { };
+    var session = {
+        popScript : undefined,
+        globalAccess : false,
+        instanceAccess : false,
+        sharedWorkspace : undefined,
+        interface : { },
+        chunk : new __CatspeakChunk()
+    };
     var sessions = catspeak.sessions;
     var empty_sessions = catspeak.sessionEmpty;
     var pos;
