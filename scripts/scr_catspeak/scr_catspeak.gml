@@ -22,16 +22,50 @@ function __catspeak_manager() {
     return catspeak;
 }
 
+/// @desc Handles an error if this function exists, otherwise the error is thrown again.
+/// @param {value} error The error to handle.
+/// @param {script} script_id_or_method The id of the script that handles the error.
+function __catspeak_handle_error(_e, _f) {
+    if (_f != undefined) {
+        _f(_e);
+    } else {
+        throw _e;
+    }
+};
+
+/// @desc Kills the current compiler process.
+function __catspeak_kill_compiler_process() {
+    var catspeak = __catspeak_manager();
+    buffer_delete(catspeak.compilerProcessCurrent.buff);
+    if (array_length(catspeak.compilerProcesses) > 0) {
+        catspeak.compilerProcessCurrent = array_pop(catspeak.compilerProcesses);
+    } else {
+        catspeak.compilerProcessCurrent = undefined;
+    }
+}
+
+/// @desc Kills a runtime process with this id.
+/// @param {value} process_id The id of the runtime process to kill.
+function __catspeak_kill_runtime_process(_process_id) {
+    var catspeak = __catspeak_manager();
+    array_delete(catspeak.runtimeProcesses, _process_id, 1);
+    catspeak.runtimeProcessCount -= 1;
+    __catspeak_next_runtime_process();
+}
+
+/// @desc Moves onto the next runtime process.
+function __catspeak_next_runtime_process() {
+    var catspeak = __catspeak_manager();
+    if (catspeak.runtimeProcessID < 1) {
+        catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
+    } else {
+        catspeak.runtimeProcessID -= 1;
+    }
+}
+
 /// @desc Updates the catspeak manager.
 /// @param {real} frame_start The time (in microseconds) when the frame started.
 function catspeak_update(_frame_start) {
-    static handle_catspeak_error = function(_e, _f) {
-        if (_f != undefined) {
-            _f(_e);
-        } else {
-            throw _e;
-        }
-    };
     var catspeak = __catspeak_manager();
     // update active processes
     var frame_time = game_get_speed(gamespeed_microseconds);
@@ -46,45 +80,34 @@ function catspeak_update(_frame_start) {
         if (compiler_process != undefined) {
             // update compiler processes
             var compiler = compiler_process.compiler;
+            if not (compiler.inProgress()) {
+                // compiler process is complete, move onto the next
+                __catspeak_kill_compiler_process();
+                continue;
+            }
             try {
                 compiler.generateCode();
             } catch (_e) {
-                handle_catspeak_error(_e, f);
-                continue;
-            }
-            if not (compiler.inProgress()) {
-                // compiler process is complete, move onto the next
-                buffer_delete(compiler_process.buff);
-                if (array_length(compiler_processes) > 0) {
-                    catspeak.compilerProcessCurrent = array_pop(compiler_processes);
-                } else {
-                    catspeak.compilerProcessCurrent = undefined;
-                }
+                __catspeak_kill_compiler_process();
+                __catspeak_handle_error(_e, f);
             }
         } else if (catspeak.runtimeProcessCount > 0) {
             // update runtime processes
             var process_id = catspeak.runtimeProcessID;
             var runtime_process = runtime_processes[process_id];
             var runtime = runtime_process.runtime;
-            static kill_process = function(_catspeak, _process_id) {
-                array_delete(_catspeak.runtimeProcesses, _process_id, 1);
-                _catspeak.runtimeProcessCount -= 1;
-            };
+            if not (runtime.inProgress()) {
+                __catspeak_kill_runtime_process(process_id);
+                continue;
+            }
             try {
                 runtime.computeProgram();
             } catch (_e) {
-                kill_process(catspeak, process_id);
-                handle_catspeak_error(_e, f);
+                __catspeak_kill_runtime_process(process_id);
+                __catspeak_handle_error(_e, f);
                 continue;
             }
-            if not (runtime.inProgress()) {
-                kill_process(catspeak, process_id);
-            }
-            if (process_id < 1) {
-                catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
-            } else {
-                catspeak.runtimeProcessID -= 1;
-            }
+            __catspeak_next_runtime_process();
         } else {
             break;
         }
