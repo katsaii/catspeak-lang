@@ -31,13 +31,21 @@ function catspeak_update(_frame_start) {
             game_get_speed(gamespeed_microseconds);
     try {
         do {
-            if (catspeak.compilerProcessCount > 0) {
+            var compiler_process = catspeak.compilerProcessCurrent;
+            if (compiler_process != undefined) {
                 // update compiler processes
-                var process_id = catspeak.compilerProcessID;
-                if (process_id < 1) {
-                    catspeak.compilerProcessID = catspeak.compilerProcessCount - 1;
-                } else {
-                    catspeak.compilerProcessID -= 1;
+                var compiler = compiler_process.compiler;
+                compiler.generateCode();
+                if not (compiler.inProgress()) {
+                    // compiler process is complete, move onto the next
+                    buffer_delete(compiler_process.buff);
+                    var compiler_processes = catspeak.compilerProcesses;
+                    if (array_length(compiler_processes) > 0) {
+                        catspeak.compilerProcessCurrent = array_pop(compiler_processes);
+                    } else {
+                        catspeak.compilerProcessCurrent = undefined;
+                        show_message(catspeak);
+                    }
                 }
             } else if (catspeak.runtimeProcessCount > 0) {
                 // update runtime processes
@@ -60,6 +68,11 @@ function catspeak_update(_frame_start) {
         }
     }
 }
+
+var sess = catspeak_session_create();
+catspeak_session_set_source(sess, @'
+print "hi"
+');
 
 /// @desc Sets the error handler for Catspeak errors.
 /// @param {script} script_id_or_method The id of the script to execute upon encountering an error.
@@ -111,8 +124,27 @@ function catspeak_session_destroy(_session_id) {
 /// @desc Sets the source code for this session.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {string} src The source code to compile and evaluate.
-function catspeak_session_set_source(_session_id, _str) {
-    __CATSPEAK_UNIMPLEMENTED;
+function catspeak_session_set_source(_session_id, _src) {
+    var catspeak = __catspeak_manager();
+    var src_size = string_byte_length(_src);
+    var buff = buffer_create(src_size, buffer_fixed, 1);
+    buffer_write(buff, buffer_text, _src);
+    buffer_seek(buff, buffer_seek_start, 0);
+    var scanner = new __CatspeakScanner(buff);
+    var lexer = new __CatspeakLexer(scanner);
+    var chunk = new __CatspeakChunk();
+    var compiler = new __CatspeakCompiler(lexer, chunk);
+    var compiler_process = {
+        buff : buff,
+        compiler : compiler
+    };
+    var session = catspeak.sessions[_session_id];
+    session.chunk = chunk;
+    if (catspeak.compilerProcessCurrent == undefined) {
+        catspeak.compilerProcessCurrent = compiler_process;
+    } else {
+        array_push(catspeak.compilerProcesses, compiler_process);
+    }
 }
 
 /// @desc Sets the VM pop handler for this session.
