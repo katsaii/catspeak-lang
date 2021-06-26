@@ -25,54 +25,77 @@ function __catspeak_manager() {
 /// @desc Updates the catspeak manager.
 /// @param {real} frame_start The time (in microseconds) when the frame started.
 function catspeak_update(_frame_start) {
+    static handle_catspeak_error = function(_e, _f) {
+        if (_f != undefined) {
+            _f(_e);
+        } else {
+            throw _e;
+        }
+    };
     var catspeak = __catspeak_manager();
     // update active processes
     var time_limit = _frame_start + catspeak.frameAllocation *
             game_get_speed(gamespeed_microseconds);
-    try {
-        do {
-            var compiler_process = catspeak.compilerProcessCurrent;
-            if (compiler_process != undefined) {
-                // update compiler processes
-                var compiler = compiler_process.compiler;
+    var f = catspeak.errorScript;
+    var runtime_processes = catspeak.runtimeProcesses;
+    var compiler_processes = catspeak.compilerProcesses;
+    do {
+        var compiler_process = catspeak.compilerProcessCurrent;
+        if (compiler_process != undefined) {
+            // update compiler processes
+            var compiler = compiler_process.compiler;
+            try {
                 compiler.generateCode();
-                if not (compiler.inProgress()) {
-                    // compiler process is complete, move onto the next
-                    buffer_delete(compiler_process.buff);
-                    var compiler_processes = catspeak.compilerProcesses;
-                    if (array_length(compiler_processes) > 0) {
-                        catspeak.compilerProcessCurrent = array_pop(compiler_processes);
-                    } else {
-                        catspeak.compilerProcessCurrent = undefined;
-                        show_message(catspeak);
-                    }
-                }
-            } else if (catspeak.runtimeProcessCount > 0) {
-                // update runtime processes
-                var process_id = catspeak.runtimeProcessID;
-                if (process_id < 1) {
-                    catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
-                } else {
-                    catspeak.runtimeProcessID -= 1;
-                }
-            } else {
-                break;
+            } catch (_e) {
+                handle_catspeak_error(_e, f);
+                continue;
             }
-        } until (get_timer() >= time_limit);
-    } catch (_e) {
-        var f = catspeak.errorScript;
-        if (f != undefined) {
-            f(_e);
+            if not (compiler.inProgress()) {
+                // compiler process is complete, move onto the next
+                buffer_delete(compiler_process.buff);
+                if (array_length(compiler_processes) > 0) {
+                    catspeak.compilerProcessCurrent = array_pop(compiler_processes);
+                } else {
+                    catspeak.compilerProcessCurrent = undefined;
+                    show_message(catspeak);
+                }
+            }
+        } else if (catspeak.runtimeProcessCount > 0) {
+            // update runtime processes
+            var process_id = catspeak.runtimeProcessID;
+            var process = runtime_processes[process_id];
+            static kill_process = function(_catspeak, _process_id) {
+                array_delete(_catspeak.runtimeProcesses, _process_id, 1);
+                _catspeak.runtimeProcessCount -= 1;
+            };
+            try {
+                process.computeProgram();
+            } catch (_e) {
+                kill_process(catspeak, process_id);
+                handle_catspeak_error(_e, f);
+                continue;
+            }
+            if not (process.inProgress()) {
+                kill_process(catspeak, process_id);
+            }
+            if (process_id < 1) {
+                catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
+            } else {
+                catspeak.runtimeProcessID -= 1;
+            }
         } else {
-            throw _e;
+            break;
         }
-    }
+    } until (get_timer() >= time_limit);
 }
 
 var sess = catspeak_session_create();
 catspeak_session_set_source(sess, @'
 print "hi"
 ');
+catspeak_session_create_process(sess, function(_result) {
+    show_message("what is up katsaii nation");
+})
 
 /// @desc Sets the error handler for Catspeak errors.
 /// @param {script} script_id_or_method The id of the script to execute upon encountering an error.
@@ -212,7 +235,16 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 /// @param {real} session_id The ID of the session to spawn a process for.
 /// @param {script} script_id_or_method The id of the script to execute upon completing the process.
 function catspeak_session_create_process(_session_id, _callback_return) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var catspeak = __catspeak_manager();
+    var session = catspeak.sessions[@ _session_id];
+    var process = new __CatspeakVM();
+    process.setOption(__CatspeakVMOption.GLOBAL_VISIBILITY, session.globalAccess);
+    process.setOption(__CatspeakVMOption.INSTANCE_VISIBILITY, session.instanceAccess);
+    process.setOption(__CatspeakVMOption.POP_HANDLER, session.popScript);
+    process.setOption(__CatspeakVMOption.RESULT_HANDLER, _callback_return);
+    process.addChunk(session.chunk);
+    array_push(catspeak.runtimeProcesses, process);
+    catspeak.runtimeProcessCount += 1;
 }
 
 /*
