@@ -259,7 +259,7 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
-    var chunk = session.compilerProcess == undefined ? new __CatspeakChunk() : session.compilerProcess.chunk;
+    var chunk = session.compilerProcess == undefined ? __catspeak_default_chunk() : session.compilerProcess.chunk;
     var runtime = new __CatspeakVM(chunk, catspeak.maxIterations, session.globalAccess,
             session.instanceAccess, session.implicitReturn, session.interface,
             session.sharedWorkspace, _callback_return);
@@ -278,7 +278,7 @@ function catspeak_session_create_process_eager(_session_id) {
     var chunk;
     var compiler_process = session.compilerProcess;
     if (compiler_process == undefined) {
-        chunk = new __CatspeakChunk();
+        chunk = __catspeak_default_chunk();
     } else {
         chunk = compiler_process.chunk;
         var compiler = compiler_process.compiler;

@@ -1205,6 +1205,16 @@ function __CatspeakChunk() constructor {
     }
 }
 
+/// @desc Returns the default Catspeak chunk.
+function __catspeak_default_chunk() {
+    static chunk = (function() {
+        var _ = new __CatspeakChunk();
+        _.addCode([1, 1], __CatspeakOpCode.RETURN_IMPLICIT, undefined);
+        return _;
+    })();
+    return chunk;
+}
+
 /// @desc Handles the execution of a single Catspeak chunk.
 /// @param {__CatspeakChunk} chunk The chunk to evaluate.
 /// @param {real} max_iterations The maximum iteration count.
