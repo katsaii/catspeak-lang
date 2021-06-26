@@ -2,12 +2,12 @@
  * ----------------------
  * Kat @katsaii
  */
-/*
+
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
-function catspeak_ext_session_id_add_gml_operators(_session_id) {
-    var f = catspeak_session_id_add_function;
-    var c = catspeak_session_id_add_constant;
+function catspeak_ext_session_add_gml_operators(_session_id) {
+    var f = catspeak_session_add_function;
+    var c = catspeak_session_add_constant;
     f(_session_id, "+", function(_l, _r) { return _l + _r; });
     f(_session_id, "++", function(_l, _r) { return (is_string(_l) ? _l : string(_l)) + (is_string(_r) ? _r : string(_r)); });
     f(_session_id, "-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; });
@@ -41,12 +41,12 @@ function catspeak_ext_session_id_add_gml_operators(_session_id) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_instances(_session_id, _mode) {
+function catspeak_ext_session_add_gml_instances(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "point_distance_3d", point_distance_3d);
         f(_session_id, "point_distance", point_distance);
         f(_session_id, "point_direction", point_direction);
@@ -226,7 +226,7 @@ function catspeak_ext_session_id_add_gml_instances(_session_id, _mode) {
         f(_session_id, "instance_deactivate_layer", instance_deactivate_layer);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "all", all);
         c(_session_id, "noone", noone);
         c(_session_id, "global", global);
@@ -285,19 +285,19 @@ function catspeak_ext_session_id_add_gml_instances(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_pointers(_session_id, _mode) {
+function catspeak_ext_session_add_gml_pointers(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "weak_ref_create", weak_ref_create);
         f(_session_id, "weak_ref_alive", weak_ref_alive);
         f(_session_id, "weak_ref_any_alive", weak_ref_any_alive);
         f(_session_id, "ptr", ptr);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "pointer_invalid", pointer_invalid);
         c(_session_id, "pointer_null", pointer_null);
     }
@@ -306,12 +306,12 @@ function catspeak_ext_session_id_add_gml_pointers(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_unsafe(_session_id, _mode) {
+function catspeak_ext_session_add_gml_unsafe(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "exception_unhandled_handler", exception_unhandled_handler);
         f(_session_id, "variable_global_exists", variable_global_exists);
         f(_session_id, "variable_global_get", variable_global_get);
@@ -559,7 +559,7 @@ function catspeak_ext_session_id_add_gml_unsafe(_session_id, _mode) {
         f(_session_id, "gc_get_target_frame_time", gc_get_target_frame_time);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "gamespeed_fps", gamespeed_fps);
         c(_session_id, "gamespeed_microseconds", gamespeed_microseconds);
         c(_session_id, "ev_create", ev_create);
@@ -841,12 +841,12 @@ function catspeak_ext_session_id_add_gml_unsafe(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_introspection(_session_id, _mode) {
+function catspeak_ext_session_add_gml_introspection(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "is_real", is_real);
         f(_session_id, "is_numeric", is_numeric);
         f(_session_id, "is_string", is_string);
@@ -877,7 +877,7 @@ function catspeak_ext_session_id_add_gml_introspection(_session_id, _mode) {
         f(_session_id, "extension_get_string", extension_get_string);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "asset_object", asset_object);
         c(_session_id, "asset_unknown", asset_unknown);
         c(_session_id, "asset_sprite", asset_sprite);
@@ -897,12 +897,12 @@ function catspeak_ext_session_id_add_gml_introspection(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_maths(_session_id, _mode) {
+function catspeak_ext_session_add_gml_maths(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "abs", abs);
         f(_session_id, "round", round);
         f(_session_id, "floor", floor);
@@ -975,7 +975,7 @@ function catspeak_ext_session_id_add_gml_maths(_session_id, _mode) {
         f(_session_id, "matrix_stack_is_empty", matrix_stack_is_empty);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "undefined", undefined);
         c(_session_id, "true", true);
         c(_session_id, "false", false);
@@ -991,12 +991,12 @@ function catspeak_ext_session_id_add_gml_maths(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_animation(_session_id, _mode) {
+function catspeak_ext_session_add_gml_animation(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "path_start", path_start);
         f(_session_id, "path_end", path_end);
         f(_session_id, "mp_linear_step", mp_linear_step);
@@ -1119,7 +1119,7 @@ function catspeak_ext_session_id_add_gml_animation(_session_id, _mode) {
         f(_session_id, "animcurve_point_new", animcurve_point_new);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "path_action_stop", path_action_stop);
         c(_session_id, "path_action_restart", path_action_restart);
         c(_session_id, "path_action_continue", path_action_continue);
@@ -1158,12 +1158,12 @@ function catspeak_ext_session_id_add_gml_animation(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_collections(_session_id, _mode) {
+function catspeak_ext_session_add_gml_collections(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "array_length", array_length);
         f(_session_id, "array_equals", array_equals);
         f(_session_id, "array_create", array_create);
@@ -1409,7 +1409,7 @@ function catspeak_ext_session_id_add_gml_collections(_session_id, _mode) {
         f(_session_id, "buffer_decompress", buffer_decompress);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "path_action_stop", path_action_stop);
         c(_session_id, "path_action_restart", path_action_restart);
         c(_session_id, "path_action_continue", path_action_continue);
@@ -1447,12 +1447,12 @@ function catspeak_ext_session_id_add_gml_collections(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_random(_session_id, _mode) {
+function catspeak_ext_session_add_gml_random(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "random", random);
         f(_session_id, "random_range", random_range);
         f(_session_id, "irandom", irandom);
@@ -1464,7 +1464,7 @@ function catspeak_ext_session_id_add_gml_random(_session_id, _mode) {
         f(_session_id, "choose", choose);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         
     }
 }
@@ -1472,12 +1472,12 @@ function catspeak_ext_session_id_add_gml_random(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_strings(_session_id, _mode) {
+function catspeak_ext_session_add_gml_strings(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "string", string);
         f(_session_id, "string_format", string_format);
         f(_session_id, "chr", chr);
@@ -1512,7 +1512,7 @@ function catspeak_ext_session_id_add_gml_strings(_session_id, _mode) {
         f(_session_id, "string_height_ext", string_height_ext);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         
     }
 }
@@ -1520,12 +1520,12 @@ function catspeak_ext_session_id_add_gml_strings(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_scripts(_session_id, _mode) {
+function catspeak_ext_session_add_gml_scripts(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "method", method);
         f(_session_id, "method_get_index", method_get_index);
         f(_session_id, "method_get_self", method_get_self);
@@ -1535,7 +1535,7 @@ function catspeak_ext_session_id_add_gml_scripts(_session_id, _mode) {
         f(_session_id, "script_execute_ext", script_execute_ext);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         
     }
 }
@@ -1543,12 +1543,12 @@ function catspeak_ext_session_id_add_gml_scripts(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_input(_session_id, _mode) {
+function catspeak_ext_session_add_gml_input(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "clipboard_has_text", clipboard_has_text);
         f(_session_id, "clipboard_set_text", clipboard_set_text);
         f(_session_id, "clipboard_get_text", clipboard_get_text);
@@ -1679,7 +1679,7 @@ function catspeak_ext_session_id_add_gml_input(_session_id, _mode) {
         f(_session_id, "keyboard_virtual_height", keyboard_virtual_height);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "timezone_local", timezone_local);
         c(_session_id, "timezone_utc", timezone_utc);
         c(_session_id, "vk_nokey", vk_nokey);
@@ -1792,12 +1792,12 @@ function catspeak_ext_session_id_add_gml_input(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_audio(_session_id, _mode) {
+function catspeak_ext_session_add_gml_audio(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "audio_listener_position", audio_listener_position);
         f(_session_id, "audio_listener_velocity", audio_listener_velocity);
         f(_session_id, "audio_listener_orientation", audio_listener_orientation);
@@ -1888,7 +1888,7 @@ function catspeak_ext_session_id_add_gml_audio(_session_id, _mode) {
         f(_session_id, "audio_get_listener_info", audio_get_listener_info);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "audio_falloff_none", audio_falloff_none);
         c(_session_id, "audio_falloff_inverse_distance", audio_falloff_inverse_distance);
         c(_session_id, "audio_falloff_inverse_distance_clamped", audio_falloff_inverse_distance_clamped);
@@ -1905,12 +1905,12 @@ function catspeak_ext_session_id_add_gml_audio(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_graphics(_session_id, _mode) {
+function catspeak_ext_session_add_gml_graphics(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "draw_self", draw_self);
         f(_session_id, "draw_sprite", draw_sprite);
         f(_session_id, "draw_sprite_pos", draw_sprite_pos);
@@ -2263,7 +2263,7 @@ function catspeak_ext_session_id_add_gml_graphics(_session_id, _mode) {
         f(_session_id, "draw_tile", draw_tile);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "bboxmode_automatic", bboxmode_automatic);
         c(_session_id, "bboxmode_fullimage", bboxmode_fullimage);
         c(_session_id, "bboxmode_manual", bboxmode_manual);
@@ -2368,12 +2368,12 @@ function catspeak_ext_session_id_add_gml_graphics(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_layers(_session_id, _mode) {
+function catspeak_ext_session_add_gml_layers(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "layer_get_id", layer_get_id);
         f(_session_id, "layer_get_id_at_depth", layer_get_id_at_depth);
         f(_session_id, "layer_get_depth", layer_get_depth);
@@ -2551,7 +2551,7 @@ function catspeak_ext_session_id_add_gml_layers(_session_id, _mode) {
         f(_session_id, "layer_sequence_get_length", layer_sequence_get_length);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "layerelementtype_undefined", layerelementtype_undefined);
         c(_session_id, "layerelementtype_background", layerelementtype_background);
         c(_session_id, "layerelementtype_instance", layerelementtype_instance);
@@ -2571,12 +2571,12 @@ function catspeak_ext_session_id_add_gml_layers(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_display(_session_id, _mode) {
+function catspeak_ext_session_add_gml_display(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "display_get_width", display_get_width);
         f(_session_id, "display_get_height", display_get_height);
         f(_session_id, "display_get_orientation", display_get_orientation);
@@ -2678,7 +2678,7 @@ function catspeak_ext_session_id_add_gml_display(_session_id, _mode) {
         f(_session_id, "view_set_surface_id", view_set_surface_id);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "cr_default", cr_default);
         c(_session_id, "cr_none", cr_none);
         c(_session_id, "cr_arrow", cr_arrow);
@@ -2706,12 +2706,12 @@ function catspeak_ext_session_id_add_gml_display(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_debug(_session_id, _mode) {
+function catspeak_ext_session_add_gml_debug(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "show_debug_message", show_debug_message);
         f(_session_id, "show_debug_overlay", show_debug_overlay);
         f(_session_id, "debug_event", debug_event);
@@ -2723,7 +2723,7 @@ function catspeak_ext_session_id_add_gml_debug(_session_id, _mode) {
         f(_session_id, "show_error", show_error);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         
     }
 }
@@ -2731,12 +2731,12 @@ function catspeak_ext_session_id_add_gml_debug(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_files(_session_id, _mode) {
+function catspeak_ext_session_add_gml_files(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "screen_save", screen_save);
         f(_session_id, "screen_save_part", screen_save_part);
         f(_session_id, "gif_open", gif_open);
@@ -2810,7 +2810,7 @@ function catspeak_ext_session_id_add_gml_files(_session_id, _mode) {
         f(_session_id, "sha1_file", sha1_file);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "fa_readonly", fa_readonly);
         c(_session_id, "fa_hidden", fa_hidden);
         c(_session_id, "fa_sysfile", fa_sysfile);
@@ -2823,12 +2823,12 @@ function catspeak_ext_session_id_add_gml_files(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_particles(_session_id, _mode) {
+function catspeak_ext_session_add_gml_particles(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "effect_create_below", effect_create_below);
         f(_session_id, "effect_create_above", effect_create_above);
         f(_session_id, "effect_clear", effect_clear);
@@ -2892,7 +2892,7 @@ function catspeak_ext_session_id_add_gml_particles(_session_id, _mode) {
         f(_session_id, "part_emitter_stream", part_emitter_stream);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "ef_explosion", ef_explosion);
         c(_session_id, "ef_ring", ef_ring);
         c(_session_id, "ef_ellipse", ef_ellipse);
@@ -2932,12 +2932,12 @@ function catspeak_ext_session_id_add_gml_particles(_session_id, _mode) {
 /// @desc Applies a GML interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_id_add_gml_device(_session_id, _mode) {
+function catspeak_ext_session_add_gml_device(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
-        var f = catspeak_session_id_add_function;
+        var f = catspeak_session_add_function;
         f(_session_id, "browser_input_capture", browser_input_capture);
         f(_session_id, "os_get_config", os_get_config);
         f(_session_id, "os_get_info", os_get_info);
@@ -2966,7 +2966,7 @@ function catspeak_ext_session_id_add_gml_device(_session_id, _mode) {
         f(_session_id, "os_powersave_enable", os_powersave_enable);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
-        var c = catspeak_session_id_add_constant;
+        var c = catspeak_session_add_constant;
         c(_session_id, "GM_build_date", GM_build_date);
         c(_session_id, "GM_version", GM_version);
         c(_session_id, "GM_runtime_version", GM_runtime_version);
@@ -3012,4 +3012,4 @@ function catspeak_ext_session_id_add_gml_device(_session_id, _mode) {
         c(_session_id, "os_permission_granted", os_permission_granted);
     }
 }
-*/
+

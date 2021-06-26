@@ -43,13 +43,13 @@ end
 
 def show_map_constants patterns, indent=8
     (filter_map patterns, $gml_constants)
-            .map{|name| "c(_session, \"#{name}\", #{name});"}
+            .map{|name| "c(_session_id, \"#{name}\", #{name});"}
             .join("\n" + " " * indent)
 end
 
 def show_map_functions patterns, indent=8
     (filter_map patterns, $gml_functions)
-            .map{|name| "f(_session, \"#{name}\", #{name});"}
+            .map{|name| "f(_session_id, \"#{name}\", #{name});"}
             .join("\n" + " " * indent)
 end
 
@@ -174,33 +174,33 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
 
     /// @desc Applies a GML interface to this Catspeak session.
     /// @param {struct} session The Catspeak session to update.
-    function catspeak_ext_session_add_gml_operators(_session) {
+    function catspeak_ext_session_add_gml_operators(_session_id) {
         var f = catspeak_session_add_function;
         var c = catspeak_session_add_constant;
-        f(_session, "+", function(_l, _r) { return _l + _r; });
-        f(_session, "++", function(_l, _r) { return (is_string(_l) ? _l : string(_l)) + (is_string(_r) ? _r : string(_r)); });
-        f(_session, "-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; });
-        f(_session, "*", function(_l, _r) { return _l * _r; });
-        f(_session, "/", function(_l, _r) { return _l / _r; });
-        f(_session, "%", function(_l, _r) { return _l % _r; });
-        f(_session, "div", function(_l, _r) { return _l div _r; });
-        f(_session, "|", function(_l, _r) { return _l | _r; });
-        f(_session, "&", function(_l, _r) { return _l & _r; });
-        f(_session, "^", function(_l, _r) { return _l ^ _r; });
-        f(_session, "~", function(_x) { return ~_x; });
-        f(_session, "<<", function(_l, _r) { return _l << _r; });
-        f(_session, ">>", function(_l, _r) { return _l >> _r; });
-        f(_session, "||", function(_l, _r) { return _l || _r; });
-        f(_session, "&&", function(_l, _r) { return _l && _r; });
-        f(_session, "^^", function(_l, _r) { return _l ^^ _r; });
-        f(_session, "!", function(_x) { return !_x; });
-        f(_session, "==", function(_l, _r) { return _l == _r; });
-        f(_session, "!=", function(_l, _r) { return _l != _r; });
-        f(_session, ">=", function(_l, _r) { return _l >= _r; });
-        f(_session, "<=", function(_l, _r) { return _l <= _r; });
-        f(_session, ">", function(_l, _r) { return _l > _r; });
-        f(_session, "<", function(_l, _r) { return _l < _r; });
-        f(_session, "!!", function(_x) { return is_numeric(_x) && _x; });
+        f(_session_id, "+", function(_l, _r) { return _l + _r; });
+        f(_session_id, "++", function(_l, _r) { return (is_string(_l) ? _l : string(_l)) + (is_string(_r) ? _r : string(_r)); });
+        f(_session_id, "-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; });
+        f(_session_id, "*", function(_l, _r) { return _l * _r; });
+        f(_session_id, "/", function(_l, _r) { return _l / _r; });
+        f(_session_id, "%", function(_l, _r) { return _l % _r; });
+        f(_session_id, "div", function(_l, _r) { return _l div _r; });
+        f(_session_id, "|", function(_l, _r) { return _l | _r; });
+        f(_session_id, "&", function(_l, _r) { return _l & _r; });
+        f(_session_id, "^", function(_l, _r) { return _l ^ _r; });
+        f(_session_id, "~", function(_x) { return ~_x; });
+        f(_session_id, "<<", function(_l, _r) { return _l << _r; });
+        f(_session_id, ">>", function(_l, _r) { return _l >> _r; });
+        f(_session_id, "||", function(_l, _r) { return _l || _r; });
+        f(_session_id, "&&", function(_l, _r) { return _l && _r; });
+        f(_session_id, "^^", function(_l, _r) { return _l ^^ _r; });
+        f(_session_id, "!", function(_x) { return !_x; });
+        f(_session_id, "==", function(_l, _r) { return _l == _r; });
+        f(_session_id, "!=", function(_l, _r) { return _l != _r; });
+        f(_session_id, ">=", function(_l, _r) { return _l >= _r; });
+        f(_session_id, "<=", function(_l, _r) { return _l <= _r; });
+        f(_session_id, ">", function(_l, _r) { return _l > _r; });
+        f(_session_id, "<", function(_l, _r) { return _l < _r; });
+        f(_session_id, "!!", function(_x) { return is_numeric(_x) && _x; });
     }
 
     #macro CATSPEAK_EXT_GML_FUNCTIONS (1 << 0)
@@ -211,7 +211,7 @@ gml_interface = (ERB.new <<~HEAD, trim_mode: "->").result binding
     /// @desc Applies a GML interface to this Catspeak session.
     /// @param {struct} session The Catspeak session to update.
     /// @param {real} [mode] Whether to include functions, constants, or both.
-    function catspeak_ext_session_add_gml_<%= group %>(_session, _mode) {
+    function catspeak_ext_session_add_gml_<%= group %>(_session_id, _mode) {
         if (_mode == undefined) {
             _mode = CATSPEAK_EXT_GML_ALL;
         }
