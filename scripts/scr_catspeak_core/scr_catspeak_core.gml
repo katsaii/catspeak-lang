@@ -1259,17 +1259,18 @@ enum __CatspeakVMOption {
 /// @param {__CatspeakChunk} chunk The chunk to evaluate.
 /// @param {bool} global_access Whether to enable global variable access.
 /// @param {bool} instance_access Whether to enable instance variable access.
+/// @param {struct} interface The variable interface to assign.
+/// @param {struct} workspace The variable workspace to assign.
 /// @param {bool} pop_script The reference to the script that handles popped values.
 /// @param {bool} return_script The reference to the script that handles returned values.
-function __CatspeakVM(_chunk, _global_access, _instance_access, _pop_script, _return_script) constructor {
-    interface = { };
-    binding = { };
+function __CatspeakVM(_chunk, _global_access, _instance_access, _interface, _workspace, _pop_script, _return_script) constructor {
+    interface = is_struct(_interface) ? _interface : { };
+    binding = is_struct(_workspace) ? _workspace : { };
     resultHandler = _return_script;
     popHandler = _pop_script;
-    chunks = [_chunk];
-    chunkCount = 1;
-    chunkID = 0;
+    chunk = _chunk;
     pc = 0;
+    running = true;
     stackLimit = 8;
     stackSize = 0;
     stack = array_create(stackLimit);
@@ -1278,80 +1279,11 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _pop_script, _re
     /// @desc Throws a `__CatspeakError` with the current program counter.
     /// @param {string} msg The error message.
     static error = function(_msg) {
-        throw new __CatspeakError(chunks[chunkID].getCode(pc).pos, _msg);
-    }
-    /// @desc Adds a new chunk to the VM to execute.
-    /// @param {__CatspeakChunk} chunk The chunk to execute code of.
-    static addChunk = function(_chunk) {
-        array_push(chunks, _chunk);
-        chunkCount += 1;
-    }
-    /// @desc Rewinds the VM back to the first chunk.
-    static rewind = function() {
-        pc = 0;
-        chunkID = 0;
-        stackSize = 0;
-    }
-    /// @desc Deletes all chunks from the VM memory.
-    static reset = function() {
-        rewind();
-        chunks = [];
-        binding = { };
-    }
-    /// @desc Terminates the chunk that is currently being executed and moves to the next one.
-    static terminateChunk = function() {
-        pc = 0;
-        chunkID += 1;
+        throw new __CatspeakError(chunk.getCode(pc).pos, _msg);
     }
     /// @desc Returns whether the VM is in progress.
     static inProgress = function() {
-        return chunkID < chunkCount;
-    }
-    /// @desc Gets the variable workspace for this context.
-    static getWorkspace = function() {
-        return binding;
-    }
-    /// @desc Sets the variable workspace for this context.
-    /// @param {struct} workspace The variable workspace to assign.
-    static setWorkspace = function(_vars) {
-        binding = _vars;
-    }
-    /// @desc Inserts a new read-only global variable into the interface.
-    /// @param {string} name The name of the variable.
-    /// @param {value} value The value of the variable.
-    static addConstant = function(_name, _value) {
-        interface[$ _name] = _value;
-    }
-    /// @desc Inserts a new function into to the interface.
-    /// @param {string} name The name of the function.
-    /// @param {value} method_or_script_id The reference to the function.
-    static addFunction = function(_name, _value) {
-        var f = _value;
-        if not (is_method(f)) {
-            // this is so that unexposed functions cannot be enumerated
-            // by a malicious user in order to access important functions
-            f = method(undefined, f);
-        }
-        interface[$ _name] = f;
-    }
-    /// @desc Sets a configuration option.
-    /// @param {CatspeakVMOption} option The option to configure.
-    /// @param {bool} enable Whether to enable this option.
-    static setOption = function(_option, _enable) {
-        switch (_option) {
-        case __CatspeakVMOption.GLOBAL_VISIBILITY:
-            exposeGlobalScope = is_numeric(_enable) && _enable;
-            break;
-        case __CatspeakVMOption.INSTANCE_VISIBILITY:
-            exposeInstanceScope = is_numeric(_enable) && _enable;
-            break;
-        case __CatspeakVMOption.RESULT_HANDLER:
-            resultHandler.add(_enable);
-            break;
-        case __CatspeakVMOption.POP_HANDLER:
-            popHandler.add(_enable);
-            break;
-        }
+        return running;
     }
     /// @desc Pushes a value onto the stack.
     /// @param {value} value The value to push.
@@ -1391,14 +1323,6 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _pop_script, _re
             values[$ string(key)] = value;
         }
         return values;
-    }
-    /// @desc Returns the top value of the stack.
-    static top = function() {
-        if (stackSize < 1) {
-            error("cannot peek into empty VM stack");
-            return undefined;
-        }
-        return stack[stackSize - 1];
     }
     /// @desc Assigns a value to a variable in the current context.
     /// @param {string} name The name of the variable to add.
@@ -1504,7 +1428,7 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _pop_script, _re
     }
     /// @desc Executes a single instruction and updates the program counter.
     static computeProgram = function() {
-        var inst = chunks[chunkID].getCode(pc);
+        var inst = chunk.getCode(pc);
         switch (inst.code) {
         case __CatspeakOpCode.PUSH:
             var value = inst.param;
@@ -1596,7 +1520,7 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _pop_script, _re
             if (resultHandler != undefined) {
                 resultHandler(value);
             }
-            terminateChunk(); // complete execution
+            running = false;
             return;
         default:
             error("unknown program instruction `" + string(inst.code) + "` (" + __catspeak_code_render(inst.code) + ")");

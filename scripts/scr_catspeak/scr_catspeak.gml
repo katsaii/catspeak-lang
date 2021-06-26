@@ -241,8 +241,8 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
-    var runtime = new __CatspeakVM(session.chunk, session.globalAccess,
-            session.instanceAccess, session.popScript, _callback_return);
+    var runtime = new __CatspeakVM(session.chunk, session.globalAccess, session.instanceAccess,
+            session.interface, session.sharedWorkspace, session.popScript, _callback_return);
     var runtime_process = {
         runtime : runtime,
         iterationCount : 0
