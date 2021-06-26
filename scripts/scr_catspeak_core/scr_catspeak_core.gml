@@ -9,9 +9,11 @@
 function __CatspeakError(_pos, _msg) constructor {
     pos = _pos;
     reason = is_string(_msg) ? _msg : string(_msg);
+    callstack = debug_get_callstack();
     /// @desc Displays the content of this error.
     static toString = function() {
-        return "Fatal Error at (row. " + string(pos[0]) + ", col. " + string(pos[1]) + "): " + reason;
+        return "Fatal Error at (row. " + string(pos[0]) + ", col. " + string(pos[1]) + "): " +
+                reason + "\nCallstack: " + string(callstack);
     }
 }
 
@@ -1478,7 +1480,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 push(result);
                 break;
             default:
-                error("invalid call site of type `" + ty + "`");
+                error("invalid call site `" + string(callsite) + "` of type `" + ty + "`");
                 break;
             }
             break;
