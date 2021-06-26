@@ -29,27 +29,36 @@ function catspeak_update(_frame_start) {
     // update active processes
     var time_limit = _frame_start + catspeak.frameAllocation *
             game_get_speed(gamespeed_microseconds);
-    do {
-        if (catspeak.compilerProcessCount > 0) {
-            // update compiler processes
-            var process_id = catspeak.compilerProcessID;
-            if (process_id < 1) {
-                catspeak.compilerProcessID = catspeak.compilerProcessCount - 1;
+    try {
+        do {
+            if (catspeak.compilerProcessCount > 0) {
+                // update compiler processes
+                var process_id = catspeak.compilerProcessID;
+                if (process_id < 1) {
+                    catspeak.compilerProcessID = catspeak.compilerProcessCount - 1;
+                } else {
+                    catspeak.compilerProcessID -= 1;
+                }
+            } else if (catspeak.runtimeProcessCount > 0) {
+                // update runtime processes
+                var process_id = catspeak.runtimeProcessID;
+                if (process_id < 1) {
+                    catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
+                } else {
+                    catspeak.runtimeProcessID -= 1;
+                }
             } else {
-                catspeak.compilerProcessID -= 1;
+                break;
             }
-        } else if (catspeak.runtimeProcessCount > 0) {
-            // update runtime processes
-            var process_id = catspeak.runtimeProcessID;
-            if (process_id < 1) {
-                catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
-            } else {
-                catspeak.runtimeProcessID -= 1;
-            }
+        } until (get_timer() >= time_limit);
+    } catch (_e) {
+        var f = catspeak.errorScript;
+        if (f != undefined) {
+            f(_e);
         } else {
-            break;
+            throw _e;
         }
-    } until (get_timer() >= time_limit);
+    }
 }
 
 /// @desc Sets the error handler for Catspeak errors.
@@ -110,28 +119,36 @@ function catspeak_session_set_source(_session_id, _str) {
 /// @param {struct} session_id The ID of the session to update.
 /// @param {script} script_id_or_method The id of the script to execute upon popping a value.
 function catspeak_session_set_pop_script(_session_id, _f) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var sessions = __catspeak_manager().sessions;
+    var session = sessions[@ _session_id];
+    session.popScript = is_method(_f) || is_numeric(_f) && script_exists(_f) ? _f : undefined;
 }
 
 /// @desc Enables access to global variables for this session.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {bool} enable Whether to enable this option.
 function catspeak_session_enable_global_access(_session_id, _enable) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var sessions = __catspeak_manager().sessions;
+    var session = sessions[@ _session_id];
+    session.globalAccess = is_numeric(_enable) && _enable;
 }
 
 /// @desc Enables access to instance variables for this session.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {bool} enable Whether to enable this option.
 function catspeak_session_enable_instance_access(_session_id, _enable) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var sessions = __catspeak_manager().sessions;
+    var session = sessions[@ _session_id];
+    session.instanceAccess = is_numeric(_enable) && _enable;
 }
 
 /// @desc Makes all processes of this session use the same workspace.
 /// @param {struct} session_id The ID of the session to update.
 /// @param {bool} enable Whether to enable this option.
 function catspeak_session_enable_shared_workspace(_session_id, _enable) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var sessions = __catspeak_manager().sessions;
+    var session = sessions[@ _session_id];
+    session.sharedWorkspace = is_numeric(_enable) && _enable ? { } : undefined;
 }
 
 /// @desc Inserts a new read-only global variable into the interface of this session.
@@ -139,7 +156,7 @@ function catspeak_session_enable_shared_workspace(_session_id, _enable) {
 /// @param {string} name The name of the variable.
 /// @param {value} value The value of the variable.
 function catspeak_session_add_constant(_session_id, _name, _value) {
-    __CATSPEAK_UNIMPLEMENTED;
+    interface[$ _name] = _value;
 }
 
 /// @desc Inserts a new function into to the interface of this session.
@@ -147,7 +164,16 @@ function catspeak_session_add_constant(_session_id, _name, _value) {
 /// @param {string} name The name of the function.
 /// @param {value} script_id_or_method The reference to the function.
 function catspeak_session_add_function(_session_id, _name, _value) {
-    __CATSPEAK_UNIMPLEMENTED;
+    var f = _value;
+    if not (is_method(f)) {
+        if not (is_numeric(_f) && script_exists(_f)) {
+            return;
+        }
+        // this is so that unexposed functions cannot be enumerated
+        // by a malicious user in order to access important functions
+        f = method(undefined, f);
+    }
+    interface[$ _name] = f;
 }
 
 /// @desc Spawns a process from this session.
