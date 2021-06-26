@@ -29,6 +29,7 @@ catspeak_session_set_source(session, @'
     }
 }
 ');
+show_message(catspeak_session_create_process_eager(session));
 catspeak_session_create_process(session, function(_value) {
     show_message(_value);
-})
+});

@@ -24,10 +24,11 @@ function __catspeak_manager() {
 
 /// @desc Handles an error if this function exists, otherwise the error is thrown again.
 /// @param {value} error The error to handle.
-/// @param {script} script_id_or_method The id of the script that handles the error.
-function __catspeak_handle_error(_e, _f) {
-    if (_f != undefined) {
-        _f(_e);
+function __catspeak_handle_error(_e) {
+    var catspeak = __catspeak_manager();
+    var f = catspeak.errorScript;
+    if (f != undefined) {
+        f(_e);
     } else {
         throw _e;
     }
@@ -71,7 +72,6 @@ function catspeak_update(_frame_start) {
     var frame_time = game_get_speed(gamespeed_microseconds);
     var time_limit = min(_frame_start + frame_time,
             get_timer() + catspeak.frameAllocation * frame_time);
-    var f = catspeak.errorScript;
     var runtime_processes = catspeak.runtimeProcesses;
     var compiler_processes = catspeak.compilerProcesses;
     var max_iteration_count = catspeak.maxIterations;
@@ -89,7 +89,7 @@ function catspeak_update(_frame_start) {
                 compiler.generateCode();
             } catch (_e) {
                 __catspeak_kill_compiler_process();
-                __catspeak_handle_error(_e, f);
+                __catspeak_handle_error(_e);
             }
         } else if (catspeak.runtimeProcessCount > 0) {
             // update runtime processes
@@ -104,7 +104,7 @@ function catspeak_update(_frame_start) {
                 runtime.computeProgram();
             } catch (_e) {
                 __catspeak_kill_runtime_process(process_id);
-                __catspeak_handle_error(_e, f);
+                __catspeak_handle_error(_e);
                 continue;
             }
             __catspeak_next_runtime_process();
@@ -268,4 +268,42 @@ function catspeak_session_create_process(_session_id, _callback_return) {
     };
     array_push(catspeak.runtimeProcesses, runtime_process);
     catspeak.runtimeProcessCount += 1;
+}
+
+/// @desc Spawns a process from this session which is evaluated immediately.
+/// @param {real} session_id The ID of the session to spawn a process for.
+function catspeak_session_create_process_eager(_session_id) {
+    var catspeak = __catspeak_manager();
+    var session = catspeak.sessions[@ _session_id];
+    var chunk;
+    var compiler_process = session.compilerProcess;
+    if (compiler_process == undefined) {
+        chunk = new __CatspeakChunk();
+    } else {
+        chunk = compiler_process.chunk;
+        var compiler = compiler_process.compiler;
+        try {
+            while (compiler.inProgress()) {
+                compiler.generateCode();
+            }
+        } catch (_e) {
+            __catspeak_handle_error(_e);
+            return undefined;
+        }
+    }
+    var result = { value : undefined };
+    var runtime = new __CatspeakVM(chunk, catspeak.maxIterations, session.globalAccess,
+            session.instanceAccess, session.implicitReturn, session.interface,
+            session.sharedWorkspace, method(result, function(_value) {
+                value = _value;
+            }));
+    try {
+        while (runtime.inProgress()) {
+            runtime.computeProgram();
+        }
+    } catch (_e) {
+        __catspeak_handle_error(_e);
+        return undefined;
+    }
+    return result.value;
 }
