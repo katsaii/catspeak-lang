@@ -34,8 +34,9 @@ function catspeak_update(_frame_start) {
     };
     var catspeak = __catspeak_manager();
     // update active processes
-    var time_limit = _frame_start + catspeak.frameAllocation *
-            game_get_speed(gamespeed_microseconds);
+    var frame_time = game_get_speed(gamespeed_microseconds);
+    var time_limit = min(_frame_start + frame_time,
+            get_timer() + catspeak.frameAllocation * frame_time);
     var f = catspeak.errorScript;
     var runtime_processes = catspeak.runtimeProcesses;
     var compiler_processes = catspeak.compilerProcesses;
@@ -71,14 +72,12 @@ function catspeak_update(_frame_start) {
             };
             try {
                 runtime.computeProgram();
-                runtime_process.iterationCount += 1;
             } catch (_e) {
                 kill_process(catspeak, process_id);
                 handle_catspeak_error(_e, f);
                 continue;
             }
-            if (max_iteration_count >= 0 && runtime_process.iterationCount >= max_iteration_count
-                    || !runtime.inProgress()) {
+            if not (runtime.inProgress()) {
                 kill_process(catspeak, process_id);
             }
             if (process_id < 1) {
@@ -103,7 +102,7 @@ function catspeak_set_error_script(_f) {
 /// @param {real} iteration_count The number of maximum number of iterations to perform. Use `-1` for unlimited.
 function catspeak_set_max_iterations(_iteration_count) {
     var catspeak = __catspeak_manager();
-    catspeak.maxIterations = is_numeric(_f) && _f >= 0 ? _f : -1;
+    catspeak.maxIterations = is_numeric(_iteration_count) && _iteration_count >= 0 ? _iteration_count : -1;
 }
 
 /// @desc Creates a new Catspeak session and returns its ID.
@@ -236,12 +235,13 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
-    var runtime = new __CatspeakVM(session.chunk, session.globalAccess, session.instanceAccess,
-            session.implicitReturn, session.interface, session.sharedWorkspace, _callback_return);
+    var runtime = new __CatspeakVM(session.chunk, catspeak.maxIterations, session.globalAccess,
+            session.instanceAccess, session.implicitReturn, session.interface,
+            session.sharedWorkspace, _callback_return);
     var runtime_process = {
-        runtime : runtime,
-        iterationCount : 0
+        runtime : runtime
     };
     array_push(catspeak.runtimeProcesses, runtime_process);
     catspeak.runtimeProcessCount += 1;
 }
+

@@ -1207,18 +1207,21 @@ function __CatspeakChunk() constructor {
 
 /// @desc Handles the execution of a single Catspeak chunk.
 /// @param {__CatspeakChunk} chunk The chunk to evaluate.
+/// @param {real} max_iterations The maximum iteration count.
 /// @param {bool} global_access Whether to enable global variable access.
 /// @param {bool} instance_access Whether to enable instance variable access.
 /// @param {bool} implicit_return Whether to enable instance variable access.
 /// @param {struct} interface The variable interface to assign.
 /// @param {struct} workspace The variable workspace to assign.
 /// @param {bool} return_script The reference to the script that handles returned values.
-function __CatspeakVM(_chunk, _global_access, _instance_access, _implicit_return,
-        _interface, _workspace, _return_script) constructor {
+function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
+        _implicit_return, _interface, _workspace, _return_script) constructor {
     interface = is_struct(_interface) ? _interface : { };
     binding = is_struct(_workspace) ? _workspace : { };
     resultHandler = _return_script;
     chunk = _chunk;
+    iterationCount = 0;
+    iterationCountMax = _max_iterations;
     pc = 0;
     running = true;
     stackLimit = 8;
@@ -1379,6 +1382,11 @@ function __CatspeakVM(_chunk, _global_access, _instance_access, _implicit_return
     }
     /// @desc Executes a single instruction and updates the program counter.
     static computeProgram = function() {
+        if (iterationCountMax >= 0 && iterationCount > iterationCountMax) {
+            error("max iteration count `" + string(iterationCountMax) + "` reached");
+        } else {
+            iterationCount += 1;
+        }
         var inst = chunk.getCode(pc);
         switch (inst.code) {
         case __CatspeakOpCode.PUSH:

@@ -3,6 +3,8 @@ frameStartTime = 0;
 show_debug_overlay(true);
 session = catspeak_session_create();
 catspeak_session_enable_implicit_return(session, true);
+catspeak_set_max_iterations(1000);
+catspeak_session_add_function(session, "pred", function(_x) { return _x - 1; });
 catspeak_session_set_source(session, @'
 {
     "glossary": {
