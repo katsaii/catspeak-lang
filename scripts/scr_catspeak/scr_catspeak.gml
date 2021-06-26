@@ -39,6 +39,7 @@ function catspeak_update(_frame_start) {
     var f = catspeak.errorScript;
     var runtime_processes = catspeak.runtimeProcesses;
     var compiler_processes = catspeak.compilerProcesses;
+    var max_iteration_count = catspeak.maxIterations;
     do {
         var compiler_process = catspeak.compilerProcessCurrent;
         if (compiler_process != undefined) {
@@ -63,19 +64,22 @@ function catspeak_update(_frame_start) {
         } else if (catspeak.runtimeProcessCount > 0) {
             // update runtime processes
             var process_id = catspeak.runtimeProcessID;
-            var process = runtime_processes[process_id];
+            var runtime_process = runtime_processes[process_id];
+            var runtime = runtime_process.runtime;
             static kill_process = function(_catspeak, _process_id) {
                 array_delete(_catspeak.runtimeProcesses, _process_id, 1);
                 _catspeak.runtimeProcessCount -= 1;
             };
             try {
-                process.computeProgram();
+                runtime.computeProgram();
+                runtime_process.iterationCount += 1;
             } catch (_e) {
                 kill_process(catspeak, process_id);
                 handle_catspeak_error(_e, f);
                 continue;
             }
-            if not (process.inProgress()) {
+            if (max_iteration_count >= 0 && runtime_process.iterationCount >= max_iteration_count
+                    || !runtime.inProgress()) {
                 kill_process(catspeak, process_id);
             }
             if (process_id < 1) {
@@ -237,9 +241,13 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 function catspeak_session_create_process(_session_id, _callback_return) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
-    var process = new __CatspeakVM(session.chunk, session.globalAccess,
+    var runtime = new __CatspeakVM(session.chunk, session.globalAccess,
             session.instanceAccess, session.popScript, _callback_return);
-    array_push(catspeak.runtimeProcesses, process);
+    var runtime_process = {
+        runtime : runtime,
+        iterationCount : 0
+    };
+    array_push(catspeak.runtimeProcesses, runtime_process);
     catspeak.runtimeProcessCount += 1;
 }
 
