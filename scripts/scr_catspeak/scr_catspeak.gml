@@ -17,7 +17,8 @@ function __catspeak_manager() {
         runtimeProcessID : 0,
         errorScript : undefined,
         maxIterations : -1,
-        frameAllocation : 0.5 // compute for 50% of frame time
+        frameAllocation : 0.5, // compute for 50% of frame time
+        frameThreshold : 1 // do not surpass 1 frame when processing
     };
     return catspeak;
 }
@@ -69,7 +70,7 @@ function __catspeak_next_runtime_process() {
 function catspeak_update(_frame_start) {
     var catspeak = __catspeak_manager();
     // update active processes
-    var frame_time = game_get_speed(gamespeed_microseconds);
+    var frame_time = catspeak.frameThreshold * game_get_speed(gamespeed_microseconds);
     var time_limit = min(_frame_start + frame_time,
             get_timer() + catspeak.frameAllocation * frame_time);
     var runtime_processes = catspeak.runtimeProcesses;
@@ -126,6 +127,20 @@ function catspeak_set_error_script(_f) {
 function catspeak_set_max_iterations(_iteration_count) {
     var catspeak = __catspeak_manager();
     catspeak.maxIterations = is_numeric(_iteration_count) && _iteration_count >= 0 ? _iteration_count : -1;
+}
+
+/// @desc Sets the maximum percentage of a game frame to spend processing.
+/// @param {real} amount The amount in the range 0-1.
+function catspeak_set_frame_allocation(_amount) {
+    var catspeak = __catspeak_manager();
+    catspeak.frameAllocation = is_numeric(_amount) ? clamp(_amount, 0, 1) : 0.5;
+}
+
+/// @desc Sets the threshold for processing in the current frame. Processing will not continue beyond this point.
+/// @param {real} amount The amount in the range 0-1.
+function catspeak_set_frame_threshold(_amount) {
+    var catspeak = __catspeak_manager();
+    catspeak.frameThreshold = is_numeric(_amount) ? clamp(_amount, 0, 1) : 1.0;
 }
 
 /// @desc Creates a new Catspeak session and returns its ID.
