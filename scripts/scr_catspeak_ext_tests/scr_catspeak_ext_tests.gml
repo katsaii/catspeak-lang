@@ -231,60 +231,31 @@ try {
     catspeak_session_create_process_eager(session);
     catspeak_session_destroy(session);
 
-/*
-
     // JSON-like syntax
-    var obj_json = catspeak_ext_json_parse(@'
+    var json_obj = catspeak_ext_json_parse(@'
     {
-        "glossary": {
-            "title": "example glossary",
-            "GlossDiv": {
-                "title": "S",
-                "GlossList": {
-                    "GlossEntry": {
-                        "ID": "SGML",
-                        "SortAs": "SGML",
-                        "GlossTerm": "Standard Generalized Markup Language",
-                        "Acronym": "SGML",
-                        "Abbrev": "ISO 8879:1986",
-                        "GlossDef": {
-                            "para": "A meta-markup language, used to create markup languages such as DocBook.",
-                            "GlossSeeAlso": ["GML", "XML"]
-                        },
-                        "GlossSee": "markup"
-                    }
-                }
-            }
-        }
+        "Arrs": [1, 2, 3],
+        "Objs": {
+            "x": "hello",
+            "y": "world"
+        },
+        "Lits": [null, true, false]
     }
     ');
-    var obj_catspeak_object = catspeak_ext_json_parse(@'
+    var catspeak_obj = catspeak_ext_json_parse(@'
     {
-        .glossary {
-            .title "example glossary"
-            .GlossDiv {
-                .title "S",
-                .GlossList {
-                    .GlossEntry {
-                        .ID "SGML"
-                        .SortAs "SGML"
-                        .GlossTerm "Standard Generalized Markup Language"
-                        .Acronym "SGML"
-                        .Abbrev "ISO 8879:1986"
-                        .GlossDef {
-                            .para "A meta-markup language, used to create markup languages such as DocBook.",
-                            .GlossSeeAlso ["GML", "XML"]
-                        }
-                        .GlossSee "markup"
-                    }
-                }
-            }
+        .Arrs [1, 2, 3]
+        .Objs {
+            .x "hello"
+            .y "world"
         }
+        .Lits [null, true, false]
     }
     ');
-    __catspeak_ext_tests_assert_true(is_struct(obj_json));
-    __catspeak_ext_tests_assert_true(is_struct(obj_catspeak_object));
-*/
+    __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Arrs"], json_obj[$ "Arrs"]);
+    __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Objs"][$ "x"], json_obj[$ "Objs"][$ "x"]);
+    __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Objs"][$ "y"], json_obj[$ "Objs"][$ "y"]);
+    __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Lits"], json_obj[$ "Lits"]);
 
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");

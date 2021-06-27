@@ -2,35 +2,31 @@
 frameStartTime = 0;
 show_debug_overlay(true);
 // JSON session
-jsonSession = catspeak_session_create();
-catspeak_session_enable_implicit_return(jsonSession, true);
-catspeak_session_set_source(jsonSession, @'
-{
-    "glossary": {
-        "title": "example glossary",
-        "GlossDiv": {
-            "title": "S",
-            "GlossList": {
-                "GlossEntry": {
-                    "ID": "SGML",
-                    "SortAs": "SGML",
-                    "GlossTerm": "Standard Generalized Markup Language",
-                    "Acronym": "SGML",
-                    "Abbrev": "ISO 8879:1986",
-                    "GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-                        "GlossSeeAlso": ["GML", "XML"]
-                    },
-                    "GlossSee": "markup"
+jsonObj = catspeak_ext_json_parse(@'
+    {
+        "glossary": {
+            "title": "example glossary",
+            "GlossDiv": {
+                "title": "S",
+                "GlossList": {
+                    "GlossEntry": {
+                        "ID": "SGML",
+                        "SortAs": "SGML",
+                        "GlossTerm": "Standard Generalized Markup Language",
+                        "Acronym": "SGML",
+                        "Abbrev": "ISO 8879:1986",
+                        "GlossDef": {
+                            "para": "A meta-markup language, used to create markup languages such as DocBook.",
+                            "GlossSeeAlso": ["GML", "XML"]
+                        },
+                        "GlossSee": "markup"
+                    }
                 }
             }
         }
     }
-}
 ');
-catspeak_session_create_process(jsonSession, function(_value) {
-    show_message("JSON result:\n" + json_stringify(_value));
-});
+show_message("JSON result:\n" + json_stringify(jsonObj));
 // configuration example
 configSession = catspeak_session_create();
 playerData = undefined;
