@@ -74,6 +74,17 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(3, result);
 
+    // global variables
+    var session = catspeak_session_create();
+    catspeak_session_enable_global_access(session, true);
+    catspeak_session_add_constant(session, "global", global);
+    catspeak_session_set_source(session, @'
+        set global.result : "secret message"
+    ');
+    catspeak_session_create_process_eager(session);
+    catspeak_session_destroy(session);
+    __catspeak_ext_tests_assert_eq("secret message", global.result);
+
     // ans variable
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
