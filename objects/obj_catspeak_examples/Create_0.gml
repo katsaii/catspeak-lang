@@ -35,6 +35,7 @@ catspeak_session_create_process(jsonSession, function(_value) {
 configSession = catspeak_session_create();
 playerData = undefined;
 worldData = undefined;
+catspeak_ext_session_add_gml_operators(configSession);
 catspeak_session_add_function(configSession, "player", function(_value) {
     playerData = _value;
 });
@@ -44,7 +45,7 @@ catspeak_session_add_function(configSession, "world", function(_value) {
 catspeak_session_set_source(configSession, @'
 player {
     .name : "Angie"
-    .x : 12
+    .x : -12
     .y : 8
 }
 
