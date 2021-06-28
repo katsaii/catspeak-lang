@@ -163,6 +163,38 @@ function catspeak_session_create() {
         pos = array_length(sessions);
     }
     sessions[@ pos] = session;
+    // add the default interface
+    var f = catspeak_session_add_function;
+    var c = catspeak_session_add_constant;
+    f(pos, "+", function(_l, _r) { return _l + _r; });
+    f(pos, "++", function(_l, _r) { return (is_string(_l) ? _l : string(_l)) + (is_string(_r) ? _r : string(_r)); });
+    f(pos, "-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; });
+    f(pos, "*", function(_l, _r) { return _l * _r; });
+    f(pos, "/", function(_l, _r) { return _l / _r; });
+    f(pos, "%", function(_l, _r) { return _l % _r; });
+    f(pos, "div", function(_l, _r) { return _l div _r; });
+    f(pos, "|", function(_l, _r) { return _l | _r; });
+    f(pos, "&", function(_l, _r) { return _l & _r; });
+    f(pos, "^", function(_l, _r) { return _l ^ _r; });
+    f(pos, "~", function(_x) { return ~_x; });
+    f(pos, "<<", function(_l, _r) { return _l << _r; });
+    f(pos, ">>", function(_l, _r) { return _l >> _r; });
+    f(pos, "||", function(_l, _r) { return _l || _r; });
+    f(pos, "&&", function(_l, _r) { return _l && _r; });
+    f(pos, "^^", function(_l, _r) { return _l ^^ _r; });
+    f(pos, "!", function(_x) { return !_x; });
+    f(pos, "==", function(_l, _r) { return _l == _r; });
+    f(pos, "!=", function(_l, _r) { return _l != _r; });
+    f(pos, ">=", function(_l, _r) { return _l >= _r; });
+    f(pos, "<=", function(_l, _r) { return _l <= _r; });
+    f(pos, ">", function(_l, _r) { return _l > _r; });
+    f(pos, "<", function(_l, _r) { return _l < _r; });
+    f(pos, "!!", function(_x) { return is_numeric(_x) && _x; });
+    c(pos, "undefined", undefined);
+    c(pos, "true", true);
+    c(pos, "false", false);
+    c(pos, "NaN", NaN);
+    c(pos, "infinity", infinity);
     return pos;
 }
 

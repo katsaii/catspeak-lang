@@ -120,7 +120,6 @@ try {
 
     // gml interface
     var session = catspeak_session_create();
-    catspeak_ext_session_add_gml_operators(session);
     catspeak_ext_session_add_gml_maths(session);
     catspeak_session_set_source(session, @'
         set a : -3
@@ -135,7 +134,6 @@ try {
 
     // data types
     var session = catspeak_session_create();
-    catspeak_ext_session_add_gml_maths(session, CATSPEAK_EXT_GML_CONSTANTS);
     catspeak_session_set_source(session, @'
         return {
             .int 1
@@ -163,7 +161,6 @@ try {
 
     // if statements
     var session = catspeak_session_create();
-    catspeak_ext_session_add_gml_operators(session);
     catspeak_session_set_source(session, @'
         set a 3
         set b 5
@@ -183,7 +180,6 @@ try {
     // while loops
     var session = catspeak_session_create();
     var counter = { n : 0 };
-    catspeak_ext_session_add_gml_operators(session);
     catspeak_session_add_function(session, "register_count", method(counter, function() {
         n += 1;
     }));
@@ -202,7 +198,6 @@ try {
 
     // break points
     var session = catspeak_session_create();
-    catspeak_ext_session_add_gml_maths(session);
     catspeak_session_add_function(session, "failure", function(_number) {
         show_error("failed to break out of loop " + string(_number), true);
     });
@@ -224,8 +219,6 @@ try {
 
     // continue points
     var session = catspeak_session_create();
-    catspeak_ext_session_add_gml_operators(session);
-    catspeak_ext_session_add_gml_maths(session);
     catspeak_session_add_function(session, "failure", function(_number) {
         throw "failed to continue outside of loop " + string(_number);
     });

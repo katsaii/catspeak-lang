@@ -33,7 +33,6 @@ show_message("JSON result:\n" + json_stringify(jsonObj));
 configSession = catspeak_session_create();
 playerData = undefined;
 worldData = undefined;
-catspeak_ext_session_add_gml_operators(configSession);
 catspeak_session_add_function(configSession, "player", function(_value) {
     playerData = _value;
 });
@@ -59,7 +58,6 @@ catspeak_session_create_process(configSession, function(_) {
 });
 // heavy processing example
 processingSession = catspeak_session_create();
-catspeak_ext_session_add_gml_operators(configSession);
 catspeak_session_set_source(configSession, @'
     set countdown 15000
     while countdown {
