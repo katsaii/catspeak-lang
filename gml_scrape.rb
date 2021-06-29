@@ -58,49 +58,49 @@ gml_script_groups = {
         :contains => ["all", "noone", "global"],
         :prefixes => [
             "object", "instance", "motion", "place", "move", "distance",
-            "position", "collision", "point", "rectangle", "bbox", "physics",
-            "phy"
+            "position", "collision", "point", "rectangle"
         ]
+    },
+    :physics => {
+        :prefixes => ["physics", "phy"]
     },
     :pointers => {
         :contains => ["ptr"],
         :prefixes => ["pointer", "weak_ref"]
     },
-    :unsafe => {
+    :game => {
         :prefixes => [
-            "exception", "variable", "game", "gamespeed", "room", "event",
-            "ev", "get", "external", "ty", "dll", "of_challenge", "achievement",
-            "leaderboard", "highscore", "shop", "ads", "iap", "analytics",
-            "win8", "uwp", "winphone", "network", "steam", "ov", "lb", "ugc",
-            "push", "gc"
+            "game", "gamespeed", "room", "event", "ev", "gc"
         ]
     },
     :introspection => {
         :contains => ["typeof", "instanceof"],
-        :prefixes => ["is", "in", "asset", "tag", "extension"]
+        :prefixes => ["is"]
+    },
+    :assets => {
+        :prefixes => ["asset", "tag", "extension"]
     },
     :maths => {
         :contains => [
-            "undefined", "true", "false", "NaN", "infinity", "pi", "abs",
-            "round", "floor", "ceil", "sign", "frac", "sqrt", "sqr", "exp",
-            "ln", "log2", "log10", "sin", "cos", "tan", "arcsin", "arccos",
-            "arctan", "arctan2", "dsin", "dcos", "dtan", "darcsin",
-            "darccos", "darctan", "darctan2", "degtorad", "power", "logn",
-            "min", "max", "mean", "median", "clamp", "lerp", "real", "bool",
-            "int64"
+            "pi", "abs", "round", "floor", "ceil", "sign", "frac", "sqrt",
+            "sqr", "exp", "ln", "log2", "log10", "sin", "cos", "tan",
+            "arcsin", "arccos", "arctan", "arctan2", "dsin", "dcos", "dtan",
+            "darcsin", "darccos", "darctan", "darctan2", "degtorad", "power",
+            "logn", "min", "max", "mean", "median", "clamp", "lerp", "real",
+            "int64", "bool"
         ],
-        :prefixes => ["dot", "math", "point", "lengthdir", "matrix"]
+        :prefixes => ["dot", "math", "point", "lengthdir"]
     },
     :animation => {
         :prefixes => [
-            "path", "mp", "timeline", "skeleton", "sequence", "animcurve", "seqtracktype",
-            "seqplay", "seqdir", "seqinterpolation", "seqaudiokey",
-            "animcurvetype"
+            "path", "mp", "timeline", "skeleton", "sequence", "animcurve",
+            "seqtracktype", "seqplay", "seqdir", "seqinterpolation",
+            "seqaudiokey", "animcurvetype"
         ]
     },
     :collections => {
         :prefixes => [
-            "path", "mp", "array", "struct", "ds", "highscore", "buffer"
+            "path", "mp", "array", "struct", "ds", "buffer"
         ]
     },
     :random => {
@@ -117,9 +117,9 @@ gml_script_groups = {
     },
     :input => {
         :prefixes => [
-            "clipboard", "date", "timezone", "keyboard", "vk", "io", "mouse",
-            "mb", "cursor", "clickable", "virtual_key", "gamepad", "gp",
-            "gesture", "kbv"
+            "keyboard", "vk", "io", "mouse", "mb", "cursor", "clickable",
+            "virtual_key", "gamepad", "gp", "gesture", "kbv", "device_mouse",
+            "device_get", "device_is"
         ]
     },
     :audio => {
@@ -135,7 +135,7 @@ gml_script_groups = {
             "background", "draw", "c",  "make_color", "make_colour",
             "color", "colour", "pr", "texture", "bm", "tf", "mip", "surface",
             "texturegroup", "spritespeed", "cmpfunc", "cull", "lighttype",
-            "gpu", "shader", "vertex"
+            "gpu", "shader", "vertex", "matrix"
         ]
     },
     :layers => {
@@ -161,8 +161,11 @@ gml_script_groups = {
         :prefixes => ["effect", "ef", "part", "pt", "ps"]
     },
     :device => {
-        :contains => ["code_is_compiled"],
-        :prefixes => ["GM", "os", "browser", "device"]
+        :contains => ["code_is_compiled", "device_emulator", "device_tablet"],
+        :prefixes => [
+            "clipboard", "date", "timezone", "GM", "os", "browser",
+            "device_ios"
+        ]
     }
 }
 

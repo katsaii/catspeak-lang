@@ -93,6 +93,26 @@ function catspeak_ext_session_add_gml_instances(_session_id, _mode) {
         f(_session_id, "object_set_visible", object_set_visible);
         f(_session_id, "object_set_persistent", object_set_persistent);
         f(_session_id, "object_set_mask", object_set_mask);
+        f(_session_id, "instance_activate_layer", instance_activate_layer);
+        f(_session_id, "instance_deactivate_layer", instance_deactivate_layer);
+    }
+    if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
+        var c = catspeak_session_add_constant;
+        c(_session_id, "all", all);
+        c(_session_id, "noone", noone);
+        c(_session_id, "global", global);
+    }
+}
+
+/// @desc Applies the physics interface to this Catspeak session.
+/// @param {struct} session The Catspeak session to update.
+/// @param {real} [mode] Whether to include functions, constants, or both.
+function catspeak_ext_session_add_gml_physics(_session_id, _mode) {
+    if (_mode == undefined) {
+        _mode = CATSPEAK_EXT_GML_ALL;
+    }
+    if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
+        var f = catspeak_session_add_function;
         f(_session_id, "physics_world_create", physics_world_create);
         f(_session_id, "physics_world_gravity", physics_world_gravity);
         f(_session_id, "physics_world_update_speed", physics_world_update_speed);
@@ -191,14 +211,9 @@ function catspeak_ext_session_add_gml_instances(_session_id, _mode) {
         f(_session_id, "physics_particle_set_density", physics_particle_set_density);
         f(_session_id, "physics_particle_set_damping", physics_particle_set_damping);
         f(_session_id, "physics_particle_set_gravity_scale", physics_particle_set_gravity_scale);
-        f(_session_id, "instance_activate_layer", instance_activate_layer);
-        f(_session_id, "instance_deactivate_layer", instance_deactivate_layer);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
         var c = catspeak_session_add_constant;
-        c(_session_id, "all", all);
-        c(_session_id, "noone", noone);
-        c(_session_id, "global", global);
         c(_session_id, "phy_joint_anchor_1_x", phy_joint_anchor_1_x);
         c(_session_id, "phy_joint_anchor_1_y", phy_joint_anchor_1_y);
         c(_session_id, "phy_joint_anchor_2_x", phy_joint_anchor_2_x);
@@ -272,30 +287,15 @@ function catspeak_ext_session_add_gml_pointers(_session_id, _mode) {
     }
 }
 
-/// @desc Applies the unsafe interface to this Catspeak session.
+/// @desc Applies the game interface to this Catspeak session.
 /// @param {struct} session The Catspeak session to update.
 /// @param {real} [mode] Whether to include functions, constants, or both.
-function catspeak_ext_session_add_gml_unsafe(_session_id, _mode) {
+function catspeak_ext_session_add_gml_game(_session_id, _mode) {
     if (_mode == undefined) {
         _mode = CATSPEAK_EXT_GML_ALL;
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
         var f = catspeak_session_add_function;
-        f(_session_id, "exception_unhandled_handler", exception_unhandled_handler);
-        f(_session_id, "variable_global_exists", variable_global_exists);
-        f(_session_id, "variable_global_get", variable_global_get);
-        f(_session_id, "variable_global_set", variable_global_set);
-        f(_session_id, "variable_instance_exists", variable_instance_exists);
-        f(_session_id, "variable_instance_get", variable_instance_get);
-        f(_session_id, "variable_instance_set", variable_instance_set);
-        f(_session_id, "variable_instance_get_names", variable_instance_get_names);
-        f(_session_id, "variable_instance_names_count", variable_instance_names_count);
-        f(_session_id, "variable_struct_exists", variable_struct_exists);
-        f(_session_id, "variable_struct_get", variable_struct_get);
-        f(_session_id, "variable_struct_set", variable_struct_set);
-        f(_session_id, "variable_struct_get_names", variable_struct_get_names);
-        f(_session_id, "variable_struct_names_count", variable_struct_names_count);
-        f(_session_id, "variable_struct_remove", variable_struct_remove);
         f(_session_id, "game_set_speed", game_set_speed);
         f(_session_id, "game_get_speed", game_get_speed);
         f(_session_id, "room_goto", room_goto);
@@ -314,19 +314,6 @@ function catspeak_ext_session_add_gml_unsafe(_session_id, _mode) {
         f(_session_id, "event_user", event_user);
         f(_session_id, "event_perform_object", event_perform_object);
         f(_session_id, "event_inherited", event_inherited);
-        f(_session_id, "get_integer", get_integer);
-        f(_session_id, "get_string", get_string);
-        f(_session_id, "get_integer_async", get_integer_async);
-        f(_session_id, "get_string_async", get_string_async);
-        f(_session_id, "get_login_async", get_login_async);
-        f(_session_id, "get_open_filename", get_open_filename);
-        f(_session_id, "get_save_filename", get_save_filename);
-        f(_session_id, "get_open_filename_ext", get_open_filename_ext);
-        f(_session_id, "get_save_filename_ext", get_save_filename_ext);
-        f(_session_id, "highscore_clear", highscore_clear);
-        f(_session_id, "highscore_add", highscore_add);
-        f(_session_id, "highscore_value", highscore_value);
-        f(_session_id, "highscore_name", highscore_name);
         f(_session_id, "room_exists", room_exists);
         f(_session_id, "room_get_name", room_get_name);
         f(_session_id, "room_set_width", room_set_width);
@@ -342,184 +329,6 @@ function catspeak_ext_session_add_gml_unsafe(_session_id, _mode) {
         f(_session_id, "room_instance_clear", room_instance_clear);
         f(_session_id, "room_get_camera", room_get_camera);
         f(_session_id, "room_set_camera", room_set_camera);
-        f(_session_id, "external_call", external_call);
-        f(_session_id, "external_define", external_define);
-        f(_session_id, "external_free", external_free);
-        f(_session_id, "shop_leave_rating", shop_leave_rating);
-        f(_session_id, "get_timer", get_timer);
-        f(_session_id, "achievement_login", achievement_login);
-        f(_session_id, "achievement_logout", achievement_logout);
-        f(_session_id, "achievement_post", achievement_post);
-        f(_session_id, "achievement_increment", achievement_increment);
-        f(_session_id, "achievement_post_score", achievement_post_score);
-        f(_session_id, "achievement_available", achievement_available);
-        f(_session_id, "achievement_show_achievements", achievement_show_achievements);
-        f(_session_id, "achievement_show_leaderboards", achievement_show_leaderboards);
-        f(_session_id, "achievement_load_friends", achievement_load_friends);
-        f(_session_id, "achievement_load_leaderboard", achievement_load_leaderboard);
-        f(_session_id, "achievement_send_challenge", achievement_send_challenge);
-        f(_session_id, "achievement_load_progress", achievement_load_progress);
-        f(_session_id, "achievement_reset", achievement_reset);
-        f(_session_id, "achievement_login_status", achievement_login_status);
-        f(_session_id, "achievement_get_pic", achievement_get_pic);
-        f(_session_id, "achievement_show_challenge_notifications", achievement_show_challenge_notifications);
-        f(_session_id, "achievement_get_challenges", achievement_get_challenges);
-        f(_session_id, "achievement_event", achievement_event);
-        f(_session_id, "achievement_show", achievement_show);
-        f(_session_id, "achievement_get_info", achievement_get_info);
-        f(_session_id, "iap_activate", iap_activate);
-        f(_session_id, "iap_status", iap_status);
-        f(_session_id, "iap_enumerate_products", iap_enumerate_products);
-        f(_session_id, "iap_restore_all", iap_restore_all);
-        f(_session_id, "iap_acquire", iap_acquire);
-        f(_session_id, "iap_consume", iap_consume);
-        f(_session_id, "iap_product_details", iap_product_details);
-        f(_session_id, "iap_purchase_details", iap_purchase_details);
-        f(_session_id, "uwp_livetile_tile_clear", uwp_livetile_tile_clear);
-        f(_session_id, "uwp_livetile_badge_notification", uwp_livetile_badge_notification);
-        f(_session_id, "uwp_livetile_badge_clear", uwp_livetile_badge_clear);
-        f(_session_id, "uwp_livetile_queue_enable", uwp_livetile_queue_enable);
-        f(_session_id, "uwp_secondarytile_pin", uwp_secondarytile_pin);
-        f(_session_id, "uwp_secondarytile_badge_notification", uwp_secondarytile_badge_notification);
-        f(_session_id, "uwp_secondarytile_delete", uwp_secondarytile_delete);
-        f(_session_id, "uwp_secondarytile_badge_clear", uwp_secondarytile_badge_clear);
-        f(_session_id, "uwp_secondarytile_tile_clear", uwp_secondarytile_tile_clear);
-        f(_session_id, "uwp_livetile_notification_begin", uwp_livetile_notification_begin);
-        f(_session_id, "uwp_livetile_notification_secondary_begin", uwp_livetile_notification_secondary_begin);
-        f(_session_id, "uwp_livetile_notification_expiry", uwp_livetile_notification_expiry);
-        f(_session_id, "uwp_livetile_notification_tag", uwp_livetile_notification_tag);
-        f(_session_id, "uwp_livetile_notification_text_add", uwp_livetile_notification_text_add);
-        f(_session_id, "uwp_livetile_notification_image_add", uwp_livetile_notification_image_add);
-        f(_session_id, "uwp_livetile_notification_end", uwp_livetile_notification_end);
-        f(_session_id, "uwp_livetile_notification_template_add", uwp_livetile_notification_template_add);
-        f(_session_id, "uwp_appbar_enable", uwp_appbar_enable);
-        f(_session_id, "uwp_appbar_add_element", uwp_appbar_add_element);
-        f(_session_id, "uwp_appbar_remove_element", uwp_appbar_remove_element);
-        f(_session_id, "uwp_device_touchscreen_available", uwp_device_touchscreen_available);
-        f(_session_id, "winphone_license_trial_version", winphone_license_trial_version);
-        f(_session_id, "winphone_tile_title", winphone_tile_title);
-        f(_session_id, "winphone_tile_count", winphone_tile_count);
-        f(_session_id, "winphone_tile_back_title", winphone_tile_back_title);
-        f(_session_id, "winphone_tile_back_content", winphone_tile_back_content);
-        f(_session_id, "winphone_tile_back_content_wide", winphone_tile_back_content_wide);
-        f(_session_id, "winphone_tile_front_image", winphone_tile_front_image);
-        f(_session_id, "winphone_tile_front_image_small", winphone_tile_front_image_small);
-        f(_session_id, "winphone_tile_front_image_wide", winphone_tile_front_image_wide);
-        f(_session_id, "winphone_tile_back_image", winphone_tile_back_image);
-        f(_session_id, "winphone_tile_back_image_wide", winphone_tile_back_image_wide);
-        f(_session_id, "winphone_tile_background_colour", winphone_tile_background_colour);
-        f(_session_id, "winphone_tile_background_color", winphone_tile_background_color);
-        f(_session_id, "winphone_tile_icon_image", winphone_tile_icon_image);
-        f(_session_id, "winphone_tile_small_icon_image", winphone_tile_small_icon_image);
-        f(_session_id, "winphone_tile_wide_content", winphone_tile_wide_content);
-        f(_session_id, "winphone_tile_cycle_images", winphone_tile_cycle_images);
-        f(_session_id, "winphone_tile_small_background_image", winphone_tile_small_background_image);
-        f(_session_id, "network_create_socket", network_create_socket);
-        f(_session_id, "network_create_socket_ext", network_create_socket_ext);
-        f(_session_id, "network_create_server", network_create_server);
-        f(_session_id, "network_create_server_raw", network_create_server_raw);
-        f(_session_id, "network_connect", network_connect);
-        f(_session_id, "network_connect_raw", network_connect_raw);
-        f(_session_id, "network_connect_async", network_connect_async);
-        f(_session_id, "network_connect_raw_async", network_connect_raw_async);
-        f(_session_id, "network_send_packet", network_send_packet);
-        f(_session_id, "network_send_raw", network_send_raw);
-        f(_session_id, "network_send_broadcast", network_send_broadcast);
-        f(_session_id, "network_send_udp", network_send_udp);
-        f(_session_id, "network_send_udp_raw", network_send_udp_raw);
-        f(_session_id, "network_set_timeout", network_set_timeout);
-        f(_session_id, "network_set_config", network_set_config);
-        f(_session_id, "network_resolve", network_resolve);
-        f(_session_id, "network_destroy", network_destroy);
-        f(_session_id, "steam_activate_overlay", steam_activate_overlay);
-        f(_session_id, "steam_is_overlay_enabled", steam_is_overlay_enabled);
-        f(_session_id, "steam_is_overlay_activated", steam_is_overlay_activated);
-        f(_session_id, "steam_get_persona_name", steam_get_persona_name);
-        f(_session_id, "steam_initialised", steam_initialised);
-        f(_session_id, "steam_is_cloud_enabled_for_app", steam_is_cloud_enabled_for_app);
-        f(_session_id, "steam_is_cloud_enabled_for_account", steam_is_cloud_enabled_for_account);
-        f(_session_id, "steam_file_persisted", steam_file_persisted);
-        f(_session_id, "steam_get_quota_total", steam_get_quota_total);
-        f(_session_id, "steam_get_quota_free", steam_get_quota_free);
-        f(_session_id, "steam_file_write", steam_file_write);
-        f(_session_id, "steam_file_write_file", steam_file_write_file);
-        f(_session_id, "steam_file_read", steam_file_read);
-        f(_session_id, "steam_file_delete", steam_file_delete);
-        f(_session_id, "steam_file_exists", steam_file_exists);
-        f(_session_id, "steam_file_size", steam_file_size);
-        f(_session_id, "steam_file_share", steam_file_share);
-        f(_session_id, "steam_is_screenshot_requested", steam_is_screenshot_requested);
-        f(_session_id, "steam_send_screenshot", steam_send_screenshot);
-        f(_session_id, "steam_is_user_logged_on", steam_is_user_logged_on);
-        f(_session_id, "steam_get_user_steam_id", steam_get_user_steam_id);
-        f(_session_id, "steam_user_owns_dlc", steam_user_owns_dlc);
-        f(_session_id, "steam_user_installed_dlc", steam_user_installed_dlc);
-        f(_session_id, "steam_set_achievement", steam_set_achievement);
-        f(_session_id, "steam_get_achievement", steam_get_achievement);
-        f(_session_id, "steam_clear_achievement", steam_clear_achievement);
-        f(_session_id, "steam_set_stat_int", steam_set_stat_int);
-        f(_session_id, "steam_set_stat_float", steam_set_stat_float);
-        f(_session_id, "steam_set_stat_avg_rate", steam_set_stat_avg_rate);
-        f(_session_id, "steam_get_stat_int", steam_get_stat_int);
-        f(_session_id, "steam_get_stat_float", steam_get_stat_float);
-        f(_session_id, "steam_get_stat_avg_rate", steam_get_stat_avg_rate);
-        f(_session_id, "steam_reset_all_stats", steam_reset_all_stats);
-        f(_session_id, "steam_reset_all_stats_achievements", steam_reset_all_stats_achievements);
-        f(_session_id, "steam_stats_ready", steam_stats_ready);
-        f(_session_id, "steam_create_leaderboard", steam_create_leaderboard);
-        f(_session_id, "steam_upload_score", steam_upload_score);
-        f(_session_id, "steam_upload_score_ext", steam_upload_score_ext);
-        f(_session_id, "steam_download_scores_around_user", steam_download_scores_around_user);
-        f(_session_id, "steam_download_scores", steam_download_scores);
-        f(_session_id, "steam_download_friends_scores", steam_download_friends_scores);
-        f(_session_id, "steam_upload_score_buffer", steam_upload_score_buffer);
-        f(_session_id, "steam_upload_score_buffer_ext", steam_upload_score_buffer_ext);
-        f(_session_id, "steam_current_game_language", steam_current_game_language);
-        f(_session_id, "steam_available_languages", steam_available_languages);
-        f(_session_id, "steam_activate_overlay_browser", steam_activate_overlay_browser);
-        f(_session_id, "steam_activate_overlay_user", steam_activate_overlay_user);
-        f(_session_id, "steam_activate_overlay_store", steam_activate_overlay_store);
-        f(_session_id, "steam_get_user_persona_name", steam_get_user_persona_name);
-        f(_session_id, "steam_get_app_id", steam_get_app_id);
-        f(_session_id, "steam_get_user_account_id", steam_get_user_account_id);
-        f(_session_id, "steam_ugc_download", steam_ugc_download);
-        f(_session_id, "steam_ugc_create_item", steam_ugc_create_item);
-        f(_session_id, "steam_ugc_start_item_update", steam_ugc_start_item_update);
-        f(_session_id, "steam_ugc_set_item_title", steam_ugc_set_item_title);
-        f(_session_id, "steam_ugc_set_item_description", steam_ugc_set_item_description);
-        f(_session_id, "steam_ugc_set_item_visibility", steam_ugc_set_item_visibility);
-        f(_session_id, "steam_ugc_set_item_tags", steam_ugc_set_item_tags);
-        f(_session_id, "steam_ugc_set_item_content", steam_ugc_set_item_content);
-        f(_session_id, "steam_ugc_set_item_preview", steam_ugc_set_item_preview);
-        f(_session_id, "steam_ugc_submit_item_update", steam_ugc_submit_item_update);
-        f(_session_id, "steam_ugc_get_item_update_progress", steam_ugc_get_item_update_progress);
-        f(_session_id, "steam_ugc_subscribe_item", steam_ugc_subscribe_item);
-        f(_session_id, "steam_ugc_unsubscribe_item", steam_ugc_unsubscribe_item);
-        f(_session_id, "steam_ugc_num_subscribed_items", steam_ugc_num_subscribed_items);
-        f(_session_id, "steam_ugc_get_subscribed_items", steam_ugc_get_subscribed_items);
-        f(_session_id, "steam_ugc_get_item_install_info", steam_ugc_get_item_install_info);
-        f(_session_id, "steam_ugc_get_item_update_info", steam_ugc_get_item_update_info);
-        f(_session_id, "steam_ugc_request_item_details", steam_ugc_request_item_details);
-        f(_session_id, "steam_ugc_create_query_user", steam_ugc_create_query_user);
-        f(_session_id, "steam_ugc_create_query_user_ex", steam_ugc_create_query_user_ex);
-        f(_session_id, "steam_ugc_create_query_all", steam_ugc_create_query_all);
-        f(_session_id, "steam_ugc_create_query_all_ex", steam_ugc_create_query_all_ex);
-        f(_session_id, "steam_ugc_query_set_cloud_filename_filter", steam_ugc_query_set_cloud_filename_filter);
-        f(_session_id, "steam_ugc_query_set_match_any_tag", steam_ugc_query_set_match_any_tag);
-        f(_session_id, "steam_ugc_query_set_search_text", steam_ugc_query_set_search_text);
-        f(_session_id, "steam_ugc_query_set_ranked_by_trend_days", steam_ugc_query_set_ranked_by_trend_days);
-        f(_session_id, "steam_ugc_query_add_required_tag", steam_ugc_query_add_required_tag);
-        f(_session_id, "steam_ugc_query_add_excluded_tag", steam_ugc_query_add_excluded_tag);
-        f(_session_id, "steam_ugc_query_set_return_long_description", steam_ugc_query_set_return_long_description);
-        f(_session_id, "steam_ugc_query_set_return_total_only", steam_ugc_query_set_return_total_only);
-        f(_session_id, "steam_ugc_query_set_allow_cached_response", steam_ugc_query_set_allow_cached_response);
-        f(_session_id, "steam_ugc_send_query", steam_ugc_send_query);
-        f(_session_id, "push_local_notification", push_local_notification);
-        f(_session_id, "push_get_first_local_notification", push_get_first_local_notification);
-        f(_session_id, "push_get_next_local_notification", push_get_next_local_notification);
-        f(_session_id, "push_cancel_local_notification", push_cancel_local_notification);
-        f(_session_id, "push_get_application_badge_number", push_get_application_badge_number);
-        f(_session_id, "push_set_application_badge_number", push_set_application_badge_number);
         f(_session_id, "gc_collect", gc_collect);
         f(_session_id, "gc_enable", gc_enable);
         f(_session_id, "gc_is_enabled", gc_is_enabled);
@@ -687,123 +496,6 @@ function catspeak_ext_session_add_gml_unsafe(_session_id, _mode) {
         c(_session_id, "ev_global_gesture_rotate_start", ev_global_gesture_rotate_start);
         c(_session_id, "ev_global_gesture_rotating", ev_global_gesture_rotating);
         c(_session_id, "ev_global_gesture_rotate_end", ev_global_gesture_rotate_end);
-        c(_session_id, "ty_real", ty_real);
-        c(_session_id, "ty_string", ty_string);
-        c(_session_id, "dll_cdecl", dll_cdecl);
-        c(_session_id, "dll_stdcall", dll_stdcall);
-        c(_session_id, "of_challenge_win", of_challenge_win);
-        c(_session_id, "of_challenge_lose", of_challenge_lose);
-        c(_session_id, "of_challenge_tie", of_challenge_tie);
-        c(_session_id, "leaderboard_type_number", leaderboard_type_number);
-        c(_session_id, "leaderboard_type_time_mins_secs", leaderboard_type_time_mins_secs);
-        c(_session_id, "iap_ev_storeload", iap_ev_storeload);
-        c(_session_id, "iap_ev_product", iap_ev_product);
-        c(_session_id, "iap_ev_purchase", iap_ev_purchase);
-        c(_session_id, "iap_ev_consume", iap_ev_consume);
-        c(_session_id, "iap_ev_restore", iap_ev_restore);
-        c(_session_id, "iap_storeload_ok", iap_storeload_ok);
-        c(_session_id, "iap_storeload_failed", iap_storeload_failed);
-        c(_session_id, "iap_status_uninitialised", iap_status_uninitialised);
-        c(_session_id, "iap_status_unavailable", iap_status_unavailable);
-        c(_session_id, "iap_status_loading", iap_status_loading);
-        c(_session_id, "iap_status_available", iap_status_available);
-        c(_session_id, "iap_status_processing", iap_status_processing);
-        c(_session_id, "iap_status_restoring", iap_status_restoring);
-        c(_session_id, "iap_failed", iap_failed);
-        c(_session_id, "iap_unavailable", iap_unavailable);
-        c(_session_id, "iap_available", iap_available);
-        c(_session_id, "iap_purchased", iap_purchased);
-        c(_session_id, "iap_canceled", iap_canceled);
-        c(_session_id, "iap_refunded", iap_refunded);
-        c(_session_id, "achievement_our_info", achievement_our_info);
-        c(_session_id, "achievement_friends_info", achievement_friends_info);
-        c(_session_id, "achievement_leaderboard_info", achievement_leaderboard_info);
-        c(_session_id, "achievement_achievement_info", achievement_achievement_info);
-        c(_session_id, "achievement_filter_all_players", achievement_filter_all_players);
-        c(_session_id, "achievement_filter_friends_only", achievement_filter_friends_only);
-        c(_session_id, "achievement_filter_favorites_only", achievement_filter_favorites_only);
-        c(_session_id, "achievement_type_achievement_challenge", achievement_type_achievement_challenge);
-        c(_session_id, "achievement_type_score_challenge", achievement_type_score_challenge);
-        c(_session_id, "achievement_pic_loaded", achievement_pic_loaded);
-        c(_session_id, "achievement_show_ui", achievement_show_ui);
-        c(_session_id, "achievement_show_profile", achievement_show_profile);
-        c(_session_id, "achievement_show_leaderboard", achievement_show_leaderboard);
-        c(_session_id, "achievement_show_achievement", achievement_show_achievement);
-        c(_session_id, "achievement_show_bank", achievement_show_bank);
-        c(_session_id, "achievement_show_friend_picker", achievement_show_friend_picker);
-        c(_session_id, "achievement_show_purchase_prompt", achievement_show_purchase_prompt);
-        c(_session_id, "network_socket_tcp", network_socket_tcp);
-        c(_session_id, "network_socket_udp", network_socket_udp);
-        c(_session_id, "network_socket_ws", network_socket_ws);
-        c(_session_id, "network_socket_bluetooth", network_socket_bluetooth);
-        c(_session_id, "network_type_connect", network_type_connect);
-        c(_session_id, "network_type_disconnect", network_type_disconnect);
-        c(_session_id, "network_type_data", network_type_data);
-        c(_session_id, "network_type_non_blocking_connect", network_type_non_blocking_connect);
-        c(_session_id, "network_config_connect_timeout", network_config_connect_timeout);
-        c(_session_id, "network_config_use_non_blocking_socket", network_config_use_non_blocking_socket);
-        c(_session_id, "network_config_enable_reliable_udp", network_config_enable_reliable_udp);
-        c(_session_id, "network_config_disable_reliable_udp", network_config_disable_reliable_udp);
-        c(_session_id, "network_config_avoid_time_wait", network_config_avoid_time_wait);
-        c(_session_id, "ov_friends", ov_friends);
-        c(_session_id, "ov_community", ov_community);
-        c(_session_id, "ov_players", ov_players);
-        c(_session_id, "ov_settings", ov_settings);
-        c(_session_id, "ov_gamegroup", ov_gamegroup);
-        c(_session_id, "ov_achievements", ov_achievements);
-        c(_session_id, "lb_sort_none", lb_sort_none);
-        c(_session_id, "lb_sort_ascending", lb_sort_ascending);
-        c(_session_id, "lb_sort_descending", lb_sort_descending);
-        c(_session_id, "lb_disp_none", lb_disp_none);
-        c(_session_id, "lb_disp_numeric", lb_disp_numeric);
-        c(_session_id, "lb_disp_time_sec", lb_disp_time_sec);
-        c(_session_id, "lb_disp_time_ms", lb_disp_time_ms);
-        c(_session_id, "ugc_result_success", ugc_result_success);
-        c(_session_id, "ugc_filetype_community", ugc_filetype_community);
-        c(_session_id, "ugc_filetype_microtrans", ugc_filetype_microtrans);
-        c(_session_id, "ugc_visibility_public", ugc_visibility_public);
-        c(_session_id, "ugc_visibility_friends_only", ugc_visibility_friends_only);
-        c(_session_id, "ugc_visibility_private", ugc_visibility_private);
-        c(_session_id, "ugc_query_RankedByVote", ugc_query_RankedByVote);
-        c(_session_id, "ugc_query_RankedByPublicationDate", ugc_query_RankedByPublicationDate);
-        c(_session_id, "ugc_query_AcceptedForGameRankedByAcceptanceDate", ugc_query_AcceptedForGameRankedByAcceptanceDate);
-        c(_session_id, "ugc_query_RankedByTrend", ugc_query_RankedByTrend);
-        c(_session_id, "ugc_query_FavoritedByFriendsRankedByPublicationDate", ugc_query_FavoritedByFriendsRankedByPublicationDate);
-        c(_session_id, "ugc_query_CreatedByFriendsRankedByPublicationDate", ugc_query_CreatedByFriendsRankedByPublicationDate);
-        c(_session_id, "ugc_query_RankedByNumTimesReported", ugc_query_RankedByNumTimesReported);
-        c(_session_id, "ugc_query_CreatedByFollowedUsersRankedByPublicationDate", ugc_query_CreatedByFollowedUsersRankedByPublicationDate);
-        c(_session_id, "ugc_query_NotYetRated", ugc_query_NotYetRated);
-        c(_session_id, "ugc_query_RankedByTotalVotesAsc", ugc_query_RankedByTotalVotesAsc);
-        c(_session_id, "ugc_query_RankedByVotesUp", ugc_query_RankedByVotesUp);
-        c(_session_id, "ugc_query_RankedByTextSearch", ugc_query_RankedByTextSearch);
-        c(_session_id, "ugc_sortorder_CreationOrderDesc", ugc_sortorder_CreationOrderDesc);
-        c(_session_id, "ugc_sortorder_CreationOrderAsc", ugc_sortorder_CreationOrderAsc);
-        c(_session_id, "ugc_sortorder_TitleAsc", ugc_sortorder_TitleAsc);
-        c(_session_id, "ugc_sortorder_LastUpdatedDesc", ugc_sortorder_LastUpdatedDesc);
-        c(_session_id, "ugc_sortorder_SubscriptionDateDesc", ugc_sortorder_SubscriptionDateDesc);
-        c(_session_id, "ugc_sortorder_VoteScoreDesc", ugc_sortorder_VoteScoreDesc);
-        c(_session_id, "ugc_sortorder_ForModeration", ugc_sortorder_ForModeration);
-        c(_session_id, "ugc_list_Published", ugc_list_Published);
-        c(_session_id, "ugc_list_VotedOn", ugc_list_VotedOn);
-        c(_session_id, "ugc_list_VotedUp", ugc_list_VotedUp);
-        c(_session_id, "ugc_list_VotedDown", ugc_list_VotedDown);
-        c(_session_id, "ugc_list_WillVoteLater", ugc_list_WillVoteLater);
-        c(_session_id, "ugc_list_Favorited", ugc_list_Favorited);
-        c(_session_id, "ugc_list_Subscribed", ugc_list_Subscribed);
-        c(_session_id, "ugc_list_UsedOrPlayed", ugc_list_UsedOrPlayed);
-        c(_session_id, "ugc_list_Followed", ugc_list_Followed);
-        c(_session_id, "ugc_match_Items", ugc_match_Items);
-        c(_session_id, "ugc_match_Items_Mtx", ugc_match_Items_Mtx);
-        c(_session_id, "ugc_match_Items_ReadyToUse", ugc_match_Items_ReadyToUse);
-        c(_session_id, "ugc_match_Collections", ugc_match_Collections);
-        c(_session_id, "ugc_match_Artwork", ugc_match_Artwork);
-        c(_session_id, "ugc_match_Videos", ugc_match_Videos);
-        c(_session_id, "ugc_match_Screenshots", ugc_match_Screenshots);
-        c(_session_id, "ugc_match_AllGuides", ugc_match_AllGuides);
-        c(_session_id, "ugc_match_WebGuides", ugc_match_WebGuides);
-        c(_session_id, "ugc_match_IntegratedGuides", ugc_match_IntegratedGuides);
-        c(_session_id, "ugc_match_UsableInGame", ugc_match_UsableInGame);
-        c(_session_id, "ugc_match_ControllerBindings", ugc_match_ControllerBindings);
     }
 }
 
@@ -833,6 +525,22 @@ function catspeak_ext_session_add_gml_introspection(_session_id, _mode) {
         f(_session_id, "is_method", is_method);
         f(_session_id, "typeof", typeof);
         f(_session_id, "instanceof", instanceof);
+    }
+    if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
+        var c = catspeak_session_add_constant;
+        
+    }
+}
+
+/// @desc Applies the assets interface to this Catspeak session.
+/// @param {struct} session The Catspeak session to update.
+/// @param {real} [mode] Whether to include functions, constants, or both.
+function catspeak_ext_session_add_gml_assets(_session_id, _mode) {
+    if (_mode == undefined) {
+        _mode = CATSPEAK_EXT_GML_ALL;
+    }
+    if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
+        var f = catspeak_session_add_function;
         f(_session_id, "asset_get_index", asset_get_index);
         f(_session_id, "asset_get_type", asset_get_type);
         f(_session_id, "tag_get_asset_ids", tag_get_asset_ids);
@@ -926,34 +634,10 @@ function catspeak_ext_session_add_gml_maths(_session_id, _mode) {
         f(_session_id, "point_in_rectangle", point_in_rectangle);
         f(_session_id, "point_in_triangle", point_in_triangle);
         f(_session_id, "point_in_circle", point_in_circle);
-        f(_session_id, "matrix_get", matrix_get);
-        f(_session_id, "matrix_set", matrix_set);
-        f(_session_id, "matrix_build_identity", matrix_build_identity);
-        f(_session_id, "matrix_build", matrix_build);
-        f(_session_id, "matrix_build_lookat", matrix_build_lookat);
-        f(_session_id, "matrix_build_projection_ortho", matrix_build_projection_ortho);
-        f(_session_id, "matrix_build_projection_perspective", matrix_build_projection_perspective);
-        f(_session_id, "matrix_build_projection_perspective_fov", matrix_build_projection_perspective_fov);
-        f(_session_id, "matrix_multiply", matrix_multiply);
-        f(_session_id, "matrix_transform_vertex", matrix_transform_vertex);
-        f(_session_id, "matrix_stack_push", matrix_stack_push);
-        f(_session_id, "matrix_stack_pop", matrix_stack_pop);
-        f(_session_id, "matrix_stack_set", matrix_stack_set);
-        f(_session_id, "matrix_stack_clear", matrix_stack_clear);
-        f(_session_id, "matrix_stack_top", matrix_stack_top);
-        f(_session_id, "matrix_stack_is_empty", matrix_stack_is_empty);
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
         var c = catspeak_session_add_constant;
-        c(_session_id, "undefined", undefined);
-        c(_session_id, "true", true);
-        c(_session_id, "false", false);
         c(_session_id, "pi", pi);
-        c(_session_id, "NaN", NaN);
-        c(_session_id, "infinity", infinity);
-        c(_session_id, "matrix_view", matrix_view);
-        c(_session_id, "matrix_projection", matrix_projection);
-        c(_session_id, "matrix_world", matrix_world);
     }
 }
 
@@ -1168,10 +852,6 @@ function catspeak_ext_session_add_gml_collections(_session_id, _mode) {
         f(_session_id, "mp_grid_path", mp_grid_path);
         f(_session_id, "mp_grid_draw", mp_grid_draw);
         f(_session_id, "mp_grid_to_ds_grid", mp_grid_to_ds_grid);
-        f(_session_id, "highscore_clear", highscore_clear);
-        f(_session_id, "highscore_add", highscore_add);
-        f(_session_id, "highscore_value", highscore_value);
-        f(_session_id, "highscore_name", highscore_name);
         f(_session_id, "path_exists", path_exists);
         f(_session_id, "path_get_name", path_get_name);
         f(_session_id, "path_get_length", path_get_length);
@@ -1518,52 +1198,6 @@ function catspeak_ext_session_add_gml_input(_session_id, _mode) {
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
         var f = catspeak_session_add_function;
-        f(_session_id, "clipboard_has_text", clipboard_has_text);
-        f(_session_id, "clipboard_set_text", clipboard_set_text);
-        f(_session_id, "clipboard_get_text", clipboard_get_text);
-        f(_session_id, "date_current_datetime", date_current_datetime);
-        f(_session_id, "date_create_datetime", date_create_datetime);
-        f(_session_id, "date_valid_datetime", date_valid_datetime);
-        f(_session_id, "date_inc_year", date_inc_year);
-        f(_session_id, "date_inc_month", date_inc_month);
-        f(_session_id, "date_inc_week", date_inc_week);
-        f(_session_id, "date_inc_day", date_inc_day);
-        f(_session_id, "date_inc_hour", date_inc_hour);
-        f(_session_id, "date_inc_minute", date_inc_minute);
-        f(_session_id, "date_inc_second", date_inc_second);
-        f(_session_id, "date_get_year", date_get_year);
-        f(_session_id, "date_get_month", date_get_month);
-        f(_session_id, "date_get_week", date_get_week);
-        f(_session_id, "date_get_day", date_get_day);
-        f(_session_id, "date_get_hour", date_get_hour);
-        f(_session_id, "date_get_minute", date_get_minute);
-        f(_session_id, "date_get_second", date_get_second);
-        f(_session_id, "date_get_weekday", date_get_weekday);
-        f(_session_id, "date_get_day_of_year", date_get_day_of_year);
-        f(_session_id, "date_get_hour_of_year", date_get_hour_of_year);
-        f(_session_id, "date_get_minute_of_year", date_get_minute_of_year);
-        f(_session_id, "date_get_second_of_year", date_get_second_of_year);
-        f(_session_id, "date_year_span", date_year_span);
-        f(_session_id, "date_month_span", date_month_span);
-        f(_session_id, "date_week_span", date_week_span);
-        f(_session_id, "date_day_span", date_day_span);
-        f(_session_id, "date_hour_span", date_hour_span);
-        f(_session_id, "date_minute_span", date_minute_span);
-        f(_session_id, "date_second_span", date_second_span);
-        f(_session_id, "date_compare_datetime", date_compare_datetime);
-        f(_session_id, "date_compare_date", date_compare_date);
-        f(_session_id, "date_compare_time", date_compare_time);
-        f(_session_id, "date_date_of", date_date_of);
-        f(_session_id, "date_time_of", date_time_of);
-        f(_session_id, "date_datetime_string", date_datetime_string);
-        f(_session_id, "date_date_string", date_date_string);
-        f(_session_id, "date_time_string", date_time_string);
-        f(_session_id, "date_days_in_month", date_days_in_month);
-        f(_session_id, "date_days_in_year", date_days_in_year);
-        f(_session_id, "date_leap_year", date_leap_year);
-        f(_session_id, "date_is_today", date_is_today);
-        f(_session_id, "date_set_timezone", date_set_timezone);
-        f(_session_id, "date_get_timezone", date_get_timezone);
         f(_session_id, "keyboard_set_map", keyboard_set_map);
         f(_session_id, "keyboard_get_map", keyboard_get_map);
         f(_session_id, "keyboard_unset_map", keyboard_unset_map);
@@ -1590,10 +1224,24 @@ function catspeak_ext_session_add_gml_input(_session_id, _mode) {
         f(_session_id, "clickable_delete", clickable_delete);
         f(_session_id, "clickable_exists", clickable_exists);
         f(_session_id, "clickable_set_style", clickable_set_style);
+        f(_session_id, "device_mouse_dbclick_enable", device_mouse_dbclick_enable);
         f(_session_id, "virtual_key_add", virtual_key_add);
         f(_session_id, "virtual_key_hide", virtual_key_hide);
         f(_session_id, "virtual_key_delete", virtual_key_delete);
         f(_session_id, "virtual_key_show", virtual_key_show);
+        f(_session_id, "device_get_tilt_x", device_get_tilt_x);
+        f(_session_id, "device_get_tilt_y", device_get_tilt_y);
+        f(_session_id, "device_get_tilt_z", device_get_tilt_z);
+        f(_session_id, "device_is_keypad_open", device_is_keypad_open);
+        f(_session_id, "device_mouse_check_button", device_mouse_check_button);
+        f(_session_id, "device_mouse_check_button_pressed", device_mouse_check_button_pressed);
+        f(_session_id, "device_mouse_check_button_released", device_mouse_check_button_released);
+        f(_session_id, "device_mouse_x", device_mouse_x);
+        f(_session_id, "device_mouse_y", device_mouse_y);
+        f(_session_id, "device_mouse_raw_x", device_mouse_raw_x);
+        f(_session_id, "device_mouse_raw_y", device_mouse_raw_y);
+        f(_session_id, "device_mouse_x_to_gui", device_mouse_x_to_gui);
+        f(_session_id, "device_mouse_y_to_gui", device_mouse_y_to_gui);
         f(_session_id, "gamepad_is_supported", gamepad_is_supported);
         f(_session_id, "gamepad_get_device_count", gamepad_get_device_count);
         f(_session_id, "gamepad_is_connected", gamepad_is_connected);
@@ -1649,8 +1297,6 @@ function catspeak_ext_session_add_gml_input(_session_id, _mode) {
     }
     if (_mode & CATSPEAK_EXT_GML_CONSTANTS) {
         var c = catspeak_session_add_constant;
-        c(_session_id, "timezone_local", timezone_local);
-        c(_session_id, "timezone_utc", timezone_utc);
         c(_session_id, "vk_nokey", vk_nokey);
         c(_session_id, "vk_anykey", vk_anykey);
         c(_session_id, "vk_enter", vk_enter);
@@ -2084,6 +1730,22 @@ function catspeak_ext_session_add_gml_graphics(_session_id, _mode) {
         f(_session_id, "font_replace_sprite", font_replace_sprite);
         f(_session_id, "font_replace_sprite_ext", font_replace_sprite_ext);
         f(_session_id, "font_delete", font_delete);
+        f(_session_id, "matrix_get", matrix_get);
+        f(_session_id, "matrix_set", matrix_set);
+        f(_session_id, "matrix_build_identity", matrix_build_identity);
+        f(_session_id, "matrix_build", matrix_build);
+        f(_session_id, "matrix_build_lookat", matrix_build_lookat);
+        f(_session_id, "matrix_build_projection_ortho", matrix_build_projection_ortho);
+        f(_session_id, "matrix_build_projection_perspective", matrix_build_projection_perspective);
+        f(_session_id, "matrix_build_projection_perspective_fov", matrix_build_projection_perspective_fov);
+        f(_session_id, "matrix_multiply", matrix_multiply);
+        f(_session_id, "matrix_transform_vertex", matrix_transform_vertex);
+        f(_session_id, "matrix_stack_push", matrix_stack_push);
+        f(_session_id, "matrix_stack_pop", matrix_stack_pop);
+        f(_session_id, "matrix_stack_set", matrix_stack_set);
+        f(_session_id, "matrix_stack_clear", matrix_stack_clear);
+        f(_session_id, "matrix_stack_top", matrix_stack_top);
+        f(_session_id, "matrix_stack_is_empty", matrix_stack_is_empty);
         f(_session_id, "draw_enable_drawevent", draw_enable_drawevent);
         f(_session_id, "draw_enable_swf_aa", draw_enable_swf_aa);
         f(_session_id, "draw_set_swf_aa_level", draw_set_swf_aa_level);
@@ -2298,6 +1960,9 @@ function catspeak_ext_session_add_gml_graphics(_session_id, _mode) {
         c(_session_id, "mip_markedonly", mip_markedonly);
         c(_session_id, "spritespeed_framespersecond", spritespeed_framespersecond);
         c(_session_id, "spritespeed_framespergameframe", spritespeed_framespergameframe);
+        c(_session_id, "matrix_view", matrix_view);
+        c(_session_id, "matrix_projection", matrix_projection);
+        c(_session_id, "matrix_world", matrix_world);
         c(_session_id, "cmpfunc_never", cmpfunc_never);
         c(_session_id, "cmpfunc_less", cmpfunc_less);
         c(_session_id, "cmpfunc_equal", cmpfunc_equal);
@@ -2907,6 +2572,52 @@ function catspeak_ext_session_add_gml_device(_session_id, _mode) {
     }
     if (_mode & CATSPEAK_EXT_GML_FUNCTIONS) {
         var f = catspeak_session_add_function;
+        f(_session_id, "clipboard_has_text", clipboard_has_text);
+        f(_session_id, "clipboard_set_text", clipboard_set_text);
+        f(_session_id, "clipboard_get_text", clipboard_get_text);
+        f(_session_id, "date_current_datetime", date_current_datetime);
+        f(_session_id, "date_create_datetime", date_create_datetime);
+        f(_session_id, "date_valid_datetime", date_valid_datetime);
+        f(_session_id, "date_inc_year", date_inc_year);
+        f(_session_id, "date_inc_month", date_inc_month);
+        f(_session_id, "date_inc_week", date_inc_week);
+        f(_session_id, "date_inc_day", date_inc_day);
+        f(_session_id, "date_inc_hour", date_inc_hour);
+        f(_session_id, "date_inc_minute", date_inc_minute);
+        f(_session_id, "date_inc_second", date_inc_second);
+        f(_session_id, "date_get_year", date_get_year);
+        f(_session_id, "date_get_month", date_get_month);
+        f(_session_id, "date_get_week", date_get_week);
+        f(_session_id, "date_get_day", date_get_day);
+        f(_session_id, "date_get_hour", date_get_hour);
+        f(_session_id, "date_get_minute", date_get_minute);
+        f(_session_id, "date_get_second", date_get_second);
+        f(_session_id, "date_get_weekday", date_get_weekday);
+        f(_session_id, "date_get_day_of_year", date_get_day_of_year);
+        f(_session_id, "date_get_hour_of_year", date_get_hour_of_year);
+        f(_session_id, "date_get_minute_of_year", date_get_minute_of_year);
+        f(_session_id, "date_get_second_of_year", date_get_second_of_year);
+        f(_session_id, "date_year_span", date_year_span);
+        f(_session_id, "date_month_span", date_month_span);
+        f(_session_id, "date_week_span", date_week_span);
+        f(_session_id, "date_day_span", date_day_span);
+        f(_session_id, "date_hour_span", date_hour_span);
+        f(_session_id, "date_minute_span", date_minute_span);
+        f(_session_id, "date_second_span", date_second_span);
+        f(_session_id, "date_compare_datetime", date_compare_datetime);
+        f(_session_id, "date_compare_date", date_compare_date);
+        f(_session_id, "date_compare_time", date_compare_time);
+        f(_session_id, "date_date_of", date_date_of);
+        f(_session_id, "date_time_of", date_time_of);
+        f(_session_id, "date_datetime_string", date_datetime_string);
+        f(_session_id, "date_date_string", date_date_string);
+        f(_session_id, "date_time_string", date_time_string);
+        f(_session_id, "date_days_in_month", date_days_in_month);
+        f(_session_id, "date_days_in_year", date_days_in_year);
+        f(_session_id, "date_leap_year", date_leap_year);
+        f(_session_id, "date_is_today", date_is_today);
+        f(_session_id, "date_set_timezone", date_set_timezone);
+        f(_session_id, "date_get_timezone", date_get_timezone);
         f(_session_id, "browser_input_capture", browser_input_capture);
         f(_session_id, "os_get_config", os_get_config);
         f(_session_id, "os_get_info", os_get_info);
@@ -2915,20 +2626,6 @@ function catspeak_ext_session_add_gml_device(_session_id, _mode) {
         f(_session_id, "os_check_permission", os_check_permission);
         f(_session_id, "os_request_permission", os_request_permission);
         f(_session_id, "os_lock_orientation", os_lock_orientation);
-        f(_session_id, "device_mouse_dbclick_enable", device_mouse_dbclick_enable);
-        f(_session_id, "device_get_tilt_x", device_get_tilt_x);
-        f(_session_id, "device_get_tilt_y", device_get_tilt_y);
-        f(_session_id, "device_get_tilt_z", device_get_tilt_z);
-        f(_session_id, "device_is_keypad_open", device_is_keypad_open);
-        f(_session_id, "device_mouse_check_button", device_mouse_check_button);
-        f(_session_id, "device_mouse_check_button_pressed", device_mouse_check_button_pressed);
-        f(_session_id, "device_mouse_check_button_released", device_mouse_check_button_released);
-        f(_session_id, "device_mouse_x", device_mouse_x);
-        f(_session_id, "device_mouse_y", device_mouse_y);
-        f(_session_id, "device_mouse_raw_x", device_mouse_raw_x);
-        f(_session_id, "device_mouse_raw_y", device_mouse_raw_y);
-        f(_session_id, "device_mouse_x_to_gui", device_mouse_x_to_gui);
-        f(_session_id, "device_mouse_y_to_gui", device_mouse_y_to_gui);
         f(_session_id, "os_is_paused", os_is_paused);
         f(_session_id, "code_is_compiled", code_is_compiled);
         f(_session_id, "os_is_network_connected", os_is_network_connected);
@@ -2939,6 +2636,8 @@ function catspeak_ext_session_add_gml_device(_session_id, _mode) {
         c(_session_id, "GM_build_date", GM_build_date);
         c(_session_id, "GM_version", GM_version);
         c(_session_id, "GM_runtime_version", GM_runtime_version);
+        c(_session_id, "timezone_local", timezone_local);
+        c(_session_id, "timezone_utc", timezone_utc);
         c(_session_id, "os_windows", os_windows);
         c(_session_id, "os_macosx", os_macosx);
         c(_session_id, "os_ios", os_ios);
