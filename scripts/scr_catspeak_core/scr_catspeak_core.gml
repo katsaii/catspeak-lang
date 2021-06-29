@@ -268,11 +268,14 @@ function __CatspeakScanner(_buff) constructor {
             lexeme = "";
             return;
         }
-        var slice = buffer_create(lexemeLength, buffer_fixed, 1);
-        buffer_copy(buff, buffer_tell(buff) - lexemeLength, lexemeLength, slice, 0);
-        buffer_seek(slice, buffer_seek_start, 0);
-        lexeme = buffer_read(slice, buffer_text);
-        buffer_delete(slice);
+        var buff_ = buff;
+        var pos = buffer_tell(buff_);
+        var byte = buffer_peek(buff_, pos, buffer_u8);
+        buffer_poke(buff_, pos, buffer_u8, 0x00);
+        buffer_seek(buff_, buffer_seek_start, pos - lexemeLength);
+        lexeme = buffer_read(buff_, buffer_string);
+        buffer_seek(buff_, buffer_seek_relative, -1);
+        buffer_poke(buff_, pos, buffer_u8, byte);
     }
     /// @desc Resets the current lexeme.
     static clearLexeme = function() {
