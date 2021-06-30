@@ -132,6 +132,17 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([-3, 12, -33, 12], result);
 
+    // groupings
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+        a = (1 + (1 + 1))
+        b = : 1 + : 1 + 1
+        return [a, b]
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    catspeak_session_destroy(session);
+    __catspeak_ext_tests_assert_eq([3, 3], result);
+
     // data types
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
