@@ -21,4 +21,4 @@ Furthermore, Catspeak is implemented in GameMaker Language in order to be stable
 
 ## Installation
 
-The [releases](https://github.com/NuxiiGit/catspeak/releases) page offers a local GMS2 package that can be installed by dragging the file into the IDE. Only `scr_catspeak` is required in order for the library to be functional. However, additional scripts are included that extend parts of the library to support GML and JSON. Unit tests and examples are also included in order to verify the project is working correctly. If all the unit tests pass, a console message **"ALL CATSPEAK TESTS HAVE PASSED"** will be shown.
+See the [wiki page](https://github.com/NuxiiGit/catspeak-lang/wiki/Getting-Started#installing).
