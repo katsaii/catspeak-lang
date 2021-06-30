@@ -59,12 +59,12 @@ catspeak_session_create_process(configSession, function(_) {
 // heavy processing example
 processingSession = catspeak_session_create();
 catspeak_session_set_source(configSession, @'
-    set countdown 15000
+    countdown = 15000
     while countdown {
         if (countdown % 5000 == 0) {
             print countdown
         }
-        set countdown : countdown - 1
+        countdown = countdown - 1
     }
 ');
 catspeak_session_create_process(configSession, function(_) {

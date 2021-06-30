@@ -738,7 +738,7 @@ function __CatspeakScanner(_buff) constructor {
         case ord("~"):
             advanceWhile(__catspeak_byte_is_operator);
             registerLexeme();
-            return __CatspeakToken.COMPARISON;
+            return lexeme == "=" ? __CatspeakToken.SET : __CatspeakToken.COMPARISON;
         case ord("+"):
         case ord("-"):
             advanceWhile(__catspeak_byte_is_operator);
@@ -785,9 +785,6 @@ function __CatspeakScanner(_buff) constructor {
                 registerLexeme();
                 var keyword;
                 switch (lexeme) {
-                case "set":
-                    keyword = __CatspeakToken.SET;
-                    break;
                 case "if":
                     keyword = __CatspeakToken.IF;
                     break;
@@ -1167,9 +1164,6 @@ function __CatspeakCompiler(_lexer, _out) constructor {
         case __CatspeakCompilerState.STATEMENT:
             if (consume(__CatspeakToken.SEMICOLON)) {
                 // do nothing
-            } else if (consume(__CatspeakToken.SET)) {
-                pushState(__CatspeakCompilerState.SET_BEGIN);
-                pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.IF)) {
                 pushState(__CatspeakCompilerState.IF_BEGIN);
                 pushState(__CatspeakCompilerState.ARG);
@@ -1188,7 +1182,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushState(__CatspeakCompilerState.RETURN);
                 pushState(__CatspeakCompilerState.ARG);
             } else {
-                pushState(__CatspeakCompilerState.POP_VALUE);
+                pushState(__CatspeakCompilerState.SET_BEGIN);
                 pushState(__CatspeakCompilerState.EXPRESSION);
             }
             break;
@@ -1203,23 +1197,27 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             }
             break;
         case __CatspeakCompilerState.SET_BEGIN:
-            var top_pc = out.getCurrentSize() - 1;
-            var top_inst = out.getCode(top_pc);
-            switch (top_inst.code) {
-            case __CatspeakOpCode.VAR_GET:
-                pushStorage(__CatspeakOpCode.VAR_SET);
-                break;
-            case __CatspeakOpCode.REF_GET:
-                pushStorage(__CatspeakOpCode.REF_SET);
-                break;
-            default:
-                error("invalid assignment target");
-                break;
+            if (consume(__CatspeakToken.SET)) {
+                var top_pc = out.getCurrentSize() - 1;
+                var top_inst = out.getCode(top_pc);
+                switch (top_inst.code) {
+                case __CatspeakOpCode.VAR_GET:
+                    pushStorage(__CatspeakOpCode.VAR_SET);
+                    break;
+                case __CatspeakOpCode.REF_GET:
+                    pushStorage(__CatspeakOpCode.REF_SET);
+                    break;
+                default:
+                    error("invalid assignment target");
+                    break;
+                }
+                out.removeCode(top_pc);
+                pushStorage(top_inst.param);
+                pushState(__CatspeakCompilerState.SET_END);
+                pushState(__CatspeakCompilerState.EXPRESSION);
+            } else {
+                pushState(__CatspeakCompilerState.POP_VALUE);
             }
-            out.removeCode(top_pc);
-            pushStorage(top_inst.param);
-            pushState(__CatspeakCompilerState.SET_END);
-            pushState(__CatspeakCompilerState.ARG);
             break;
         case __CatspeakCompilerState.SET_END:
             expectsSemicolon("after assignment statements");

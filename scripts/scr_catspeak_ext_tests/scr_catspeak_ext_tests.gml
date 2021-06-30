@@ -67,7 +67,7 @@ try {
     // shared workspace
     var session = catspeak_session_create();
     catspeak_session_enable_shared_workspace(session, true);
-    catspeak_session_set_source(session, "set a 3");
+    catspeak_session_set_source(session, "a = 3");
     catspeak_session_create_process_eager(session);
     catspeak_session_set_source(session, "return a");
     var result = catspeak_session_create_process_eager(session);
@@ -79,7 +79,7 @@ try {
     catspeak_session_enable_global_access(session, true);
     catspeak_session_add_constant(session, "global", global);
     catspeak_session_set_source(session, @'
-        set global.result : "secret message"
+        global.result = "secret message"
     ');
     catspeak_session_create_process_eager(session);
     catspeak_session_destroy(session);
@@ -100,8 +100,8 @@ try {
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, @'
-        set var 3
-        set var2 var
+        var = 3
+        var2 = var
         return [var, var2]
     ');
     var result = catspeak_session_create_process_eager(session);
@@ -122,10 +122,10 @@ try {
     var session = catspeak_session_create();
     catspeak_ext_session_add_gml_maths(session);
     catspeak_session_set_source(session, @'
-        set a : -3
-        set b : 12
-        set c : a * b + -a
-        set d : max a b c
+        a = -3
+        b = 12
+        c = a * b + -a
+        d = max a b c
         return [a, b, c, d]
     ');
     var result = catspeak_session_create_process_eager(session);
@@ -162,14 +162,14 @@ try {
     // if statements
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-        set a 3
-        set b 5
+        a = 3
+        b = 5
         if (a > b) {
-            set c "greater"
+            c = "greater"
         } else if (a < b) {
-            set c "less"
+            c = "less"
         } else {
-            set c "equal"
+            c = "equal"
         }
         return c
     ');
@@ -184,11 +184,11 @@ try {
         n += 1;
     }));
     catspeak_session_set_source(session, @'
-        set count 0
-        set limit 10
+        count = 0
+        limit = 10
         while (count < limit) {
             run register_count
-            set count : count + 1
+            count = count + 1
         }
         return count
     ');
@@ -223,9 +223,9 @@ try {
         throw "failed to continue outside of loop " + string(_number);
     });
     catspeak_session_set_source(session, @'
-        set count 10
+        count = 10
         while (count > 0) {
-            set count : count - 1
+            count = count - 1
             while true {
                 continue 2
                 failure 1
