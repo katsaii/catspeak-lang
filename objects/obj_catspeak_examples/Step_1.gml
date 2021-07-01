@@ -1,2 +1,2 @@
 /// @desc Keep track of the frame start time.
-frameStartTime = get_timer();
+catspeak_start_frame();

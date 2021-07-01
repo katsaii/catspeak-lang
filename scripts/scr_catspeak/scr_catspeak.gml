@@ -18,7 +18,8 @@ function __catspeak_manager() {
         errorScript : undefined,
         maxIterations : -1,
         frameAllocation : 0.5, // compute for 50% of frame time
-        frameThreshold : 1 // do not surpass 1 frame when processing
+        frameThreshold : 1, // do not surpass 1 frame when processing
+        frameStartTime : 0
     };
     return catspeak;
 }
@@ -65,17 +66,20 @@ function __catspeak_next_runtime_process() {
     }
 }
 
+/// @desc Updates the time limit for updating Catspeak processes.
+function catspeak_start_frame() {
+    var catspeak = __catspeak_manager();
+    catspeak.frameStartTime = get_timer();
+}
+
 /// @desc Updates the catspeak manager.
-/// @param {real} frame_start The time (in microseconds) when the frame started.
-function catspeak_update(_frame_start) {
+function catspeak_update() {
     var catspeak = __catspeak_manager();
     // update active processes
     var frame_time = catspeak.frameThreshold * game_get_speed(gamespeed_microseconds);
-    var time_limit = min(_frame_start + frame_time,
+    var time_limit = min(catspeak.frameStartTime + frame_time,
             get_timer() + catspeak.frameAllocation * frame_time);
     var runtime_processes = catspeak.runtimeProcesses;
-    var compiler_processes = catspeak.compilerProcesses;
-    var max_iteration_count = catspeak.maxIterations;
     do {
         var compiler_process = catspeak.compilerProcessCurrent;
         if (compiler_process != undefined) {
