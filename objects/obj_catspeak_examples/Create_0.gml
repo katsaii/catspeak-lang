@@ -1,9 +1,7 @@
 /// @desc Initialise examples.
-frameStartTime = 0;
-show_debug_overlay(true);
 catspeak_set_frame_allocation(0.5); // compute for 50% of the frame if possible
 catspeak_set_frame_threshold(0.75); // do not surpass 75% of the current frame
-// JSON session
+// parsing JSON using Catspeak
 jsonObj = catspeak_ext_json_parse(@'
     {
         "glossary": {
@@ -58,7 +56,7 @@ catspeak_session_create_process(configSession, function(_) {
 });
 // heavy processing example
 processingSession = catspeak_session_create();
-catspeak_session_set_source(configSession, @'
+catspeak_session_set_source(processingSession, @'
     countdown = 15000
     while countdown {
         if (countdown % 5000 == 0) {
@@ -67,6 +65,6 @@ catspeak_session_set_source(configSession, @'
         countdown = countdown - 1
     }
 ');
-catspeak_session_create_process(configSession, function(_) {
+catspeak_session_create_process(processingSession, function(_) {
     show_message("countdown complete!");
 });

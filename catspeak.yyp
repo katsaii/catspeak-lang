@@ -1,5 +1,6 @@
 {
   "resources": [
+    {"id":{"name":"obj_catspeak","path":"objects/obj_catspeak/obj_catspeak.yy",},"order":17,},
     {"id":{"name":"obj_catspeak_examples","path":"objects/obj_catspeak_examples/obj_catspeak_examples.yy",},"order":15,},
     {"id":{"name":"scr_catspeak_ext_gml","path":"scripts/scr_catspeak_ext_gml/scr_catspeak_ext_gml.yy",},"order":2,},
     {"id":{"name":"scr_catspeak","path":"scripts/scr_catspeak/scr_catspeak.yy",},"order":13,},
