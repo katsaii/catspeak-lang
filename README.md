@@ -23,4 +23,4 @@ See the [wiki page](https://github.com/NuxiiGit/catspeak-lang/wiki/Getting-Start
 
 # Acknowledgements
 
-Thanks to @JujuAdams for giving feedback on aspects of the implementation.
+Thanks to [@JujuAdams](https://www.jujuadams.com/) for giving feedback on aspects of the implementation.
