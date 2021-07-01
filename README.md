@@ -20,3 +20,7 @@ Custom operators and functions are exposed to the Catspeak virtual machine under
 ## Installation
 
 See the [wiki page](https://github.com/NuxiiGit/catspeak-lang/wiki/Getting-Started#installing).
+
+# Acknowledgements
+
+Thanks to @JujuAdams for giving feedback on aspects of the implementation.
