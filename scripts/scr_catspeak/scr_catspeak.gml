@@ -60,7 +60,7 @@ function __catspeak_kill_runtime_process(_process_id) {
 function __catspeak_next_runtime_process() {
     var catspeak = __catspeak_manager();
     if (catspeak.runtimeProcessID < 1) {
-        catspeak.runtimeProcessID = catspeak.runtimeProcessCount - 1;
+        catspeak.runtimeProcessID = max(catspeak.runtimeProcessCount - 1, 0);
     } else {
         catspeak.runtimeProcessID -= 1;
     }
