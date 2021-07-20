@@ -7,7 +7,7 @@ Catspeak is a small, dynamically typed domain-specific scripting language for [G
 The language is entirely customisable, with only a few primitive constructs. These include:
 
  - Support for strings (`"hello world"`) and numerical values (`12.5`)
- - Support for array (`[1, 2, 3]`) and object (`{ a : "this is a", b : "this is b" }`) literals
+ - Support for array (`[1, 2, 3]`) and object (`{ .a : "this is a", .b : "this is b" }`) literals
  - Groupings of expressions using parenthesis, or the use of the unary grouping operator `:`
  - Variable assignment using the `=` operator
  - Control-flow statements such as `if`, `while`, `break`, and `continue`
