@@ -968,6 +968,8 @@ enum __CatspeakCompilerState {
     IF_END,
     WHILE_BEGIN,
     WHILE_END,
+    FOR_BEGIN,
+    FOR_END,
     BREAK,
     CONTINUE,
     PRINT,
@@ -1004,6 +1006,8 @@ function __catspeak_compiler_state_render(_state) {
     case __CatspeakCompilerState.IF_END: return "IF_END";
     case __CatspeakCompilerState.WHILE_BEGIN: return "WHILE_BEGIN";
     case __CatspeakCompilerState.WHILE_END: return "WHILE_END";
+    case __CatspeakCompilerState.FOR_BEGIN: return "FOR_BEGIN";
+    case __CatspeakCompilerState.FOR_END: return "FOR_END";
     case __CatspeakCompilerState.BREAK: return "BREAK";
     case __CatspeakCompilerState.CONTINUE: return "CONTINUE";
     case __CatspeakCompilerState.PRINT: return "PRINT";
@@ -1180,6 +1184,9 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushLoop();
                 pushState(__CatspeakCompilerState.WHILE_BEGIN);
                 pushState(__CatspeakCompilerState.ARG);
+            } else if (consume(__CatspeakToken.FOR)) {
+                pushState(__CatspeakCompilerState.FOR_BEGIN);
+                pushState(__CatspeakCompilerState.ARG);
             } else if (consume(__CatspeakToken.BREAK)) {
                 pushState(__CatspeakCompilerState.BREAK);
             } else if (consume(__CatspeakToken.CONTINUE)) {
@@ -1274,6 +1281,38 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 out.getCode(break_pc).param = end_pc;
             }
             popLoop();
+            break;
+        case __CatspeakCompilerState.FOR_BEGIN:
+            expects(__CatspeakToken.SET, "expected `=` symbol between elements of for-loop");
+            expects(__CatspeakToken.IDENTIFIER, "expected a valid identifier after `=` symbol in for-loop");
+            var value_ident = lexeme;
+            var top_pc = out.getCurrentSize() - 1;
+            var top_inst = out.getCode(top_pc);
+            out.removeCode(top_pc);
+            if (top_inst.code != __CatspeakOpCode.REF_GET) {
+                error("invalid iterator target");
+            }
+            var key_pc = top_pc - 1;
+            var key_inst = out.getCode(key_pc);
+            out.removeCode(key_pc - 1);
+            if (key_inst.code != __CatspeakOpCode.VAR_GET) {
+                error("expected a valid identifier for iterator key");
+            }
+            var key_ident = key_inst.param;
+            out.addCode(pos, __CatspeakOpCode.MAKE_ITERATOR, {
+                key : key_ident,
+                value : value_ident,
+                unordered : top_inst.unordered,
+            });
+            pushLoop();
+            out.addCode(pos, __CatspeakOpCode.UPDATE_ITERATOR);
+            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP_FALSE, undefined));
+            pushState(__CatspeakCompilerState.FOR_END);
+            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+            break;
+        case __CatspeakCompilerState.FOR_END:
+            popLoop();
+            error("unimplemented for");
             break;
         case __CatspeakCompilerState.BREAK:
             var loop_depth = 1;
@@ -1509,6 +1548,8 @@ enum __CatspeakOpCode {
     REF_SET,
     MAKE_ARRAY,
     MAKE_OBJECT,
+    MAKE_ITERATOR,
+    UPDATE_ITERATOR,
     PRINT,
     RETURN,
     RETURN_IMPLICIT,
@@ -1529,6 +1570,8 @@ function __catspeak_code_render(_kind) {
     case __CatspeakOpCode.REF_SET: return "REF_SET";
     case __CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
     case __CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
+    case __CatspeakOpCode.MAKE_ITERATOR: return "MAKE_ITERATOR";
+    case __CatspeakOpCode.UPDATE_ITERATOR: return "UPDATE_ITERATOR";
     case __CatspeakOpCode.PRINT: return "PRINT";
     case __CatspeakOpCode.RETURN: return "RETURN";
     case __CatspeakOpCode.RETURN_IMPLICIT: return "RETURN_IMPLICIT";
@@ -1809,6 +1852,12 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             var size = inst.param;
             var container = popManyKWArgs(size);
             push(container);
+            break;
+        case __CatspeakOpCode.MAKE_ITERATOR:
+            error("unimplemented");
+            break;
+        case __CatspeakOpCode.UPDATE_ITERATOR:
+            error("unimplemented 2");
             break;
         case __CatspeakOpCode.PRINT:
             var value = pop();
