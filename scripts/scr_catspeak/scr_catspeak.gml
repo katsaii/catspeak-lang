@@ -1085,9 +1085,18 @@ function __CatspeakCompiler(_lexer, _out) constructor {
         return loopStack[loopDepth - _n];
     }
     /// @desc Pops the top loop frame from the loop stack.
-    static popLoop = function() {
+    /// @param {real} break_pc The program counter to direct all breaks to.
+    static popLoop = function(_break_pc) {
+        var loop_current = getLoop(1);
+        var start_pc = loop_current.pc;
+        var breaks = loop_current.breaks;
+        for (var i = array_length(breaks) - 1; i >= 0; i -= 1) {
+            var break_pc = breaks[i];
+            out.getCode(break_pc).param = _break_pc;
+        }
         loopDepth -= 1;
         array_pop(loopStack);
+        return start_pc;
     }
     /// @desc Returns the current buffer position.
     static getPosition = function() {
@@ -1270,17 +1279,11 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             break;
         case __CatspeakCompilerState.WHILE_END:
             var jump_false_pc = popStorage();
-            var loop_current = getLoop(1);
-            var start_pc = loop_current.pc;
-            var breaks = loop_current.breaks;
-            out.addCode(pos, __CatspeakOpCode.JUMP, start_pc);
+            var jump_end_pc = out.addCode(pos, __CatspeakOpCode.JUMP, undefined);
             var end_pc = out.getCurrentSize();
+            var start_pc = popLoop(end_pc);
             out.getCode(jump_false_pc).param = end_pc;
-            for (var i = array_length(breaks) - 1; i >= 0; i -= 1) {
-                var break_pc = breaks[i];
-                out.getCode(break_pc).param = end_pc;
-            }
-            popLoop();
+            out.getCode(jump_end_pc).param = start_pc;
             break;
         case __CatspeakCompilerState.FOR_BEGIN:
             expects(__CatspeakToken.SET, "expected `=` symbol between elements of for-loop");
@@ -1311,7 +1314,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
             break;
         case __CatspeakCompilerState.FOR_END:
-            popLoop();
+            //popLoop();
             error("unimplemented for");
             break;
         case __CatspeakCompilerState.BREAK:
