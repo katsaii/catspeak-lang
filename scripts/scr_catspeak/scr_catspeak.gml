@@ -401,6 +401,7 @@ enum __CatspeakToken {
     IF,
     ELSE,
     WHILE,
+    FOR,
     PRINT,
     RUN,
     BREAK,
@@ -443,6 +444,7 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.IF: return "IF";
     case __CatspeakToken.ELSE: return "ELSE";
     case __CatspeakToken.WHILE: return "WHILE";
+    case __CatspeakToken.FOR: return "FOR";
     case __CatspeakToken.PRINT: return "PRINT";
     case __CatspeakToken.RUN: return "RUN";
     case __CatspeakToken.BREAK: return "BREAK";
@@ -797,6 +799,9 @@ function __CatspeakScanner(_buff) constructor {
                     break;
                 case "while":
                     keyword = __CatspeakToken.WHILE;
+                    break;
+                case "for":
+                    keyword = __CatspeakToken.FOR;
                     break;
                 case "print":
                     keyword = __CatspeakToken.PRINT;
