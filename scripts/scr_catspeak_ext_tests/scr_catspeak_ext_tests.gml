@@ -272,6 +272,13 @@ try {
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Objs"][$ "y"], json_obj[$ "Objs"][$ "y"]);
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Lits"], json_obj[$ "Lits"]);
 
+    var session = catspeak_session_create();
+    catspeak_session_enable_implicit_return(session, true);
+    catspeak_session_set_source(session, "1+2+4+8^1+2+4+8*4");
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, (1 + 2 + 4 + 8) ^ (1 + 2 + 4 + (8 * 4)));
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
