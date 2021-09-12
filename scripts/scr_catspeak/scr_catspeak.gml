@@ -1307,13 +1307,15 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 error("expected a valid identifier for iterator key");
             }
             var key_ident = key_inst.param;
+            var idx = string(pos)
             out.addCode(pos, __CatspeakOpCode.MAKE_ITERATOR, {
                 key : key_ident,
                 value : value_ident,
                 unordered : top_inst.param,
+                idx : idx,
             });
             pushLoop();
-            out.addCode(pos, __CatspeakOpCode.UPDATE_ITERATOR);
+            out.addCode(pos, __CatspeakOpCode.UPDATE_ITERATOR, idx);
             pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP_FALSE, undefined));
             pushState(__CatspeakCompilerState.FOR_END);
             pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
@@ -1661,12 +1663,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     stackLimit = 8;
     stackSize = 0;
     stack = array_create(stackLimit);
-    forContainer = undefined;
-    forUnordered = false;
-    forKey = "";
-    forValue = "";
-    forIndex = 0;
-    forIndices = undefined;
+    iterators = { };
     exposeGlobalScope = is_numeric(_global_access) && _global_access;
     exposeInstanceScope = is_numeric(_instance_access) && _instance_access;
     implicitReturn = is_numeric(_implicit_return) && _implicit_return;
@@ -1880,26 +1877,28 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             var options = inst.param;
             var container = pop();
             var unordered = options.unordered;
-            forContainer = container;
-            forUnordered = unordered;
-            forKey = options.key;
-            forValue = options.value;
-            forIndex = 0;
-            if (unordered) {
-                forIndices = __catspeak_get_unordered_collection_keys(container);
-            }
+            iterators[$ options.idx] = {
+                container : container,
+                unordered : unordered,
+                key : options.key,
+                value : options.value,
+                subscript : 0,
+                indices : unordered ? __catspeak_get_unordered_collection_keys(container) : undefined,
+            };
             break;
         case __CatspeakOpCode.UPDATE_ITERATOR:
-            var container = forContainer;
-            var unordered = forUnordered;
-            var subscript = forIndex;
-            forIndex += 1;
+            var iterator = iterators[$ inst.param];
+            var container = iterator.container;
+            var unordered = iterator.unordered;
+            var subscript = iterator.subscript;
+            var indices = iterator.indices;
+            iterator.subscript += 1;
             if (unordered) {
-                if (subscript >= array_length(forIndices)) {
+                if (subscript >= array_length(indices)) {
                     push(false);
                     break;
                 }
-                subscript = forIndices[subscript];
+                subscript = indices[subscript];
             } else {
                 if (subscript >= __catspeak_get_ordered_collection_length(container)) {
                     push(false);
@@ -1907,8 +1906,8 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 }
             }
             var value = getIndex(container, subscript, unordered);
-            setVariable(forKey, subscript);
-            setVariable(forValue, value);
+            setVariable(iterator.key, subscript);
+            setVariable(iterator.value, value);
             push(true);
             break;
         case __CatspeakOpCode.PRINT:
