@@ -1297,7 +1297,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             }
             var key_pc = top_pc - 1;
             var key_inst = out.getCode(key_pc);
-            out.removeCode(key_pc - 1);
+            out.removeCode(key_pc);
             if (key_inst.code != __CatspeakOpCode.VAR_GET) {
                 error("expected a valid identifier for iterator key");
             }
@@ -1305,7 +1305,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             out.addCode(pos, __CatspeakOpCode.MAKE_ITERATOR, {
                 key : key_ident,
                 value : value_ident,
-                unordered : top_inst.unordered,
+                unordered : top_inst.param,
             });
             pushLoop();
             out.addCode(pos, __CatspeakOpCode.UPDATE_ITERATOR);
@@ -1880,7 +1880,26 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             }
             break;
         case __CatspeakOpCode.UPDATE_ITERATOR:
-            error("unimplemented 2");
+            var container = forContainer;
+            var unordered = forUnordered;
+            var subscript = forIndex;
+            forIndex += 1;
+            if (unordered) {
+                if (subscript >= array_length(forIndices)) {
+                    push(false);
+                    break;
+                }
+                subscript = forIndices[subscript];
+            } else {
+                if (is_array(container) && subscript >= array_length(container)) {
+                    push(false);
+                    break;
+                }
+            }
+            var value = getIndex(container, subscript, unordered);
+            setVariable(forKey, subscript);
+            setVariable(forValue, value);
+            push(true);
             break;
         case __CatspeakOpCode.PRINT:
             var value = pop();

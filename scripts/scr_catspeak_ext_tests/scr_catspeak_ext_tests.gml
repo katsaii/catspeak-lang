@@ -272,11 +272,38 @@ try {
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Objs"][$ "y"], json_obj[$ "Objs"][$ "y"]);
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Lits"], json_obj[$ "Lits"]);
 
+    // arithmetic
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, "1+2+4+8^1+2+4+8*4");
     var result = catspeak_session_create_process_eager(session);
     __catspeak_ext_tests_assert_eq(result, (1 + 2 + 4 + 8) ^ (1 + 2 + 4 + (8 * 4)));
+    catspeak_session_destroy(session);
+
+    // for loops
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    iter = [1, 2, 3]
+    for iter.[i] = value {
+        iter.[i] = value * 2
+    }
+    return iter
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, [1 * 2, 2 * 2, 3 *2]);
+    catspeak_session_destroy(session);
+
+    // for loops over structs
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    iter = { .a 1, .b 2, .c 3 }
+    for iter.{key} = value {
+        iter.{key} = key ++ " " ++ value
+    }
+    return [iter.a, iter.b, iter.c]
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, ["a 1", "b 2", "c 3"]);
     catspeak_session_destroy(session);
 
     // success
