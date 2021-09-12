@@ -197,6 +197,8 @@ function catspeak_session_create() {
     f(pos, "string", function(_x) { return is_string(_x) ? _x : string(_x); });
     f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
     f(pos, "typeof", function(_x) { return typeof(_x); });
+    //f(pos, "get_length", __catspeak_get_ordered_collection_length);
+    //f(pos, "get_fields", __catspeak_get_unordered_collection_keys);
     c(pos, "undefined", undefined);
     c(pos, "true", true);
     c(pos, "false", false);
@@ -1728,7 +1730,9 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     /// @desc Gets a variable in the current context.
     /// @param {string} name The name of the variable to add.
     static getVariable = function(_name) {
-        if (variable_struct_exists(binding, _name)) {
+        if (_name == "_") {
+            return undefined;
+        } else if (variable_struct_exists(binding, _name)) {
             return binding[$ _name];
         } else if (variable_struct_exists(interface, _name)) {
             return interface[$ _name];
@@ -1882,7 +1886,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             forValue = options.value;
             forIndex = 0;
             if (unordered) {
-                forIndices = variable_struct_get_names(container);
+                forIndices = __catspeak_get_unordered_collection_keys(container);
             }
             break;
         case __CatspeakOpCode.UPDATE_ITERATOR:
@@ -1897,7 +1901,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 }
                 subscript = forIndices[subscript];
             } else {
-                if (is_array(container) && subscript >= array_length(container)) {
+                if (subscript >= __catspeak_get_ordered_collection_length(container)) {
                     push(false);
                     break;
                 }
@@ -1993,4 +1997,42 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
         error("argument count of " + string(array_length(_a)) + " is not supported");
         return undefined;
     }
+}
+
+/// @desc Attempts to get the length of an ordered container.
+/// @param {value} container The container to index.
+function __catspeak_get_unordered_collection_keys(_container) {
+    var ty = typeof(_container);
+    switch (ty) {
+    case "struct":
+        return variable_struct_get_names(_container);
+    case "number":
+    case "bool":
+    case "int32":
+    case "int64":
+        if (instance_exists(_container)) {
+            return variable_instance_get_names(_container);
+        } else if (ds_exists(_container, ds_type_map)) {
+            return ds_map_keys_to_array(_container);
+        }
+    }
+    return [];
+}
+
+/// @desc Attempts to get the length of an ordered container.
+/// @param {value} container The container to index.
+function __catspeak_get_ordered_collection_length(_container) {
+    var ty = typeof(_container);
+    switch (ty) {
+    case "array":
+        return array_length(_container);
+    case "number":
+    case "bool":
+    case "int32":
+    case "int64":
+        if (ds_exists(_container, ds_type_list)) {
+            return ds_list_size(_container);
+        }
+    }
+    return -1;
 }
