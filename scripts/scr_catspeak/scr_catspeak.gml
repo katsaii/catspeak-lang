@@ -1720,6 +1720,9 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     /// @param {string} name The name of the variable to add.
     /// @param {value} value The value to assign.
     static setVariable = function(_name, _value) {
+        if (_name == "_") {
+            return;
+        }
         binding[$ _name] = _value;
     }
     /// @desc Gets a variable in the current context.
