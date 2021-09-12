@@ -1656,6 +1656,12 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     stackLimit = 8;
     stackSize = 0;
     stack = array_create(stackLimit);
+    forContainer = undefined;
+    forUnordered = false;
+    forKey = "";
+    forValue = "";
+    forIndex = 0;
+    forIndices = undefined;
     exposeGlobalScope = is_numeric(_global_access) && _global_access;
     exposeInstanceScope = is_numeric(_instance_access) && _instance_access;
     implicitReturn = is_numeric(_implicit_return) && _implicit_return;
@@ -1861,7 +1867,17 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             push(container);
             break;
         case __CatspeakOpCode.MAKE_ITERATOR:
-            error("unimplemented");
+            var options = inst.param;
+            var container = pop();
+            var unordered = options.unordered;
+            forContainer = container;
+            forUnordered = unordered;
+            forKey = options.key;
+            forValue = options.value;
+            forIndex = 0;
+            if (unordered) {
+                forIndices = variable_struct_get_names(container);
+            }
             break;
         case __CatspeakOpCode.UPDATE_ITERATOR:
             error("unimplemented 2");
