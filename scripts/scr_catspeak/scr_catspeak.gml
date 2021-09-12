@@ -193,7 +193,10 @@ function catspeak_session_create() {
     f(pos, "<=", function(_l, _r) { return _l <= _r; });
     f(pos, ">", function(_l, _r) { return _l > _r; });
     f(pos, "<", function(_l, _r) { return _l < _r; });
-    f(pos, "!!", function(_x) { return is_numeric(_x) && _x; });
+    f(pos, "bool", function(_x) { return is_numeric(_x) && _x; });
+    f(pos, "string", function(_x) { return is_string(_x) ? _x : string(_x); });
+    f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
+    f(pos, "typeof", function(_x) { return typeof(_x); });
     c(pos, "undefined", undefined);
     c(pos, "true", true);
     c(pos, "false", false);

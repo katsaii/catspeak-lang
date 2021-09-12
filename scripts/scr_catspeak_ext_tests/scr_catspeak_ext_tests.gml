@@ -298,12 +298,15 @@ try {
     catspeak_session_set_source(session, @'
     iter = { .a 1, .b 2, .c 3 }
     for iter.{key} = value {
+        if (typeof key == "string" && key == "c") {
+            break
+        }
         iter.{key} = key ++ " " ++ value
     }
     return [iter.a, iter.b, iter.c]
     ');
     var result = catspeak_session_create_process_eager(session);
-    __catspeak_ext_tests_assert_eq(result, ["a 1", "b 2", "c 3"]);
+    __catspeak_ext_tests_assert_eq(result, ["a 1", "b 2", 3]);
     catspeak_session_destroy(session);
 
     // success

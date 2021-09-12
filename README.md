@@ -10,7 +10,7 @@ The language is entirely customisable, with only a few primitive constructs. The
  - Support for array (`[1, 2, 3]`) and object (`{ .a : "this is a", .b : "this is b" }`) literals
  - Groupings of expressions using parenthesis, or the use of the unary grouping operator `:`
  - Variable assignment using the `=` operator
- - Control-flow statements such as `if`, `while`, `break`, and `continue`
+ - Control-flow statements such as `if`, `while`, `for`, `break`, and `continue`
  - Return values using the `return` keyword
  - Call GameMaker functions using the `run` keyword or by passing parameters in a Lisp-style `f arg1 arg2 arg3 ...`
  - Access elements of collections using ordered (`a.[i]`) and unordered (`a.{"key"}` or `a.key`) index operators
