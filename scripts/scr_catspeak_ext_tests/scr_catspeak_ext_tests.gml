@@ -353,6 +353,27 @@ try {
     __catspeak_ext_tests_assert_eq(result, 3 * 2);
     catspeak_session_destroy(session);
 
+    // get field data
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    struct = { .a 1, .b 2, .c 3 }
+    return : get_fields struct
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    array_sort(result, true);
+    __catspeak_ext_tests_assert_eq(result, ["a", "b", "c"]);
+    catspeak_session_destroy(session);
+
+    // get array length
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    array = [0, 0, 0, 0, 0,]
+    return : get_length array
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, 5);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
