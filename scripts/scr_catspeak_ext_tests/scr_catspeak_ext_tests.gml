@@ -335,6 +335,24 @@ try {
     __catspeak_ext_tests_assert_eq(result, 0 + 1 + 2 + 3 + 4 + 5);
     catspeak_session_destroy(session);
 
+    // nested for loops
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    for [1, 2].[_] = outer {
+        for [3, 4].[_] = inner {
+            if (outer == 1) {
+                continue 2
+            }
+            result = inner * outer
+            break 2
+        }
+    }
+    return result
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, 3 * 2);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
