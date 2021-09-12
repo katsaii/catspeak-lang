@@ -1314,8 +1314,12 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
             break;
         case __CatspeakCompilerState.FOR_END:
-            //popLoop();
-            error("unimplemented for");
+            var jump_false_pc = popStorage();
+            var jump_end_pc = out.addCode(pos, __CatspeakOpCode.JUMP, undefined);
+            var end_pc = out.getCurrentSize();
+            var start_pc = popLoop(end_pc);
+            out.getCode(jump_false_pc).param = end_pc;
+            out.getCode(jump_end_pc).param = start_pc;
             break;
         case __CatspeakCompilerState.BREAK:
             var loop_depth = 1;
