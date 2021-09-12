@@ -197,8 +197,8 @@ function catspeak_session_create() {
     f(pos, "string", function(_x) { return is_string(_x) ? _x : string(_x); });
     f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
     f(pos, "typeof", function(_x) { return typeof(_x); });
-    //f(pos, "get_length", __catspeak_get_ordered_collection_length);
-    //f(pos, "get_fields", __catspeak_get_unordered_collection_keys);
+    f(pos, "get_length", __catspeak_get_ordered_collection_length);
+    f(pos, "get_fields", __catspeak_get_unordered_collection_keys);
     c(pos, "undefined", undefined);
     c(pos, "true", true);
     c(pos, "false", false);
@@ -2002,14 +2002,9 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
 /// @desc Attempts to get the length of an ordered container.
 /// @param {value} container The container to index.
 function __catspeak_get_unordered_collection_keys(_container) {
-    var ty = typeof(_container);
-    switch (ty) {
-    case "struct":
+    if (is_struct(_container)) {
         return variable_struct_get_names(_container);
-    case "number":
-    case "bool":
-    case "int32":
-    case "int64":
+    } else if (is_numeric(_container)) {
         if (instance_exists(_container)) {
             return variable_instance_get_names(_container);
         } else if (ds_exists(_container, ds_type_map)) {
@@ -2022,14 +2017,9 @@ function __catspeak_get_unordered_collection_keys(_container) {
 /// @desc Attempts to get the length of an ordered container.
 /// @param {value} container The container to index.
 function __catspeak_get_ordered_collection_length(_container) {
-    var ty = typeof(_container);
-    switch (ty) {
-    case "array":
+    if (is_array(_container)) {
         return array_length(_container);
-    case "number":
-    case "bool":
-    case "int32":
-    case "int64":
+    } else if (is_numeric(_container)) {
         if (ds_exists(_container, ds_type_list)) {
             return ds_list_size(_container);
         }

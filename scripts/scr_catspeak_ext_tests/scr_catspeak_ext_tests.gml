@@ -299,7 +299,7 @@ try {
     iter = { .a 1, .b 2, .c 3 }
     for iter.{key} = value {
         if (typeof key == "string" && key == "c") {
-            break
+            continue
         }
         iter.{key} = key ++ " " ++ value
     }
