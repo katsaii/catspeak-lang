@@ -312,13 +312,14 @@ function catspeak_session_add_function(_session_id, _name, _value) {
 /// @desc Spawns a process from this session.
 /// @param {real} session_id The ID of the session to spawn a process for.
 /// @param {script} script_id_or_method The id of the script to execute upon completing the process.
-function catspeak_session_create_process(_session_id, _callback_return) {
+/// @param {array} args The arguments to pass to the process.
+function catspeak_session_create_process(_session_id, _callback_return, _args=[]) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
     var chunk = session.compilerProcess == undefined ? __catspeak_default_chunk() : session.compilerProcess.chunk;
     var runtime = new __CatspeakVM(chunk, catspeak.maxIterations, session.globalAccess,
             session.instanceAccess, session.implicitReturn, session.interface,
-            session.sharedWorkspace, _callback_return);
+            session.sharedWorkspace, _callback_return, _args);
     var runtime_process = {
         runtime : runtime
     };
@@ -328,7 +329,8 @@ function catspeak_session_create_process(_session_id, _callback_return) {
 
 /// @desc Spawns a process from this session which is evaluated immediately.
 /// @param {real} session_id The ID of the session to spawn a process for.
-function catspeak_session_create_process_eager(_session_id) {
+/// @param {array} args The arguments to pass to the process.
+function catspeak_session_create_process_eager(_session_id, _args=[]) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
     var chunk;
@@ -352,7 +354,7 @@ function catspeak_session_create_process_eager(_session_id) {
             session.instanceAccess, session.implicitReturn, session.interface,
             session.sharedWorkspace, method(result, function(_value) {
                 value = _value;
-            }));
+            }), _args);
     try {
         while (runtime.inProgress()) {
             runtime.computeProgram();
@@ -1773,9 +1775,10 @@ function __CatspeakVMFunction(_data) constructor {
     __data = _data;
     /// @desc Spawns a new VM process and returns it.
     /// @param {method} method_or_script_id The script to call to handle returned values.
-    static spawnVM = function(_return_script) {
+    /// @param {array} args The arguments to pass to the process.
+    static spawnVM = function(_return_script, _args) {
         var vm = new __CatspeakVM(__data.chunk, -1, __data.exposeGlobalScope, __data.exposeInstanceScope,
-                __data.implicitReturn, __data.interface, __data.workspace, _return_script);
+                __data.implicitReturn, __data.interface, __data.workspace, _return_script, _args);
         // sneakily set additional values
         vm.pc = __data.pc;
         return vm;
@@ -1791,8 +1794,9 @@ function __CatspeakVMFunction(_data) constructor {
 /// @param {struct} interface The variable interface to assign.
 /// @param {struct} workspace The variable workspace to assign.
 /// @param {bool} return_script The reference to the script that handles returned values.
+/// @param {array} args The arguments to pass to the process.
 function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
-        _implicit_return, _interface, _workspace, _return_script) constructor {
+        _implicit_return, _interface, _workspace, _return_script, _args) constructor {
     interface = is_struct(_interface) ? _interface : { };
     binding = is_struct(_workspace) ? _workspace : { };
     resultHandler = _return_script;
@@ -1806,6 +1810,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     stack = array_create(stackLimit);
     iterators = { };
     subprocess = undefined;
+    arguments = is_array(_args) ? _args : [_args];
     exposeGlobalScope = is_numeric(_global_access) && _global_access;
     exposeInstanceScope = is_numeric(_instance_access) && _instance_access;
     implicitReturn = is_numeric(_implicit_return) && _implicit_return;
@@ -2022,7 +2027,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             setIndex(container, subscript, unordered, value);
             break;
         case __CatspeakOpCode.ARG_GET:
-            push([]);
+            push(arguments);
             break;
         case __CatspeakOpCode.MAKE_ARRAY:
             var size = inst.param;
@@ -2053,7 +2058,11 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                         result = _result;
                     }
                 }, function() {
-                    var vm = f.spawnVM(callback);
+                    var args = array_create(argument_count);
+                    for (var i = argument_count - 1; i >= 0; i -= 1) {
+                        args[@ i] = argument[i];
+                    }
+                    var vm = f.spawnVM(callback, args);
                     while (vm.inProgress()) {
                         vm.computeProgram();
                     }
@@ -2141,7 +2150,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                     subprocess = callsite.spawnVM(function(_result) {
                         push(_result);
                         subprocess = undefined;
-                    });
+                    }, args);
                     break;
                 }
             default:
