@@ -194,7 +194,7 @@ function catspeak_session_create() {
     f(pos, ">", function(_l, _r) { return _l > _r; });
     f(pos, "<", function(_l, _r) { return _l < _r; });
     f(pos, "bool", function(_x) { return is_numeric(_x) && _x; });
-    f(pos, "string", function(_x) { return is_string(_x) ? _x : string(_x); });
+    f(pos, "string", function(_x) { return __catspeak_encode_value(_x); });
     f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
     f(pos, "typeof", function(_x) { return typeof(_x); });
     f(pos, "get_length", __catspeak_get_ordered_collection_length);
@@ -362,6 +362,82 @@ function catspeak_session_create_process_eager(_session_id) {
         return undefined;
     }
     return result.value;
+}
+
+
+
+/// @desc Attempts to get the length of an ordered container.
+/// @param {value} container The container to index.
+function __catspeak_get_unordered_collection_keys(_container) {
+    if (is_struct(_container)) {
+        return variable_struct_get_names(_container);
+    } else if (is_numeric(_container)) {
+        if (instance_exists(_container)) {
+            return variable_instance_get_names(_container);
+        } else if (ds_exists(_container, ds_type_map)) {
+            return ds_map_keys_to_array(_container);
+        }
+    }
+    return [];
+}
+
+/// @desc Attempts to get the length of an ordered container.
+/// @param {value} container The container to index.
+function __catspeak_get_ordered_collection_length(_container) {
+    if (is_array(_container)) {
+        return array_length(_container);
+    } else if (is_numeric(_container)) {
+        if (ds_exists(_container, ds_type_list)) {
+            return ds_list_size(_container);
+        }
+    }
+    return -1;
+}
+
+/// @desc Returns whether the identifier is a bottomless hole.
+/// @param {string} name The string to check.
+function __catspeak_identifier_is_valid_hole(_name) {
+    return is_string(_name) && string_byte_at(_name, 1) == ord("_");
+}
+
+/// @desc Displays this value in a Catspeak-compatible format.
+/// @param {value} value The value to encode.
+function __catspeak_encode_value(_value) {
+    if (is_string(_value)) {
+        return _value;
+    } else if (is_method(_value)) {
+        return "function";
+    } else if (is_array(_value) || is_vec3(_value) || is_vec4(_value)) {
+        var n = array_length(_value);
+        var inner = "";
+        for (var i = 0; i < n; i += 1) {
+            if (i != 0) {
+                inner += ", ";
+            }
+            inner += __catspeak_encode_value(_value[i]);
+        }
+        return "[" + inner + "]";
+    } else if (is_struct(_value)) {
+        var names = variable_struct_get_names(_value);
+        var inner = "";
+        var count = 0;
+        for (var i = array_length(names) - 1; i >= 0; i -= 1) {
+            var name = names[i];
+            if (__catspeak_identifier_is_valid_hole(name)) {
+                continue;
+            }
+            if (count != 0) {
+                inner += ", ";
+            } else {
+                inner += " ";
+            }
+            count += 1;
+            inner += name + " : " + __catspeak_encode_value(_value[$ name]);
+        }
+        return "{" + inner + " }";
+    } else {
+        return string(_value);
+    }
 }
 
 /* Catspeak Core Compiler
@@ -1711,7 +1787,10 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
         repeat (_n) {
             var value = pop();
             var key = pop();
-            values[$ string(key)] = value;
+            if (__catspeak_identifier_is_valid_hole(key)) {
+                continue;
+            }
+            values[$ __catspeak_encode_value(key)] = value;
         }
         return values;
     }
@@ -1747,7 +1826,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             switch (ty) {
             case "struct":
                 return __catspeak_identifier_is_valid_hole(_subscript) ?
-                        undefined : _container[$ string(_subscript)];
+                        undefined : _container[$ __catspeak_encode_value(_subscript)];
             case "number":
             case "bool":
             case "int32":
@@ -1790,7 +1869,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             switch (ty) {
             case "struct":
                 if not (__catspeak_identifier_is_valid_hole(_subscript)) {
-                    _container[$ string(_subscript)] = _value;
+                    _container[$ __catspeak_encode_value(_subscript)] = _value;
                 }
                 return;
             case "number":
@@ -1921,7 +2000,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             break;
         case __CatspeakOpCode.PRINT:
             var value = pop();
-            show_debug_message(value);
+            show_debug_message(__catspeak_encode_value(value));
             break;
         case __CatspeakOpCode.JUMP:
             var new_pc = inst.param;
@@ -2005,38 +2084,4 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
         error("argument count of " + string(array_length(_a)) + " is not supported");
         return undefined;
     }
-}
-
-/// @desc Attempts to get the length of an ordered container.
-/// @param {value} container The container to index.
-function __catspeak_get_unordered_collection_keys(_container) {
-    if (is_struct(_container)) {
-        return variable_struct_get_names(_container);
-    } else if (is_numeric(_container)) {
-        if (instance_exists(_container)) {
-            return variable_instance_get_names(_container);
-        } else if (ds_exists(_container, ds_type_map)) {
-            return ds_map_keys_to_array(_container);
-        }
-    }
-    return [];
-}
-
-/// @desc Attempts to get the length of an ordered container.
-/// @param {value} container The container to index.
-function __catspeak_get_ordered_collection_length(_container) {
-    if (is_array(_container)) {
-        return array_length(_container);
-    } else if (is_numeric(_container)) {
-        if (ds_exists(_container, ds_type_list)) {
-            return ds_list_size(_container);
-        }
-    }
-    return -1;
-}
-
-/// @desc Returns whether the identifier is a bottomless hole.
-/// @param {string} name The string to check.
-function __catspeak_identifier_is_valid_hole(_name) {
-    return is_string(_name) && string_byte_at(_name, 1) == ord("_");
 }
