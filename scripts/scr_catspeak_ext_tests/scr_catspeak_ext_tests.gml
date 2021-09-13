@@ -448,6 +448,22 @@ try {
     __catspeak_ext_tests_assert_eq(result, 1 + 3);
     catspeak_session_destroy(session);
 
+    // recursion
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    factorial = eager fun {
+        n = arg.[0]
+        if (n <= 1) {
+            return 1
+        }
+        return : n * factorial : n - 1
+    }
+    return factorial
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result(10), 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
