@@ -485,6 +485,7 @@ enum __CatspeakToken {
     FOR,
     FUN,
     EAGER,
+    ARG,
     PRINT,
     RUN,
     BREAK,
@@ -530,6 +531,7 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.FOR: return "FOR";
     case __CatspeakToken.FUN: return "FUN";
     case __CatspeakToken.EAGER: return "EAGER";
+    case __CatspeakToken.ARG: return "ARG";
     case __CatspeakToken.PRINT: return "PRINT";
     case __CatspeakToken.RUN: return "RUN";
     case __CatspeakToken.BREAK: return "BREAK";
@@ -891,8 +893,11 @@ function __CatspeakScanner(_buff) constructor {
                 case "fun":
                     keyword = __CatspeakToken.FUN;
                     break;
-                case "eager":
+                case "greedy":
                     keyword = __CatspeakToken.EAGER;
+                    break;
+                case "arg":
+                    keyword = __CatspeakToken.ARG;
                     break;
                 case "print":
                     keyword = __CatspeakToken.PRINT;
@@ -1459,8 +1464,17 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             out.addCode(pos, __CatspeakOpCode.POP);
             break;
         case __CatspeakCompilerState.EXPRESSION:
-            pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
-            pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            if (consume(__CatspeakToken.FUN)) {
+                pushStorage(false);
+                pushState(__CatspeakCompilerState.FUN_BEGIN);
+            } else if (consume(__CatspeakToken.EAGER)) {
+                expects(__CatspeakToken.FUN, "expected keyword `fun` after `eager`");
+                pushStorage(true);
+                pushState(__CatspeakCompilerState.FUN_BEGIN);
+            } else {
+                pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
+                pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            }
             break;
         case __CatspeakCompilerState.BINARY_BEGIN:
             var precedence = popStorage();
@@ -1558,14 +1572,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
             break;
         case __CatspeakCompilerState.TERMINAL:
-            if (consume(__CatspeakToken.FUN)) {
-                pushStorage(false);
-                pushState(__CatspeakCompilerState.FUN_BEGIN);
-            } else if (consume(__CatspeakToken.EAGER)) {
-                expects(__CatspeakToken.FUN, "expected keyword `fun` after `eager`");
-                pushStorage(true);
-                pushState(__CatspeakCompilerState.FUN_BEGIN);
-            } else if (consume(__CatspeakToken.IDENTIFIER)) {
+            if (consume(__CatspeakToken.IDENTIFIER)) {
                 out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
             } else if (matchesOperator()) {
                 advance();
