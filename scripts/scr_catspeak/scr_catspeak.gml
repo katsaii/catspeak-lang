@@ -1459,33 +1459,8 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             out.addCode(pos, __CatspeakOpCode.POP);
             break;
         case __CatspeakCompilerState.EXPRESSION:
-            if (consume(__CatspeakToken.FUN)) {
-                pushStorage(false);
-                pushState(__CatspeakCompilerState.FUN_BEGIN);
-            } else if (consume(__CatspeakToken.EAGER)) {
-                expects(__CatspeakToken.FUN, "expected keyword `fun` after `eager`");
-                pushStorage(true);
-                pushState(__CatspeakCompilerState.FUN_BEGIN);
-            } else { 
-                pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
-                pushState(__CatspeakCompilerState.BINARY_BEGIN);
-            }
-            break;
-        case __CatspeakCompilerState.FUN_BEGIN:
-            var eager = popStorage();
-            var fun_make_pc = out.addCode(pos, __CatspeakOpCode.MAKE_FUNCTION, {
-                eager : eager,
-                pc : -1
-            });
-            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
-            out.getCode(fun_make_pc).param.pc = out.getCurrentSize();
-            pushState(__CatspeakCompilerState.FUN_END);
-            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
-            break;
-        case __CatspeakCompilerState.FUN_END:
-            var fun_end_pc = popStorage();
-            out.addCode(pos, __CatspeakOpCode.RETURN_IMPLICIT);
-            out.getCode(fun_end_pc).param.pc = out.getCurrentSize();
+            pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
+            pushState(__CatspeakCompilerState.BINARY_BEGIN);
             break;
         case __CatspeakCompilerState.BINARY_BEGIN:
             var precedence = popStorage();
@@ -1583,7 +1558,14 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
             break;
         case __CatspeakCompilerState.TERMINAL:
-            if (consume(__CatspeakToken.IDENTIFIER)) {
+            if (consume(__CatspeakToken.FUN)) {
+                pushStorage(false);
+                pushState(__CatspeakCompilerState.FUN_BEGIN);
+            } else if (consume(__CatspeakToken.EAGER)) {
+                expects(__CatspeakToken.FUN, "expected keyword `fun` after `eager`");
+                pushStorage(true);
+                pushState(__CatspeakCompilerState.FUN_BEGIN);
+            } else if (consume(__CatspeakToken.IDENTIFIER)) {
                 out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
             } else if (matchesOperator()) {
                 advance();
@@ -1608,6 +1590,22 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             } else {
                 pushState(__CatspeakCompilerState.GROUPING_BEGIN);
             }
+            break;
+        case __CatspeakCompilerState.FUN_BEGIN:
+            var eager = popStorage();
+            var fun_make_pc = out.addCode(pos, __CatspeakOpCode.MAKE_FUNCTION, {
+                eager : eager,
+                pc : -1,
+            });
+            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
+            out.getCode(fun_make_pc).param.pc = out.getCurrentSize();
+            pushState(__CatspeakCompilerState.FUN_END);
+            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+            break;
+        case __CatspeakCompilerState.FUN_END:
+            var fun_end_pc = popStorage();
+            out.addCode(pos, __CatspeakOpCode.RETURN_IMPLICIT);
+            out.getCode(fun_end_pc).param = out.getCurrentSize();
             break;
         case __CatspeakCompilerState.GROUPING_BEGIN:
             if (consume(__CatspeakToken.COLON)) {

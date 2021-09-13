@@ -390,7 +390,6 @@ try {
     catspeak_session_add_constant(session, "map", { _secret : "shhh" });
     catspeak_session_set_source(session, @'
     map._secret = "hi"
-    print map
     return map._secret
     ');
     var result = catspeak_session_create_process_eager(session);
