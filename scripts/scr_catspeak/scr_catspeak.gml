@@ -2032,7 +2032,19 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 implicitReturn : implicitReturn,
             });
             if (setup.eager) {
-                error("unimplemented eager function");
+                push(method({
+                    f : fun_data,
+                    result : undefined,
+                    callback : function(_result) {
+                        result = _result;
+                    }
+                }, function() {
+                    var vm = f.spawnVM(callback);
+                    while (vm.inProgress()) {
+                        vm.computeProgram();
+                    }
+                    return result;
+                }));
             } else {
                 push(fun_data);
             }

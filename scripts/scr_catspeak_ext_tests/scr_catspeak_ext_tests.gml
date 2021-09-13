@@ -413,13 +413,27 @@ try {
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     get_name = fun {
-        print "hi"
         return "Kat"
     };
     return : run get_name
     ');
     var result = catspeak_session_create_process_eager(session);
     __catspeak_ext_tests_assert_eq(result, "Kat");
+    catspeak_session_destroy(session);
+
+    // calling eager functions within GML
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    return : eager fun {
+        count = 0
+        for [1, 2, 3, 4, 5].[_] = n {
+            count = count + n
+        }
+        return count
+    }
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result(), 1 + 2 + 3 + 4 + 5);
     catspeak_session_destroy(session);
 
     // success
