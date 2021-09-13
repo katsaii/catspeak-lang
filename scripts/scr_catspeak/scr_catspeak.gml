@@ -1476,6 +1476,22 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushState(__CatspeakCompilerState.BINARY_BEGIN);
             }
             break;
+        case __CatspeakCompilerState.FUN_BEGIN:
+            var eager = popStorage();
+            var fun_make_pc = out.addCode(pos, __CatspeakOpCode.MAKE_FUNCTION, {
+                eager : eager,
+                pc : -1,
+            });
+            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
+            out.getCode(fun_make_pc).param.pc = out.getCurrentSize();
+            pushState(__CatspeakCompilerState.FUN_END);
+            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
+            break;
+        case __CatspeakCompilerState.FUN_END:
+            var fun_end_pc = popStorage();
+            out.addCode(pos, __CatspeakOpCode.RETURN_IMPLICIT);
+            out.getCode(fun_end_pc).param = out.getCurrentSize();
+            break;
         case __CatspeakCompilerState.BINARY_BEGIN:
             var precedence = popStorage();
             if (precedence >= __CatspeakToken.__OPERATORS_END__) {
@@ -1597,22 +1613,6 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             } else {
                 pushState(__CatspeakCompilerState.GROUPING_BEGIN);
             }
-            break;
-        case __CatspeakCompilerState.FUN_BEGIN:
-            var eager = popStorage();
-            var fun_make_pc = out.addCode(pos, __CatspeakOpCode.MAKE_FUNCTION, {
-                eager : eager,
-                pc : -1,
-            });
-            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
-            out.getCode(fun_make_pc).param.pc = out.getCurrentSize();
-            pushState(__CatspeakCompilerState.FUN_END);
-            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
-            break;
-        case __CatspeakCompilerState.FUN_END:
-            var fun_end_pc = popStorage();
-            out.addCode(pos, __CatspeakOpCode.RETURN_IMPLICIT);
-            out.getCode(fun_end_pc).param = out.getCurrentSize();
             break;
         case __CatspeakCompilerState.GROUPING_BEGIN:
             if (consume(__CatspeakToken.COLON)) {
