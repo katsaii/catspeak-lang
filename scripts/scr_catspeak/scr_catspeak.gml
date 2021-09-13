@@ -1719,7 +1719,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     /// @param {string} name The name of the variable to add.
     /// @param {value} value The value to assign.
     static setVariable = function(_name, _value) {
-        if (_name == "_") {
+        if (__catspeak_identifier_is_valid_hole(_name)) {
             return;
         }
         binding[$ _name] = _value;
@@ -1727,7 +1727,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     /// @desc Gets a variable in the current context.
     /// @param {string} name The name of the variable to add.
     static getVariable = function(_name) {
-        if (_name == "_") {
+        if (__catspeak_identifier_is_valid_hole(_name)) {
             return undefined;
         } else if (variable_struct_exists(binding, _name)) {
             return binding[$ _name];
@@ -2024,4 +2024,10 @@ function __catspeak_get_ordered_collection_length(_container) {
         }
     }
     return -1;
+}
+
+/// @desc Returns whether the identifier is a bottomless hole.
+/// @param {string} name The string to check.
+function __catspeak_identifier_is_valid_hole(_name) {
+    return is_string(_name) && string_byte_at(_name, 1) == ord("_");
 }

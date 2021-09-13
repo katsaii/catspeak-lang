@@ -374,6 +374,17 @@ try {
     __catspeak_ext_tests_assert_eq(result, 5);
     catspeak_session_destroy(session);
 
+    // holes
+    var session = catspeak_session_create();
+    catspeak_session_add_constant(session, "_private", { secret : "shhh" });
+    catspeak_session_set_source(session, @'
+    _private = "nice"
+    return _private
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, undefined);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
