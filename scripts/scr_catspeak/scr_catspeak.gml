@@ -1756,6 +1756,21 @@ function __catspeak_default_chunk() {
     return chunk;
 }
 
+/// @desc Creates a new VM function.
+/// @param {value} data The associated function data.
+function __CatspeakVMFunction(_data) constructor {
+    __data = _data;
+    /// @desc Spawns a new VM process and returns it.
+    /// @param {method} method_or_script_id The script to call to handle returned values.
+    static spawnVM = function(_return_script) {
+        var vm = new __CatspeakVM(__data.chunk, -1, __data.exposeGlobalScope, __data.exposeInstanceScope,
+                __data.implicitReturn, __data.interface, __data.workspace, _return_script);
+        // sneakily set additional values
+        vm.pc = __data.pc;
+        return vm;
+    }
+}
+
 /// @desc Handles the execution of a single Catspeak chunk.
 /// @param {__CatspeakChunk} chunk The chunk to evaluate.
 /// @param {real} max_iterations The maximum iteration count.
@@ -1779,6 +1794,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     stackSize = 0;
     stack = array_create(stackLimit);
     iterators = { };
+    subprocess = undefined;
     exposeGlobalScope = is_numeric(_global_access) && _global_access;
     exposeInstanceScope = is_numeric(_instance_access) && _instance_access;
     implicitReturn = is_numeric(_implicit_return) && _implicit_return;
@@ -1956,6 +1972,10 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
         } else {
             iterationCount += 1;
         }
+        if (subprocess != undefined) {
+            subprocess.computeProgram();
+            return;
+        }
         var inst = chunk.getCode(pc);
         switch (inst.code) {
         case __CatspeakOpCode.PUSH:
@@ -2002,9 +2022,20 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             break;
         case __CatspeakOpCode.MAKE_FUNCTION:
             var setup = inst.param;
-            var eager = setup.eager;
-            var entry = setup.pc;
-            push({ pc : entry, eager : eager });
+            var fun_data = new __CatspeakVMFunction({
+                pc : setup.pc,
+                interface : interface,
+                workspace : binding,
+                chunk : chunk,
+                exposeGlobalScope : exposeGlobalScope,
+                exposeInstanceScope : exposeInstanceScope,
+                implicitReturn : implicitReturn,
+            });
+            if (setup.eager) {
+                error("unimplemented eager function");
+            } else {
+                push(fun_data);
+            }
             break;
         case __CatspeakOpCode.MAKE_ITERATOR:
             var options = inst.param;
@@ -2079,6 +2110,14 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 var result = executeMethod(callsite, args);
                 push(result);
                 break;
+            case "struct":
+                if (instanceof(callsite) == "__CatspeakVMFunction") {
+                    subprocess = callsite.spawnVM(function(_result) {
+                        push(_result);
+                        subprocess = undefined;
+                    });
+                    break;
+                }
             default:
                 error("invalid call site `" + string(callsite) + "` of type `" + ty + "`");
                 break;
