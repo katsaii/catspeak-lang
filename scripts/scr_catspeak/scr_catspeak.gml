@@ -1746,15 +1746,18 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
         if (_unordered) {
             switch (ty) {
             case "struct":
-                return _container[$ string(_subscript)];
+                return __catspeak_identifier_is_valid_hole(_subscript) ?
+                        undefined : _container[$ string(_subscript)];
             case "number":
             case "bool":
             case "int32":
             case "int64":
                 if (exposeInstanceScope && instance_exists(_container)) {
-                    return variable_instance_get(_container, _subscript);
+                    return __catspeak_identifier_is_valid_hole(_subscript) ?
+                        undefined : variable_instance_get(_container, _subscript);
                 } else if (exposeGlobalScope && _container == global) {
-                    return variable_global_get(_subscript);
+                    return __catspeak_identifier_is_valid_hole(_subscript) ?
+                        undefined : variable_global_get(_subscript);
                 } else if (ds_exists(_container, ds_type_map)) {
                     return _container[? _subscript];
                 }
@@ -1786,17 +1789,23 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
         if (_unordered) {
             switch (ty) {
             case "struct":
-                _container[$ string(_subscript)] = _value;
+                if not (__catspeak_identifier_is_valid_hole(_subscript)) {
+                    _container[$ string(_subscript)] = _value;
+                }
                 return;
             case "number":
             case "bool":
             case "int32":
             case "int64":
                 if (exposeInstanceScope && instance_exists(_container)) {
-                    variable_instance_set(_container, _subscript, _value);
+                    if not (__catspeak_identifier_is_valid_hole(_subscript)) {
+                        variable_instance_set(_container, _subscript, _value);
+                    }
                     return;
                 } else if (exposeGlobalScope && _container == global) {
-                    variable_global_set(_subscript, _value);
+                    if not (__catspeak_identifier_is_valid_hole(_subscript)) {
+                        variable_global_set(_subscript, _value);
+                    }
                     return;
                 } else if (ds_exists(_container, ds_type_map)) {
                     _container[? _subscript] = _value;

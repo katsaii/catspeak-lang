@@ -385,6 +385,18 @@ try {
     __catspeak_ext_tests_assert_eq(result, undefined);
     catspeak_session_destroy(session);
 
+    // struct holes
+    var session = catspeak_session_create();
+    catspeak_session_add_constant(session, "map", { _secret : "shhh" });
+    catspeak_session_set_source(session, @'
+    map._secret = "hi"
+    print map
+    return map._secret
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, undefined);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
