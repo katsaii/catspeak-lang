@@ -397,6 +397,20 @@ try {
     __catspeak_ext_tests_assert_eq(result, undefined);
     catspeak_session_destroy(session);
 
+    // functions
+    var session = catspeak_session_create();
+    catspeak_session_add_function(session, "failure", function() {
+        throw "failed to contain function";
+    });
+    catspeak_session_set_source(session, @'
+    return fun {
+        run failure
+    };
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    show_debug_message(result);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {

@@ -1473,8 +1473,19 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             break;
         case __CatspeakCompilerState.FUN_BEGIN:
             var eager = popStorage();
+            var fun_make_pc = out.addCode(pos, __CatspeakOpCode.MAKE_FUNCTION, {
+                eager : eager,
+                pc : -1
+            });
+            pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
+            out.getCode(fun_make_pc).param.pc = out.getCurrentSize();
+            pushState(__CatspeakCompilerState.FUN_END);
+            pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
             break;
         case __CatspeakCompilerState.FUN_END:
+            var fun_end_pc = popStorage();
+            out.addCode(pos, __CatspeakOpCode.RETURN_IMPLICIT);
+            out.getCode(fun_end_pc).param.pc = out.getCurrentSize();
             break;
         case __CatspeakCompilerState.BINARY_BEGIN:
             var precedence = popStorage();
@@ -1666,6 +1677,7 @@ enum __CatspeakOpCode {
     REF_SET,
     MAKE_ARRAY,
     MAKE_OBJECT,
+    MAKE_FUNCTION,
     MAKE_ITERATOR,
     UPDATE_ITERATOR,
     PRINT,
@@ -1688,6 +1700,7 @@ function __catspeak_code_render(_kind) {
     case __CatspeakOpCode.REF_SET: return "REF_SET";
     case __CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
     case __CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
+    case __CatspeakOpCode.MAKE_FUNCTION: return "MAKE_FUNCTION";
     case __CatspeakOpCode.MAKE_ITERATOR: return "MAKE_ITERATOR";
     case __CatspeakOpCode.UPDATE_ITERATOR: return "UPDATE_ITERATOR";
     case __CatspeakOpCode.PRINT: return "PRINT";
@@ -1988,6 +2001,12 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             var size = inst.param;
             var container = popManyKWArgs(size);
             push(container);
+            break;
+        case __CatspeakOpCode.MAKE_FUNCTION:
+            var setup = inst.param;
+            var eager = setup.eager;
+            var entry = setup.pc;
+            push({ pc : entry, eager : eager });
             break;
         case __CatspeakOpCode.MAKE_ITERATOR:
             var options = inst.param;
