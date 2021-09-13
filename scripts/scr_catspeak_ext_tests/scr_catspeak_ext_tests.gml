@@ -424,7 +424,7 @@ try {
     // calling eager functions within GML
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    return : greedy fun {
+    return : eager fun {
         count = 0
         for [1, 2, 3, 4, 5].[_] = n {
             count = count + n
@@ -434,6 +434,18 @@ try {
     ');
     var result = catspeak_session_create_process_eager(session);
     __catspeak_ext_tests_assert_eq(result(), 1 + 2 + 3 + 4 + 5);
+    catspeak_session_destroy(session);
+
+    // function arguments
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    add = fun {
+        return : arg.[0] + arg.[1]
+    }
+    return : add 1 3
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result, 1 + 3);
     catspeak_session_destroy(session);
 
     // success

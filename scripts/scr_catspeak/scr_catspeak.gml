@@ -893,7 +893,7 @@ function __CatspeakScanner(_buff) constructor {
                 case "fun":
                     keyword = __CatspeakToken.FUN;
                     break;
-                case "greedy":
+                case "eager":
                     keyword = __CatspeakToken.EAGER;
                     break;
                 case "arg":
@@ -1588,7 +1588,9 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
             break;
         case __CatspeakCompilerState.TERMINAL:
-            if (consume(__CatspeakToken.IDENTIFIER)) {
+            if (consume(__CatspeakToken.ARG)) {
+                out.addCode(pos, __CatspeakOpCode.ARG_GET);
+            } else if (consume(__CatspeakToken.IDENTIFIER)) {
                 out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
             } else if (matchesOperator()) {
                 advance();
@@ -1680,6 +1682,7 @@ enum __CatspeakOpCode {
     VAR_SET,
     REF_GET,
     REF_SET,
+    ARG_GET,
     MAKE_ARRAY,
     MAKE_OBJECT,
     MAKE_FUNCTION,
@@ -1703,6 +1706,7 @@ function __catspeak_code_render(_kind) {
     case __CatspeakOpCode.VAR_SET: return "VAR_SET";
     case __CatspeakOpCode.REF_GET: return "REF_GET";
     case __CatspeakOpCode.REF_SET: return "REF_SET";
+    case __CatspeakOpCode.ARG_GET: return "ARG_GET";
     case __CatspeakOpCode.MAKE_ARRAY: return "MAKE_ARRAY";
     case __CatspeakOpCode.MAKE_OBJECT: return "MAKE_OBJECT";
     case __CatspeakOpCode.MAKE_FUNCTION: return "MAKE_FUNCTION";
@@ -2016,6 +2020,9 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             var subscript = pop();
             var container = pop();
             setIndex(container, subscript, unordered, value);
+            break;
+        case __CatspeakOpCode.ARG_GET:
+            push([]);
             break;
         case __CatspeakOpCode.MAKE_ARRAY:
             var size = inst.param;
