@@ -1061,6 +1061,8 @@ enum __CatspeakCompilerState {
     WHILE_END,
     FOR_BEGIN,
     FOR_END,
+    FUN_BEGIN,
+    FUN_END,
     BREAK,
     CONTINUE,
     PRINT,
@@ -1099,6 +1101,8 @@ function __catspeak_compiler_state_render(_state) {
     case __CatspeakCompilerState.WHILE_END: return "WHILE_END";
     case __CatspeakCompilerState.FOR_BEGIN: return "FOR_BEGIN";
     case __CatspeakCompilerState.FOR_END: return "FOR_END";
+    case __CatspeakCompilerState.FUN_BEGIN: return "FUN_BEGIN";
+    case __CatspeakCompilerState.FUN_END: return "FUN_END";
     case __CatspeakCompilerState.BREAK: return "BREAK";
     case __CatspeakCompilerState.CONTINUE: return "CONTINUE";
     case __CatspeakCompilerState.PRINT: return "PRINT";
@@ -1455,8 +1459,22 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             out.addCode(pos, __CatspeakOpCode.POP);
             break;
         case __CatspeakCompilerState.EXPRESSION:
-            pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
-            pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            if (consume(__CatspeakToken.FUN)) {
+                pushStorage(false);
+                pushState(__CatspeakCompilerState.FUN_BEGIN);
+            } else if (consume(__CatspeakToken.EAGER)) {
+                expects(__CatspeakToken.FUN, "expected keyword `fun` after `eager`");
+                pushStorage(true);
+                pushState(__CatspeakCompilerState.FUN_BEGIN);
+            } else { 
+                pushStorage(__CatspeakToken.__OPERATORS_BEGIN__ + 1);
+                pushState(__CatspeakCompilerState.BINARY_BEGIN);
+            }
+            break;
+        case __CatspeakCompilerState.FUN_BEGIN:
+            var eager = popStorage();
+            break;
+        case __CatspeakCompilerState.FUN_END:
             break;
         case __CatspeakCompilerState.BINARY_BEGIN:
             var precedence = popStorage();
