@@ -1791,6 +1791,10 @@ function __CatspeakVMFunction(_data) constructor {
         vm.pc = __data.pc;
         return vm;
     }
+    /// @desc Displays the function information.
+    static toString = function() {
+        return "catspeak function";
+    }
 }
 
 /// @desc Handles the execution of a single Catspeak chunk.
