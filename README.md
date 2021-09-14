@@ -23,8 +23,7 @@ Custom operators and functions are exposed to the Catspeak virtual machine under
 ### Functions!
 
 ```
-factorial = fun {
-  n = arg.[0]
+factorial = fun n {
   if (n <= 1) {
     return 1
   }
