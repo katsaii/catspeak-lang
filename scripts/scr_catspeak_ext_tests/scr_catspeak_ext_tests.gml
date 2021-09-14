@@ -357,7 +357,7 @@ try {
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     struct = { .a 1, .b 2, .c 3 }
-    return : get_fields struct
+    return : keys struct
     ');
     var result = catspeak_session_create_process_eager(session);
     array_sort(result, true);
@@ -368,7 +368,7 @@ try {
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     array = [0, 0, 0, 0, 0,]
-    return : get_length array
+    return : length array
     ');
     var result = catspeak_session_create_process_eager(session);
     __catspeak_ext_tests_assert_eq(result, 5);
@@ -439,8 +439,8 @@ try {
     // function arguments
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    add = fun {
-        return : arg.[0] + arg.[1]
+    add = fun a b {
+        return : a + b
     }
     return : add 1 3
     ');
@@ -451,12 +451,27 @@ try {
     // recursion
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    factorial = eager fun {
-        n = arg.[0]
+    factorial = eager fun n {
         if (n <= 1) {
             return 1
         }
         return : n * factorial : n - 1
+    }
+    return factorial
+    ');
+    var result = catspeak_session_create_process_eager(session);
+    __catspeak_ext_tests_assert_eq(result(10), 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10);
+    catspeak_session_destroy(session);
+
+    // variadic arguments
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    mean = fun {
+        count = 0
+        for arg.[_] = n {
+            count = count + n
+        }
+        return : count / length arg
     }
     return factorial
     ');

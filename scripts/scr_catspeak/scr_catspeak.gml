@@ -197,8 +197,8 @@ function catspeak_session_create() {
     f(pos, "string", function(_x) { return __catspeak_encode_value(_x); });
     f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
     f(pos, "typeof", function(_x) { return typeof(_x); });
-    f(pos, "get_length", __catspeak_get_ordered_collection_length);
-    f(pos, "get_fields", __catspeak_get_unordered_collection_keys);
+    f(pos, "size", __catspeak_get_ordered_collection_length);
+    f(pos, "keys", __catspeak_get_unordered_collection_keys);
     c(pos, "undefined", undefined);
     c(pos, "true", true);
     c(pos, "false", false);
@@ -1486,6 +1486,13 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             });
             pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
             out.getCode(fun_make_pc).param.pc = out.getCurrentSize();
+            // add code for named parameters
+            for (var named_id = 0; consume(__CatspeakToken.IDENTIFIER); named_id += 1) {
+                out.addCode(pos, __CatspeakOpCode.ARG_GET);
+                out.addCode(pos, __CatspeakOpCode.PUSH, named_id);
+                out.addCode(pos, __CatspeakOpCode.REF_GET);
+                out.addCode(pos, __CatspeakOpCode.VAR_SET, lexeme);
+            }
             pushState(__CatspeakCompilerState.FUN_END);
             pushState(__CatspeakCompilerState.SEQUENCE_BEGIN);
             break;
