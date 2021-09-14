@@ -479,6 +479,20 @@ try {
     __catspeak_ext_tests_assert_eq(result, mean(10, 5, 30));
     catspeak_session_destroy(session);
 
+    // function scope
+    var session = catspeak_session_create();
+    catspeak_session_set_source(session, @'
+    global = 5
+    run : fun {
+        local = 6
+        global = 7
+    }
+    return [global, local]
+    ');
+    var result = catspeak_session_create_process_greedy(session);
+    __catspeak_ext_tests_assert_eq(result, [7, undefined]);
+    catspeak_session_destroy(session);
+
     // success
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
