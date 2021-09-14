@@ -18,6 +18,36 @@ The language is entirely customisable, with only a few primitive constructs. The
 
 Custom operators and functions are exposed to the Catspeak virtual machine under the discretion of developers, in order to limit how much access a modder has to the game environment. This is done using the `catspeak_session_add_function` script; a full list of script names and their uses is included in the [wiki](https://github.com/NuxiiGit/catspeak-lang/wiki).
 
+## Examples
+
+### Functions!
+
+```
+factorial = fun {
+  n = arg.[0]
+  if (n <= 1) {
+    return 1
+  }
+  return : n * factorial (n - 1)
+}
+print : factorial 10 -- 3628800
+```
+
+### For-loops!
+
+```
+for [1, 2].[_] = outer {
+  for [3, 4].[_] = inner {
+    if (outer == 1) {
+      continue 2
+    }
+    result = inner * outer
+    break 2
+  }
+}
+print result -- 6
+```
+
 ## Installation
 
 See the [wiki page](https://github.com/NuxiiGit/catspeak-lang/wiki/Getting-Started#installing).
