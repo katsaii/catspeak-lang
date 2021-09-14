@@ -473,10 +473,10 @@ try {
         }
         return : count / length arg
     }
-    return factorial
+    return : mean 10 5 30
     ');
     var result = catspeak_session_create_process_eager(session);
-    __catspeak_ext_tests_assert_eq(result(10), 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10);
+    __catspeak_ext_tests_assert_eq(result, mean(10, 5, 30));
     catspeak_session_destroy(session);
 
     // success

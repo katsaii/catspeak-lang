@@ -197,7 +197,7 @@ function catspeak_session_create() {
     f(pos, "string", function(_x) { return __catspeak_encode_value(_x); });
     f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
     f(pos, "typeof", function(_x) { return typeof(_x); });
-    f(pos, "size", __catspeak_get_ordered_collection_length);
+    f(pos, "length", __catspeak_get_ordered_collection_length);
     f(pos, "keys", __catspeak_get_unordered_collection_keys);
     c(pos, "undefined", undefined);
     c(pos, "true", true);
@@ -1228,7 +1228,8 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 || matches(__CatspeakToken.NUMBER)
                 || matches(__CatspeakToken.NUMBER_INT)
                 || matches(__CatspeakToken.NUMBER_HEX)
-                || matches(__CatspeakToken.NUMBER_BIN);
+                || matches(__CatspeakToken.NUMBER_BIN)
+                || matches(__CatspeakToken.ARG);
     }
     /// @desc Returns true if the current token matches any kind of operator.
     static matchesOperator = function() {
@@ -1878,6 +1879,8 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     static setVariable = function(_name, _value) {
         if (__catspeak_identifier_is_valid_hole(_name)) {
             return;
+        } else if (variable_struct_exists(interface, _name)) {
+            error("the variable `" + _name + "` is a constant, and cannot be redefined");
         }
         binding[$ _name] = _value;
     }
@@ -1886,10 +1889,10 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     static getVariable = function(_name) {
         if (__catspeak_identifier_is_valid_hole(_name)) {
             return undefined;
-        } else if (variable_struct_exists(binding, _name)) {
-            return binding[$ _name];
         } else if (variable_struct_exists(interface, _name)) {
             return interface[$ _name];
+        } else if (variable_struct_exists(binding, _name)) {
+            return binding[$ _name];
         } else {
             return undefined;
         }
