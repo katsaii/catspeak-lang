@@ -176,7 +176,7 @@ function catspeak_session_create() {
     f(pos, "*", function(_l, _r) { return _l * _r; });
     f(pos, "/", function(_l, _r) { return _l / _r; });
     f(pos, "%", function(_l, _r) { return _l % _r; });
-    f(pos, "div", function(_l, _r) { return _l div _r; });
+    f(pos, "//", function(_l, _r) { return _l div _r; });
     f(pos, "|", function(_l, _r) { return _l | _r; });
     f(pos, "&", function(_l, _r) { return _l & _r; });
     f(pos, "^", function(_l, _r) { return _l ^ _r; });
