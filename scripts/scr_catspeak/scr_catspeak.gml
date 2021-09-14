@@ -330,7 +330,7 @@ function catspeak_session_create_process(_session_id, _callback_return, _args=[]
 /// @desc Spawns a process from this session which is evaluated immediately.
 /// @param {real} session_id The ID of the session to spawn a process for.
 /// @param {array} args The arguments to pass to the process.
-function catspeak_session_create_process_eager(_session_id, _args=[]) {
+function catspeak_session_create_process_greedy(_session_id, _args=[]) {
     var catspeak = __catspeak_manager();
     var session = catspeak.sessions[@ _session_id];
     var chunk;
@@ -486,7 +486,7 @@ enum __CatspeakToken {
     WHILE,
     FOR,
     FUN,
-    EAGER,
+    GREEDY,
     ARG,
     PRINT,
     RUN,
@@ -532,7 +532,7 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.WHILE: return "WHILE";
     case __CatspeakToken.FOR: return "FOR";
     case __CatspeakToken.FUN: return "FUN";
-    case __CatspeakToken.EAGER: return "EAGER";
+    case __CatspeakToken.GREEDY: return "GREEDY";
     case __CatspeakToken.ARG: return "ARG";
     case __CatspeakToken.PRINT: return "PRINT";
     case __CatspeakToken.RUN: return "RUN";
@@ -895,8 +895,8 @@ function __CatspeakScanner(_buff) constructor {
                 case "fun":
                     keyword = __CatspeakToken.FUN;
                     break;
-                case "eager":
-                    keyword = __CatspeakToken.EAGER;
+                case "greedy":
+                    keyword = __CatspeakToken.GREEDY;
                     break;
                 case "arg":
                     keyword = __CatspeakToken.ARG;
@@ -1470,8 +1470,8 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             if (consume(__CatspeakToken.FUN)) {
                 pushStorage(false);
                 pushState(__CatspeakCompilerState.FUN_BEGIN);
-            } else if (consume(__CatspeakToken.EAGER)) {
-                expects(__CatspeakToken.FUN, "expected keyword `fun` after `eager`");
+            } else if (consume(__CatspeakToken.GREEDY)) {
+                expects(__CatspeakToken.FUN, "expected keyword `fun` after `greedy`");
                 pushStorage(true);
                 pushState(__CatspeakCompilerState.FUN_BEGIN);
             } else {
@@ -1480,9 +1480,9 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             }
             break;
         case __CatspeakCompilerState.FUN_BEGIN:
-            var eager = popStorage();
+            var greedy = popStorage();
             var fun_make_pc = out.addCode(pos, __CatspeakOpCode.MAKE_FUNCTION, {
-                eager : eager,
+                greedy : greedy,
                 pc : -1,
             });
             pushStorage(out.addCode(pos, __CatspeakOpCode.JUMP, undefined));
@@ -1785,8 +1785,9 @@ function __CatspeakVMFunction(_data) constructor {
     /// @param {method} method_or_script_id The script to call to handle returned values.
     /// @param {array} args The arguments to pass to the process.
     static spawnVM = function(_return_script, _args) {
+        var local_scope = { __proto__ : __data.workspace };
         var vm = new __CatspeakVM(__data.chunk, -1, __data.exposeGlobalScope, __data.exposeInstanceScope,
-                __data.implicitReturn, __data.interface, __data.workspace, _return_script, _args);
+                __data.implicitReturn, __data.interface, local_scope, _return_script, _args);
         // sneakily set additional values
         vm.pc = __data.pc;
         return vm;
@@ -1883,23 +1884,40 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
     static setVariable = function(_name, _value) {
         if (__catspeak_identifier_is_valid_hole(_name)) {
             return;
-        } else if (variable_struct_exists(interface, _name)) {
+        }
+        if (variable_struct_exists(interface, _name)) {
             error("the variable `" + _name + "` is a constant, and cannot be redefined");
         }
-        binding[$ _name] = _value;
+        var top_binding = binding;
+        var current_binding = top_binding;
+        while (current_binding != undefined) {
+            if (variable_struct_exists(current_binding, _name)) {
+                current_binding[$ _name] = _value;
+                return;
+            }
+            current_binding = current_binding[$ "__proto__"];
+        }
+        top_binding[$ _name] = _value;
     }
     /// @desc Gets a variable in the current context.
     /// @param {string} name The name of the variable to add.
     static getVariable = function(_name) {
         if (__catspeak_identifier_is_valid_hole(_name)) {
             return undefined;
-        } else if (variable_struct_exists(interface, _name)) {
-            return interface[$ _name];
-        } else if (variable_struct_exists(binding, _name)) {
-            return binding[$ _name];
-        } else {
-            return undefined;
         }
+        if (variable_struct_exists(interface, _name)) {
+            return interface[$ _name];
+        }
+        // prototype system similar to javascript, but really only for variable bindings
+        // instead of objects
+        var current_binding = binding;
+        while (current_binding != undefined) {
+            if (variable_struct_exists(current_binding, _name)) {
+                return current_binding[$ _name];
+            }
+            current_binding = current_binding[$ "__proto__"];
+        }
+        return undefined;
     }
     /// @desc Attempts to index into a container and returns its value.
     /// @param {value} container The container to index.
@@ -2064,7 +2082,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 exposeInstanceScope : exposeInstanceScope,
                 implicitReturn : implicitReturn,
             });
-            if (setup.eager) {
+            if (setup.greedy) {
                 push(method({
                     f : fun_data,
                     result : undefined,

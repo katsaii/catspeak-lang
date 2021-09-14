@@ -18,7 +18,7 @@ function catspeak_ext_json_session_create() {
 function catspeak_ext_json_parse(_src) {
     var session_id = catspeak_ext_json_session_create();
     catspeak_session_set_source(session_id, _src);
-    var result = catspeak_session_create_process_eager(session_id);
+    var result = catspeak_session_create_process_greedy(session_id);
     catspeak_session_destroy(session_id);
     return result;
 }

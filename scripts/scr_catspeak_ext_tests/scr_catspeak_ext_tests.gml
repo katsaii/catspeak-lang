@@ -31,20 +31,20 @@ try {
     // basic functionality
     var session = catspeak_session_create();
     catspeak_session_set_source(session, "return 12");
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(12, result);
 
     // empty source code
     var session = catspeak_session_create();
     catspeak_session_set_source(session, "");
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
     // whitespace
     var session = catspeak_session_create();
     catspeak_session_set_source(session, "\n\n\t \r\n\n");
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
     // comments
@@ -53,14 +53,14 @@ try {
         -- hello
         --another comment
     ');
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
     // implicit return
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, "18");
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(18, result);
 
@@ -68,9 +68,9 @@ try {
     var session = catspeak_session_create();
     catspeak_session_enable_shared_workspace(session, true);
     catspeak_session_set_source(session, "a = 3");
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_set_source(session, "return a");
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(3, result);
 
@@ -81,7 +81,7 @@ try {
     catspeak_session_set_source(session, @'
         global.result = "secret message"
     ');
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq("secret message", global.result);
 
@@ -92,7 +92,7 @@ try {
         "hello world"
         return ans
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq("hello world", result);
 
@@ -104,7 +104,7 @@ try {
         var2 = var
         return [var, var2]
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([3, 3], result);
 
@@ -113,7 +113,7 @@ try {
     catspeak_session_add_constant(session, "const", -12);
     catspeak_session_add_function(session, "funct", max);
     catspeak_session_set_source(session, "return [const, funct]");
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(-12, result[0]);
     __catspeak_ext_tests_assert_eq(max, method_get_index(result[1]));
@@ -128,7 +128,7 @@ try {
         d = max a b c
         return [a, b, c, d]
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([-3, 12, -33, 12], result);
 
@@ -139,7 +139,7 @@ try {
         b = : 1 + : 1 + 1
         return [a, b]
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([3, 3], result);
 
@@ -161,7 +161,7 @@ try {
             }
         }
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(1, result[$ "int"]);
     __catspeak_ext_tests_assert_eq(1.5, result[$ "float"]);
@@ -184,7 +184,7 @@ try {
         }
         return c
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq("less", result);
 
@@ -203,7 +203,7 @@ try {
         }
         return count
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(counter.n, result);
 
@@ -225,7 +225,7 @@ try {
             failure 3
         }
     ');
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
     // continue points
@@ -243,7 +243,7 @@ try {
             }
         }
     ');
-    catspeak_session_create_process_eager(session);
+    catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
     // JSON-like syntax
@@ -276,7 +276,7 @@ try {
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, "1+2+4+8^1+2+4+8*4");
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, (1 + 2 + 4 + 8) ^ (1 + 2 + 4 + (8 * 4)));
     catspeak_session_destroy(session);
 
@@ -289,7 +289,7 @@ try {
     }
     return iter
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, [1 * 2, 2 * 2, 3 *2]);
     catspeak_session_destroy(session);
 
@@ -305,7 +305,7 @@ try {
     }
     return [iter.a, iter.b, iter.c]
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, ["a 1", "b 2", 3]);
     catspeak_session_destroy(session);
 
@@ -318,7 +318,7 @@ try {
     }
     return ans
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, 1 + 2 + 5);
     catspeak_session_destroy(session);
 
@@ -331,7 +331,7 @@ try {
     }
     return ans
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, 0 + 1 + 2 + 3 + 4 + 5);
     catspeak_session_destroy(session);
 
@@ -349,7 +349,7 @@ try {
     }
     return result
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, 3 * 2);
     catspeak_session_destroy(session);
 
@@ -359,7 +359,7 @@ try {
     struct = { .a 1, .b 2, .c 3 }
     return : keys struct
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     array_sort(result, true);
     __catspeak_ext_tests_assert_eq(result, ["a", "b", "c"]);
     catspeak_session_destroy(session);
@@ -370,7 +370,7 @@ try {
     array = [0, 0, 0, 0, 0,]
     return : length array
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, 5);
     catspeak_session_destroy(session);
 
@@ -381,7 +381,7 @@ try {
     _private = "nice"
     return _private
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, undefined);
     catspeak_session_destroy(session);
 
@@ -392,7 +392,7 @@ try {
     map._secret = "hi"
     return map._secret
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, undefined);
     catspeak_session_destroy(session);
 
@@ -406,7 +406,7 @@ try {
         run failure
     };
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
     // calling custom functions
@@ -417,14 +417,14 @@ try {
     };
     return : [run get_name, run get_name]
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, ["Kat", "Kat"]);
     catspeak_session_destroy(session);
 
-    // calling eager functions within GML
+    // calling greedy functions within GML
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    return : eager fun {
+    return : greedy fun {
         count = 0
         for [1, 2, 3, 4, 5].[_] = n {
             count = count + n
@@ -432,7 +432,7 @@ try {
         return count
     }
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result(), 1 + 2 + 3 + 4 + 5);
     catspeak_session_destroy(session);
 
@@ -444,22 +444,22 @@ try {
     }
     return : add 1 3
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, 1 + 3);
     catspeak_session_destroy(session);
 
     // recursion
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    factorial = eager fun n {
+    factorial = greedy fun n {
         if (n <= 1) {
             return 1
         }
-        return : n * factorial : n - 1
+        return : factorial (n - 1) * n
     }
     return factorial
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result(10), 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10);
     catspeak_session_destroy(session);
 
@@ -475,7 +475,7 @@ try {
     }
     return : mean 10 5 30
     ');
-    var result = catspeak_session_create_process_eager(session);
+    var result = catspeak_session_create_process_greedy(session);
     __catspeak_ext_tests_assert_eq(result, mean(10, 5, 30));
     catspeak_session_destroy(session);
 
