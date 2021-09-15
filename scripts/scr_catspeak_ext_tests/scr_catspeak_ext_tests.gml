@@ -424,7 +424,7 @@ try {
     // calling greedy functions within GML
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    return : greedy fun {
+    return : extern fun {
         count = 0
         for [1, 2, 3, 4, 5].[_] = n {
             count = count + n
@@ -451,7 +451,7 @@ try {
     // recursion
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
-    factorial = greedy fun n {
+    factorial = extern fun n {
         if (n <= 1) {
             return 1
         }

@@ -486,7 +486,7 @@ enum __CatspeakToken {
     WHILE,
     FOR,
     FUN,
-    GREEDY,
+    EXTERN,
     ARG,
     PRINT,
     RUN,
@@ -532,7 +532,7 @@ function __catspeak_token_render(_kind) {
     case __CatspeakToken.WHILE: return "WHILE";
     case __CatspeakToken.FOR: return "FOR";
     case __CatspeakToken.FUN: return "FUN";
-    case __CatspeakToken.GREEDY: return "GREEDY";
+    case __CatspeakToken.EXTERN: return "EXTERN";
     case __CatspeakToken.ARG: return "ARG";
     case __CatspeakToken.PRINT: return "PRINT";
     case __CatspeakToken.RUN: return "RUN";
@@ -895,8 +895,8 @@ function __CatspeakScanner(_buff) constructor {
                 case "fun":
                     keyword = __CatspeakToken.FUN;
                     break;
-                case "greedy":
-                    keyword = __CatspeakToken.GREEDY;
+                case "extern":
+                    keyword = __CatspeakToken.EXTERN;
                     break;
                 case "arg":
                     keyword = __CatspeakToken.ARG;
@@ -1470,7 +1470,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             if (consume(__CatspeakToken.FUN)) {
                 pushStorage(false);
                 pushState(__CatspeakCompilerState.FUN_BEGIN);
-            } else if (consume(__CatspeakToken.GREEDY)) {
+            } else if (consume(__CatspeakToken.EXTERN)) {
                 expects(__CatspeakToken.FUN, "expected keyword `fun` after `greedy`");
                 pushStorage(true);
                 pushState(__CatspeakCompilerState.FUN_BEGIN);
