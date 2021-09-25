@@ -68,3 +68,15 @@ catspeak_session_set_source(processingSession, @'
 catspeak_session_create_process(processingSession, function(_) {
     show_message("countdown complete!");
 });
+// external function rendering
+var eager = catspeak_session_create();
+catspeak_session_add_function(eager, "draw_text", draw_text);
+catspeak_session_add_function(eager, "mouse_get_x", function() { return mouse_x; });
+catspeak_session_add_function(eager, "mouse_get_y", function() { return mouse_y; });
+catspeak_session_set_source(eager, @'
+    return : extern fun {
+        draw_text (run mouse_get_x) (run mouse_get_y) "hello from Catspeak"
+    }
+');
+catspeakDrawFunction = catspeak_session_create_process_greedy(eager);
+catspeak_session_destroy(eager);

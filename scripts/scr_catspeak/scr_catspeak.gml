@@ -1471,7 +1471,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 pushStorage(false);
                 pushState(__CatspeakCompilerState.FUN_BEGIN);
             } else if (consume(__CatspeakToken.EXTERN)) {
-                expects(__CatspeakToken.FUN, "expected keyword `fun` after `greedy`");
+                expects(__CatspeakToken.FUN, "expected keyword `fun` after `extern`");
                 pushStorage(true);
                 pushState(__CatspeakCompilerState.FUN_BEGIN);
             } else {
