@@ -1769,11 +1769,13 @@ function __CatspeakChunk() constructor {
 
 /// @desc Returns the default Catspeak chunk.
 function __catspeak_default_chunk() {
-    static chunk = (function() {
-        var _ = new __CatspeakChunk();
-        _.addCode([1, 1], __CatspeakOpCode.RETURN_IMPLICIT, undefined);
-        return _;
-    })();
+    static init = true;
+    static chunk = undefined;
+    if (init) {
+        init = false;
+        chunk = new __CatspeakChunk();
+        chunk.addCode([1, 1], __CatspeakOpCode.RETURN_IMPLICIT, undefined);
+    }
     return chunk;
 }
 

@@ -13,6 +13,8 @@
     {"name":"macOS","path":"options/mac/options_mac.yy",},
     {"name":"Main","path":"options/main/options_main.yy",},
     {"name":"Windows","path":"options/windows/options_windows.yy",},
+    {"name":"HTML5","path":"options/html5/options_html5.yy",},
+    {"name":"operagx","path":"options/operagx/options_operagx.yy",},
   ],
   "isDnDProject": false,
   "isEcma": false,
@@ -36,7 +38,7 @@
   ],
   "IncludedFiles": [],
   "MetaData": {
-    "IDEVersion": "23.1.1.379",
+    "IDEVersion": "23.1.1.403",
   },
   "resourceVersion": "1.4",
   "name": "catspeak",
