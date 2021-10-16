@@ -3,6 +3,12 @@
  * Kat @katsaii
  */
 
+global.testTitle = "unnamed test";
+
+function __catspeak_ext_test_title(_title) {
+    global.testTitle = is_string(_title) ? _title : string(_title);
+}
+
 function __catspeak_ext_tests_assert_eq(_expects, _got) {
     var callstack_pos = argument_count > 2 ? argument[2] : 1;
     var pass;
@@ -28,26 +34,26 @@ function __catspeak_ext_tests_assert_false(_condition) {
 }
 
 try {
-    // basic functionality
+    __catspeak_ext_test_title("basic functionality");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, "return 12");
     var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(12, result);
 
-    // empty source code
+    __catspeak_ext_test_title("empty source code");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, "");
     catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
-    // whitespace
+    __catspeak_ext_test_title("whitespace");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, "\n\n\t \r\n\n");
     catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
-    // comments
+    __catspeak_ext_test_title("comments");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
         -- hello
@@ -56,7 +62,7 @@ try {
     catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
-    // implicit return
+    __catspeak_ext_test_title("implicit return");
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, "18");
@@ -64,7 +70,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(18, result);
 
-    // shared workspace
+    __catspeak_ext_test_title("shared workspace");
     var session = catspeak_session_create();
     catspeak_session_enable_shared_workspace(session, true);
     catspeak_session_set_source(session, "a = 3");
@@ -74,7 +80,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(3, result);
 
-    // global variables
+    __catspeak_ext_test_title("global variables");
     var session = catspeak_session_create();
     catspeak_session_enable_global_access(session, true);
     catspeak_session_add_constant(session, "global", global);
@@ -85,7 +91,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq("secret message", global.result);
 
-    // ans variable
+    __catspeak_ext_test_title("ans variable");
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, @'
@@ -96,7 +102,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq("hello world", result);
 
-    // assignment statements
+    __catspeak_ext_test_title("assignment statements");
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, @'
@@ -108,7 +114,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([3, 3], result);
 
-    // foreign functions and values
+    __catspeak_ext_test_title("foreign functions and values");
     var session = catspeak_session_create();
     catspeak_session_add_constant(session, "const", -12);
     catspeak_session_add_function(session, "funct", max);
@@ -118,7 +124,7 @@ try {
     __catspeak_ext_tests_assert_eq(-12, result[0]);
     __catspeak_ext_tests_assert_eq(max, method_get_index(result[1]));
 
-    // gml interface
+    __catspeak_ext_test_title("gml interface");
     var session = catspeak_session_create();
     catspeak_ext_session_add_gml_maths(session);
     catspeak_session_set_source(session, @'
@@ -132,7 +138,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([-3, 12, -33, 12], result);
 
-    // groupings
+    __catspeak_ext_test_title("groupings");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
         a = (1 + (1 + 1))
@@ -143,7 +149,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq([3, 3], result);
 
-    // data types
+    __catspeak_ext_test_title("data types");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
         return {
@@ -170,7 +176,7 @@ try {
     __catspeak_ext_tests_assert_eq(undefined, result[$ "object"][$ "x"]);
     __catspeak_ext_tests_assert_eq(infinity, result[$ "object"][$ "y"]);
 
-    // if statements
+    __catspeak_ext_test_title("if statements");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
         a = 3
@@ -188,7 +194,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq("less", result);
 
-    // while loops
+    __catspeak_ext_test_title("while loops");
     var session = catspeak_session_create();
     var counter = { n : 0 };
     catspeak_session_add_function(session, "register_count", method(counter, function() {
@@ -207,7 +213,7 @@ try {
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(counter.n, result);
 
-    // break points
+    __catspeak_ext_test_title("break points");
     var session = catspeak_session_create();
     catspeak_session_add_function(session, "failure", function(_number) {
         show_error("failed to break out of loop " + string(_number), true);
@@ -228,7 +234,7 @@ try {
     catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
-    // continue points
+    __catspeak_ext_test_title("continue points");
     var session = catspeak_session_create();
     catspeak_session_add_function(session, "failure", function(_number) {
         throw "failed to continue outside of loop " + string(_number);
@@ -246,7 +252,7 @@ try {
     catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
-    // JSON-like syntax
+    __catspeak_ext_test_title("JSON-like syntax");
     var json_obj = catspeak_ext_json_parse(@'
     {
         "Arrs": [1, 2, 3],
@@ -271,8 +277,8 @@ try {
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Objs"][$ "x"], json_obj[$ "Objs"][$ "x"]);
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Objs"][$ "y"], json_obj[$ "Objs"][$ "y"]);
     __catspeak_ext_tests_assert_eq(catspeak_obj[$ "Lits"], json_obj[$ "Lits"]);
-
-    // arithmetic
+    
+    __catspeak_ext_test_title("arithmetic");
     var session = catspeak_session_create();
     catspeak_session_enable_implicit_return(session, true);
     catspeak_session_set_source(session, "1+2+4+8^1+2+4+8*4");
@@ -280,7 +286,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, (1 + 2 + 4 + 8) ^ (1 + 2 + 4 + (8 * 4)));
     catspeak_session_destroy(session);
 
-    // for loops
+    __catspeak_ext_test_title("for loops");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     iter = [1, 2, 3]
@@ -293,7 +299,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, [1 * 2, 2 * 2, 3 *2]);
     catspeak_session_destroy(session);
 
-    // for loops over structs
+    __catspeak_ext_test_title("for loops over structs");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     iter = { .a 1, .b 2, .c 3 }
@@ -309,7 +315,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, ["a 1", "b 2", 3]);
     catspeak_session_destroy(session);
 
-    // for loops discard index
+    __catspeak_ext_test_title("for loops discard index");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     ans = 0
@@ -322,7 +328,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, 1 + 2 + 5);
     catspeak_session_destroy(session);
 
-    // for loops discard value
+    __catspeak_ext_test_title("for loops discard value");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     ans = 0
@@ -335,7 +341,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, 0 + 1 + 2 + 3 + 4 + 5);
     catspeak_session_destroy(session);
 
-    // nested for loops
+    __catspeak_ext_test_title("nested for loops");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     for [1, 2].[_] = outer {
@@ -353,7 +359,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, 3 * 2);
     catspeak_session_destroy(session);
 
-    // get field data
+    __catspeak_ext_test_title("get field data");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     struct = { .a 1, .b 2, .c 3 }
@@ -364,7 +370,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, ["a", "b", "c"]);
     catspeak_session_destroy(session);
 
-    // get array length
+    __catspeak_ext_test_title("get array length");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     array = [0, 0, 0, 0, 0,]
@@ -374,7 +380,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, 5);
     catspeak_session_destroy(session);
 
-    // holes
+    __catspeak_ext_test_title("holes");
     var session = catspeak_session_create();
     catspeak_session_add_constant(session, "_private", { secret : "shhh" });
     catspeak_session_set_source(session, @'
@@ -385,7 +391,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, undefined);
     catspeak_session_destroy(session);
 
-    // struct holes
+    __catspeak_ext_test_title("struct holes");
     var session = catspeak_session_create();
     catspeak_session_add_constant(session, "map", { _secret : "shhh" });
     catspeak_session_set_source(session, @'
@@ -396,7 +402,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, undefined);
     catspeak_session_destroy(session);
 
-    // custom functions
+    __catspeak_ext_test_title("custom functions");
     var session = catspeak_session_create();
     catspeak_session_add_function(session, "failure", function() {
         throw "failed to contain function";
@@ -409,7 +415,7 @@ try {
     var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
 
-    // calling custom functions
+    __catspeak_ext_test_title("calling custom functions");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     get_name = fun {
@@ -421,7 +427,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, ["Kat", "Kat"]);
     catspeak_session_destroy(session);
 
-    // calling greedy functions within GML
+    __catspeak_ext_test_title("calling greedy functions within GML");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     return : extern fun {
@@ -436,7 +442,7 @@ try {
     __catspeak_ext_tests_assert_eq(result(), 1 + 2 + 3 + 4 + 5);
     catspeak_session_destroy(session);
 
-    // function arguments
+    __catspeak_ext_test_title("function arguments");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     add = fun a b {
@@ -448,7 +454,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, 1 + 3);
     catspeak_session_destroy(session);
 
-    // recursion
+    __catspeak_ext_test_title("recursion");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     factorial = extern fun n {
@@ -463,7 +469,7 @@ try {
     __catspeak_ext_tests_assert_eq(result(10), 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10);
     catspeak_session_destroy(session);
 
-    // variadic arguments
+    __catspeak_ext_test_title("variadic arguments");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     mean = fun {
@@ -479,7 +485,7 @@ try {
     __catspeak_ext_tests_assert_eq(result, mean(10, 5, 30));
     catspeak_session_destroy(session);
 
-    // function scope
+    __catspeak_ext_test_title("function scope");
     var session = catspeak_session_create();
     catspeak_session_set_source(session, @'
     global = 5
@@ -497,5 +503,5 @@ try {
     show_debug_message("ALL CATSPEAK TESTS PASSED SUCCESSFULLY");
 } catch (_e) {
     var msg = is_struct(_e) && variable_struct_exists(_e, "message") ? _e[$ "message"] : string(_e);
-    show_debug_message("AN ERROR OCCURRED WHEN RUNNING CATSPEAK UNIT TESTS:\n" + msg);
+    show_debug_message("AN ERROR OCCURRED WHEN RUNNING CATSPEAK UNIT TEST '" + global.testTitle + "':\n" + msg);
 }

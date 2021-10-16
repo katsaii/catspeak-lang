@@ -673,6 +673,7 @@ function __CatspeakScanner(_buff) constructor {
     buff = _buff;
     alignment = buffer_get_alignment(_buff);
     limit = buffer_get_size(_buff);
+    eofReached = false;
     row = 1; // assumes the buffer is always at its starting position, even if it's not
     col = 1;
     rowStart = row;
@@ -739,6 +740,10 @@ function __CatspeakScanner(_buff) constructor {
     }
     /// @desc Advances the scanner and returns the current byte.
     static advance = function() {
+        var seek = buffer_tell(buff);
+        if (seek + 1 >= limit) {
+            eofReached = true;
+        }
         var byte = buffer_read(buff, buffer_u8);
         registerByte(byte);
         return byte;
@@ -752,38 +757,27 @@ function __CatspeakScanner(_buff) constructor {
     }
     /// @desc Advances the scanner whilst a predicate holds, or until the EoF was reached.
     /// @param {script} pred The predicate to check for.
-    /// @param {script} escape The predicate to check for escapes.
-    static advanceWhileEscape = function(_pred, _escape) {
-        var do_escape = false;
+    static advanceWhile = function(_pred) {
         var byte = undefined;
         var seek = buffer_tell(buff);
         while (seek < limit) {
             byte = buffer_peek(buff, seek, buffer_u8);
-            if (do_escape) {
-                do_escape = _escape(byte);
-            }
-            if not (do_escape) {
-                if not (_pred(byte)) {
-                    break;
-                } else if (byte == ord("\\")) {
-                    do_escape = true;
-                }
+            if not (_pred(byte)) {
+                break;
             }
             registerByte(byte);
             seek += alignment;
         }
+        if (seek >= limit) {
+            eofReached = true;
+        }
         buffer_seek(buff, buffer_seek_start, seek);
         return byte;
-    }
-    /// @desc Advances the scanner according to this predicate, but escapes newline characters.
-    /// @param {script} pred The predicate to check for.
-    static advanceWhile = function(_pred) {
-        return advanceWhileEscape(_pred, __catspeak_byte_is_newline);
     }
     /// @desc Advances the scanner and returns the next token.
     static next = function() {
         clearLexeme();
-        if (buffer_tell(buff) >= limit) {
+        if (limit == 0 || eofReached) {
             return __CatspeakToken.EOF;
         }
         if (skipNextByte) {
@@ -856,7 +850,7 @@ function __CatspeakScanner(_buff) constructor {
             return __CatspeakToken.DIVISION;
         case ord("\""):
             clearLexeme();
-            advanceWhileEscape(__catspeak_byte_is_not_quote, __catspeak_byte_is_quote);
+            advanceWhile(__catspeak_byte_is_not_quote);
             skipNextByte = true;
             registerLexeme();
             return __CatspeakToken.STRING;
@@ -864,7 +858,7 @@ function __CatspeakScanner(_buff) constructor {
             return __CatspeakToken.DOT;
         case ord("`"):
             clearLexeme();
-            advanceWhileEscape(__catspeak_byte_is_not_accent, __catspeak_byte_is_accent);
+            advanceWhile(__catspeak_byte_is_not_accent);
             skipNextByte = true;
             registerLexeme();
             return __CatspeakToken.IDENTIFIER;
@@ -964,6 +958,7 @@ function __CatspeakScanner(_buff) constructor {
         var token;
         do {
             token = next();
+            //show_message([__catspeak_token_render(token), lexeme, buffer_tell(buff), buffer_get_size(buff), limit, row, col]);
         } until (token != __CatspeakToken.WHITESPACE
                 && token != __CatspeakToken.COMMENT);
         return token;
