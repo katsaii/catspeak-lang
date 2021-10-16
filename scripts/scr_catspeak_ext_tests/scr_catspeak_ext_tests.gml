@@ -21,7 +21,7 @@ function __catspeak_ext_tests_assert_eq(_expects, _got) {
         var msg = "expected '" + string(_expects) + "' (" + typeof(_expects) +
                 ") got '" + string(_got) + "' (" + typeof(_got) + ")";
         var callstack = debug_get_callstack();
-        show_error("failed unit test at " + callstack[callstack_pos] + " -- " + msg, false);
+        throw "failed unit test at " + callstack[callstack_pos] + " -- " + msg;
     }
 }
 

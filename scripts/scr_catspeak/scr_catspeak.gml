@@ -349,6 +349,14 @@ function catspeak_session_create_process_greedy(_session_id, _args=[]) {
             return undefined;
         }
     }
+    if (global.testTitle == "recursion") {
+        var msg = "";
+        for (var i = 0, n = chunk.size; i < n; i += 1) {
+            var param = chunk.program[i].param;
+            msg += "\n" + string(i) + " " + __catspeak_code_render(chunk.program[i].code) + " " + (param == undefined ? "" : string(param));
+        }
+        show_message(msg);
+    }
     var result = { value : undefined };
     var runtime = new __CatspeakVM(chunk, catspeak.maxIterations, session.globalAccess,
             session.instanceAccess, session.implicitReturn, session.interface,
@@ -1782,7 +1790,7 @@ function __CatspeakVMFunction(_data) constructor {
     /// @param {method} method_or_script_id The script to call to handle returned values.
     /// @param {array} args The arguments to pass to the process.
     static spawnVM = function(_return_script, _args) {
-        var local_scope = { __proto__ : __data.workspace };
+        var local_scope = { _parentScope : __data.workspace };
         var vm = new __CatspeakVM(__data.chunk, -1, __data.exposeGlobalScope, __data.exposeInstanceScope,
                 __data.implicitReturn, __data.interface, local_scope, _return_script, _args);
         // sneakily set additional values
@@ -1892,7 +1900,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 current_binding[$ _name] = _value;
                 return;
             }
-            current_binding = current_binding[$ "__proto__"];
+            current_binding = current_binding[$ "_parentScope"];
         }
         top_binding[$ _name] = _value;
     }
@@ -1912,7 +1920,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
             if (variable_struct_exists(current_binding, _name)) {
                 return current_binding[$ _name];
             }
-            current_binding = current_binding[$ "__proto__"];
+            current_binding = current_binding[$ "_parentScope"];
         }
         return undefined;
     }
