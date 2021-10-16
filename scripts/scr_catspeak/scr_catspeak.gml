@@ -349,14 +349,6 @@ function catspeak_session_create_process_greedy(_session_id, _args=[]) {
             return undefined;
         }
     }
-    if (global.testTitle == "recursion") {
-        var msg = "";
-        for (var i = 0, n = chunk.size; i < n; i += 1) {
-            var param = chunk.program[i].param;
-            msg += "\n" + string(i) + " " + __catspeak_code_render(chunk.program[i].code) + " " + (param == undefined ? "" : string(param));
-        }
-        show_message(msg);
-    }
     var result = { value : undefined };
     var runtime = new __CatspeakVM(chunk, catspeak.maxIterations, session.globalAccess,
             session.instanceAccess, session.implicitReturn, session.interface,
@@ -373,8 +365,6 @@ function catspeak_session_create_process_greedy(_session_id, _args=[]) {
     }
     return result.value;
 }
-
-
 
 /// @desc Attempts to get the length of an ordered container.
 /// @param {value} container The container to index.
@@ -966,7 +956,6 @@ function __CatspeakScanner(_buff) constructor {
         var token;
         do {
             token = next();
-            //show_message([__catspeak_token_render(token), lexeme, buffer_tell(buff), buffer_get_size(buff), limit, row, col]);
         } until (token != __CatspeakToken.WHITESPACE
                 && token != __CatspeakToken.COMMENT);
         return token;
@@ -1767,6 +1756,22 @@ function __CatspeakChunk() constructor {
     static removeCode = function(_pos) {
         array_delete(program, _pos, 1);
         size -= 1;
+    }
+    /// @desc Displays the program data for this chunk in a human-readable format.
+    static toString = function() {
+        var out = "";
+        for (var i = 0; i < size; i += 1) {
+            var inst = program[i];
+            if (i != 0) {
+                out += "\n";
+            }
+            out += string(i) + " " + __catspeak_code_render(inst.code);
+            var param = inst.param;
+            if (param != undefined) {
+                out += " " + string(param);
+            }
+        }
+        return out;
     }
 }
 

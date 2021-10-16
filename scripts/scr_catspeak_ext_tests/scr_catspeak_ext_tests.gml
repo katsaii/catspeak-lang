@@ -116,13 +116,14 @@ try {
 
     __catspeak_ext_test_title("foreign functions and values");
     var session = catspeak_session_create();
+    var fun = method({ uwu : "uwu" }, function() { return uwu; });
     catspeak_session_add_constant(session, "const", -12);
-    catspeak_session_add_function(session, "funct", max);
+    catspeak_session_add_function(session, "funct", fun);
     catspeak_session_set_source(session, "return [const, funct]");
     var result = catspeak_session_create_process_greedy(session);
     catspeak_session_destroy(session);
     __catspeak_ext_tests_assert_eq(-12, result[0]);
-    __catspeak_ext_tests_assert_eq(max, method_get_index(result[1]));
+    __catspeak_ext_tests_assert_eq(fun, result[1]);
 
     __catspeak_ext_test_title("gml interface");
     var session = catspeak_session_create();
