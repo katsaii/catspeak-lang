@@ -1,4 +1,5 @@
 /// @desc Initialise examples.
+show_debug_overlay(true);
 catspeak_set_frame_allocation(0.5); // compute for 50% of the frame if possible
 catspeak_set_frame_threshold(0.75); // do not surpass 75% of the current frame
 // parsing JSON using Catspeak

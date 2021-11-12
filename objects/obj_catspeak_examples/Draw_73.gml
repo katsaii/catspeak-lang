@@ -1,2 +1,4 @@
 /// @desc Use the Catspeak draw function.
-catspeakDrawFunction();
+repeat (500) {
+    catspeakDrawFunction();
+}
