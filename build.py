@@ -1,5 +1,7 @@
 import types
 
+EMPTY_STRING = ""
+
 # Parses a file containing whitespace separated values into a list of those
 # values.
 def read_values(fileIn):
@@ -27,58 +29,64 @@ def flatten(iterable):
     return out
 
 # Generates the boilerplate code for a schema of enum values.
-def generate_enum_stub(name, desc):
+def impl_enum(name, desc):
     lowerName = name.lower()
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
-    lines = []
-    lines.append("//! Boilerplate for the `{}` enum.".format(typeName))
-    lines.append("")
-    lines.append("//# feather use syntax-errors")
-    lines.append("")
-    lines.append("/// {}".format(desc))
-    lines.append("enum {} {{".format(typeName))
-    lines.extend("    {},".format(field) for field in fields)
-    lines.append("}")
-    lines.append("")
-    lines.append("/// Gets the name for a value of `{}`.".format(typeName))
-    lines.append("/// Will return `<unknown>` if the value is unexpected.")
-    lines.append("///")
-    lines.append("/// @param {{Enum.{}}} value".format(typeName))
-    lines.append("///   The value of `{}` to convert.".format(typeName))
-    lines.append("///")
-    lines.append("/// @return {String}")
-    lines.append("function catspeak_{}_show(value) {{".format(name.lower()))
-    lines.append("    switch (value) {")
-    lines.extend("    case {}.{}:\n        return \"{}\";"
-            .format(typeName, field, field)
+    lines = flatten([
+        "//! Boilerplate for the `{}` enum.".format(typeName),
+        EMPTY_STRING,
+        "//# feather use syntax-errors",
+        EMPTY_STRING,
+        "/// {}".format(desc),
+        "enum {} {{".format(typeName), (
+            "    {},".format(field)
             for field in fields
-            if not field.startswith("__"))
-    lines.append("    }")
-    lines.append("    return \"<unknown>\";")
-    lines.append("}")
-    lines.append("")
-    lines.append("/// Parses a string into a value of `{}`.".format(typeName))
-    lines.append("/// Will return `undefined` if the value cannot be parsed.")
-    lines.append("///")
-    lines.append("/// @param {Any} str")
-    lines.append("///   The string to parse.")
-    lines.append("///")
-    lines.append("/// @return {{Enum.{}}}".format(typeName))
-    lines.append("function catspeak_{}_read(str) {{".format(name.lower()))
-    lines.append("    switch (str) {")
-    lines.extend("    case \"{}\":\n        return {}.{};"
-            .format(field, typeName, field)
+        ), "}",
+        EMPTY_STRING,
+        "/// Gets the name for a value of `{}`.".format(typeName),
+        "/// Will return `<unknown>` if the value is unexpected.",
+        "///",
+        "/// @param {{Enum.{}}} value".format(typeName),
+        "///   The value of `{}` to convert.".format(typeName),
+        "///",
+        "/// @return {String}",
+        "function catspeak_{}_show(value) {{".format(name.lower()),
+        "    switch (value) {", (
+            [
+                "    case {}.{}:".format(typeName, field),
+                "        return \"{}\";".format(field)
+            ]
             for field in fields
-            if not field.startswith("__"))
-    lines.append("    }")
-    lines.append("    return undefined;")
-    lines.append("}")
+            if not field.startswith("__")
+        ), "    }",
+        "    return \"<unknown\">;",
+        "}",
+        EMPTY_STRING,
+        "/// Parses a string into a value of `{}`.".format(typeName),
+        "/// Will return `undefined` if the value cannot be parsed.",
+        "///",
+        "/// @param {Any} str",
+        "///   The string to parse.",
+        "///",
+        "/// @return {{Enum.{}}}".format(typeName),
+        "function catspeak_{}_read(str) {{".format(name.lower()),
+        "    switch (str) {", (
+            [
+                "    case \"{}\":".format(field),
+                "        return {}.{};".format(typeName, field)
+            ]
+            for field in fields
+            if not field.startswith("__")
+        ), "    }",
+        "    return undefined;",
+        "}"
+    ])
     write_script(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
                 .format(lowerName, lowerName),
         lines,
     )
 
-generate_enum_stub("Token", "Represents a kind of Catspeak token.")
-generate_enum_stub("Intcode", "Represents a kind of Catspeak VM instruction.")
+impl_enum("Token", "Represents a kind of Catspeak token.")
+impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")

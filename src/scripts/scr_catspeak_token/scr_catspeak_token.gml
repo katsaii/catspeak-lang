@@ -129,7 +129,7 @@ function catspeak_token_show(value) {
     case CatspeakToken.DIVISION:
         return "DIVISION";
     }
-    return "<unknown>";
+    return "<unknown">;
 }
 
 /// Parses a string into a value of `CatspeakToken`.

@@ -70,7 +70,7 @@ function catspeak_intcode_show(value) {
     case CatspeakIntcode.JUMP_FALSE:
         return "JUMP_FALSE";
     }
-    return "<unknown>";
+    return "<unknown">;
 }
 
 /// Parses a string into a value of `CatspeakIntcode`.
