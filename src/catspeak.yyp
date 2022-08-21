@@ -2,7 +2,9 @@
   "resources": [
     {"id":{"name":"scr_catspeak_legacy","path":"scripts/scr_catspeak_legacy/scr_catspeak_legacy.yy",},"order":13,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
+    {"id":{"name":"scr_catspeak_token","path":"scripts/scr_catspeak_token/scr_catspeak_token.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
+    {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},
     {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":0,},
   ],
   "Options": [
@@ -26,6 +28,7 @@
     {"folderPath":"folders/Catspeak.yy","order":0,"resourceVersion":"1.0","name":"Catspeak","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Rooms.yy","order":1,"resourceVersion":"1.0","name":"Rooms","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Catspeak/Internals.yy","order":14,"resourceVersion":"1.0","name":"Internals","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Catspeak/Internals/enums.yy","order":3,"resourceVersion":"1.0","name":"enums","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
