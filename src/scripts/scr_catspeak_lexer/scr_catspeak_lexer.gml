@@ -1,5 +1,3 @@
+//! Handles the lexical analysis stage of the Catspeak compiler.
 
-//! TODO: Description
-function scr_catspeak_lexer(){
-
-}
+//# feather use syntax-errors

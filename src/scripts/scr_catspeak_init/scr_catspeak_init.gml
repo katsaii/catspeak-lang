@@ -1,5 +1,7 @@
 //! Initialises core components of the Catspeak compiler.
 
+//# feather use syntax-errors
+
 /// The compiler version, should be updated before each release.
 #macro CATSPEAK_VERSION "2.0.0"
 
