@@ -6,7 +6,7 @@
     "path": "folders/Catspeak.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_ext_gml",
+  "name": "scr_catspeak_legacy",
   "tags": [],
   "resourceType": "GMScript",
 }
