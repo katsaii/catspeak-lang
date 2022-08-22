@@ -52,14 +52,16 @@ def impl_enum(name, desc):
         "///",
         "/// @return {String}",
         "function catspeak_{}_show(value) {{".format(name.lower()),
-        "    switch (value) {", (
+        "    switch (value) {",
+        (
             [
                 "    case {}.{}:".format(typeName, field),
                 "        return \"{}\";".format(field)
             ]
             for field in fields
             if not field.startswith("__")
-        ), "    }",
+        ),
+        "    }",
         "    return \"<unknown\">;",
         "}",
         EMPTY_STRING,
@@ -71,14 +73,16 @@ def impl_enum(name, desc):
         "///",
         "/// @return {{Enum.{}}}".format(typeName),
         "function catspeak_{}_read(str) {{".format(name.lower()),
-        "    switch (str) {", (
+        "    switch (str) {",
+        (
             [
                 "    case \"{}\":".format(field),
                 "        return {}.{};".format(typeName, field)
             ]
             for field in fields
             if not field.startswith("__")
-        ), "    }",
+        ),
+        "    }",
         "    return undefined;",
         "}"
     ])
@@ -88,5 +92,37 @@ def impl_enum(name, desc):
         lines,
     )
 
+# Generates the boilerplate code for a schema of enum flags.
+def impl_enum_flags(name, desc):
+    lowerName = name.lower()
+    typeName = "Catspeak{}".format(name)
+    fields = read_values("enums/{}.tsv".format(lowerName))
+    lines = flatten([
+        "//! Boilerplate for the `{}` enum.".format(typeName),
+        EMPTY_STRING,
+        "//# feather use syntax-errors",
+        EMPTY_STRING,
+        "/// {}".format(desc),
+        "enum {} {{".format(typeName),
+        "    NONE = 0,",
+        (
+            "    {} = (1 << {}),".format(field, i)
+            for i, field in enumerate(fields)
+        ),
+        "    ALL = (",
+        (
+            "        {}{}.{}".format("| " if i > 0 else "", typeName, field)
+            for i, field in enumerate(fields)
+        ),
+        "    ),",
+        "}",
+    ])
+    write_script(
+        "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
+                .format(lowerName, lowerName),
+        lines,
+    )
+
 impl_enum("Token", "Represents a kind of Catspeak token.")
 impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")
+impl_enum_flags("Option", "The set of feature flags Catspeak can be configured with.")
