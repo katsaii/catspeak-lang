@@ -3,6 +3,7 @@
     {"id":{"name":"scr_catspeak_option","path":"scripts/scr_catspeak_option/scr_catspeak_option.yy",},"order":2,},
     {"id":{"name":"scr_catspeak_legacy","path":"scripts/scr_catspeak_legacy/scr_catspeak_legacy.yy",},"order":13,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
+    {"id":{"name":"scr_catspeak_error","path":"scripts/scr_catspeak_error/scr_catspeak_error.yy",},"order":4,},
     {"id":{"name":"scr_catspeak_token","path":"scripts/scr_catspeak_token/scr_catspeak_token.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},

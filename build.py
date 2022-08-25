@@ -62,7 +62,7 @@ def impl_enum(name, desc):
             if not field.startswith("__")
         ),
         "    }",
-        "    return \"<unknown\">;",
+        "    return \"<unknown>\";",
         "}",
         EMPTY_STRING,
         "/// Parses a string into a value of `{}`.".format(typeName),
