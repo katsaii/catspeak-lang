@@ -2,15 +2,23 @@ import types
 
 EMPTY_STRING = ""
 
+# Reads a file as a complete string and returns its contents.
+def read_string(fileIn):
+    try:
+        with open(fileIn) as file:
+            print("Reading file: {}".format(fileIn))
+            return file.read()
+    except FileNotFoundError:
+        return None
+
 # Parses a file containing whitespace separated values into a list of those
 # values.
 def read_values(fileIn):
-    print("Reading file: {}".format(fileIn))
-    with open(fileIn) as file:
-        return [field for field in file.read().split()]
+    content = read_string(fileIn)
+    return [field for field in content.split()]
 
 # Updates a script file with this name.
-def write_script(fileOut, lines):
+def write_string(fileOut, lines):
     print("Updating file: {}".format(fileOut))
     with open(fileOut, "w") as file:
         file.writelines("{}\n".format(line) for line in lines)
@@ -33,6 +41,7 @@ def impl_enum(name, desc):
     lowerName = name.lower()
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
+    appendix = read_string("enums/{}.gml".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
         EMPTY_STRING,
@@ -84,9 +93,14 @@ def impl_enum(name, desc):
         ),
         "    }",
         "    return undefined;",
-        "}"
+        "}",
     ])
-    write_script(
+    if (appendix != None):
+        lines.extend([
+            EMPTY_STRING,
+            appendix,
+        ])
+    write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
                 .format(lowerName, lowerName),
         lines,
@@ -97,6 +111,7 @@ def impl_enum_flags(name, desc):
     lowerName = name.lower()
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
+    appendix = read_string("enums/{}.gml".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
         EMPTY_STRING,
@@ -117,7 +132,12 @@ def impl_enum_flags(name, desc):
         "    ),",
         "}",
     ])
-    write_script(
+    if (appendix != None):
+        lines.extend([
+            EMPTY_STRING,
+            appendix,
+        ])
+    write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
                 .format(lowerName, lowerName),
         lines,
@@ -125,4 +145,7 @@ def impl_enum_flags(name, desc):
 
 impl_enum("Token", "Represents a kind of Catspeak token.")
 impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")
-impl_enum_flags("Option", "The set of feature flags Catspeak can be configured with.")
+impl_enum_flags(
+    "Option",
+    "The set of feature flags Catspeak can be configured with."
+)

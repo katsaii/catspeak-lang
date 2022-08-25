@@ -66,7 +66,3 @@ function CatspeakError(location, message="No message") constructor {
         return msg;
     }
 }
-
-var pos = new CatspeakLocation(10, 20);
-var err = new CatspeakError(pos, "Wtf an error!! owo");
-show_message(err.toString(true));
