@@ -15,10 +15,19 @@ function CatspeakLocation(line, column) constructor {
     self.line = line;
     self.column = column;
 
+    /// Creates an exact copy of this source location and returns it.
+    ///
+    /// @return {Struct.CatspeakLocation}
+    static clone = function () {
+        return new CatspeakLocation(line, column);
+    }
+
     /// Renders this Catspeak location. If both a line number and column
     /// number exist, then the format will be `(line N, column M)`. Otherwise,
     /// if only a line number exists, the format will be `(line N)`.
-    function toString() {
+    ///
+    /// @return {String}
+    static toString = function () {
         var msg = "(line " + string(line);
         if (column != undefined) {
             msg += ", column " + string(column);
@@ -52,7 +61,9 @@ function CatspeakError(location, message="No message") constructor {
     ///
     /// @param {Bool} [verbose]
     ///   Whether to include the stack trace as part of the error output.
-    function toString(verbose=false) {
+    ///
+    /// @return {String}
+    static toString = function (verbose=false) {
         var msg = "";
         msg += instanceof(self) + " " + string(location);
         msg += ": " + string(message);

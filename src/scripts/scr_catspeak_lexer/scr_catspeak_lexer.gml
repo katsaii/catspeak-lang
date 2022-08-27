@@ -1,8 +1,43 @@
 //! Handles the lexical analysis stage of the Catspeak compiler.
 
-/// 
-function CatspeakLexer() constructor {
-    
+/// Tokenises the contents of a GML buffer. The lexer does not take ownership
+/// of this buffer, but it may mutate it so beware. Therefore you should make
+/// sure to delete the buffer once parsing is complete.
+///
+/// @param {ID.Buffer} buff
+///   The ID of the GML buffer to use.
+///
+/// @param {Array<Enum.CatspeakASCIIDesc>} [db]
+///   The ASCII database to use, defaults to the global database. This
+///   modifies how the lexer interprets the character codes read from the
+///   buffer. 
+function CatspeakLexer(buff, db) constructor {
+    self.db = db ?? catspeak_ascii_database_get();
+    self.buff = buff;
+    self.alignment = buffer_get_alignment(buff);
+    self.limit = buffer_get_size(buff);
+    self.eof = false;
+    self.cr = false;
+    self.skipNextByte = false;
+    self.lexeme = undefined;
+    self.lexemeLength = 0;
+    self.posStart = new CatspeakLocation(1, 1);
+    self.posEnd = self.lexemePos.clone();
+
+    /// Advances the lexer and returns the next `CatspeakToken`.
+    ///
+    /// @return {Enum.CatspeakToken}
+    static next = function() {
+        // TODO
+    }
+
+    /// Advances the lexer and returns the next `CatspeakToken`, ingoring
+    /// any comments and whitespace.
+    ///
+    /// @return {Enum.CatspeakToken}
+    static nextWithoutSpace = function() {
+        // TODO
+    }
 }
 
 /// Returns whether a Catspeak token is a valid operator.
@@ -57,7 +92,7 @@ function catspeak_byte_get_desc_ext(char, db) {
 ///   or a single ASCII character to update.
 ///
 /// @param {Array<Enum.CatspeakASCIIDesc>} [db]
-///   The descriptor database to update. Defaults to the global database.
+///   The descriptor database to update, defaults to the global database.
 function catspeak_ascii_database_mark(descriptor, query, db) {
     db ??= catspeak_ascii_database_get();
     if (is_method(query) || is_real(query) && script_exists(query)) {
@@ -112,7 +147,7 @@ function catspeak_ascii_database_get() {
         catspeak_ascii_database_mark(
             CatspeakASCIIDesc.ALPHABETIC
             | CatspeakASCIIDesc.GRAPHIC,
-            function(char) {
+            function (char) {
                 return char >= ord("a") && char <= ord("z")
                         || char >= ord("A") && char <= ord("Z");
             },
@@ -127,7 +162,7 @@ function catspeak_ascii_database_get() {
             CatspeakASCIIDesc.DIGIT
             | CatspeakASCIIDesc.DIGIT_HEX
             | CatspeakASCIIDesc.GRAPHIC,
-            function(char) {
+            function (char) {
                 return char >= ord("0") && char <= ord("9");
             },
             db
@@ -139,7 +174,7 @@ function catspeak_ascii_database_get() {
         );
         catspeak_ascii_database_mark(
             CatspeakASCIIDesc.DIGIT_HEX,
-            function(char) {
+            function (char) {
                 return char >= ord("a") && char <= ord("f")
                         || char >= ord("A") && char <= ord("F");
             },
@@ -147,7 +182,7 @@ function catspeak_ascii_database_get() {
         );
         catspeak_ascii_database_mark(
             CatspeakASCIIDesc.OPERATOR,
-            function(char) {
+            function (char) {
                 return char == ord("!")
                         || char >= ord("#") && char <= ord("&")
                         || char == ord("*")
