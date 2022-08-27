@@ -14,7 +14,7 @@ def read_string(fileIn):
 # Parses a file containing whitespace separated values into a list of those
 # values.
 def read_values(fileIn):
-    content = read_string(fileIn)
+    content = read_string(fileIn) or ""
     return [field for field in content.split()]
 
 # Updates a script file with this name.
@@ -44,6 +44,7 @@ def impl_enum(name, desc):
     appendix = read_string("enums/{}.gml".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
+        "//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
         EMPTY_STRING,
         "//# feather use syntax-errors",
         EMPTY_STRING,
@@ -114,6 +115,7 @@ def impl_enum_flags(name, desc):
     appendix = read_string("enums/{}.gml".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
+        "//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
         EMPTY_STRING,
         "//# feather use syntax-errors",
         EMPTY_STRING,
@@ -125,8 +127,9 @@ def impl_enum_flags(name, desc):
             for i, field in enumerate(fields)
         ),
         "    ALL = (",
+        "        {}.NONE".format(typeName),
         (
-            "        {}{}.{}".format("| " if i > 0 else "", typeName, field)
+            "        | {}.{}".format(typeName, field)
             for i, field in enumerate(fields)
         ),
         "    ),",
@@ -148,4 +151,8 @@ impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")
 impl_enum_flags(
     "Option",
     "The set of feature flags Catspeak can be configured with."
+)
+impl_enum_flags(
+    "ASCIIDescriptor",
+    "Basic predicate functions for ASCII characters."
 )

@@ -6,7 +6,7 @@
     "path": "folders/Catspeak/Internals.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_byte",
+  "name": "scr_catspeak_asciidescriptor",
   "tags": [],
   "resourceType": "GMScript",
 }
