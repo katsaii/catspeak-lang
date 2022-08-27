@@ -3,7 +3,7 @@
 
 //# feather use syntax-errors
 
-/// Basic predicate functions for ASCII characters.
+/// Simple tags that identify ASCII characters read from a GML buffer.
 enum CatspeakASCIIDescriptor {
     NONE = 0,
     NEWLINE = (1 << 0),

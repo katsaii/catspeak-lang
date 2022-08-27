@@ -154,5 +154,5 @@ impl_enum_flags(
 )
 impl_enum_flags(
     "ASCIIDescriptor",
-    "Basic predicate functions for ASCII characters."
+    "Simple tags that identify ASCII characters read from a GML buffer."
 )
