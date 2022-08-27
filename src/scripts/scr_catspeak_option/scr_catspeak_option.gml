@@ -18,3 +18,17 @@ enum CatspeakOption {
         | CatspeakOption.PERSISTENT
     ),
 }
+
+/// Returns whether an instance of `CatspeakOption` contains an expected flag.
+///
+/// @param {Any} value
+///   The value to check for flags of, must be a numeric value.
+///
+/// @param {Enum.CatspeakOption} flags
+///   The flags of `CatspeakOption` to check.
+///
+/// @return {Bool}
+function catspeak_option_contains(value, flags) {
+    gml_pragma("forceinline");
+    return (value & flags) == flags;
+}

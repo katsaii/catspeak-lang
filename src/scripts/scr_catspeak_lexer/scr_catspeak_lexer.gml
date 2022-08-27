@@ -9,7 +9,10 @@ function CatspeakLexer() constructor {
 ///
 /// @param {Enum.CatspeakToken} token
 ///   The ID of the token to check.
+///
+/// @return {Bool}
 function catspeak_token_is_operator(token) {
+    gml_pragma("forceinline");
     return token > CatspeakToken.__OPERATORS_BEGIN__
             && token < CatspeakToken.__OPERATORS_END__;
 }
@@ -20,10 +23,11 @@ function catspeak_token_is_operator(token) {
 /// @param {Real} char
 ///   The character to check.
 ///
-/// @return {Enum.CatspeakASCIIDescriptor}
-function catspeak_byte_get_descriptor(char) {
-    return catspeak_byte_get_descriptor_ext(char,
-            catspeak_ascii_descriptor_database_get());
+/// @return {Enum.CatspeakASCIIDesc}
+function catspeak_byte_get_desc(char) {
+    gml_pragma("forceinline");
+    return catspeak_byte_get_desc_ext(char,
+            catspeak_ascii_database_get());
 }
 
 /// Returns the descriptor for this ASCII character. Allows for a custom
@@ -32,21 +36,19 @@ function catspeak_byte_get_descriptor(char) {
 /// @param {Real} char
 ///   The character to check.
 ///
-/// @param {Array<Enum.CatspeakASCIIDescriptor>} db
+/// @param {Array<Enum.CatspeakASCIIDesc>} db
 ///   The descriptor database to use. Must be an array whose length is exactly
 ///   256 elements long.
 ///
-/// @return {Enum.CatspeakASCIIDescriptor}
-function catspeak_byte_get_descriptor_ext(char, db) {
-    if (char < 0 || char > 255) {
-        return CatspeakASCIIDescriptor.NONE;
-    }
-    return db[char];
+/// @return {Enum.CatspeakASCIIDesc}
+function catspeak_byte_get_desc_ext(char, db) {
+    gml_pragma("forceinline");
+    return char < 0 || char > 255 ? CatspeakASCIIDesc.NONE : db[char];
 }
 
 /// Marks all characters which match a query with a descriptor.
 ///
-/// @param {Enum.CatspeakASCIIDescriptor} descriptor
+/// @param {Enum.CatspeakASCIIDesc} descriptor
 ///   The descriptor to mark.
 ///
 /// @param {Any} query
@@ -54,9 +56,10 @@ function catspeak_byte_get_descriptor_ext(char, db) {
 ///   characters, function which takes a character and returns true/false,
 ///   or a single ASCII character to update.
 ///
-/// @param {Array<Enum.CatspeakASCIIDescriptor>} db
-///   The descriptor database to update.
-function catspeak_ascii_descriptor_database_mark(descriptor, query, db) {
+/// @param {Array<Enum.CatspeakASCIIDesc>} [db]
+///   The descriptor database to update. Defaults to the global database.
+function catspeak_ascii_database_mark(descriptor, query, db) {
+    db ??= catspeak_ascii_database_get();
     if (is_method(query) || is_real(query) && script_exists(query)) {
         for (var i = 0; i < 256; i += 1) {
             if (query(i)) {
@@ -78,15 +81,15 @@ function catspeak_ascii_descriptor_database_mark(descriptor, query, db) {
     }
 }
 
-/// Returns the ASCII descriptor database.
+/// Returns the ASCII global descriptor database.
 ///
-/// @return {Array<Enum.CatspeakASCIIDescriptor>}
-function catspeak_ascii_descriptor_database_get() {
+/// @return {Array<Enum.CatspeakASCIIDesc>}
+function catspeak_ascii_database_get() {
     static db = undefined;
     if (db == undefined) {
-        db = array_create(256, CatspeakASCIIDescriptor.NONE);
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.WHITESPACE,
+        db = array_create(256, CatspeakASCIIDesc.NONE);
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.WHITESPACE,
             [
                 0x09, // CHARACTER TABULATION ('\t')
                 0x0A, // LINE FEED ('\n')
@@ -98,52 +101,52 @@ function catspeak_ascii_descriptor_database_get() {
             ],
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.NEWLINE,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.NEWLINE,
             [
                 0x0A, // LINE FEED ('\n')
                 0x0D, // CARRIAGE RETURN ('\r')
             ],
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.ALPHABETIC
-            | CatspeakASCIIDescriptor.GRAPHIC,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.ALPHABETIC
+            | CatspeakASCIIDesc.GRAPHIC,
             function(char) {
                 return char >= ord("a") && char <= ord("z")
                         || char >= ord("A") && char <= ord("Z");
             },
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.GRAPHIC,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.GRAPHIC,
             ["_", "'"],
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.DIGIT
-            | CatspeakASCIIDescriptor.DIGIT_HEX
-            | CatspeakASCIIDescriptor.GRAPHIC,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.DIGIT
+            | CatspeakASCIIDesc.DIGIT_HEX
+            | CatspeakASCIIDesc.GRAPHIC,
             function(char) {
                 return char >= ord("0") && char <= ord("9");
             },
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.DIGIT_BIN,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.DIGIT_BIN,
             ["0", "1"],
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.DIGIT_HEX,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.DIGIT_HEX,
             function(char) {
                 return char >= ord("a") && char <= ord("f")
                         || char >= ord("A") && char <= ord("F");
             },
             db
         );
-        catspeak_ascii_descriptor_database_mark(
-            CatspeakASCIIDescriptor.OPERATOR,
+        catspeak_ascii_database_mark(
+            CatspeakASCIIDesc.OPERATOR,
             function(char) {
                 return char == ord("!")
                         || char >= ord("#") && char <= ord("&")
