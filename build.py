@@ -133,6 +133,21 @@ def impl_enum_flags(name, desc):
         ),
         "    ),",
         "}",
+        EMPTY_STRING,
+        "/// Returns whether an instance of `{}` contains an expected flag."
+                .format(typeName),
+        "///",
+        "/// @param {Any} value",
+        "///   The value to check for flags of, must be a numeric value.",
+        "///",
+        "/// @param {{Enum.{}}} flags".format(typeName),
+        "///   The flags of `{}` to check.".format(typeName),
+        "///",
+        "/// @return {Bool}",
+        "function catspeak_{}_contains(value, flags) {{".format(lowerName),
+        "    gml_pragma(\"forceinline\");",
+        "    return (value & flags) == flags;",
+        "}",
     ])
     write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
@@ -147,6 +162,6 @@ impl_enum_flags(
     "The set of feature flags Catspeak can be configured with."
 )
 impl_enum_flags(
-    "ASCII",
+    "ASCIIDesc",
     "Simple tags that identify ASCII characters read from a GML buffer."
 )
