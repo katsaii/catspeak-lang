@@ -19,8 +19,14 @@ def read_values(fileIn):
 
 # Updates a script file with this name.
 def write_string(fileOut, lines):
-    print("Updating file: {}".format(fileOut))
+    try:
+        with open(fileOut):
+            # (っ °Д °;)っ why is python making me do this! give me file_exists
+            pass
+    except FileNotFoundError:
+        return None
     with open(fileOut, "w") as file:
+        print("Updating file: {}".format(fileOut))
         file.writelines("{}\n".format(line) for line in lines)
 
 # Flattens an iterable into a single list.
@@ -41,7 +47,6 @@ def impl_enum(name, desc):
     lowerName = name.lower()
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
-    appendix = read_string("enums/{}.gml".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
         "//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
@@ -96,11 +101,6 @@ def impl_enum(name, desc):
         "    return undefined;",
         "}",
     ])
-    if (appendix != None):
-        lines.extend([
-            EMPTY_STRING,
-            appendix,
-        ])
     write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
                 .format(lowerName, lowerName),
@@ -112,7 +112,6 @@ def impl_enum_flags(name, desc):
     lowerName = name.lower()
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
-    appendix = read_string("enums/{}.gml".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
         "//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
@@ -135,11 +134,6 @@ def impl_enum_flags(name, desc):
         "    ),",
         "}",
     ])
-    if (appendix != None):
-        lines.extend([
-            EMPTY_STRING,
-            appendix,
-        ])
     write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
                 .format(lowerName, lowerName),
@@ -153,6 +147,6 @@ impl_enum_flags(
     "The set of feature flags Catspeak can be configured with."
 )
 impl_enum_flags(
-    "ASCIIDescriptor",
+    "ASCII",
     "Simple tags that identify ASCII characters read from a GML buffer."
 )
