@@ -14,6 +14,7 @@ enum CatspeakASCIIDesc {
     DIGIT_BIN = (1 << 5),
     OPERATOR = (1 << 6),
     GRAPHIC = (1 << 7),
+    IDENT = (1 << 8),
     ALL = (
         CatspeakASCIIDesc.NONE
         | CatspeakASCIIDesc.NEWLINE
@@ -24,6 +25,7 @@ enum CatspeakASCIIDesc {
         | CatspeakASCIIDesc.DIGIT_BIN
         | CatspeakASCIIDesc.OPERATOR
         | CatspeakASCIIDesc.GRAPHIC
+        | CatspeakASCIIDesc.IDENT
     ),
 }
 
@@ -118,6 +120,11 @@ function catspeak_asciidesc_show(value) {
         msg += delimiter ?? "";
         delimiter ??= " | ";
         msg += "GRAPHIC";
+    }
+    if ((value & CatspeakASCIIDesc.IDENT) != 0) {
+        msg += delimiter ?? "";
+        delimiter ??= " | ";
+        msg += "IDENT";
     }
     return msg;
 }
