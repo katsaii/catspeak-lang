@@ -1,6 +1,6 @@
 //! Handles the lexical analysis stage of the Catspeak compiler.
 
-var s = "this ? is : a ; test -- string";
+var s = "this ? is : a ; test\n -- string";
 var buff = buffer_create(string_byte_length(s), buffer_fixed, 1);
 buffer_write(buff, buffer_text, s);
 buffer_seek(buff, buffer_seek_start, 0);
@@ -8,7 +8,7 @@ var lex = new CatspeakLexer(buff);
 do {
     var tk = lex.nextWithoutSpace();
     var a = catspeak_token_show(tk);
-    show_message([a, lex.lexeme]);
+    //show_message([a, lex.lexeme]);
 } until (tk == CatspeakToken.EOF);
 
 /// Tokenises the contents of a GML buffer. The lexer does not take ownership

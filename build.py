@@ -148,6 +148,58 @@ def impl_enum_flags(name, desc):
         "    gml_pragma(\"forceinline\");",
         "    return (value & flags) == flags;",
         "}",
+        EMPTY_STRING,
+        "/// Returns whether an instance of `{}` equals an expected flag."
+                .format(typeName),
+        "///",
+        "/// @param {Any} value",
+        "///   The value to check for flags of, must be a numeric value.",
+        "///",
+        "/// @param {{Enum.{}}} flags".format(typeName),
+        "///   The flags of `{}` to check.".format(typeName),
+        "///",
+        "/// @return {Bool}",
+        "function catspeak_{}_equals(value, flags) {{".format(lowerName),
+        "    gml_pragma(\"forceinline\");",
+        "    return value == flags;",
+        "}",
+        EMPTY_STRING,
+        "/// Returns whether an instance of `{}` intersects a set of expected flags."
+                .format(typeName),
+        "///",
+        "/// @param {Any} value",
+        "///   The value to check for flags of, must be a numeric value.",
+        "///",
+        "/// @param {{Enum.{}}} flags".format(typeName),
+        "///   The flags of `{}` to check.".format(typeName),
+        "///",
+        "/// @return {Bool}",
+        "function catspeak_{}_intersects(value, flags) {{".format(lowerName),
+        "    gml_pragma(\"forceinline\");",
+        "    return (value & flags) != 0;",
+        "}",
+        EMPTY_STRING,
+        "/// Gets the name for a value of `{}`.".format(typeName),
+        "/// Will return the empty string if the value is unexpected.",
+        "///",
+        "/// @param {{Enum.{}}} value".format(typeName),
+        "///   The value of `{}` to convert, must be a numeric value."
+                .format(typeName),
+        "///",
+        "/// @return {String}",
+        "function catspeak_{}_show(value) {{".format(lowerName),
+        "    var msg = \"\";",
+        "    var delimiter = undefined;",
+        (
+            """    if ((value & {}.{}) != 0) {{
+        msg += delimiter ?? "";
+        delimiter ??= " | ";
+        msg += \"{}\";
+    }}""".format(typeName, field, field)
+            for i, field in enumerate(fields)
+        ),
+        "    return msg;",
+        "}",
     ])
     write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"
