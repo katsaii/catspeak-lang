@@ -156,7 +156,8 @@ function CatspeakLexer(buff) constructor {
             registerLexeme();
             token = catspeak_string_to_token_keyword(lexeme) ?? token;
             if (token == CatspeakToken.COMMENT) {
-                
+                // consume the coment
+                advanceWhile(CatspeakASCIIDesc.NEWLINE, false);
             }
         } else if (catspeak_asciidesc_contains(desc,
                 CatspeakASCIIDesc.ALPHABETIC)) {
