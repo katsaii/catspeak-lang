@@ -1,19 +1,6 @@
 //! Handles the lexical analysis stage of the Catspeak compiler.
 
-var s = @'
-    let `+` = fun(lhs, rhs) {
-        ...
-    }
-';
-var buff = buffer_create(string_byte_length(s), buffer_fixed, 1);
-buffer_write(buff, buffer_text, s);
-buffer_seek(buff, buffer_seek_start, 0);
-var lex = new CatspeakLexer(buff);
-do {
-    var tk = lex.nextWithoutSpace();
-    var a = catspeak_token_show(tk);
-    show_message([a, lex.lexeme]);
-} until (tk == CatspeakToken.EOF);
+//# feather use syntax-errors
 
 /// Tokenises the contents of a GML buffer. The lexer does not take ownership
 /// of this buffer, but it may mutate it so beware. Therefore you should make
@@ -204,16 +191,26 @@ function CatspeakLexer(buff) constructor {
     };
 
     /// Advances the lexer and returns the next `CatspeakToken`, ingoring
-    /// any comments and whitespace.
+    /// any comments, whitespace, and line continuations.
     ///
     /// @return {Enum.CatspeakToken}
     static nextWithoutSpace = function() {
-        var token;
-        do {
-            token = next();
-        } until (token != CatspeakToken.WHITESPACE
-                && token != CatspeakToken.COMMENT);
-        return token;
+        var skipSemicolon = false;
+        while (true) {
+            var token = next();
+            if (token == CatspeakToken.WHITESPACE
+                    || token == CatspeakToken.COMMENT) {
+                continue;
+            }
+            if (token == CatspeakToken.CONTINUE_LINE) {
+                skipSemicolon = true;
+                continue;
+            }
+            if (skipSemicolon && token == CatspeakToken.BREAK_LINE) {
+                continue;
+            }
+            return token;
+        }
     };
 }
 
