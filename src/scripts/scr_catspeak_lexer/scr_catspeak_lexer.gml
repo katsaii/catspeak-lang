@@ -5,10 +5,11 @@ var buff = buffer_create(string_byte_length(s), buffer_fixed, 1);
 buffer_write(buff, buffer_text, s);
 buffer_seek(buff, buffer_seek_start, 0);
 var lex = new CatspeakLexer(buff);
-while (!lex.eof) {
-    var a = catspeak_token_show(lex.next());
+do {
+    var tk = lex.nextWithoutSpace();
+    var a = catspeak_token_show(tk);
     show_message([a, lex.lexeme]);
-}
+} until (tk == CatspeakToken.EOF);
 
 /// Tokenises the contents of a GML buffer. The lexer does not take ownership
 /// of this buffer, but it may mutate it so beware. Therefore you should make
@@ -158,6 +159,7 @@ function CatspeakLexer(buff) constructor {
             if (token == CatspeakToken.COMMENT) {
                 // consume the coment
                 advanceWhile(CatspeakASCIIDesc.NEWLINE, false);
+                registerLexeme();
             }
         } else if (catspeak_asciidesc_contains(desc,
                 CatspeakASCIIDesc.ALPHABETIC)) {
@@ -167,10 +169,32 @@ function CatspeakLexer(buff) constructor {
         } else if (catspeak_asciidesc_contains(desc,
                 CatspeakASCIIDesc.DIGIT)) {
             // TODO, numeric literals
-        } else if (byte == "\"") {
-            // TODO, strings
-        } else if (byte == "`") {
-            // TODO, identifier literals
+        } else if (byte == ord("\"")) {
+            clearLexeme();
+            while (true) {
+                var peek = peek(1);
+                if (peek == -1 || peek == ord("\"")) {
+                    break;
+                }
+                advance();
+            }
+            registerLexeme();
+            if (peek(1) == "\"") {
+                // I don't care about raising an error in this situation,
+                // since Catspeak should be a bit forgiving as a modding
+                // language
+                skipNextByte = true;
+            }
+        } else if (byte == ord("`")) {
+            clearLexeme();
+            advanceWhile(CatspeakASCIIDesc.WHITESPACE, false);
+            registerLexeme();
+            if (peek(1) == "`") {
+                // similar to strings, I don't care about raising an error in
+                // this situation, since Catspeak should be a bit forgiving as
+                // a modding language
+                skipNextByte = true;
+            }
         }
         return token;
     }
@@ -180,7 +204,12 @@ function CatspeakLexer(buff) constructor {
     ///
     /// @return {Enum.CatspeakToken}
     static nextWithoutSpace = function() {
-        // TODO
+        var token;
+        do {
+            token = next();
+        } until (token != CatspeakToken.WHITESPACE
+                && token != CatspeakToken.COMMENT);
+        return token;
     }
 }
 
@@ -363,9 +392,9 @@ function __catspeak_mark_asciidesc(db, query, value) {
     var countDb = array_length(db);
     for (var i = 0; i < count; i += 1) {
         var queryItem = query[i];
-        if (is_method(query)) {
+        if (is_method(queryItem)) {
             for (var i = 0; i < countDb; i += 1) {
-                if (query(i)) {
+                if (queryItem(i)) {
                     db[@ i] |= value;
                 }
             }

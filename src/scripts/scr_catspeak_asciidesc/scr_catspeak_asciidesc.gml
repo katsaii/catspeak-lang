@@ -9,21 +9,23 @@ enum CatspeakASCIIDesc {
     NEWLINE = (1 << 0),
     WHITESPACE = (1 << 1),
     ALPHABETIC = (1 << 2),
-    GRAPHIC = (1 << 3),
-    DIGIT = (1 << 4),
-    DIGIT_HEX = (1 << 5),
-    DIGIT_BIN = (1 << 6),
-    OPERATOR = (1 << 7),
+    DIGIT = (1 << 3),
+    DIGIT_HEX = (1 << 4),
+    DIGIT_BIN = (1 << 5),
+    OPERATOR = (1 << 6),
+    GRAPHIC = (1 << 7),
+    QUOTE = (1 << 8),
     ALL = (
         CatspeakASCIIDesc.NONE
         | CatspeakASCIIDesc.NEWLINE
         | CatspeakASCIIDesc.WHITESPACE
         | CatspeakASCIIDesc.ALPHABETIC
-        | CatspeakASCIIDesc.GRAPHIC
         | CatspeakASCIIDesc.DIGIT
         | CatspeakASCIIDesc.DIGIT_HEX
         | CatspeakASCIIDesc.DIGIT_BIN
         | CatspeakASCIIDesc.OPERATOR
+        | CatspeakASCIIDesc.GRAPHIC
+        | CatspeakASCIIDesc.QUOTE
     ),
 }
 
