@@ -20,7 +20,7 @@ function CatspeakLocation(line, column) constructor {
     /// @return {Struct.CatspeakLocation}
     static clone = function () {
         return new CatspeakLocation(line, column);
-    }
+    };
 
     /// Renders this Catspeak location. If both a line number and column
     /// number exist, then the format will be `(line N, column M)`. Otherwise,
@@ -34,7 +34,7 @@ function CatspeakLocation(line, column) constructor {
         }
         msg += ")";
         return msg;
-    }
+    };
 }
 
 /// Represents an error raised by the Catspeak runtime. Follows a similar
@@ -75,5 +75,5 @@ function CatspeakError(location, message="No message") constructor {
             }
         }
         return msg;
-    }
+    };
 }
