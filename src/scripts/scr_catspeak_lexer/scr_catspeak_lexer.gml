@@ -24,6 +24,101 @@ function CatspeakLexer(buff, db) constructor {
     self.posStart = new CatspeakLocation(1, 1);
     self.posEnd = self.lexemePos.clone();
 
+    /// Updates the line and column numbers of the lexer, also updates the.
+    /// current length of the lexeme, in bytes.
+    ///
+    /// @param {Real} byte
+    ///   The byte to consider.
+    static registerByte = function(byte) {
+        lexemeLength += 1;
+        if (byte == ord("\r")) {
+            cr = true;
+            col = 1;
+            row += 1;
+        } else if (byte == ord("\n")) {
+            col = 1;
+            if (cr) {
+                cr = false;
+            } else {
+                row += 1;
+            }
+        } else {
+            col += 1;
+            cr = false;
+        }
+    }
+
+    /// Registers the current lexeme as a string.
+    static registerLexeme = function() {
+        if (lexemeLength < 1) {
+            // always an empty slice
+            lexeme = "";
+            return;
+        }
+        var buff_ = buff;
+        var offset = buffer_tell(buff_);
+        var byte = buffer_peek(buff_, offset, buffer_u8);
+        buffer_poke(buff_, offset, buffer_u8, 0x00);
+        buffer_seek(buff_, buffer_seek_start, offset - lexemeLength);
+        lexeme = buffer_read(buff_, buffer_string);
+        buffer_seek(buff_, buffer_seek_relative, -1);
+        buffer_poke(buff_, offset, buffer_u8, byte);
+    }
+
+    /// Resets the current lexeme.
+    static clearLexeme = function() {
+        lexemeLength = 0;
+        lexeme = undefined;
+        posStart.line = posEnd.line;
+        posStart.column = posEnd.column;
+    }
+
+    /// @desc Advances the scanner and returns the current byte.
+    static advance = function() {
+        var seek = buffer_tell(buff);
+        if (seek + 1 >= limit) {
+            eofReached = true;
+        }
+        var byte = buffer_read(buff, buffer_u8);
+        registerByte(byte);
+        return byte;
+    }
+
+    /// @desc Peeks `n` bytes ahead of the current buffer offset.
+    ///
+    /// @param {Real} n
+    ///   The number of bytes to look ahead.
+    static peek = function(n) {
+        var offset = buffer_tell(buff) + n - 1;
+        if (offset >= limit) {
+            return -1;
+        }
+        return buffer_peek(buff, offset, buffer_u8);
+    }
+
+    /// @desc Advances the lexer whilst a bytes contain some expected ASCII
+    /// descriptor, or until the end of the file is reached.
+    ///
+    /// @param {Enum.CatspeakASCIIDesc} desc
+    ///   The descriptor to check for.
+    static advanceWhile = function(desc) {
+        var byte = undefined;
+        var seek = buffer_tell(buff);
+        while (seek < limit) {
+            byte = buffer_peek(buff, seek, buffer_u8);
+            if (!catspeak_byte_contains_desc(byte, db, desc)) {
+                break;
+            }
+            registerByte(byte);
+            seek += alignment;
+        }
+        if (seek >= limit) {
+            eofReached = true;
+        }
+        buffer_seek(buff, buffer_seek_start, seek);
+        return byte;
+    }
+
     /// Advances the lexer and returns the next `CatspeakToken`.
     ///
     /// @return {Enum.CatspeakToken}
@@ -52,21 +147,7 @@ function catspeak_token_is_operator(token) {
             && token < CatspeakToken.__OPERATORS_END__;
 }
 
-/// Returns the descriptor for this ASCII character. Uses the default
-/// descriptor database returned by `catspeak_ascii_descriptor_database_get`.
-///
-/// @param {Real} char
-///   The character to check.
-///
-/// @return {Enum.CatspeakASCIIDesc}
-function catspeak_byte_get_desc(char) {
-    gml_pragma("forceinline");
-    return catspeak_byte_get_desc_ext(char,
-            catspeak_ascii_database_get());
-}
-
-/// Returns the descriptor for this ASCII character. Allows for a custom
-/// descriptor database to be passed as a parameter.
+/// Returns whether a byte matches an expected ASCII descriptor of.
 ///
 /// @param {Real} char
 ///   The character to check.
@@ -75,10 +156,16 @@ function catspeak_byte_get_desc(char) {
 ///   The descriptor database to use. Must be an array whose length is exactly
 ///   256 elements long.
 ///
-/// @return {Enum.CatspeakASCIIDesc}
-function catspeak_byte_get_desc_ext(char, db) {
+/// @param {Any} descriptor
+///   The descriptor to check.
+///
+/// @return {Bool}
+function catspeak_byte_contains_desc(char, db, descriptor) {
     gml_pragma("forceinline");
-    return char < 0 || char > 255 ? CatspeakASCIIDesc.NONE : db[char];
+    if (char < 0 || char > 255) {
+        return false;
+    }
+    return (db[char] & descriptor) == descriptor;
 }
 
 /// Marks all characters which match a query with a descriptor.
