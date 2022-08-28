@@ -123,7 +123,16 @@ function CatspeakLexer(buff, db) constructor {
     ///
     /// @return {Enum.CatspeakToken}
     static next = function() {
-        // TODO
+        clearLexeme();
+        if (limit == 0 || eofReached) {
+            return CatspeakToken.EOF;
+        }
+        if (skipNextByte) {
+            advance();
+            skipNextByte = false;
+            return next();
+        }
+        var byte = advance();
     }
 
     /// Advances the lexer and returns the next `CatspeakToken`, ingoring
