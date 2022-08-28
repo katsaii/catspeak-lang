@@ -15,6 +15,8 @@ enum CatspeakToken {
     COLON,
     COMMA,
     ASSIGN,
+    BREAK_LINE,
+    CONTINUE_LINE,
     IF,
     ELSE,
     WHILE,
@@ -37,12 +39,14 @@ enum CatspeakToken {
     EOF,
     OTHER,
     __OPERATORS_BEGIN__,
-    DISJUNCTION,
-    CONJUNCTION,
-    COMPARISON,
-    ADDITION,
-    MULTIPLICATION,
-    DIVISION,
+    OP_LOW,
+    OP_OR,
+    OP_AND,
+    OP_COMP,
+    OP_ADD,
+    OP_MUL,
+    OP_DIV,
+    OP_HIGH,
     __OPERATORS_END__,
 }
 
@@ -75,6 +79,10 @@ function catspeak_token_show(value) {
         return "COMMA";
     case CatspeakToken.ASSIGN:
         return "ASSIGN";
+    case CatspeakToken.BREAK_LINE:
+        return "BREAK_LINE";
+    case CatspeakToken.CONTINUE_LINE:
+        return "CONTINUE_LINE";
     case CatspeakToken.IF:
         return "IF";
     case CatspeakToken.ELSE:
@@ -117,18 +125,22 @@ function catspeak_token_show(value) {
         return "EOF";
     case CatspeakToken.OTHER:
         return "OTHER";
-    case CatspeakToken.DISJUNCTION:
-        return "DISJUNCTION";
-    case CatspeakToken.CONJUNCTION:
-        return "CONJUNCTION";
-    case CatspeakToken.COMPARISON:
-        return "COMPARISON";
-    case CatspeakToken.ADDITION:
-        return "ADDITION";
-    case CatspeakToken.MULTIPLICATION:
-        return "MULTIPLICATION";
-    case CatspeakToken.DIVISION:
-        return "DIVISION";
+    case CatspeakToken.OP_LOW:
+        return "OP_LOW";
+    case CatspeakToken.OP_OR:
+        return "OP_OR";
+    case CatspeakToken.OP_AND:
+        return "OP_AND";
+    case CatspeakToken.OP_COMP:
+        return "OP_COMP";
+    case CatspeakToken.OP_ADD:
+        return "OP_ADD";
+    case CatspeakToken.OP_MUL:
+        return "OP_MUL";
+    case CatspeakToken.OP_DIV:
+        return "OP_DIV";
+    case CatspeakToken.OP_HIGH:
+        return "OP_HIGH";
     }
     return "<unknown>";
 }
@@ -162,6 +174,10 @@ function catspeak_token_read(str) {
         return CatspeakToken.COMMA;
     case "ASSIGN":
         return CatspeakToken.ASSIGN;
+    case "BREAK_LINE":
+        return CatspeakToken.BREAK_LINE;
+    case "CONTINUE_LINE":
+        return CatspeakToken.CONTINUE_LINE;
     case "IF":
         return CatspeakToken.IF;
     case "ELSE":
@@ -204,18 +220,22 @@ function catspeak_token_read(str) {
         return CatspeakToken.EOF;
     case "OTHER":
         return CatspeakToken.OTHER;
-    case "DISJUNCTION":
-        return CatspeakToken.DISJUNCTION;
-    case "CONJUNCTION":
-        return CatspeakToken.CONJUNCTION;
-    case "COMPARISON":
-        return CatspeakToken.COMPARISON;
-    case "ADDITION":
-        return CatspeakToken.ADDITION;
-    case "MULTIPLICATION":
-        return CatspeakToken.MULTIPLICATION;
-    case "DIVISION":
-        return CatspeakToken.DIVISION;
+    case "OP_LOW":
+        return CatspeakToken.OP_LOW;
+    case "OP_OR":
+        return CatspeakToken.OP_OR;
+    case "OP_AND":
+        return CatspeakToken.OP_AND;
+    case "OP_COMP":
+        return CatspeakToken.OP_COMP;
+    case "OP_ADD":
+        return CatspeakToken.OP_ADD;
+    case "OP_MUL":
+        return CatspeakToken.OP_MUL;
+    case "OP_DIV":
+        return CatspeakToken.OP_DIV;
+    case "OP_HIGH":
+        return CatspeakToken.OP_HIGH;
     }
     return undefined;
 }
