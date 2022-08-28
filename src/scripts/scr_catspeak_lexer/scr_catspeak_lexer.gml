@@ -51,7 +51,7 @@ function CatspeakLexer(buff) constructor {
             posEnd.column += 1;
             cr = false;
         }
-    }
+    };
 
     /// Registers the current lexeme as a string.
     static registerLexeme = function() {
@@ -68,7 +68,7 @@ function CatspeakLexer(buff) constructor {
         lexeme = buffer_read(buff_, buffer_string);
         buffer_seek(buff_, buffer_seek_relative, -1);
         buffer_poke(buff_, offset, buffer_u8, byte);
-    }
+    };
 
     /// Resets the current lexeme.
     static clearLexeme = function() {
@@ -76,7 +76,7 @@ function CatspeakLexer(buff) constructor {
         lexeme = undefined;
         posStart.line = posEnd.line;
         posStart.column = posEnd.column;
-    }
+    };
 
     /// @desc Advances the scanner and returns the current byte.
     ///
@@ -89,7 +89,7 @@ function CatspeakLexer(buff) constructor {
         var byte = buffer_read(buff, buffer_u8);
         registerByte(byte);
         return byte;
-    }
+    };
 
     /// @desc Peeks `n` bytes ahead of the current buffer offset.
     ///
@@ -103,7 +103,7 @@ function CatspeakLexer(buff) constructor {
             return -1;
         }
         return buffer_peek(buff, offset, buffer_u8);
-    }
+    };
 
     /// @desc Advances the lexer whilst a bytes contain some expected ASCII
     /// descriptor, or until the end of the file is reached.
@@ -133,7 +133,7 @@ function CatspeakLexer(buff) constructor {
         }
         buffer_seek(buff, buffer_seek_start, seek);
         return byte;
-    }
+    };
 
     /// Advances the lexer and returns the next `CatspeakToken`.
     ///
@@ -197,7 +197,7 @@ function CatspeakLexer(buff) constructor {
             }
         }
         return token;
-    }
+    };
 
     /// Advances the lexer and returns the next `CatspeakToken`, ingoring
     /// any comments and whitespace.
@@ -210,7 +210,7 @@ function CatspeakLexer(buff) constructor {
         } until (token != CatspeakToken.WHITESPACE
                 && token != CatspeakToken.COMMENT);
         return token;
-    }
+    };
 }
 
 /// Returns whether a Catspeak token is a valid operator.
