@@ -1,6 +1,10 @@
 //! Handles the lexical analysis stage of the Catspeak compiler.
 
-var s = "this ? is : a ; test\n -- string";
+var s = @'
+    let `+` = fun(lhs, rhs) {
+        ...
+    }
+';
 var buff = buffer_create(string_byte_length(s), buffer_fixed, 1);
 buffer_write(buff, buffer_text, s);
 buffer_seek(buff, buffer_seek_start, 0);
@@ -8,7 +12,7 @@ var lex = new CatspeakLexer(buff);
 do {
     var tk = lex.nextWithoutSpace();
     var a = catspeak_token_show(tk);
-    //show_message([a, lex.lexeme]);
+    show_message([a, lex.lexeme]);
 } until (tk == CatspeakToken.EOF);
 
 /// Tokenises the contents of a GML buffer. The lexer does not take ownership
@@ -172,8 +176,8 @@ function CatspeakLexer(buff) constructor {
         } else if (byte == ord("\"")) {
             clearLexeme();
             while (true) {
-                var peek = peek(1);
-                if (peek == -1 || peek == ord("\"")) {
+                var peeked = peek(1);
+                if (peeked == -1 || peeked == ord("\"")) {
                     break;
                 }
                 advance();
@@ -187,9 +191,9 @@ function CatspeakLexer(buff) constructor {
             }
         } else if (byte == ord("`")) {
             clearLexeme();
-            advanceWhile(CatspeakASCIIDesc.WHITESPACE, false);
+            advanceWhile(CatspeakASCIIDesc.IDENT);
             registerLexeme();
-            if (peek(1) == "`") {
+            if (peek(1) == ord("`")) {
                 // similar to strings, I don't care about raising an error in
                 // this situation, since Catspeak should be a bit forgiving as
                 // a modding language
@@ -341,13 +345,17 @@ function catspeak_byte_to_asciidesc(char) {
         __catspeak_mark_asciidesc(db, function (char) {
             return char >= ord("a") && char <= ord("z")
                     || char >= ord("A") && char <= ord("Z");
-        }, CatspeakASCIIDesc.ALPHABETIC | CatspeakASCIIDesc.GRAPHIC);
-        __catspeak_mark_asciidesc(db, ["_", "'"], CatspeakASCIIDesc.GRAPHIC);
+        }, CatspeakASCIIDesc.ALPHABETIC
+                | CatspeakASCIIDesc.GRAPHIC
+                | CatspeakASCIIDesc.IDENT);
+        __catspeak_mark_asciidesc(db, ["_", "'"],
+                CatspeakASCIIDesc.GRAPHIC | CatspeakASCIIDesc.IDENT);
         __catspeak_mark_asciidesc(db, function (char) {
             return char >= ord("0") && char <= ord("9");
         }, CatspeakASCIIDesc.DIGIT
                 | CatspeakASCIIDesc.DIGIT_HEX
-                | CatspeakASCIIDesc.GRAPHIC);
+                | CatspeakASCIIDesc.GRAPHIC
+                | CatspeakASCIIDesc.IDENT);
         __catspeak_mark_asciidesc(db, ["0", "1"], CatspeakASCIIDesc.DIGIT_BIN);
         __catspeak_mark_asciidesc(db, function (char) {
             return char >= ord("a") && char <= ord("f")
@@ -356,7 +364,7 @@ function catspeak_byte_to_asciidesc(char) {
         __catspeak_mark_asciidesc(db, [
             "!", "#", "$", "%", "&", "*", "+", "-", ".", "/", ":", ";", "<",
             "=", ">", "?", "@", "\\", "^", "|", "~",
-        ], CatspeakASCIIDesc.OPERATOR);
+        ], CatspeakASCIIDesc.OPERATOR | CatspeakASCIIDesc.IDENT);
     }
     return db[char];
 }
