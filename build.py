@@ -208,6 +208,7 @@ def impl_enum_flags(name, desc):
     )
 
 impl_enum("Token", "Represents a kind of Catspeak token.")
+impl_enum("CompilerState", "Represents a kind of Catspeak parser production.")
 impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")
 impl_enum_flags(
     "Option",
