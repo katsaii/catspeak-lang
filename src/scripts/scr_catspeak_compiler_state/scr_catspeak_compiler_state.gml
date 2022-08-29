@@ -44,7 +44,7 @@ enum CatspeakCompilerState {
 ///   The value of `CatspeakCompilerState` to convert.
 ///
 /// @return {String}
-function catspeak_compilerstate_show(value) {
+function catspeak_compiler_state_show(value) {
     switch (value) {
     case CatspeakCompilerState.PROGRAM:
         return "PROGRAM";
@@ -117,7 +117,7 @@ function catspeak_compilerstate_show(value) {
 ///   The string to parse.
 ///
 /// @return {Enum.CatspeakCompilerState}
-function catspeak_compilerstate_read(str) {
+function catspeak_compiler_state_read(str) {
     switch (str) {
     case "PROGRAM":
         return CatspeakCompilerState.PROGRAM;

@@ -6,7 +6,7 @@
     "path": "folders/Catspeak/internals/auto-generated.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_asciidesc",
+  "name": "scr_catspeak_compiler_state",
   "tags": [],
   "resourceType": "GMScript",
 }

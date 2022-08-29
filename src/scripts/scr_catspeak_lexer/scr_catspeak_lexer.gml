@@ -112,8 +112,8 @@ function CatspeakLexer(buff) constructor {
         var seek = buffer_tell(buff);
         while (seek < limit) {
             byte = buffer_peek(buff, seek, buffer_u8);
-            if (condition != catspeak_asciidesc_contains(
-                    catspeak_byte_to_asciidesc(byte), desc)) {
+            if (condition != catspeak_ascii_desc_contains(
+                    catspeak_byte_to_ascii_desc(byte), desc)) {
                 break;
             }
             registerByte(byte);
@@ -141,8 +141,8 @@ function CatspeakLexer(buff) constructor {
         }
         var byte = advance();
         var token = catspeak_byte_to_token(byte);
-        var desc = catspeak_byte_to_asciidesc(byte);
-        if (catspeak_asciidesc_contains(desc,
+        var desc = catspeak_byte_to_ascii_desc(byte);
+        if (catspeak_ascii_desc_contains(desc,
                 CatspeakASCIIDesc.OPERATOR)) {
             advanceWhile(CatspeakASCIIDesc.OPERATOR);
             registerLexeme();
@@ -152,12 +152,12 @@ function CatspeakLexer(buff) constructor {
                 advanceWhile(CatspeakASCIIDesc.NEWLINE, false);
                 registerLexeme();
             }
-        } else if (catspeak_asciidesc_contains(desc,
+        } else if (catspeak_ascii_desc_contains(desc,
                 CatspeakASCIIDesc.ALPHABETIC)) {
             advanceWhile(CatspeakASCIIDesc.GRAPHIC);
             registerLexeme();
             token = catspeak_string_to_token_keyword(lexeme) ?? token;
-        } else if (catspeak_asciidesc_contains(desc,
+        } else if (catspeak_ascii_desc_contains(desc,
                 CatspeakASCIIDesc.DIGIT)) {
             // TODO, numeric literals
         } else if (byte == ord("\"")) {
@@ -319,14 +319,14 @@ function catspeak_byte_to_token(char) {
 ///   The character to check.
 ///
 /// @return {Enum.CatspeakASCIIDesc}
-function catspeak_byte_to_asciidesc(char) {
+function catspeak_byte_to_ascii_desc(char) {
     static db = undefined;
     if (char < 0 || char > 255) {
         return CatspeakASCIIDesc.NONE;
     }
     if (db == undefined) {
         db = array_create(256, CatspeakASCIIDesc.NONE);
-        __catspeak_mark_asciidesc(db, [
+        __catspeak_mark_ascii_desc(db, [
             0x09, // CHARACTER TABULATION ('\t')
             0x0A, // LINE FEED ('\n')
             0x0B, // LINE TABULATION ('\v')
@@ -335,30 +335,30 @@ function catspeak_byte_to_asciidesc(char) {
             0x20, // SPACE (' ')
             0x85, // NEXT LINE
         ], CatspeakASCIIDesc.WHITESPACE);
-        __catspeak_mark_asciidesc(db, [
+        __catspeak_mark_ascii_desc(db, [
             0x0A, // LINE FEED ('\n')
             0x0D, // CARRIAGE RETURN ('\r')
         ], CatspeakASCIIDesc.NEWLINE);
-        __catspeak_mark_asciidesc(db, function (char) {
+        __catspeak_mark_ascii_desc(db, function (char) {
             return char >= ord("a") && char <= ord("z")
                     || char >= ord("A") && char <= ord("Z");
         }, CatspeakASCIIDesc.ALPHABETIC
                 | CatspeakASCIIDesc.GRAPHIC
                 | CatspeakASCIIDesc.IDENT);
-        __catspeak_mark_asciidesc(db, ["_", "'"],
+        __catspeak_mark_ascii_desc(db, ["_", "'"],
                 CatspeakASCIIDesc.GRAPHIC | CatspeakASCIIDesc.IDENT);
-        __catspeak_mark_asciidesc(db, function (char) {
+        __catspeak_mark_ascii_desc(db, function (char) {
             return char >= ord("0") && char <= ord("9");
         }, CatspeakASCIIDesc.DIGIT
                 | CatspeakASCIIDesc.DIGIT_HEX
                 | CatspeakASCIIDesc.GRAPHIC
                 | CatspeakASCIIDesc.IDENT);
-        __catspeak_mark_asciidesc(db, ["0", "1"], CatspeakASCIIDesc.DIGIT_BIN);
-        __catspeak_mark_asciidesc(db, function (char) {
+        __catspeak_mark_ascii_desc(db, ["0", "1"], CatspeakASCIIDesc.DIGIT_BIN);
+        __catspeak_mark_ascii_desc(db, function (char) {
             return char >= ord("a") && char <= ord("f")
                     || char >= ord("A") && char <= ord("F");
         }, CatspeakASCIIDesc.DIGIT_HEX);
-        __catspeak_mark_asciidesc(db, [
+        __catspeak_mark_ascii_desc(db, [
             "!", "#", "$", "%", "&", "*", "+", "-", ".", "/", ":", ";", "<",
             "=", ">", "?", "@", "\\", "^", "|", "~",
         ], CatspeakASCIIDesc.OPERATOR | CatspeakASCIIDesc.IDENT);
@@ -389,7 +389,7 @@ function __catspeak_mark_token(db, query, value) {
 }
 
 /// @ignore
-function __catspeak_mark_asciidesc(db, query, value) {
+function __catspeak_mark_ascii_desc(db, query, value) {
     if (!is_array(query)) {
         query = [query];
     }

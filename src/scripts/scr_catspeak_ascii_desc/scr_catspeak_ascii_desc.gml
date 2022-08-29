@@ -38,7 +38,7 @@ enum CatspeakASCIIDesc {
 ///   The flags of `CatspeakASCIIDesc` to check.
 ///
 /// @return {Bool}
-function catspeak_asciidesc_contains(value, flags) {
+function catspeak_ascii_desc_contains(value, flags) {
     gml_pragma("forceinline");
     return (value & flags) == flags;
 }
@@ -52,7 +52,7 @@ function catspeak_asciidesc_contains(value, flags) {
 ///   The flags of `CatspeakASCIIDesc` to check.
 ///
 /// @return {Bool}
-function catspeak_asciidesc_equals(value, flags) {
+function catspeak_ascii_desc_equals(value, flags) {
     gml_pragma("forceinline");
     return value == flags;
 }
@@ -66,7 +66,7 @@ function catspeak_asciidesc_equals(value, flags) {
 ///   The flags of `CatspeakASCIIDesc` to check.
 ///
 /// @return {Bool}
-function catspeak_asciidesc_intersects(value, flags) {
+function catspeak_ascii_desc_intersects(value, flags) {
     gml_pragma("forceinline");
     return (value & flags) != 0;
 }
@@ -78,7 +78,7 @@ function catspeak_asciidesc_intersects(value, flags) {
 ///   The value of `CatspeakASCIIDesc` to convert, must be a numeric value.
 ///
 /// @return {String}
-function catspeak_asciidesc_show(value) {
+function catspeak_ascii_desc_show(value) {
     var msg = "";
     var delimiter = undefined;
     if ((value & CatspeakASCIIDesc.NEWLINE) != 0) {

@@ -1,6 +1,12 @@
 import types
+import re
 
 EMPTY_STRING = ""
+
+# Converts a CamelCase name into snake_case.
+def camel_to_snake(name):
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
 # Reads a file as a complete string and returns its contents.
 def read_string(fileIn):
@@ -44,7 +50,7 @@ def flatten(iterable):
 
 # Generates the boilerplate code for a schema of enum values.
 def impl_enum(name, desc):
-    lowerName = name.lower()
+    lowerName = camel_to_snake(name)
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
@@ -66,7 +72,7 @@ def impl_enum(name, desc):
         "///   The value of `{}` to convert.".format(typeName),
         "///",
         "/// @return {String}",
-        "function catspeak_{}_show(value) {{".format(name.lower()),
+        "function catspeak_{}_show(value) {{".format(lowerName),
         "    switch (value) {",
         (
             [
@@ -87,7 +93,7 @@ def impl_enum(name, desc):
         "///   The string to parse.",
         "///",
         "/// @return {{Enum.{}}}".format(typeName),
-        "function catspeak_{}_read(str) {{".format(name.lower()),
+        "function catspeak_{}_read(str) {{".format(lowerName),
         "    switch (str) {",
         (
             [
@@ -109,7 +115,7 @@ def impl_enum(name, desc):
 
 # Generates the boilerplate code for a schema of enum flags.
 def impl_enum_flags(name, desc):
-    lowerName = name.lower()
+    lowerName = camel_to_snake(name)
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
