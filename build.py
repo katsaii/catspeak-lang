@@ -115,6 +115,7 @@ def impl_enum(name, desc):
         "///",
         "/// @return {Real}",
         "function catspeak_{}_valueof(value) {{".format(lowerName),
+        "    gml_pragma(\"forceinline\");",
         "    return value;",
         "}",
         EMPTY_STRING,
@@ -122,6 +123,7 @@ def impl_enum(name, desc):
         "///",
         "/// @return {Real}",
         "function catspeak_{}_sizeof() {{".format(lowerName),
+        "    gml_pragma(\"forceinline\");",
         "    return {}.{} + 1;".format(typeName, fields[-1])
                 if fields else "    return 0;",
         "}",

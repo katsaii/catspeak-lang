@@ -54,7 +54,7 @@ function CatspeakError(location, message="No message") constructor {
         self.script = e.script;
         self.stacktrace = e.stacktrace;
     }
-    self.location = location;
+    self.location = location.clone();
 
     /// Renders this Catspeak error with its location followed by the error
     /// message.
@@ -71,7 +71,7 @@ function CatspeakError(location, message="No message") constructor {
             msg += "\nStacktrace:";
             var count = array_length(stacktrace);
             for (var i = 0; i < count; i += 1) {
-                msg += "\n(" + string(i) + ") " + string(stacktrace[i]);
+                msg += "\nat " + string(stacktrace[i]);
             }
         }
         return msg;

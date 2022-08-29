@@ -131,6 +131,7 @@ function catspeak_intcode_read(str) {
 ///
 /// @return {Real}
 function catspeak_intcode_valueof(value) {
+    gml_pragma("forceinline");
     return value;
 }
 
@@ -138,5 +139,6 @@ function catspeak_intcode_valueof(value) {
 ///
 /// @return {Real}
 function catspeak_intcode_sizeof() {
+    gml_pragma("forceinline");
     return CatspeakIntcode.JUMP_FALSE + 1;
 }
