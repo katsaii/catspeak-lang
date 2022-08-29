@@ -2,11 +2,25 @@
 
 //# feather use syntax-errors
 
+/// A helper function for creating a buffer from a string.
+///
+/// @param {String} src
+///   The source code to convert into a buffer.
+///
+/// @return {Id.Buffer}
+function catspeak_create_buffer_from_string(src) {
+    var capacity = string_byte_length(src);
+    var buff = buffer_create(capacity, buffer_fixed, 1);
+    buffer_write(buff, buffer_text, src);
+    buffer_seek(buff, buffer_seek_start, 0);
+    return buff;
+}
+
 /// Tokenises the contents of a GML buffer. The lexer does not take ownership
 /// of this buffer, but it may mutate it so beware. Therefore you should make
 /// sure to delete the buffer once parsing is complete.
 ///
-/// @param {ID.Buffer} buff
+/// @param {Id.Buffer} buff
 ///   The ID of the GML buffer to use.
 function CatspeakLexer(buff) constructor {
     self.buff = buff;

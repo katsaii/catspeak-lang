@@ -248,6 +248,7 @@ function catspeak_token_read(str) {
 ///
 /// @return {Real}
 function catspeak_token_valueof(value) {
+    gml_pragma("forceinline");
     return value;
 }
 
@@ -255,5 +256,6 @@ function catspeak_token_valueof(value) {
 ///
 /// @return {Real}
 function catspeak_token_sizeof() {
+    gml_pragma("forceinline");
     return CatspeakToken.__OPERATORS_END__ + 1;
 }
