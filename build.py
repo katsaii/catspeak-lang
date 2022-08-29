@@ -106,6 +106,25 @@ def impl_enum(name, desc):
         "    }",
         "    return undefined;",
         "}",
+        EMPTY_STRING,
+        "/// Returns the integer representation for a value of `{}`.".format(typeName),
+        "/// Will return `undefined` if the value is unexpected.",
+        "///",
+        "/// @param {{Enum.{}}} value".format(typeName),
+        "///   The value of `{}` to convert.".format(typeName),
+        "///",
+        "/// @return {Real}",
+        "function catspeak_{}_valueof(value) {{".format(lowerName),
+        "    return value;",
+        "}",
+        EMPTY_STRING,
+        "/// Returns the number of elements of `{}`.".format(typeName),
+        "///",
+        "/// @return {Real}",
+        "function catspeak_{}_sizeof() {{".format(lowerName),
+        "    return {}.{} + 1;".format(typeName, fields[-1])
+                if fields else "    return 0;",
+        "}",
     ])
     write_string(
         "src/scripts/scr_catspeak_{}/scr_catspeak_{}.gml"

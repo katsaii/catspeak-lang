@@ -122,3 +122,21 @@ function catspeak_intcode_read(str) {
     }
     return undefined;
 }
+
+/// Returns the integer representation for a value of `CatspeakIntcode`.
+/// Will return `undefined` if the value is unexpected.
+///
+/// @param {Enum.CatspeakIntcode} value
+///   The value of `CatspeakIntcode` to convert.
+///
+/// @return {Real}
+function catspeak_intcode_valueof(value) {
+    return value;
+}
+
+/// Returns the number of elements of `CatspeakIntcode`.
+///
+/// @return {Real}
+function catspeak_intcode_sizeof() {
+    return CatspeakIntcode.JUMP_FALSE + 1;
+}

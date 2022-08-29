@@ -182,3 +182,21 @@ function catspeak_compiler_state_read(str) {
     }
     return undefined;
 }
+
+/// Returns the integer representation for a value of `CatspeakCompilerState`.
+/// Will return `undefined` if the value is unexpected.
+///
+/// @param {Enum.CatspeakCompilerState} value
+///   The value of `CatspeakCompilerState` to convert.
+///
+/// @return {Real}
+function catspeak_compiler_state_valueof(value) {
+    return value;
+}
+
+/// Returns the number of elements of `CatspeakCompilerState`.
+///
+/// @return {Real}
+function catspeak_compiler_state_sizeof() {
+    return CatspeakCompilerState.OBJECT + 1;
+}
