@@ -126,10 +126,12 @@ function CatspeakLexer(buff) constructor {
         return byte;
     };
 
-    /// Advances the lexer and returns the next `CatspeakToken`.
+    /// Advances the lexer and returns the next `CatspeakToken`. This includes
+    /// additional whitespace and control tokens, like: line breaks `;`, line
+    /// continuations `...`, and comments `--`.
     ///
     /// @return {Enum.CatspeakToken}
-    static next = function() {
+    static nextWithWhitespace = function() {
         clearLexeme();
         if (limit == 0 || eof) {
             return CatspeakToken.EOF;
@@ -194,10 +196,10 @@ function CatspeakLexer(buff) constructor {
     /// any comments, whitespace, and line continuations.
     ///
     /// @return {Enum.CatspeakToken}
-    static nextWithoutSpace = function() {
+    static next = function() {
         var skipSemicolon = false;
         while (true) {
-            var token = next();
+            var token = nextWithWhitespace();
             if (token == CatspeakToken.WHITESPACE
                     || token == CatspeakToken.COMMENT) {
                 continue;
