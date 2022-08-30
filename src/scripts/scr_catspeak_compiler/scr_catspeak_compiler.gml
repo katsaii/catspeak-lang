@@ -15,12 +15,12 @@
 ///   instance.
 function CatspeakCompiler(lexer, ir) constructor {
     self.lexer = lexer;
-    self.ir = ir;
+    self.ir = ir ?? new CatspeakFunction();
     self.pos = new CatspeakLocation(0, 0);
     self.token = CatspeakToken.BOF;
     self.tokenLexeme = undefined;
     self.tokenPeeked = lexer.next();
-    self.stateStack = [CatspeakCompilerState.PROGRAM, undefined];
+    self.stateStack = [__stateProgram, undefined];
     self.loopStack = [];
 
     /// Advances the parser and returns the current token.
@@ -31,7 +31,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         token = tokenPeeked;
         tokenPeeked = lexer.next();
         return token;
-    }
+    };
 
     /// Returns true if the current token matches this token kind.
     ///
@@ -41,7 +41,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @return {Bool}
     static matches = function(kind) {
         return tokenPeeked == kind;
-    }
+    };
 
     /// Attempts to match against a token and advances the parser if there
     /// was a match. Returns whether the match was successful.
@@ -56,7 +56,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             advance();
         }
         return matched;
-    }
+    };
 
     /// @desc Throws a `CatspeakError` for the current token.
     ///
@@ -64,7 +64,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The error message to use.
     static error = function(message) {
         throw new CatspeakError(pos, message);
-    }
+    };
 
     /// Advances the parser and throws an for the current token.
     ///
@@ -80,7 +80,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             message += " -- " + suffix;
         }
         error(message);
-    }
+    };
 
     /// Throws a `CatspeakError` if the current token is not the
     /// expected token. Advances the parser otherwise.
@@ -94,7 +94,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (!consume(kind)) {
             errorAndAdvance(message);
         }
-    }
+    };
 
     /// Throws a `CatspeakError` if the current token is not a semicolon
     /// or new line. Advances the parser otherwise.
@@ -104,25 +104,25 @@ function CatspeakCompiler(lexer, ir) constructor {
     static expectsSemicolon = function(message) {
         return expects(CatspeakToken.BREAK_LINE,
                 "expected `;` or new line " + (message ?? ""));
-    }
+    };
 
     /// Returns whether the compiler is in progress.
     static inProgress = function() {
         return array_length(stateStack) > 0;
-    }
+    };
 
     /// Stages a new compiler production. Optionally takes a single value
     /// which can be used to pass arguments into this compiler state.
     ///
-    /// @param {Enum.CatspeakCompilerState} state
+    /// @param {Function} state
     ///   The production to insert. Since this is a FIFO data structure, take
     ///   care to queue up states in reverse order of the expected execution.
     ///
-    /// @param {Any} value
+    /// @param {Any} [value]
     ///   The value to use as a parameter to this state.
     static addState = function(state, value) {
         array_push(stateStack, state, value);
-    }
+    };
 
     /// Performs `n`-many steps of the parsing and code generation process.
     /// The steps are discrete so that compilation can be paused if necessary,
@@ -132,19 +132,13 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The number of steps of codegen to perform, defaults to 1. Use `-1`
     ///   to peform all steps in a single frame. (Not recommended since large
     ///   loads may cause your game to pause.)
-    static generateCode = function(n=1) {
+    static emitProgram = function(n=1) {
         var stateStack_ = stateStack;
-        while (!lexer.eof) {
-            var a = lexer.next();
-            show_message([catspeak_token_show(a), lexer.pos]);
-        }
-        return;
         /// @ignore
-        #macro __CATSPEAK_COMPILER_GENERATE_CODE \
+        #macro __CATSPEAK_COMPILER_GENERATE_CODE       \
                 var stateArg = array_pop(stateStack_); \
-                var state = array_pop(stateStack_); \
-                var f = findStateMethod(state); \
-                f(stateArg)
+                var state = array_pop(stateStack_);    \
+                state(stateArg)
         if (n < 0) {
             while (inProgress()) {
                 __CATSPEAK_COMPILER_GENERATE_CODE;
@@ -157,26 +151,28 @@ function CatspeakCompiler(lexer, ir) constructor {
                 __CATSPEAK_COMPILER_GENERATE_CODE;
             }
         }
-    }
+    };
 
-    /// Converts a Catspeak compiler state into its method call.
-    /// Will raise an error if an invalid state is used.
-    ///
-    /// @param {Enum.CatspeakCompilerState} state
-    ///   The state to find.
-    ///
-    /// @return {Function}
-    static findStateMethod = function(state) {
-        static states = undefined;
-        if (states == undefined) {
-            var n = catspeak_compiler_state_sizeof();
-            states = array_create(n, __stateError);
-        }
-        return states[state];
+    /// @ignore
+    static __stateError = function() {
+        throw new CatspeakError(pos, "invalid state");
     }
 
     /// @ignore
-    static __stateError = function(_) {
-        throw new CatspeakError(pos, "invalid state");
-    }
+    static __stateProgram = function() {
+        if (matches(CatspeakToken.EOF)) {
+            return;
+        }
+        addState(__stateProgram);
+        addState(__stateStatement);
+    };
+    
+    /// @ignore
+    static __stateStatement = function() {
+        if (consume(CatspeakToken.BREAK_LINE)) {
+            // do nothing
+        } else {
+            addState(__stateError);
+        }
+    };
 }

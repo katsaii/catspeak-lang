@@ -50,5 +50,5 @@ function CatspeakBlock() constructor {
         for (var i = 0; i < argument_count; i += 1) {
             array_push(argument[i]);
         }
-    }
+    };
 }
