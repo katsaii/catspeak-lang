@@ -14,6 +14,7 @@
 function CatspeakLocation(line, column) constructor {
     self.line = line;
     self.column = column;
+    self.lexeme = undefined;
 
     /// Creates an exact copy of this source location and returns it.
     ///
@@ -22,9 +23,23 @@ function CatspeakLocation(line, column) constructor {
         return new CatspeakLocation(line, column);
     };
 
+    /// Copies values from this location to a new `CatspeakLocation` without
+    /// creating a new instance.
+    ///
+    /// @param {Struct.CatspeakLocation} source
+    ///   The target location to sample from.
+    static reflect = function (source) {
+        line = source.line;
+        column = source.column;
+        lexeme = source.lexeme;
+    };
+
     /// Renders this Catspeak location. If both a line number and column
     /// number exist, then the format will be `(line N, column M)`. Otherwise,
     /// if only a line number exists, the format will be `(line N)`.
+    ///
+    /// If this source location also includes a debug text, it is also included
+    /// in the debug output between square brackets.
     ///
     /// @return {String}
     static toString = function () {
@@ -33,6 +48,9 @@ function CatspeakLocation(line, column) constructor {
             msg += ", column " + string(column);
         }
         msg += ")";
+        if (lexeme != undefined) {
+            msg += " [" + string(lexeme) + "]";
+        }
         return msg;
     };
 }

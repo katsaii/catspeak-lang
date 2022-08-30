@@ -29,10 +29,9 @@ function CatspeakLexer(buff) constructor {
     self.eof = false;
     self.cr = false;
     self.skipNextByte = false;
-    self.lexeme = undefined;
     self.lexemeLength = 0;
-    self.posStart = new CatspeakLocation(1, 1);
-    self.posEnd = self.posStart.clone();
+    self.pos = new CatspeakLocation(1, 1);
+    self.posNext = self.pos.clone();
 
     /// Updates the line and column numbers of the lexer, also updates the.
     /// current length of the lexeme, in bytes.
@@ -43,17 +42,17 @@ function CatspeakLexer(buff) constructor {
         lexemeLength += 1;
         if (byte == ord("\r")) {
             cr = true;
-            posEnd.column = 1;
-            posEnd.line += 1;
+            posNext.column = 1;
+            posNext.line += 1;
         } else if (byte == ord("\n")) {
-            posEnd.column = 1;
+            posNext.column = 1;
             if (cr) {
                 cr = false;
             } else {
-                posEnd.line += 1;
+                posNext.line += 1;
             }
         } else {
-            posEnd.column += 1;
+            posNext.column += 1;
             cr = false;
         }
     };
@@ -62,7 +61,7 @@ function CatspeakLexer(buff) constructor {
     static registerLexeme = function() {
         if (lexemeLength < 1) {
             // always an empty slice
-            lexeme = "";
+            pos.lexeme = "";
             return;
         }
         var buff_ = buff;
@@ -70,7 +69,7 @@ function CatspeakLexer(buff) constructor {
         var byte = buffer_peek(buff_, offset, buffer_u8);
         buffer_poke(buff_, offset, buffer_u8, 0x00);
         buffer_seek(buff_, buffer_seek_start, offset - lexemeLength);
-        lexeme = buffer_read(buff_, buffer_string);
+        pos.lexeme = buffer_read(buff_, buffer_string);
         buffer_seek(buff_, buffer_seek_relative, -1);
         buffer_poke(buff_, offset, buffer_u8, byte);
     };
@@ -78,9 +77,7 @@ function CatspeakLexer(buff) constructor {
     /// Resets the current lexeme.
     static clearLexeme = function() {
         lexemeLength = 0;
-        lexeme = undefined;
-        posStart.line = posEnd.line;
-        posStart.column = posEnd.column;
+        pos.reflect(posNext);
     };
 
     /// @desc Advances the scanner and returns the current byte.
@@ -162,7 +159,7 @@ function CatspeakLexer(buff) constructor {
                 CatspeakASCIIDesc.OPERATOR)) {
             advanceWhile(CatspeakASCIIDesc.OPERATOR);
             registerLexeme();
-            token = catspeak_string_to_token_keyword(lexeme) ?? token;
+            token = catspeak_string_to_token_keyword(pos.lexeme) ?? token;
             if (token == CatspeakToken.COMMENT) {
                 // consume the coment
                 advanceWhile(CatspeakASCIIDesc.NEWLINE, false);
@@ -172,10 +169,23 @@ function CatspeakLexer(buff) constructor {
                 CatspeakASCIIDesc.ALPHABETIC)) {
             advanceWhile(CatspeakASCIIDesc.GRAPHIC);
             registerLexeme();
-            token = catspeak_string_to_token_keyword(lexeme) ?? token;
+            token = catspeak_string_to_token_keyword(pos.lexeme) ?? token;
         } else if (catspeak_ascii_desc_contains(desc,
                 CatspeakASCIIDesc.DIGIT)) {
-            // TODO, numeric literals
+            // TODO hex/binary digits
+            advanceWhile(CatspeakASCIIDesc.DIGIT);
+            if (peek(1) == ord(".") && catspeak_ascii_desc_contains(
+                catspeak_byte_to_ascii_desc(peek(2)),
+                CatspeakASCIIDesc.DIGIT
+            )) {
+                advance();
+                advanceWhile(CatspeakASCIIDesc.DIGIT);
+                registerLexeme();
+                return __CatspeakToken.NUMBER;
+            } else {
+                registerLexeme();
+                return __CatspeakToken.NUMBER_INT;
+            }
         } else if (byte == ord("\"")) {
             clearLexeme();
             while (true) {

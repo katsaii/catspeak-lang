@@ -27,11 +27,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @return {Enum.CatspeakToken}
     static advance = function() {
+        pos.reflect(lexer.pos);
         token = tokenPeeked;
-        var newPos = lexer.getPosition();
-        pos.line = newPos.line;
-        pos.column = newPos.column;
-        tokenLexeme = lexer.lexeme;
         tokenPeeked = lexer.next();
         return token;
     }
@@ -137,6 +134,11 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   loads may cause your game to pause.)
     static generateCode = function(n=1) {
         var stateStack_ = stateStack;
+        while (!lexer.eof) {
+            var a = lexer.next();
+            show_message([catspeak_token_show(a), lexer.pos]);
+        }
+        return;
         /// @ignore
         #macro __CATSPEAK_COMPILER_GENERATE_CODE \
                 var stateArg = array_pop(stateStack_); \

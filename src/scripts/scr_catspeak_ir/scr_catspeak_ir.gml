@@ -4,6 +4,8 @@
 
 /// Represents the executable Catspeak VM code. Also exposes methods for
 /// constructing custom IR manually.
-function CatspeakIR() constructor {
-    // TODO
+function CatspeakFunction() constructor {
+    self.blocks = [];
+    self.labelNameToBlock = { };
+    self.registers = []; // stores debug info about registers
 }
