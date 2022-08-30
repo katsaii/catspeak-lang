@@ -164,13 +164,31 @@ function CatspeakCompiler(lexer, ir) constructor {
             return;
         }
         addState(__stateProgram);
-        addState(__stateStatement);
+        addState(__stateStmt);
     };
     
     /// @ignore
-    static __stateStatement = function() {
+    static __stateStmt = function() {
         if (consume(CatspeakToken.BREAK_LINE)) {
             // do nothing
+        } else {
+            addState(__stateExpr);
+        }
+    };
+
+    /// @ignore
+    static __stateExpr = function() {
+        addState(__stateExprTerminal);
+    };
+
+    /// @ignore
+    static __stateExprTerminal = function() {
+        if (consume(CatspeakToken.STRING)) {
+            var val = pos.lexeme;
+            ir.currentBlock.emitCode(CatspeakIntcode.GET_CONST, val);
+        } else if (consume(CatspeakToken.NUMBER)) {
+            var val = real(pos.lexeme);
+            ir.currentBlock.emitCode(CatspeakIntcode.GET_CONST, val);
         } else {
             addState(__stateError);
         }

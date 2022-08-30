@@ -9,6 +9,7 @@ enum CatspeakIntcode {
     JUMP_FALSE,
     GET,
     GET_REF,
+    GET_CONST,
     SET,
     SET_REF,
     ARG,
@@ -33,6 +34,8 @@ function catspeak_intcode_show(value) {
         return "GET";
     case CatspeakIntcode.GET_REF:
         return "GET_REF";
+    case CatspeakIntcode.GET_CONST:
+        return "GET_CONST";
     case CatspeakIntcode.SET:
         return "SET";
     case CatspeakIntcode.SET_REF:
@@ -64,6 +67,8 @@ function catspeak_intcode_read(str) {
         return CatspeakIntcode.GET;
     case "GET_REF":
         return CatspeakIntcode.GET_REF;
+    case "GET_CONST":
+        return CatspeakIntcode.GET_CONST;
     case "SET":
         return CatspeakIntcode.SET;
     case "SET_REF":
