@@ -7,15 +7,20 @@
 function CatspeakFunction() constructor {
     self.blocks = [];
     self.registers = []; // stores debug info about registers
+    self.currentBlock = self.emitBlock(new CatspeakBlock());
 
     /// Adds a Catspeak block to the end of this function.
     ///
     /// @param {Struct.CatspeakBlock} block
     ///   The Catspeak block to insert.
+    ///
+    /// @return {Struct.CatspeakBlock}
     static emitBlock = function(block) {
         var idx = array_length(blocks);
         array_push(blocks, block);
         block.idx = idx;
+        currentBlock = block;
+        return block;
     };
 
     /// Allocates space for a new Catspeak register. This just returns the
