@@ -180,12 +180,8 @@ function CatspeakLexer(buff) constructor {
             )) {
                 advance();
                 advanceWhile(CatspeakASCIIDesc.DIGIT);
-                registerLexeme();
-                return __CatspeakToken.NUMBER;
-            } else {
-                registerLexeme();
-                return __CatspeakToken.NUMBER_INT;
             }
+            registerLexeme();
         } else if (byte == ord("\"")) {
             clearLexeme();
             while (true) {
@@ -316,7 +312,7 @@ function catspeak_byte_to_token(char) {
         }, CatspeakToken.IDENT);
         __catspeak_mark_token(db, function (char) {
             return char >= ord("0") && char <= ord("9");
-        }, CatspeakToken.INT);
+        }, CatspeakToken.NUMBER);
         __catspeak_mark_token(db, ["$", ":", ";"], CatspeakToken.OP_LOW);
         __catspeak_mark_token(db, ["^", "|"], CatspeakToken.OP_OR);
         __catspeak_mark_token(db, ["&"], CatspeakToken.OP_AND);

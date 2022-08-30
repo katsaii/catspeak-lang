@@ -1,6 +1,6 @@
 
 var buff = catspeak_create_buffer_from_string(@'
-    let hi = 1
+    let hi = 1.0
 ');
 var lex = new CatspeakLexer(buff);
 var comp = new CatspeakCompiler(lex);

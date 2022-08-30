@@ -28,10 +28,7 @@ enum CatspeakToken {
     RETURN,
     IDENT,
     STRING,
-    FLOAT,
-    INT,
-    INT_HEX,
-    INT_BIN,
+    NUMBER,
     WHITESPACE,
     COMMENT,
     EOL,
@@ -105,14 +102,8 @@ function catspeak_token_show(value) {
         return "IDENT";
     case CatspeakToken.STRING:
         return "STRING";
-    case CatspeakToken.FLOAT:
-        return "FLOAT";
-    case CatspeakToken.INT:
-        return "INT";
-    case CatspeakToken.INT_HEX:
-        return "INT_HEX";
-    case CatspeakToken.INT_BIN:
-        return "INT_BIN";
+    case CatspeakToken.NUMBER:
+        return "NUMBER";
     case CatspeakToken.WHITESPACE:
         return "WHITESPACE";
     case CatspeakToken.COMMENT:
@@ -200,14 +191,8 @@ function catspeak_token_read(str) {
         return CatspeakToken.IDENT;
     case "STRING":
         return CatspeakToken.STRING;
-    case "FLOAT":
-        return CatspeakToken.FLOAT;
-    case "INT":
-        return CatspeakToken.INT;
-    case "INT_HEX":
-        return CatspeakToken.INT_HEX;
-    case "INT_BIN":
-        return CatspeakToken.INT_BIN;
+    case "NUMBER":
+        return CatspeakToken.NUMBER;
     case "WHITESPACE":
         return CatspeakToken.WHITESPACE;
     case "COMMENT":
