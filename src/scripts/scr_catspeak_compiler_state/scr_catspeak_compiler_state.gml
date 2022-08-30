@@ -191,6 +191,7 @@ function catspeak_compiler_state_read(str) {
 ///
 /// @return {Real}
 function catspeak_compiler_state_valueof(value) {
+    gml_pragma("forceinline");
     return value;
 }
 
@@ -198,5 +199,6 @@ function catspeak_compiler_state_valueof(value) {
 ///
 /// @return {Real}
 function catspeak_compiler_state_sizeof() {
+    gml_pragma("forceinline");
     return CatspeakCompilerState.OBJECT + 1;
 }
