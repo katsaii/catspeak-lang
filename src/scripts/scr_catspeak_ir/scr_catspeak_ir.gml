@@ -73,6 +73,19 @@ function CatspeakFunction() constructor {
         return emitUnreachable();
     };
 
+    /// Generates the code to move the value of one register to another.
+    ///
+    /// @param {Real} source
+    ///   The register containing the value to move.
+    ///
+    /// @param {Real} dest
+    ///   The register containing the destination to move to.
+    ///
+    /// @return {Real}
+    static emitMove = function(source, dest) {
+        emitCode(CatspeakIntcode.MOV, source, dest);
+    };
+
     /// Emits a new Catspeak intcode instruction for the current block.
     ///
     /// @param {Struct.CatspeakIntcode} inst

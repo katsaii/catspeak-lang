@@ -18,12 +18,10 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.ir = ir ?? new CatspeakFunction();
     self.pos = new CatspeakLocation(0, 0);
     self.token = CatspeakToken.BOF;
-    self.tokenLexeme = undefined;
     self.tokenPeeked = lexer.next();
-    self.stateStack = [__stateProgram];
+    self.stateStack = [__stateInit];
     self.resultStack = [];
-    self.loopStack = [];
-    self.lastRegister = undefined;
+    self.scope = undefined;
 
     /// Advances the parser and returns the current token.
     ///
@@ -85,7 +83,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The error message to use.
     static errorAndAdvance = function(message) {
         advance();
-        var suffix = "got `" + string(tokenLexeme) +
+        var suffix = "got `" + string(pos.lexeme) +
                 "` (" + catspeak_token_show(token) + ")";
         if (message == undefined) {
             message = suffix;
@@ -135,6 +133,35 @@ function CatspeakCompiler(lexer, ir) constructor {
         array_push(stateStack, state);
     };
 
+    /// Allocates a new register for a local variable and returns its
+    /// reference.
+    ///
+    /// @param {String} name
+    ///   The name of the variable to declare.
+    ///
+    /// @param {Real} reg
+    ///   The register where the value of this variable is stored.
+    ///
+    /// @return {Real}
+    static declareVar = function(name, reg) {
+        scope.vars[$ name] = reg;
+    };
+
+    /// Looks up a variable by name and returns its register. If the variable
+    /// does not exist, then an error is raised.
+    ///
+    /// @param {String} name
+    ///   The name of the variable to search for.
+    ///
+    /// @return {Real}
+    static findVar = function(name) {
+        var reg = scope.vars[$ name];
+        if (reg == undefined) {
+            error("a variable with the name `" + name + "` does not exist");
+        }
+        return reg;
+    };
+
     /// Pushes a register which can be used to pass arguments into compiler
     /// states.
     ///
@@ -149,6 +176,18 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @return {Any}
     static popResult = function() {
         return array_pop(resultStack);
+    };
+
+    /// Starts a new lexical scope.
+    static pushBlock = function() {
+        scope = new CatspeakLocalScope(scope);
+    };
+
+    /// Pops the current block scope and returns its value.
+    static popBlock = function() {
+        var result = scope.result;
+        scope = scope.parent;
+        return result;
     };
 
     /// Performs `n`-many steps of the parsing and code generation process.
@@ -185,6 +224,20 @@ function CatspeakCompiler(lexer, ir) constructor {
     }
 
     /// @ignore
+    static __stateInit = function() {
+        pushBlock();
+        addState(__stateDeinit);
+        addState(__stateProgram);
+    }
+
+    /// @ignore
+    static __stateDeinit = function() {
+        var result = popBlock();
+        // add a final return statement
+        ir.emitReturn(result);
+    }
+
+    /// @ignore
     static __stateProgram = function() {
         if (matches(CatspeakToken.EOF)) {
             return;
@@ -197,21 +250,44 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateStmt = function() {
         if (consume(CatspeakToken.BREAK_LINE)) {
             // do nothing
+        } else if (consume(CatspeakToken.LET)) {
+            expects(CatspeakToken.IDENT,
+                    "expected identifier after `let` keyword");
+            pushResult(ir.emitRegister(pos));
+            pushResult(pos.lexeme);
+            addState(__stateStmtLetEnd);
+            if (consume(CatspeakToken.ASSIGN)) {
+                addState(__stateExpr);
+            } else {
+                pushResult(undefined);
+            }
         } else {
-            addState(__stateStmtPop);
+            addState(__stateExprPop);
             addState(__stateExpr);
         }
     };
 
     /// @ignore
-    static __stateStmtPop = function() {
+    static __stateStmtLetEnd = function() {
+        var value = popResult();
+        var name = popResult();
         var reg = popResult();
-        lastRegister = reg;
-    }
+        declareVar(name, reg);
+        if (value != undefined) {
+            ir.emitMove(value, reg);
+        }
+        scope.result = undefined;
+    };
 
     /// @ignore
     static __stateExpr = function() {
         addState(__stateExprStmt);
+    };
+
+    /// @ignore
+    static __stateExprPop = function() {
+        // implicit return
+        scope.result = popResult();
     };
 
     /// @ignore
@@ -241,15 +317,18 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.NUMBER)) {
             var reg = ir.emitConstant(real(pos.lexeme), pos);
             pushResult(reg);
+        } else if (consume(CatspeakToken.IDENT)) {
+            var reg = findVar(pos.lexeme);
+            pushResult(reg);
         } else {
-            addState(__stateGrouping);
+            addState(__stateExprGrouping);
         }
     };
     
     /// @ignore
-    static __stateGrouping = function() {
+    static __stateExprGrouping = function() {
         if (consume(CatspeakToken.PAREN_LEFT)) {
-            addState(__stateGroupingEnd);
+            addState(__stateExprGroupingEnd);
             addState(__stateExpr);
         } else {
             errorAndAdvance("invalid expression");
@@ -257,9 +336,19 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
     
     /// @ignore
-    static __stateGroupingEnd = function() {
+    static __stateExprGroupingEnd = function() {
         expects(CatspeakToken.PAREN_RIGHT, "expected closing `)`");
     };
+}
+
+/// Represents a lexically scoped block of code in the compiler.
+///
+/// @param {Struct.CatspeakLocalScope} parent
+///   The parent scope to inherit.
+function CatspeakLocalScope(parent) constructor {
+    self.result = undefined;
+    self.vars = { };
+    self.parent = parent;
 }
 
 /// Returns a boxed reference to a value, useful for passing by reference.
