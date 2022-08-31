@@ -17,6 +17,7 @@ enum CatspeakToken {
     ASSIGN,
     BREAK_LINE,
     CONTINUE_LINE,
+    DO,
     IF,
     ELSE,
     WHILE,
@@ -80,6 +81,8 @@ function catspeak_token_show(value) {
         return "BREAK_LINE";
     case CatspeakToken.CONTINUE_LINE:
         return "CONTINUE_LINE";
+    case CatspeakToken.DO:
+        return "DO";
     case CatspeakToken.IF:
         return "IF";
     case CatspeakToken.ELSE:
@@ -169,6 +172,8 @@ function catspeak_token_read(str) {
         return CatspeakToken.BREAK_LINE;
     case "CONTINUE_LINE":
         return CatspeakToken.CONTINUE_LINE;
+    case "DO":
+        return CatspeakToken.DO;
     case "IF":
         return CatspeakToken.IF;
     case "ELSE":

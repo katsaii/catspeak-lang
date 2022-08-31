@@ -86,6 +86,25 @@ function CatspeakFunction() constructor {
         emitCode(CatspeakIntcode.MOV, source, dest);
     };
 
+    /// Generates the code to call a Catspeak function. Returns a register
+    /// containing the result of the call.
+    ///
+    /// @param {Real} callee
+    ///   The register containing function to be called.
+    ///
+    /// @param {Real} arg
+    ///   The register containing the arguments array to pass to the function.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this constant.
+    ///
+    /// @return {Real}
+    static emitCall = function(callee, arg, pos) {
+        var reg = emitRegister(pos);
+        emitCode(CatspeakIntcode.CALL, callee, arg, reg);
+        return reg;
+    };
+
     /// Emits a new Catspeak intcode instruction for the current block.
     ///
     /// @param {Struct.CatspeakIntcode} inst
@@ -111,14 +130,6 @@ function CatspeakFunction() constructor {
     /// sub-function definitions, sorry!
     static disassembly = function() {
         var msg = "fun () {"
-        var registerCount = array_length(registers);
-        for (var i = 0; i < registerCount; i += 1) {
-            msg += "\n  ALLOC r" + string(i);
-            var regInfo = registers[i];
-            if (regInfo != undefined && regInfo.lexeme != undefined) {
-                msg += " -- " + string(regInfo.lexeme);
-            }
-        }
         var blockCount = array_length(blocks);
         for (var i = 0; i < blockCount; i += 1) {
             var block = blocks[i];

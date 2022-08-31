@@ -258,7 +258,25 @@ function catspeak_token_is_expression(token) {
     static tokens = undefined;
     if (tokens == undefined) {
         tokens = array_create(catspeak_token_sizeof(), true);
-        var exceptions = [];
+        var exceptions = [
+            CatspeakToken.PAREN_RIGHT,
+            CatspeakToken.BOX_RIGHT,
+            CatspeakToken.BRACE_RIGHT,
+            CatspeakToken.DOT,
+            CatspeakToken.COLON,
+            CatspeakToken.COMMA,
+            CatspeakToken.ASSIGN,
+            CatspeakToken.BREAK_LINE,
+            CatspeakToken.CONTINUE_LINE,
+            CatspeakToken.ELSE,
+            CatspeakToken.LET,
+            CatspeakToken.WHITESPACE,
+            CatspeakToken.COMMENT,
+            CatspeakToken.EOL,
+            CatspeakToken.BOF,
+            CatspeakToken.EOF,
+            CatspeakToken.OTHER,
+        ];
         var count = array_length(exceptions);
         for (var i = 0; i < count; i += 1) {
             tokens[catspeak_token_valueof(exceptions[i])] = false;
@@ -289,6 +307,7 @@ function catspeak_string_to_token_keyword(str) {
         keywords[$ "while"] = CatspeakToken.WHILE;
         keywords[$ "for"] = CatspeakToken.FOR;
         keywords[$ "let"] = CatspeakToken.LET;
+        keywords[$ "do"] = CatspeakToken.DO;
         keywords[$ "fun"] = CatspeakToken.FUN;
         keywords[$ "break"] = CatspeakToken.BREAK;
         keywords[$ "continue"] = CatspeakToken.CONTINUE;
