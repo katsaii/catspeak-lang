@@ -5,16 +5,15 @@
 
 /// Represents a kind of Catspeak VM instruction.
 enum CatspeakIntcode {
-    JUMP,
-    JUMP_FALSE,
-    GET,
+    JMP,
+    JMP_FALSE,
+    MOV,
+    LDC,
     GET_REF,
-    GET_CONST,
-    SET,
     SET_REF,
     ARG,
     CALL,
-    RETURN,
+    RET,
 }
 
 /// Gets the name for a value of `CatspeakIntcode`.
@@ -26,26 +25,24 @@ enum CatspeakIntcode {
 /// @return {String}
 function catspeak_intcode_show(value) {
     switch (value) {
-    case CatspeakIntcode.JUMP:
-        return "JUMP";
-    case CatspeakIntcode.JUMP_FALSE:
-        return "JUMP_FALSE";
-    case CatspeakIntcode.GET:
-        return "GET";
+    case CatspeakIntcode.JMP:
+        return "JMP";
+    case CatspeakIntcode.JMP_FALSE:
+        return "JMP_FALSE";
+    case CatspeakIntcode.MOV:
+        return "MOV";
+    case CatspeakIntcode.LDC:
+        return "LDC";
     case CatspeakIntcode.GET_REF:
         return "GET_REF";
-    case CatspeakIntcode.GET_CONST:
-        return "GET_CONST";
-    case CatspeakIntcode.SET:
-        return "SET";
     case CatspeakIntcode.SET_REF:
         return "SET_REF";
     case CatspeakIntcode.ARG:
         return "ARG";
     case CatspeakIntcode.CALL:
         return "CALL";
-    case CatspeakIntcode.RETURN:
-        return "RETURN";
+    case CatspeakIntcode.RET:
+        return "RET";
     }
     return "<unknown>";
 }
@@ -59,26 +56,24 @@ function catspeak_intcode_show(value) {
 /// @return {Enum.CatspeakIntcode}
 function catspeak_intcode_read(str) {
     switch (str) {
-    case "JUMP":
-        return CatspeakIntcode.JUMP;
-    case "JUMP_FALSE":
-        return CatspeakIntcode.JUMP_FALSE;
-    case "GET":
-        return CatspeakIntcode.GET;
+    case "JMP":
+        return CatspeakIntcode.JMP;
+    case "JMP_FALSE":
+        return CatspeakIntcode.JMP_FALSE;
+    case "MOV":
+        return CatspeakIntcode.MOV;
+    case "LDC":
+        return CatspeakIntcode.LDC;
     case "GET_REF":
         return CatspeakIntcode.GET_REF;
-    case "GET_CONST":
-        return CatspeakIntcode.GET_CONST;
-    case "SET":
-        return CatspeakIntcode.SET;
     case "SET_REF":
         return CatspeakIntcode.SET_REF;
     case "ARG":
         return CatspeakIntcode.ARG;
     case "CALL":
         return CatspeakIntcode.CALL;
-    case "RETURN":
-        return CatspeakIntcode.RETURN;
+    case "RET":
+        return CatspeakIntcode.RET;
     }
     return undefined;
 }
@@ -100,5 +95,5 @@ function catspeak_intcode_valueof(value) {
 /// @return {Real}
 function catspeak_intcode_sizeof() {
     gml_pragma("forceinline");
-    return CatspeakIntcode.RETURN + 1;
+    return CatspeakIntcode.RET + 1;
 }

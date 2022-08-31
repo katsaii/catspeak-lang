@@ -20,7 +20,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.token = CatspeakToken.BOF;
     self.tokenLexeme = undefined;
     self.tokenPeeked = lexer.next();
-    self.stateStack = [__stateProgram, undefined];
+    self.stateStack = [__stateProgram, undefined, undefined];
     self.loopStack = [];
 
     /// Advances the parser and returns the current token.
@@ -120,8 +120,27 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @param {Any} [value]
     ///   The value to use as a parameter to this state.
+    ///
+    /// @return {Struct}
     static addState = function(state, value) {
-        array_push(stateStack, state, value);
+        array_push(stateStack, state, undefined, value);
+    };
+
+    /// identical to the normal `addState` method, except a register is
+    /// returned containing the result of the production.
+    ///
+    /// @param {Function} state
+    ///   The production to insert. Since this is a FIFO data structure, take
+    ///   care to queue up states in reverse order of the expected execution.
+    ///
+    /// @param {Any} [value]
+    ///   The value to use as a parameter to this state.
+    ///
+    /// @return {Struct}
+    static addStateResult = function(state, value) {
+        var reg = ir.emitRegister(pos);
+        array_push(stateStack, state, reg, value);
+        return reg;
     };
 
     /// Performs `n`-many steps of the parsing and code generation process.
@@ -135,10 +154,14 @@ function CatspeakCompiler(lexer, ir) constructor {
     static emitProgram = function(n=1) {
         var stateStack_ = stateStack;
         /// @ignore
-        #macro __CATSPEAK_COMPILER_GENERATE_CODE       \
-                var stateArg = array_pop(stateStack_); \
-                var state = array_pop(stateStack_);    \
-                state(stateArg)
+        #macro __CATSPEAK_COMPILER_GENERATE_CODE                        \
+                var stateArg = array_pop(stateStack_);                  \
+                var stateReg = array_pop(stateStack_);                  \
+                var state = array_pop(stateStack_);                     \
+                var result = state(stateArg);                           \
+                if (result != undefined && stateReg != undefined) {     \
+                    ir.emitCode(CatspeakIntcode.MOV, result, stateReg); \
+                }
         if (n < 0) {
             while (inProgress()) {
                 __CATSPEAK_COMPILER_GENERATE_CODE;
@@ -178,17 +201,15 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExpr = function() {
-        addState(__stateExprTerminal);
+        return addStateResult(__stateExprTerminal);
     };
 
     /// @ignore
     static __stateExprTerminal = function() {
         if (consume(CatspeakToken.STRING)) {
-            var val = pos.lexeme;
-            ir.currentBlock.emitCode(CatspeakIntcode.GET_CONST, val);
+            return ir.emitConstant(pos.lexeme, pos);
         } else if (consume(CatspeakToken.NUMBER)) {
-            var val = real(pos.lexeme);
-            ir.currentBlock.emitCode(CatspeakIntcode.GET_CONST, val);
+            return ir.emitConstant(real(pos.lexeme), pos);
         } else {
             addState(__stateError);
         }
