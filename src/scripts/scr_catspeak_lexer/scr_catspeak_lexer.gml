@@ -248,6 +248,25 @@ function catspeak_token_is_operator(token) {
             && token < CatspeakToken.__OPERATORS_END__;
 }
 
+/// Returns whether a Catspeak token can start a new expression.
+///
+/// @param {Enum.CatspeakToken} token
+///   The ID of the token to check.
+///
+/// @return {Bool}
+function catspeak_token_is_expression(token) {
+    static tokens = undefined;
+    if (tokens == undefined) {
+        tokens = array_create(catspeak_token_sizeof(), true);
+        var exceptions = [];
+        var count = array_length(exceptions);
+        for (var i = 0; i < count; i += 1) {
+            tokens[catspeak_token_valueof(exceptions[i])] = false;
+        }
+    }
+    return tokens[catspeak_token_valueof(token)];
+}
+
 /// Converts a string into a keyword token if once exists. If the keyword
 /// doesn't exist, `undefined` is returned instead.
 ///

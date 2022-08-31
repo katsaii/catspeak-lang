@@ -36,6 +36,14 @@ function CatspeakFunction() constructor {
         return idx;
     };
 
+    /// Emits the special unreachable "register." The existence of this
+    /// flag will make dead code elimination easier in an optimisation phase.
+    ///
+    /// @return {Real}
+    static emitUnreachable = function() {
+        return -1;
+    };
+
     /// Generates the code to assign a constant to a register.
     ///
     /// @param {Any} value
@@ -49,6 +57,20 @@ function CatspeakFunction() constructor {
         var reg = emitRegister(pos);
         emitCode(CatspeakIntcode.LDC, reg, value);
         return reg;
+    };
+
+    /// Generates the code to return a value from this function. Since
+    /// statements are expressions, this returns the never register.
+    ///
+    /// @param {Real} [reg]
+    ///   The register containing the value to return. If not supplied, a
+    ///   register containing `undefined` is used instead.
+    ///
+    /// @return {Real}
+    static emitReturn = function(reg) {
+        var reg_ = reg ?? emitConstant(undefined);
+        emitCode(CatspeakIntcode.RET, reg_);
+        return emitUnreachable();
     };
 
     /// Emits a new Catspeak intcode instruction for the current block.
@@ -78,17 +100,17 @@ function CatspeakFunction() constructor {
         var msg = "fun () {"
         var registerCount = array_length(registers);
         for (var i = 0; i < registerCount; i += 1) {
-            msg += "\n  REG r" + string(i);
+            msg += "\n  ALLOC r" + string(i);
             var regInfo = registers[i];
-            if (regInfo != undefined) {
-                msg += " -- " + string(regInfo);
+            if (regInfo != undefined && regInfo.lexeme != undefined) {
+                msg += " -- " + string(regInfo.lexeme);
             }
         }
         var blockCount = array_length(blocks);
         for (var i = 0; i < blockCount; i += 1) {
             var block = blocks[i];
             var code_ = block.code;
-            msg += "\nl" + string(block.idx) + ":";
+            msg += "\n" + __blockName(block) + ":";
             var codeCount = array_length(code_);
             for (var j = 0; j < codeCount; j += 1) {
                 var inst = code_[j];
@@ -133,12 +155,13 @@ function CatspeakFunction() constructor {
 
     /// @ignore
     static __registerName = function(reg) {
-        return "r" + string(reg);
+        return reg < 0 ? "!" : "r" + string(reg);
     }
 
     /// @ignore
     static __blockName = function(blk) {
-        return "l" + string(blk.idx);
+        var idx = blk.idx;
+        return idx == 0 ? "entry" : "blk" + string(idx);
     }
 }
 

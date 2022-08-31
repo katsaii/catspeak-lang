@@ -20,8 +20,10 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.token = CatspeakToken.BOF;
     self.tokenLexeme = undefined;
     self.tokenPeeked = lexer.next();
-    self.stateStack = [__stateProgram, undefined, undefined];
+    self.stateStack = [__stateProgram];
+    self.resultStack = [];
     self.loopStack = [];
+    self.lastRegister = undefined;
 
     /// Advances the parser and returns the current token.
     ///
@@ -41,6 +43,17 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @return {Bool}
     static matches = function(kind) {
         return tokenPeeked == kind;
+    };
+
+    /// Returns true if the current token satisfies a predicate.
+    ///
+    /// @param {Function} predicate
+    ///   The predicate to call on the peeked token, must return a Boolean
+    ///   value.
+    ///
+    /// @return {Bool}
+    static satisfies = function(predicate) {
+        return predicate(tokenPeeked);
     };
 
     /// Attempts to match against a token and advances the parser if there
@@ -111,36 +124,31 @@ function CatspeakCompiler(lexer, ir) constructor {
         return array_length(stateStack) > 0;
     };
 
-    /// Stages a new compiler production. Optionally takes a single value
-    /// which can be used to pass arguments into this compiler state.
+    /// Stages a new compiler production.
     ///
     /// @param {Function} state
     ///   The production to insert. Since this is a FIFO data structure, take
     ///   care to queue up states in reverse order of the expected execution.
     ///
-    /// @param {Any} [value]
-    ///   The value to use as a parameter to this state.
-    ///
     /// @return {Struct}
-    static addState = function(state, value) {
-        array_push(stateStack, state, undefined, value);
+    static addState = function(state) {
+        array_push(stateStack, state);
     };
 
-    /// identical to the normal `addState` method, except a register is
-    /// returned containing the result of the production.
+    /// Pushes a register which can be used to pass arguments into compiler
+    /// states.
     ///
-    /// @param {Function} state
-    ///   The production to insert. Since this is a FIFO data structure, take
-    ///   care to queue up states in reverse order of the expected execution.
+    /// @param {Any} result
+    ///   The result to push onto the stack. Typically this is a register ID.
+    static pushResult = function(result) {
+        array_push(resultStack, result);
+    };
+
+    /// Pops the top value of the result stack and returns it.
     ///
-    /// @param {Any} [value]
-    ///   The value to use as a parameter to this state.
-    ///
-    /// @return {Struct}
-    static addStateResult = function(state, value) {
-        var reg = ir.emitRegister(pos);
-        array_push(stateStack, state, reg, value);
-        return reg;
+    /// @return {Any}
+    static popResult = function() {
+        return array_pop(resultStack);
     };
 
     /// Performs `n`-many steps of the parsing and code generation process.
@@ -154,14 +162,9 @@ function CatspeakCompiler(lexer, ir) constructor {
     static emitProgram = function(n=1) {
         var stateStack_ = stateStack;
         /// @ignore
-        #macro __CATSPEAK_COMPILER_GENERATE_CODE                        \
-                var stateArg = array_pop(stateStack_);                  \
-                var stateReg = array_pop(stateStack_);                  \
-                var state = array_pop(stateStack_);                     \
-                var result = state(stateArg);                           \
-                if (result != undefined && stateReg != undefined) {     \
-                    ir.emitCode(CatspeakIntcode.MOV, result, stateReg); \
-                }
+        #macro __CATSPEAK_COMPILER_GENERATE_CODE    \
+                var state = array_pop(stateStack_); \
+                state()
         if (n < 0) {
             while (inProgress()) {
                 __CATSPEAK_COMPILER_GENERATE_CODE;
@@ -195,23 +198,71 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (consume(CatspeakToken.BREAK_LINE)) {
             // do nothing
         } else {
+            addState(__stateStmtPop);
             addState(__stateExpr);
         }
     };
 
     /// @ignore
+    static __stateStmtPop = function() {
+        var reg = popResult();
+        lastRegister = reg;
+    }
+
+    /// @ignore
     static __stateExpr = function() {
-        return addStateResult(__stateExprTerminal);
+        addState(__stateExprStmt);
+    };
+
+    /// @ignore
+    static __stateExprStmt = function() {
+        if (consume(CatspeakToken.RETURN)) {
+            addState(__stateExprReturnEnd);
+            if (satisfies(catspeak_token_is_expression)) {
+                addState(__stateExpr);
+            } else {
+                pushResult(undefined);
+            }
+        } else {
+            addState(__stateExprTerminal);
+        }
+    };
+
+    /// @ignore
+    static __stateExprReturnEnd = function() {
+        pushResult(ir.emitReturn(popResult()));
     };
 
     /// @ignore
     static __stateExprTerminal = function() {
         if (consume(CatspeakToken.STRING)) {
-            return ir.emitConstant(pos.lexeme, pos);
+            var reg = ir.emitConstant(pos.lexeme, pos);
+            pushResult(reg);
         } else if (consume(CatspeakToken.NUMBER)) {
-            return ir.emitConstant(real(pos.lexeme), pos);
+            var reg = ir.emitConstant(real(pos.lexeme), pos);
+            pushResult(reg);
         } else {
-            addState(__stateError);
+            addState(__stateGrouping);
         }
     };
+    
+    /// @ignore
+    static __stateGrouping = function() {
+        if (consume(CatspeakToken.PAREN_LEFT)) {
+            addState(__stateGroupingEnd);
+            addState(__stateExpr);
+        } else {
+            errorAndAdvance("invalid expression");
+        }
+    };
+    
+    /// @ignore
+    static __stateGroupingEnd = function() {
+        expects(CatspeakToken.PAREN_RIGHT, "expected closing `)`");
+    };
+}
+
+/// Returns a boxed reference to a value, useful for passing by reference.
+function catspeak_box() {
+    return { ref : undefined };
 }
