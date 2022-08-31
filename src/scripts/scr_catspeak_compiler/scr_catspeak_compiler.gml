@@ -155,11 +155,15 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @return {Real}
     static findVar = function(name) {
-        var reg = scope.vars[$ name];
-        if (reg == undefined) {
-            error("a variable with the name `" + name + "` does not exist");
+        var scope_ = scope;
+        while (scope_ != undefined) {
+            var reg = scope.vars[$ name];
+            if (reg != undefined) {
+                return reg;
+            }
+            scope_ = scope_.parent;
         }
-        return reg;
+        error("a variable with the name `" + name + "` does not exist");
     };
 
     /// Pushes a register which can be used to pass arguments into compiler
@@ -299,14 +303,65 @@ function CatspeakCompiler(lexer, ir) constructor {
             } else {
                 pushResult(undefined);
             }
+        } else if (consume(CatspeakToken.DO)) {
+            addState(__stateExprBlock);
         } else {
-            addState(__stateExprTerminal);
+            addState(__stateExprOpUnary);
         }
     };
 
     /// @ignore
     static __stateExprReturnEnd = function() {
         pushResult(ir.emitReturn(popResult()));
+    };
+
+    /// @ignore
+    static __stateExprBlock = function() {
+        expects(CatspeakToken.BRACE_LEFT,
+                "expected opening `{` at the start of a new block");
+        pushBlock();
+        addState(__stateExprBlockEnd);
+    };
+
+    /// @ignore
+    static __stateExprBlockEnd = function() {
+        if (matches(CatspeakToken.EOF)) {
+            error("missing closing `}` in block");
+        } else if (consume(CatspeakToken.BRACE_RIGHT)) {
+            pushResult(popBlock());
+            return;
+        }
+        addState(__stateExprBlockEnd);
+        addState(__stateStmt);
+    };
+
+    /// @ignore
+    static __stateExprOpUnary = function() {
+        if (satisfies(catspeak_token_is_operator)) {
+            advance();
+            var reg = findVar(pos.lexeme);
+            pushResult(reg);
+            addState(__stateExprCallEnd);
+            addState(__stateExprTerminal);
+        } else {
+            addState(__stateExprCall);
+            addState(__stateExprTerminal);
+        }
+    };
+
+    static __stateExprCall = function() {
+        if (!satisfies(catspeak_token_is_expression)) {
+            return;
+        }
+        addState(__stateExprCallEnd);
+        addState(__stateExpr);
+    };
+
+    /// @ignore
+    static __stateExprCallEnd = function() {
+        var arg = popResult();
+        var callee = popResult();
+        pushResult(ir.emitCall(callee, arg));
     };
 
     /// @ignore
@@ -330,6 +385,10 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (consume(CatspeakToken.PAREN_LEFT)) {
             addState(__stateExprGroupingEnd);
             addState(__stateExpr);
+        } else if (consume(CatspeakToken.BOX_LEFT)) {
+            addState(__stateExprArray);
+        } else if (consume(CatspeakToken.BRACE_LEFT)) {
+            addState(__stateExprObject);
         } else {
             errorAndAdvance("invalid expression");
         }
@@ -338,6 +397,16 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprGroupingEnd = function() {
         expects(CatspeakToken.PAREN_RIGHT, "expected closing `)`");
+    };
+
+    /// @ignore
+    static __stateExprArray = function() {
+        errorAndAdvance("arrays unimplemented");
+    };
+
+    /// @ignore
+    static __stateExprObject = function() {
+        errorAndAdvance("objects unimplemented");
     };
 }
 
