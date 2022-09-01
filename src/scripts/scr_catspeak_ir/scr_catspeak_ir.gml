@@ -101,20 +101,25 @@ function CatspeakFunction() constructor {
     /// @param {Real} callee
     ///   The register containing function to be called.
     ///
-    /// @param {Real} arg
-    ///   The register containing the arguments array to pass to the function.
+    /// @param {Array<Real>} args
+    ///   The array of registers containing the arguments to pass.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
     ///   The debug info for this constant.
     ///
     /// @return {Real}
-    static emitCall = function(callee, arg, pos) {
+    static emitCall = function(callee, args, pos) {
         var result = emitRegister(pos);
-        emitCode(CatspeakIntcode.CALL, result, callee, arg);
+        var inst = emitCode(CatspeakIntcode.CALL, result, callee);
+        var argCount = array_length(args);
+        for (var i = 0; i < argCount; i += 1) {
+            array_push(inst, args[i]);
+        }
         return result;
     };
 
     /// Emits a new Catspeak intcode instruction for the current block.
+    /// Returns the array containing the instruction information.
     ///
     /// @param {Struct.CatspeakIntcode} inst
     ///   The Catspeak intcode instruction to perform.
@@ -126,12 +131,15 @@ function CatspeakFunction() constructor {
     /// @param {Any} ...
     ///   The parameters to emit for this instruction, can be any kind of
     ///   value, but most likely will be register IDs.
+    ///
+    /// @return {Array<Real>}
     static emitCode = function() {
         var inst = [];
         array_push(currentBlock.code, inst);
         for (var i = 0; i < argument_count; i += 1) {
             array_push(inst, argument[i]);
         }
+        return inst;
     };
 
     /// Debug display for Catspeak functions, attempts to resemble the GML
@@ -170,28 +178,22 @@ function CatspeakFunction() constructor {
                 case CatspeakIntcode.MOV:
                     msg += " " + __registerName(inst[2]);
                     break;
-                case CatspeakIntcode.ARR_GET:
-                case CatspeakIntcode.OBJ_GET:
-                    msg += " " + __registerName(inst[2]);
-                    msg += " " + __registerName(inst[3]);
-                    break;
-                case CatspeakIntcode.ARR_SET:
-                case CatspeakIntcode.OBJ_SET:
-                    msg += " " + __registerName(inst[2]);
-                    msg += " " + __registerName(inst[3]);
-                    msg += " " + __registerName(inst[4]);
-                    break;
                 case CatspeakIntcode.LDC:
                     var c = inst[2];
                     msg += " " + (is_string(c) ? "\"" + c + "\"" : string(c));
                     break;
+                case CatspeakIntcode.GLOBAL:
+                    break;
                 case CatspeakIntcode.ARG:
+                    break;
                 case CatspeakIntcode.RET:
                     msg += " " + __registerName(inst[2]);
                     break;
                 case CatspeakIntcode.CALL:
-                    msg += " " + __registerName(inst[2]);
-                    msg += " " + __registerName(inst[3]);
+                    var argCount = array_length(inst);
+                    for (var k = 2; k < argCount; k += 1) {
+                        msg += " " + __registerName(inst[k]);
+                    }
                     break;
                 }
             }
@@ -203,7 +205,7 @@ function CatspeakFunction() constructor {
     /// @ignore
     static __registerName = function(reg) {
         if (reg < 0) {
-            return "!";5
+            return "!";
         }
         var pos = registers[reg];
         if (pos == undefined || pos.lexeme == undefined) {
