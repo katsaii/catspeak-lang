@@ -404,15 +404,31 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (!satisfies(catspeak_token_is_expression)) {
             return;
         }
+        var parens = consume(CatspeakToken.PAREN_LEFT);
+        pushResult(parens);
+        pushResult([]);
         addState(__stateExprCallEnd);
         addState(__stateExpr);
     };
 
     /// @ignore
     static __stateExprCallEnd = function() {
-        var arg = popResult();
+        var exprReg = popResult();
+        var callArgs = popResult();
+        array_push(callArgs, exprReg);
+        if (consume(CatspeakToken.COMMA)) {
+            pushResult(callArgs);
+            addState(__stateExprCallEnd);
+            addState(__stateExpr);
+            return;
+        }
+        var parens = popResult();
+        if (parens) {
+            expects(CatspeakToken.PAREN_RIGHT,
+                    "expected `)` at end of function call");
+        }
         var callee = popResult();
-        pushResult(ir.emitCall(callee, arg));
+        pushResult(ir.emitCall(callee, callArgs));
     };
 
     /// @ignore
