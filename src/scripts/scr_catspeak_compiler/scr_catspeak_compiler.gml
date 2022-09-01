@@ -330,8 +330,11 @@ function CatspeakCompiler(lexer, ir) constructor {
             }
         } else if (consume(CatspeakToken.DO)) {
             addState(__stateExprBlock);
+        } else if (consume(CatspeakToken.FUN)) {
+            // TODO
         } else {
-            addState(__stateExprOpUnary);
+            pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
+            addState(__stateOpBinary);
         }
     };
 
@@ -358,6 +361,31 @@ function CatspeakCompiler(lexer, ir) constructor {
         }
         addState(__stateExprBlockEnd);
         addState(__stateStmt);
+    };
+
+    /// @ignore
+    static __stateOpBinary = function() {
+        var precedence = popResult();
+        if (precedence >= __CatspeakToken.__OPERATORS_END__) {
+            addState(__stateExprOpUnary);
+            return;
+        }
+        pushResult(precedence);
+        pushState(__stateOpBinaryEnd);
+        pushResult(precedence + 1);
+        pushState(__stateOpBinary);
+    };
+
+    /// @ignore
+    static __stateOpBinaryEnd = function() {
+        var lhs = popResult();
+        var precedence = popResult();
+        if (consume(precedence)) {
+            var opReg = getVar(pos.lexeme);
+            error("unimplemented");
+        } else {
+            pushResult(lhs);
+        }
     };
 
     /// @ignore
