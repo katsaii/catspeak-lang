@@ -9,6 +9,8 @@ enum CatspeakIntcode {
     JMP_FALSE,
     MOV,
     LDC,
+    IMPORT,
+    EXPORT,
     ARG,
     CALL,
     RET,
@@ -31,6 +33,10 @@ function catspeak_intcode_show(value) {
         return "MOV";
     case CatspeakIntcode.LDC:
         return "LDC";
+    case CatspeakIntcode.IMPORT:
+        return "IMPORT";
+    case CatspeakIntcode.EXPORT:
+        return "EXPORT";
     case CatspeakIntcode.ARG:
         return "ARG";
     case CatspeakIntcode.CALL:
@@ -58,6 +64,10 @@ function catspeak_intcode_read(str) {
         return CatspeakIntcode.MOV;
     case "LDC":
         return CatspeakIntcode.LDC;
+    case "IMPORT":
+        return CatspeakIntcode.IMPORT;
+    case "EXPORT":
+        return CatspeakIntcode.EXPORT;
     case "ARG":
         return CatspeakIntcode.ARG;
     case "CALL":
