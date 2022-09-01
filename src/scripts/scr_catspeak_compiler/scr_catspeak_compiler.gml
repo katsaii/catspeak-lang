@@ -148,13 +148,13 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// Looks up a variable by name and returns its register. If the variable
-    /// does not exist, then an error is raised.
+    /// does not exist, then a global variable is used instead.
     ///
     /// @param {String} name
     ///   The name of the variable to search for.
     ///
     /// @return {Real}
-    static findVar = function(name) {
+    static getVar = function(name) {
         var scope_ = scope;
         while (scope_ != undefined) {
             var reg = scope.vars[$ name];
@@ -163,7 +163,32 @@ function CatspeakCompiler(lexer, ir) constructor {
             }
             scope_ = scope_.parent;
         }
-        error("a variable with the name `" + name + "` does not exist");
+        var nameReg = ir.emitConstant(name);
+        return ir.emitImport(nameReg, pos);
+    };
+
+    /// Looks up a variable by name and attempts to assign it a value. If the
+    /// variable does not exist, then a global variable is used instead.
+    ///
+    /// @param {String} name
+    ///   The name of the variable to search for.
+    ///
+    /// @param {Real} value
+    ///   The register containing the value to assign.
+    ///
+    /// @return {Real}
+    static setVar = function(name, value) {
+        var scope_ = scope;
+        while (scope_ != undefined) {
+            var reg = scope.vars[$ name];
+            if (reg != undefined) {
+                ir.emitMove(value, reg);
+                return value;
+            }
+            scope_ = scope_.parent;
+        }
+        var nameReg = ir.emitConstant(name);
+        return ir.emitExport(nameReg, value);
     };
 
     /// Pushes a register which can be used to pass arguments into compiler
@@ -339,7 +364,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprOpUnary = function() {
         if (satisfies(catspeak_token_is_operator)) {
             advance();
-            var reg = findVar(pos.lexeme);
+            var reg = getVar(pos.lexeme);
             pushResult(reg);
             addState(__stateExprCallEnd);
             addState(__stateExprTerminal);
@@ -373,7 +398,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             var reg = ir.emitConstant(real(pos.lexeme), pos);
             pushResult(reg);
         } else if (consume(CatspeakToken.IDENT)) {
-            var reg = findVar(pos.lexeme);
+            var reg = getVar(pos.lexeme);
             pushResult(reg);
         } else {
             addState(__stateExprGrouping);

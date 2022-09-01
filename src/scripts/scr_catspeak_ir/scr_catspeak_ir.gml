@@ -86,6 +86,36 @@ function CatspeakFunction() constructor {
         emitCode(CatspeakIntcode.MOV, source, dest);
     };
 
+    /// Generates the code to import a global variable and assigns it to a
+    /// register.
+    ///
+    /// @param {Real} name
+    ///   The register containing the name of the global variable to get.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for the output register.
+    ///
+    /// @return {Real}
+    static emitImport = function(name, pos) {
+        var reg = emitRegister(pos);
+        emitCode(CatspeakIntcode.IMPORT, name, reg);
+        return reg;
+    };
+
+    /// Generates the code to assign a value to a global variable.
+    ///
+    /// @param {Real} name
+    ///   The register containing the name of the global variable to set.
+    ///
+    /// @param {Real} value
+    ///   The register containing the value to assign.
+    ///
+    /// @return {Real}
+    static emitExport = function(name, value) {
+        emitCode(CatspeakIntcode.EXPORT, name, value);
+        return value;
+    };
+
     /// Generates the code to call a Catspeak function. Returns a register
     /// containing the result of the call.
     ///
@@ -150,6 +180,8 @@ function CatspeakFunction() constructor {
                     j += 2;
                     break;
                 case CatspeakIntcode.MOV:
+                case CatspeakIntcode.IMPORT:
+                case CatspeakIntcode.EXPORT:
                     msg += " " + __registerName(code_[j + 1]);
                     msg += " " + __registerName(code_[j + 2]);
                     j += 2;
