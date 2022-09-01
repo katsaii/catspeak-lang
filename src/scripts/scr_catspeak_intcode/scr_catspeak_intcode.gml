@@ -9,8 +9,11 @@ enum CatspeakIntcode {
     JMP_FALSE,
     MOV,
     LDC,
-    IMPORT,
-    EXPORT,
+    GLOBAL,
+    ARR_GET,
+    ARR_SET,
+    OBJ_GET,
+    OBJ_SET,
     ARG,
     CALL,
     RET,
@@ -33,10 +36,16 @@ function catspeak_intcode_show(value) {
         return "MOV";
     case CatspeakIntcode.LDC:
         return "LDC";
-    case CatspeakIntcode.IMPORT:
-        return "IMPORT";
-    case CatspeakIntcode.EXPORT:
-        return "EXPORT";
+    case CatspeakIntcode.GLOBAL:
+        return "GLOBAL";
+    case CatspeakIntcode.ARR_GET:
+        return "ARR_GET";
+    case CatspeakIntcode.ARR_SET:
+        return "ARR_SET";
+    case CatspeakIntcode.OBJ_GET:
+        return "OBJ_GET";
+    case CatspeakIntcode.OBJ_SET:
+        return "OBJ_SET";
     case CatspeakIntcode.ARG:
         return "ARG";
     case CatspeakIntcode.CALL:
@@ -64,10 +73,16 @@ function catspeak_intcode_read(str) {
         return CatspeakIntcode.MOV;
     case "LDC":
         return CatspeakIntcode.LDC;
-    case "IMPORT":
-        return CatspeakIntcode.IMPORT;
-    case "EXPORT":
-        return CatspeakIntcode.EXPORT;
+    case "GLOBAL":
+        return CatspeakIntcode.GLOBAL;
+    case "ARR_GET":
+        return CatspeakIntcode.ARR_GET;
+    case "ARR_SET":
+        return CatspeakIntcode.ARR_SET;
+    case "OBJ_GET":
+        return CatspeakIntcode.OBJ_GET;
+    case "OBJ_SET":
+        return CatspeakIntcode.OBJ_SET;
     case "ARG":
         return CatspeakIntcode.ARG;
     case "CALL":
