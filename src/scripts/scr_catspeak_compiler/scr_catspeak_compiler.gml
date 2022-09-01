@@ -143,7 +143,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The register where the value of this variable is stored.
     ///
     /// @return {Real}
-    static declareVar = function(name, reg) {
+    static declareLocal = function(name, reg) {
         scope.vars[$ name] = reg;
     };
 
@@ -163,8 +163,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             }
             scope_ = scope_.parent;
         }
-        var nameReg = ir.emitConstant(name);
-        return ir.emitImport(nameReg, pos);
+        error("global variables unimplemented");
     };
 
     /// Looks up a variable by name and attempts to assign it a value. If the
@@ -187,8 +186,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             }
             scope_ = scope_.parent;
         }
-        var nameReg = ir.emitConstant(name);
-        return ir.emitExport(nameReg, value);
+        error("global variables unimplemented");
     };
 
     /// Pushes a register which can be used to pass arguments into compiler
@@ -301,7 +299,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         var value = popResult();
         var name = popResult();
         var reg = popResult();
-        declareVar(name, reg);
+        declareLocal(name, reg);
         if (value != undefined) {
             ir.emitMove(value, reg);
         }
