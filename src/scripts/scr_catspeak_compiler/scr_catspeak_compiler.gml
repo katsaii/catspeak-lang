@@ -129,7 +129,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   care to queue up states in reverse order of the expected execution.
     ///
     /// @return {Struct}
-    static addState = function(state) {
+    static pushState = function(state) {
         array_push(stateStack, state);
     };
 
@@ -253,8 +253,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateInit = function() {
         pushBlock();
-        addState(__stateDeinit);
-        addState(__stateProgram);
+        pushState(__stateDeinit);
+        pushState(__stateProgram);
     }
 
     /// @ignore
@@ -269,8 +269,8 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (matches(CatspeakToken.EOF)) {
             return;
         }
-        addState(__stateProgram);
-        addState(__stateStmt);
+        pushState(__stateProgram);
+        pushState(__stateStmt);
     };
     
     /// @ignore
@@ -278,19 +278,24 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (consume(CatspeakToken.BREAK_LINE)) {
             // do nothing
         } else if (consume(CatspeakToken.LET)) {
-            expects(CatspeakToken.IDENT,
-                    "expected identifier after `let` keyword");
-            pushResult(ir.emitRegister(pos));
-            pushResult(pos.lexeme);
-            addState(__stateStmtLetEnd);
-            if (consume(CatspeakToken.ASSIGN)) {
-                addState(__stateExpr);
-            } else {
-                pushResult(undefined);
-            }
+            pushState(__stateStmtLetBegin);
         } else {
-            addState(__stateExprPop);
-            addState(__stateExpr);
+            pushState(__stateExprPop);
+            pushState(__stateExpr);
+        }
+    };
+    
+    /// @ignore
+    static __stateStmtLetBegin = function() {
+        expects(CatspeakToken.IDENT,
+                "expected identifier after `let` keyword");
+        pushResult(ir.emitRegister(pos));
+        pushResult(pos.lexeme);
+        pushState(__stateStmtLetEnd);
+        if (consume(CatspeakToken.ASSIGN)) {
+            pushState(__stateExpr);
+        } else {
+            pushResult(undefined);
         }
     };
 
@@ -308,7 +313,7 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExpr = function() {
-        addState(__stateExprStmt);
+        pushState(__stateExprStmt);
     };
 
     /// @ignore
@@ -320,19 +325,24 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprStmt = function() {
         if (consume(CatspeakToken.RETURN)) {
-            addState(__stateExprReturnEnd);
-            if (satisfies(catspeak_token_is_expression)) {
-                addState(__stateExpr);
-            } else {
-                pushResult(undefined);
-            }
+            pushState(__stateExprReturnBegin);
         } else if (consume(CatspeakToken.DO)) {
-            addState(__stateExprBlock);
+            pushState(__stateExprBlockBegin);
         } else if (consume(CatspeakToken.FUN)) {
             // TODO
         } else {
             pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
-            addState(__stateOpBinary);
+            pushState(__stateOpBinaryBegin);
+        }
+    };
+
+    /// @ignore
+    static __stateExprReturnBegin = function() {
+        pushState(__stateExprReturnEnd);
+        if (satisfies(catspeak_token_is_expression)) {
+            pushState(__stateExpr);
+        } else {
+            pushResult(undefined);
         }
     };
 
@@ -342,11 +352,11 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateExprBlock = function() {
+    static __stateExprBlockBegin = function() {
         expects(CatspeakToken.BRACE_LEFT,
                 "expected opening `{` at the start of a new block");
         pushBlock();
-        addState(__stateExprBlockEnd);
+        pushState(__stateExprBlockEnd);
     };
 
     /// @ignore
@@ -357,21 +367,21 @@ function CatspeakCompiler(lexer, ir) constructor {
             pushResult(popBlock());
             return;
         }
-        addState(__stateExprBlockEnd);
-        addState(__stateStmt);
+        pushState(__stateExprBlockEnd);
+        pushState(__stateStmt);
     };
 
     /// @ignore
-    static __stateOpBinary = function() {
+    static __stateOpBinaryBegin = function() {
         var precedence = popResult();
-        if (precedence >= __CatspeakToken.__OPERATORS_END__) {
-            addState(__stateExprOpUnary);
+        if (precedence >= CatspeakToken.__OPERATORS_END__) {
+            pushState(__stateExprOpUnary);
             return;
         }
         pushResult(precedence);
         pushState(__stateOpBinaryEnd);
         pushResult(precedence + 1);
-        pushState(__stateOpBinary);
+        pushState(__stateOpBinaryBegin);
     };
 
     /// @ignore
@@ -380,7 +390,9 @@ function CatspeakCompiler(lexer, ir) constructor {
         var precedence = popResult();
         if (consume(precedence)) {
             var opReg = getVar(pos.lexeme);
-            error("unimplemented");
+            
+            pushResult(precedence + 1);
+            pushState(__stateOpBinaryBegin);
         } else {
             pushResult(lhs);
         }
@@ -392,23 +404,23 @@ function CatspeakCompiler(lexer, ir) constructor {
             advance();
             var reg = getVar(pos.lexeme);
             pushResult(reg);
-            addState(__stateExprCallEnd);
-            addState(__stateExprTerminal);
+            pushState(__stateExprCallEnd);
+            pushState(__stateExprTerminal);
         } else {
-            addState(__stateExprCall);
-            addState(__stateExprTerminal);
+            pushState(__stateExprCallBegin);
+            pushState(__stateExprTerminal);
         }
     };
 
-    static __stateExprCall = function() {
+    static __stateExprCallBegin = function() {
         if (!satisfies(catspeak_token_is_expression)) {
             return;
         }
         var parens = consume(CatspeakToken.PAREN_LEFT);
         pushResult(parens);
         pushResult([]);
-        addState(__stateExprCallEnd);
-        addState(__stateExpr);
+        pushState(__stateExprCallEnd);
+        pushState(__stateExpr);
     };
 
     /// @ignore
@@ -418,8 +430,8 @@ function CatspeakCompiler(lexer, ir) constructor {
         array_push(callArgs, exprReg);
         if (consume(CatspeakToken.COMMA)) {
             pushResult(callArgs);
-            addState(__stateExprCallEnd);
-            addState(__stateExpr);
+            pushState(__stateExprCallEnd);
+            pushState(__stateExpr);
             return;
         }
         var parens = popResult();
@@ -443,19 +455,19 @@ function CatspeakCompiler(lexer, ir) constructor {
             var reg = getVar(pos.lexeme);
             pushResult(reg);
         } else {
-            addState(__stateExprGrouping);
+            pushState(__stateExprGroupingBegin);
         }
     };
     
     /// @ignore
-    static __stateExprGrouping = function() {
+    static __stateExprGroupingBegin = function() {
         if (consume(CatspeakToken.PAREN_LEFT)) {
-            addState(__stateExprGroupingEnd);
-            addState(__stateExpr);
+            pushState(__stateExprGroupingEnd);
+            pushState(__stateExpr);
         } else if (consume(CatspeakToken.BOX_LEFT)) {
-            addState(__stateExprArray);
+            pushState(__stateExprArray);
         } else if (consume(CatspeakToken.BRACE_LEFT)) {
-            addState(__stateExprObject);
+            pushState(__stateExprObject);
         } else {
             errorAndAdvance("invalid expression");
         }
