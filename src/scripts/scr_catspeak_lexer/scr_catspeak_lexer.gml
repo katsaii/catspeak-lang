@@ -310,12 +310,13 @@ function catspeak_string_to_token_keyword(str) {
         keywords[$ ";"] = CatspeakToken.BREAK_LINE;
         keywords[$ "."] = CatspeakToken.DOT;
         keywords[$ "..."] = CatspeakToken.CONTINUE_LINE;
+        keywords[$ "do"] = CatspeakToken.DO;
+        keywords[$ "it"] = CatspeakToken.IT;
         keywords[$ "if"] = CatspeakToken.IF;
         keywords[$ "else"] = CatspeakToken.ELSE;
         keywords[$ "while"] = CatspeakToken.WHILE;
         keywords[$ "for"] = CatspeakToken.FOR;
         keywords[$ "let"] = CatspeakToken.LET;
-        keywords[$ "do"] = CatspeakToken.DO;
         keywords[$ "fun"] = CatspeakToken.FUN;
         keywords[$ "break"] = CatspeakToken.BREAK;
         keywords[$ "continue"] = CatspeakToken.CONTINUE;
