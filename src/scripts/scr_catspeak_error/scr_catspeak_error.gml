@@ -72,7 +72,7 @@ function CatspeakError(location, message="No message") constructor {
         self.script = e.script;
         self.stacktrace = e.stacktrace;
     }
-    self.location = location.clone();
+    self.location = location == undefined ? undefined : location.clone();
 
     /// Renders this Catspeak error with its location followed by the error
     /// message.
