@@ -127,7 +127,7 @@ function CatspeakFunction() constructor {
         }
         // must push the instruction after emitting code for the accessors
         array_push(currentBlock.code, inst);
-        return result;
+        return new CatspeakReadOnlyRegister(result);
     };
 
     /// Emits a new Catspeak intcode instruction for the current block.
@@ -164,7 +164,7 @@ function CatspeakFunction() constructor {
     /// @param {Struct.CatspeakLocation} [pos]
     ///   The debug info for this instruction.
     ///
-    /// @return {Real}
+    /// @return {Any}
     static emitGet = function(accessor, pos) {
         if (is_real(accessor)) {
             return accessor;
@@ -173,7 +173,8 @@ function CatspeakFunction() constructor {
         if (getter == undefined) {
             throw new CatspeakError(pos, "value is not readable");
         }
-        return getter();
+        var result = getter();
+        return emitGet(result, pos);
     };
 
     /// Attempts to get the value of an accessor if it exists. If the accessor
@@ -189,18 +190,19 @@ function CatspeakFunction() constructor {
     /// @param {Struct.CatspeakLocation} [pos]
     ///   The debug info for this instruction.
     ///
-    /// @return {Real}
+    /// @return {Any}
     static emitSet = function(accessor, value, pos) {
         var valueReg = emitGet(value, pos);
         if (is_real(accessor)) {
-            emitMove(valueReg, accessor);
+            emitMove(valueReg, accessor, pos);
             return valueReg;
         }
         var setter = accessor.setValue;
         if (setter == undefined) {
             throw new CatspeakError(pos, "value is not writable");
         }
-        return setter(valueReg);
+        var result = setter(valueReg);
+        return emitGet(result, pos);
     };
 
     /// Debug display for Catspeak functions, attempts to resemble the GML
