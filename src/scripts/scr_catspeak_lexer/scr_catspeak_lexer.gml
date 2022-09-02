@@ -276,6 +276,14 @@ function catspeak_token_is_expression(token) {
             CatspeakToken.BOF,
             CatspeakToken.EOF,
             CatspeakToken.OTHER,
+            CatspeakToken.OP_LOW,
+            CatspeakToken.OP_OR,
+            CatspeakToken.OP_AND,
+            CatspeakToken.OP_COMP,
+            CatspeakToken.OP_ADD,
+            CatspeakToken.OP_MUL,
+            CatspeakToken.OP_DIV,
+            CatspeakToken.OP_HIGH,
         ];
         var count = array_length(exceptions);
         for (var i = 0; i < count; i += 1) {

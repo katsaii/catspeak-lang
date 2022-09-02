@@ -1,6 +1,7 @@
 
 var buff = catspeak_create_buffer_from_string(@'
-    1 10 2, 12 3
+    let `+`;
+    1 + 2 + 3
 ');
 var lex = new CatspeakLexer(buff);
 var comp = new CatspeakCompiler(lex);
