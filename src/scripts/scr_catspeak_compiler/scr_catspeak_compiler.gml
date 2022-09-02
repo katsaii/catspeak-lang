@@ -21,6 +21,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.tokenPeeked = lexer.next();
     self.stateStack = [__stateInit];
     self.resultStack = [];
+    self.itStack = [];
     self.scope = undefined;
 
     /// Advances the parser and returns the current token.
@@ -122,17 +123,6 @@ function CatspeakCompiler(lexer, ir) constructor {
         return array_length(stateStack) > 0;
     };
 
-    /// Stages a new compiler production.
-    ///
-    /// @param {Function} state
-    ///   The production to insert. Since this is a FIFO data structure, take
-    ///   care to queue up states in reverse order of the expected execution.
-    ///
-    /// @return {Struct}
-    static pushState = function(state) {
-        array_push(stateStack, state);
-    };
-
     /// Allocates a new register for a local variable and returns its
     /// reference.
     ///
@@ -196,6 +186,17 @@ function CatspeakCompiler(lexer, ir) constructor {
         error("global variables unimplemented");
     };
 
+    /// Stages a new compiler production.
+    ///
+    /// @param {Function} state
+    ///   The production to insert. Since this is a FIFO data structure, take
+    ///   care to queue up states in reverse order of the expected execution.
+    ///
+    /// @return {Struct}
+    static pushState = function(state) {
+        array_push(stateStack, state);
+    };
+
     /// Pushes a register which can be used to pass arguments into compiler
     /// states.
     ///
@@ -214,6 +215,29 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// Starts a new lexical scope.
     static pushBlock = function() {
+        scope = new CatspeakLocalScope(scope);
+    };
+
+    /// Pushes the new accessor for the `it` keyword onto the stack.
+    ///
+    /// @param {Any} reg
+    ///   The register or accessor representing the left-hand-side of an
+    ///   assignment expression.
+    static pushIt = function(reg) {
+        return array_push(itStack, reg);
+    };
+
+    /// Returns the accessor for the `it` keyword.
+    static topIt = function() {
+        var i = array_length(itStack);
+        if (i == 0) {
+            throw new CatspeakError(pos, "`it` keyword invalid in this case");
+        }
+        return new CatspeakReadOnlyRegister(itStack[i - 1]);
+    };
+
+    /// Pops the top accessor the `it` keyword represents.
+    static popIt = function() {
         scope = new CatspeakLocalScope(scope);
     };
 
@@ -384,6 +408,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         var lhs = popResult();
         if (consume(CatspeakToken.ASSIGN)) {
             pushResult(lhs);
+            pushIt(lhs);
             pushState(__stateAssignEnd);
             pushState(__stateExpr);
         } else {
@@ -395,6 +420,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateAssignEnd = function() {
         var rhs = popResult();
         var lhs = popResult();
+        popIt();
         pushResult(ir.emitSet(lhs, rhs, pos));
     };
 
@@ -499,6 +525,9 @@ function CatspeakCompiler(lexer, ir) constructor {
             pushResult(reg);
         } else if (consume(CatspeakToken.IDENT)) {
             var reg = getVar(pos.lexeme);
+            pushResult(reg);
+        } else if (consume(CatspeakToken.IT)) {
+            var reg = topIt();
             pushResult(reg);
         } else {
             pushState(__stateExprGroupingBegin);

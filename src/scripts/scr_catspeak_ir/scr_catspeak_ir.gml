@@ -100,6 +100,10 @@ function CatspeakFunction() constructor {
     static emitMove = function(source, dest, pos) {
         var source_ = emitGet(source, pos);
         var dest_ = emitGet(dest, pos);
+        if (source_ == dest_) {
+            // the registers are already equal
+            return;
+        }
         emitCode(CatspeakIntcode.MOV, dest_, source_);
     };
 
