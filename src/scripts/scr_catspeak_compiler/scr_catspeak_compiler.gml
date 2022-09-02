@@ -155,10 +155,6 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @return {Real}
     static getVar = function(name) {
-        var builtin = catspeak_string_to_builtin(name);
-        if (builtin != undefined || name == "undefined") {
-            return ir.emitConstant(builtin);
-        }
         var scope_ = scope;
         while (scope_ != undefined) {
             var reg = scope.vars[$ name];
@@ -166,6 +162,10 @@ function CatspeakCompiler(lexer, ir) constructor {
                 return reg;
             }
             scope_ = scope_.parent;
+        }
+        if (catspeak_string_is_builtin(name)) {
+            var builtin = catspeak_string_to_builtin(name);
+            return ir.emitConstant(builtin);
         }
         error("global variables unimplemented");
     };
@@ -189,6 +189,9 @@ function CatspeakCompiler(lexer, ir) constructor {
                 return value;
             }
             scope_ = scope_.parent;
+        }
+        if (catspeak_string_is_builtin(name)) {
+            error("cannot assign to built-in constant `" + name + "`");
         }
         error("global variables unimplemented");
     };
@@ -527,54 +530,219 @@ function CatspeakLocalScope(parent) constructor {
 ///
 /// @param {String} name
 ///   The name of the built-in to find.
+///
+/// @return {Any}
 function catspeak_string_to_builtin(name) {
-    static keywords = undefined;
-    if (keywords == undefined) {
-        keywords = { };
-        keywords[$ "+"] = function(lhs, rhs) { return lhs + rhs };
-        keywords[$ "null"] = pointer_null;
-        keywords[$ "undefined"] = undefined;
-        keywords[$ "true"] = true;
-        keywords[$ "false"] = false;
-        keywords[$ "NaN"] = NaN;
-        keywords[$ "infinity"] = infinity;
-        
-        /*
-        f(pos, "+", function(_l, _r) { return _l + _r; });
-        f(pos, "++", function(_l, _r) { return (is_string(_l) ? _l : string(_l)) + (is_string(_r) ? _r : string(_r)); });
-        f(pos, "-", function(_l, _r) { return _r == undefined ? -_l : _l - _r; });
-        f(pos, "*", function(_l, _r) { return _l * _r; });
-        f(pos, "/", function(_l, _r) { return _l / _r; });
-        f(pos, "%", function(_l, _r) { return _l % _r; });
-        f(pos, "//", function(_l, _r) { return _l div _r; });
-        f(pos, "|", function(_l, _r) { return _l | _r; });
-        f(pos, "&", function(_l, _r) { return _l & _r; });
-        f(pos, "^", function(_l, _r) { return _l ^ _r; });
-        f(pos, "~", function(_x) { return ~_x; });
-        f(pos, "<<", function(_l, _r) { return _l << _r; });
-        f(pos, ">>", function(_l, _r) { return _l >> _r; });
-        f(pos, "||", function(_l, _r) { return _l || _r; });
-        f(pos, "&&", function(_l, _r) { return _l && _r; });
-        f(pos, "^^", function(_l, _r) { return _l ^^ _r; });
-        f(pos, "!", function(_x) { return !_x; });
-        f(pos, "==", function(_l, _r) { return _l == _r; });
-        f(pos, "!=", function(_l, _r) { return _l != _r; });
-        f(pos, ">=", function(_l, _r) { return _l >= _r; });
-        f(pos, "<=", function(_l, _r) { return _l <= _r; });
-        f(pos, ">", function(_l, _r) { return _l > _r; });
-        f(pos, "<", function(_l, _r) { return _l < _r; });
-        f(pos, "bool", function(_x) { return is_numeric(_x) && _x; });
-        f(pos, "string", function(_x) { return __catspeak_legacy_encode_value(_x); });
-        f(pos, "real", function(_x) { return is_real(_x) ? _x : real(_x); });
-        f(pos, "typeof", function(_x) { return typeof(_x); });
-        f(pos, "length", __catspeak_legacy_get_ordered_collection_length);
-        f(pos, "keys", __catspeak_legacy_get_unordered_collection_keys);
-        c(pos, "undefined", undefined);
-        c(pos, "true", true);
-        c(pos, "false", false);
-        c(pos, "NaN", NaN);
-        c(pos, "infinity", infinity);
-        */
+    static builtins = undefined;
+    if (builtins == undefined) {
+        builtins = { };
+        var funcs = [
+            "+", __catspeak_builtin_add,
+            "++", __catspeak_builtin_add_string,
+            "-", __catspeak_builtin_sub,
+            "*", __catspeak_builtin_mul,
+            "/", __catspeak_builtin_div,
+            "%", __catspeak_builtin_mod,
+            "//", __catspeak_builtin_div_int,
+            "|", __catspeak_builtin_bit_or,
+            "&", __catspeak_builtin_bit_and,
+            "^", __catspeak_builtin_bit_xor,
+            "~", __catspeak_builtin_bit_not,
+            "<<", __catspeak_builtin_bit_lshift,
+            ">>", __catspeak_builtin_bit_rshift,
+            "||", __catspeak_builtin_or,
+            "&&", __catspeak_builtin_and,
+            "^^", __catspeak_builtin_xor,
+            "!", __catspeak_builtin_not,
+            "==", __catspeak_builtin_eq,
+            "!=", __catspeak_builtin_neq,
+            ">=", __catspeak_builtin_geq,
+            "<=", __catspeak_builtin_leq,
+            ">", __catspeak_builtin_gt,
+            "<", __catspeak_builtin_lt,
+            "bool", bool,
+            "string", string,
+            "real", real,
+            "int64", int64,
+            "typeof", typeof,
+            "instanceof", instanceof,
+            "is_array", is_array,
+            "is_bool", is_bool,
+            "is_infinity", is_infinity,
+            "is_int32", is_int32,
+            "is_int64", is_int64,
+            "is_method", is_method,
+            "is_nan", is_nan,
+            "is_numeric", is_numeric,
+            "is_ptr", is_ptr,
+            "is_real", is_real,
+            "is_string", is_string,
+            "is_struct", is_struct,
+            "is_undefined", is_undefined,
+            "is_vec3", is_vec3,
+            "is_vec4", is_vec4,
+        ];
+        for (var i = 0; i < array_length(funcs); i += 2) {
+            builtins[$ funcs[i + 0]] = method(undefined, funcs[i + 1]);
+        }
+        var consts = [
+            "null", pointer_null,
+            "undefiend", undefined,
+            "true", true,
+            "false", false,
+            "NaN", NaN,
+            "infinity", infinity,
+        ];
+        for (var i = 0; i < array_length(consts); i += 2) {
+            builtins[$ consts[i + 0]] = consts[i + 1];
+        }
     }
-    return keywords[$ name];
+    return builtins[$ name];
+}
+
+/// Returns whether this string represents a built-in Catspeak constant.
+///
+/// @param {String} name
+///   The name of the built-in to find.
+///
+/// @return {Bool}
+function catspeak_string_is_builtin(name) {
+    gml_pragma("forceinline");
+    var builtin = catspeak_string_to_builtin(name);
+    return builtin != undefined || name == "undefined";
+}
+
+/// @ignore
+function __catspeak_builtin_add(lhs, rhs) {
+    return rhs == undefined ? +lhs : lhs + rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_add_string(lhs, rhs) {
+    var lhs_ = is_string(lhs) ? lhs : string(lhs);
+    var rhs_ = is_string(rhs) ? rhs : string(rhs);
+    return lhs_ + rhs_;
+}
+
+/// @ignore
+function __catspeak_builtin_sub() {
+    return rhs == undefined ? -lhs : lhs - rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_mul(lhs, rhs) {
+    return lhs * rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_div(lhs, rhs) {
+    return lhs / rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_mod(lhs, rhs) {
+    return lhs % rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_div_int(lhs, rhs) {
+    return lhs div rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_bit_or(lhs, rhs) {
+    return lhs | rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_bit_and(lhs, rhs) {
+    return lhs & rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_bit_xor(lhs, rhs) {
+    return lhs ^ rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_bit_not(lhs) {
+    return ~lhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_bit_lshift(lhs, rhs) {
+    return lhs << rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_bit_rshift(lhs, rhs) {
+    return lhs >> rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_or(lhs, rhs) {
+    return lhs || rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_and(lhs, rhs) {
+    return lhs && rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_xor(lhs, rhs) {
+    return lhs ^^ rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_not(lhs) {
+    return !lhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_eq(lhs, rhs) {
+    return lhs == rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_neq(lhs, rhs) {
+    return lhs != rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_geq(lhs, rhs) {
+    return lhs >= rhs;
+}
+
+/// @ignore
+function  __catspeak_builtin_leq(lhs, rhs) {
+    return lhs <= rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_gt(lhs, rhs) {
+    return lhs > rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_lt(lhs, rhs) {
+    return lhs < rhs;
+}
+
+/// @ignore
+function __catspeak_builtin_array() {
+    var arr = array_create(argument_count);
+    for (var i = 0; i < argument_count; i += 1) {
+        arr[i] = argument[i];
+    }
+    return arr;
+}
+
+/// @ignore
+function __catspeak_builtin_struct() {
+    var obj = { };
+    for (var i = 0; i < argument_count; i += 2) {
+        obj[$ argument[i + 0]] = argument[i + 1];
+    }
+    return obj;
 }
