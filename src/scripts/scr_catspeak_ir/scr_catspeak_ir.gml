@@ -47,12 +47,12 @@ function CatspeakFunction() constructor {
     /// Returns whether a register is unreachable. Used to perform dead code
     /// elimination.
     ///
-    /// @param {Real} reg
-    ///   The register to check.
+    /// @param {Any} reg
+    ///   The register or accessor to check.
     ///
     /// @return {Bool}
     static isUnreachable = function(reg) {
-        return reg < 0;
+        return is_real(value) && value < 0;
     };
 
     /// Generates the code to assign a constant to a register.
@@ -61,60 +61,72 @@ function CatspeakFunction() constructor {
     ///   The constant value to load.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
-    ///   The debug info for this constant.
+    ///   The debug info for this instruction.
     ///
-    /// @return {Real}
+    /// @return {Any}
     static emitConstant = function(value, pos) {
         var result = emitRegister(pos);
         emitCode(CatspeakIntcode.LDC, result, value);
-        return result;
+        return new CatspeakReadOnlyRegister(result);
     };
 
     /// Generates the code to return a value from this function. Since
     /// statements are expressions, this returns the never register.
     ///
-    /// @param {Real} [reg]
-    ///   The register containing the value to return. If not supplied, a
-    ///   register containing `undefined` is used instead.
+    /// @param {Any} [reg]
+    ///   The register or accessor containing the value to return. If not
+    ///   supplied, a register containing `undefined` is used instead.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
     ///
     /// @return {Real}
-    static emitReturn = function(reg) {
-        var reg_ = reg ?? emitConstant(undefined);
+    static emitReturn = function(reg, pos) {
+        var reg_ = emitGet(reg ?? emitConstant(undefined, pos), pos);
         emitCode(CatspeakIntcode.RET, undefined, reg_);
         return emitUnreachable();
     };
 
     /// Generates the code to move the value of one register to another.
     ///
-    /// @param {Real} source
-    ///   The register containing the value to move.
+    /// @param {Any} source
+    ///   The register or accessor containing the value to move.
     ///
-    /// @param {Real} dest
-    ///   The register containing the destination to move to.
-    static emitMove = function(source, dest) {
-        emitCode(CatspeakIntcode.MOV, dest, source);
+    /// @param {Any} dest
+    ///   The register or accessor containing the destination to move to.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    static emitMove = function(source, dest, pos) {
+        var source_ = emitGet(source, pos);
+        var dest_ = emitGet(dest, pos);
+        emitCode(CatspeakIntcode.MOV, dest_, source_);
     };
 
     /// Generates the code to call a Catspeak function. Returns a register
     /// containing the result of the call.
     ///
-    /// @param {Real} callee
-    ///   The register containing function to be called.
+    /// @param {Any} callee
+    ///   The register or accessor containing function to be called.
     ///
-    /// @param {Array<Real>} args
-    ///   The array of registers containing the arguments to pass.
+    /// @param {Array<Any>} args
+    ///   The array of registers or accessors containing the arguments to
+    ///   pass.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
-    ///   The debug info for this constant.
+    ///   The debug info for this instruction.
     ///
     /// @return {Real}
     static emitCall = function(callee, args, pos) {
         var result = emitRegister(pos);
-        var inst = emitCode(CatspeakIntcode.CALL, result, callee);
+        var callee_ = emitGet(callee, pos);
+        var inst = [CatspeakIntcode.CALL, result, callee_];
         var argCount = array_length(args);
         for (var i = 0; i < argCount; i += 1) {
-            array_push(inst, args[i]);
+            array_push(inst, emitGet(args[i], pos));
         }
+        // must push the instruction after emitting code for the accessors
+        array_push(currentBlock.code, inst);
         return result;
     };
 
@@ -132,7 +144,7 @@ function CatspeakFunction() constructor {
     ///   The parameters to emit for this instruction, can be any kind of
     ///   value, but most likely will be register IDs.
     ///
-    /// @return {Array<Real>}
+    /// @return {Array<Any>}
     static emitCode = function() {
         var inst = [];
         array_push(currentBlock.code, inst);
@@ -142,11 +154,60 @@ function CatspeakFunction() constructor {
         return inst;
     };
 
+    /// Attempts to get the value of an accessor if it exists. If the accessor
+    /// does not implement the `getValue` function, a Catspeak error is
+    /// raised.
+    ///
+    /// @param {Any} accessor
+    ///   The register or accessor to get the value of.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    ///
+    /// @return {Real}
+    static emitGet = function(accessor, pos) {
+        if (is_real(accessor)) {
+            return accessor;
+        }
+        var getter = accessor.getValue;
+        if (getter == undefined) {
+            throw new CatspeakError(pos, "value is not readable");
+        }
+        return getter();
+    };
+
+    /// Attempts to get the value of an accessor if it exists. If the accessor
+    /// does not implement the `getValue` function, a Catspeak error is
+    /// raised.
+    ///
+    /// @param {Any} accessor
+    ///   The register or accessor to set the value of.
+    ///
+    /// @param {Any} value
+    ///   The register or accessor to assign to the accessor 
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    ///
+    /// @return {Real}
+    static emitSet = function(accessor, value, pos) {
+        var valueReg = emitGet(value, pos);
+        if (is_real(accessor)) {
+            emitMove(valueReg, accessor);
+            return valueReg;
+        }
+        var setter = accessor.setValue;
+        if (setter == undefined) {
+            throw new CatspeakError(pos, "value is not writable");
+        }
+        return setter(valueReg);
+    };
+
     /// Debug display for Catspeak functions, attempts to resemble the GML
     /// function `toString` behaviour.
     static toString = function() {
         return "function catspeak_" + instanceof(self);
-    }
+    };
 
     /// Returns the disassembly for this IR function. Does not handle
     /// sub-function definitions, sorry!
@@ -200,7 +261,7 @@ function CatspeakFunction() constructor {
         }
         msg += "\n}";
         return msg;
-    }
+    };
 
     /// @ignore
     static __registerName = function(reg) {
@@ -213,17 +274,42 @@ function CatspeakFunction() constructor {
         }
         var lexeme = pos.lexeme;
         return "`" + (is_string(lexeme) ? lexeme : string(lexeme)) + "`";
-    }
+    };
 
     /// @ignore
     static __blockName = function(blk) {
         var idx = blk.idx;
         return idx == 0 ? "entry" : "blk" + string(idx);
-    }
+    };
 }
 
 /// Represents a block of executable code.
 function CatspeakBlock() constructor {
     self.code = [];
     self.idx = -1;
+}
+
+/// Represents a special assignment target which generates different code
+/// depending on whether it used as a getter or setter. The simplest example
+/// is with array and struct accessors, but it is not limited to just this.
+///
+/// The `getValue` function expects no arguments and should return a
+/// register ID.
+///
+/// The `setValue` function expects a single argument, a register containing
+/// the value to set, and should return a register containing the result of
+/// the assignment. If there is no result, return `undefined`.
+function CatspeakAccessor() constructor {
+    self.getValue = undefined;
+    self.setValue = undefined;
+}
+
+/// Used for constants, compile error on attempted assignment to constant
+/// value.
+///
+/// @param {Real} reg
+///   The register to mark as read-only.
+function CatspeakReadOnlyRegister(reg) : CatspeakAccessor() constructor {
+    self.reg = reg;
+    self.getValue = function() { return reg };
 }
