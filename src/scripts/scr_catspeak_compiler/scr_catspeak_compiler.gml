@@ -375,22 +375,26 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateOpBinaryBegin = function() {
         var precedence = popResult();
         if (precedence >= CatspeakToken.__OPERATORS_END__) {
-            pushState(__stateExprOpUnary);
+            pushState(__stateExprOpUnaryBegin);
             return;
         }
         pushResult(precedence);
-        pushState(__stateOpBinaryEnd);
+        pushState(__stateOpBinary);
         pushResult(precedence + 1);
         pushState(__stateOpBinaryBegin);
     };
 
     /// @ignore
-    static __stateOpBinaryEnd = function() {
+    static __stateOpBinary = function() {
         var lhs = popResult();
         var precedence = popResult();
         if (consume(precedence)) {
             var opReg = getVar(pos.lexeme);
-            
+            pushResult(precedence);
+            pushState(__stateOpBinary);
+            pushResult(opReg);
+            pushResult(lhs);
+            pushState(__stateOpBinaryEnd);
             pushResult(precedence + 1);
             pushState(__stateOpBinaryBegin);
         } else {
@@ -399,17 +403,32 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateExprOpUnary = function() {
+    static __stateOpBinaryEnd = function() {
+        var rhs = popResult();
+        var lhs = popResult();
+        var op = popResult();
+        pushResult(ir.emitCall(op, [lhs, rhs]));
+    };
+
+    /// @ignore
+    static __stateExprOpUnaryBegin = function() {
         if (satisfies(catspeak_token_is_operator)) {
             advance();
-            var reg = getVar(pos.lexeme);
-            pushResult(reg);
-            pushState(__stateExprCallEnd);
+            var opReg = getVar(pos.lexeme);
+            pushResult(opReg);
+            pushState(__stateExprOpUnaryEnd);
             pushState(__stateExprTerminal);
         } else {
             pushState(__stateExprCallBegin);
             pushState(__stateExprTerminal);
         }
+    };
+
+    /// @ignore
+    static __stateExprOpUnaryEnd = function() {
+        var val = popResult();
+        var op = popResult();
+        pushResult(ir.emitCall(op, [val]));
     };
 
     static __stateExprCallBegin = function() {
