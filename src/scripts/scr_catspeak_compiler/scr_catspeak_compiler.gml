@@ -739,10 +739,31 @@ function __catspeak_builtin_array() {
 }
 
 /// @ignore
+function __catspeak_builtin_array_accessor() {
+    if (argument_count == 2) {
+        return argument[0][argument[1]];
+    }
+    var val = argument[2];
+    argument[0][argument[1]] = val;
+    return val;
+}
+
+/// @ignore
 function __catspeak_builtin_struct() {
     var obj = { };
     for (var i = 0; i < argument_count; i += 2) {
         obj[$ argument[i + 0]] = argument[i + 1];
     }
     return obj;
+}
+
+/// @ignore
+function __catspeak_builtin_struct_accessor() {
+    if (argument_count == 2) {
+        return argument[0][$ argument[1]];
+    }
+    var val = argument[2];
+    var obj = argument[0];
+    obj[$ argument[1]] = val;
+    return val;
 }
