@@ -70,6 +70,14 @@ function CatspeakCompiler(lexer, ir) constructor {
         return matched;
     };
 
+    /// A helper function which consumes any line breaks which may appear in
+    /// an unexpected location.
+    static consumeLinebreaks = function() {
+        while (consume(CatspeakToken.BREAK_LINE)) {
+            // nothing
+        }
+    }
+
     /// @desc Throws a `CatspeakError` for the current token.
     ///
     /// @param {String} [message]
@@ -581,6 +589,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     
     /// @ignore
     static __stateExprGroupingEnd = function() {
+        consumeLinebreaks();
         expects(CatspeakToken.PAREN_RIGHT, "expected closing `)`");
     };
 
@@ -601,6 +610,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         var elems = topResult();
         array_push(elems, elem);
         var hasComma = consume(CatspeakToken.COMMA);
+        consumeLinebreaks();
         if (consume(CatspeakToken.BOX_RIGHT)) {
             return;
         }
@@ -663,6 +673,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         var elems = topResult();
         array_push(elems, elemKey, elem);
         var hasComma = consume(CatspeakToken.COMMA);
+        consumeLinebreaks();
         if (consume(CatspeakToken.BRACE_RIGHT)) {
             return;
         }
@@ -701,6 +712,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         var key = popResult();
         var parens = popResult();
         if (parens) {
+            consumeLinebreaks();
             expects(CatspeakToken.BOX_RIGHT,
                     "expected closing `]` after accessor expression");
         }

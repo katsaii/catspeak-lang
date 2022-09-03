@@ -29,6 +29,7 @@ function CatspeakLexer(buff) constructor {
     self.eof = false;
     self.cr = false;
     self.skipNextByte = false;
+    self.skipNextSemicolon = false;
     self.lexemeLength = 0;
     self.pos = new CatspeakLocation(1, 1);
     self.posNext = self.pos.clone();
@@ -217,7 +218,8 @@ function CatspeakLexer(buff) constructor {
     ///
     /// @return {Enum.CatspeakToken}
     static next = function() {
-        var skipSemicolon = false;
+        var skipSemicolon = skipNextSemicolon;
+        skipNextSemicolon = false;
         while (true) {
             var token = nextWithWhitespace();
             if (token == CatspeakToken.WHITESPACE
@@ -227,6 +229,8 @@ function CatspeakLexer(buff) constructor {
             if (token == CatspeakToken.CONTINUE_LINE) {
                 skipSemicolon = true;
                 continue;
+            } else if (catspeak_token_skips_newline(token)) {
+                skipNextSemicolon = true;
             }
             if (skipSemicolon && token == CatspeakToken.BREAK_LINE) {
                 continue;
@@ -287,7 +291,55 @@ function catspeak_token_is_expression(token) {
         ];
         var count = array_length(exceptions);
         for (var i = 0; i < count; i += 1) {
-            tokens[catspeak_token_valueof(exceptions[i])] = false;
+            tokens[@ catspeak_token_valueof(exceptions[i])] = false;
+        }
+    }
+    return tokens[catspeak_token_valueof(token)];
+}
+
+/// Returns whether a Catspeak token ignores any succeeding newline
+/// characters.
+///
+/// @param {Enum.CatspeakToken} token
+///   The ID of the token to check.
+///
+/// @return {Bool}
+function catspeak_token_skips_newline(token) {
+    static tokens = undefined;
+    if (tokens == undefined) {
+        tokens = array_create(catspeak_token_sizeof(), false);
+        var tokens_ = [
+            // !! DO NOT ADD `BREAK_LINE` HERE, IT WILL RUIN EVERYTHING !!
+            //              you have been warned... (*^_^*) b
+            CatspeakToken.PAREN_LEFT,
+            CatspeakToken.BOX_LEFT,
+            CatspeakToken.BRACE_LEFT,
+            CatspeakToken.DOT,
+            CatspeakToken.COLON,
+            CatspeakToken.COMMA,
+            CatspeakToken.ASSIGN,
+            // this token technically does, but it's handled in a different
+            // way to the others, so it's only here honorarily
+            //CatspeakToken.CONTINUE_LINE,
+            CatspeakToken.DO,
+            CatspeakToken.IF,
+            CatspeakToken.ELSE,
+            CatspeakToken.WHILE,
+            CatspeakToken.FOR,
+            CatspeakToken.LET,
+            CatspeakToken.FUN,
+            CatspeakToken.OP_LOW,
+            CatspeakToken.OP_OR,
+            CatspeakToken.OP_AND,
+            CatspeakToken.OP_COMP,
+            CatspeakToken.OP_ADD,
+            CatspeakToken.OP_MUL,
+            CatspeakToken.OP_DIV,
+            CatspeakToken.OP_HIGH,
+        ];
+        var count = array_length(tokens_);
+        for (var i = 0; i < count; i += 1) {
+            tokens[@ catspeak_token_valueof(tokens_[i])] = true;
         }
     }
     return tokens[catspeak_token_valueof(token)];
