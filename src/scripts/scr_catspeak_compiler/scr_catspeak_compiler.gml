@@ -695,8 +695,12 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprFieldBegin = function() {
         pushState(__stateExprFieldEnd);
-        if (consume(CatspeakToken.IDENT)) {
+        if (consume(CatspeakToken.IDENT) || consume(CatspeakToken.STRING)) {
             var reg = ir.emitConstant(pos.lexeme, pos);
+            pushResult(false); // no paren
+            pushResult(reg);
+        } else if (consume(CatspeakToken.NUMBER)) {
+            var reg = ir.emitConstant(real(pos.lexeme), pos);
             pushResult(false); // no paren
             pushResult(reg);
         } else if (consume(CatspeakToken.BOX_LEFT)) {
