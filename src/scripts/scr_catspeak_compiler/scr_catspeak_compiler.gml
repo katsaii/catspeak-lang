@@ -753,10 +753,16 @@ function CatspeakCollectionAccessor(
     self.ir = ir_;
     self.collection = ir_.emitGet(collection, pos_);
     self.index = ir_.emitGet(index, pos_);
+    self.getReg = undefined;
     self.getValue = function() {
+        if (getReg != undefined) {
+            return getReg;
+        }
         var getFunc = method(undefined, __catspeak_builtin_get);
         var getFuncReg = ir.emitConstant(getFunc, pos);
-        return ir.emitCall(getFuncReg, [collection, index], pos);
+        var result = ir.emitCall(getFuncReg, [collection, index], pos);
+        getReg = result;
+        return result;
     };
     self.setValue = function(value) {
         var setFunc = method(undefined, __catspeak_builtin_set);
