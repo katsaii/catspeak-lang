@@ -533,31 +533,17 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (!consume(CatspeakToken.DOT)) {
             return;
         }
-        pushState(__stateExprIndexBegin);
         pushState(__stateExprIndexEnd);
-        if (consume(CatspeakToken.IDENT)) {
-            var reg = ir.emitConstant(pos.lexeme, pos);
-            pushResult(false); // no paren
-            pushResult(reg);
-        } else if (consume(CatspeakToken.BOX_LEFT)) {
-            pushResult(true); // yes paren
-            pushState(__stateExpr);
-        } else {
-            error("expected `[` or identifier after `.` operator");
-        }
+        pushState(__stateExprFieldBegin);
     };
 
     /// @ignore
     static __stateExprIndexEnd = function() {
         var key = popResult();
-        var parens = popResult();
         var collection = popResult();
-        if (parens) {
-            expects(CatspeakToken.BOX_RIGHT,
-                    "expected closing `]` after accessor expression");
-        }
         var accessor = new CatspeakCollectionAccessor(self, collection, key);
         pushResult(accessor);
+        pushState(__stateExprIndexBegin);
     };
 
     /// @ignore
@@ -587,7 +573,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.BOX_LEFT)) {
             pushState(__stateExprArrayBegin);
         } else if (consume(CatspeakToken.BRACE_LEFT)) {
-            pushState(__stateExprObjectBegin);
+            pushState(__stateExprStructBegin);
         } else {
             errorAndAdvance("invalid expression");
         }
@@ -634,8 +620,91 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateExprObjectBegin = function() {
-        errorAndAdvance("objects unimplemented");
+    static __stateExprStructBegin = function() {
+        pushResult([]);
+        pushState(__stateExprStructEnd);
+        if (consume(CatspeakToken.BRACE_RIGHT)) {
+            return;
+        }
+        pushState(__stateExprStruct);
+        pushState(__stateExprStructKeyValueShorthand);
+    };
+
+    /// @ignore
+    static __stateExprStructKeyValueShorthand = function() {
+        if (consume(CatspeakToken.IDENT)) {
+            // `{ x }` is short for `{ "x" : x }`
+            var varName = pos.lexeme;
+            var varNameReg = ir.emitConstant(varName, pos);
+            pushResult(varNameReg);
+            if (consume(CatspeakToken.COLON)) {
+                pushState(__stateExpr);
+            } else {
+                var varReg = getVar(varName);
+                pushResult(varReg);
+            }
+        } else {
+            pushState(__stateExprStructKeyValue);
+            pushState(__stateExprFieldBegin);
+        }
+    };
+
+    /// @ignore
+    static __stateExprStructKeyValue = function() {
+        expects(CatspeakToken.COLON,
+                "expected `:` between key and value of struct element");
+        pushState(__stateExpr);
+    };
+
+    /// @ignore
+    static __stateExprStruct = function() {
+        var elem = popResult();
+        var elemKey = popResult();
+        var elems = topResult();
+        array_push(elems, elemKey, elem);
+        var hasComma = consume(CatspeakToken.COMMA);
+        if (consume(CatspeakToken.BRACE_RIGHT)) {
+            return;
+        }
+        if (!hasComma) {
+            error("expected `,` between struct elements");
+        }
+        pushState(__stateExprStruct);
+        pushState(__stateExprStructKeyValueShorthand);
+    };
+
+    /// @ignore
+    static __stateExprStructEnd = function() {
+        var args = popResult();
+        var newFunc = method(undefined, __catspeak_builtin_array);
+        var newFuncReg = ir.emitConstant(newFunc, pos);
+        pushResult(ir.emitCall(newFuncReg, args, pos));
+    };
+
+    /// @ignore
+    static __stateExprFieldBegin = function() {
+        pushState(__stateExprFieldEnd);
+        if (consume(CatspeakToken.IDENT)) {
+            var reg = ir.emitConstant(pos.lexeme, pos);
+            pushResult(false); // no paren
+            pushResult(reg);
+        } else if (consume(CatspeakToken.BOX_LEFT)) {
+            pushResult(true); // yes paren
+            pushState(__stateExpr);
+        } else {
+            error("expected `[` or identifier in accessor expression");
+        }
+    };
+
+    /// @ignore
+    static __stateExprFieldEnd = function() {
+        var key = popResult();
+        var parens = popResult();
+        if (parens) {
+            expects(CatspeakToken.BOX_RIGHT,
+                    "expected closing `]` after accessor expression");
+        }
+        pushResult(key);
     };
 }
 
