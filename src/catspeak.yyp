@@ -11,6 +11,7 @@
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},"order":6,},
+    {"id":{"name":"scr_catspeak_bitstack","path":"scripts/scr_catspeak_bitstack/scr_catspeak_bitstack.yy",},"order":7,},
     {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":0,},
   ],
   "Options": [
