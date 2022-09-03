@@ -7,7 +7,7 @@
 function CatspeakFunction() constructor {
     self.blocks = [];
     self.registers = []; // stores debug info about registers
-    self.initBlock = self.emitBlock(new CatspeakBlock());
+    self.constants = []; // stores the values of constants
     self.currentBlock = self.emitBlock(new CatspeakBlock());
     self.constantTable = __catspeak_constant_pool_get(self);
 
@@ -43,7 +43,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Real}
     static emitUnreachable = function() {
-        return -1;
+        return NaN;
     };
 
     /// Returns whether a register is unreachable. Used to perform dead code
@@ -54,7 +54,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Bool}
     static isUnreachable = function(reg) {
-        return is_real(value) && value < 0;
+        return is_nan(reg);
     };
 
     /// Generates the code to assign a constant to a register.
@@ -69,14 +69,14 @@ function CatspeakFunction() constructor {
     static emitConstant = function(value, pos) {
         // constant definitions are hoisted
         if (ds_map_exists(constantTable, value)) {
-            return constantTable[? value];
+            // constants use negative ids, offset by 1
+            // e.g. constant 0 has the register id of `-1`
+            return -(constantTable[? value] + 1);
         }
-        var result = emitRegister(pos);
-        var inst = [CatspeakIntcode.LDC, result, value];
-        array_push(initBlock.code, inst);
-        var result = new CatspeakReadOnlyAccessor(result);
+        var result = array_length(constants);
+        array_push(constants, value);
         constantTable[? value] = result;
-        return result;
+        return -(result + 1);
     };
 
     /// Generates the code to return a value from this function. Since
@@ -206,6 +206,9 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitSet = function(accessor, value, pos) {
         var valueReg = emitGet(value, pos);
+        if (valueReg < 0) {
+            throw new CatspeakError(pos, "constant is not writable");
+        }
         if (is_real(accessor)) {
             emitMove(valueReg, accessor, pos);
             return valueReg;
@@ -227,14 +230,31 @@ function CatspeakFunction() constructor {
     /// Returns the disassembly for this IR function. Does not handle
     /// sub-function definitions, sorry!
     static disassembly = function() {
-        var msg = "fun () {"
+        var msg = "";
+        // emit constants
+        var constCount = array_length(constants);
+        for (var i = 0; i < constCount; i += 1) {
+            var reg = -(i + 1);
+            if (i != 0) {
+                msg += "\n";
+            }
+            msg += "const " + __registerName(reg);
+            msg += " = " + __valueName(constants[i]);
+        }
+        // emit function body
+        if (constCount > 0) {
+            msg += "\n\n";
+        }
+        msg += "fun () {"
         var blockCount = array_length(blocks);
         for (var i = 0; i < blockCount; i += 1) {
+            // emit blocks
             var block = blocks[i];
             var code_ = block.code;
             msg += "\n" + __blockName(block) + ":";
             var codeCount = array_length(code_);
             for (var j = 0; j < codeCount; j += 1) {
+                // emit instructions
                 var inst = code_[j];
                 var opcode = inst[0];
                 var resultReg = inst[1];
@@ -255,8 +275,7 @@ function CatspeakFunction() constructor {
                     msg += " " + __registerName(inst[2]);
                     break;
                 case CatspeakIntcode.LDC:
-                    var c = inst[2];
-                    msg += " " + (is_string(c) ? "\"" + c + "\"" : string(c));
+                    msg += " " + __valueName(inst[2]);
                     break;
                 case CatspeakIntcode.GLOBAL:
                     break;
@@ -280,8 +299,12 @@ function CatspeakFunction() constructor {
 
     /// @ignore
     static __registerName = function(reg) {
-        if (reg < 0) {
+        if (is_nan(reg)) {
             return "!";
+        }
+        if (reg < 0) {
+            // constant register
+            return "c" + string(abs(reg) - 1);
         }
         var pos = registers[reg];
         if (pos == undefined || pos.lexeme == undefined) {
@@ -296,6 +319,28 @@ function CatspeakFunction() constructor {
         var idx = blk.idx;
         return idx == 0 ? "entry" : "blk" + string(idx);
     };
+
+    /// @ignore
+    static __valueName = function(value) {
+        if (is_string(value)) {
+            var msg = value;
+            msg = string_replace_all(msg, "\n", "\\n");
+            msg = string_replace_all(msg, "\r", "\\r");
+            msg = string_replace_all(msg, "\t", "\\t");
+            msg = string_replace_all(msg, "\v", "\\v");
+            msg = string_replace_all(msg, "\f", "\\f");
+            msg = string_replace_all(msg, "\"", "\\\"");
+            return "\"" + msg + "\"";
+        } else if (is_struct(value)) {
+            var inst = instanceof(value);
+            if (inst == "function") {
+                inst = undefined;
+            }
+            inst ??= string(value);
+            return inst;
+        }
+        return string(value);
+    }
 }
 
 /// Represents a block of executable code.
