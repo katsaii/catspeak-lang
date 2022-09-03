@@ -557,10 +557,10 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprTerminal = function() {
         if (consume(CatspeakToken.STRING)) {
-            var reg = ir.emitConstant(pos.lexeme, pos);
+            var reg = ir.emitConstant(pos.lexeme);
             pushResult(reg);
         } else if (consume(CatspeakToken.NUMBER)) {
-            var reg = ir.emitConstant(real(pos.lexeme), pos);
+            var reg = ir.emitConstant(real(pos.lexeme));
             pushResult(reg);
         } else if (consume(CatspeakToken.IDENT)) {
             var reg = getVar(pos.lexeme);
@@ -625,7 +625,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprArrayEnd = function() {
         static newFunc = method(undefined, __catspeak_builtin_array);
         var args = popResult();
-        var newFuncReg = ir.emitConstant(newFunc, pos);
+        var newFuncReg = ir.emitConstant(newFunc);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
 
@@ -645,7 +645,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (consume(CatspeakToken.IDENT)) {
             // `{ x }` is short for `{ "x" : x }`
             var varName = pos.lexeme;
-            var varNameReg = ir.emitConstant(varName, pos);
+            var varNameReg = ir.emitConstant(varName);
             pushResult(varNameReg);
             if (consume(CatspeakToken.COLON)) {
                 pushState(__stateExpr);
@@ -688,7 +688,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprStructEnd = function() {
         static newFunc = method(undefined, __catspeak_builtin_struct);
         var args = popResult();
-        var newFuncReg = ir.emitConstant(newFunc, pos);
+        var newFuncReg = ir.emitConstant(newFunc);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
 
@@ -696,11 +696,11 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprFieldBegin = function() {
         pushState(__stateExprFieldEnd);
         if (consume(CatspeakToken.IDENT) || consume(CatspeakToken.STRING)) {
-            var reg = ir.emitConstant(pos.lexeme, pos);
+            var reg = ir.emitConstant(pos.lexeme);
             pushResult(false); // no paren
             pushResult(reg);
         } else if (consume(CatspeakToken.NUMBER)) {
-            var reg = ir.emitConstant(real(pos.lexeme), pos);
+            var reg = ir.emitConstant(real(pos.lexeme));
             pushResult(false); // no paren
             pushResult(reg);
         } else if (consume(CatspeakToken.BOX_LEFT)) {
@@ -759,14 +759,14 @@ function CatspeakCollectionAccessor(
         if (getReg != undefined) {
             return getReg;
         }
-        var getFuncReg = ir.emitConstant(getFunc, pos);
+        var getFuncReg = ir.emitConstant(getFunc);
         var result = ir.emitCall(getFuncReg, [collection, index], pos);
         getReg = result;
         return result;
     };
     self.setValue = function(value) {
         static setFunc = method(undefined, __catspeak_builtin_set);
-        var setFuncReg = ir.emitConstant(setFunc, pos);
+        var setFuncReg = ir.emitConstant(setFunc);
         ir.emitCall(setFuncReg, [collection, index, value], pos);
         return value;
     };
