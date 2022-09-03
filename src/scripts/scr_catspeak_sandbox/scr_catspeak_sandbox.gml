@@ -1,6 +1,6 @@
 
 var buff = catspeak_create_buffer_from_string(@'
-    let a;
+    let a = [1, 1,1,1,1,1,1,1,1];
     a.[1] = it - 2
 ');
 var lex = new CatspeakLexer(buff);

@@ -206,6 +206,13 @@ function CatspeakCompiler(lexer, ir) constructor {
         array_push(resultStack, result);
     };
 
+    /// Returns the top result in the result stack without removing it.
+    ///
+    /// @return {Any}
+    static topResult = function() {
+        return resultStack[array_length(resultStack) - 1];
+    };
+
     /// Pops the top value of the result stack and returns it.
     ///
     /// @return {Any}
@@ -362,9 +369,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.FUN)) {
             // TODO
         } else {
-            pushState(__stateAssignBegin);
-            pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
-            pushState(__stateOpBinaryBegin);
+            pushState(__stateExprAssignBegin);
         }
     };
 
@@ -372,7 +377,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprReturnBegin = function() {
         pushState(__stateExprReturnEnd);
         if (satisfies(catspeak_token_is_expression)) {
-            pushState(__stateExpr);
+            pushState(__stateExprAssignBegin);
         } else {
             pushResult(undefined);
         }
@@ -404,12 +409,19 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateAssignBegin = function() {
+    static __stateExprAssignBegin = function() {
+        pushState(__stateExprAssign);
+        pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
+        pushState(__stateOpBinaryBegin);
+    };
+
+    /// @ignore
+    static __stateExprAssign = function() {
         var lhs = popResult();
         if (consume(CatspeakToken.ASSIGN)) {
             pushResult(lhs);
             pushIt(lhs);
-            pushState(__stateAssignEnd);
+            pushState(__stateExprAssignEnd);
             pushState(__stateExpr);
         } else {
             pushResult(lhs);
@@ -417,7 +429,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateAssignEnd = function() {
+    static __stateExprAssignEnd = function() {
         var rhs = popResult();
         var lhs = popResult();
         popIt();
@@ -573,9 +585,9 @@ function CatspeakCompiler(lexer, ir) constructor {
             pushState(__stateExprGroupingEnd);
             pushState(__stateExpr);
         } else if (consume(CatspeakToken.BOX_LEFT)) {
-            pushState(__stateExprArray);
+            pushState(__stateExprArrayBegin);
         } else if (consume(CatspeakToken.BRACE_LEFT)) {
-            pushState(__stateExprObject);
+            pushState(__stateExprObjectBegin);
         } else {
             errorAndAdvance("invalid expression");
         }
@@ -587,12 +599,42 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateExprArray = function() {
-        errorAndAdvance("arrays unimplemented");
+    static __stateExprArrayBegin = function() {
+        pushResult([]);
+        pushState(__stateExprArrayEnd);
+        if (consume(CatspeakToken.BOX_RIGHT)) {
+            return;
+        }
+        pushState(__stateExprArray);
+        pushState(__stateExpr);
     };
 
     /// @ignore
-    static __stateExprObject = function() {
+    static __stateExprArray = function() {
+        var elem = popResult();
+        var elems = topResult();
+        array_push(elems, elem);
+        var hasComma = consume(CatspeakToken.COMMA);
+        if (consume(CatspeakToken.BOX_RIGHT)) {
+            return;
+        }
+        if (!hasComma) {
+            error("expected `,` between array elements");
+        }
+        pushState(__stateExprArray);
+        pushState(__stateExpr);
+    };
+
+    /// @ignore
+    static __stateExprArrayEnd = function() {
+        var args = popResult();
+        var newFunc = method(undefined, __catspeak_builtin_array);
+        var newFuncReg = ir.emitConstant(newFunc, pos);
+        pushResult(ir.emitCall(newFuncReg, args, pos));
+    };
+
+    /// @ignore
+    static __stateExprObjectBegin = function() {
         errorAndAdvance("objects unimplemented");
     };
 }
@@ -864,7 +906,11 @@ function __catspeak_builtin_struct() {
 /// @ignore
 function __catspeak_builtin_get(collection, key) {
     if (is_array(collection)) {
-        return collection[key];
+        if (key < 0 || key >= array_length(collection)) {
+            return undefined;
+        } else {
+            return collection[key];
+        }
     } else {
         return collection[$ key];
     }
