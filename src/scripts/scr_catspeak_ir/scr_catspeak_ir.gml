@@ -67,7 +67,7 @@ function CatspeakFunction() constructor {
     static emitConstant = function(value, pos) {
         var result = emitRegister(pos);
         emitCode(CatspeakIntcode.LDC, result, value);
-        return new CatspeakReadOnlyRegister(result);
+        return new CatspeakReadOnlyAccessor(result);
     };
 
     /// Generates the code to return a value from this function. Since
@@ -131,7 +131,7 @@ function CatspeakFunction() constructor {
         }
         // must push the instruction after emitting code for the accessors
         array_push(currentBlock.code, inst);
-        return new CatspeakReadOnlyRegister(result);
+        return new CatspeakReadOnlyAccessor(result);
     };
 
     /// Emits a new Catspeak intcode instruction for the current block.
@@ -315,7 +315,7 @@ function CatspeakAccessor() constructor {
 ///
 /// @param {Real} reg
 ///   The register to mark as read-only.
-function CatspeakReadOnlyRegister(reg) : CatspeakAccessor() constructor {
+function CatspeakReadOnlyAccessor(reg) : CatspeakAccessor() constructor {
     self.reg = reg;
     self.getValue = function() { return reg };
 }

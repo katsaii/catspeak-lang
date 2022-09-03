@@ -233,7 +233,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (i == 0) {
             throw new CatspeakError(pos, "`it` keyword invalid in this case");
         }
-        return new CatspeakReadOnlyRegister(itStack[i - 1]);
+        return new CatspeakReadOnlyAccessor(itStack[i - 1]);
     };
 
     /// Pops the top accessor the `it` keyword represents.
@@ -485,14 +485,15 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     static __stateExprCallBegin = function() {
-        if (!satisfies(catspeak_token_is_expression)) {
-            return;
+        if (satisfies(catspeak_token_is_expression)) {
+            var parens = consume(CatspeakToken.PAREN_LEFT);
+            pushResult(parens);
+            pushResult([]);
+            pushState(__stateExprCallEnd);
+            pushState(__stateExpr);
+        } else {
+            pushState(__stateExprIndexBegin);
         }
-        var parens = consume(CatspeakToken.PAREN_LEFT);
-        pushResult(parens);
-        pushResult([]);
-        pushState(__stateExprCallEnd);
-        pushState(__stateExpr);
     };
 
     /// @ignore
@@ -513,6 +514,38 @@ function CatspeakCompiler(lexer, ir) constructor {
         }
         var callee = popResult();
         pushResult(ir.emitCall(callee, callArgs));
+    };
+
+    /// @ignore
+    static __stateExprIndexBegin = function() {
+        if (!consume(CatspeakToken.DOT)) {
+            return;
+        }
+        pushState(__stateExprIndexBegin);
+        pushState(__stateExprIndexEnd);
+        if (consume(CatspeakToken.IDENT)) {
+            var reg = ir.emitConstant(pos.lexeme, pos);
+            pushResult(false); // no paren
+            pushResult(reg);
+        } else if (consume(CatspeakToken.BOX_LEFT)) {
+            pushResult(true); // yes paren
+            pushState(__stateExpr);
+        } else {
+            error("expected `[` or identifier after `.` operator");
+        }
+    };
+
+    /// @ignore
+    static __stateExprIndexEnd = function() {
+        var key = popResult();
+        var parens = popResult();
+        var collection = popResult();
+        if (parens) {
+            expects(CatspeakToken.BOX_RIGHT,
+                    "expected closing `]` after accessor expression");
+        }
+        var accessor = new CatspeakCollectionAccessor(self, collection, key);
+        pushResult(accessor);
     };
 
     /// @ignore
@@ -572,6 +605,38 @@ function CatspeakLocalScope(parent) constructor {
     self.result = undefined;
     self.vars = { };
     self.parent = parent;
+}
+
+/// An accessor for array and object access expressions.
+///
+/// @param {Struct.CatspeakCompiler} compiler
+///   The Catspeak compiler which generated this accessor.
+///
+/// @param {Any} collection
+///   The register or accessor containing the collection to access.
+///
+/// @param {Any} index
+///   The register or accessor containing the index to access.
+function CatspeakCollectionAccessor(
+    compiler, collection, index,
+) : CatspeakAccessor() constructor {
+    var pos_ = compiler.pos;
+    var ir_ = compiler.ir;
+    self.pos = pos_;
+    self.ir = ir_;
+    self.collection = ir_.emitGet(collection, pos_);
+    self.index = ir_.emitGet(index, pos_);
+    self.getValue = function() {
+        var getFunc = method(undefined, __catspeak_builtin_get);
+        var getFuncReg = ir.emitConstant(getFunc, pos);
+        return ir.emitCall(getFuncReg, [collection, index], pos);
+    };
+    self.setValue = function(value) {
+        var setFunc = method(undefined, __catspeak_builtin_set);
+        var setFuncReg = ir.emitConstant(setFunc, pos);
+        ir.emitCall(setFuncReg, [collection, index, value], pos);
+        return value;
+    };
 }
 
 /// Returns the value of a built-in Catspeak constant, if one exists.
@@ -788,16 +853,6 @@ function __catspeak_builtin_array() {
 }
 
 /// @ignore
-function __catspeak_builtin_array_accessor() {
-    if (argument_count == 2) {
-        return argument[0][argument[1]];
-    }
-    var val = argument[2];
-    argument[0][argument[1]] = val;
-    return val;
-}
-
-/// @ignore
 function __catspeak_builtin_struct() {
     var obj = { };
     for (var i = 0; i < argument_count; i += 2) {
@@ -807,12 +862,19 @@ function __catspeak_builtin_struct() {
 }
 
 /// @ignore
-function __catspeak_builtin_struct_accessor() {
-    if (argument_count == 2) {
-        return argument[0][$ argument[1]];
+function __catspeak_builtin_get(collection, key) {
+    if (is_array(collection)) {
+        return collection[key];
+    } else {
+        return collection[$ key];
     }
-    var val = argument[2];
-    var obj = argument[0];
-    obj[$ argument[1]] = val;
-    return val;
+}
+
+/// @ignore
+function __catspeak_builtin_set(collection, key, value) {
+    if (is_array(collection)) {
+        return collection[@ key] = value;
+    } else {
+        return collection[$ key] = value;
+    }
 }
