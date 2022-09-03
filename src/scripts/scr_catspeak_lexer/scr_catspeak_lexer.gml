@@ -193,7 +193,7 @@ function CatspeakLexer(buff) constructor {
                 advance();
             }
             registerLexeme();
-            if (peek(1) == "\"") {
+            if (peek(1) == ord("\"")) {
                 // I don't care about raising an error in this situation,
                 // since Catspeak should be a bit forgiving as a modding
                 // language
