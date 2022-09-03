@@ -7,7 +7,9 @@
 function CatspeakFunction() constructor {
     self.blocks = [];
     self.registers = []; // stores debug info about registers
+    self.initBlock = self.emitBlock(new CatspeakBlock());
     self.currentBlock = self.emitBlock(new CatspeakBlock());
+    self.constantTable = ds_map_create(); // TODO pool these
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -65,9 +67,16 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Any}
     static emitConstant = function(value, pos) {
+        // constant definitions are hoisted
+        if (ds_map_exists(constantTable, value)) {
+            return constantTable[? value];
+        }
         var result = emitRegister(pos);
-        emitCode(CatspeakIntcode.LDC, result, value);
-        return new CatspeakReadOnlyAccessor(result);
+        var inst = [CatspeakIntcode.LDC, result, value];
+        array_push(initBlock.code, inst);
+        var result = new CatspeakReadOnlyAccessor(result);
+        constantTable[? value] = result;
+        return result;
     };
 
     /// Generates the code to return a value from this function. Since

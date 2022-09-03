@@ -623,8 +623,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprArrayEnd = function() {
+        static newFunc = method(undefined, __catspeak_builtin_array);
         var args = popResult();
-        var newFunc = method(undefined, __catspeak_builtin_array);
         var newFuncReg = ir.emitConstant(newFunc, pos);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
@@ -686,8 +686,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprStructEnd = function() {
+        static newFunc = method(undefined, __catspeak_builtin_struct);
         var args = popResult();
-        var newFunc = method(undefined, __catspeak_builtin_array);
         var newFuncReg = ir.emitConstant(newFunc, pos);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
@@ -755,17 +755,17 @@ function CatspeakCollectionAccessor(
     self.index = ir_.emitGet(index, pos_);
     self.getReg = undefined;
     self.getValue = function() {
+        static getFunc = method(undefined, __catspeak_builtin_get);
         if (getReg != undefined) {
             return getReg;
         }
-        var getFunc = method(undefined, __catspeak_builtin_get);
         var getFuncReg = ir.emitConstant(getFunc, pos);
         var result = ir.emitCall(getFuncReg, [collection, index], pos);
         getReg = result;
         return result;
     };
     self.setValue = function(value) {
-        var setFunc = method(undefined, __catspeak_builtin_set);
+        static setFunc = method(undefined, __catspeak_builtin_set);
         var setFuncReg = ir.emitConstant(setFunc, pos);
         ir.emitCall(setFuncReg, [collection, index, value], pos);
         return value;
