@@ -95,3 +95,25 @@ function CatspeakError(location, message="No message") constructor {
         return msg;
     };
 }
+
+/// Raises a Catspeak error at this location, with this message, if an
+/// assertion condition is not true.
+///
+/// @param {Bool} condition
+///   The condition to check. Use `false` to raise an exception.
+///
+/// @param {Struct.CatspeakLocation} pos
+///   The location where this error occurred.
+///
+/// @param {String} [message]
+///   The error message to display.
+function catspeak_assert(condition, pos, message) {
+    if (condition) {
+        return;
+    }
+    var msg = "ASSERT FAILED";
+    if (message != undefined) {
+        msg += ": " + message;
+    }
+    throw new CatspeakError(pos, msg);
+}

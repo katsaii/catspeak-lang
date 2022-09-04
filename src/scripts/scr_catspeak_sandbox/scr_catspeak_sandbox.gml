@@ -17,11 +17,8 @@ repeat (10) {
 }
 
 var buff = catspeak_create_buffer_from_string(@'
-    let a = do {
-        let b = 1
-        b
-    }
-    a
+    let a = [];
+    let b = { };
 ');
 var lex = new CatspeakLexer(buff);
 var comp = new CatspeakCompiler(lex);

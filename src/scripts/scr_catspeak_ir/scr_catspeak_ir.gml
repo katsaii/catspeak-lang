@@ -8,10 +8,8 @@ function CatspeakFunction() constructor {
     self.blocks = [];
     self.registers = []; // stores debug info about registers
     self.constants = []; // stores the values of constants
-    self.tempRegisters = []; // stores any previously allocated registers
-                             // which are safe to reuse
-    self.tempRegisterCount = 0; // used so that registers used twice in a call
-                                // argument aren't overwritten
+    self.discardedRegisters = []; // stores any previously allocated registers
+                                  // which are safe to reuse
     self.currentBlock = self.emitBlock(new CatspeakBlock());
     self.constantTable = catspeak_alloc_ds_map(self);
     self.constantNaN = undefined; // the NaN lookup needs to be handled
@@ -43,37 +41,40 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Real}
     static emitRegister = function(pos) {
-        var idx = array_length(registers);
-        var meta = {
-            temporary : false,
-            used : false,
-            pos : pos == undefined ? undefined : pos.clone(),
-        };
-        array_push(registers, meta);
+        var idx;
+        var pos_ = pos == undefined ? undefined : pos.clone();
+        if (array_length(discardedRegisters) > 0) {
+            // reuse a discarded register
+            idx = array_pop(discardedRegisters);
+            var meta = registers[idx];
+            meta.pos ??= pos_;
+            meta.discarded = false;
+        } else {
+            idx = array_length(registers);
+            array_push(registers, {
+                pos : pos_,
+                discarded : false,
+            });
+        }
         return idx;
     };
 
-    /// Allocates space for a temporary register which can only be read from
-    /// once.
+    /// Discards a register so it can be recycled somewhere else.
     ///
-    /// @param {Struct.CatspeakLocation} [pos]
-    ///   The debug info for this register.
-    ///
-    /// @return {Real}
-    static emitTempRegister = function(pos) {
-        var tempRegisters_ = tempRegisters;
-        var tempRegisterCount_ = tempRegisterCount;
-        if (tempRegisterCount_ == 0) {
-            // allocate a new register
-            var reg = emitRegister(pos);
-            registers[reg].temporary = true;
-            return reg;
+    /// @param {Any} reg
+    ///   The register or accessor to check.
+    static discardRegister = function(reg) {
+        if (reg < 0) {
+            // ignore constants
+            return;
         }
-        var reg = tempRegisters_[0];
-        array_delete(tempRegisters_, 0, 1);
-        tempRegisterCount = tempRegisterCount_ - 1;
-        registers[reg].used = false;
-        return reg;
+        var meta = registers[reg];
+        if (meta.discarded) {
+            // already discarded, should this be an error?
+            return;
+        }
+        meta.discarded = true;
+        array_push(discardedRegisters, reg);
     };
 
     /// Emits the special unreachable "register." The existence of this
@@ -92,7 +93,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Bool}
     static isUnreachable = function(reg) {
-        return is_nan(reg);
+        return is_numeric(reg) && is_nan(reg);
     };
 
     /// Returns whether a register is a constant memory location.
@@ -113,14 +114,15 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitConstant = function(value) {
         var result;
-        if (is_nan(value) && constantNaN != undefined) {
+        var isNaN = is_numeric(value) && is_nan(value); // is_nan is borked
+        if (isNaN && constantNaN != undefined) {
             result = constantNaN;
         } else if (ds_map_exists(constantTable, value)) {
             result = constantTable[? value]
         } else {
             result = array_length(constants);
             array_push(constants, value);
-            if (is_nan(value)) {
+            if (isNaN) {
                 constantNaN = result;
             } else {
                 constantTable[? value] = result;
@@ -134,16 +136,15 @@ function CatspeakFunction() constructor {
     /// Generates the code to return a value from this function. Since
     /// statements are expressions, this returns the never register.
     ///
-    /// @param {Any} [reg]
-    ///   The register or accessor containing the value to return. If not
-    ///   supplied, a register containing `undefined` is used instead.
+    /// @param {Any} reg
+    ///   The register or accessor containing the value to return.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
     ///   The debug info for this instruction.
     ///
     /// @return {Real}
     static emitReturn = function(reg, pos) {
-        var reg_ = emitGet(reg ?? emitConstant(undefined), pos);
+        var reg_ = emitGet(reg, pos);
         emitCode(CatspeakIntcode.RET, undefined, reg_);
         return emitUnreachable();
     };
@@ -210,14 +211,13 @@ function CatspeakFunction() constructor {
         for (var i = 0; i < argCount; i += 1) {
             array_push(inst, emitGet(args[i], pos));
         }
-        __refreshTempRegisters();
-        // backpatch temporary register, since even if a register is used
-        // as a parameter, it's available to use as the return value
+        // backpatch return register, since if an argument is discarded during
+        // the call, it can be reused as the return value
         var result = emitRegister(pos);
         inst[@ 1] = result;
         // must push the instruction after emitting code for the accessors
         array_push(currentBlock.code, inst);
-        return new CatspeakReadOnlyAccessor(result);
+        return new CatspeakTempRegisterAccessor(result, self);
     };
 
     /// Emits a new Catspeak intcode instruction for the current block.
@@ -241,7 +241,6 @@ function CatspeakFunction() constructor {
         for (var i = 0; i < argument_count; i += 1) {
             array_push(inst, argument[i]);
         }
-        __refreshTempRegisters();
         return inst;
     };
 
@@ -258,14 +257,6 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitGet = function(accessor, pos) {
         if (is_real(accessor)) {
-            if (accessor >= 0) {
-                var meta = registers[accessor];
-                if (meta.temporary && !meta.used) {
-                    // make this register available to use again
-                    array_push(tempRegisters, accessor);
-                    meta.used = true;
-                }
-            }
             return accessor;
         }
         var getter = accessor.getValue;
@@ -292,12 +283,10 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitSet = function(accessor, value, pos) {
         var valueReg = emitGet(value, pos);
-        if (valueReg < 0) {
-            throw new CatspeakError(pos, "constant is not writable");
-        }
         if (is_real(accessor)) {
-            // TODO try add a sanity check that temporary registers aren't
-            // being reused after they're moved
+            if (accessor < 0) {
+                throw new CatspeakError(pos, "constant is not writable");
+            }
             emitMove(valueReg, accessor, pos);
             return valueReg;
         }
@@ -387,17 +376,17 @@ function CatspeakFunction() constructor {
 
     /// @ignore
     static __registerName = function(reg) {
-        if (is_nan(reg)) {
+        if (isUnreachable(reg)) {
             return "!";
         }
-        if (reg < 0) {
+        if (isConstant(reg)) {
             // constant register
             return "c" + string(abs(reg) - 1);
         }
         var meta = registers[reg];
         var pos = meta.pos;
         if (pos == undefined || pos.lexeme == undefined) {
-            return (meta.temporary ? "t" : "r") + string(reg);
+            return "r" + string(reg);
         }
         var lexeme = pos.lexeme;
         return "`" + (is_string(lexeme) ? lexeme : string(lexeme)) + "`";
@@ -430,12 +419,6 @@ function CatspeakFunction() constructor {
         }
         return string(value);
     }
-
-    /// @ignore
-    static __refreshTempRegisters = function() {
-        // update the number of temporary registers now that it's safe to do so
-        tempRegisterCount = array_length(tempRegisters);
-    };
 }
 
 /// Represents a block of executable code.
@@ -467,4 +450,23 @@ function CatspeakAccessor() constructor {
 function CatspeakReadOnlyAccessor(reg) : CatspeakAccessor() constructor {
     self.reg = reg;
     self.getValue = function() { return reg };
+}
+
+/// Used for call return values, most cases expect the value to be read once
+/// and then be discarded. This adds a sanity check so that a compiler error
+/// is raised if this fails.
+///
+/// @param {Real} reg
+///   The register to read from once.
+///
+/// @param {Struct.CatspeakFunction} ir
+///   The IR function associated with this register.
+function CatspeakTempRegisterAccessor(reg, ir) : CatspeakAccessor() constructor {
+    self.reg = reg;
+    self.ir = ir;
+    self.getValue = function() {
+        getValue = undefined;
+        ir.discardRegister(reg);
+        return reg;
+    };
 }
