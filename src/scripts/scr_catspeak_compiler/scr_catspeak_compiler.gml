@@ -155,7 +155,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static getVar = function(name) {
         var scope_ = scope;
         while (scope_ != undefined) {
-            var reg = scope.vars[$ name];
+            var reg = scope_.vars[$ name];
             if (reg != undefined) {
                 return reg;
             }
@@ -181,7 +181,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static setVar = function(name, value) {
         var scope_ = scope;
         while (scope_ != undefined) {
-            var reg = scope.vars[$ name];
+            var reg = scope_.vars[$ name];
             if (reg != undefined) {
                 ir.emitMove(value, reg);
                 return value;
