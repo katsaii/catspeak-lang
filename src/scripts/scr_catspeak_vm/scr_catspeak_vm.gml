@@ -10,6 +10,4 @@
 ///   not well-formed, there are likely to be runtime errors and misbehaviour.
 function CatspeakVM(ir) constructor {
     self.ir = ir;
-
-    static 
 }

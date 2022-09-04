@@ -1046,6 +1046,7 @@ function __catspeak_builtin_get(collection, key) {
             return collection[key];
         }
     } else {
+        __catspeak_verify_struct(collection);
         return collection[$ key];
     }
 }
@@ -1055,7 +1056,16 @@ function __catspeak_builtin_set(collection, key, value) {
     if (is_array(collection)) {
         collection[@ key] = value;
     } else {
+        __catspeak_verify_struct(collection);
         collection[$ key] = value;
     }
     return value;
+}
+
+/// @ignore
+function __catspeak_verify_struct(collection) {
+    if (string_pos("Catspeak", instanceof(collection)) == 1) {
+        throw new CatspeakError(undefined,
+                "self-modification is prohibited by Catspeak");
+    }
 }
