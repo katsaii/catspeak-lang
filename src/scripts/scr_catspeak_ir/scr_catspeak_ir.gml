@@ -237,7 +237,7 @@ function CatspeakFunction() constructor {
     /// Emits a new Catspeak intcode instruction for the current block.
     /// Returns the array containing the instruction information.
     ///
-    /// @param {Struct.CatspeakIntcode} inst
+    /// @param {Enum.CatspeakIntcode} inst
     ///   The Catspeak intcode instruction to perform.
     ///
     /// @param {Real} returnReg
@@ -310,6 +310,60 @@ function CatspeakFunction() constructor {
         }
         var result = setter(valueReg);
         return emitGet(result, pos);
+    };
+
+    /// Returns a reference to the last instruction emitted to this function.
+    /// If no instruction exists in the current block, `undefined` is returned
+    /// instead.
+    ///
+    /// @return {Array<Any>}
+    static lastCode = function() {
+        var code_ = currentBlock.code;
+        var n = array_length(code_);
+        if (n == 0) {
+            return undefined;
+        }
+        return code_[n - 1];
+    };
+
+    /// Modifies the opcode component of this instruction.
+    ///
+    /// @param {Array<Any>} inst
+    ///   The instruction to modify.
+    ///
+    /// @param {Enum.CatspeakIntcode} code
+    ///   The opcode to replace the current opcode with.
+    static patchInst = function(inst, code) {
+        inst[@ 0] = code;
+    };
+
+    /// Modifies the return register of this instruction.
+    ///
+    /// @param {Array<Any>} inst
+    ///   The instruction to modify.
+    ///
+    /// @param {Real} reg
+    ///   The register to return the result of the instruction to.
+    static patchInst = function(inst, reg) {
+        inst[@ 1] = reg;
+    };
+
+    /// Modifies the return register of this instruction.
+    /// Fair warning: this is a dumb operation, so no checks are performed
+    /// to validate that the value you're replacing is correct. This may
+    /// result in undefined behaviour at runtime! Only use this function
+    /// if you absolutely know what you're doing.
+    ///
+    /// @param {Array<Any>} inst
+    ///   The instruction to modify.
+    ///
+    /// @param {Real} argIdx
+    ///   The ID of the argument to modify.
+    ///
+    /// @param {Real} reg
+    ///   The register containing to value to replace.
+    static patchArg = function(inst, argIdx, reg) {
+        inst[@ 2 + argIdx] = reg;
     };
 
     /// Debug display for Catspeak functions, attempts to resemble the GML
