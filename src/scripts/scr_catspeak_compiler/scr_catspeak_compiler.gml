@@ -306,6 +306,15 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
+    static __replaceImplicitReturn = function(replacement) {
+        var scope_ = scope;
+        if (scope_.result != undefined) {
+            emitGet(scope_.result);
+        }
+        scope_.result = replacement;
+    }
+
+    /// @ignore
     static __stateError = function() {
         throw new CatspeakError(pos, "invalid state");
     }
@@ -366,7 +375,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (value != undefined) {
             ir.emitMove(value, reg);
         }
-        scope.result = undefined;
+        __replaceImplicitReturn(undefined);
     };
 
     /// @ignore
@@ -377,7 +386,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprPop = function() {
         // implicit return
-        scope.result = popResult();
+        __replaceImplicitReturn(popResult());
     };
 
     /// @ignore
