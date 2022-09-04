@@ -23,7 +23,6 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.resultStack = [];
     self.itStack = [];
     self.scope = undefined;
-    self.discardedVariableRegisters = [];
 
     /// Advances the parser and returns the current token.
     ///
@@ -146,13 +145,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             // a variable with this name already exists, so just use it
             return vars[$ name];
         }
-        var reg;
-        if (array_length(discardedVariableRegisters) <= 0) {
-            reg = ir.emitRegister(pos);
-        } else {
-            // if there is an out of scope register, use it instead
-            reg = array_pop(discardedVariableRegisters);
-        }
+        var reg = ir.emitRegister(pos);
         vars[$ name] = reg;
         array_push(scope_.varRegisters, reg);
         return reg;
@@ -250,13 +243,13 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// defined in this scope are freed up to be used by new declarations.
     static popBlock = function() {
         var scope_ = scope;
-        var result = scope_.result;
+        var result = scope_.result ?? ir.emitConstant(undefined, pos);
         scope = scope_.parent;
         // free variable registers
         var vars = scope_.varRegisters;
         var varCount = array_length(vars);
         for (var i = 0; i < varCount; i += 1) {
-            array_push(discardedVariableRegisters, vars[i]);
+            ir.discardRegister(vars[i]);
         }
         return new CatspeakReadOnlyAccessor(result);
     };
@@ -642,9 +635,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprArrayEnd = function() {
-        static newFunc = method(undefined, __catspeak_builtin_array);
         var args = popResult();
-        var newFuncReg = ir.emitConstant(newFunc);
+        var newFuncReg = ir.emitConstant(__newArrayFunc);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
 
@@ -705,9 +697,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprStructEnd = function() {
-        static newFunc = method(undefined, __catspeak_builtin_struct);
         var args = popResult();
-        var newFuncReg = ir.emitConstant(newFunc);
+        var newFuncReg = ir.emitConstant(__newStructFunc);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
 
@@ -741,6 +732,12 @@ function CatspeakCompiler(lexer, ir) constructor {
         }
         pushResult(key);
     };
+
+    /// @ignore
+    static __newArrayFunc = method(undefined, __catspeak_builtin_array);
+
+    /// @ignore
+    static __newStructFunc = method(undefined, __catspeak_builtin_struct);
 }
 
 /// Represents a lexically scoped block of code in the compiler.
