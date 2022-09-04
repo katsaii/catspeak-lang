@@ -12,6 +12,9 @@ function CatspeakFunction() constructor {
                              // which are safe to reuse
     self.currentBlock = self.emitBlock(new CatspeakBlock());
     self.constantTable = __catspeak_constant_pool_get(self);
+    self.constantNaN = undefined; // the NaN lookup needs to be handled
+                                  // separately because they are not
+                                  // comparable
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -21,6 +24,9 @@ function CatspeakFunction() constructor {
     /// @return {Struct.CatspeakBlock}
     static emitBlock = function(block) {
         var idx = array_length(blocks);
+        if (idx > 0) {
+            emitJump(block);
+        }
         array_push(blocks, block);
         block.idx = idx;
         currentBlock = block;
@@ -102,15 +108,22 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Any}
     static emitConstant = function(value) {
-        // constant definitions are hoisted
-        if (ds_map_exists(constantTable, value)) {
-            // constants use negative ids, offset by 1
-            // e.g. constant 0 has the register id of `-1`
-            return -(constantTable[? value] + 1);
+        var result;
+        if (is_nan(value) && constantNaN != undefined) {
+            result = constantNaN;
+        } else if (ds_map_exists(constantTable, value)) {
+            result = constantTable[? value]
+        } else {
+            result = array_length(constants);
+            array_push(constants, value);
+            if (is_nan(value)) {
+                constantNaN = result;
+            } else {
+                constantTable[? value] = result;
+            }
         }
-        var result = array_length(constants);
-        array_push(constants, value);
-        constantTable[? value] = result;
+        // constants use negative ids, offset by 1
+        // e.g. constant 0 has the register id of `-1`
         return -(result + 1);
     };
 
@@ -126,7 +139,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Real}
     static emitReturn = function(reg, pos) {
-        var reg_ = emitGet(reg ?? emitConstant(undefined, pos), pos);
+        var reg_ = emitGet(reg ?? emitConstant(undefined), pos);
         emitCode(CatspeakIntcode.RET, undefined, reg_);
         return emitUnreachable();
     };
@@ -149,6 +162,26 @@ function CatspeakFunction() constructor {
             return;
         }
         emitCode(CatspeakIntcode.MOV, dest_, source_);
+    };
+
+    /// Generates the code to jump to a new block of code.
+    ///
+    /// @param {Struct.CatspeakBlock} block
+    ///   The block to jump to.
+    static emitJump = function(block) {
+        emitCode(CatspeakIntcode.JMP, undefined, block);
+    };
+
+    /// Generates the code to jump to a new block of code if a condition
+    /// is false.
+    ///
+    /// @param {Struct.CatspeakBlock} block
+    ///   The block to jump to.
+    ///
+    /// @param {Any} condition
+    ///   The register or accessor containing the condition code to check.
+    static emitJumpFalse = function(block, condition) {
+        emitCode(CatspeakIntcode.JMP_FALSE, undefined, block, condition);
     };
 
     /// Generates the code to call a Catspeak function. Returns a register

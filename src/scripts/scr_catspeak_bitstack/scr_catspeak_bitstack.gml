@@ -1,6 +1,8 @@
 //! Handles potentially very large stacks of boolean values, storing them
 //! compactly using run-length encoding.
 
+//# feather use syntax-errors
+
 /// Inserts a new boolean value into this bit stack.
 ///
 /// @param {Array<Real>} stack
