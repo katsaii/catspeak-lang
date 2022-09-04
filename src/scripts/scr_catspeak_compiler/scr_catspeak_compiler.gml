@@ -258,7 +258,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         for (var i = 0; i < varCount; i += 1) {
             array_push(discardedVariableRegisters, vars[i]);
         }
-        return result;
+        return new CatspeakReadOnlyAccessor(result);
     };
 
     /// Pushes the new accessor for the `it` keyword onto the stack.
@@ -267,7 +267,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The register or accessor representing the left-hand-side of an
     ///   assignment expression.
     static pushIt = function(reg) {
-        return array_push(itStack, reg);
+        return array_push(itStack, new CatspeakReadOnlyAccessor(reg));
     };
 
     /// Returns the accessor for the `it` keyword.
@@ -276,12 +276,12 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (i == 0) {
             throw new CatspeakError(pos, "`it` keyword invalid in this case");
         }
-        return new CatspeakReadOnlyAccessor(itStack[i - 1]);
+        return itStack[i - 1];
     };
 
     /// Pops the top accessor the `it` keyword represents.
     static popIt = function() {
-        scope = new CatspeakLocalScope(scope);
+        array_pop(itStack);
     };
 
     /// Performs `n`-many steps of the parsing and code generation process.
@@ -769,10 +769,12 @@ function CatspeakCollectionAccessor(
 ) : CatspeakAccessor() constructor {
     var pos_ = compiler.pos;
     var ir_ = compiler.ir;
+    var collection_ = ir_.emitGet(collection, pos_);
+    var index_ = ir_.emitGet(index, pos_);
     self.pos = pos_;
     self.ir = ir_;
-    self.collection = ir_.emitGet(collection, pos_);
-    self.index = ir_.emitGet(index, pos_);
+    self.collection = collection_; // create non-temporary registers
+    self.index = index_;
     self.getReg = undefined;
     self.getValue = function() {
         static getFunc = method(undefined, __catspeak_builtin_get);

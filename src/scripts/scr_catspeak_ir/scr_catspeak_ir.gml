@@ -213,7 +213,7 @@ function CatspeakFunction() constructor {
         __refreshTempRegisters();
         // backpatch temporary register, since even if a register is used
         // as a parameter, it's available to use as the return value
-        var result = emitTempRegister(pos);
+        var result = emitRegister(pos);
         inst[@ 1] = result;
         // must push the instruction after emitting code for the accessors
         array_push(currentBlock.code, inst);
