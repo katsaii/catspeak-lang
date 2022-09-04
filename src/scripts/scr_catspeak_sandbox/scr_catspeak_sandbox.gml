@@ -1,6 +1,4 @@
 
-
-
 var stack = [];
 
 catspeak_bitstack_push(stack, true);
