@@ -10,6 +10,8 @@ function CatspeakFunction() constructor {
     self.constants = []; // stores the values of constants
     self.tempRegisters = []; // stores any previously allocated registers
                              // which are safe to reuse
+    self.tempRegisterCount = 0; // used so that registers used twice in a call
+                                // argument aren't overwritten
     self.currentBlock = self.emitBlock(new CatspeakBlock());
     self.constantTable = catspeak_alloc_ds_map(self);
     self.constantNaN = undefined; // the NaN lookup needs to be handled
@@ -59,15 +61,17 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Real}
     static emitTempRegister = function(pos) {
-        var n = array_length(tempRegisters);
-        if (n == 0) {
+        var tempRegisters_ = tempRegisters;
+        var tempRegisterCount_ = tempRegisterCount;
+        if (tempRegisterCount_ == 0) {
             // allocate a new register
             var reg = emitRegister(pos);
             registers[reg].temporary = true;
             return reg;
         }
-        var reg = tempRegisters[0];
-        array_delete(tempRegisters, 0, 1);
+        var reg = tempRegisters_[0];
+        array_delete(tempRegisters_, 0, 1);
+        tempRegisterCount = tempRegisterCount_ - 1;
         registers[reg].used = false;
         return reg;
     };
@@ -181,7 +185,8 @@ function CatspeakFunction() constructor {
     /// @param {Any} condition
     ///   The register or accessor containing the condition code to check.
     static emitJumpFalse = function(block, condition) {
-        emitCode(CatspeakIntcode.JMP_FALSE, undefined, block, condition);
+        var condition_ = emitGet(condition);
+        emitCode(CatspeakIntcode.JMP_FALSE, undefined, block, condition_);
     };
 
     /// Generates the code to call a Catspeak function. Returns a register
@@ -205,6 +210,7 @@ function CatspeakFunction() constructor {
         for (var i = 0; i < argCount; i += 1) {
             array_push(inst, emitGet(args[i], pos));
         }
+        __refreshTempRegisters();
         // backpatch temporary register, since even if a register is used
         // as a parameter, it's available to use as the return value
         var result = emitTempRegister(pos);
@@ -235,6 +241,7 @@ function CatspeakFunction() constructor {
         for (var i = 0; i < argument_count; i += 1) {
             array_push(inst, argument[i]);
         }
+        __refreshTempRegisters();
         return inst;
     };
 
@@ -423,6 +430,12 @@ function CatspeakFunction() constructor {
         }
         return string(value);
     }
+
+    /// @ignore
+    static __refreshTempRegisters = function() {
+        // update the number of temporary registers now that it's safe to do so
+        tempRegisterCount = array_length(tempRegisters);
+    };
 }
 
 /// Represents a block of executable code.
