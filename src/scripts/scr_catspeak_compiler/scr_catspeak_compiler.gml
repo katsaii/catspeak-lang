@@ -766,29 +766,44 @@ function CatspeakCollectionAccessor(
 ) : CatspeakAccessor() constructor {
     var pos_ = compiler.pos;
     var ir_ = compiler.ir;
-    var collection_ = ir_.emitGet(collection, pos_);
-    var index_ = ir_.emitGet(index, pos_);
     self.pos = pos_;
     self.ir = ir_;
-    self.collection = collection_; // create non-temporary registers
-    self.index = index_;
+    self.collection = ir_.emitGet(collection, pos_);
+    self.index = ir_.emitGet(index, pos_);
     self.getReg = undefined;
     self.getValue = function() {
-        static getFunc = method(undefined, __catspeak_builtin_get);
         if (getReg != undefined) {
             return getReg;
         }
+        // could improve this to only copy if necessary
+        // e.g. constant registers don't need to copied
+        collection = ir.emitClone(collection);
+        index = ir.emitClone(index);
         var getFuncReg = ir.emitConstant(getFunc);
-        var result = ir.emitCall(getFuncReg, [collection, index], pos);
+        var result = ir.emitClone(
+                ir.emitCall(getFuncReg, [collection, index], pos));
         getReg = result;
         return result;
     };
     self.setValue = function(value) {
-        static setFunc = method(undefined, __catspeak_builtin_set);
         var setFuncReg = ir.emitConstant(setFunc);
-        ir.emitCall(setFuncReg, [collection, index, value], pos);
-        return value;
+        var result = ir.emitCall(setFuncReg, [collection, index, value], pos);
+        if (getReg != undefined) {
+            // dispose of allocated registers
+            ir.discardRegister(getReg);
+            ir.discardRegister(collection);
+            ir.discardRegister(index);
+        }
+        getValue = undefined; // accessor is not longer valid
+        setValue = undefined;
+        return result;
     };
+
+    /// @ignore
+    static getFunc = method(undefined, __catspeak_builtin_get);
+
+    /// @ignore
+    static setFunc = method(undefined, __catspeak_builtin_set);
 }
 
 /// Returns the value of a built-in Catspeak constant, if one exists.
@@ -1029,8 +1044,9 @@ function __catspeak_builtin_get(collection, key) {
 /// @ignore
 function __catspeak_builtin_set(collection, key, value) {
     if (is_array(collection)) {
-        return collection[@ key] = value;
+        collection[@ key] = value;
     } else {
-        return collection[$ key] = value;
+        collection[$ key] = value;
     }
+    return value;
 }

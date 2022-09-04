@@ -169,6 +169,20 @@ function CatspeakFunction() constructor {
         emitCode(CatspeakIntcode.MOV, dest_, source_);
     };
 
+    /// Generates the code to clone a value into a manually managed register.
+    ///
+    /// @param {Any} reg
+    ///   The register or accessor containing the value to copy.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    static emitClone = function(reg, pos) {
+        var reg_ = emitGet(reg, pos);
+        var result = emitRegister(pos);
+        emitMove(reg_, result, pos);
+        return result;
+    };
+
     /// Generates the code to jump to a new block of code.
     ///
     /// @param {Struct.CatspeakBlock} block
@@ -256,7 +270,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Any}
     static emitGet = function(accessor, pos) {
-        if (is_real(accessor)) {
+        if (is_numeric(accessor)) {
             return accessor;
         }
         var getter = accessor.getValue;
@@ -283,7 +297,7 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitSet = function(accessor, value, pos) {
         var valueReg = emitGet(value, pos);
-        if (is_real(accessor)) {
+        if (is_numeric(accessor)) {
             if (accessor < 0) {
                 throw new CatspeakError(pos, "constant is not writable");
             }
