@@ -23,6 +23,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.resultStack = [];
     self.itStack = [];
     self.scope = undefined;
+    self.discardedVariableRegisters = [];
 
     /// Advances the parser and returns the current token.
     ///
@@ -137,12 +138,24 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @param {String} name
     ///   The name of the variable to declare.
     ///
-    /// @param {Real} reg
-    ///   The register where the value of this variable is stored.
-    ///
     /// @return {Real}
-    static declareLocal = function(name, reg) {
-        scope.vars[$ name] = reg;
+    static declareLocal = function(name) {
+        var scope_ = scope;
+        var vars = scope_.vars;
+        if (variable_struct_exists(vars, name)) {
+            // a variable with this name already exists, so just use it
+            return vars[$ name];
+        }
+        var reg;
+        if (array_length(discardedVariableRegisters) <= 0) {
+            reg = ir.emitRegister(pos);
+        } else {
+            // if there is an out of scope register, use it instead
+            reg = array_pop(discardedVariableRegisters);
+        }
+        vars[$ name] = reg;
+        array_push(scope_.varRegisters, reg);
+        return reg;
     };
 
     /// Looks up a variable by name and returns its register. If the variable
@@ -233,6 +246,21 @@ function CatspeakCompiler(lexer, ir) constructor {
         scope = new CatspeakLocalScope(scope);
     };
 
+    /// Pops the current block scope and returns its value. Any variables
+    /// defined in this scope are freed up to be used by new declarations.
+    static popBlock = function() {
+        var scope_ = scope;
+        var result = scope_.result;
+        scope = scope_.parent;
+        // free variable registers
+        var vars = scope_.varRegisters;
+        var varCount = array_length(vars);
+        for (var i = 0; i < varCount; i += 1) {
+            array_push(discardedVariableRegisters, vars[i]);
+        }
+        return result;
+    };
+
     /// Pushes the new accessor for the `it` keyword onto the stack.
     ///
     /// @param {Any} reg
@@ -254,13 +282,6 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// Pops the top accessor the `it` keyword represents.
     static popIt = function() {
         scope = new CatspeakLocalScope(scope);
-    };
-
-    /// Pops the current block scope and returns its value.
-    static popBlock = function() {
-        var result = scope.result;
-        scope = scope.parent;
-        return result;
     };
 
     /// Performs `n`-many steps of the parsing and code generation process.
@@ -335,7 +356,6 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateStmtLetBegin = function() {
         expects(CatspeakToken.IDENT,
                 "expected identifier after `let` keyword");
-        pushResult(ir.emitRegister(pos));
         pushResult(pos.lexeme);
         pushState(__stateStmtLetEnd);
         if (consume(CatspeakToken.ASSIGN)) {
@@ -349,8 +369,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateStmtLetEnd = function() {
         var value = popResult();
         var name = popResult();
-        var reg = popResult();
-        declareLocal(name, reg);
+        var reg = declareLocal(name);
         if (value != undefined) {
             ir.emitMove(value, reg);
         }
@@ -731,6 +750,7 @@ function CatspeakCompiler(lexer, ir) constructor {
 function CatspeakLocalScope(parent) constructor {
     self.result = undefined;
     self.vars = { };
+    self.varRegisters = [];
     self.parent = parent;
 }
 
