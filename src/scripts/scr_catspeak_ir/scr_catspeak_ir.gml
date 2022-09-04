@@ -11,7 +11,7 @@ function CatspeakFunction() constructor {
     self.tempRegisters = []; // stores any previously allocated registers
                              // which are safe to reuse
     self.currentBlock = self.emitBlock(new CatspeakBlock());
-    self.constantTable = __catspeak_constant_pool_get(self);
+    self.constantTable = catspeak_alloc_ds_map(self);
     self.constantNaN = undefined; // the NaN lookup needs to be handled
                                   // separately because they are not
                                   // comparable
@@ -454,50 +454,4 @@ function CatspeakAccessor() constructor {
 function CatspeakReadOnlyAccessor(reg) : CatspeakAccessor() constructor {
     self.reg = reg;
     self.getValue = function() { return reg };
-}
-
-/// @ignore
-function __catspeak_constant_pool() {
-    static pool = [];
-    return pool;
-}
-
-/// @ignore
-function __catspeak_constant_pool_get(struct) {
-    var pool = __catspeak_constant_pool();
-    var poolMax = array_length(pool) - 1;
-    if (poolMax >= 0) {
-        repeat (3) { // the number of retries until a new map is created
-            var i = irandom(poolMax);
-            var weakRef = pool[i];
-            if (weak_ref_alive(weakRef)) {
-                continue;
-            }
-            var newWeakRef = weak_ref_create(struct);
-            var ds = weakRef.ds;
-            newWeakRef.ds = ds;
-            ds_map_clear(ds);
-            pool[@ i] = newWeakRef;
-            return newWeakRef;
-        }
-    }
-    var weakRef = weak_ref_create(struct);
-    weakRef.ds = ds_map_create();
-    array_push(pool, weakRef);
-    return weakRef;
-}
-
-/// Forces the Catspeak engine to collect any unreachable constant tables
-/// discarded during codegen.
-function catspeak_ir_collect() {
-    var pool = __catspeak_constant_pool();
-    var poolSize = array_length(pool);
-    for (var i = poolSize - 1; i >= 0; i -= 1) {
-        var weakRef = pool[i];
-        if (weak_ref_alive(weakRef)) {
-            continue;
-        }
-        ds_map_destroy(weakRef.ds);
-        array_delete(pool, i, 1);
-    }
 }
