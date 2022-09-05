@@ -66,7 +66,7 @@ function catspeak_alloc(struct, adapter) {
 function catspeak_collect() {
     var pool = __catspeak_constant_pool();
     var poolSize = array_length(pool);
-    for (var i = poolSize - 1; i >= 0; i -= 1) {
+    for (var i = 0; i < poolSize; i += 1) {
         var weakRef = pool[i];
         if (weak_ref_alive(weakRef)) {
             continue;
