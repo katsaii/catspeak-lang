@@ -147,7 +147,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// Looks up a variable by name and returns its register. If the variable
-    /// does not exist, then a global variable is used instead.
+    /// does not exist, then a global constant is loaded from the runtime
+    /// interface.
     ///
     /// @param {String} name
     ///   The name of the variable to search for.
@@ -163,14 +164,13 @@ function CatspeakCompiler(lexer, ir) constructor {
             scope_ = scope_.parent;
         }
         if (catspeak_string_is_builtin(name)) {
-            var builtin = catspeak_string_to_builtin(name);
-            return ir.emitConstant(builtin);
+            return ir.emitConstant(catspeak_string_to_builtin(name));
         }
-        error("global variables unimplemented");
+        return ir.emitRuntimeConstant(name, pos);
     };
 
     /// Looks up a variable by name and attempts to assign it a value. If the
-    /// variable does not exist, then a global variable is used instead.
+    /// variable does not exist, an error is raised.
     ///
     /// @param {String} name
     ///   The name of the variable to search for.
@@ -189,10 +189,8 @@ function CatspeakCompiler(lexer, ir) constructor {
             }
             scope_ = scope_.parent;
         }
-        if (catspeak_string_is_builtin(name)) {
-            error("cannot assign to built-in constant `" + name + "`");
-        }
-        error("global variables unimplemented");
+        error("variable with name `" + name +
+                "` does not exist in this scope");
     };
 
     /// Stages a new compiler production.
