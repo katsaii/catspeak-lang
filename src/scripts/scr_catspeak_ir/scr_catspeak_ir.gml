@@ -245,8 +245,8 @@ function CatspeakFunction() constructor {
     /// @return {Real}
     static emitCall = function(callee, args, pos) {
         var callee_ = emitGet(callee, pos);
-        var inst = [CatspeakIntcode.CALL, undefined, callee_];
         var argCount = array_length(args);
+        var inst = [CatspeakIntcode.CALL, undefined, callee_, argCount];
         for (var i = 0; i < argCount; i += 1) {
             array_push(inst, emitGet(args[i], pos));
         }
@@ -453,8 +453,10 @@ function CatspeakFunction() constructor {
                     msg += " " + __registerName(inst[2]);
                     break;
                 case CatspeakIntcode.CALL:
-                    var argCount = array_length(inst);
-                    for (var k = 2; k < argCount; k += 1) {
+                    var argCount = inst[3];
+                    msg += " " + __registerName(inst[2]);
+                    msg += " " + __valueName(argCount);
+                    for (var k = 3; k < argCount; k += 1) {
                         msg += " " + __registerName(inst[k]);
                     }
                     break;

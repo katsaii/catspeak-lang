@@ -122,14 +122,14 @@ function CatspeakVM(prelude) constructor {
                 // TODO support calling Catspeak functions
                 var callee = __catspeak_vm_get_mem(r, c, inst[2]);
                 if (is_method(callee)) {
-                    var argCount = array_length(inst) - 3;
+                    var argCount = inst[3];
                     if (argCount > argsCapacity_) {
                         array_resize(args_, argCount);
                         argsCapacity_ = argCount;
                         argsCapacity = argsCapacity_;
                     }
                     for (var i = 0; i < argCount; i += 1) {
-                        args_[@ i] = __catspeak_vm_get_mem(r, c, inst[3 + i]);
+                        args_[@ i] = __catspeak_vm_get_mem(r, c, inst[4 + i]);
                     }
                     var result = __catspeak_vm_function_execute(
                             callFrame.self_, callee, argCount, args_);
