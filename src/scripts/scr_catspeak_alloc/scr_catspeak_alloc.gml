@@ -3,12 +3,6 @@
 
 //# feather use syntax-errors
 
-/// @ignore
-function __catspeak_alloc_pool() {
-    static pool = [];
-    return pool;
-}
-
 /// Allocates a new DSMap resource and returns its ID.
 ///
 /// @param {Struct} struct
@@ -16,11 +10,8 @@ function __catspeak_alloc_pool() {
 ///
 /// @return {Id.DsMap}
 function catspeak_alloc_ds_map(struct) {
-    static dsMapAdapter = {
-        create : ds_map_create,
-        destroy : ds_map_destroy,
-    };
-    return catspeak_alloc(struct, dsMapAdapter);
+    gml_pragma("forceinline");
+    return catspeak_alloc(struct, global.__catspeakAllocDSMapAdapter);
 }
 
 /// Allocates a new resource with the same lifetime as a given struct.
@@ -36,7 +27,7 @@ function catspeak_alloc_ds_map(struct) {
 ///
 /// @return {Any}
 function catspeak_alloc(struct, adapter) {
-    var pool = __catspeak_alloc_pool();
+    var pool = global.__catspeakAllocPool;
     var poolMax = array_length(pool) - 1;
     if (poolMax >= 0) {
         repeat (3) { // the number of retries until a new map is created
@@ -64,7 +55,7 @@ function catspeak_alloc(struct, adapter) {
 
 /// Forces the Catspeak engine to collect any discarded resources.
 function catspeak_collect() {
-    var pool = __catspeak_constant_pool();
+    var pool = global.__catspeakAllocPool;
     var poolSize = array_length(pool);
     for (var i = 0; i < poolSize; i += 1) {
         var weakRef = pool[i];

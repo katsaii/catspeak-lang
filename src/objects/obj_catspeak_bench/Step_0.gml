@@ -10,7 +10,7 @@ while (comp.inProgress()) {
 var vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
 vm.popCallFrame();
-repeat (1) {
+repeat (100) {
     vm.reuseCallFrame();
     while (vm.inProgress()) {
         vm.runProgram(10);
