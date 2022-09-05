@@ -10,10 +10,10 @@ while (comp.inProgress()) {
 var vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
 vm.popCallFrame();
-repeat (1000) {
+repeat (1) {
     vm.reuseCallFrame();
     while (vm.inProgress()) {
-        vm.runProgram(1);
+        vm.runProgram(10);
     }
 }
 var dt1 = (get_timer() - t) / 1000000;

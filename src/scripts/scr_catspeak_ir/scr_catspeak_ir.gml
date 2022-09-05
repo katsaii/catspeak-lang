@@ -10,11 +10,13 @@ function CatspeakFunction() constructor {
     self.constants = []; // stores the values of constants
     self.discardedRegisters = []; // stores any previously allocated registers
                                   // which are safe to reuse
-    self.currentBlock = self.emitBlock(new CatspeakBlock());
+    self.runtimeConstantTable = { };
     self.constantTable = catspeak_alloc_ds_map(self);
     self.constantNaN = undefined; // the NaN lookup needs to be handled
                                   // separately because they are not
                                   // comparable
+    self.constantBlock = self.emitBlock(new CatspeakBlock());
+    self.currentBlock = self.emitBlock(new CatspeakBlock());
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -131,6 +133,29 @@ function CatspeakFunction() constructor {
         // constants use negative ids, offset by 1
         // e.g. constant 0 has the register id of `-1`
         return -(result + 1);
+    };
+
+    /// Generates the code to read a constant at runtime using its identifier.
+    ///
+    /// @param {String} name
+    ///   The name of the constant to load.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    ///
+    /// @return {Any}
+    static emitRuntimeConstant = function(name, pos) {
+        if (variable_struct_exists(runtimeConstantTable, name)) {
+            return runtimeConstantTable[$ name];
+        }
+        // hoist the definition
+        var constantBlock_ = constantBlock;
+        var code = constantBlock_.code;
+        var result = emitRegister(pos);
+        var inst = [CatspeakIntcode.LDC, result, name];
+        array_insert(code, array_length(code) - 1, inst); // yuck!
+        runtimeConstantTable[$ name] = result;
+        return new CatspeakReadOnlyAccessor(result);
     };
 
     /// Generates the code to return a value from this function. Since
