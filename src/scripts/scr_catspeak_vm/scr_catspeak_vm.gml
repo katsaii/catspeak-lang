@@ -9,6 +9,8 @@ function CatspeakVM() constructor {
     self.callFrames = [];
     self.callHead = -1;
     self.callCapacity = 0;
+    self.args = [];
+    self.argsCapacity = 0;
 
     /// Creates a new executable callframe for this IR.
     ///
@@ -97,58 +99,81 @@ function CatspeakVM() constructor {
     /// if necessary. However, this does not account for external code that
     /// may perform large amounts of processing, such as a GML function
     /// containing a computationally expensive loop.
-    static runProgram = function() {
-        var callFrame_ = callFrames[callHead];
-        var pc = callFrame_.pc;
-        var r = callFrame_.registers;
-        var c = callFrame_.constants;
-        var inst = callFrame_.block[pc];
-        switch (inst[0]) {
-        case CatspeakIntcode.JMP:
-            callFrame_.block = inst[2].code;
-            callFrame_.pc = 0;
-            break;
-        case CatspeakIntcode.JMP_FALSE:
-            if (__catspeak_vm_get_mem(r, c, inst[3])) {
-                callFrame_.pc = pc + 1;
-            } else {
-                callFrame_.block = inst[2].code;
-                callFrame_.pc = 0;
+    ///
+    /// @param {Real} [n]
+    ///   The number of steps of process, defaults to 1.
+    static runProgram = function(n=1) {
+        var callFrame = callFrames[callHead];
+        var pc = callFrame.pc;
+        var r = callFrame.registers;
+        var c = callFrame.constants;
+        var block = callFrame.block;
+        var argsCapacity_ = argsCapacity;
+        var args_ = args;
+        repeat (n) {
+            var inst = block[pc];
+            switch (inst[0]) {
+            case CatspeakIntcode.JMP:
+                block = inst[2].code;
+                pc = 0;
+                break;
+            case CatspeakIntcode.JMP_FALSE:
+                if (__catspeak_vm_get_mem(r, c, inst[3])) {
+                    pc += 1;
+                } else {
+                    block = inst[2].code;
+                    pc = 0;
+                }
+                break;
+            case CatspeakIntcode.MOV:
+                r[@ inst[1]] = __catspeak_vm_get_mem(r, c, inst[2]);
+                pc += 1;
+                break;
+            case CatspeakIntcode.LDC:
+                // not implemented right now
+                pc += 1;
+                break;
+            case CatspeakIntcode.ARG:
+                r[@ inst[1]] = callFrame.args;
+                pc += 1;
+                break;
+            case CatspeakIntcode.RET:
+                returnValue = __catspeak_vm_get_mem(r, c, inst[2]);
+                popCallFrame();
+                if (callHead < 0) {
+                    // exit early
+                    return;
+                }
+                callFrame = callFrames[callHead];
+                pc = callFrame.pc;
+                r = callFrame.registers;
+                c = callFrame.constants;
+                block = callFrame.block;
+                break;
+            case CatspeakIntcode.CALL:
+                // TODO support calling Catspeak functions
+                var callee = __catspeak_vm_get_mem(r, c, inst[2]);
+                var argCount = array_length(inst) - 3;
+                if (argCount > argsCapacity_) {
+                    array_resize(args_, argCount);
+                    argsCapacity_ = argCount;
+                    argsCapacity = argsCapacity_;
+                }
+                for (var i = 0; i < argCount; i += 1) {
+                    args_[@ i] = __catspeak_vm_get_mem(r, c, inst[3 + i]);
+                }
+                var result = __catspeak_vm_function_execute(
+                        callFrame.self_, callee, argCount, args_);
+                r[@ inst[1]] = result;
+                pc += 1;
+                break;
+            default:
+                throw new CatspeakError(undefined, "invalid VM instruction");
+                break;
             }
-            break;
-        case CatspeakIntcode.MOV:
-            r[@ inst[1]] = __catspeak_vm_get_mem(r, c, inst[2]);
-            callFrame_.pc = pc + 1;
-            break;
-        case CatspeakIntcode.LDC:
-            // not implemented right now
-            callFrame_.pc = pc + 1;
-            break;
-        case CatspeakIntcode.ARG:
-            r[@ inst[1]] = callFrame_.args;
-            callFrame_.pc = pc + 1;
-            break;
-        case CatspeakIntcode.RET:
-            returnValue = __catspeak_vm_get_mem(r, c, inst[2]);
-            popCallFrame();
-            break;
-        case CatspeakIntcode.CALL:
-            // TODO support calling Catspeak functions
-            var callee = __catspeak_vm_get_mem(r, c, inst[2]);
-            var argCount = array_length(inst) - 3;
-            var args = array_create(argCount);
-            for (var i = 0; i < argCount; i += 1) {
-                args[@ i] = __catspeak_vm_get_mem(r, c, inst[3 + i]);
-            }
-            var result = __catspeak_vm_function_execute(
-                    callFrame_.self_, callee, argCount, args);
-            r[@ inst[1]] = result;
-            callFrame_.pc = pc + 1;
-            break;
-        default:
-            throw new CatspeakError(undefined, "invalid VM instruction");
-            break;
         }
+        callFrame.pc = pc;
+        callFrame.block = block;
     };
 }
 
@@ -162,7 +187,7 @@ function __catspeak_vm_function_execute(self_, f, argc, args) {
         f_ = method_get_index(f_);
     }
     with(self__) {
-        return script_execute_ext(f_, args);
+        return script_execute_ext(f_, args, 0, argc);
     }
 }
 

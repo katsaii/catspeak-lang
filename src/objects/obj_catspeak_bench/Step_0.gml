@@ -10,16 +10,16 @@ while (comp.inProgress()) {
 var vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
 vm.popCallFrame();
-repeat (10000) {
+repeat (1000) {
     vm.reuseCallFrame();
     while (vm.inProgress()) {
-        vm.runProgram();
+        vm.runProgram(1);
     }
 }
 var dt1 = (get_timer() - t) / 1000000;
 
-t = get_timer();
-repeat (10000) {
+/*t = get_timer();
+repeat (1000) {
     catspeak_legacy_session_create_process_greedy(oldsess);
 }
 var dt2 = (get_timer() - t) / 1000000;
@@ -28,7 +28,7 @@ show_message({
     old : dt2,
     new_ : dt1,
 });
-
+*/
 
 
 //show_message(json_stringify(vm.returnValue));
