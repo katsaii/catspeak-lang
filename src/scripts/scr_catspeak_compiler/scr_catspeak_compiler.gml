@@ -126,11 +126,6 @@ function CatspeakCompiler(lexer, ir) constructor {
                 "expected `;` or new line " + (message ?? ""));
     };
 
-    /// Returns whether the compiler is in progress.
-    static inProgress = function() {
-        return array_length(stateStack) > 0;
-    };
-
     /// Allocates a new register for a local variable and returns its
     /// reference.
     ///
@@ -277,32 +272,19 @@ function CatspeakCompiler(lexer, ir) constructor {
         array_pop(itStack);
     };
 
-    /// Performs `n`-many steps of the parsing and code generation process.
+    /// Returns whether the compiler is in progress.
+    static inProgress = function() {
+        return array_length(stateStack) > 0;
+    };
+
+    /// Performs a single step of the parsing and code generation process.
     /// The steps are discrete so that compilation can be paused if necessary,
     /// e.g. to avoid freezing the game for large files.
-    ///
-    /// @param {Real} [n]
-    ///   The number of steps of codegen to perform, defaults to 1. Use `-1`
-    ///   to peform all steps in a single frame. (Not recommended since large
-    ///   loads may cause your game to pause.)
-    static emitProgram = function(n=1) {
+    static emitProgram = function() {
         var stateStack_ = stateStack;
-        /// @ignore
-        #macro __CATSPEAK_COMPILER_GENERATE_CODE    \
-                var state = array_pop(stateStack_); \
-                state()
-        if (n < 0) {
-            while (inProgress()) {
-                __CATSPEAK_COMPILER_GENERATE_CODE;
-            }
-        } else {
-            repeat (n) {
-                if (!inProgress()) {
-                    break;
-                }
-                __CATSPEAK_COMPILER_GENERATE_CODE;
-            }
-        }
+        catspeak_assert(array_length(stateStack_) > 0, pos, "no more states");
+        var state = array_pop(stateStack_);
+        state();
     };
 
     /// @ignore
@@ -372,9 +354,8 @@ function CatspeakCompiler(lexer, ir) constructor {
         var value = popResult();
         var name = popResult();
         var reg = declareLocal(name);
-        if (value != undefined) {
-            ir.emitMove(value, reg);
-        }
+        value ??= ir.emitConstant(undefined);
+        ir.emitMove(value, reg);
         __replaceImplicitReturn(undefined);
     };
 

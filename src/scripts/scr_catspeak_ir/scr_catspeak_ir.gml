@@ -422,8 +422,6 @@ function CatspeakFunction() constructor {
                 case CatspeakIntcode.LDC:
                     msg += " " + __valueName(inst[2]);
                     break;
-                case CatspeakIntcode.GLOBAL:
-                    break;
                 case CatspeakIntcode.ARG:
                     break;
                 case CatspeakIntcode.RET:
