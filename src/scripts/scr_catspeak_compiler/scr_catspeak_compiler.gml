@@ -20,13 +20,10 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.token = CatspeakToken.BOF;
     self.tokenPeeked = lexer.next();
     self.scope = undefined;
-    self.stateStack = catspeak_alloc_ds_list(self);
-    self.resultStack = catspeak_alloc_ds_list(self);
-    self.itStack = catspeak_alloc_ds_list(self);
-    self.stateStackHead = 1; // starts with a single initial state
-    self.resultStackHead = 0;
-    self.itStackHead = 0;
-    ds_list_add(self.stateStack, __stateInit);
+    self.stateStack = catspeak_alloc_ds_stack(self);
+    self.resultStack = catspeak_alloc_ds_stack(self);
+    self.itStack = catspeak_alloc_ds_stack(self);
+    ds_stack_push(self.stateStack, __stateInit);
 
     /// Advances the parser and returns the current token.
     ///
@@ -205,8 +202,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @return {Struct}
     static pushState = function(state) {
-        stateStack[| stateStackHead] = state;
-        stateStackHead += 1;
+        ds_stack_push(stateStack, state);
     };
 
     /// Pushes a register which can be used to pass arguments into compiler
@@ -215,23 +211,21 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @param {Any} result
     ///   The result to push onto the stack. Typically this is a register ID.
     static pushResult = function(result) {
-        resultStack[| resultStackHead] = result;
-        resultStackHead += 1;
+        ds_stack_push(resultStack, result);
     };
 
     /// Returns the top result in the result stack without removing it.
     ///
     /// @return {Any}
     static topResult = function() {
-        return resultStack[| resultStackHead - 1];
+        return ds_stack_top(resultStack);
     };
 
     /// Pops the top value of the result stack and returns it.
     ///
     /// @return {Any}
     static popResult = function() {
-        resultStackHead -= 1;
-        return resultStack[| resultStackHead];
+        return ds_stack_pop(resultStack);
     };
 
     /// Starts a new lexical scope.
@@ -260,26 +254,25 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The register or accessor representing the left-hand-side of an
     ///   assignment expression.
     static pushIt = function(reg) {
-        itStack[| itStackHead] = new CatspeakReadOnlyAccessor(reg);
-        itStackHead += 1;
+        ds_stack_push(itStack, new CatspeakReadOnlyAccessor(reg));
     };
 
     /// Returns the accessor for the `it` keyword.
     static topIt = function() {
-        if (itStackHead < 1) {
+        if (ds_stack_empty(itStack)) {
             throw new CatspeakError(pos, "`it` keyword invalid in this case");
         }
-        return itStack[| itStackHead - 1];
+        return ds_stack_top(itStack);
     };
 
     /// Pops the top accessor the `it` keyword represents.
     static popIt = function() {
-        itStackHead -= 1;
+        ds_stack_pop(itStack);
     };
 
     /// Returns whether the compiler is in progress.
     static inProgress = function() {
-        return stateStackHead > 0;
+        return !ds_stack_empty(stateStack);
     };
 
     /// Performs `n`-many steps of the parsing and code generation process.
@@ -291,12 +284,10 @@ function CatspeakCompiler(lexer, ir) constructor {
     static emitProgram = function(n=1) {
         var stateStack_ = stateStack;
         repeat (n) {
-            var head = stateStackHead - 1;
-            if (head < 0) {
+            var state = ds_stack_pop(stateStack);
+            if (state == undefined) {
                 return;
             }
-            stateStackHead = head;
-            var state = stateStack_[| head];
             state();
         }
     };

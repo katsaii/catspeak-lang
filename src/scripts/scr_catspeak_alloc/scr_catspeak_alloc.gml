@@ -25,6 +25,17 @@ function catspeak_alloc_ds_list(struct) {
     return catspeak_alloc(struct, global.__catspeakAllocDSListAdapter);
 }
 
+/// Allocates a new DSSTack resource and returns its ID.
+///
+/// @param {Struct} struct
+///   The struct whose lifetime determines how long the DSSTack lives.
+///
+/// @return {Id.DsStack}
+function catspeak_alloc_ds_stack(struct) {
+    gml_pragma("forceinline");
+    return catspeak_alloc(struct, global.__catspeakAllocDSStackAdapter);
+}
+
 /// Allocates a new resource with the same lifetime as a given struct.
 ///
 /// @param {Struct} struct

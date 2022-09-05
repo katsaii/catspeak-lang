@@ -1,16 +1,8 @@
 
-buffer_seek(buff, buffer_seek_start, 0);
+//buffer_seek(buff, buffer_seek_start, 0);
 
 var t = get_timer();
-var lex = new CatspeakLexer(buff);
-var comp = new CatspeakCompiler(lex);
-while (comp.inProgress()) {
-    comp.emitProgram(10);
-}
-var vm = new CatspeakVM();
-vm.pushCallFrame(self, comp.ir);
-vm.popCallFrame();
-repeat (100) {
+repeat (50) {
     vm.reuseCallFrame();
     while (vm.inProgress()) {
         vm.runProgram(10);
