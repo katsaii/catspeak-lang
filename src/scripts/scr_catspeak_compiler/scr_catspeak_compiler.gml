@@ -19,10 +19,14 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.pos = new CatspeakLocation(0, 0);
     self.token = CatspeakToken.BOF;
     self.tokenPeeked = lexer.next();
-    self.stateStack = [__stateInit];
-    self.resultStack = [];
-    self.itStack = [];
     self.scope = undefined;
+    self.stateStack = catspeak_alloc_ds_list(self);
+    self.resultStack = catspeak_alloc_ds_list(self);
+    self.itStack = catspeak_alloc_ds_list(self);
+    self.stateStackHead = 1; // starts with a single initial state
+    self.resultStackHead = 0;
+    self.itStackHead = 0;
+    ds_list_add(self.stateStack, __stateInit);
 
     /// Advances the parser and returns the current token.
     ///
@@ -201,7 +205,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @return {Struct}
     static pushState = function(state) {
-        array_push(stateStack, state);
+        stateStack[| stateStackHead] = state;
+        stateStackHead += 1;
     };
 
     /// Pushes a register which can be used to pass arguments into compiler
@@ -210,21 +215,23 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @param {Any} result
     ///   The result to push onto the stack. Typically this is a register ID.
     static pushResult = function(result) {
-        array_push(resultStack, result);
+        resultStack[| resultStackHead] = result;
+        resultStackHead += 1;
     };
 
     /// Returns the top result in the result stack without removing it.
     ///
     /// @return {Any}
     static topResult = function() {
-        return resultStack[array_length(resultStack) - 1];
+        return resultStack[| resultStackHead - 1];
     };
 
     /// Pops the top value of the result stack and returns it.
     ///
     /// @return {Any}
     static popResult = function() {
-        return array_pop(resultStack);
+        resultStackHead -= 1;
+        return resultStack[| resultStackHead];
     };
 
     /// Starts a new lexical scope.
@@ -253,35 +260,35 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The register or accessor representing the left-hand-side of an
     ///   assignment expression.
     static pushIt = function(reg) {
-        return array_push(itStack, new CatspeakReadOnlyAccessor(reg));
+        itStack[| itStackHead] = new CatspeakReadOnlyAccessor(reg);
+        itStackHead += 1;
     };
 
     /// Returns the accessor for the `it` keyword.
     static topIt = function() {
-        var i = array_length(itStack);
-        if (i == 0) {
+        if (itStackHead < 1) {
             throw new CatspeakError(pos, "`it` keyword invalid in this case");
         }
-        return itStack[i - 1];
+        return itStack[| itStackHead - 1];
     };
 
     /// Pops the top accessor the `it` keyword represents.
     static popIt = function() {
-        array_pop(itStack);
+        itStackHead -= 1;
     };
 
     /// Returns whether the compiler is in progress.
     static inProgress = function() {
-        return array_length(stateStack) > 0;
+        return stateStackHead > 0;
     };
 
     /// Performs a single step of the parsing and code generation process.
     /// The steps are discrete so that compilation can be paused if necessary,
     /// e.g. to avoid freezing the game for large files.
     static emitProgram = function() {
-        var stateStack_ = stateStack;
-        catspeak_assert(array_length(stateStack_) > 0, pos, "no more states");
-        var state = array_pop(stateStack_);
+        catspeak_assert(stateStackHead > 0, pos, "no more states");
+        stateStackHead -= 1;
+        var state = stateStack[| stateStackHead];
         state();
     };
 
