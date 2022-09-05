@@ -1,4 +1,6 @@
 
+catspeak_force_init();
+
 var stack = [];
 
 catspeak_bitstack_push(stack, true);
@@ -25,7 +27,7 @@ var comp = new CatspeakCompiler(lex);
 while (comp.inProgress()) {
     comp.emitProgram();
 }
-show_message(comp.ir.disassembly());
+//show_message(comp.ir.disassembly());
 
 var vm = new CatspeakVM({
     "show_message" : method(undefined, show_message),

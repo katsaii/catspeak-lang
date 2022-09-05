@@ -259,42 +259,9 @@ function catspeak_token_is_operator(token) {
 ///
 /// @return {Bool}
 function catspeak_token_is_expression(token) {
-    static tokens = undefined;
-    if (tokens == undefined) {
-        tokens = array_create(catspeak_token_sizeof(), true);
-        var exceptions = [
-            CatspeakToken.PAREN_RIGHT,
-            CatspeakToken.BOX_RIGHT,
-            CatspeakToken.BRACE_RIGHT,
-            CatspeakToken.DOT,
-            CatspeakToken.COLON,
-            CatspeakToken.COMMA,
-            CatspeakToken.ASSIGN,
-            CatspeakToken.BREAK_LINE,
-            CatspeakToken.CONTINUE_LINE,
-            CatspeakToken.ELSE,
-            CatspeakToken.LET,
-            CatspeakToken.WHITESPACE,
-            CatspeakToken.COMMENT,
-            CatspeakToken.EOL,
-            CatspeakToken.BOF,
-            CatspeakToken.EOF,
-            CatspeakToken.OTHER,
-            CatspeakToken.OP_LOW,
-            CatspeakToken.OP_OR,
-            CatspeakToken.OP_AND,
-            CatspeakToken.OP_COMP,
-            CatspeakToken.OP_ADD,
-            CatspeakToken.OP_MUL,
-            CatspeakToken.OP_DIV,
-            CatspeakToken.OP_HIGH,
-        ];
-        var count = array_length(exceptions);
-        for (var i = 0; i < count; i += 1) {
-            tokens[@ catspeak_token_valueof(exceptions[i])] = false;
-        }
-    }
-    return tokens[catspeak_token_valueof(token)];
+    gml_pragma("forceinline");
+    return global.__catspeakDatabaseTokenStartsExpression[
+            catspeak_token_valueof(token)];
 }
 
 /// Returns whether a Catspeak token ignores any succeeding newline
@@ -305,76 +272,21 @@ function catspeak_token_is_expression(token) {
 ///
 /// @return {Bool}
 function catspeak_token_skips_newline(token) {
-    static tokens = undefined;
-    if (tokens == undefined) {
-        tokens = array_create(catspeak_token_sizeof(), false);
-        var tokens_ = [
-            // !! DO NOT ADD `BREAK_LINE` HERE, IT WILL RUIN EVERYTHING !!
-            //              you have been warned... (*^_^*) b
-            CatspeakToken.PAREN_LEFT,
-            CatspeakToken.BOX_LEFT,
-            CatspeakToken.BRACE_LEFT,
-            CatspeakToken.DOT,
-            CatspeakToken.COLON,
-            CatspeakToken.COMMA,
-            CatspeakToken.ASSIGN,
-            // this token technically does, but it's handled in a different
-            // way to the others, so it's only here honorarily
-            //CatspeakToken.CONTINUE_LINE,
-            CatspeakToken.DO,
-            CatspeakToken.IF,
-            CatspeakToken.ELSE,
-            CatspeakToken.WHILE,
-            CatspeakToken.FOR,
-            CatspeakToken.LET,
-            CatspeakToken.FUN,
-            CatspeakToken.OP_LOW,
-            CatspeakToken.OP_OR,
-            CatspeakToken.OP_AND,
-            CatspeakToken.OP_COMP,
-            CatspeakToken.OP_ADD,
-            CatspeakToken.OP_MUL,
-            CatspeakToken.OP_DIV,
-            CatspeakToken.OP_HIGH,
-        ];
-        var count = array_length(tokens_);
-        for (var i = 0; i < count; i += 1) {
-            tokens[@ catspeak_token_valueof(tokens_[i])] = true;
-        }
-    }
-    return tokens[catspeak_token_valueof(token)];
+    gml_pragma("forceinline");
+    return global.__catspeakDatabaseTokenSkipsLine[
+            catspeak_token_valueof(token)];
 }
 
 /// Converts a string into a keyword token if once exists. If the keyword
 /// doesn't exist, `undefined` is returned instead.
 ///
-/// @param {Real} char
-///   The character to check.
+/// @param {String} str
+///   The lexeme to look-up the keyword for.
 ///
 /// @return {Enum.CatspeakToken}
 function catspeak_string_to_token_keyword(str) {
-    static keywords = undefined;
-    if (keywords == undefined) {
-        keywords = { };
-        keywords[$ "--"] = CatspeakToken.COMMENT;
-        keywords[$ "="] = CatspeakToken.ASSIGN;
-        keywords[$ ":"] = CatspeakToken.COLON;
-        keywords[$ ";"] = CatspeakToken.BREAK_LINE;
-        keywords[$ "."] = CatspeakToken.DOT;
-        keywords[$ "..."] = CatspeakToken.CONTINUE_LINE;
-        keywords[$ "do"] = CatspeakToken.DO;
-        keywords[$ "it"] = CatspeakToken.IT;
-        keywords[$ "if"] = CatspeakToken.IF;
-        keywords[$ "else"] = CatspeakToken.ELSE;
-        keywords[$ "while"] = CatspeakToken.WHILE;
-        keywords[$ "for"] = CatspeakToken.FOR;
-        keywords[$ "let"] = CatspeakToken.LET;
-        keywords[$ "fun"] = CatspeakToken.FUN;
-        keywords[$ "break"] = CatspeakToken.BREAK;
-        keywords[$ "continue"] = CatspeakToken.CONTINUE;
-        keywords[$ "return"] = CatspeakToken.RETURN;
-    }
-    return keywords[$ str];
+    gml_pragma("forceinline");
+    return global.__catspeakDatabaseLexemeToKeyword[$ str];
 }
 
 /// Converts an ASCII character into a Catspeak token. This is only an
@@ -385,53 +297,11 @@ function catspeak_string_to_token_keyword(str) {
 ///
 /// @return {Enum.CatspeakToken}
 function catspeak_byte_to_token(char) {
-    static db = undefined;
+    gml_pragma("forceinline");
     if (char < 0 || char > 255) {
         return CatspeakToken.OTHER;
     }
-    if (db == undefined) {
-        db = array_create(256, CatspeakToken.OTHER);
-        __catspeak_mark_token(db, [
-            0x09, // CHARACTER TABULATION ('\t')
-            0x0B, // LINE TABULATION ('\v')
-            0x0C, // FORM FEED ('\f')
-            0x20, // SPACE (' ')
-            0x85, // NEXT LINE
-        ], CatspeakToken.WHITESPACE);
-        __catspeak_mark_token(db, [
-            0x0A, // LINE FEED ('\n')
-            0x0D, // CARRIAGE RETURN ('\r')
-        ], CatspeakToken.BREAK_LINE);
-        __catspeak_mark_token(db, function (char) {
-            return char >= ord("a") && char <= ord("z")
-                    || char >= ord("A") && char <= ord("Z")
-                    || char == ord("_")
-                    || char == ord("'")
-                    || char == ord("`");
-        }, CatspeakToken.IDENT);
-        __catspeak_mark_token(db, function (char) {
-            return char >= ord("0") && char <= ord("9");
-        }, CatspeakToken.NUMBER);
-        __catspeak_mark_token(db, ["$", ":", ";"], CatspeakToken.OP_LOW);
-        __catspeak_mark_token(db, ["^", "|"], CatspeakToken.OP_OR);
-        __catspeak_mark_token(db, ["&"], CatspeakToken.OP_AND);
-        __catspeak_mark_token(db, [
-            "!", "<", "=", ">", "?", "~"
-        ], CatspeakToken.OP_COMP);
-        __catspeak_mark_token(db, ["+", "-"], CatspeakToken.OP_ADD);
-        __catspeak_mark_token(db, ["*", "/"], CatspeakToken.OP_MUL);
-        __catspeak_mark_token(db, ["%", "\\"], CatspeakToken.OP_DIV);
-        __catspeak_mark_token(db, ["#", ".", "@"], CatspeakToken.OP_HIGH);
-        __catspeak_mark_token(db, "\"", CatspeakToken.STRING);
-        __catspeak_mark_token(db, "(", CatspeakToken.PAREN_LEFT);
-        __catspeak_mark_token(db, ")", CatspeakToken.PAREN_RIGHT);
-        __catspeak_mark_token(db, "[", CatspeakToken.BOX_LEFT);
-        __catspeak_mark_token(db, "]", CatspeakToken.BOX_RIGHT);
-        __catspeak_mark_token(db, "{", CatspeakToken.BRACE_LEFT);
-        __catspeak_mark_token(db, "}", CatspeakToken.BRACE_RIGHT);
-        __catspeak_mark_token(db, ",", CatspeakToken.COMMA);
-    }
-    return db[char];
+    return global.__catspeakDatabaseByteToToken[char];
 }
 
 /// Converts an ASCII character into a Catspeak character descriptor.
@@ -441,92 +311,9 @@ function catspeak_byte_to_token(char) {
 ///
 /// @return {Enum.CatspeakASCIIDesc}
 function catspeak_byte_to_ascii_desc(char) {
-    static db = undefined;
+    gml_pragma("forceinline");
     if (char < 0 || char > 255) {
         return CatspeakASCIIDesc.NONE;
     }
-    if (db == undefined) {
-        db = array_create(256, CatspeakASCIIDesc.NONE);
-        __catspeak_mark_ascii_desc(db, [
-            0x09, // CHARACTER TABULATION ('\t')
-            0x0A, // LINE FEED ('\n')
-            0x0B, // LINE TABULATION ('\v')
-            0x0C, // FORM FEED ('\f')
-            0x0D, // CARRIAGE RETURN ('\r')
-            0x20, // SPACE (' ')
-            0x85, // NEXT LINE
-        ], CatspeakASCIIDesc.WHITESPACE);
-        __catspeak_mark_ascii_desc(db, [
-            0x0A, // LINE FEED ('\n')
-            0x0D, // CARRIAGE RETURN ('\r')
-        ], CatspeakASCIIDesc.NEWLINE);
-        __catspeak_mark_ascii_desc(db, function (char) {
-            return char >= ord("a") && char <= ord("z")
-                    || char >= ord("A") && char <= ord("Z");
-        }, CatspeakASCIIDesc.ALPHABETIC
-                | CatspeakASCIIDesc.GRAPHIC
-                | CatspeakASCIIDesc.IDENT);
-        __catspeak_mark_ascii_desc(db, ["_", "'"],
-                CatspeakASCIIDesc.GRAPHIC | CatspeakASCIIDesc.IDENT);
-        __catspeak_mark_ascii_desc(db, function (char) {
-            return char >= ord("0") && char <= ord("9");
-        }, CatspeakASCIIDesc.DIGIT
-                | CatspeakASCIIDesc.DIGIT_HEX
-                | CatspeakASCIIDesc.GRAPHIC
-                | CatspeakASCIIDesc.IDENT);
-        __catspeak_mark_ascii_desc(db, ["0", "1"], CatspeakASCIIDesc.DIGIT_BIN);
-        __catspeak_mark_ascii_desc(db, function (char) {
-            return char >= ord("a") && char <= ord("f")
-                    || char >= ord("A") && char <= ord("F");
-        }, CatspeakASCIIDesc.DIGIT_HEX);
-        __catspeak_mark_ascii_desc(db, [
-            "!", "#", "$", "%", "&", "*", "+", "-", ".", "/", ":", ";", "<",
-            "=", ">", "?", "@", "\\", "^", "|", "~",
-        ], CatspeakASCIIDesc.OPERATOR | CatspeakASCIIDesc.IDENT);
-    }
-    return db[char];
-}
-
-/// @ignore
-function __catspeak_mark_token(db, query, value) {
-    if (!is_array(query)) {
-        query = [query];
-    }
-    var count = array_length(query);
-    var countDb = array_length(db);
-    for (var i = 0; i < count; i += 1) {
-        var queryItem = query[i];
-        if (is_method(queryItem)) {
-            for (var i = 0; i < countDb; i += 1) {
-                if (queryItem(i)) {
-                    db[@ i] = value;
-                }
-            }
-            continue;
-        }
-        var byte = is_string(queryItem) ? ord(queryItem) : queryItem;
-        db[@ byte] = value;
-    }
-}
-
-/// @ignore
-function __catspeak_mark_ascii_desc(db, query, value) {
-    if (!is_array(query)) {
-        query = [query];
-    }
-    var count = array_length(query);
-    var countDb = array_length(db);
-    for (var i = 0; i < count; i += 1) {
-        var queryItem = query[i];
-        if (is_method(queryItem)) {
-            for (var i = 0; i < countDb; i += 1) {
-                if (queryItem(i)) {
-                    db[@ i] |= value;
-                }
-            }
-            continue;
-        }
-        var byte = is_string(queryItem) ? ord(queryItem) : queryItem;
-        db[@ byte] |= value;
-    }
+    return global.__catspeakDatabaseByteToASCIIDesc[char];
 }
