@@ -99,7 +99,7 @@ function CatspeakVM(prelude) constructor {
         return callHead >= 0;
     };
 
-    /// Performs a single step of the execution process. Just like the
+    /// Performs a `n`-many steps of the execution process. Just like the
     /// compiler, these steps try to be discrete so that the VM can be paused
     /// if necessary. However, this does not account for external code that
     /// may perform large amounts of processing, such as a GML function

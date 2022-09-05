@@ -282,14 +282,23 @@ function CatspeakCompiler(lexer, ir) constructor {
         return stateStackHead > 0;
     };
 
-    /// Performs a single step of the parsing and code generation process.
+    /// Performs `n`-many steps of the parsing and code generation process.
     /// The steps are discrete so that compilation can be paused if necessary,
     /// e.g. to avoid freezing the game for large files.
-    static emitProgram = function() {
-        catspeak_assert(stateStackHead > 0, pos, "no more states");
-        stateStackHead -= 1;
-        var state = stateStack[| stateStackHead];
-        state();
+    ///
+    /// @param {Real} [n]
+    ///   The number of steps of process, defaults to 1.
+    static emitProgram = function(n=1) {
+        var stateStack_ = stateStack;
+        repeat (n) {
+            var head = stateStackHead - 1;
+            if (head < 0) {
+                return;
+            }
+            stateStackHead = head;
+            var state = stateStack_[| head];
+            state();
+        }
     };
 
     /// @ignore

@@ -5,7 +5,7 @@ var t = get_timer();
 var lex = new CatspeakLexer(buff);
 var comp = new CatspeakCompiler(lex);
 while (comp.inProgress()) {
-    comp.emitProgram();
+    comp.emitProgram(10);
 }
 var vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
