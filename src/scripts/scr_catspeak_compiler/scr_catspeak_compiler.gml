@@ -291,7 +291,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __replaceImplicitReturn = function(replacement) {
         var scope_ = scope;
         if (scope_.result != undefined) {
-            emitGet(scope_.result);
+            ir.emitGet(scope_.result);
         }
         scope_.result = replacement;
     }
