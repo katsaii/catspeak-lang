@@ -2,7 +2,7 @@
 //buffer_seek(buff, buffer_seek_start, 0);
 
 var t = get_timer();
-repeat (50) {
+repeat (1000) {
     vm.reuseCallFrame();
     while (vm.inProgress()) {
         vm.runProgram(10);
