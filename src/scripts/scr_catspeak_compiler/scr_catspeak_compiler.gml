@@ -279,9 +279,9 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// The steps are discrete so that compilation can be paused if necessary,
     /// e.g. to avoid freezing the game for large files.
     ///
-    /// @param {Real} [n]
-    ///   The number of steps of process, defaults to 1.
-    static emitProgram = function(n=1) {
+    /// @param {Real} n
+    ///   The number of steps of process.
+    static emitProgram = function(n) {
         var stateStack_ = stateStack;
         repeat (n) {
             var state = ds_stack_pop(stateStack);

@@ -105,9 +105,9 @@ function CatspeakVM(prelude) constructor {
     /// may perform large amounts of processing, such as a GML function
     /// containing a computationally expensive loop.
     ///
-    /// @param {Real} [n]
-    ///   The number of steps of process, defaults to 1.
-    static runProgram = function(n=1) {
+    /// @param {Real} n
+    ///   The number of steps of process.
+    static runProgram = function(n) {
         var callFrame = callFrames[callHead];
         var pc = callFrame.pc;
         var r = callFrame.registers;

@@ -456,8 +456,8 @@ function CatspeakFunction() constructor {
                     var argCount = inst[3];
                     msg += " " + __registerName(inst[2]);
                     msg += " " + __valueName(argCount);
-                    for (var k = 3; k < argCount; k += 1) {
-                        msg += " " + __registerName(inst[k]);
+                    for (var k = 0; k < argCount; k += 1) {
+                        msg += " " + __registerName(inst[3 + k]);
                     }
                     break;
                 }
