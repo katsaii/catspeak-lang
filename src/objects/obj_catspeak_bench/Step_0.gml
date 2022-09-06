@@ -4,23 +4,23 @@
 var t = get_timer();
 repeat (1000) {
     vm.reuseCallFrame();
-    while (vm.inProgress()) {
+    //while (vm.inProgress()) {
         vm.runProgram(10);
-    }
+    //}
+    vm.popCallFrame();
 }
 var dt1 = (get_timer() - t) / 1000000;
 
-/*t = get_timer();
-repeat (1000) {
-    catspeak_legacy_session_create_process_greedy(oldsess);
-}
-var dt2 = (get_timer() - t) / 1000000;
+//t = get_timer();
+//repeat (1000) {
+    //catspeak_legacy_session_create_process_greedy(oldsess);
+//}
+//var dt2 = (get_timer() - t) / 1000000;
 
-show_message({
+/*show_message({
     old : dt2,
     new_ : dt1,
-});
-*/
+});*/
 
 
 //show_message(json_stringify(vm.returnValue));

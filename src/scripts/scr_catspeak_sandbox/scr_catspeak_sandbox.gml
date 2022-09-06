@@ -33,6 +33,6 @@ var vm = new CatspeakVM({
     "show_message" : method(undefined, show_message),
 });
 vm.pushCallFrame(self, comp.ir);
-while (vm.inProgress()) {
-    vm.runProgram(10);
-}
+//while (vm.inProgress()) {
+//    vm.runProgram(10);
+//}
