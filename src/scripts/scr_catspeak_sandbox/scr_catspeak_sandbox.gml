@@ -25,7 +25,7 @@ buff = catspeak_create_buffer_from_string(@'
 var lex = new CatspeakLexer(buff);
 var comp = new CatspeakCompiler(lex);
 while (comp.inProgress()) {
-    comp.emitProgram();
+    comp.emitProgram(1);
 }
 //show_message(comp.ir.disassembly());
 
