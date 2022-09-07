@@ -236,6 +236,7 @@ function CatspeakFunction() constructor {
         if (argCount > 0) {
             var prevReg = emitGet(args[0], pos);
             var currLength = 1;
+            var simpleCall = true;
             for (var i = 1; i < argCount; i += 1) {
                 var nextReg = emitGet(args[i], pos);
                 if (prevReg + 1 == nextReg) {
@@ -244,11 +245,17 @@ function CatspeakFunction() constructor {
                     array_push(inst, prevReg - currLength + 1, currLength);
                     inst[@ 3] += 1;
                     currLength = 1;
+                    simpleCall = false;
                 }
                 prevReg = nextReg;
             }
+            if (simpleCall) {
+                array_pop(inst);
+                inst[@ 0] = CatspeakIntcode.CALL_SIMPLE;
+            } else {
+                inst[@ 3] += 1;
+            }
             array_push(inst, prevReg - currLength + 1, currLength);
-            inst[@ 3] += 1;
         }
         // backpatch return register, since if an argument is discarded during
         // the call, it can be reused as the return value this is incredibly
@@ -444,9 +451,6 @@ function CatspeakFunction() constructor {
                     break;
                 case CatspeakIntcode.ARG:
                     break;
-                case CatspeakIntcode.RET:
-                    msg += " " + __registerName(inst[2]);
-                    break;
                 case CatspeakIntcode.CALL:
                     msg += " " + __registerName(inst[2]);
                     msg += " " + __valueName(inst[3]);
@@ -454,6 +458,14 @@ function CatspeakFunction() constructor {
                         msg += " " + __registerName(inst[k + 0]);
                         msg += " " + __valueName(inst[k + 1]);
                     }
+                    break;
+                case CatspeakIntcode.CALL_SIMPLE:
+                    msg += " " + __registerName(inst[2]);
+                    msg += " " + __registerName(inst[3]);
+                    msg += " " + __valueName(inst[4]);
+                    break;
+                case CatspeakIntcode.RET:
+                    msg += " " + __registerName(inst[2]);
                     break;
                 }
             }

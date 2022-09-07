@@ -110,6 +110,7 @@ function CatspeakVM(prelude) constructor {
         var pc = callFrame.pc;
         var r = callFrame.registers;
         var block = callFrame.block;
+        var self_ = callFrame.self_;
         var args_ = args;
         repeat (n) {
             var inst = block[pc];
@@ -117,6 +118,21 @@ function CatspeakVM(prelude) constructor {
             case CatspeakIntcode.LDC:
                 array_copy(r, inst[1], inst, 3, inst[2]);
                 pc += 1;
+                break;
+            case CatspeakIntcode.CALL_SIMPLE:
+                var callee = r[inst[2]];
+                if (is_method(callee)) {
+                    var result = __catspeak_vm_function_execute(
+                            self_, callee, inst[4], inst[3], r);
+                    r[@ inst[1]] = result;
+                    pc += 1;
+                } else {
+                    // TODO avoid code duplication, even if it's just a macro
+                    var ir = callFrame.ir;
+                    var reg = inst[2];
+                    var pos = reg < 0 ? undefined : ir.registers[reg].pos;
+                    throw new CatspeakError(pos, "value is not callable");
+                }
                 break;
             case CatspeakIntcode.CALL:
                 // TODO support calling Catspeak functions
@@ -133,7 +149,7 @@ function CatspeakVM(prelude) constructor {
                         argOffset += spanLength;
                     }
                     var result = __catspeak_vm_function_execute(
-                            callFrame.self_, callee, argOffset, args_);
+                            self_, callee, argOffset, 0, args_);
                     r[@ inst[1]] = result;
                     pc += 1;
                 } else {
@@ -186,12 +202,12 @@ function CatspeakVM(prelude) constructor {
 }
 
 /// @ignore
-function __catspeak_vm_function_execute(self_, f, argc, args) {
+function __catspeak_vm_function_execute(self_, f, argc, argO, args) {
     gml_pragma("forceinline");
     var f_ = f;
     var scrSelf = method_get_self(f_) ?? self_;
     var scr = method_get_index(f_);
     with (scrSelf) {
-        return script_execute_ext(scr, args, 0, argc);
+        return script_execute_ext(scr, args, argO, argc);
     }
 }
