@@ -14,7 +14,6 @@ function CatspeakVM(prelude) constructor {
     self.callHead = -1;
     self.callCapacity = 0;
     self.args = [];
-    self.argsCapacity = 0;
     self.prelude = prelude ?? { };
 
     /// Creates a new executable callframe for this IR.
@@ -111,7 +110,6 @@ function CatspeakVM(prelude) constructor {
         var pc = callFrame.pc;
         var r = callFrame.registers;
         var block = callFrame.block;
-        var argsCapacity_ = argsCapacity;
         var args_ = args;
         repeat (n) {
             var inst = block[pc];
@@ -124,17 +122,18 @@ function CatspeakVM(prelude) constructor {
                 // TODO support calling Catspeak functions
                 var callee = r[inst[2]];
                 if (is_method(callee)) {
-                    var argCount = inst[3];
-                    if (argCount > argsCapacity_) {
-                        array_resize(args_, argCount);
-                        argsCapacity_ = argCount;
-                        argsCapacity = argsCapacity_;
-                    }
-                    for (var i = 0; i < argCount; i += 1) {
-                        args_[@ i] = r[inst[4 + i]];
+                    var spanCount = inst[3];
+                    var instOffset = 4;
+                    var argOffset = 0;
+                    repeat (spanCount) {
+                        var spanReg = inst[instOffset];
+                        var spanLength = inst[instOffset + 1];
+                        array_copy(args, argOffset, r, spanReg, spanLength);
+                        instOffset += 1;
+                        argOffset += spanLength;
                     }
                     var result = __catspeak_vm_function_execute(
-                            callFrame.self_, callee, argCount, args_);
+                            callFrame.self_, callee, argOffset, args_);
                     r[@ inst[1]] = result;
                     pc += 1;
                 } else {
