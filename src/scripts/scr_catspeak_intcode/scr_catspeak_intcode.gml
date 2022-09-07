@@ -12,6 +12,7 @@ enum CatspeakIntcode {
     IMPORT,
     ARG,
     CALL,
+    CALL_SIMPLE,
     RET,
 }
 
@@ -38,6 +39,8 @@ function catspeak_intcode_show(value) {
         return "ARG";
     case CatspeakIntcode.CALL:
         return "CALL";
+    case CatspeakIntcode.CALL_SIMPLE:
+        return "CALL_SIMPLE";
     case CatspeakIntcode.RET:
         return "RET";
     }
@@ -67,6 +70,8 @@ function catspeak_intcode_read(str) {
         return CatspeakIntcode.ARG;
     case "CALL":
         return CatspeakIntcode.CALL;
+    case "CALL_SIMPLE":
+        return CatspeakIntcode.CALL_SIMPLE;
     case "RET":
         return CatspeakIntcode.RET;
     }
