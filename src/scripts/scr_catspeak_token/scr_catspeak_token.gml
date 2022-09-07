@@ -28,6 +28,8 @@ enum CatspeakToken {
     BREAK,
     CONTINUE,
     RETURN,
+    AND,
+    OR,
     IDENT,
     STRING,
     NUMBER,
@@ -104,6 +106,10 @@ function catspeak_token_show(value) {
         return "CONTINUE";
     case CatspeakToken.RETURN:
         return "RETURN";
+    case CatspeakToken.AND:
+        return "AND";
+    case CatspeakToken.OR:
+        return "OR";
     case CatspeakToken.IDENT:
         return "IDENT";
     case CatspeakToken.STRING:
@@ -197,6 +203,10 @@ function catspeak_token_read(str) {
         return CatspeakToken.CONTINUE;
     case "RETURN":
         return CatspeakToken.RETURN;
+    case "AND":
+        return CatspeakToken.AND;
+    case "OR":
+        return CatspeakToken.OR;
     case "IDENT":
         return CatspeakToken.IDENT;
     case "STRING":

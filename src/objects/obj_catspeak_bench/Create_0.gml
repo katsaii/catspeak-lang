@@ -85,13 +85,13 @@ buff = catspeak_create_buffer_from_string(@'
 }}
 ');
 
-
 var lex = new CatspeakLexer(buff);
 comp = new CatspeakCompiler(lex);
 while (comp.inProgress()) {
     comp.emitProgram(10);
 }
-//show_message(comp.ir.disassembly());
+//clipboard_set_text(comp.ir.disassembly());
+//show_message("emitted")
 
 vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);

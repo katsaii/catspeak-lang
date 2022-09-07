@@ -391,7 +391,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprReturnBegin = function() {
         pushState(__stateExprReturnEnd);
-        if (satisfies(catspeak_token_is_expression)) {
+        if (satisfies(__tokenIsExpr)) {
             pushState(__stateExprAssignBegin);
         } else {
             pushResult(undefined);
@@ -512,7 +512,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     static __stateExprCallBegin = function() {
-        if (satisfies(catspeak_token_is_expression)) {
+        if (satisfies(__tokenIsExpr)) {
             var parens = consume(CatspeakToken.PAREN_LEFT);
             pushResult(parens);
             pushResult([]);
@@ -733,6 +733,9 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __newStructFunc = method(undefined, __catspeak_builtin_struct);
+
+    /// @ignore
+    static __tokenIsExpr = method(undefined, catspeak_token_is_expression);
 }
 
 /// Represents a lexically scoped block of code in the compiler.

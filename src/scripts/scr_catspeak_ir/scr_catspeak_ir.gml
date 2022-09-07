@@ -8,13 +8,10 @@ function CatspeakFunction() constructor {
     self.blocks = [];
     self.registers = []; // stores debug info about registers
     self.constants = []; // stores the values of constants
-    self.discardedRegisters = []; // stores any previously allocated registers
-                                  // which are safe to reuse
+    // stores any previously allocated registers which are safe to reuse
+    // using a priority queue offers more opportunity for optimisations
+    self.discardedRegisters = catspeak_alloc_ds_priority(self);
     self.runtimeConstantTable = { };
-    self.constantTable = catspeak_alloc_ds_map(self);
-    self.constantNaN = undefined; // the NaN lookup needs to be handled
-                                  // separately because they are not
-                                  // comparable
     self.constantBlock = self.emitBlock(new CatspeakBlock());
     self.currentBlock = self.emitBlock(new CatspeakBlock());
 
@@ -45,9 +42,10 @@ function CatspeakFunction() constructor {
     static emitRegister = function(pos) {
         var idx;
         var pos_ = pos == undefined ? undefined : pos.clone();
-        if (array_length(discardedRegisters) > 0) {
+        if (!ds_priority_empty(discardedRegisters)) {
             // reuse a discarded register
-            idx = array_pop(discardedRegisters);
+            // using a priority queue offers more opportunity for optimisation
+            idx = ds_priority_delete_min(discardedRegisters);
             var meta = registers[idx];
             meta.pos ??= pos_;
             meta.discarded = false;
@@ -76,7 +74,7 @@ function CatspeakFunction() constructor {
             return;
         }
         meta.discarded = true;
-        array_push(discardedRegisters, reg);
+        ds_priority_add(discardedRegisters, reg, reg);
     };
 
     /// Emits the special unreachable "register." The existence of this
@@ -98,16 +96,6 @@ function CatspeakFunction() constructor {
         return is_numeric(reg) && is_nan(reg);
     };
 
-    /// Returns whether a register is a constant memory location.
-    ///
-    /// @param {Any} reg
-    ///   The register or accessor to check.
-    ///
-    /// @return {Bool}
-    static isConstant = function(reg) {
-        return reg < 0;
-    };
-
     /// Generates the code to assign a constant to a register.
     ///
     /// @param {Any} value
@@ -115,24 +103,9 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Any}
     static emitConstant = function(value) {
-        var result;
-        var isNaN = is_numeric(value) && is_nan(value); // is_nan is borked
-        if (isNaN && constantNaN != undefined) {
-            result = constantNaN;
-        } else if (ds_map_exists(constantTable, value)) {
-            result = constantTable[? value]
-        } else {
-            result = array_length(constants);
-            array_push(constants, value);
-            if (isNaN) {
-                constantNaN = result;
-            } else {
-                constantTable[? value] = result;
-            }
-        }
-        // constants use negative ids, offset by 1
-        // e.g. constant 0 has the register id of `-1`
-        return -(result + 1);
+        var result = emitRegister();
+        emitCode(CatspeakIntcode.LDC, result, value);
+        return new CatspeakTempRegisterAccessor(result, self);
     };
 
     /// Generates the code to read a constant at runtime using its identifier.
@@ -145,7 +118,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Any}
     static emitRuntimeConstant = function(name, pos) {
-        if (variable_struct_exists(runtimeConstantTable, name)) {
+        /*if (variable_struct_exists(runtimeConstantTable, name)) {
             return runtimeConstantTable[$ name];
         }
         // hoist the definition
@@ -155,7 +128,8 @@ function CatspeakFunction() constructor {
         var inst = [CatspeakIntcode.LDC, result, name];
         array_insert(code, array_length(code) - 1, inst); // yuck!
         runtimeConstantTable[$ name] = result;
-        return new CatspeakReadOnlyAccessor(result);
+        return new CatspeakReadOnlyAccessor(result);*/
+        throw new CatspeakError(pos, "unimplemented");
     };
 
     /// Generates the code to return a value from this function. Since
@@ -401,20 +375,7 @@ function CatspeakFunction() constructor {
     /// sub-function definitions, sorry!
     static disassembly = function() {
         var msg = "";
-        // emit constants
-        var constCount = array_length(constants);
-        for (var i = 0; i < constCount; i += 1) {
-            var reg = -(i + 1);
-            if (i != 0) {
-                msg += "\n";
-            }
-            msg += "const " + __registerName(reg);
-            msg += " = " + __valueName(constants[i]);
-        }
         // emit function body
-        if (constCount > 0) {
-            msg += "\n\n";
-        }
         msg += "fun () {"
         var blockCount = array_length(blocks);
         for (var i = 0; i < blockCount; i += 1) {
@@ -447,6 +408,9 @@ function CatspeakFunction() constructor {
                 case CatspeakIntcode.LDC:
                     msg += " " + __valueName(inst[2]);
                     break;
+                case CatspeakIntcode.IMPORT:
+                    msg += " " + __valueName(inst[2]);
+                    break;
                 case CatspeakIntcode.ARG:
                     break;
                 case CatspeakIntcode.RET:
@@ -472,17 +436,13 @@ function CatspeakFunction() constructor {
         if (isUnreachable(reg)) {
             return "!";
         }
-        if (isConstant(reg)) {
-            // constant register
-            return "c" + string(abs(reg) - 1);
-        }
         var meta = registers[reg];
         var pos = meta.pos;
         if (pos == undefined || pos.lexeme == undefined) {
             return "r" + string(reg);
         }
         var lexeme = pos.lexeme;
-        return "`" + (is_string(lexeme) ? lexeme : string(lexeme)) + "`";
+        return "r`" + (is_string(lexeme) ? lexeme : string(lexeme)) + "`";
     };
 
     /// @ignore
