@@ -117,7 +117,7 @@ function CatspeakVM(prelude) constructor {
             var inst = block[pc];
             switch (inst[0]) {
             case CatspeakIntcode.LDC:
-                r[@ inst[1]] = inst[2];
+                array_copy(r, inst[1], inst, 3, inst[2]);
                 pc += 1;
                 break;
             case CatspeakIntcode.CALL:

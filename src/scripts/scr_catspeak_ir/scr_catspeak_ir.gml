@@ -104,7 +104,17 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitConstant = function(value) {
         var result = emitRegister();
-        emitCode(CatspeakIntcode.LDC, result, value);
+        var code = lastCode();
+        if (code != undefined
+                && code[0] == CatspeakIntcode.LDC
+                && code[1] + code[2] == result) {
+            // if the last code was a LDC, and the two registers are
+            // adjacent, use a single instruction
+            code[@ 2] += 1;
+            array_push(code, value);
+        } else {
+            emitCode(CatspeakIntcode.LDC, result, 1, value);
+        }
         return new CatspeakTempRegisterAccessor(result, self);
     };
 
@@ -225,7 +235,8 @@ function CatspeakFunction() constructor {
             array_push(inst, emitGet(args[i], pos));
         }
         // backpatch return register, since if an argument is discarded during
-        // the call, it can be reused as the return value
+        // the call, it can be reused as the return value this is incredibly
+        // important for emitting fast code
         var result = emitRegister(pos);
         inst[@ 1] = result;
         // must push the instruction after emitting code for the accessors
@@ -407,6 +418,10 @@ function CatspeakFunction() constructor {
                     break;
                 case CatspeakIntcode.LDC:
                     msg += " " + __valueName(inst[2]);
+                    var instCount = array_length(inst);
+                    for (var k = 3; k < instCount; k += 1) {
+                        msg += " " + __valueName(inst[k]);
+                    }
                     break;
                 case CatspeakIntcode.IMPORT:
                     msg += " " + __valueName(inst[2]);
