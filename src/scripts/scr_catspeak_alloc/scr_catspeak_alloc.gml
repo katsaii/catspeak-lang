@@ -36,6 +36,17 @@ function catspeak_alloc_ds_stack(struct) {
     return catspeak_alloc(struct, global.__catspeakAllocDSStackAdapter);
 }
 
+/// Allocates a new DSPriority resource and returns its ID.
+///
+/// @param {Struct} struct
+///   The struct whose lifetime determines how long the DSPriority lives.
+///
+/// @return {Id.DsPriority}
+function catspeak_alloc_ds_priority(struct) {
+    gml_pragma("forceinline");
+    return catspeak_alloc(struct, global.__catspeakAllocDSPriorityAdapter);
+}
+
 /// Allocates a new resource with the same lifetime as a given struct.
 ///
 /// @param {Struct} struct

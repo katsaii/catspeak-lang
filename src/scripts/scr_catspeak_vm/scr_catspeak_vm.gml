@@ -57,7 +57,6 @@ function CatspeakVM(prelude) constructor {
         callFrame.ir = ir;
         callFrame.args = args ?? [];
         callFrame.registers = array_create(registerCount);
-        callFrame.constants = ir.constants;
         callFrame.pc = 0;
         callFrame.initialBlock = initialBlock;
         callFrame.block = initialBlock;
@@ -111,16 +110,19 @@ function CatspeakVM(prelude) constructor {
         var callFrame = callFrames[callHead];
         var pc = callFrame.pc;
         var r = callFrame.registers;
-        var c = callFrame.constants;
         var block = callFrame.block;
         var argsCapacity_ = argsCapacity;
         var args_ = args;
         repeat (n) {
             var inst = block[pc];
             switch (inst[0]) {
+            case CatspeakIntcode.LDC:
+                r[@ inst[1]] = inst[2];
+                pc += 1;
+                break;
             case CatspeakIntcode.CALL:
                 // TODO support calling Catspeak functions
-                var callee = __catspeak_vm_get_mem(r, c, inst[2]);
+                var callee = r[inst[2]];
                 if (is_method(callee)) {
                     var argCount = inst[3];
                     if (argCount > argsCapacity_) {
@@ -129,7 +131,7 @@ function CatspeakVM(prelude) constructor {
                         argsCapacity = argsCapacity_;
                     }
                     for (var i = 0; i < argCount; i += 1) {
-                        args_[@ i] = __catspeak_vm_get_mem(r, c, inst[4 + i]);
+                        args_[@ i] = r[inst[4 + i]];
                     }
                     var result = __catspeak_vm_function_execute(
                             callFrame.self_, callee, argCount, args_);
@@ -147,7 +149,7 @@ function CatspeakVM(prelude) constructor {
                 pc = 0;
                 break;
             case CatspeakIntcode.JMP_FALSE:
-                if (__catspeak_vm_get_mem(r, c, inst[3])) {
+                if (r[inst[3]]) {
                     pc += 1;
                 } else {
                     block = inst[2].code;
@@ -155,11 +157,7 @@ function CatspeakVM(prelude) constructor {
                 }
                 break;
             case CatspeakIntcode.MOV:
-                r[@ inst[1]] = __catspeak_vm_get_mem(r, c, inst[2]);
-                pc += 1;
-                break;
-            case CatspeakIntcode.LDC:
-                r[@ inst[1]] = prelude[$ inst[2]];
+                r[@ inst[1]] = r[inst[2]];
                 pc += 1;
                 break;
             case CatspeakIntcode.ARG:
@@ -167,7 +165,7 @@ function CatspeakVM(prelude) constructor {
                 pc += 1;
                 break;
             case CatspeakIntcode.RET:
-                returnValue = __catspeak_vm_get_mem(r, c, inst[2]);
+                returnValue = r[inst[2]];
                 popCallFrame();
                 if (callHead < 0) {
                     // exit early
@@ -176,7 +174,6 @@ function CatspeakVM(prelude) constructor {
                 callFrame = callFrames[callHead];
                 pc = callFrame.pc;
                 r = callFrame.registers;
-                c = callFrame.constants;
                 block = callFrame.block;
                 break;
             default:
@@ -197,15 +194,5 @@ function __catspeak_vm_function_execute(self_, f, argc, args) {
     var scr = method_get_index(f_);
     with (scrSelf) {
         return script_execute_ext(scr, args, 0, argc);
-    }
-}
-
-/// @ignore
-function __catspeak_vm_get_mem(registers, constants, reg) {
-    gml_pragma("forceinline");
-    if (reg < 0) {
-        return constants[-(reg + 1)];
-    } else {
-        return registers[reg];
     }
 }

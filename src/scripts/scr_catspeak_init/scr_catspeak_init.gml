@@ -49,6 +49,11 @@ function __catspeak_init_alloc() {
         create : ds_stack_create,
         destroy : ds_stack_destroy,
     };
+    /// @ignore
+    global.__catspeakAllocDSPriorityAdapter = {
+        create : ds_priority_create,
+        destroy : ds_priority_destroy,
+    };
 }
 
 /// @ignore
