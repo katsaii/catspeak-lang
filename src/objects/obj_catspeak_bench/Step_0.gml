@@ -2,7 +2,7 @@
 //buffer_seek(buff, buffer_seek_start, 0);
 
 var t = get_timer();
-repeat (10000) {
+repeat (1) {
     /*buffer_seek(buff, buffer_seek_start, 0);
     var lex = new CatspeakLexer(buff);
     var comp_ = new CatspeakCompiler(lex);
@@ -18,7 +18,7 @@ repeat (10000) {
     
 }
 var dt1 = (get_timer() - t) / 1000000;
-
+/*
 t = get_timer();
 repeat (10000) {
     catspeak_legacy_session_create_process_greedy(oldsess);
@@ -29,6 +29,7 @@ show_message({
     old : dt2,
     new_ : dt1,
 });
+*/
 
 
 //show_message(json_stringify(vm.returnValue));
