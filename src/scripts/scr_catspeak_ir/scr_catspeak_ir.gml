@@ -547,7 +547,7 @@ function CatspeakFunction() constructor {
                 inst = undefined;
             }
             inst ??= string(value);
-            return inst;
+            return "(" + inst + ")";
         }
         return string(value);
     }
