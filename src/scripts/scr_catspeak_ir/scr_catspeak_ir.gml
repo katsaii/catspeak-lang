@@ -137,7 +137,11 @@ function CatspeakFunction() constructor {
         } else if (ds_map_exists(permanentConstantTable, value)) {
             result = permanentConstantTable[? value]
         } else {
-            result = emitRegister();
+            result = array_length(registers); // don't reuse a register
+            array_push(registers, {
+                pos : undefined,
+                discarded : false,
+            });
             var code = constantBlock.code;
             var inst = [CatspeakIntcode.LDC, result, 1, value];
             array_insert(code, array_length(code) - 1, inst); // yuck!
