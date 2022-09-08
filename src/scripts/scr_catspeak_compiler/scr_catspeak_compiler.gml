@@ -172,8 +172,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             scope_ = scope_.parent;
         }
         if (catspeak_string_is_builtin(name)) {
-            return ir.emitPermanentConstant(
-                    catspeak_string_to_builtin(name));
+            return ir.emitConstant(catspeak_string_to_builtin(name));
         }
         return ir.emitRuntimeConstant(name, pos);
     };
