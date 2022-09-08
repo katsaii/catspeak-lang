@@ -133,18 +133,25 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @param {String} name
     ///   The name of the variable to declare.
     ///
+    /// @param {Real} [initReg]
+    ///   The accessor containing the initialiser expression, or `undefined`
+    ///   if there is no initialiser.
+    ///
     /// @return {Real}
-    static declareLocal = function(name) {
+    static declareLocal = function(name, initReg) {
         var scope_ = scope;
         var vars = scope_.vars;
+        var init_ = initReg ?? ir.emitPermanentConstant(undefined);
         if (variable_struct_exists(vars, name)) {
             // a variable with this name already exists, so just use it
-            return vars[$ name];
+            var result = vars[$ name];
+            ir.emitMove(init_, result);
+            return result;
         }
-        var reg = ir.emitRegister(pos);
-        vars[$ name] = reg;
-        array_push(scope_.varRegisters, reg);
-        return reg;
+        var result = ir.emitClone(init_);
+        vars[$ name] = result;
+        array_push(scope_.varRegisters, result);
+        return result;
     };
 
     /// Looks up a variable by name and returns its register. If the variable
@@ -165,7 +172,8 @@ function CatspeakCompiler(lexer, ir) constructor {
             scope_ = scope_.parent;
         }
         if (catspeak_string_is_builtin(name)) {
-            return ir.emitConstant(catspeak_string_to_builtin(name));
+            return ir.emitPermanentConstant(
+                    catspeak_string_to_builtin(name));
         }
         return ir.emitRuntimeConstant(name, pos);
     };
@@ -361,9 +369,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateStmtLetEnd = function() {
         var value = popResult();
         var name = popResult();
-        var reg = declareLocal(name);
-        value ??= ir.emitConstant(undefined);
-        ir.emitMove(value, reg);
+        declareLocal(name, value);
         __replaceImplicitReturn(undefined);
     };
 
