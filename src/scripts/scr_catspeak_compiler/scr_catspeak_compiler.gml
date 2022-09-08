@@ -311,6 +311,9 @@ function CatspeakCompiler(lexer, ir) constructor {
         pushBlock();
         pushState(__stateDeinit);
         pushState(__stateProgram);
+        // init some of the common built-in functions
+        ir.emitPermanentConstant(__newArrayFunc);
+        ir.emitPermanentConstant(__newStructFunc);
     }
 
     /// @ignore
@@ -631,7 +634,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprArrayEnd = function() {
         var args = popResult();
-        var newFuncReg = ir.emitConstant(__newArrayFunc);
+        var newFuncReg = ir.emitPermanentConstant(__newArrayFunc);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
 
@@ -693,7 +696,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprStructEnd = function() {
         var args = popResult();
-        var newFuncReg = ir.emitConstant(__newStructFunc);
+        var newFuncReg = ir.emitPermanentConstant(__newStructFunc);
         pushResult(ir.emitCall(newFuncReg, args, pos));
     };
 
@@ -777,14 +780,14 @@ function CatspeakCollectionAccessor(
         // e.g. constant registers don't need to copied
         collection = ir.emitClone(collection);
         index = ir.emitClone(index);
-        var getFuncReg = ir.emitConstant(getFunc);
+        var getFuncReg = ir.emitPermanentConstant(getFunc);
         var result = ir.emitClone(
                 ir.emitCall(getFuncReg, [collection, index], pos));
         getReg = result;
         return result;
     };
     self.setValue = function(value) {
-        var setFuncReg = ir.emitConstant(setFunc);
+        var setFuncReg = ir.emitPermanentConstant(setFunc);
         var result = ir.emitCall(setFuncReg, [collection, index, value], pos);
         if (getReg != undefined) {
             // dispose of allocated registers

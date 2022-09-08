@@ -12,6 +12,10 @@ function CatspeakFunction() constructor {
     // using a priority queue offers more opportunity for optimisations
     self.discardedRegisters = catspeak_alloc_ds_priority(self);
     self.runtimeConstantTable = { };
+    self.permanentConstantTable = catspeak_alloc_ds_map(self);
+    // the NaN lookup needs to be handled separately because they are not
+    // comparable
+    self.permanentConstantNaN = undefined;
     self.constantBlock = self.emitBlock(new CatspeakBlock());
     self.currentBlock = self.emitBlock(new CatspeakBlock());
 
@@ -96,7 +100,8 @@ function CatspeakFunction() constructor {
         return is_numeric(reg) && is_nan(reg);
     };
 
-    /// Generates the code to assign a constant to a register.
+    /// Generates the code to assign a set of constants to a set of
+    /// temporary registers.
     ///
     /// @param {Any} value
     ///   The constant value to load.
@@ -116,6 +121,33 @@ function CatspeakFunction() constructor {
             emitCode(CatspeakIntcode.LDC, result, 1, value);
         }
         return new CatspeakTempRegisterAccessor(result, self);
+    };
+
+    /// Generates the code to assign a constant to a permanent register.
+    ///
+    /// @param {Any} value
+    ///   The constant value to load.
+    ///
+    /// @return {Any}
+    static emitPermanentConstant = function(value) {
+        var result;
+        var isNaN = is_numeric(value) && is_nan(value); // is_nan is borked
+        if (isNaN && permanentConstantNaN != undefined) {
+            result = permanentConstantNaN;
+        } else if (ds_map_exists(permanentConstantTable, value)) {
+            result = permanentConstantTable[? value]
+        } else {
+            result = emitRegister();
+            var code = constantBlock.code;
+            var inst = [CatspeakIntcode.LDC, result, 1, value];
+            array_insert(code, array_length(code) - 1, inst); // yuck!
+            if (isNaN) {
+                permanentConstantNaN = result;
+            } else {
+                permanentConstantTable[? value] = result;
+            }
+        }
+        return result;
     };
 
     /// Generates the code to read a constant at runtime using its identifier.

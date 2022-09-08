@@ -90,8 +90,8 @@ comp = new CatspeakCompiler(lex);
 while (comp.inProgress()) {
     comp.emitProgram(10);
 }
-clipboard_set_text(comp.ir.disassembly());
-show_message("emitted")
+//clipboard_set_text(comp.ir.disassembly());
+//show_message("emitted")
 
 vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
