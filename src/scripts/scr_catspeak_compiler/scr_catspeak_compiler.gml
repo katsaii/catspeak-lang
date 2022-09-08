@@ -387,8 +387,21 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprStmt = function() {
         if (consume(CatspeakToken.RETURN)) {
             pushState(__stateExprReturnBegin);
+        } else if (consume(CatspeakToken.CONTINUE)) {
+            // TODO
+        } else if (consume(CatspeakToken.BREAK)) {
+            // TODO
         } else if (consume(CatspeakToken.DO)) {
             pushState(__stateExprBlockBegin);
+        } else if (consume(CatspeakToken.IF)) {
+            // TODO
+            pushState(__stateExprIfBegin);
+            pushState(__stateExprBlockBegin);
+            pushState(__stateExprGroupingBegin);
+        } else if (consume(CatspeakToken.WHILE)) {
+            // TODO
+        } else if (consume(CatspeakToken.FOR)) {
+            // TODO
         } else if (consume(CatspeakToken.FUN)) {
             // TODO
         } else {
@@ -429,6 +442,24 @@ function CatspeakCompiler(lexer, ir) constructor {
         }
         pushState(__stateExprBlockEnd);
         pushState(__stateStmt);
+    };
+
+    /// @ignore
+    static __stateExprIfBegin = function() {
+        pushState(__stateExprIfEnd);
+        if (consume(CatspeakToken.ELSE)) {
+            pushState(__stateExprBlockBegin);
+        } else {
+            pushResult(ir.emitConstant(undefined));
+        }
+    };
+
+    /// @ignore
+    static __stateExprIfEnd = function() {
+        var ifElse = popResult();
+        var ifThen = popResult();
+        var condition = popResult();
+        throw new CatspeakError("unimplemented");
     };
 
     /// @ignore
