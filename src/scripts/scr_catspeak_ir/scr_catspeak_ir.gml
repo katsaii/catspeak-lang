@@ -7,7 +7,7 @@
 function CatspeakFunction() constructor {
     self.blocks = [];
     self.registers = []; // stores debug info about registers
-    self.constants = []; // stores the values of constants
+    self.permanentRegisters = [];
     // stores any previously allocated registers which are safe to reuse
     // using a priority queue offers more opportunity for optimisations
     self.discardedRegisters = catspeak_alloc_ds_priority(self);
@@ -16,7 +16,7 @@ function CatspeakFunction() constructor {
     // the NaN lookup needs to be handled separately because they are not
     // comparable
     self.permanentConstantNaN = undefined;
-    self.constantBlock = self.emitBlock(new CatspeakBlock());
+    self.initialBlock = self.emitBlock(new CatspeakBlock());
     self.currentBlock = self.emitBlock(new CatspeakBlock());
 
     /// Adds a Catspeak block to the end of this function.
@@ -63,13 +63,35 @@ function CatspeakFunction() constructor {
         return idx;
     };
 
+    /// Returns the next persistent register ID. Persistent registers are not
+    /// allocated immediately, they hold a temporary ID until the rest of the
+    /// code is generated. Once this is complete, these special registers are
+    /// allocated at the end of the register list. This is done in order to
+    /// avoid messing up CALL instruction optimisations, where arguments are
+    /// expected to be adjacent.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this register.
+    ///
+    /// @return {Real}
+    static emitPermanentRegister = function(pos) {
+        var idx;
+        var pos_ = pos == undefined ? undefined : pos.clone();
+        idx = array_length(permanentRegisters);
+        array_push(permanentRegisters, {
+            pos : pos_,
+            marks : [],
+        });
+        return -(idx + 1);
+    };
+
     /// Discards a register so it can be recycled somewhere else.
     ///
     /// @param {Any} reg
     ///   The register or accessor to check.
     static discardRegister = function(reg) {
         if (reg < 0) {
-            // ignore constants
+            // ignore persistent registers
             return;
         }
         var meta = registers[reg];
@@ -138,14 +160,10 @@ function CatspeakFunction() constructor {
                 && ds_map_exists(permanentConstantTable, value)) {
             result = permanentConstantTable[? value]
         } else {
-            result = array_length(registers); // don't reuse a register
-            array_push(registers, {
-                pos : undefined,
-                discarded : false,
-            });
-            var code = constantBlock.code;
-            var inst = [CatspeakIntcode.LDC, result, 1, value];
-            array_insert(code, array_length(code) - 1, inst); // yuck!
+            result = emitPermanentRegister();
+            var code = initialBlock.code;
+            var inst = emitCodeHoisted(CatspeakIntcode.LDC, result, 1, value);
+            __registerMark(inst, 1);
             if (isNaN) {
                 permanentConstantNaN = result;
             } else if (os_browser == browser_not_a_browser
@@ -167,18 +185,15 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Any}
     static emitRuntimeConstant = function(name, pos) {
-        /*if (variable_struct_exists(runtimeConstantTable, name)) {
+        if (variable_struct_exists(runtimeConstantTable, name)) {
             return runtimeConstantTable[$ name];
         }
         // hoist the definition
-        var constantBlock_ = constantBlock;
-        var code = constantBlock_.code;
-        var result = emitRegister(pos);
-        var inst = [CatspeakIntcode.LDC, result, name];
-        array_insert(code, array_length(code) - 1, inst); // yuck!
+        var result = emitPermanentRegister(pos);
+        var inst = emitCodeHoisted(CatspeakIntcode.IMPORT, result, name);
+        __registerMark(inst, 1);
         runtimeConstantTable[$ name] = result;
-        return new CatspeakReadOnlyAccessor(result);*/
-        throw new CatspeakError(pos, "unimplemented");
+        return new CatspeakReadOnlyAccessor(result);
     };
 
     /// Generates the code to return a value from this function. Since
@@ -193,7 +208,8 @@ function CatspeakFunction() constructor {
     /// @return {Real}
     static emitReturn = function(reg, pos) {
         var reg_ = emitGet(reg, pos);
-        emitCode(CatspeakIntcode.RET, undefined, reg_);
+        var inst = emitCode(CatspeakIntcode.RET, undefined, reg_);
+        __registerMark(inst, 2);
         return emitUnreachable();
     };
 
@@ -214,7 +230,8 @@ function CatspeakFunction() constructor {
             // the registers are already equal
             return;
         }
-        emitCode(CatspeakIntcode.MOV, dest_, source_);
+        var inst = emitCode(CatspeakIntcode.MOV, dest_, source_);
+        __registerMark(inst, 1, 2);
     };
 
     /// Generates the code to clone a value into a manually managed register.
@@ -249,7 +266,8 @@ function CatspeakFunction() constructor {
     ///   The register or accessor containing the condition code to check.
     static emitJumpFalse = function(block, condition) {
         var condition_ = emitGet(condition);
-        emitCode(CatspeakIntcode.JMP_FALSE, undefined, block, condition_);
+        var inst = emitCode(CatspeakIntcode.JMP_FALSE, undefined, block, condition_);
+        __registerMark(inst, 3);
     };
 
     /// Generates the code to call a Catspeak function. Returns a register
@@ -270,6 +288,7 @@ function CatspeakFunction() constructor {
         var callee_ = emitGet(callee, pos);
         var argCount = array_length(args);
         var inst = [CatspeakIntcode.CALL, undefined, callee_, 0];
+        __registerMark(inst, 1, 2);
         // add arguments using run-length encoding, in the best case all
         // arguments can be simplified to a single span
         if (argCount > 0) {
@@ -282,6 +301,7 @@ function CatspeakFunction() constructor {
                     currLength += 1;
                 } else {
                     array_push(inst, prevReg - currLength + 1, currLength);
+                    __registerMark(inst, array_length(inst) - 2);
                     inst[@ 3] += 1;
                     currLength = 1;
                     simpleCall = false;
@@ -295,6 +315,7 @@ function CatspeakFunction() constructor {
                 inst[@ 3] += 1;
             }
             array_push(inst, prevReg - currLength + 1, currLength);
+            __registerMark(inst, array_length(inst) - 2);
         }
         // backpatch return register, since if an argument is discarded during
         // the call, it can be reused as the return value this is incredibly
@@ -324,6 +345,31 @@ function CatspeakFunction() constructor {
     static emitCode = function() {
         var inst = [];
         array_push(currentBlock.code, inst);
+        for (var i = 0; i < argument_count; i += 1) {
+            array_push(inst, argument[i]);
+        }
+        return inst;
+    };
+
+    /// Emits a new Catspeak intcode instruction, hoisted into the
+    /// initialisation block.
+    ///
+    /// @param {Enum.CatspeakIntcode} inst
+    ///   The Catspeak intcode instruction to perform.
+    ///
+    /// @param {Real} returnReg
+    ///   The register to return the value to. If the return value is ignored,
+    ///   then use `undefined`.
+    ///
+    /// @param {Any} ...
+    ///   The parameters to emit for this instruction, can be any kind of
+    ///   value, but most likely will be register IDs.
+    ///
+    /// @return {Array<Any>}
+    static emitCodeHoisted = function() {
+        var inst = [];
+        var code = initialBlock.code;
+        array_insert(code, array_length(code) - 1, inst);
         for (var i = 0; i < argument_count; i += 1) {
             array_push(inst, argument[i]);
         }
@@ -418,6 +464,7 @@ function CatspeakFunction() constructor {
     ///   The register to return the result of the instruction to.
     static patchInst = function(inst, reg) {
         inst[@ 1] = reg;
+        __registerMark(inst, 1);
     };
 
     /// Modifies the return register of this instruction.
@@ -436,6 +483,34 @@ function CatspeakFunction() constructor {
     ///   The register containing to value to replace.
     static patchArg = function(inst, argIdx, reg) {
         inst[@ 2 + argIdx] = reg;
+        __registerMark(inst, 2 + argIdx);
+    };
+
+    /// Backpatches the current set of persistent registers, and promotes
+    /// them to true registers.
+    static patchPermanentRegisters = function() {
+        var registers_ = registers;
+        var permanentRgisters_ = permanentRegisters;
+        var registerCount = array_length(registers_);
+        var permanentCount = array_length(permanentRgisters_);
+        for (var i = 0; i < permanentCount; i += 1) {
+            var meta = permanentRgisters_[i];
+            var marks = meta.marks;
+            array_push(registers_, {
+                pos : meta.pos,
+                discarded : false,
+            });
+            var markCount = array_length(marks);
+            for (var j = 0; j < markCount; j += 2) {
+                var inst = marks[j + 0];
+                var offset = marks[j + 1];
+                var reg = inst[offset];
+                if (reg < 0) {
+                    inst[@ offset] = -(reg + 1) + registerCount;
+                }
+            }
+        }
+        permanentRegisters = [];
     };
 
     /// Debug display for Catspeak functions, attempts to resemble the GML
@@ -514,9 +589,26 @@ function CatspeakFunction() constructor {
     };
 
     /// @ignore
+    static __registerMark = function(inst, offset, n=1) {
+        // marks a persistent register for backpatching
+        for (var i = 0; i < n; i += 1) {
+            var pos = offset + i;
+            var reg = inst[pos];
+            if (!(reg < 0)) {
+                continue;
+            }
+            array_push(permanentRegisters[-(reg + 1)].marks, inst, pos);
+        }
+    };
+
+    /// @ignore
     static __registerName = function(reg) {
         if (isUnreachable(reg)) {
             return "!";
+        }
+        if (reg < 0) {
+            // this shouldn't ever appear, but it helps debug
+            return "!r" + string(array_length(registers) + -(reg + 1));
         }
         var meta = registers[reg];
         var pos = meta.pos;
