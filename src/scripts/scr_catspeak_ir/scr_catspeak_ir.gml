@@ -131,14 +131,14 @@ function CatspeakFunction() constructor {
     /// @return {Any}
     static emitConstant = function(value) {
         var result = emitRegister();
-        var code = lastCode();
-        if (code != undefined
-                && code[0] == CatspeakIntcode.LDC
-                && code[1] + code[2] == result) {
+        var inst = lastCode();
+        if (inst != undefined
+                && inst[0] == CatspeakIntcode.LDC
+                && inst[1] + inst[2] == result) {
             // if the last code was a LDC, and the two registers are
             // adjacent, use a single instruction
-            code[@ 2] += 1;
-            array_push(code, value);
+            inst[@ 2] += 1;
+            array_push(inst, value);
         } else {
             emitCode(CatspeakIntcode.LDC, result, 1, value);
         }
@@ -161,18 +161,28 @@ function CatspeakFunction() constructor {
             result = permanentConstantTable[? value]
         } else {
             result = emitPermanentRegister();
-            var code = initialBlock.code;
-            var inst = emitCodeHoisted(CatspeakIntcode.LDC, result, 1, value);
-            __registerMark(inst, 1);
+            var inst = lastCodeHoisted();
+            if (inst != undefined
+                    && inst[0] == CatspeakIntcode.LDC
+                    && inst[1] - inst[2] == result) {
+                // if the last code was a LDC, and the two registers are
+                // adjacent, use a single instruction
+                inst[@ 2] += 1;
+                array_push(inst, value);
+            } else {
+                var newInst = emitCodeHoisted(
+                        CatspeakIntcode.LDC, result, 1, value);
+                __registerMark(newInst, 1);
+            }
             if (isNaN) {
                 permanentConstantNaN = result;
             } else if (os_browser == browser_not_a_browser
-                    // ds maps only support string keys in HTML5
+                    // maps only support string keys in HTML5
                     || is_string(value)) {
                 permanentConstantTable[? value] = result;
             }
         }
-        return result;
+        return new CatspeakReadOnlyAccessor(result);
     };
 
     /// Generates the code to read a constant at runtime using its identifier.
@@ -436,12 +446,26 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Array<Any>}
     static lastCode = function() {
-        var code_ = currentBlock.code;
-        var n = array_length(code_);
+        var code = currentBlock.code;
+        var n = array_length(code);
         if (n == 0) {
             return undefined;
         }
-        return code_[n - 1];
+        return code[n - 1];
+    };
+
+    /// Returns a reference to the last instruction emitted to the
+    /// initialisation block, ignoring the final branch instruction. If no
+    /// instruction exists, then `undefined` is returned instead.
+    ///
+    /// @return {Array<Any>}
+    static lastCodeHoisted = function() {
+        var code = initialBlock.code;
+        var n = array_length(code) - 1;
+        if (n == 0) {
+            return undefined;
+        }
+        return code[n - 1];
     };
 
     /// Modifies the opcode component of this instruction.
