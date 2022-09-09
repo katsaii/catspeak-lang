@@ -121,43 +121,28 @@ function CatspeakVM(prelude) constructor {
                 break;
             case CatspeakIntcode.CALL_SIMPLE:
                 var callee = r[inst[2]];
-                if (is_method(callee)) {
-                    var result = __catspeak_vm_function_execute(
-                            self_, callee, inst[4], inst[3], r);
-                    r[@ inst[1]] = result;
-                    pc += 1;
-                } else {
-                    // TODO avoid code duplication, even if it's just a macro
-                    var ir = callFrame.ir;
-                    var reg = inst[2];
-                    var pos = reg < 0 ? undefined : ir.registers[reg].pos;
-                    throw new CatspeakError(pos, "value is not callable");
-                }
+                var result = __catspeak_vm_function_execute(
+                        self_, callee, inst[4], inst[3], r);
+                r[@ inst[1]] = result;
+                pc += 1;
                 break;
             case CatspeakIntcode.CALL:
                 // TODO support calling Catspeak functions
                 var callee = r[inst[2]];
-                if (is_method(callee)) {
-                    var spanCount = inst[3];
-                    var instOffset = 4;
-                    var argOffset = 0;
-                    repeat (spanCount) {
-                        var spanReg = inst[instOffset];
-                        var spanLength = inst[instOffset + 1];
-                        array_copy(args, argOffset, r, spanReg, spanLength);
-                        instOffset += 1;
-                        argOffset += spanLength;
-                    }
-                    var result = __catspeak_vm_function_execute(
-                            self_, callee, argOffset, 0, args_);
-                    r[@ inst[1]] = result;
-                    pc += 1;
-                } else {
-                    var ir = callFrame.ir;
-                    var reg = inst[2];
-                    var pos = reg < 0 ? undefined : ir.registers[reg].pos;
-                    throw new CatspeakError(pos, "value is not callable");
+                var spanCount = inst[3];
+                var instOffset = 4;
+                var argOffset = 0;
+                repeat (spanCount) {
+                    var spanReg = inst[instOffset];
+                    var spanLength = inst[instOffset + 1];
+                    array_copy(args, argOffset, r, spanReg, spanLength);
+                    instOffset += 2;
+                    argOffset += spanLength;
                 }
+                var result = __catspeak_vm_function_execute(
+                        self_, callee, argOffset, 0, args_);
+                r[@ inst[1]] = result;
+                pc += 1;
                 break;
             case CatspeakIntcode.JMP:
                 block = inst[2].code;
@@ -170,6 +155,10 @@ function CatspeakVM(prelude) constructor {
                     block = inst[2].code;
                     pc = 0;
                 }
+                break;
+            case CatspeakIntcode.IMPORT:
+                //r[@ inst[1]] = prelude[$ inst[2]];
+                pc += 1;
                 break;
             case CatspeakIntcode.MOV:
                 r[@ inst[1]] = r[inst[2]];
@@ -207,6 +196,12 @@ function __catspeak_vm_function_execute(self_, f, argc, argO, args) {
     var f_ = f;
     var scrSelf = method_get_self(f_) ?? self_;
     var scr = method_get_index(f_);
+    if (scr == __catspeak_builtin_array) {
+        // array create shortcut
+        var arr = array_create(argc);
+        array_copy(arr, 0, args, argO, argc);
+        return arr;
+    }
     with (scrSelf) {
         return script_execute_ext(scr, args, argO, argc);
     }
