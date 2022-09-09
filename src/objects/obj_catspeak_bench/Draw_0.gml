@@ -1,0 +1,1 @@
+draw_text(mouse_x + 30, mouse_y, fps_real);

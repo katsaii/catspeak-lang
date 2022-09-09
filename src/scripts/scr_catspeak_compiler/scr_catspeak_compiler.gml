@@ -602,11 +602,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprTerminal = function() {
-        if (consume(CatspeakToken.STRING)) {
+        if (consume(CatspeakToken.STRING) || consume(CatspeakToken.NUMBER)) {
             var reg = ir.emitConstant(pos.lexeme);
-            pushResult(reg);
-        } else if (consume(CatspeakToken.NUMBER)) {
-            var reg = ir.emitConstant(real(pos.lexeme));
             pushResult(reg);
         } else if (consume(CatspeakToken.IDENT)) {
             var reg = getVar(pos.lexeme);
@@ -739,12 +736,10 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprFieldBegin = function() {
         pushState(__stateExprFieldEnd);
-        if (consume(CatspeakToken.IDENT) || consume(CatspeakToken.STRING)) {
+        if (consume(CatspeakToken.IDENT)
+                || consume(CatspeakToken.STRING)
+                || consume(CatspeakToken.NUMBER)) {
             var reg = ir.emitConstant(pos.lexeme);
-            pushResult(false); // no paren
-            pushResult(reg);
-        } else if (consume(CatspeakToken.NUMBER)) {
-            var reg = ir.emitConstant(real(pos.lexeme));
             pushResult(false); // no paren
             pushResult(reg);
         } else if (consume(CatspeakToken.BOX_LEFT)) {
