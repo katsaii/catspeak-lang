@@ -258,6 +258,19 @@ function CatspeakFunction() constructor {
         return result;
     };
 
+    /// Generates the code to clone a value into a temporary register. This
+    /// is useful for optimising function calls, since it helps align all
+    /// arguments so they're adjacent.
+    ///
+    /// @param {Any} reg
+    ///   The register or accessor containing the value to copy.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    static emitCloneTemp = function(reg, pos) {
+        return new CatspeakTempRegisterAccessor(emitClone(reg, pos), self);
+    };
+
     /// Generates the code to jump to a new block of code.
     ///
     /// @param {Struct.CatspeakBlock} block

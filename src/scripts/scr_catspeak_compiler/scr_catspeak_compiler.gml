@@ -326,9 +326,6 @@ function CatspeakCompiler(lexer, ir) constructor {
         pushBlock();
         pushState(__stateDeinit);
         pushState(__stateProgram);
-        // init some of the common built-in functions
-        ir.emitPermanentConstant(__newArrayFunc);
-        ir.emitPermanentConstant(__newStructFunc);
     }
 
     /// @ignore
@@ -533,8 +530,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateOpBinaryEnd = function() {
-        var rhs = popResult();
-        var lhs = popResult();
+        var rhs = ir.emitCloneTemp(popResult(), pos);
+        var lhs = ir.emitCloneTemp(popResult(), pos);
         var op = popResult();
         pushResult(ir.emitCall(op, [lhs, rhs]));
     };
@@ -576,7 +573,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprCallEnd = function() {
         var exprReg = popResult();
         var callArgs = popResult();
-        array_push(callArgs, exprReg);
+        array_push(callArgs, ir.emitCloneTemp(exprReg));
         if (consume(CatspeakToken.COMMA)) {
             pushResult(callArgs);
             pushState(__stateExprCallEnd);
@@ -661,7 +658,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprArray = function() {
         var elem = popResult();
         var elems = topResult();
-        array_push(elems, elem);
+        array_push(elems, ir.emitCloneTemp(elem, pos));
         var hasComma = consume(CatspeakToken.COMMA);
         consumeLinebreaks();
         if (consume(CatspeakToken.BOX_RIGHT)) {
@@ -723,7 +720,9 @@ function CatspeakCompiler(lexer, ir) constructor {
         var elem = popResult();
         var elemKey = popResult();
         var elems = topResult();
-        array_push(elems, elemKey, elem);
+        array_push(elems,
+                ir.emitCloneTemp(elemKey, pos),
+                ir.emitCloneTemp(elem, pos));
         var hasComma = consume(CatspeakToken.COMMA);
         consumeLinebreaks();
         if (consume(CatspeakToken.BRACE_RIGHT)) {
