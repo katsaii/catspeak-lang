@@ -186,15 +186,8 @@ function __catspeak_init_database_ascii_desc() {
     mark(db, function (char) {
         return char >= ord("0") && char <= ord("9");
     }, CatspeakASCIIDesc.DIGIT
-            | CatspeakASCIIDesc.DIGIT_HEX
             | CatspeakASCIIDesc.GRAPHIC
             | CatspeakASCIIDesc.IDENT);
-    mark(db, ["0", "1"],
-            CatspeakASCIIDesc.DIGIT_BIN);
-    mark(db, function (char) {
-        return char >= ord("a") && char <= ord("f")
-                || char >= ord("A") && char <= ord("F");
-    }, CatspeakASCIIDesc.DIGIT_HEX);
     mark(db, [
         "!", "#", "$", "%", "&", "*", "+", "-", ".", "/", ":", ";", "<",
         "=", ">", "?", "@", "\\", "^", "|", "~",

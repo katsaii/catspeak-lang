@@ -7,15 +7,9 @@
 enum CatspeakOption {
     NONE = 0,
     TOTAL = (1 << 0),
-    UNSAFE = (1 << 1),
-    NO_PRELUDE = (1 << 2),
-    PERSISTENT = (1 << 3),
     ALL = (
         CatspeakOption.NONE
         | CatspeakOption.TOTAL
-        | CatspeakOption.UNSAFE
-        | CatspeakOption.NO_PRELUDE
-        | CatspeakOption.PERSISTENT
     ),
 }
 
@@ -75,21 +69,6 @@ function catspeak_option_show(value) {
         msg += delimiter ?? "";
         delimiter ??= " | ";
         msg += "TOTAL";
-    }
-    if ((value & CatspeakOption.UNSAFE) != 0) {
-        msg += delimiter ?? "";
-        delimiter ??= " | ";
-        msg += "UNSAFE";
-    }
-    if ((value & CatspeakOption.NO_PRELUDE) != 0) {
-        msg += delimiter ?? "";
-        delimiter ??= " | ";
-        msg += "NO_PRELUDE";
-    }
-    if ((value & CatspeakOption.PERSISTENT) != 0) {
-        msg += delimiter ?? "";
-        delimiter ??= " | ";
-        msg += "PERSISTENT";
     }
     return msg;
 }

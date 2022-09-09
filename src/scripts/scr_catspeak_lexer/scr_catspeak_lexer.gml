@@ -218,7 +218,6 @@ function CatspeakLexer(buff) constructor {
             token = catspeak_string_to_token_keyword(pos.lexeme) ?? token;
         } else if (catspeak_ascii_desc_contains(desc,
                 CatspeakASCIIDesc.DIGIT)) {
-            // TODO hex/binary digits
             advanceWhile(CatspeakASCIIDesc.DIGIT);
             if (peek(1) == ord(".") && catspeak_ascii_desc_contains(
                 catspeak_byte_to_ascii_desc(peek(2)),
