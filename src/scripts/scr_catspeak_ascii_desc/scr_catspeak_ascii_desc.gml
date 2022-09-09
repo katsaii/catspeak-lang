@@ -10,19 +10,15 @@ enum CatspeakASCIIDesc {
     WHITESPACE = (1 << 1),
     ALPHABETIC = (1 << 2),
     DIGIT = (1 << 3),
-    DIGIT_HEX = (1 << 4),
-    DIGIT_BIN = (1 << 5),
-    OPERATOR = (1 << 6),
-    GRAPHIC = (1 << 7),
-    IDENT = (1 << 8),
+    OPERATOR = (1 << 4),
+    GRAPHIC = (1 << 5),
+    IDENT = (1 << 6),
     ALL = (
         CatspeakASCIIDesc.NONE
         | CatspeakASCIIDesc.NEWLINE
         | CatspeakASCIIDesc.WHITESPACE
         | CatspeakASCIIDesc.ALPHABETIC
         | CatspeakASCIIDesc.DIGIT
-        | CatspeakASCIIDesc.DIGIT_HEX
-        | CatspeakASCIIDesc.DIGIT_BIN
         | CatspeakASCIIDesc.OPERATOR
         | CatspeakASCIIDesc.GRAPHIC
         | CatspeakASCIIDesc.IDENT
@@ -100,16 +96,6 @@ function catspeak_ascii_desc_show(value) {
         msg += delimiter ?? "";
         delimiter ??= " | ";
         msg += "DIGIT";
-    }
-    if ((value & CatspeakASCIIDesc.DIGIT_HEX) != 0) {
-        msg += delimiter ?? "";
-        delimiter ??= " | ";
-        msg += "DIGIT_HEX";
-    }
-    if ((value & CatspeakASCIIDesc.DIGIT_BIN) != 0) {
-        msg += delimiter ?? "";
-        delimiter ??= " | ";
-        msg += "DIGIT_BIN";
     }
     if ((value & CatspeakASCIIDesc.OPERATOR) != 0) {
         msg += delimiter ?? "";
