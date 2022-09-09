@@ -156,7 +156,52 @@ function CatspeakLexer(buff) constructor {
         var byte = advance();
         var token = catspeak_byte_to_token(byte);
         var desc = catspeak_byte_to_ascii_desc(byte);
-        if (catspeak_ascii_desc_contains(desc,
+        if (byte == ord("\"") || byte == ord("@") && peek(1) == ord("\"")) {
+            // this needs to be first in order to support the `@` prefix
+            var rawString = byte == ord("@");
+            if (rawString) {
+                token = CatspeakToken.STRING; // since `@` is an operator
+                advance();
+            }
+            clearLexeme();
+            var escape = false;
+            while (true) {
+                var peeked = peek(1);
+                if (peeked == -1) {
+                    break;
+                }
+                if (escape) {
+                    escape = false;
+                } else if (peeked == ord("\"")) {
+                    break;
+                } else if (peeked == ord("\\")) {
+                    escape = true;
+                }
+                advance();
+            }
+            registerLexeme();
+            if (!rawString) {
+                // TODO this is very slow, figure do it with buffers
+                var lexeme = pos.lexeme;
+                lexeme = string_replace_all(lexeme, "\\\"", "\"");
+                lexeme = string_replace_all(lexeme, "\\\r\n", "");
+                lexeme = string_replace_all(lexeme, "\\\n", "");
+                lexeme = string_replace_all(lexeme, "\\\r", "");
+                lexeme = string_replace_all(lexeme, "\\\\", "\\");
+                lexeme = string_replace_all(lexeme, "\\t", "\t");
+                lexeme = string_replace_all(lexeme, "\\n", "\n");
+                lexeme = string_replace_all(lexeme, "\\v", "\v");
+                lexeme = string_replace_all(lexeme, "\\f", "\f");
+                lexeme = string_replace_all(lexeme, "\\r", "\r");
+                pos.lexeme = lexeme;
+            }
+            if (peek(1) == ord("\"")) {
+                // I don't care about raising an error in this situation,
+                // since Catspeak should be a bit forgiving as a modding
+                // language
+                skipNextByte = true;
+            }
+        } else if (catspeak_ascii_desc_contains(desc,
                 CatspeakASCIIDesc.OPERATOR)) {
             advanceWhile(CatspeakASCIIDesc.OPERATOR);
             registerLexeme();
@@ -183,22 +228,7 @@ function CatspeakLexer(buff) constructor {
                 advanceWhile(CatspeakASCIIDesc.DIGIT);
             }
             registerLexeme();
-        } else if (byte == ord("\"")) {
-            clearLexeme();
-            while (true) {
-                var peeked = peek(1);
-                if (peeked == -1 || peeked == ord("\"")) {
-                    break;
-                }
-                advance();
-            }
-            registerLexeme();
-            if (peek(1) == ord("\"")) {
-                // I don't care about raising an error in this situation,
-                // since Catspeak should be a bit forgiving as a modding
-                // language
-                skipNextByte = true;
-            }
+            pos.lexeme = real(pos.lexeme);
         } else if (byte == ord("`")) {
             clearLexeme();
             advanceWhile(CatspeakASCIIDesc.IDENT);

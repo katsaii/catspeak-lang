@@ -134,7 +134,8 @@ function CatspeakFunction() constructor {
         var isNaN = is_numeric(value) && is_nan(value); // is_nan is borked
         if (isNaN && permanentConstantNaN != undefined) {
             result = permanentConstantNaN;
-        } else if (ds_map_exists(permanentConstantTable, value)) {
+        } else if ((os_browser == browser_not_a_browser || is_string(value))
+                && ds_map_exists(permanentConstantTable, value)) {
             result = permanentConstantTable[? value]
         } else {
             result = array_length(registers); // don't reuse a register
@@ -147,7 +148,9 @@ function CatspeakFunction() constructor {
             array_insert(code, array_length(code) - 1, inst); // yuck!
             if (isNaN) {
                 permanentConstantNaN = result;
-            } else {
+            } else if (os_browser == browser_not_a_browser
+                    // ds maps only support string keys in HTML5
+                    || is_string(value)) {
                 permanentConstantTable[? value] = result;
             }
         }
