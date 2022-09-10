@@ -106,7 +106,8 @@ function CatspeakVM(prelude) constructor {
     /// @param {Real} n
     ///   The number of steps of process.
     static runProgram = function(n) {
-        var callFrame = callFrames[callHead];
+        var callFrames_ = callFrames;
+        var callFrame = callFrames_[callHead];
         var pc = callFrame.pc;
         var r = callFrame.registers;
         var block = callFrame.block;
@@ -114,35 +115,52 @@ function CatspeakVM(prelude) constructor {
         var args_ = args;
         repeat (n) {
             var inst = block[pc];
-            switch (inst[0]) {
+            var code = inst[0];
+            switch (code) {
             case CatspeakIntcode.LDC:
                 array_copy(r, inst[1], inst, 3, inst[2]);
                 pc += 1;
                 break;
+            case CatspeakIntcode.CALL:
             case CatspeakIntcode.CALL_SIMPLE:
                 var callee = r[inst[2]];
-                var result = __catspeak_vm_function_execute(
-                        self_, callee, inst[4], inst[3], r);
-                r[@ inst[1]] = result;
-                pc += 1;
-                break;
-            case CatspeakIntcode.CALL:
-                // TODO support calling Catspeak functions
-                var callee = r[inst[2]];
-                var spanCount = inst[3];
-                var instOffset = 4;
-                var argOffset = 0;
-                repeat (spanCount) {
-                    var spanReg = inst[instOffset];
-                    var spanLength = inst[instOffset + 1];
-                    array_copy(args, argOffset, r, spanReg, spanLength);
-                    instOffset += 2;
-                    argOffset += spanLength;
+                var argC, argO, argB;
+                if (code == CatspeakIntcode.CALL_SIMPLE) {
+                    argC = inst[4];
+                    argO = inst[3];
+                    argB = r;
+                } else {
+                    var spanCount = inst[3];
+                    var instOffset = 4;
+                    var argOffset = 0;
+                    repeat (spanCount) {
+                        var spanReg = inst[instOffset];
+                        var spanLength = inst[instOffset + 1];
+                        array_copy(args, argOffset, r, spanReg, spanLength);
+                        instOffset += 2;
+                        argOffset += spanLength;
+                    }
+                    argC = argOffset;
+                    argO = 0;
+                    argB = args_;
                 }
-                var result = __catspeak_vm_function_execute(
-                        self_, callee, argOffset, 0, args_);
-                r[@ inst[1]] = result;
-                pc += 1;
+                if (instanceof(callee) == "CatspeakFunction") {
+                    // call Catspeak function
+                    var newArgs = array_create(argC);
+                    array_copy(newArgs, 0, argB, argO, argC);
+                    callFrame.pc = pc;
+                    callFrame.block = block;
+                    pushCallFrame(self_, callee, newArgs);
+                    callFrame = callFrames_[callHead];
+                    pc = callFrame.pc;
+                    r = callFrame.registers;
+                    block = callFrame.block;
+                } else {
+                    // call GML function
+                    r[@ inst[1]] = __catspeak_vm_function_execute(
+                            self_, callee, argC, argO, argB);
+                    pc += 1;
+                }
                 break;
             case CatspeakIntcode.JMP:
                 block = inst[2].code;
@@ -179,6 +197,8 @@ function CatspeakVM(prelude) constructor {
                 pc = callFrame.pc;
                 r = callFrame.registers;
                 block = callFrame.block;
+                r[@ block[pc][1]] = returnValue;
+                pc += 1;
                 break;
             default:
                 throw new CatspeakError(undefined, "invalid VM instruction");

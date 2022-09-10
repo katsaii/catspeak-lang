@@ -20,7 +20,7 @@ if (os_browser == browser_not_a_browser) {
 } else {
     show_debug_message(comp.ir.disassembly());
 }
-show_message("emitted");
+//show_message("emitted");
 
 vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
