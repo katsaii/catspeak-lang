@@ -2,13 +2,12 @@ show_debug_overlay(true);
 
 
 buff = catspeak_create_buffer_from_string(@'
-    let n = 10
-    while (n > 0) {
-        break
-        n = it - 1
+    let f = fun {
+        let a = 1
+        let b = 2
+        a + b
     }
-    continue
-    n
+    f()
 ');
 
 var lex = new CatspeakLexer(buff);
