@@ -473,7 +473,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprAssignBegin = function() {
         pushState(__stateExprAssign);
         pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
-        pushState(__stateOpBinaryBegin);
+        pushState(__stateExprOpBinaryBegin);
     };
 
     /// @ignore
@@ -498,38 +498,38 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
-    static __stateOpBinaryBegin = function() {
+    static __stateExprOpBinaryBegin = function() {
         var precedence = popResult();
         if (precedence >= CatspeakToken.__OPERATORS_END__) {
             pushState(__stateExprOpUnaryBegin);
             return;
         }
         pushResult(precedence);
-        pushState(__stateOpBinary);
+        pushState(__stateExprOpBinary);
         pushResult(precedence + 1);
-        pushState(__stateOpBinaryBegin);
+        pushState(__stateExprOpBinaryBegin);
     };
 
     /// @ignore
-    static __stateOpBinary = function() {
+    static __stateExprOpBinary = function() {
         var lhs = popResult();
         var precedence = popResult();
         if (consume(precedence)) {
             var opReg = getVar(pos.lexeme);
             pushResult(precedence);
-            pushState(__stateOpBinary);
+            pushState(__stateExprOpBinary);
             pushResult(opReg);
             pushResult(lhs);
-            pushState(__stateOpBinaryEnd);
+            pushState(__stateExprOpBinaryEnd);
             pushResult(precedence + 1);
-            pushState(__stateOpBinaryBegin);
+            pushState(__stateExprOpBinaryBegin);
         } else {
             pushResult(lhs);
         }
     };
 
     /// @ignore
-    static __stateOpBinaryEnd = function() {
+    static __stateExprOpBinaryEnd = function() {
         var rhs = ir.emitCloneTemp(popResult(), pos);
         var lhs = ir.emitCloneTemp(popResult(), pos);
         var op = popResult();
