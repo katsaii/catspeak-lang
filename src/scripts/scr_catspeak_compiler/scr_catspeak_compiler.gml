@@ -403,9 +403,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.IF)) {
             pushState(__stateExprIfBegin);
         } else if (consume(CatspeakToken.WHILE)) {
-            // TODO
-        } else if (consume(CatspeakToken.FOR)) {
-            // TODO
+            pushState(__stateExprWhileBegin);
         } else if (consume(CatspeakToken.FUN)) {
             // TODO
         } else {
@@ -496,6 +494,36 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
+    static __stateExprWhileBegin = function() {
+        pushResult({
+            whileBegin : new CatspeakBlock("while begin"),
+            whileEnd : new CatspeakBlock("while end"),
+        });
+        var whileContext = topResult();
+        ir.emitBlock(whileContext.whileBegin);
+        pushState(__stateExprWhile);
+        pushState(__stateExprGroupingBegin);
+    };
+
+    /// @ignore
+    static __stateExprWhile = function() {
+        var condition = popResult();
+        var whileContext = topResult();
+        ir.emitJumpFalse(whileContext.whileEnd, condition);
+        pushState(__stateExprWhileEnd);
+        pushState(__stateExprBlockBegin);
+    };
+
+    /// @ignore
+    static __stateExprWhileEnd = function() {
+        var result = popResult();
+        var whileContext = popResult();
+        ir.emitJump(whileContext.whileBegin);
+        ir.emitBlock(whileContext.whileEnd);
+        pushResult(result);
+    };
+
+    /// @ignore
     static __stateExprAssignBegin = function() {
         pushState(__stateExprAssign);
         pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
@@ -545,7 +573,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             pushResult(precedence);
             pushState(__stateExprOpBinary);
             pushResult(opReg);
-            pushResult(lhs);
+            pushResult(ir.emitCloneTemp(lhs, pos));
             pushState(__stateExprOpBinaryEnd);
             pushResult(precedence + 1);
             pushState(__stateExprOpBinaryBegin);
@@ -556,8 +584,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprOpBinaryEnd = function() {
-        var rhs = ir.emitCloneTemp(popResult(), pos);
-        var lhs = ir.emitCloneTemp(popResult(), pos);
+        var rhs = popResult();
+        var lhs = popResult();
         var op = popResult();
         pushResult(ir.emitCall(op, [lhs, rhs]));
     };
@@ -973,7 +1001,7 @@ function __catspeak_builtin_add_string(lhs, rhs) {
 }
 
 /// @ignore
-function __catspeak_builtin_sub() {
+function __catspeak_builtin_sub(lhs, rhs) {
     return rhs == undefined ? -lhs : lhs - rhs;
 }
 
