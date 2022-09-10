@@ -2,8 +2,11 @@ show_debug_overlay(true);
 
 
 buff = catspeak_create_buffer_from_string(@'
-    let a = if (false) { 1 } else { "hi" }
-    a
+    let n = 10
+    while (n > 0) {
+        n = it - 1
+        "cool"
+    }
 ');
 
 var lex = new CatspeakLexer(buff);

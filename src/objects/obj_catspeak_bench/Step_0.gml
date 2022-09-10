@@ -2,7 +2,7 @@
 //buffer_seek(buff, buffer_seek_start, 0);
 var t = get_timer();
 runs = 1;
-repeat (1000) {
+repeat (100) {
     /*buffer_seek(buff, buffer_seek_start, 0);
     var lex = new CatspeakLexer(buff);
     var comp_ = new CatspeakCompiler(lex);
