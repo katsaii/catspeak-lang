@@ -24,7 +24,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.resultStack = catspeak_alloc_ds_stack(self);
     self.itStack = catspeak_alloc_ds_stack(self);
     self.loopStack = catspeak_alloc_ds_stack(self);
-    ds_stack_push(self.stateStack, __stateInit);
+    self.irStack = catspeak_alloc_ds_stack(self);
+    ds_stack_push(self.stateStack, __stateCheckAllParsed, __stateInit);
 
     /// Advances the parser and returns the current token.
     ///
@@ -170,7 +171,7 @@ function CatspeakCompiler(lexer, ir) constructor {
             if (reg != undefined) {
                 return reg;
             }
-            scope_ = scope_.parent;
+            scope_ = scope_.inherited ? scope_.parent : undefined;
         }
         if (catspeak_string_is_builtin(name)) {
             var builtin = catspeak_string_to_builtin(name);
@@ -204,7 +205,7 @@ function CatspeakCompiler(lexer, ir) constructor {
                 ir.emitMove(value, reg);
                 return value;
             }
-            scope_ = scope_.parent;
+            scope_ = scope_.inherited ? scope_.parent : undefined;
         }
         error("variable with name `" + name +
                 "` does not exist in this scope");
@@ -245,15 +246,19 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// Starts a new lexical scope.
-    static pushBlock = function() {
-        scope = new CatspeakLocalScope(scope);
+    ///
+    /// @param {Bool} [inherit]
+    ///   Whether to inherit the previous scope, defaults to true.
+    static pushBlock = function(inherit=true) {
+        scope = new CatspeakLocalScope(scope, inherit);
     };
 
     /// Pops the current block scope and returns its value. Any variables
     /// defined in this scope are freed up to be used by new declarations.
+    ///
+    /// @return {Any}
     static popBlock = function() {
         var scope_ = scope;
-        var result = scope_.result ?? ir.emitConstant(undefined, pos);
         scope = scope_.parent;
         // free variable registers
         var vars = scope_.varRegisters;
@@ -261,7 +266,12 @@ function CatspeakCompiler(lexer, ir) constructor {
         for (var i = 0; i < varCount; i += 1) {
             ir.discardRegister(vars[i]);
         }
-        return new CatspeakReadOnlyAccessor(result);
+        if (scope_.inherited) {
+            var result = scope_.result ?? ir.emitConstant(undefined, pos);
+            return new CatspeakReadOnlyAccessor(result);
+        } else {
+            return ir.emitUnreachable(); // shouldn't ever use this value
+        }
     };
 
     /// Pushes the new accessor for the `it` keyword onto the stack.
@@ -270,17 +280,23 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The register or accessor representing the left-hand-side of an
     ///   assignment expression.
     static pushIt = function(reg) {
-        ds_stack_push(itStack, new CatspeakReadOnlyAccessor(reg));
+        ds_stack_push(itStack, {
+            ir : ir,
+            it : new CatspeakReadOnlyAccessor(reg),
+        });
     };
 
     /// Returns the accessor for the `it` keyword.
     ///
     /// @return {Any}
     static topIt = function() {
-        if (ds_stack_empty(itStack)) {
-            throw new CatspeakError(pos, "`it` keyword invalid in this case");
+        if (!ds_stack_empty(itStack)) {
+            var top = ds_stack_top(itStack);
+            if (top.ir == ir) {
+                return top.it;
+            }
         }
-        return ds_stack_top(itStack);
+        throw new CatspeakError(pos, "`it` keyword invalid in this case");
     };
 
     /// Pops the top accessor the `it` keyword represents.
@@ -299,6 +315,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @param {Struct}
     static pushLoop = function(breakBlock, continueBlock) {
         var context = {
+            ir : ir,
             breakBlock : breakBlock,
             continueBlock : continueBlock,
         };
@@ -310,11 +327,14 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///
     /// @return {Struct}
     static topLoop = function() {
-        if (ds_stack_empty(loopStack)) {
-            throw new CatspeakError(pos,
-                    "`break` or `continue` invalid in this case");
+        if (!ds_stack_empty(loopStack)) {
+            var top = ds_stack_top(loopStack);
+            if (top.ir == ir) {
+                return ir;
+            }
         }
-        return ds_stack_top(loopStack);
+        throw new CatspeakError(pos,
+                    "`break` or `continue` invalid in this case");
     };
 
     /// Pops the top loop.
@@ -357,6 +377,11 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateError = function() {
         throw new CatspeakError(pos, "invalid state");
     }
+    
+    /// @ignore
+    static __stateCheckAllParsed = function() {
+        expects(CatspeakToken.EOF, "expected end of file");
+    }
 
     /// @ignore
     static __stateInit = function() {
@@ -376,7 +401,8 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateProgram = function() {
-        if (matches(CatspeakToken.EOF)) {
+        if (matches(CatspeakToken.EOF)
+                || matches(CatspeakToken.BRACE_RIGHT)) {
             return;
         }
         pushState(__stateProgram);
@@ -444,7 +470,16 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.WHILE)) {
             pushState(__stateExprWhileBegin);
         } else if (consume(CatspeakToken.FUN)) {
-            // TODO
+            expects(CatspeakToken.BRACE_LEFT,
+                    "expected `{` in function definition");
+            var name = "anon_" + string(pos.line) + "_" + string(pos.column);
+            var func = ir.emitFunction(name);
+            pushResult(ir.emitConstant(func));
+            ds_stack_push(irStack, ir);
+            ir = func;
+            pushBlock(false);
+            pushState(__stateExprFunEnd);
+            pushState(__stateInit);
         } else {
             pushState(__stateExprAssignBegin);
         }
@@ -562,6 +597,14 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// @ignore
+    static __stateExprFunEnd = function() {
+        expects(CatspeakToken.BRACE_RIGHT,
+                "expected `}` at end of function definition");
+        popBlock();
+        ir = ds_stack_pop(irStack);
+    };
+
+    /// @ignore
     static __stateExprAssignBegin = function() {
         pushState(__stateExprAssign);
         pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
@@ -652,6 +695,11 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprCallBegin = function() {
         if (satisfies(__tokenIsExpr)) {
             var parens = consume(CatspeakToken.PAREN_LEFT);
+            if (parens && consume(CatspeakToken.PAREN_RIGHT)) {
+                var callee = popResult();
+                pushResult(ir.emitCall(callee, []));
+                return;
+            }
             pushResult(parens);
             pushResult([]);
             pushState(__stateExprCallEnd);
@@ -877,11 +925,15 @@ function CatspeakCompiler(lexer, ir) constructor {
 ///
 /// @param {Struct.CatspeakLocalScope} parent
 ///   The parent scope to inherit.
-function CatspeakLocalScope(parent) constructor {
+///
+/// @param {Bool} inherit
+///   The whether to actually inherit the parent scope.
+function CatspeakLocalScope(parent, inherit) constructor {
     self.result = undefined;
     self.vars = { };
     self.varRegisters = [];
     self.parent = parent;
+    self.inherited = inherit;
 }
 
 /// An accessor for array and object access expressions.

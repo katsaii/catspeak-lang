@@ -5,6 +5,7 @@
 /// Represents the executable Catspeak VM code. Also exposes methods for
 /// constructing custom IR manually.
 function CatspeakFunction() constructor {
+    self.name = "main";
     self.blocks = [];
     self.registers = []; // stores debug info about registers
     self.permanentRegisters = [];
@@ -18,6 +19,7 @@ function CatspeakFunction() constructor {
     self.permanentConstantNaN = undefined;
     self.initialBlock = undefined;
     self.currentBlock = self.emitBlock(new CatspeakBlock("entry"));
+    self.subFunctions = [];
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -34,6 +36,19 @@ function CatspeakFunction() constructor {
         block.idx = idx;
         currentBlock = block;
         return block;
+    };
+
+    /// Creates a new sub-function and returns its reference.
+    ///
+    /// @param {String} [name]
+    ///   The name of the sub-function.
+    ///
+    /// @return {Struct.CatspeakFunction}
+    static emitFunction = function(name) {
+        var func = new CatspeakFunction();
+        func.name = name;
+        array_push(subFunctions, func);
+        return func;
     };
 
     /// Allocates space for a new Catspeak register. This just returns the
@@ -578,15 +593,22 @@ function CatspeakFunction() constructor {
     /// Debug display for Catspeak functions, attempts to resemble the GML
     /// function `toString` behaviour.
     static toString = function() {
-        return "function catspeak_" + instanceof(self);
+        var msg = "catspeak function";
+        if (name != undefined) {
+            msg += " " + string(name);
+        }
+        return msg;
     };
 
-    /// Returns the disassembly for this IR function. Does not handle
-    /// sub-function definitions, sorry!
+    /// Returns the disassembly for this IR function.
     static disassembly = function() {
         var msg = "";
         // emit function body
-        msg += "fun () {"
+        msg += "fun ";
+        if (name != undefined) {
+            msg += string(name);
+        }
+        msg += "() {";
         var blockCount = array_length(blocks);
         for (var i = 0; i < blockCount; i += 1) {
             // emit blocks
@@ -648,6 +670,11 @@ function CatspeakFunction() constructor {
             }
         }
         msg += "\n}";
+        // emit sub-functions
+        var subFunctionCount = array_length(subFunctions);
+        for (var i = 0; i < subFunctionCount; i += 1) {
+            msg += "\n\n" + subFunctions[i].disassembly();
+        }
         return msg;
     };
 
@@ -705,7 +732,7 @@ function CatspeakFunction() constructor {
             return "\"" + msg + "\"";
         } else if (is_struct(value)) {
             var inst = instanceof(value);
-            if (inst == "function") {
+            if (inst == "function" || inst == "CatspeakFunction") {
                 inst = undefined;
             }
             inst ??= string(value);
