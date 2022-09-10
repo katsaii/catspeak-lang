@@ -16,8 +16,8 @@ function CatspeakFunction() constructor {
     // the NaN lookup needs to be handled separately because they are not
     // comparable
     self.permanentConstantNaN = undefined;
-    self.initialBlock = self.emitBlock(new CatspeakBlock());
-    self.currentBlock = self.emitBlock(new CatspeakBlock());
+    self.initialBlock = undefined;
+    self.currentBlock = self.emitBlock(new CatspeakBlock("entry"));
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -27,7 +27,7 @@ function CatspeakFunction() constructor {
     /// @return {Struct.CatspeakBlock}
     static emitBlock = function(block) {
         var idx = array_length(blocks);
-        if (idx > 0) {
+        if (idx > 0 && !blocks[idx - 1].terminated) {
             emitJump(block);
         }
         array_push(blocks, block);
@@ -220,6 +220,7 @@ function CatspeakFunction() constructor {
         var reg_ = emitGet(reg, pos);
         var inst = emitCode(CatspeakIntcode.RET, undefined, reg_);
         __registerMark(inst, 2);
+        currentBlock.terminated = true;
         return emitUnreachable();
     };
 
@@ -288,6 +289,7 @@ function CatspeakFunction() constructor {
     ///   The block to jump to.
     static emitJump = function(block) {
         emitCode(CatspeakIntcode.JMP, undefined, block);
+        currentBlock.terminated = true;
     };
 
     /// Generates the code to jump to a new block of code if a condition
@@ -402,7 +404,15 @@ function CatspeakFunction() constructor {
     /// @return {Array<Any>}
     static emitCodeHoisted = function() {
         var inst = [];
-        var code = initialBlock.code;
+        var initialBlock_ = initialBlock;
+        if (initialBlock_ == undefined) {
+            initialBlock_ = new CatspeakBlock("init");
+            initialBlock = initialBlock_;
+            array_push(initialBlock_.code,
+                    [CatspeakIntcode.JMP, undefined, blocks[0]]);
+            array_insert(blocks, 0, initialBlock_);
+        }
+        var code = initialBlock_.code;
         array_insert(code, array_length(code) - 1, inst);
         for (var i = 0; i < argument_count; i += 1) {
             array_push(inst, argument[i]);
@@ -484,7 +494,11 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Array<Any>}
     static lastCodeHoisted = function() {
-        var code = initialBlock.code;
+        var initialBlock_ = initialBlock;
+        if (initialBlock_ == undefined) {
+            return undefined;
+        }
+        var code = initialBlock_.code;
         var n = array_length(code) - 1;
         if (n == 0) {
             return undefined;
@@ -670,8 +684,12 @@ function CatspeakFunction() constructor {
 
     /// @ignore
     static __blockName = function(blk) {
-        var idx = blk.idx;
-        return idx == 0 ? "entry" : "blk" + string(idx);
+        var msg = "blk" + string(blk.idx);
+        var name = blk.name;
+        if (name != undefined) {
+            msg += "[" + __valueName(name) + "]";
+        }
+        return msg;
     };
 
     /// @ignore
@@ -698,9 +716,14 @@ function CatspeakFunction() constructor {
 }
 
 /// Represents a block of executable code.
-function CatspeakBlock() constructor {
+///
+/// @param {Any} [name]
+///   The name to give this block, leave blank for no name.
+function CatspeakBlock(name) constructor {
     self.code = [];
+    self.name = name;
     self.idx = -1;
+    self.terminated = false;
 }
 
 /// Represents a special assignment target which generates different code
