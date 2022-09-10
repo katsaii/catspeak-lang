@@ -401,10 +401,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.DO)) {
             pushState(__stateExprBlockBegin);
         } else if (consume(CatspeakToken.IF)) {
-            // TODO
             pushState(__stateExprIfBegin);
-            pushState(__stateExprBlockBegin);
-            pushState(__stateExprGroupingBegin);
         } else if (consume(CatspeakToken.WHILE)) {
             // TODO
         } else if (consume(CatspeakToken.FOR)) {
@@ -453,9 +450,37 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprIfBegin = function() {
+        pushResult({
+            reg : undefined,
+            ifEnd : new CatspeakBlock("if end"),
+            ifElse : new CatspeakBlock("if else"),
+        });
+        pushState(__stateExprIfThen);
+        pushState(__stateExprGroupingBegin);
+    };
+
+    /// @ignore
+    static __stateExprIfThen = function() {
+        var condition = popResult();
+        ir.emitJumpFalse(topResult().ifElse, condition);
+        pushState(__stateExprIfElse);
+        pushState(__stateExprBlockBegin);
+    };
+
+    /// @ignore
+    static __stateExprIfElse = function() {
+        var ifThenValue = popResult();
+        var ifContext = topResult();
+        ifContext.reg = ir.emitClone(ifThenValue, pos);
+        ir.emitJump(ifContext.ifEnd);
+        ir.emitBlock(ifContext.ifElse);
         pushState(__stateExprIfEnd);
         if (consume(CatspeakToken.ELSE)) {
-            pushState(__stateExprBlockBegin);
+            if (consume(CatspeakToken.IF)) {
+                pushState(__stateExprIfBegin);
+            } else {
+                pushState(__stateExprBlockBegin);
+            }
         } else {
             pushResult(ir.emitConstant(undefined));
         }
@@ -463,10 +488,11 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprIfEnd = function() {
-        var ifElse = popResult();
-        var ifThen = popResult();
-        var condition = popResult();
-        throw new CatspeakError("unimplemented");
+        var ifElseValue = popResult();
+        var ifContext = popResult();
+        ir.emitMove(ifElseValue, ifContext.reg);
+        ir.emitBlock(ifContext.ifEnd);
+        pushResult(new CatspeakTempRegisterAccessor(ifContext.reg, ir));
     };
 
     /// @ignore

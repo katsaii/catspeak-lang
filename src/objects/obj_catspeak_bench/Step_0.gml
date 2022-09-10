@@ -2,7 +2,7 @@
 //buffer_seek(buff, buffer_seek_start, 0);
 var t = get_timer();
 runs = 1;
-repeat (10000) {
+repeat (1000) {
     /*buffer_seek(buff, buffer_seek_start, 0);
     var lex = new CatspeakLexer(buff);
     var comp_ = new CatspeakCompiler(lex);
@@ -16,6 +16,7 @@ repeat (10000) {
         vm.runProgram(10);
     }
     runs += 1;
+    //show_message(vm.returnValue)
 }
 var dt1 = (get_timer() - t) / 1000000;
 /*
