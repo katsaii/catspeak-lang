@@ -240,8 +240,19 @@ function CatspeakFunction() constructor {
             // the registers are already equal
             return;
         }
-        var inst = emitCode(CatspeakIntcode.MOV, dest_, source_);
-        __registerMark(inst, 1, 2);
+        var inst = lastCode();
+        if (inst != undefined
+                && inst[0] == CatspeakIntcode.MOV
+                && inst[3] + inst[2] == source_
+                && inst[1] + inst[2] == dest_) {
+            // if the last code was a MOV, and the two registers are
+            // adjacent, use a single instruction
+            inst[@ 2] += 1;
+        } else {
+            var newInst = emitCode(CatspeakIntcode.MOV, dest_, 1, source_);
+            __registerMark(newInst, 1);
+            __registerMark(newInst, 3);
+        }
     };
 
     /// Generates the code to clone a value into a manually managed register.
@@ -589,7 +600,8 @@ function CatspeakFunction() constructor {
                     msg += " " + __registerName(inst[3]);
                     break;
                 case CatspeakIntcode.MOV:
-                    msg += " " + __registerName(inst[2]);
+                    msg += " " + __valueName(inst[2]);
+                    msg += " " + __registerName(inst[3]);
                     break;
                 case CatspeakIntcode.LDC:
                     msg += " " + __valueName(inst[2]);

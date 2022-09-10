@@ -2,9 +2,10 @@ show_debug_overlay(true);
 
 
 buff = catspeak_create_buffer_from_string(@'
-    { a : "cool", b : true, c : null, d : @"hi\
-    \
-    wtf" }
+    let a = 1;
+    let b = 2;
+    let c = 3;
+    [a, b, c]
 ');
 
 var lex = new CatspeakLexer(buff);

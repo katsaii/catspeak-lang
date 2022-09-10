@@ -161,7 +161,7 @@ function CatspeakVM(prelude) constructor {
                 pc += 1;
                 break;
             case CatspeakIntcode.MOV:
-                r[@ inst[1]] = r[inst[2]];
+                array_copy(r, inst[1], r, inst[3], inst[2]);
                 pc += 1;
                 break;
             case CatspeakIntcode.ARG:
