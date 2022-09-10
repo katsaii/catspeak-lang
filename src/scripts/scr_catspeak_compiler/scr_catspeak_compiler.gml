@@ -23,6 +23,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.stateStack = catspeak_alloc_ds_stack(self);
     self.resultStack = catspeak_alloc_ds_stack(self);
     self.itStack = catspeak_alloc_ds_stack(self);
+    self.loopStack = catspeak_alloc_ds_stack(self);
     ds_stack_push(self.stateStack, __stateInit);
 
     /// Advances the parser and returns the current token.
@@ -273,6 +274,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     };
 
     /// Returns the accessor for the `it` keyword.
+    ///
+    /// @return {Any}
     static topIt = function() {
         if (ds_stack_empty(itStack)) {
             throw new CatspeakError(pos, "`it` keyword invalid in this case");
@@ -283,6 +286,40 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// Pops the top accessor the `it` keyword represents.
     static popIt = function() {
         ds_stack_pop(itStack);
+    };
+
+    /// Pushes the loop onto the stack.
+    ///
+    /// @param {Struct.CatspeakBlock} breakBlock
+    ///   The block to jump to if `break` is used.
+    ///
+    /// @param {Struct.CatspeakBlock} continueBlock
+    ///   The block to jump to if `continue` is used.
+    ///
+    /// @param {Struct}
+    static pushLoop = function(breakBlock, continueBlock) {
+        var context = {
+            breakBlock : breakBlock,
+            continueBlock : continueBlock,
+        };
+        ds_stack_push(loopStack, context);
+        return context;
+    };
+
+    /// Returns the data for the current loop.
+    ///
+    /// @return {Struct}
+    static topLoop = function() {
+        if (ds_stack_empty(loopStack)) {
+            throw new CatspeakError(pos,
+                    "`break` or `continue` invalid in this case");
+        }
+        return ds_stack_top(loopStack);
+    };
+
+    /// Pops the top loop.
+    static popLoop = function() {
+        ds_stack_pop(loopStack);
     };
 
     /// Returns whether the compiler is in progress.
@@ -395,9 +432,11 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (consume(CatspeakToken.RETURN)) {
             pushState(__stateExprReturnBegin);
         } else if (consume(CatspeakToken.CONTINUE)) {
-            // TODO
+            ir.emitJump(topLoop().continueBlock);
+            pushResult(ir.emitUnreachable());
         } else if (consume(CatspeakToken.BREAK)) {
-            // TODO
+            ir.emitJump(topLoop().breakBlock);
+            pushResult(ir.emitUnreachable());
         } else if (consume(CatspeakToken.DO)) {
             pushState(__stateExprBlockBegin);
         } else if (consume(CatspeakToken.IF)) {
@@ -495,12 +534,10 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprWhileBegin = function() {
-        pushResult({
-            whileBegin : new CatspeakBlock("while begin"),
-            whileEnd : new CatspeakBlock("while end"),
-        });
-        var whileContext = topResult();
-        ir.emitBlock(whileContext.whileBegin);
+        var whileContext = pushLoop(
+                new CatspeakBlock("while end"),
+                new CatspeakBlock("while begin"));
+        ir.emitBlock(whileContext.continueBlock);
         pushState(__stateExprWhile);
         pushState(__stateExprGroupingBegin);
     };
@@ -508,19 +545,20 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprWhile = function() {
         var condition = popResult();
-        var whileContext = topResult();
-        ir.emitJumpFalse(whileContext.whileEnd, condition);
+        var whileContext = topLoop();
+        ir.emitJumpFalse(whileContext.breakBlock, condition);
         pushState(__stateExprWhileEnd);
         pushState(__stateExprBlockBegin);
     };
 
     /// @ignore
     static __stateExprWhileEnd = function() {
-        var result = popResult();
-        var whileContext = popResult();
-        ir.emitJump(whileContext.whileBegin);
-        ir.emitBlock(whileContext.whileEnd);
-        pushResult(result);
+        ir.emitGet(popResult()); // discards the result of the loop body
+        var whileContext = topLoop();
+        popLoop();
+        ir.emitJump(whileContext.continueBlock);
+        ir.emitBlock(whileContext.breakBlock);
+        pushResult(ir.emitConstant(undefined));
     };
 
     /// @ignore

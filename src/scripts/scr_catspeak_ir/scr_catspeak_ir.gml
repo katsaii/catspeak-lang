@@ -27,7 +27,7 @@ function CatspeakFunction() constructor {
     /// @return {Struct.CatspeakBlock}
     static emitBlock = function(block) {
         var idx = array_length(blocks);
-        if (idx > 0 && !blocks[idx - 1].terminated) {
+        if (idx > 0) {
             emitJump(block);
         }
         array_push(blocks, block);
