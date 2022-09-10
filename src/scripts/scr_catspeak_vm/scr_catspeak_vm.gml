@@ -157,7 +157,7 @@ function CatspeakVM(prelude) constructor {
                 }
                 break;
             case CatspeakIntcode.IMPORT:
-                //r[@ inst[1]] = prelude[$ inst[2]];
+                r[@ inst[1]] = prelude[$ inst[2]];
                 pc += 1;
                 break;
             case CatspeakIntcode.MOV:
