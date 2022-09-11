@@ -485,7 +485,7 @@ enum __CatspeakToken {
     FOR,
     FUN,
     EXTERN,
-    ARG,
+    AGET,
     PRINT,
     RUN,
     BREAK,
@@ -531,7 +531,7 @@ function __catspeak_legacy_token_render(_kind) {
     case __CatspeakToken.FOR: return "FOR";
     case __CatspeakToken.FUN: return "FUN";
     case __CatspeakToken.EXTERN: return "EXTERN";
-    case __CatspeakToken.ARG: return "ARG";
+    case __CatspeakToken.AGET: return "AGET";
     case __CatspeakToken.PRINT: return "PRINT";
     case __CatspeakToken.RUN: return "RUN";
     case __CatspeakToken.BREAK: return "BREAK";
@@ -891,7 +891,7 @@ function __CatspeakScanner(_buff) constructor {
                     keyword = __CatspeakToken.EXTERN;
                     break;
                 case "arg":
-                    keyword = __CatspeakToken.ARG;
+                    keyword = __CatspeakToken.AGET;
                     break;
                 case "print":
                     keyword = __CatspeakToken.PRINT;
@@ -1113,7 +1113,7 @@ function __catspeak_legacy_compiler_state_render(_state) {
     case __CatspeakCompilerState.RUN: return "RUN";
     case __CatspeakCompilerState.CALL_BEGIN: return "CALL_BEGIN";
     case __CatspeakCompilerState.CALL_END: return "CALL_END";
-    case __CatspeakCompilerState.ARG: return "ARG";
+    case __CatspeakCompilerState.ARG: return "AGET";
     case __CatspeakCompilerState.SUBSCRIPT_BEGIN: return "SUBSCRIPT_BEGIN";
     case __CatspeakCompilerState.SUBSCRIPT_END: return "SUBSCRIPT_END";
     case __CatspeakCompilerState.TERMINAL: return "TERMINAL";
@@ -1221,7 +1221,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
                 || matches(__CatspeakToken.NUMBER_INT)
                 || matches(__CatspeakToken.NUMBER_HEX)
                 || matches(__CatspeakToken.NUMBER_BIN)
-                || matches(__CatspeakToken.ARG);
+                || matches(__CatspeakToken.AGET);
     }
     /// @desc Returns true if the current token matches any kind of operator.
     static matchesOperator = function() {
@@ -1548,7 +1548,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             break;
         case __CatspeakCompilerState.CALL_END:
             var arg_count = popStorage();
-            out.addCode(pos, __CatspeakOpCode.CALL, arg_count);
+            out.addCode(pos, __CatspeakOpCode.CALLSPAN, arg_count);
             break;
         case __CatspeakCompilerState.ARG:
             pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
@@ -1590,7 +1590,7 @@ function __CatspeakCompiler(_lexer, _out) constructor {
             pushState(__CatspeakCompilerState.SUBSCRIPT_BEGIN);
             break;
         case __CatspeakCompilerState.TERMINAL:
-            if (consume(__CatspeakToken.ARG)) {
+            if (consume(__CatspeakToken.AGET)) {
                 out.addCode(pos, __CatspeakOpCode.ARG_GET);
             } else if (consume(__CatspeakToken.IDENTIFIER)) {
                 out.addCode(pos, __CatspeakOpCode.VAR_GET, lexeme);
@@ -1693,7 +1693,7 @@ enum __CatspeakOpCode {
     PRINT,
     RETURN,
     RETURN_IMPLICIT,
-    CALL,
+    CALLSPAN,
     JUMP,
     JUMP_FALSE
 }
@@ -1717,7 +1717,7 @@ function __catspeak_legacy_code_render(_kind) {
     case __CatspeakOpCode.PRINT: return "PRINT";
     case __CatspeakOpCode.RETURN: return "RETURN";
     case __CatspeakOpCode.RETURN_IMPLICIT: return "RETURN_IMPLICIT";
-    case __CatspeakOpCode.CALL: return "CALL";
+    case __CatspeakOpCode.CALLSPAN: return "CALLSPAN";
     case __CatspeakOpCode.JUMP: return "JUMP";
     case __CatspeakOpCode.JUMP_FALSE: return "JUMP_FALSE";
     default: return "<unknown>";
@@ -2167,7 +2167,7 @@ function __CatspeakVM(_chunk, _max_iterations, _global_access, _instance_access,
                 return;
             }
             break;
-        case __CatspeakOpCode.CALL:
+        case __CatspeakOpCode.CALLSPAN:
             var arg_count = inst.param;
             var callsite, args;
             if (arg_count < 0) {

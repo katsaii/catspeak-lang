@@ -121,11 +121,11 @@ function CatspeakVM(prelude) constructor {
                 array_copy(r, inst[1], inst, 3, inst[2]);
                 pc += 1;
                 break;
+            case CatspeakIntcode.CALLSPAN:
             case CatspeakIntcode.CALL:
-            case CatspeakIntcode.CALL_SIMPLE:
                 var callee = r[inst[2]];
                 var argC, argO, argB;
-                if (code == CatspeakIntcode.CALL_SIMPLE) {
+                if (code == CatspeakIntcode.CALL) {
                     argC = inst[4];
                     argO = inst[3];
                     argB = r;
@@ -166,7 +166,7 @@ function CatspeakVM(prelude) constructor {
                 block = inst[2].code;
                 pc = 0;
                 break;
-            case CatspeakIntcode.JMP_FALSE:
+            case CatspeakIntcode.JMPF:
                 if (r[inst[3]]) {
                     pc += 1;
                 } else {
@@ -174,7 +174,7 @@ function CatspeakVM(prelude) constructor {
                     pc = 0;
                 }
                 break;
-            case CatspeakIntcode.IMPORT:
+            case CatspeakIntcode.GGET:
                 r[@ inst[1]] = prelude[$ inst[2]];
                 pc += 1;
                 break;
@@ -182,7 +182,7 @@ function CatspeakVM(prelude) constructor {
                 array_copy(r, inst[1], r, inst[3], inst[2]);
                 pc += 1;
                 break;
-            case CatspeakIntcode.ARG:
+            case CatspeakIntcode.AGET:
                 r[@ inst[1]] = callFrame.args;
                 pc += 1;
                 break;
