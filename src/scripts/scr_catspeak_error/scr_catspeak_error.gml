@@ -34,8 +34,8 @@ function CatspeakLocation(line, column) constructor {
         lexeme = source.lexeme;
     };
 
-    /// Renders this Catspeak location. If both a line number and column
-    /// number exist, then the format will be `(line N, column M)`. Otherwise,
+    /// Renders this Catspeak location. If a line number and column number
+    /// both exist, then the format will be `(line N, column M)`. Otherwise,
     /// if only a line number exists, the format will be `(line N)`.
     ///
     /// If this source location also includes a debug text, it is also included

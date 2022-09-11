@@ -82,7 +82,7 @@ function CatspeakFunction() constructor {
     /// allocated immediately, they hold a temporary ID until the rest of the
     /// code is generated. Once this is complete, these special registers are
     /// allocated at the end of the register list. This is done in order to
-    /// avoid messing up CALL instruction optimisations, where arguments are
+    /// avoid messing up CALLSPAN instruction optimisations, where arguments are
     /// expected to be adjacent.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
@@ -215,7 +215,7 @@ function CatspeakFunction() constructor {
         }
         // hoist the definition
         var result = emitPermanentRegister(pos);
-        var inst = emitCodeHoisted(CatspeakIntcode.IMPORT, result, name);
+        var inst = emitCodeHoisted(CatspeakIntcode.GGET, result, name);
         __registerMark(inst, 1);
         runtimeConstantTable[$ name] = result;
         return new CatspeakReadOnlyAccessor(result);
@@ -317,7 +317,7 @@ function CatspeakFunction() constructor {
     ///   The register or accessor containing the condition code to check.
     static emitJumpFalse = function(block, condition) {
         var condition_ = emitGet(condition);
-        var inst = emitCode(CatspeakIntcode.JMP_FALSE, undefined, block, condition_);
+        var inst = emitCode(CatspeakIntcode.JMPF, undefined, block, condition_);
         __registerMark(inst, 3);
     };
 
@@ -338,7 +338,7 @@ function CatspeakFunction() constructor {
     static emitCall = function(callee, args, pos) {
         var callee_ = emitGet(callee, pos);
         var argCount = array_length(args);
-        var inst = [CatspeakIntcode.CALL, undefined, callee_, 0];
+        var inst = [CatspeakIntcode.CALLSPAN, undefined, callee_, 0];
         __registerMark(inst, 1, 2);
         // add arguments using run-length encoding, in the best case all
         // arguments can be simplified to a single span
@@ -361,7 +361,7 @@ function CatspeakFunction() constructor {
             }
             if (simpleCall) {
                 array_pop(inst);
-                inst[@ 0] = CatspeakIntcode.CALL_SIMPLE;
+                inst[@ 0] = CatspeakIntcode.CALL;
             } else {
                 inst[@ 3] += 1;
             }
@@ -631,7 +631,7 @@ function CatspeakFunction() constructor {
                 case CatspeakIntcode.JMP:
                     msg += " " + __blockName(inst[2]);
                     break;
-                case CatspeakIntcode.JMP_FALSE:
+                case CatspeakIntcode.JMPF:
                     msg += " " + __blockName(inst[2]);
                     msg += " " + __registerName(inst[3]);
                     break;
@@ -645,12 +645,12 @@ function CatspeakFunction() constructor {
                         msg += " " + __valueName(inst[k]);
                     }
                     break;
-                case CatspeakIntcode.IMPORT:
+                case CatspeakIntcode.GGET:
                     msg += " " + __valueName(inst[2]);
                     break;
-                case CatspeakIntcode.ARG:
+                case CatspeakIntcode.AGET:
                     break;
-                case CatspeakIntcode.CALL:
+                case CatspeakIntcode.CALLSPAN:
                     msg += " " + __registerName(inst[2]);
                     msg += " " + __valueName(inst[3]);
                     for (var k = 4; k < instCount; k += 2) {
@@ -658,7 +658,7 @@ function CatspeakFunction() constructor {
                         msg += " " + __valueName(inst[k + 1]);
                     }
                     break;
-                case CatspeakIntcode.CALL_SIMPLE:
+                case CatspeakIntcode.CALL:
                     msg += " " + __registerName(inst[2]);
                     msg += " " + __registerName(inst[3]);
                     msg += " " + __valueName(inst[4]);
