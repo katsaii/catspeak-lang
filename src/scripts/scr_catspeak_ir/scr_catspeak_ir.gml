@@ -25,6 +25,7 @@ function CatspeakFunction(name, parent) constructor {
     self.permanentConstantNaN = undefined;
     self.initialBlock = undefined;
     self.currentBlock = self.emitBlock(new CatspeakBlock("entry"));
+    self.argCount = 0;
     self.subFunctions = [];
     if (parent == undefined) {
         self.globalRegisters = []; // stores the values of global variables
@@ -226,6 +227,7 @@ function CatspeakFunction(name, parent) constructor {
     ///
     /// @return {Any}
     static emitArgs = function(reg, n) {
+        argCount = n;
         emitCode(CatspeakIntcode.LDA, reg, n);
     };
 
