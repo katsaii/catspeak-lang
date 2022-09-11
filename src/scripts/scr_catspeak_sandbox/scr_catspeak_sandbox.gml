@@ -18,6 +18,7 @@ repeat (10) {
     //show_message(catspeak_bitstack_pop(stack));
 }
 
+/*
 buff = catspeak_create_buffer_from_string(@'
     let a = 1
 ');
@@ -36,3 +37,4 @@ vm.pushCallFrame(self, comp.ir);
 //while (vm.inProgress()) {
 //    vm.runProgram(10);
 //}
+*/

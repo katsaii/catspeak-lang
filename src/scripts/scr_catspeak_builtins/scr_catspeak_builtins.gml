@@ -11,7 +11,7 @@
 /// @return {Any}
 function catspeak_string_to_builtin(name) {
     gml_pragma("forceinline");
-    return global.__catspeakDatabasePrelude[$ str];
+    return global.__catspeakDatabasePrelude[$ name];
 }
 
 /// Returns whether this string represents a built-in Catspeak constant.

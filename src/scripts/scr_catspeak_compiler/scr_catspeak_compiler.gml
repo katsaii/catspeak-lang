@@ -446,14 +446,32 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.WHILE)) {
             pushState(__stateExprWhileBegin);
         } else if (consume(CatspeakToken.FUN)) {
-            expects(CatspeakToken.BRACE_LEFT,
-                    "expected `{` in function definition");
             var name = "anon_" + string(pos.line) + "_" + string(pos.column);
             var func = ir.emitFunction(name);
             pushResult(ir.emitConstant(func));
             ds_stack_push(irStack, ir);
             ir = func;
             pushBlock(false);
+            // load argument registers
+            var parens = consume(CatspeakToken.PAREN_LEFT);
+            if (consume(CatspeakToken.IDENT)) {
+                var firstArg = ir.emitRegister(pos);
+                var argCount = 1;
+                scope.vars[$ pos.lexeme] = firstArg;
+                while (consume(CatspeakToken.COMMA)) {
+                    expects(CatspeakToken.IDENT,
+                            "expected identifier after `,` in arguments");
+                    scope.vars[$ pos.lexeme] = ir.emitRegister(pos);
+                    argCount += 1;
+                }
+                ir.emitArgs(firstArg, argCount);
+            }
+            if (parens) {
+                expects(CatspeakToken.PAREN_RIGHT,
+                        "expected `)` after arguments");
+            }
+            expects(CatspeakToken.BRACE_LEFT,
+                    "expected `{` in function definition");
             pushState(__stateExprFunEnd);
             pushState(__stateInit);
         } else {

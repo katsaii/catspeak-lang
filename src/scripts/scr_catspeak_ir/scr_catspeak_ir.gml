@@ -13,7 +13,6 @@
 ///   variables.
 function CatspeakFunction(name, parent) constructor {
     self.name = name ?? "main";
-    self.parent = parent;
     self.blocks = [];
     self.registers = []; // stores debug info about registers
     self.permanentRegisters = [];
@@ -212,6 +211,24 @@ function CatspeakFunction(name, parent) constructor {
         return new CatspeakReadOnlyAccessor(result);
     };
 
+    /// Generates the code assign the arguments array into a sequence of
+    /// registers.
+    ///
+    /// @param {Any} reg
+    ///   The register or accessor containing the register to write to.
+    ///   NOTE: this will also write values to following ``n`-many registers,
+    ///   depending on how many arguments you decide to load statically.
+    ///   Therefore, you should make sure to pre-allocate the registers
+    ///   for arguments before you make this call.
+    ///
+    /// @param {Any} n
+    ///   The number of arguments to load.
+    ///
+    /// @return {Any}
+    static emitArgs = function(reg, n) {
+        emitCode(CatspeakIntcode.LDA, reg, n);
+    };
+
     /// Generates the code to read a global variable.
     ///
     /// @param {String} name
@@ -244,8 +261,8 @@ function CatspeakFunction(name, parent) constructor {
     static emitGlobalSet = function(name, reg, pos) {
         var gReg = __getGlobalRegister(name);
         var result = emitClone(reg, pos);
-        var inst = emitCode(CatspeakIntcode.GSET, undefined, result, gReg);
-        __registerMark(inst, 1);
+        var inst = emitCode(CatspeakIntcode.GSET, undefined, gReg, result);
+        __registerMark(inst, 3);
         return new CatspeakTempRegisterAccessor(result, self);
     };
 
@@ -673,15 +690,15 @@ function CatspeakFunction(name, parent) constructor {
                         msg += " " + __valueName(inst[k]);
                     }
                     break;
+                case CatspeakIntcode.LDA:
+                    msg += " " + __valueName(inst[2]);
+                    break;
                 case CatspeakIntcode.GGET:
                     msg += " " + __registerNameGlobal(inst[2]);
                     break;
                 case CatspeakIntcode.GSET:
                     msg += " " + __registerNameGlobal(inst[2]);
                     msg += " " + __registerName(inst[3]);
-                    break;
-                case CatspeakIntcode.AGET:
-                    msg += " " + __valueName(inst[2]);
                     break;
                 case CatspeakIntcode.CALLSPAN:
                     msg += " " + __registerName(inst[2]);
@@ -785,10 +802,14 @@ function CatspeakFunction(name, parent) constructor {
             return "\"" + msg + "\"";
         } else if (is_struct(value)) {
             var inst = instanceof(value);
-            if (inst == "function" || inst == "CatspeakFunction") {
-                inst = undefined;
+            if (os_browser == browser_not_a_browser) {
+                // HTML5 tends to not like using the `toString` method,
+                // so just default to the instance name
+                if (inst == "function" || inst == "CatspeakFunction") {
+                    inst = undefined;
+                }
+                inst ??= string(value);
             }
-            inst ??= string(value);
             return "(" + inst + ")";
         }
         return string(value);

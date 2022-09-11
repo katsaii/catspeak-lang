@@ -4,10 +4,6 @@
 
 /// Creates a new Catspeak virtual machine, responsible for the execution
 /// of Catspeak IR.
-///
-/// @param {Struct} [prelude]
-///   The globally available constants which are able to be accessed by
-///   Catspeak programs. Defaults to nothing.
 function CatspeakVM(prelude) constructor {
     self.returnValue = undefined;
     self.callFrames = [];
@@ -26,7 +22,13 @@ function CatspeakVM(prelude) constructor {
     ///
     /// @param {Array<Any>} [args]
     ///   The arguments to pass to this VM call.
-    static pushCallFrame = function(self_, ir, args) {
+    ///
+    /// @param {Real} [argo]
+    ///   The offset in the arguments array to start at.
+    ///
+    /// @param {Real} [argc]
+    ///   The number of arguments in the arguments array.
+    static pushCallFrame = function(self_, ir, args, argo, argc) {
         var callHead_ = callHead + 1;
         var callCapacity_ = callCapacity;
         callHead = callHead_;
@@ -43,6 +45,8 @@ function CatspeakVM(prelude) constructor {
                 // simplified initialisation
                 callFrame.self_ = self_;
                 callFrame.args = args ?? [];
+                callFrame.argo = argo ?? 0;
+                callFrame.argc = argc ?? array_length(callFrame.args);
                 callFrame.pc = 0;
                 callFrame.block = callFrame.initialBlock;
                 return;
@@ -54,6 +58,8 @@ function CatspeakVM(prelude) constructor {
         callFrame.self_ = self_;
         callFrame.ir = ir;
         callFrame.args = args ?? [];
+        callFrame.argo = argo ?? 0;
+        callFrame.argc = argc ?? array_length(callFrame.args);
         callFrame.registers = array_create(registerCount);
         callFrame.globals = ir.globalRegisters;
         callFrame.pc = 0;
@@ -80,11 +86,19 @@ function CatspeakVM(prelude) constructor {
     ///
     /// @param {Array<Any>} args
     ///   The arguments to pass to this VM call.
-    static reuseCallFrameWithArgs = function(self_, args) {
+    ///
+    /// @param {Real} [argo]
+    ///   The offset in the arguments array to start at.
+    ///
+    /// @param {Real} [argc]
+    ///   The number of arguments in the arguments array.
+    static reuseCallFrameWithArgs = function(self_, args, argo, argc) {
         reuseCallFrame();
         var callFrame = callFrames[callHead];
         callFrame.self_ = self_;
         callFrame.args = args;
+        callFrame.argo = argo ?? 0;
+        callFrame.argc = argc ?? array_length(args);
     };
 
     /// Removes the top callframe from the stack.
@@ -147,11 +161,9 @@ function CatspeakVM(prelude) constructor {
                 }
                 if (instanceof(callee) == "CatspeakFunction") {
                     // call Catspeak function
-                    var newArgs = array_create(argC);
-                    array_copy(newArgs, 0, argB, argO, argC);
                     callFrame.pc = pc;
                     callFrame.block = block;
-                    pushCallFrame(self_, callee, newArgs);
+                    pushCallFrame(self_, callee, argB, argO, argC);
                     callFrame = callFrames_[callHead];
                     pc = callFrame.pc;
                     r = callFrame.registers;
@@ -188,8 +200,22 @@ function CatspeakVM(prelude) constructor {
                 array_copy(r, inst[1], r, inst[3], inst[2]);
                 pc += 1;
                 break;
-            case CatspeakIntcode.AGET:
-                r[@ inst[1]] = callFrame.args;
+            case CatspeakIntcode.LDA:
+                var callArgs = callFrame.args;
+                var callArgo = callFrame.argo;
+                var callArgc = callFrame.argc;
+                var dest = inst[1];
+                var destArgc = inst[2];
+                if (destArgc <= callArgc) {
+                    array_copy(r, dest, callArgs, callArgo, destArgc);
+                } else {
+                    array_copy(r, dest, callArgs, callArgo, callArgc);
+                    dest += callArgc;
+                    repeat (destArgc - callArgc) {
+                        r[@ dest] = undefined;
+                        dest += 1;
+                    }
+                }
                 pc += 1;
                 break;
             case CatspeakIntcode.RET:
