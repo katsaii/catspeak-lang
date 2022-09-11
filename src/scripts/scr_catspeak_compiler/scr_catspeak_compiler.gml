@@ -524,8 +524,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     static __stateExprIfBegin = function() {
         pushResult({
             reg : undefined,
-            ifEnd : new CatspeakBlock("if end"),
-            ifElse : new CatspeakBlock("if else"),
+            ifEnd : new CatspeakBlock("if end", pos),
+            ifElse : new CatspeakBlock("if else", pos),
         });
         pushState(__stateExprIfThen);
         pushState(__stateExprGroupingBegin);
@@ -570,8 +570,8 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprWhileBegin = function() {
         var whileContext = pushLoop(
-                new CatspeakBlock("while end"),
-                new CatspeakBlock("while begin"));
+                new CatspeakBlock("while end", pos),
+                new CatspeakBlock("while begin", pos));
         ir.emitBlock(whileContext.continueBlock);
         pushState(__stateExprWhile);
         pushState(__stateExprGroupingBegin);
@@ -665,7 +665,7 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprOpBinaryEnd = function() {
-        var rhs = popResult();
+        var rhs = ir.emitCloneTemp(popResult(), pos);
         var lhs = popResult();
         var op = popResult();
         pushResult(ir.emitCall(op, [lhs, rhs]));
