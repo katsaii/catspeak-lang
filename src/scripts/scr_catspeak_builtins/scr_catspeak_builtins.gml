@@ -200,6 +200,7 @@ function __catspeak_builtin_extern(ir) {
     vm.pushCallFrame(self, ir);
     vm.popCallFrame();
     var s = {
+        duration : game_get_speed(gamespeed_microseconds) / 10,
         vm : vm,
         argc : ir.argCount,
         args : array_create(ir.argCount),
@@ -213,8 +214,13 @@ function __catspeak_builtin_extern(ir) {
                 args_[@ i] = argument[i];
             }
             vm_.reuseCallFrameWithArgs(args_, 0, argc_);
+            var timeLimit = get_timer() + duration;
             while (vm_.inProgress()) {
                 vm_.runProgram(10);
+                if (get_timer() > timeLimit) {
+                    throw new CatspeakError(undefined,
+                            "execution limit exceeded on Catspeak function");
+                }
             }
             return vm_.returnValue;
         },
