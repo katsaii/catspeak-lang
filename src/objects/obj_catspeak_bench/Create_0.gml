@@ -2,8 +2,7 @@ show_debug_overlay(true);
 
 
 buff = catspeak_create_buffer_from_string(@'
-    f = fun a, b { a ++ " " ++ b }
-    f ("hi", "owo")
+    extern fun a, b { a ++ " " ++ b }
 ');
 
 var lex = new CatspeakLexer(buff);

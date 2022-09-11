@@ -4,7 +4,7 @@
 
 /// Creates a new Catspeak virtual machine, responsible for the execution
 /// of Catspeak IR.
-function CatspeakVM(prelude) constructor {
+function CatspeakVM() constructor {
     self.returnValue = undefined;
     self.callFrames = [];
     self.callHead = -1;
@@ -43,7 +43,7 @@ function CatspeakVM(prelude) constructor {
             callFrame = callFrames[callHead_];
             if (callFrame.ir == ir) {
                 // simplified initialisation
-                callFrame.self_ = self_;
+                callFrame.self_ = self_ ?? other;
                 callFrame.args = args ?? [];
                 callFrame.argo = argo ?? 0;
                 callFrame.argc = argc ?? array_length(callFrame.args);
@@ -55,7 +55,7 @@ function CatspeakVM(prelude) constructor {
         // set up a new frame from scratch
         var initialBlock = ir.blocks[0].code;
         var registerCount = array_length(ir.registers);
-        callFrame.self_ = self_;
+        callFrame.self_ = self_ ?? other;
         callFrame.ir = ir;
         callFrame.args = args ?? [];
         callFrame.argo = argo ?? 0;
@@ -81,9 +81,6 @@ function CatspeakVM(prelude) constructor {
     /// An unsafe function similar to `reuseCallFrame`, except a new set of
     /// arguments can be passed into the frame.
     ///
-    /// @param {Struct} self_
-    ///   The "self" scope to use when calling this function.
-    ///
     /// @param {Array<Any>} args
     ///   The arguments to pass to this VM call.
     ///
@@ -92,10 +89,9 @@ function CatspeakVM(prelude) constructor {
     ///
     /// @param {Real} [argc]
     ///   The number of arguments in the arguments array.
-    static reuseCallFrameWithArgs = function(self_, args, argo, argc) {
+    static reuseCallFrameWithArgs = function(args, argo, argc) {
         reuseCallFrame();
         var callFrame = callFrames[callHead];
-        callFrame.self_ = self_;
         callFrame.args = args;
         callFrame.argo = argo ?? 0;
         callFrame.argc = argc ?? array_length(args);

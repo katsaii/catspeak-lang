@@ -193,3 +193,31 @@ function __catspeak_builtin_verify_struct(collection) {
                 "self-modification is prohibited by Catspeak");
     }
 }
+
+/// @ignore
+function __catspeak_builtin_extern(ir) {
+    var vm = new CatspeakVM();
+    vm.pushCallFrame(self, ir);
+    vm.popCallFrame();
+    var s = {
+        vm : vm,
+        argc : ir.argCount,
+        args : array_create(ir.argCount),
+        go : function() {
+            // extern functions compute everything in one go
+            // TODO add a limiter so that modders cannot freeze the game
+            var vm_ = vm;
+            var argc_ = argc;
+            var args_ = args;
+            for (var i = 0; i < argc_; i += 1) {
+                args_[@ i] = argument[i];
+            }
+            vm_.reuseCallFrameWithArgs(args_, 0, argc_);
+            while (vm_.inProgress()) {
+                vm_.runProgram(10);
+            }
+            return vm_.returnValue;
+        },
+    };
+    return s.go;
+}

@@ -86,6 +86,7 @@ function __catspeak_init_database_prelude() {
         "<", __catspeak_builtin_lt,
         "[]", __catspeak_builtin_get,
         "[]=", __catspeak_builtin_set,
+        "extern", __catspeak_builtin_extern,
         "bool", bool,
         "string", string,
         "real", real,
