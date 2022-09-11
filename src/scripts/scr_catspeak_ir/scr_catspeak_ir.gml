@@ -4,15 +4,22 @@
 
 /// Represents the executable Catspeak VM code. Also exposes methods for
 /// constructing custom IR manually.
-function CatspeakFunction() constructor {
-    self.name = "main";
+///
+/// @param {String} [name]
+///   The name to give this function, defaults to "main".
+///
+/// @param {Struct.CatspeakFunction} [parent]
+///   The function this new function was defined in. Inherits its global
+///   variables.
+function CatspeakFunction(name, parent) constructor {
+    self.name = name ?? "main";
+    self.parent = parent;
     self.blocks = [];
     self.registers = []; // stores debug info about registers
     self.permanentRegisters = [];
     // stores any previously allocated registers which are safe to reuse
     // using a priority queue offers more opportunity for optimisations
     self.discardedRegisters = catspeak_alloc_ds_priority(self);
-    self.runtimeConstantTable = { };
     self.permanentConstantTable = catspeak_alloc_ds_map(self);
     // the NaN lookup needs to be handled separately because they are not
     // comparable
@@ -20,6 +27,14 @@ function CatspeakFunction() constructor {
     self.initialBlock = undefined;
     self.currentBlock = self.emitBlock(new CatspeakBlock("entry"));
     self.subFunctions = [];
+    if (parent == undefined) {
+        self.globalRegisters = []; // stores the values of global variables
+        self.globalRegisterTable = { };
+    } else {
+        array_push(parent.subFunctions, self);
+        self.globalRegisters = parent.globalRegisters;
+        self.globalRegisterTable = parent.globalRegisterTable;
+    }
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -45,10 +60,7 @@ function CatspeakFunction() constructor {
     ///
     /// @return {Struct.CatspeakFunction}
     static emitFunction = function(name) {
-        var func = new CatspeakFunction();
-        func.name = name;
-        array_push(subFunctions, func);
-        return func;
+        return new CatspeakFunction(name, self);
     };
 
     /// Allocates space for a new Catspeak register. This just returns the
@@ -200,25 +212,41 @@ function CatspeakFunction() constructor {
         return new CatspeakReadOnlyAccessor(result);
     };
 
-    /// Generates the code to read a constant at runtime using its identifier.
+    /// Generates the code to read a global variable.
     ///
     /// @param {String} name
-    ///   The name of the constant to load.
+    ///   The name of the global to read.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
     ///   The debug info for this instruction.
     ///
     /// @return {Any}
-    static emitRuntimeConstant = function(name, pos) {
-        if (variable_struct_exists(runtimeConstantTable, name)) {
-            return runtimeConstantTable[$ name];
-        }
-        // hoist the definition
-        var result = emitPermanentRegister(pos);
-        var inst = emitCodeHoisted(CatspeakIntcode.GGET, result, name);
+    static emitGlobalGet = function(name, pos) {
+        var gReg = __getGlobalRegister(name);
+        var result = emitRegister(pos);
+        var inst = emitCode(CatspeakIntcode.GGET, result, gReg);
         __registerMark(inst, 1);
-        runtimeConstantTable[$ name] = result;
-        return new CatspeakReadOnlyAccessor(result);
+        return new CatspeakTempRegisterAccessor(result, self);
+    };
+
+    /// Generates the code to write to a global variable.
+    ///
+    /// @param {String} name
+    ///   The name of the global to write to.
+    ///
+    /// @param {Any} reg
+    ///   The register or accessor containing the value to write.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    ///
+    /// @return {Any}
+    static emitGlobalSet = function(name, reg, pos) {
+        var gReg = __getGlobalRegister(name);
+        var result = emitClone(reg, pos);
+        var inst = emitCode(CatspeakIntcode.GSET, undefined, result, gReg);
+        __registerMark(inst, 1);
+        return new CatspeakTempRegisterAccessor(result, self);
     };
 
     /// Generates the code to return a value from this function. Since
@@ -646,9 +674,14 @@ function CatspeakFunction() constructor {
                     }
                     break;
                 case CatspeakIntcode.GGET:
-                    msg += " " + __valueName(inst[2]);
+                    msg += " " + __registerNameGlobal(inst[2]);
+                    break;
+                case CatspeakIntcode.GSET:
+                    msg += " " + __registerNameGlobal(inst[2]);
+                    msg += " " + __registerName(inst[3]);
                     break;
                 case CatspeakIntcode.AGET:
+                    msg += " " + __valueName(inst[2]);
                     break;
                 case CatspeakIntcode.CALLSPAN:
                     msg += " " + __registerName(inst[2]);
@@ -692,6 +725,17 @@ function CatspeakFunction() constructor {
     };
 
     /// @ignore
+    static __getGlobalRegister = function(name) {
+        if (variable_struct_exists(globalRegisterTable, name)) {
+            return globalRegisterTable[$ name];
+        }
+        var idx = array_length(globalRegisters);
+        globalRegisters[@ idx] = undefined;
+        globalRegisterTable[$ name] = idx;
+        return idx;
+    };
+
+    /// @ignore
     static __registerName = function(reg) {
         if (isUnreachable(reg)) {
             return "!";
@@ -707,6 +751,11 @@ function CatspeakFunction() constructor {
         }
         var lexeme = pos.lexeme;
         return "r`" + (is_string(lexeme) ? lexeme : string(lexeme)) + "`";
+    };
+
+    /// @ignore
+    static __registerNameGlobal = function(reg) {
+        return "g" + string(reg);
     };
 
     /// @ignore

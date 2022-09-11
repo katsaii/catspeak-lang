@@ -14,7 +14,6 @@ function CatspeakVM(prelude) constructor {
     self.callHead = -1;
     self.callCapacity = 0;
     self.args = [];
-    self.prelude = prelude ?? { };
 
     /// Creates a new executable callframe for this IR.
     ///
@@ -56,6 +55,7 @@ function CatspeakVM(prelude) constructor {
         callFrame.ir = ir;
         callFrame.args = args ?? [];
         callFrame.registers = array_create(registerCount);
+        callFrame.globals = ir.globalRegisters;
         callFrame.pc = 0;
         callFrame.initialBlock = initialBlock;
         callFrame.block = initialBlock;
@@ -110,6 +110,7 @@ function CatspeakVM(prelude) constructor {
         var callFrame = callFrames_[callHead];
         var pc = callFrame.pc;
         var r = callFrame.registers;
+        var g = callFrame.globals;
         var block = callFrame.block;
         var self_ = callFrame.self_;
         var args_ = args;
@@ -154,6 +155,7 @@ function CatspeakVM(prelude) constructor {
                     callFrame = callFrames_[callHead];
                     pc = callFrame.pc;
                     r = callFrame.registers;
+                    g = callFrame.globals;
                     block = callFrame.block;
                 } else {
                     // call GML function
@@ -175,7 +177,11 @@ function CatspeakVM(prelude) constructor {
                 }
                 break;
             case CatspeakIntcode.GGET:
-                r[@ inst[1]] = prelude[$ inst[2]];
+                r[@ inst[1]] = g[inst[2]];
+                pc += 1;
+                break;
+            case CatspeakIntcode.GSET:
+                g[@ inst[2]] = r[inst[3]];
                 pc += 1;
                 break;
             case CatspeakIntcode.MOV:
@@ -196,6 +202,7 @@ function CatspeakVM(prelude) constructor {
                 callFrame = callFrames[callHead];
                 pc = callFrame.pc;
                 r = callFrame.registers;
+                g = callFrame.globals;
                 block = callFrame.block;
                 r[@ block[pc][1]] = returnValue;
                 pc += 1;

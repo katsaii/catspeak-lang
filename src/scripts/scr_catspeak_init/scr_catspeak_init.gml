@@ -17,6 +17,7 @@ function catspeak_force_init() {
     initialised = true;
     // call initialisers
     __catspeak_init_alloc();
+    __catspeak_init_database_prelude();
     __catspeak_init_database_token_starts_expression();
     __catspeak_init_database_token_skips_line();
     __catspeak_init_database_token_keywords();
@@ -54,6 +55,75 @@ function __catspeak_init_alloc() {
         create : ds_priority_create,
         destroy : ds_priority_destroy,
     };
+}
+
+/// @ignore
+function __catspeak_init_database_prelude() {
+    var db = { };
+    var funcs = [
+        "+", __catspeak_builtin_add,
+        "++", __catspeak_builtin_add_string,
+        "-", __catspeak_builtin_sub,
+        "*", __catspeak_builtin_mul,
+        "/", __catspeak_builtin_div,
+        "%", __catspeak_builtin_mod,
+        "//", __catspeak_builtin_div_int,
+        "|", __catspeak_builtin_bit_or,
+        "&", __catspeak_builtin_bit_and,
+        "^", __catspeak_builtin_bit_xor,
+        "~", __catspeak_builtin_bit_not,
+        "<<", __catspeak_builtin_bit_lshift,
+        ">>", __catspeak_builtin_bit_rshift,
+        "||", __catspeak_builtin_or,
+        "&&", __catspeak_builtin_and,
+        "^^", __catspeak_builtin_xor,
+        "!", __catspeak_builtin_not,
+        "==", __catspeak_builtin_eq,
+        "!=", __catspeak_builtin_neq,
+        ">=", __catspeak_builtin_geq,
+        "<=", __catspeak_builtin_leq,
+        ">", __catspeak_builtin_gt,
+        "<", __catspeak_builtin_lt,
+        "[]", __catspeak_builtin_get,
+        "[]=", __catspeak_builtin_set,
+        "bool", bool,
+        "string", string,
+        "real", real,
+        "int64", int64,
+        "typeof", typeof,
+        "instanceof", instanceof,
+        "is_array", is_array,
+        "is_bool", is_bool,
+        "is_infinity", is_infinity,
+        "is_int32", is_int32,
+        "is_int64", is_int64,
+        "is_method", is_method,
+        "is_nan", is_nan,
+        "is_numeric", is_numeric,
+        "is_ptr", is_ptr,
+        "is_real", is_real,
+        "is_string", is_string,
+        "is_struct", is_struct,
+        "is_undefined", is_undefined,
+        "is_vec3", is_vec3,
+        "is_vec4", is_vec4,
+    ];
+    for (var i = 0; i < array_length(funcs); i += 2) {
+        db[$ funcs[i + 0]] = method(undefined, funcs[i + 1]);
+    }
+    var consts = [
+        "null", pointer_null,
+        "undefiend", undefined,
+        "true", true,
+        "false", false,
+        "NaN", NaN,
+        "infinity", infinity,
+    ];
+    for (var i = 0; i < array_length(consts); i += 2) {
+        db[$ consts[i + 0]] = consts[i + 1];
+    }
+    /// @ignore
+    global.__catspeakDatabasePrelude = db;
 }
 
 /// @ignore

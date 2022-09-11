@@ -2,14 +2,8 @@ show_debug_overlay(true);
 
 
 buff = catspeak_create_buffer_from_string(@'
-    let f = fun {
-        let a = 1
-        let b = 2
-        a + b
-    }
-    if (true) {
-        f()
-    }
+    f = fun { f }
+    f()
 ');
 
 var lex = new CatspeakLexer(buff);
@@ -22,7 +16,7 @@ if (os_browser == browser_not_a_browser) {
 } else {
     show_debug_message(comp.ir.disassembly());
 }
-//show_message("emitted");
+show_message("emitted");
 
 vm = new CatspeakVM();
 vm.pushCallFrame(self, comp.ir);
