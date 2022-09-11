@@ -12,9 +12,9 @@ enum CatspeakIntcode {
     RET,
     MOV,
     LDC,
+    LDA,
     GSET,
     GGET,
-    AGET,
 }
 
 /// Gets the name for a value of `CatspeakIntcode`.
@@ -40,12 +40,12 @@ function catspeak_intcode_show(value) {
         return "MOV";
     case CatspeakIntcode.LDC:
         return "LDC";
+    case CatspeakIntcode.LDA:
+        return "LDA";
     case CatspeakIntcode.GSET:
         return "GSET";
     case CatspeakIntcode.GGET:
         return "GGET";
-    case CatspeakIntcode.AGET:
-        return "AGET";
     }
     return "<unknown>";
 }
@@ -73,12 +73,12 @@ function catspeak_intcode_read(str) {
         return CatspeakIntcode.MOV;
     case "LDC":
         return CatspeakIntcode.LDC;
+    case "LDA":
+        return CatspeakIntcode.LDA;
     case "GSET":
         return CatspeakIntcode.GSET;
     case "GGET":
         return CatspeakIntcode.GGET;
-    case "AGET":
-        return CatspeakIntcode.AGET;
     }
     return undefined;
 }
@@ -100,5 +100,5 @@ function catspeak_intcode_valueof(value) {
 /// @return {Real}
 function catspeak_intcode_sizeof() {
     gml_pragma("forceinline");
-    return CatspeakIntcode.AGET + 1;
+    return CatspeakIntcode.GGET + 1;
 }
