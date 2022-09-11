@@ -711,7 +711,11 @@ function CatspeakFunction() constructor {
 
     /// @ignore
     static __blockName = function(blk) {
-        var msg = "blk" + string(blk.idx);
+        var msg = "blk";
+        var pos = blk.pos;
+        if (pos != undefined) {
+            msg += "_" + string(pos.line) + "_" + string(pos.column);
+        }
         var name = blk.name;
         if (name != undefined) {
             msg += "[" + __valueName(name) + "]";
@@ -746,10 +750,13 @@ function CatspeakFunction() constructor {
 ///
 /// @param {Any} [name]
 ///   The name to give this block, leave blank for no name.
-function CatspeakBlock(name) constructor {
+///
+/// @param {Struct.CatspeakLocation} [pos]
+///   The debug info for this block.
+function CatspeakBlock(name, pos) constructor {
     self.code = [];
     self.name = name;
-    self.idx = -1;
+    self.pos = pos == undefined ? undefined : pos.clone();
     self.terminated = false;
 }
 

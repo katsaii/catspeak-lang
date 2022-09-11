@@ -7,7 +7,9 @@ buff = catspeak_create_buffer_from_string(@'
         let b = 2
         a + b
     }
-    f()
+    if (true) {
+        f()
+    }
 ');
 
 var lex = new CatspeakLexer(buff);
