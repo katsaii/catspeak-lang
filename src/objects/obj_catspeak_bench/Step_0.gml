@@ -7,7 +7,7 @@ runs = 0;
     while (vm.inProgress()) {
         vm.runProgram(10);
     }
-repeat (1000) {
+repeat (1) {
     runs += 1;
     /*buffer_seek(buff, buffer_seek_start, 0);
     var lex = new CatspeakLexer(buff);
