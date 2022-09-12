@@ -1,6 +1,18 @@
 //! Initialises core components of the Catspeak compiler. This includes
 //! any uninitialised global variables.
 
+// .      _             _        .
+// C     | ''.       .'' |       C
+// A     |    \_..._/    |       A
+// T    /    _       _    \      T
+// . '-|    / \     / \    |-'   .
+// S --|    | |     | |    |--   S
+// P  .'\   \_/     \_/   /'.    P
+// E     '~..__     __..~'       E
+// A           \   /             A
+// K            \ /              K
+// .             '               .
+
 //# feather use syntax-errors
 
 /// The compiler version, should be updated before each release.
