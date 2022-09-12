@@ -3,10 +3,10 @@
 
 //# feather use syntax-errors
 
-/// Allocates a new DSMap resource and returns its ID.
+/// Allocates a new DsMap resource and returns its ID.
 ///
 /// @param {Struct} struct
-///   The struct whose lifetime determines how long the DSMap lives.
+///   The struct whose lifetime determines how long the DsMap lives.
 ///
 /// @return {Id.DsMap}
 function catspeak_alloc_ds_map(struct) {
@@ -14,10 +14,10 @@ function catspeak_alloc_ds_map(struct) {
     return catspeak_alloc(struct, global.__catspeakAllocDSMapAdapter);
 }
 
-/// Allocates a new DSList resource and returns its ID.
+/// Allocates a new DsList resource and returns its ID.
 ///
 /// @param {Struct} struct
-///   The struct whose lifetime determines how long the DSList lives.
+///   The struct whose lifetime determines how long the DsList lives.
 ///
 /// @return {Id.DsList}
 function catspeak_alloc_ds_list(struct) {
@@ -25,10 +25,10 @@ function catspeak_alloc_ds_list(struct) {
     return catspeak_alloc(struct, global.__catspeakAllocDSListAdapter);
 }
 
-/// Allocates a new DSSTack resource and returns its ID.
+/// Allocates a new DsStack resource and returns its ID.
 ///
 /// @param {Struct} struct
-///   The struct whose lifetime determines how long the DSSTack lives.
+///   The struct whose lifetime determines how long the DsStack lives.
 ///
 /// @return {Id.DsStack}
 function catspeak_alloc_ds_stack(struct) {
@@ -36,10 +36,10 @@ function catspeak_alloc_ds_stack(struct) {
     return catspeak_alloc(struct, global.__catspeakAllocDSStackAdapter);
 }
 
-/// Allocates a new DSPriority resource and returns its ID.
+/// Allocates a new DsPriority resource and returns its ID.
 ///
 /// @param {Struct} struct
-///   The struct whose lifetime determines how long the DSPriority lives.
+///   The struct whose lifetime determines how long the DsPriority lives.
 ///
 /// @return {Id.DsPriority}
 function catspeak_alloc_ds_priority(struct) {
