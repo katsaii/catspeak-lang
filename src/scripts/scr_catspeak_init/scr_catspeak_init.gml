@@ -4,22 +4,22 @@
 //      _             _                                                       
 //     |  `.       .'  |                   _                             _    
 //     |    \_..._/    |                  | |                           | |   
-//    /    _       _    \      ___   __ _ | |_  ___  _ __    ___   __ _ | | __
+//    /    _       _    \     |\_/|  __ _ | |_  ___  _ __    ___   __ _ | | __
 // `-|    / \     / \    |-'  / __| / _` || __|/ __|| '_ \  / _ \ / _` || |/ /
 // --|    | |     | |    |-- | (__ | (_| || |_ \__ \| |_) ||  __/| (_| ||   < 
 //  .'\   \_/ _._ \_/   /`.   \___| \__,_| \__||___/| .__/  \___| \__,_||_|\_\
-//     `~.._________    |                      _____| |                       
-//                  `.  |                     / ._____/                       
-//                    `.|                     \_)                             
+//     `~..______    .~'                       _____| |   by: katsaii         
+//               `.  |                        / ._____/ logo: mashmerlow      
+//                 `.|                        \_)                             
 
 //# feather use syntax-errors
 
 /// The compiler version, should be updated before each release.
 #macro CATSPEAK_VERSION "2.0.0"
 
-/// Makes sure that all Catspeak global variables are initialised. Only
-/// needs to be called if you are trying to use Catspeak from a script,
-/// or through `gml_pragma`. Otherwise you can just ignore this.
+/// Makes sure that all Catspeak global variables are initialised. Only needs
+/// to be called if you are trying to use Catspeak from a script, or through
+/// `gml_pragma`. Otherwise you can just ignore this.
 function catspeak_force_init() {
     static initialised = false;
     if (initialised) {

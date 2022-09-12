@@ -17,26 +17,58 @@ function CatspeakProcess() constructor {
     self.update = undefined;
     self.isBusy = undefined;
     self.result = undefined;
+    self.callback = undefined;
+    self.used = false;
+
+    /// Adds this process to the current execution tick, invoking a callback
+    /// function once it is complete.
+    ///
+    /// @param {Function} callback
+    ///   The function to invoke once this process is complete.
+    static andThen = function(callback) {
+        self.callback = callback;
+    };
+
+    /// Adds this process to the list of active processes in the next
+    /// execution tick.
+    static invoke = function() {
+        if (used) {
+            throw new CatspeakError(undefined,
+                    "cannot invoke a Catspeak process more than once");
+        }
+        used = true;
+        // TODO actually do the work
+    }
+}
+
+/// A dummy process which immediately returns the supplied value.
+function CatspeakDummyProcess() : CatspeakProcess() constructor {
+    self.value = undefined;
+    self.update = function() { };
+    self.isBusy = function() { return false };
+    self.result = function() { return value };
 }
 
 /// Handles the exeuction of Catspeak compilation processes.
-///
-/// @param {Struct.CatspeakCompiler} compiler
-///   The Catspeak compiler to manage.
-function CatspeakCompilerProcess(compiler) : CatspeakProcess() constructor {
-    self.compiler = compiler;
+function CatspeakCompilerProcess(
+) : CatspeakProcess() constructor {
+    self.compiler = undefined;
+    self.consume = undefined;
     self.update = function() { compiler.emitProgram(5) };
-    self.isBusy = function() { compiler.inProgress() };
-    self.result = function() { return compiler.ir };
+    self.isBusy = function() { return compiler.inProgress() };
+    self.result = function() {
+        if (consume) {
+            consume = false;
+            buffer_delete(compiler.lexer.buff);
+        }
+        return compiler.ir;
+    };
 }
 
 /// Handles the exeuction of Catspeak runtime processes.
-///
-/// @param {Struct.CatspeakVM} vm
-///   The Catspeak virtual machine to manage.
-function CatspeakVMProcess(vm) : CatspeakProcess() constructor {
-    self.vm = vm;
+function CatspeakVMProcess() : CatspeakProcess() constructor {
+    self.vm = undefined;
     self.update = function() { vm.runProgram(10) };
-    self.isBusy = function() { vm.inProgress() };
+    self.isBusy = function() { return vm.inProgress() };
     self.result = function() { return vm.returnValue };
 }
