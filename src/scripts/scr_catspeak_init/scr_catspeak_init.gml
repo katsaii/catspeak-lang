@@ -46,10 +46,10 @@ catspeak_force_init();
 /// @ignore
 function __catspeak_init_process() {
     var info = {
-        currentTick : ds_list_create(),
-        nextTick : ds_list_create(),
-        // only compute Catspeak programs for quarter of a frame
-        frameAllocation : 1,
+        processes : ds_list_create(),
+        // only compute Catspeak programs for half of a frame
+        frameAllocation : 0.5,
+        exceptionHandler : undefined,
         dtRatioCache : 1,
         inactive : true,
         update : function() {
@@ -58,25 +58,21 @@ function __catspeak_init_process() {
             dtRatioCache = max(1, dtRatioCache - 0.1, dtRatio);
             var duration = frameAllocation * idealTime / dtRatioCache;
             var timeLimit = get_timer() + min(idealTime, duration);
-            var processes = currentTick;
-            var processCount = ds_list_size(processes);
+            var processes_ = processes;
+            var processCount = ds_list_size(processes_);
             var processIdx = processCount - 1;
+            // TODO :: add a method of detecting whether a process has
+            //         become unresponsive
             do {
                 if (processCount < 1) {
-                    // switch to the next tick
-                    currentTick = nextTick;
-                    nextTick = processes;
-                    ds_list_clear(processes);
-                    if (ds_list_empty(currentTick)) {
-                        // don't waste time waiting for new processes to exist
-                        time_source_stop(timeSource);
-                        inactive = true;
-                    }
+                    // don't waste time waiting for new processes to exist
+                    time_source_stop(timeSource);
+                    inactive = true;
                     break;
                 }
-                var process = processes[| processIdx];
+                var process = processes_[| processIdx];
                 if (process.isBusy()) {
-                    var catchFun = process.callbackCatch;
+                    var catchFun = process.callbackCatch ?? exceptionHandler;
                     if (catchFun == undefined) {
                         // helps preserve the throw origin in the debugger
                         process.update();
@@ -89,7 +85,7 @@ function __catspeak_init_process() {
                     }
                 } else {
                     processCount -= 1;
-                    ds_list_delete(processes, processIdx);
+                    ds_list_delete(processes_, processIdx);
                     process.used = false;
                     // TODO :: pool processes to avoid constant allocation
                     var resultFun = process.callback;

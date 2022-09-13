@@ -51,7 +51,7 @@ function CatspeakProcess() constructor {
         }
         used = true;
         var manager = global.__catspeakProcessManager;
-        ds_list_add(manager.nextTick, self);
+        ds_list_add(manager.processes, self);
         if (manager.inactive) {
             manager.inactive = false;
             time_source_start(manager.timeSource);
