@@ -1,8 +1,20 @@
 show_debug_overlay(true);
 
+catspeak_compile_string(@'
+    let n = 10
+    while (n > 0) {
+        n = it - 1
+    }
+    fun a, b { a ++ " "  ++ b }
+').andThen(function(ir) {
+    self.ir = ir;
+});
+
+/*show_debug_overlay(true);
+
 
 buff = catspeak_create_buffer_from_string(@'
-    extern fun a, b { a ++ " " ++ b }
+    fun a, b { a ++ " " ++ b }
 ');
 
 var lex = new CatspeakLexer(buff);
@@ -27,3 +39,4 @@ catspeak_legacy_session_set_source(oldsess, @'
     b = 2
     return : a + b
 ');
+*/

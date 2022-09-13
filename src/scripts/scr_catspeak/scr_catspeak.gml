@@ -1,9 +1,10 @@
 //! The primary user-facing interface for compiling and executing Catspeak
 //! programs.
 
+//# feather use syntax-errors
+
 /// Creates a new Catspeak runtime process for this Catspeak function. This
-/// function is also compatible with GML functions. Doing so, a dummy process
-/// will be created which is immediately executed. You can use
+/// function is also compatible with GML functions.
 ///
 /// @param {Function|Struct.CatspeakFunction} scr
 ///   The GML or Catspeak function to execute.
@@ -12,7 +13,7 @@
 ///   The array of arguments to pass to the function call. Defaults to the
 ///   empty array.
 ///
-/// @return {Struct.CatspeakVMProcess|Struct.CatspeakDummyProcess}
+/// @return {Struct.CatspeakVMProcess|Struct.CatspeakGMLProcess}
 function catspeak_execute(scr, args) {
     static noArgs = [];
     var args_ = args ?? noArgs;
@@ -21,18 +22,22 @@ function catspeak_execute(scr, args) {
     var process;
     if (instanceof(scr) == "CatspeakFunction") {
         var vm = new CatspeakVM();
-        vm.pushCallFrame(self, scr);
+        vm.pushCallFrame(self, scr, args, argo, argc);
         process = new CatspeakVMProcess();
         process.vm = vm;
     } else {
-        process = new CatspeakDummyProcess();
-        process.value = __catspeak_vm_function_execute(
-                self, scr, argc, argo, args);
+        process = new CatspeakGMLProcess();
+        process.self_ = self;
+        process.f = scr;
+        process.argc = argc;
+        process.argo = argo;
+        process.args = args;
     }
+    process.invoke();
     return process;
 }
 
-/// Creates a new Catspeak compiler process for buffer containing Catspeak
+/// Creates a new Catspeak compiler process for a buffer containing Catspeak
 /// code. The seek position of the buffer will not be set to the beginning of
 /// the buffer, this is something you have to manage yourself:
 /// ```
@@ -54,6 +59,7 @@ function catspeak_compile_buffer(buff, consume=false) {
     var process = new CatspeakCompilerProcess();
     process.compiler = compiler;
     process.consume = consume;
+    process.invoke();
     return process;
 }
 

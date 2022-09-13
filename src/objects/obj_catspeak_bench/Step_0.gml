@@ -1,4 +1,9 @@
+var i = 100000;
+while (i > 0) {
+    i -= 1;
+}
 
+/*
 //buffer_seek(buff, buffer_seek_start, 0);
 var t = get_timer();
 runs = 0;
@@ -17,12 +22,9 @@ repeat (1) {
     }
     */
     
-    var f = vm.returnValue;
-    f("hewwo", "OwO");
-    
     //show_message(vm.returnValue)
-}
-var dt1 = (get_timer() - t) / 1000000;
+//}
+//var dt1 = (get_timer() - t) / 1000000;
 /*
 t = get_timer();
 repeat (10000) {
