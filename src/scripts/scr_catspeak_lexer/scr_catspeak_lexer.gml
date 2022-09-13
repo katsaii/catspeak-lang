@@ -167,7 +167,7 @@ function CatspeakLexer(buff) constructor {
             }
             registerLexeme();
             if (!rawString) {
-                // TODO this is very slow, figure do it with buffers
+                // TODO :: this is very slow, figure do it with buffers
                 var lexeme = pos.lexeme;
                 lexeme = string_replace_all(lexeme, "\\\"", "\"");
                 lexeme = string_replace_all(lexeme, "\\\r\n", "");
