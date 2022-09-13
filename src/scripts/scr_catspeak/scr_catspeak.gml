@@ -105,6 +105,10 @@ function catspeak_create_buffer_from_string(src) {
 ///    components of your game to complete, whilst also letting Catspeak be
 ///    speedy.
 ///
+///  - "exceptionHandler" should be a script or method ID. This will set the
+///    catch-all exception handler when no handler exists for a specific
+///    process. Set to `undefined` to remove the handler.
+///
 /// @param {Struct} configData
 ///   A struct which can contain any one of the fields mentioned above. Only
 ///   the fields which are passed will have their configuration changed, so
@@ -112,8 +116,12 @@ function catspeak_create_buffer_from_string(src) {
 function catspeak_config(configData) {
     catspeak_force_init();
     var processManager = global.__catspeakProcessManager;
-    var amount = configData[$ "frameAllocation"];
-    if (is_real(amount)) {
-        processManager.frameAllocation = clamp(amount, 0, 1);
+    var frameAllocation = configData[$ "frameAllocation"];
+    if (is_real(frameAllocation)) {
+        processManager.frameAllocation = clamp(frameAllocation, 0, 1);
+    }
+    if (variable_struct_exists(configData, "exceptionHandler")) {
+        var handler = configData[$ "exceptionHandler"];
+        processManager.exceptionHandler = handler;
     }
 }
