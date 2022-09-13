@@ -53,11 +53,11 @@ function __catspeak_init_process() {
         dtRatioCache : 1,
         inactive : true,
         update : function() {
-            var frameTime = game_get_speed(gamespeed_microseconds);
-            var dtRatio = delta_time / frameTime * 2;
+            var idealTime = game_get_speed(gamespeed_microseconds);
+            var dtRatio = delta_time / idealTime * 2;
             dtRatioCache = max(1, dtRatioCache - 0.1, dtRatio);
-            var duration = frameAllocation * frameTime / dtRatioCache;
-            var timeLimit = get_timer() + duration;
+            var duration = frameAllocation * idealTime / dtRatioCache;
+            var timeLimit = get_timer() + min(idealTime, duration);
             var processes = currentTick;
             var processCount = ds_list_size(processes);
             var processIdx = processCount - 1;

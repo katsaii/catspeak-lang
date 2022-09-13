@@ -7,6 +7,7 @@
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_error","path":"scripts/scr_catspeak_error/scr_catspeak_error.yy",},"order":3,},
     {"id":{"name":"scr_catspeak_sandbox","path":"scripts/scr_catspeak_sandbox/scr_catspeak_sandbox.yy",},"order":1,},
+    {"id":{"name":"scr_catspeak_compatibility","path":"scripts/scr_catspeak_compatibility/scr_catspeak_compatibility.yy",},"order":4,},
     {"id":{"name":"obj_catspeak_bench","path":"objects/obj_catspeak_bench/obj_catspeak_bench.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_ascii_desc","path":"scripts/scr_catspeak_ascii_desc/scr_catspeak_ascii_desc.yy",},"order":3,},
     {"id":{"name":"scr_catspeak_builtins","path":"scripts/scr_catspeak_builtins/scr_catspeak_builtins.yy",},"order":8,},
