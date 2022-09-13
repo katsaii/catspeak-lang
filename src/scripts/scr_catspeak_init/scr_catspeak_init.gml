@@ -27,6 +27,7 @@ function catspeak_force_init() {
     }
     initialised = true;
     // call initialisers
+    __catspeak_init_process();
     __catspeak_init_alloc();
     __catspeak_init_database_prelude();
     __catspeak_init_database_token_starts_expression();
@@ -41,6 +42,74 @@ function catspeak_force_init() {
 }
 
 catspeak_force_init();
+
+/// @ignore
+function __catspeak_init_process() {
+    var info = {
+        currentTick : ds_list_create(),
+        nextTick : ds_list_create(),
+        // only compute Catspeak programs for quarter of a frame
+        frameAllocation : 1,
+        dtRatioCache : 1,
+        inactive : true,
+        update : function() {
+            var frameTime = game_get_speed(gamespeed_microseconds);
+            var dtRatio = delta_time / frameTime * 2;
+            dtRatioCache = max(1, dtRatioCache - 0.1, dtRatio);
+            var duration = frameAllocation * frameTime / dtRatioCache;
+            var timeLimit = get_timer() + duration;
+            var processes = currentTick;
+            var processCount = ds_list_size(processes);
+            var processIdx = processCount - 1;
+            do {
+                if (processCount < 1) {
+                    // switch to the next tick
+                    currentTick = nextTick;
+                    nextTick = processes;
+                    ds_list_clear(processes);
+                    if (ds_list_empty(currentTick)) {
+                        // don't waste time waiting for new processes to exist
+                        time_source_stop(timeSource);
+                        inactive = true;
+                    }
+                    break;
+                }
+                var process = processes[| processIdx];
+                if (process.isBusy()) {
+                    var catchFun = process.callbackCatch;
+                    if (catchFun == undefined) {
+                        // helps preserve the throw origin in the debugger
+                        process.update();
+                    } else {
+                        try {
+                            process.update();
+                        } catch (e) {
+                            catchFun(e);
+                        }
+                    }
+                } else {
+                    processCount -= 1;
+                    ds_list_delete(processes, processIdx);
+                    process.used = false;
+                    // TODO :: pool processes to avoid constant allocation
+                    var resultFun = process.callback;
+                    if (resultFun != undefined) {
+                        resultFun(process.result());
+                    }
+                }
+                processIdx -= 1;
+                if (processIdx < 0) {
+                    processIdx = processCount - 1;
+                }
+            } until (get_timer() > timeLimit);
+        },
+    };
+    info.timeSource = time_source_create(
+                time_source_global, 1, time_source_units_frames,
+                info.update, [], -1);
+    /// @ignore
+    global.__catspeakProcessManager = info;
+}
 
 /// @ignore
 function __catspeak_init_alloc() {
@@ -97,7 +166,7 @@ function __catspeak_init_database_prelude() {
         "<", __catspeak_builtin_lt,
         "[]", __catspeak_builtin_get,
         "[]=", __catspeak_builtin_set,
-        "extern", __catspeak_builtin_extern,
+        "len", __catspeak_builtin_length,
         "bool", bool,
         "string", string,
         "real", real,

@@ -186,44 +186,19 @@ function __catspeak_builtin_set(collection, key, value) {
 }
 
 /// @ignore
+function __catspeak_builtin_length(collection) {
+    if (is_array(collection)) {
+        return array_length(collection);
+    } else {
+        return 0;
+    }
+}
+
+/// @ignore
 function __catspeak_builtin_verify_struct(collection) {
     gml_pragma("forceinline");
     if (string_pos("Catspeak", instanceof(collection)) == 1) {
         throw new CatspeakError(undefined,
                 "self-modification is prohibited by Catspeak");
     }
-}
-
-/// @ignore
-function __catspeak_builtin_extern(ir) {
-    var vm = new CatspeakVM();
-    vm.pushCallFrame(self, ir);
-    vm.popCallFrame();
-    var s = {
-        duration : game_get_speed(gamespeed_microseconds) / 10,
-        vm : vm,
-        argc : ir.argCount,
-        args : array_create(ir.argCount),
-        go : function() {
-            // extern functions compute everything in one go
-            // TODO add a limiter so that modders cannot freeze the game
-            var vm_ = vm;
-            var argc_ = argc;
-            var args_ = args;
-            for (var i = 0; i < argc_; i += 1) {
-                args_[@ i] = argument[i];
-            }
-            vm_.reuseCallFrameWithArgs(args_, 0, argc_);
-            var timeLimit = get_timer() + duration;
-            while (vm_.inProgress()) {
-                vm_.runProgram(10);
-                if (get_timer() > timeLimit) {
-                    throw new CatspeakError(undefined,
-                            "execution limit exceeded on Catspeak function");
-                }
-            }
-            return vm_.returnValue;
-        },
-    };
-    return s.go;
 }

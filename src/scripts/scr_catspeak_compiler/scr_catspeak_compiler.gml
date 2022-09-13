@@ -306,7 +306,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         if (!ds_stack_empty(loopStack)) {
             var top = ds_stack_top(loopStack);
             if (top.ir == ir) {
-                return ir;
+                return top;
             }
         }
         throw new CatspeakError(pos,

@@ -13,6 +13,7 @@
 ///   variables.
 function CatspeakFunction(name, parent) constructor {
     self.name = name ?? "main";
+    self.parent = parent;
     self.blocks = [];
     self.registers = []; // stores debug info about registers
     self.permanentRegisters = [];
@@ -35,6 +36,31 @@ function CatspeakFunction(name, parent) constructor {
         self.globalRegisters = parent.globalRegisters;
         self.globalRegisterTable = parent.globalRegisterTable;
     }
+
+    /// Sets the value of a global variable with this name.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to set.
+    ///
+    /// @param {Any} value
+    ///   The value to assign to this global variable.
+    static setGlobal = function(name, value) {
+        var gReg = __getGlobalRegister(name);
+        globalRegisters[@ gReg] = value;
+    };
+
+    /// Gets the value of a global variable with this name.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to get.
+    ///
+    /// @return {Any}
+    static getGlobal = function(name) {
+        if (variable_struct_exists(globalRegisterTable, name)) {
+            return globalRegisterTable[$ name];
+        }
+        return undefined;
+    };
 
     /// Adds a Catspeak block to the end of this function.
     ///
@@ -642,7 +668,7 @@ function CatspeakFunction(name, parent) constructor {
     static toString = function() {
         var msg = "catspeak function";
         if (name != undefined) {
-            msg += " " + string(name);
+            msg += " " + (is_string(name) ? name : string(name));
         }
         return msg;
     };
