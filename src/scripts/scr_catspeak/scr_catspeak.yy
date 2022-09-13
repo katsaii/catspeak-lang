@@ -2,8 +2,8 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "internals",
-    "path": "folders/Catspeak/internals.yy",
+    "name": "Catspeak",
+    "path": "folders/Catspeak.yy",
   },
   "resourceVersion": "1.0",
   "name": "scr_catspeak",

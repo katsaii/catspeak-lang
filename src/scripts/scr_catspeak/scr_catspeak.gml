@@ -91,3 +91,29 @@ function catspeak_create_buffer_from_string(src) {
     buffer_seek(buff, buffer_seek_start, 0);
     return buff;
 }
+
+/// Configures various global settings of the Catspeak compiler and runtime.
+/// Below is a list of configuration values available to be customised:
+///
+///  - "frameAllocation" should be a number in the range [0, 1]. Determines
+///    what percentage of a game frame should be reserved for processing
+///    Catspeak programs. Catspeak will only spend this time when necessary,
+///    and will not sit idly wasting time. A value of 1 will cause Catspeak
+///    to spend the whole frame processing, and a value of 0 will cause
+///    Catspeak to only process a single instruction per frame. The default
+///    setting is 0.5 (50% of a frame). This leaves enough time for the other
+///    components of your game to complete, whilst also letting Catspeak be
+///    speedy.
+///
+/// @param {Struct} configData
+///   A struct which can contain any one of the fields mentioned above. Only
+///   the fields which are passed will have their configuration changed, so
+///   if you don't want a value to change, leave it blank.
+function catspeak_config(configData) {
+    catspeak_force_init();
+    var processManager = global.__catspeakProcessManager;
+    var amount = configData[$ "frameAllocation"];
+    if (is_real(amount)) {
+        processManager.frameAllocation = clamp(amount, 0, 1);
+    }
+}

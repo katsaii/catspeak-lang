@@ -27,8 +27,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Catspeak",
-    "path": "folders/Catspeak.yy",
+    "name": "testing",
+    "path": "folders/Catspeak/testing.yy",
   },
   "resourceVersion": "1.0",
   "name": "obj_catspeak_bench",

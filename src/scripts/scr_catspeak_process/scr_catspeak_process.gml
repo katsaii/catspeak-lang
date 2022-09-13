@@ -73,8 +73,14 @@ function CatspeakGMLProcess() : CatspeakProcess() constructor {
             return;
         }
         hasValue = true;
-        value = __catspeak_vm_function_execute(
-                self_, f, argc, argo, args);
+        var f_ = f;
+        var scrSelf = method_get_self(f_) ?? self_;
+        var scr = method_get_index(f_);
+        var result;
+        with (scrSelf) {
+            result = script_execute_ext(scr, args, argo, argc);
+        }
+        value = result;
     };
     self.isBusy = function() { return !hasValue };
     self.result = function() { return value };
