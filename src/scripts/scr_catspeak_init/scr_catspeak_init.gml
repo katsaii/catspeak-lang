@@ -49,21 +49,25 @@ function __catspeak_init_process() {
         processes : ds_list_create(),
         // only compute Catspeak programs for half of a frame
         frameAllocation : 0.5,
+        processTimeLimit : 1,
         exceptionHandler : undefined,
         dtRatioCache : 1,
         inactive : true,
         update : function() {
+            var oneSecond = frameAllocation * 1000000;
             var idealTime = game_get_speed(gamespeed_microseconds);
-            var dtRatio = delta_time / idealTime * 2;
+            var dtRatio = delta_time / idealTime;
             dtRatioCache = max(1, dtRatioCache - 0.1, dtRatio);
             var duration = frameAllocation * idealTime / dtRatioCache;
             var timeLimit = get_timer() + min(idealTime, duration);
             var processes_ = processes;
             var processCount = ds_list_size(processes_);
-            var processIdx = processCount - 1;
+            var processIdx = 0;
+            var exceptionHandler_ = exceptionHandler;
             // TODO :: add a method of detecting whether a process has
             //         become unresponsive
             do {
+                var tStart = get_timer();
                 if (processCount < 1) {
                     // don't waste time waiting for new processes to exist
                     time_source_stop(timeSource);
@@ -71,8 +75,9 @@ function __catspeak_init_process() {
                     break;
                 }
                 var process = processes_[| processIdx];
+                var catchFun = process.callbackCatch ?? exceptionHandler_;
+                var terminate = false;
                 if (process.isBusy()) {
-                    var catchFun = process.callbackCatch ?? exceptionHandler;
                     if (catchFun == undefined) {
                         // helps preserve the throw origin in the debugger
                         process.update();
@@ -81,9 +86,13 @@ function __catspeak_init_process() {
                             process.update();
                         } catch (e) {
                             catchFun(e);
+                            terminate = true;
                         }
                     }
                 } else {
+                    terminate = true;
+                }
+                if (terminate) {
                     processCount -= 1;
                     ds_list_delete(processes_, processIdx);
                     process.used = false;
@@ -91,6 +100,18 @@ function __catspeak_init_process() {
                     var resultFun = process.callback;
                     if (resultFun != undefined) {
                         resultFun(process.result());
+                    }
+                } else {
+                    var tSpent = process.timeSpent;
+                    process.timeSpent = tSpent + (get_timer() - tStart);
+                    if (tSpent > process.timeLimit * oneSecond) {
+                        var err = new CatspeakError(undefined,
+                                "exceeded process time limit");
+                        if (catchFun == undefined) {
+                            throw err;
+                        } else {
+                            catchFun(err);
+                        }
                     }
                 }
                 processIdx -= 1;
