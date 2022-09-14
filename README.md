@@ -5,12 +5,14 @@
   src="./catspeak.svg"
   alt="Catspeak Logo">
 
+_Developed by
+[katsaii](https://www.katsaii.com/), logo design by
+[mashmerlow](https://mashmerlow.github.io/)._
+
 # The Catspeak Programming Language
 
 A cross-platform, expression oriented programming language for implementing
-modding support into your GameMaker Studio 2.3 games. Developed by
-[katsaii](https://www.katsaii.com/), logo design by
-[mashmerlow](https://mashmerlow.github.io/).
+modding support into your GameMaker Studio 2.3 games.
 
 ## Syntax
 
