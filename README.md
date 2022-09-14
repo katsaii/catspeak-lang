@@ -1,6 +1,9 @@
-<img src="./catspeak.svg" alt="Catspeak Logo" width="157.74" height="120" />
-
-![Catspeak Logo](./catspeak.svg)
+<p align="center">
+  <img src="./catspeak.svg" alt="Catspeak Logo" width="157.74" height="120" />
+  <h1>Catspeak</h1>
+  <p>A modding language for GameMaker games.</p>
+  <p>(by Katsaii, logo by Mashmerlow)</p>
+</p>
 
 # Catspeak
 
