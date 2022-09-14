@@ -14,12 +14,14 @@ _Developed by
 [katsaii](https://www.katsaii.com/), logo design by
 [mashmerlow](https://mashmerlow.github.io/)._
 
-### Features
+## Overview
 
 Check out the [online documentation](https://www.katsaii.com/catspeak-lang) for
 a full overview of the language.
 
-TODO
+### Features
+
+ -[x] Bulleted list
 
 ## Acknowledgements
 
