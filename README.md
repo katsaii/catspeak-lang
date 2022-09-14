@@ -1,3 +1,5 @@
+![Catspeak Logo](./catspeak.svg)
+
 # Catspeak
 
 Catspeak is a small, dynamically typed domain-specific scripting language for [GameMaker Studio 2](https://www.yoyogames.com/gamemaker) that resembles the Lisp-family of languages. It is possible for Catspeak to be used as a modding language or as a replacement for configuration files, such as JSON and INI.
