@@ -41,7 +41,9 @@ function catspeak_set_error_script(script_id_or_method) {
 /// @deprecated
 function catspeak_set_max_iterations(iteration_count) {
     gml_pragma("forceinline");
-    // does nothing in Catspeak 2
+    // from my tests, it seems like Catspeak 2 can handle around this many
+    // VM steps per second
+    catspeak_config({ "processTimeLimit" : iteration_count / 50000 });
 }
 
 /// Sets the maximum percentage of a game frame to spend processing.
