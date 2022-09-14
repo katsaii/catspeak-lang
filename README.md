@@ -1,3 +1,5 @@
+<img src="./catspeak.svg" alt="Catspeak Logo" width="157.74" height="120" />
+
 ![Catspeak Logo](./catspeak.svg)
 
 # Catspeak
