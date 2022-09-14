@@ -109,6 +109,12 @@ function catspeak_create_buffer_from_string(src) {
 ///    catch-all exception handler when no handler exists for a specific
 ///    process. Set to `undefined` to remove the handler.
 ///
+///  - "processTimeLimit" should be a number greater than 0. Determines how
+///    long (in seconds) a process can run for before it is assumed
+///    unresponsive and terminated. The default value is 1 second. Setting
+///    this to `infinity` is technically possible, but will not be official
+///    supported.
+///
 /// @param {Struct} configData
 ///   A struct which can contain any one of the fields mentioned above. Only
 ///   the fields which are passed will have their configuration changed, so
@@ -123,5 +129,9 @@ function catspeak_config(configData) {
     if (variable_struct_exists(configData, "exceptionHandler")) {
         var handler = configData[$ "exceptionHandler"];
         processManager.exceptionHandler = handler;
+    }
+    var processTimeLimit = configData[$ "processTimeLimit"];
+    if (is_real(processTimeLimit)) {
+        processManager.processTimeLimit = processTimeLimit;
     }
 }

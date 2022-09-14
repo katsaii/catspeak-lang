@@ -1,7 +1,7 @@
 show_debug_overlay(true);
 
 catspeak_compile_string(@'
-    let n = 10
+    let n = 100000
     while (n > 0) {
         n = it - 1
     }

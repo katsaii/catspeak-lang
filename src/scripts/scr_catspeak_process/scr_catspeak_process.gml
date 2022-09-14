@@ -21,7 +21,21 @@ function CatspeakProcess() constructor {
     self.result = undefined;
     self.callback = undefined;
     self.callbackCatch = undefined;
+    self.timeSpent = 0;
+    self.timeLimit = undefined;
     self.used = false;
+
+    /// Sets the time limit for this process, overrides the default time limit
+    /// defined using `catspeak_config`.
+    ///
+    /// @param {Real} t
+    ///   The time limit (in seconds) the process is allowed to run for before
+    ///   it is assumed unresponsive and terminated. Set this to `undefined` to
+    ///   use the default time limit.
+    static withTimeLimit = function(t) {
+        timeLimit = t;
+        return self;
+    };
 
     /// Sets the callback function to invoke once the process is complete.
     ///
@@ -51,6 +65,8 @@ function CatspeakProcess() constructor {
         }
         used = true;
         var manager = global.__catspeakProcessManager;
+        timeSpent = 0;
+        timeLimit ??= manager.processTimeLimit;
         ds_list_add(manager.processes, self);
         if (manager.inactive) {
             manager.inactive = false;
