@@ -184,6 +184,7 @@ function __catspeak_init_database_prelude() {
         "[]", __catspeak_builtin_get,
         "[]=", __catspeak_builtin_set,
         "len", __catspeak_builtin_length,
+        "print", __catspeak_builtin_print,
         "bool", bool,
         "string", string,
         "real", real,

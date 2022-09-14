@@ -195,6 +195,17 @@ function __catspeak_builtin_length(collection) {
 }
 
 /// @ignore
+function __catspeak_builtin_print() {
+    var msg = "";
+    for (var i = 0; i < argument_count; i += 1) {
+        var item = argument[i];
+        msg += is_string(item) ? item : string(item);
+    }
+    show_debug_message(msg);
+    return msg;
+}
+
+/// @ignore
 function __catspeak_builtin_verify_struct(collection) {
     gml_pragma("forceinline");
     if (string_pos("Catspeak", instanceof(collection)) == 1) {
