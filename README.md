@@ -1,9 +1,29 @@
-<p align="center">
-  <img src="./catspeak.svg" alt="Catspeak Logo" width="157.74" height="120" />
-  <h1>Catspeak</h1>
-  <p>A modding language for GameMaker games.</p>
-  <p>(by Katsaii, logo by Mashmerlow)</p>
-</p>
+<img
+  align="right"
+  width="30%"
+  height="30%"
+  src="./catspeak.svg"
+  alt="Catspeak Logo">
+
+# The Catspeak Programming Language
+
+A cross-platform, expression oriented programming language for implementing
+modding support into your GameMaker Studio 2.3 games. Developed by
+[katsaii](https://www.katsaii.com/), logo design by
+[mashmerlow](https://mashmerlow.github.io/).
+
+## Syntax
+
+TODO
+
+### Features
+
+TODO
+
+## Acknowledgements
+
+Thanks to [@JujuAdams](https://www.jujuadams.com/) for giving feedback on
+aspects of the implementation.
 
 # Catspeak
 
@@ -59,7 +79,3 @@ print result -- 6
 ## Installation
 
 See the [wiki page](https://github.com/NuxiiGit/catspeak-lang/wiki/Getting-Started#installing).
-
-# Acknowledgements
-
-Thanks to [@JujuAdams](https://www.jujuadams.com/) for giving feedback on aspects of the implementation.
