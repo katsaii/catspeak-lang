@@ -13,9 +13,11 @@ def snake_to_title(s):
 # Replaces simple markdown styles with HTML elements.
 def simple_markdown(s):
     def control(s):
-        return "<span class=\"control\">{}</span>".format(s)
+        return "<b class=\"control\">{}</b>".format(s)
     s = re.sub(r"\*\*([^*]*)\*\*", r"{c}<b>\1</b>{c}".format(c=control("**")), s)
     s = re.sub(r"_([^_]*)_", r"{c}<em>\1</em>{c}".format(c=control("_")), s)
+    s = re.sub(r"```([^`]*)```", r"{c}<code>\1</code>{c}".format(c=control("```")), s)
+    s = re.sub(r"`([^`]+)`", r"{c}<code>\1</code>{c}".format(c=control("`")), s)
     return s
 
 def header(sep, s, ext=""):
@@ -137,6 +139,9 @@ TEMPLATE = """
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400&display=swap">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap">
     <style>
       html { box-sizing : border-box }
       *, *:before, *:after { box-sizing : inherit }
@@ -159,6 +164,11 @@ TEMPLATE = """
 
       :not(pre, code) {
         font-family : 'Ubuntu Mono', monospace;
+      }
+
+      pre, code {
+        font-family: 'Courier Prime', monospace;
+        --c : #000;
       }
 
       a {
@@ -205,7 +215,7 @@ page.add_section_string("features.md", """\
        making it impossible for modders to freeze your game with infinite loops.
 
  - [x] **Intelligent process manager** ...
-       so no time is wasted idly waiting for new Catspeak programs to appear.
+       so no `time` is wasted idly waiting for new Catspeak programs to appear.
 
  - [x] **Failsafes to catch unresponsive Catspeak processes**.
 
@@ -223,8 +233,9 @@ page.add_section_string("features.md", """\
  - [x] **Compiler internals exposed and well-documented** ...
        in order to give power users as much control over their programs as
        possible.
-
+```
  - [x] **Cute name and mascot**.
+```
 """)
 page.add_section("./LICENSE")
 
