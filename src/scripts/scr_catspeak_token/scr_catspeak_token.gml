@@ -1,5 +1,6 @@
 //! Boilerplate for the `CatspeakToken` enum.
-//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!
+
+// NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!
 
 //# feather use syntax-errors
 

@@ -80,21 +80,23 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 <b>Contents</b> (<a href="#contents">link</a>) 
 ================================================================================</span>
  - <a href="#not_catspeak_features">Features</a>
- - <a href="#scr_catspeak">scr_catspeak</a>
- - <a href="#scr_catspeak_init">scr_catspeak_init</a>
- - <a href="#scr_catspeak_process">scr_catspeak_process</a>
- - <a href="#scr_catspeak_builtins">scr_catspeak_builtins</a>
- - <a href="#scr_catspeak_error">scr_catspeak_error</a>
- - <a href="#scr_catspeak_vm">scr_catspeak_vm</a>
- - <a href="#scr_catspeak_ir">scr_catspeak_ir</a>
- - <a href="#scr_catspeak_intcode">scr_catspeak_intcode</a>
- - <a href="#scr_catspeak_compiler">scr_catspeak_compiler</a>
- - <a href="#scr_catspeak_lexer">scr_catspeak_lexer</a>
- - <a href="#scr_catspeak_token">scr_catspeak_token</a>
- - <a href="#scr_catspeak_ascii_desc">scr_catspeak_ascii_desc</a>
- - <a href="#scr_catspeak_alloc">scr_catspeak_alloc</a>
- - <a href="#scr_catspeak_compatibility">scr_catspeak_compatibility</a>
+ - <a href="#library_reference">Library Reference</a>
+   - <a href="#scr_catspeak">scr_catspeak</a>
+   - <a href="#scr_catspeak_init">scr_catspeak_init</a>
+   - <a href="#scr_catspeak_process">scr_catspeak_process</a>
+   - <a href="#scr_catspeak_builtins">scr_catspeak_builtins</a>
+   - <a href="#scr_catspeak_error">scr_catspeak_error</a>
+   - <a href="#scr_catspeak_vm">scr_catspeak_vm</a>
+   - <a href="#scr_catspeak_ir">scr_catspeak_ir</a>
+   - <a href="#scr_catspeak_intcode">scr_catspeak_intcode</a>
+   - <a href="#scr_catspeak_compiler">scr_catspeak_compiler</a>
+   - <a href="#scr_catspeak_lexer">scr_catspeak_lexer</a>
+   - <a href="#scr_catspeak_token">scr_catspeak_token</a>
+   - <a href="#scr_catspeak_ascii_desc">scr_catspeak_ascii_desc</a>
+   - <a href="#scr_catspeak_alloc">scr_catspeak_alloc</a>
+   - <a href="#scr_catspeak_compatibility">scr_catspeak_compatibility</a>
  - <a href="#LICENSE">LICENSE</a>
+
 <span id=not_catspeak_features>================================================================================
 <b>Features</b> (<a href="#not_catspeak_features">link</a>) .txt
 ================================================================================</span>
@@ -140,48 +142,59 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
      possible.
 
  - <span class="control">**</span><b>Cute name and mascot</b><span class="control">**</span>.</div>
-<span id=scr_catspeak>================================================================================
-<b>scr_catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
+<span id=library_reference>================================================================================
+<b>Library Reference</b> (<a href="#library_reference">link</a>) .md
 ================================================================================</span>
-<span id=scr_catspeak_init>================================================================================
-<b>scr_catspeak_init</b> (<a href="#scr_catspeak_init">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_process>================================================================================
-<b>scr_catspeak_process</b> (<a href="#scr_catspeak_process">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_builtins>================================================================================
-<b>scr_catspeak_builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_error>================================================================================
-<b>scr_catspeak_error</b> (<a href="#scr_catspeak_error">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_vm>================================================================================
-<b>scr_catspeak_vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_ir>================================================================================
-<b>scr_catspeak_ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_intcode>================================================================================
-<b>scr_catspeak_intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_compiler>================================================================================
-<b>scr_catspeak_compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_lexer>================================================================================
-<b>scr_catspeak_lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_token>================================================================================
-<b>scr_catspeak_token</b> (<a href="#scr_catspeak_token">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_ascii_desc>================================================================================
-<b>scr_catspeak_ascii_desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_alloc>================================================================================
-<b>scr_catspeak_alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
-================================================================================</span>
-<span id=scr_catspeak_compatibility>================================================================================
-<b>scr_catspeak_compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
-================================================================================</span>
+<div>The following sections feature documentation for all public Catspeak functions,
+macros, and structs.</div>
+<span id=scr_catspeak>  <b>scr_catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
+  ==============================================================================</span>
+<div>  The primary user-facing interface for compiling and executing Catspeak
+  programs.</div>
+<span id=scr_catspeak_init>  <b>scr_catspeak_init</b> (<a href="#scr_catspeak_init">link</a>) .gml
+  ==============================================================================</span>
+<div>  Initialises core components of the Catspeak compiler. This includes
+  any uninitialised global variables.</div>
+<span id=scr_catspeak_process>  <b>scr_catspeak_process</b> (<a href="#scr_catspeak_process">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles the creation of Catspeak processes, and divides execution time
+  between them so each gets a change to progress during the current tick.</div>
+<span id=scr_catspeak_builtins>  <b>scr_catspeak_builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
+  ==============================================================================</span>
+<div>  Defines the standard library functions of the Catspeak prelude.</div>
+<span id=scr_catspeak_error>  <b>scr_catspeak_error</b> (<a href="#scr_catspeak_error">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles errors raised by the compiler and runtime environment.</div>
+<span id=scr_catspeak_vm>  <b>scr_catspeak_vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles the code execution stage of the Catspeak runtime.</div>
+<span id=scr_catspeak_ir>  <b>scr_catspeak_ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles the flat, executable representation of Catspeak programs.</div>
+<span id=scr_catspeak_intcode>  <b>scr_catspeak_intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
+  ==============================================================================</span>
+<div>  Boilerplate for the <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b> enum.</div>
+<span id=scr_catspeak_compiler>  <b>scr_catspeak_compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles the parsing and codegen stage of the Catspeak compiler.</div>
+<span id=scr_catspeak_lexer>  <b>scr_catspeak_lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles the lexical analysis stage of the Catspeak compiler.</div>
+<span id=scr_catspeak_token>  <b>scr_catspeak_token</b> (<a href="#scr_catspeak_token">link</a>) .gml
+  ==============================================================================</span>
+<div>  Boilerplate for the <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> enum.</div>
+<span id=scr_catspeak_ascii_desc>  <b>scr_catspeak_ascii_desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
+  ==============================================================================</span>
+<div>  Boilerplate for the <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> enum.</div>
+<span id=scr_catspeak_alloc>  <b>scr_catspeak_alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
+  ==============================================================================</span>
+<div>  Handles the allocation of dynamic resources that need to be garbage
+  collected manually.</div>
+<span id=scr_catspeak_compatibility>  <b>scr_catspeak_compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
+  ==============================================================================</span>
+<div>  Compatibility scripts from version 1.2.3. All functions are deprecated
+  and some have no implementations. There is no guarantee that old code
+  will behave exactly as it did in the past because of huge design changes.</div>
 <span id=LICENSE>================================================================================
 <b>LICENSE</b> (<a href="#LICENSE">link</a>) 
 ================================================================================</span>
@@ -205,8 +218,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-</div>
+SOFTWARE.</div>
 --------------------------------------------------------------------------------
 <span>
  |\ /|

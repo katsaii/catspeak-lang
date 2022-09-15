@@ -3,10 +3,112 @@ from itertools import chain
 import re
 
 ANONYMOUS_SECTION_COUNT = 0
-H1_SEPARATOR = "=" * 80
-H2_SEPARATOR = "-" * 80
+LINE_WIDTH = 80
 
-# Converts snake_case into Title Case.
+# Stores information about a specific section of the docs, such as its title,
+# description, and any definitions it may contain.
+class Section:
+    def __init__(self):
+        global ANONYMOUS_SECTION_COUNT
+        ANONYMOUS_SECTION_COUNT += 1
+        self.title = "anon_section_{}".format(ANONYMOUS_SECTION_COUNT)
+        self.extension = ""
+        self.description = ""
+        self.subsections = []
+        self.depth = 0
+
+    def render(self):
+        out = header(self.depth, self.title, self.extension)
+        if self.description.strip():
+            description = "\n".join(
+                " " * self.depth + line
+                for line in self.description.splitlines()
+            )
+            if self.extension in { "md", "txt", "gml" }:
+                description = simple_markdown(description)
+            out += "\n<div>" + description + "</div>"
+        for subsec in self.subsections:
+            out += subsec.render()
+        return out
+
+    def from_content(title, content):
+        sec = Section()
+        parts = title.split(".")
+        sec.title = parts[0]
+        if len(parts) > 1:
+            sec.extension = parts[1]
+        if sec.extension == "gml":
+            sec.description = "\n".join(
+                (line[1:] if line else "") for line in (
+                    line[len("//!"):] for line in content.splitlines()
+                    if line.startswith("//!")
+                )
+            )
+        else:
+            sec.description = content
+        return sec
+
+    def from_file(path):
+        with open(path) as file:
+            print("Reading documentation file: {}".format(path))
+            content = file.read()
+        title = basename(path)
+        return Section.from_content(title, content)
+
+# Stores information about the docs homepage and its sections.
+class Page:
+    sections = []
+
+    def add_section_string(self, title, content):
+        sec = Section.from_content(title, content)
+        self.sections.append(sec)
+
+    def add_section(self, path, parent=None):
+        sec = Section.from_file(path)
+        if parent:
+            parent.subsections.append(sec)
+            sec.depth = parent.depth + 2
+        else:
+            self.sections.append(sec)
+
+    def add_section_note(self, *names):
+        for name in names:
+            self.add_section("./src/notes/{scr}/{scr}.txt".format(scr=name))
+
+    def add_section_script(self, *names):
+        parent = self.sections[-1]
+        for name in names:
+            self.add_section(
+                "./src/scripts/{scr}/{scr}.gml".format(scr=name),
+                parent
+            )
+
+    def render(self):
+        def render_sections(sections):
+            out = ""
+            for sec in sections:
+                out += (
+                    "\n" + (" " * sec.depth) +
+                    " - <a href=\"#{}\">".format(sec.title) +
+                    snake_to_title(sec.title) +
+                    "</a>"
+                )
+                out += render_sections(sec.subsections)
+            return out
+        body = ""
+        body += "<b>{}</b>".format(HEADER)
+        body += "<span>{}</span>".format(ABSTRACT)
+        contents = header(0, "contents")
+        contents += render_sections(self.sections)
+        body += contents + "\n"
+        for sec in self.sections:
+            body += sec.render()
+        body += "\n" + ("-" * LINE_WIDTH) + "\n"
+        body += "<span>{}</span>".format(FOOTER)
+
+        return TEMPLATE.replace("%BODY%", body)
+
+# Converts snake_case into Title Case, with some exceptions for GML scripts.
 def snake_to_title(s):
     if s.startswith("scr_catspeak"):
         return s
@@ -31,90 +133,19 @@ def simple_markdown(s):
             r"""{}<a href="#\1">\1</a>{}""".format(control("["), control("]")), s)
     return s
 
-def header(sep, s, ext=""):
+# Creates a simple section header.
+def header(depth, s, ext=""):
+    indent = " " * depth
+    sep_top = "=" * (LINE_WIDTH if depth == 0 else 0)
+    sep_bot = ("=" if depth <= 2 else "-") * (LINE_WIDTH - depth)
     if ext:
         ext = "." + ext
     return (
-        "\n<span id={}>".format(s) + sep +
-        "\n<b>" + snake_to_title(s) + "</b>" +
+        "\n" + (indent if sep_top else "") + "<span id={}>".format(s) + sep_top +
+        ("\n" if sep_top else "") + indent + "<b>" + snake_to_title(s) + "</b>" +
         " (<a href=\"#{}\">link</a>) {}".format(s, ext) +
-        "\n" + sep + "</span>"
+        "\n" + indent + sep_bot + "</span>"
     )
-
-# Stores information about a specific section of the docs, such as its title,
-# description, and any definitions it may contain.
-class Section:
-    ANONYMOUS_SECTION_COUNT += 1
-    title = "anon_section_{}".format(ANONYMOUS_SECTION_COUNT)
-    extension = ""
-    description = ""
-
-    def render(self):
-        out = header(H1_SEPARATOR, self.title, self.extension)
-        if self.description.strip():
-            description = self.description
-            if self.extension in { "md", "txt" }:
-                description = simple_markdown(description)
-            out += "\n<div>" + description + "</div>"
-        return out
-
-    def from_content(title, content):
-        sec = Section()
-        parts = title.split(".")
-        sec.title = parts[0]
-        if len(parts) > 1:
-            sec.extension = parts[1]
-        if sec.extension == "gml":
-            pass
-        else:
-            sec.description = content
-        return sec
-
-    def from_file(path):
-        with open(path) as file:
-            print("Reading documentation file: {}".format(path))
-            content = file.read()
-        title = basename(path)
-        return Section.from_content(title, content)
-
-# Stores information about the docs homepage and its sections.
-class Page:
-    sections = []
-
-    def add_section_string(self, title, content):
-        sec = Section.from_content(title, content)
-        self.sections.append(sec)
-
-    def add_section(self, path):
-        sec = Section.from_file(path)
-        self.sections.append(sec)
-
-    def add_section_note(self, *names):
-        for name in names:
-            self.add_section("./src/notes/{scr}/{scr}.txt".format(scr=name))
-
-    def add_section_script(self, *names):
-        for name in names:
-            self.add_section("./src/scripts/{scr}/{scr}.gml".format(scr=name))
-
-    def render(self):
-        body = ""
-        body += "<b>{}</b>".format(HEADER)
-        body += "<span>{}</span>".format(ABSTRACT)
-        contents = header(H1_SEPARATOR, "contents")
-        for sec in self.sections:
-            contents += (
-                "\n - <a href=\"#{}\">".format(sec.title) +
-                snake_to_title(sec.title) +
-                "</a>"
-            )
-        body += contents
-        for sec in self.sections:
-            body += sec.render()
-        body += "\n" + H2_SEPARATOR + "\n"
-        body += "<span>{}</span>".format(FOOTER)
-
-        return TEMPLATE.replace("%BODY%", body)
 
 HEADER = r"""
      _             _                                                       
@@ -213,6 +244,10 @@ page = Page()
 page.add_section_note(
     "not_catspeak_features"
 )
+page.add_section_string("library_reference.md", """\
+The following sections feature documentation for all public Catspeak functions,
+macros, and structs.
+""")
 page.add_section_script(
     "scr_catspeak",
     "scr_catspeak_init",

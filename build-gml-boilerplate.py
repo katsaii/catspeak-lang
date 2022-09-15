@@ -55,7 +55,8 @@ def impl_enum(name, desc):
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
-        "//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
+        EMPTY_STRING,
+        "// NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
         EMPTY_STRING,
         "//# feather use syntax-errors",
         EMPTY_STRING,
@@ -141,7 +142,8 @@ def impl_enum_flags(name, desc):
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the `{}` enum.".format(typeName),
-        "//! NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
+        EMPTY_STRING,
+        "//NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
         EMPTY_STRING,
         "//# feather use syntax-errors",
         EMPTY_STRING,
