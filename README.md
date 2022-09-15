@@ -1,14 +1,22 @@
-<picture
-  align="right"
-  width="30%"
-  height="30%">
+<picture>
   <source
     media="(prefers-color-scheme: dark)"
+    align="right"
+    width="30%"
+    height="30%"
     srcset="./catspeak-logo-dark.svg">
   <source
     media="(prefers-color-scheme: light)"
+    align="right"
+    width="30%"
+    height="30%"
     srcset="./catspeak-logo.svg">
-  <img alt="Catspeak Logo" src="./catspeak-logo.svg">
+  <img
+    align="right"
+    width="30%"
+    height="30%"
+    alt="Catspeak Logo"
+    src="./catspeak-logo.svg">
 </picture>
 
 # The Catspeak Programming Language
