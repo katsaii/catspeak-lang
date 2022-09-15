@@ -61,13 +61,13 @@
 <b>
      _             _                                                       
     |  `.       .'  |     <span class="title">               _                             _    </span>
-    |    \_..._/    |     <span class="title">              | |                           | |   </span>
+    |    \_..._/    |               the <span class="title">| |                           | |   </span>
    /    _       _    \    <span class="title">  |\_/|  __ _ | |_  ___  _ __    ___   __ _ | | __</span>
 `-|    / \     / \    |-' <span class="title">  / __| / _` || __|/ __|| '_ \  / _ \ / _` || |/ /</span>
 --|    | |     | |    |-- <span class="title"> | (__ | (_| || |_ \__ \| |_) ||  __/| (_| ||   < </span>
  .'\   \_/ _._ \_/   /`.  <span class="title">  \___| \__,_| \__||___/| .__/  \___| \__,_||_|\_\</span>
-    `~..______    .~'     <span class="title">                   _____| | </span>(reference)           
-              `.  |       <span class="title">                  / ._____/                       </span>
+    `~..______    .~'     <span class="title">                   _____| |                       </span>
+              `.  |       <span class="title">                  / ._____/ </span>reference           
                 `.|       <span class="title">                  \_)                             </span>
 </b><span>
 A cross-platform, expression oriented programming language for implementing
@@ -79,56 +79,109 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 <span id=contents>================================================================================
 <b>Contents</b> (<a href="#contents">link</a>) 
 ================================================================================</span>
- - <a href="#features">Features</a>
+ - <a href="#not_catspeak_features">Features</a>
+ - <a href="#scr_catspeak">scr_catspeak</a>
+ - <a href="#scr_catspeak_init">scr_catspeak_init</a>
+ - <a href="#scr_catspeak_process">scr_catspeak_process</a>
+ - <a href="#scr_catspeak_builtins">scr_catspeak_builtins</a>
+ - <a href="#scr_catspeak_error">scr_catspeak_error</a>
+ - <a href="#scr_catspeak_vm">scr_catspeak_vm</a>
+ - <a href="#scr_catspeak_ir">scr_catspeak_ir</a>
+ - <a href="#scr_catspeak_intcode">scr_catspeak_intcode</a>
+ - <a href="#scr_catspeak_compiler">scr_catspeak_compiler</a>
+ - <a href="#scr_catspeak_lexer">scr_catspeak_lexer</a>
+ - <a href="#scr_catspeak_token">scr_catspeak_token</a>
+ - <a href="#scr_catspeak_ascii_desc">scr_catspeak_ascii_desc</a>
+ - <a href="#scr_catspeak_alloc">scr_catspeak_alloc</a>
+ - <a href="#scr_catspeak_compatibility">scr_catspeak_compatibility</a>
  - <a href="#LICENSE">LICENSE</a>
-<span id=features>================================================================================
-<b>Features</b> (<a href="#features">link</a>) .md
+<span id=not_catspeak_features>================================================================================
+<b>Features</b> (<a href="#not_catspeak_features">link</a>) .txt
 ================================================================================</span>
-<div>
- - [x] <b class="control">**</b><b>Minimal setup required</b><b class="control">**</b> ...
-       ready to use after installation. No need to call any weird "init" or
-       "update" functions.
+<div> - <span class="control">**</span><b>Minimal setup required</b><span class="control">**</span> ...
+     ready to use after installation. No need to call any weird "init" or
+     "update" functions.
 
- - [x] <b class="control">**</b><b>Cross-platform</b><b class="control">**</b> ...
-       allowing mods to work on any platform out of the box.
+ - <span class="control">**</span><b>Cross-platform</b><span class="control">**</span> ...
+     allowing mods to work on any platform out of the box.
 
- - [x] <b class="control">**</b><b>Sandboxed execution environment</b><b class="control">**</b> ...
-       so modders cannot modify the sensitive parts of your game you don't want
-       them to.
+ - <span class="control">**</span><b>Sandboxed execution environment</b><span class="control">**</span> ...
+     so modders cannot modify the sensitive parts of your game you don't want
+     them to.
 
- - [x] <b class="control">**</b><b>Customisable standard library</b><b class="control">**</b> ...
-       exposing only the functions you want modders to have access to.
+ - <span class="control">**</span><b>Customisable standard library</b><span class="control">**</span> ...
+     exposing only the functions you want modders to have access to.
 
- - [x] <b class="control">**</b><b>Performant runtime</b><b class="control">**</b> ...
-       capable of interpreting thousands of (and even tens of thousands of)
-       Catspeak scripts per step. (Dependent on the complexity of your scripts.)
+ - <span class="control">**</span><b>Performant runtime</b><span class="control">**</span> ...
+     capable of interpreting thousands of (and even tens of thousands of)
+     Catspeak scripts per step. (Dependent on the complexity of your scripts.)
 
- - [x] <b class="control">**</b><b>Asynchronous execution over multiple steps</b><b class="control">**</b> ...
-       making it impossible for modders to freeze your game with infinite loops.
+ - <span class="control">**</span><b>Asynchronous execution over multiple steps</b><span class="control">**</span> ...
+     making it impossible for modders to freeze your game with infinite loops.
 
- - [x] <b class="control">**</b><b>Intelligent process manager</b><b class="control">**</b> ...
-       so no <b class="control">`</b><code>time</code><b class="control">`</b> is wasted idly waiting for new Catspeak programs to appear.
+ - <span class="control">**</span><b>Intelligent process manager</b><span class="control">**</span> ...
+     so no time is wasted idly waiting for new Catspeak programs to appear.
 
- - [x] <b class="control">**</b><b>Failsafes to catch unresponsive Catspeak processes</b><b class="control">**</b>.
+ - <span class="control">**</span><b>Failsafes to catch unresponsive Catspeak processes</b><span class="control">**</span>.
 
- - [x] <b class="control">**</b><b>Call GML code from Catspeak</b><b class="control">**</b>.
+ - <span class="control">**</span><b>Call GML code from Catspeak</b><span class="control">**</span>.
 
- - [x] <b class="control">**</b><b>Call Catspeak code from GML</b><b class="control">**</b>.
+ - <span class="control">**</span><b>Call Catspeak code from GML</b><span class="control">**</span>.
 
- - [x] <b class="control">**</b><b>Simple, relaxed syntax</b><b class="control">**</b> ...
+ - <span class="control">**</span><b>Simple, relaxed syntax</b><span class="control">**</span> ...
        but still similar enough to GML to be familiar.
 
- - [ ] <b class="control">**</b><b>Pre-compilation of scripts</b><b class="control">**</b> ...
-       to both reduce load times when initialising mods or obfuscate production
-       code. (Coming Soon!)
+ - <span class="control">**</span><b>Pre-compilation of scripts</b><span class="control">**</span> ...
+     to both reduce load times when initialising mods or obfuscate production
+     code. (Coming Soon!)
 
- - [x] <b class="control">**</b><b>Compiler internals exposed and well-documented</b><b class="control">**</b> ...
-       in order to give power users as much control over their programs as
-       possible.
-<b class="control">``<b class="control">`</b><code></b><code>
- - [x] <b class="control">**</b><b>Cute name and mascot</b><b class="control">**</b>.
-</code><b class="control"></code><b class="control">`</b>``</b>
-</div>
+ - <span class="control">**</span><b>Compiler internals exposed and well-documented</b><span class="control">**</span> ...
+     in order to give power users as much control over their programs as
+     possible.
+
+ - <span class="control">**</span><b>Cute name and mascot</b><span class="control">**</span>.</div>
+<span id=scr_catspeak>================================================================================
+<b>scr_catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_init>================================================================================
+<b>scr_catspeak_init</b> (<a href="#scr_catspeak_init">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_process>================================================================================
+<b>scr_catspeak_process</b> (<a href="#scr_catspeak_process">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_builtins>================================================================================
+<b>scr_catspeak_builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_error>================================================================================
+<b>scr_catspeak_error</b> (<a href="#scr_catspeak_error">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_vm>================================================================================
+<b>scr_catspeak_vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_ir>================================================================================
+<b>scr_catspeak_ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_intcode>================================================================================
+<b>scr_catspeak_intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_compiler>================================================================================
+<b>scr_catspeak_compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_lexer>================================================================================
+<b>scr_catspeak_lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_token>================================================================================
+<b>scr_catspeak_token</b> (<a href="#scr_catspeak_token">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_ascii_desc>================================================================================
+<b>scr_catspeak_ascii_desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_alloc>================================================================================
+<b>scr_catspeak_alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
+================================================================================</span>
+<span id=scr_catspeak_compatibility>================================================================================
+<b>scr_catspeak_compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
+================================================================================</span>
 <span id=LICENSE>================================================================================
 <b>LICENSE</b> (<a href="#LICENSE">link</a>) 
 ================================================================================</span>

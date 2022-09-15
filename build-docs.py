@@ -8,16 +8,27 @@ H2_SEPARATOR = "-" * 80
 
 # Converts snake_case into Title Case.
 def snake_to_title(s):
+    if s.startswith("scr_catspeak"):
+        return s
+    elif s.startswith("not_catspeak_"):
+        s = s[len("not_catspeak_"):]
+    elif s == "not_catspeak":
+        return "Catspeak"
     return " ".join([x[0].upper() + x[1:] for x in s.split("_") if x])
 
 # Replaces simple markdown styles with HTML elements.
 def simple_markdown(s):
     def control(s):
-        return "<b class=\"control\">{}</b>".format(s)
+        bold = s == "`" or s == "```"
+        return "<{elem} class=\"control\">{}</{elem}>".format(s, elem="b" if bold else "span")
     s = re.sub(r"\*\*([^*]*)\*\*", r"{c}<b>\1</b>{c}".format(c=control("**")), s)
     s = re.sub(r"_([^_]*)_", r"{c}<em>\1</em>{c}".format(c=control("_")), s)
     s = re.sub(r"```([^`]*)```", r"{c}<code>\1</code>{c}".format(c=control("```")), s)
     s = re.sub(r"`([^`]+)`", r"{c}<code>\1</code>{c}".format(c=control("`")), s)
+    s = re.sub(r"\[([^]]+)\]\(([^)]+)\)",
+            r"""{}<a href="\2">\1</a>{}""".format(control("["), control("]")), s)
+    s = re.sub(r"\[([^]<>]+)\]",
+            r"""{}<a href="#\1">\1</a>{}""".format(control("["), control("]")), s)
     return s
 
 def header(sep, s, ext=""):
@@ -42,7 +53,7 @@ class Section:
         out = header(H1_SEPARATOR, self.title, self.extension)
         if self.description.strip():
             description = self.description
-            if self.extension == "md":
+            if self.extension in { "md", "txt" }:
                 description = simple_markdown(description)
             out += "\n<div>" + description + "</div>"
         return out
@@ -78,6 +89,14 @@ class Page:
         sec = Section.from_file(path)
         self.sections.append(sec)
 
+    def add_section_note(self, *names):
+        for name in names:
+            self.add_section("./src/notes/{scr}/{scr}.txt".format(scr=name))
+
+    def add_section_script(self, *names):
+        for name in names:
+            self.add_section("./src/scripts/{scr}/{scr}.gml".format(scr=name))
+
     def render(self):
         body = ""
         body += "<b>{}</b>".format(HEADER)
@@ -100,13 +119,13 @@ class Page:
 HEADER = r"""
      _             _                                                       
     |  `.       .'  |     <span class="title">               _                             _    </span>
-    |    \_..._/    |     <span class="title">              | |                           | |   </span>
+    |    \_..._/    |               the <span class="title">| |                           | |   </span>
    /    _       _    \    <span class="title">  |\_/|  __ _ | |_  ___  _ __    ___   __ _ | | __</span>
 `-|    / \     / \    |-' <span class="title">  / __| / _` || __|/ __|| '_ \  / _ \ / _` || |/ /</span>
 --|    | |     | |    |-- <span class="title"> | (__ | (_| || |_ \__ \| |_) ||  __/| (_| ||   < </span>
  .'\   \_/ _._ \_/   /`.  <span class="title">  \___| \__,_| \__||___/| .__/  \___| \__,_||_|\_\</span>
-    `~..______    .~'     <span class="title">                   _____| | </span>(reference)           
-              `.  |       <span class="title">                  / ._____/                       </span>
+    `~..______    .~'     <span class="title">                   _____| |                       </span>
+              `.  |       <span class="title">                  / ._____/ </span>reference           
                 `.|       <span class="title">                  \_)                             </span>
 """
 
@@ -191,52 +210,25 @@ TEMPLATE = """
 """
 
 page = Page()
-page.add_section_string("features.md", """\
-
- - [x] **Minimal setup required** ...
-       ready to use after installation. No need to call any weird "init" or
-       "update" functions.
-
- - [x] **Cross-platform** ...
-       allowing mods to work on any platform out of the box.
-
- - [x] **Sandboxed execution environment** ...
-       so modders cannot modify the sensitive parts of your game you don't want
-       them to.
-
- - [x] **Customisable standard library** ...
-       exposing only the functions you want modders to have access to.
-
- - [x] **Performant runtime** ...
-       capable of interpreting thousands of (and even tens of thousands of)
-       Catspeak scripts per step. (Dependent on the complexity of your scripts.)
-
- - [x] **Asynchronous execution over multiple steps** ...
-       making it impossible for modders to freeze your game with infinite loops.
-
- - [x] **Intelligent process manager** ...
-       so no `time` is wasted idly waiting for new Catspeak programs to appear.
-
- - [x] **Failsafes to catch unresponsive Catspeak processes**.
-
- - [x] **Call GML code from Catspeak**.
-
- - [x] **Call Catspeak code from GML**.
-
- - [x] **Simple, relaxed syntax** ...
-       but still similar enough to GML to be familiar.
-
- - [ ] **Pre-compilation of scripts** ...
-       to both reduce load times when initialising mods or obfuscate production
-       code. (Coming Soon!)
-
- - [x] **Compiler internals exposed and well-documented** ...
-       in order to give power users as much control over their programs as
-       possible.
-```
- - [x] **Cute name and mascot**.
-```
-""")
+page.add_section_note(
+    "not_catspeak_features"
+)
+page.add_section_script(
+    "scr_catspeak",
+    "scr_catspeak_init",
+    "scr_catspeak_process",
+    "scr_catspeak_builtins",
+    "scr_catspeak_error",
+    "scr_catspeak_vm",
+    "scr_catspeak_ir",
+    "scr_catspeak_intcode",
+    "scr_catspeak_compiler",
+    "scr_catspeak_lexer",
+    "scr_catspeak_token",
+    "scr_catspeak_ascii_desc",
+    "scr_catspeak_alloc",
+    "scr_catspeak_compatibility",
+)
 page.add_section("./LICENSE")
 
 with open("docs/index.html", "w") as file:

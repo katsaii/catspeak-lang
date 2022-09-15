@@ -1,0 +1,42 @@
+ - **Minimal setup required** ...
+     ready to use after installation. No need to call any weird "init" or
+     "update" functions.
+
+ - **Cross-platform** ...
+     allowing mods to work on any platform out of the box.
+
+ - **Sandboxed execution environment** ...
+     so modders cannot modify the sensitive parts of your game you don't want
+     them to.
+
+ - **Customisable standard library** ...
+     exposing only the functions you want modders to have access to.
+
+ - **Performant runtime** ...
+     capable of interpreting thousands of (and even tens of thousands of)
+     Catspeak scripts per step. (Dependent on the complexity of your scripts.)
+
+ - **Asynchronous execution over multiple steps** ...
+     making it impossible for modders to freeze your game with infinite loops.
+
+ - **Intelligent process manager** ...
+     so no time is wasted idly waiting for new Catspeak programs to appear.
+
+ - **Failsafes to catch unresponsive Catspeak processes**.
+
+ - **Call GML code from Catspeak**.
+
+ - **Call Catspeak code from GML**.
+
+ - **Simple, relaxed syntax** ...
+       but still similar enough to GML to be familiar.
+
+ - **Pre-compilation of scripts** ...
+     to both reduce load times when initialising mods or obfuscate production
+     code. (Coming Soon!)
+
+ - **Compiler internals exposed and well-documented** ...
+     in order to give power users as much control over their programs as
+     possible.
+
+ - **Cute name and mascot**.
