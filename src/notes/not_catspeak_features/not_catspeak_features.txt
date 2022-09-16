@@ -29,7 +29,7 @@
  - **Call Catspeak code from GML**.
 
  - **Simple, relaxed syntax** ...
-       but still similar enough to GML to be familiar.
+     but still similar enough to GML to be familiar.
 
  - **Pre-compilation of scripts** ...
      to both reduce load times when initialising mods or obfuscate production

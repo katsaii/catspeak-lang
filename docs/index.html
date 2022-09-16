@@ -52,7 +52,7 @@
       }
 
       .title { --c : #526666 }
-      .control { opacity : 0.75 }
+      .control { opacity : 0.5 }
       .short-pause { height : 2em }
     </style>
   </head>
@@ -81,20 +81,87 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 ================================================================================</span>
  - <a href="#not_catspeak_features">Features</a>
  - <a href="#library_reference">Library Reference</a>
-   - <a href="#scr_catspeak">scr_catspeak</a>
-   - <a href="#scr_catspeak_init">scr_catspeak_init</a>
-   - <a href="#scr_catspeak_process">scr_catspeak_process</a>
-   - <a href="#scr_catspeak_builtins">scr_catspeak_builtins</a>
-   - <a href="#scr_catspeak_error">scr_catspeak_error</a>
-   - <a href="#scr_catspeak_vm">scr_catspeak_vm</a>
-   - <a href="#scr_catspeak_ir">scr_catspeak_ir</a>
-   - <a href="#scr_catspeak_intcode">scr_catspeak_intcode</a>
-   - <a href="#scr_catspeak_compiler">scr_catspeak_compiler</a>
-   - <a href="#scr_catspeak_lexer">scr_catspeak_lexer</a>
-   - <a href="#scr_catspeak_token">scr_catspeak_token</a>
-   - <a href="#scr_catspeak_ascii_desc">scr_catspeak_ascii_desc</a>
-   - <a href="#scr_catspeak_alloc">scr_catspeak_alloc</a>
-   - <a href="#scr_catspeak_compatibility">scr_catspeak_compatibility</a>
+   - <a href="#scr_catspeak">Scr Catspeak</a>
+     - <a href="#catspeak_execute">function catspeak_execute</a>
+     - <a href="#catspeak_compile_buffer">function catspeak_compile_buffer</a>
+     - <a href="#catspeak_compile_string">function catspeak_compile_string</a>
+     - <a href="#catspeak_create_buffer_from_string">function catspeak_create_buffer_from_string</a>
+     - <a href="#catspeak_config">function catspeak_config</a>
+   - <a href="#scr_catspeak_init">Scr Catspeak Init</a>
+     - <a href="#catspeak_force_init">function catspeak_force_init</a>
+   - <a href="#scr_catspeak_process">Scr Catspeak Process</a>
+     - <a href="#CatspeakProcess">function CatspeakProcess</a>
+     - <a href="#CatspeakGMLProcess">function CatspeakGMLProcess</a>
+     - <a href="#CatspeakCompilerProcess">function CatspeakCompilerProcess</a>
+     - <a href="#CatspeakVMProcess">function CatspeakVMProcess</a>
+   - <a href="#scr_catspeak_builtins">Scr Catspeak Builtins</a>
+     - <a href="#catspeak_string_to_builtin">function catspeak_string_to_builtin</a>
+     - <a href="#catspeak_string_is_builtin">function catspeak_string_is_builtin</a>
+   - <a href="#scr_catspeak_error">Scr Catspeak Error</a>
+     - <a href="#CatspeakLocation">function CatspeakLocation</a>
+     - <a href="#CatspeakError">function CatspeakError</a>
+     - <a href="#catspeak_assert">function catspeak_assert</a>
+   - <a href="#scr_catspeak_vm">Scr Catspeak Vm</a>
+     - <a href="#CatspeakVM">function CatspeakVM</a>
+   - <a href="#scr_catspeak_ir">Scr Catspeak Ir</a>
+     - <a href="#CatspeakFunction">function CatspeakFunction</a>
+     - <a href="#CatspeakBlock">function CatspeakBlock</a>
+     - <a href="#CatspeakAccessor">function CatspeakAccessor</a>
+     - <a href="#CatspeakReadOnlyAccessor">function CatspeakReadOnlyAccessor</a>
+     - <a href="#CatspeakTempRegisterAccessor">function CatspeakTempRegisterAccessor</a>
+   - <a href="#scr_catspeak_intcode">Scr Catspeak Intcode</a>
+     - <a href="#catspeak_intcode_show">function catspeak_intcode_show</a>
+     - <a href="#catspeak_intcode_read">function catspeak_intcode_read</a>
+     - <a href="#catspeak_intcode_valueof">function catspeak_intcode_valueof</a>
+     - <a href="#catspeak_intcode_sizeof">function catspeak_intcode_sizeof</a>
+   - <a href="#scr_catspeak_compiler">Scr Catspeak Compiler</a>
+     - <a href="#CatspeakCompiler">function CatspeakCompiler</a>
+     - <a href="#CatspeakLocalScope">function CatspeakLocalScope</a>
+     - <a href="#CatspeakGlobalAccessor">function CatspeakGlobalAccessor</a>
+     - <a href="#CatspeakCollectionAccessor">function CatspeakCollectionAccessor</a>
+   - <a href="#scr_catspeak_lexer">Scr Catspeak Lexer</a>
+     - <a href="#CatspeakLexer">function CatspeakLexer</a>
+     - <a href="#catspeak_token_is_operator">function catspeak_token_is_operator</a>
+     - <a href="#catspeak_token_is_expression">function catspeak_token_is_expression</a>
+     - <a href="#catspeak_token_skips_newline">function catspeak_token_skips_newline</a>
+     - <a href="#catspeak_string_to_token_keyword">function catspeak_string_to_token_keyword</a>
+     - <a href="#catspeak_byte_to_token">function catspeak_byte_to_token</a>
+     - <a href="#catspeak_byte_to_ascii_desc">function catspeak_byte_to_ascii_desc</a>
+   - <a href="#scr_catspeak_token">Scr Catspeak Token</a>
+     - <a href="#catspeak_token_show">function catspeak_token_show</a>
+     - <a href="#catspeak_token_read">function catspeak_token_read</a>
+     - <a href="#catspeak_token_valueof">function catspeak_token_valueof</a>
+     - <a href="#catspeak_token_sizeof">function catspeak_token_sizeof</a>
+   - <a href="#scr_catspeak_ascii_desc">Scr Catspeak Ascii Desc</a>
+     - <a href="#catspeak_ascii_desc_contains">function catspeak_ascii_desc_contains</a>
+     - <a href="#catspeak_ascii_desc_equals">function catspeak_ascii_desc_equals</a>
+     - <a href="#catspeak_ascii_desc_intersects">function catspeak_ascii_desc_intersects</a>
+     - <a href="#catspeak_ascii_desc_show">function catspeak_ascii_desc_show</a>
+   - <a href="#scr_catspeak_alloc">Scr Catspeak Alloc</a>
+     - <a href="#catspeak_alloc_ds_map">function catspeak_alloc_ds_map</a>
+     - <a href="#catspeak_alloc_ds_list">function catspeak_alloc_ds_list</a>
+     - <a href="#catspeak_alloc_ds_stack">function catspeak_alloc_ds_stack</a>
+     - <a href="#catspeak_alloc_ds_priority">function catspeak_alloc_ds_priority</a>
+     - <a href="#catspeak_alloc">function catspeak_alloc</a>
+     - <a href="#catspeak_collect">function catspeak_collect</a>
+   - <a href="#scr_catspeak_compatibility">Scr Catspeak Compatibility</a>
+     - <a href="#catspeak_start_frame">function catspeak_start_frame</a>
+     - <a href="#catspeak_update">function catspeak_update</a>
+     - <a href="#catspeak_set_error_script">function catspeak_set_error_script</a>
+     - <a href="#catspeak_set_max_iterations">function catspeak_set_max_iterations</a>
+     - <a href="#catspeak_set_frame_allocation">function catspeak_set_frame_allocation</a>
+     - <a href="#catspeak_set_frame_threshold">function catspeak_set_frame_threshold</a>
+     - <a href="#catspeak_session_create">function catspeak_session_create</a>
+     - <a href="#catspeak_session_destroy">function catspeak_session_destroy</a>
+     - <a href="#catspeak_session_set_source">function catspeak_session_set_source</a>
+     - <a href="#catspeak_session_enable_global_access">function catspeak_session_enable_global_access</a>
+     - <a href="#catspeak_session_enable_instance_access">function catspeak_session_enable_instance_access</a>
+     - <a href="#catspeak_session_enable_implicit_return">function catspeak_session_enable_implicit_return</a>
+     - <a href="#catspeak_session_enable_shared_workspace">function catspeak_session_enable_shared_workspace</a>
+     - <a href="#catspeak_session_add_constant">function catspeak_session_add_constant</a>
+     - <a href="#catspeak_session_add_function">function catspeak_session_add_function</a>
+     - <a href="#catspeak_session_create_process">function catspeak_session_create_process</a>
+     - <a href="#catspeak_session_create_process_greedy">function catspeak_session_create_process_greedy</a>
  - <a href="#LICENSE">LICENSE</a>
 
 <span id=not_catspeak_features>================================================================================
@@ -131,7 +198,7 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
  - <span class="control">**</span><b>Call Catspeak code from GML</b><span class="control">**</span>.
 
  - <span class="control">**</span><b>Simple, relaxed syntax</b><span class="control">**</span> ...
-       but still similar enough to GML to be familiar.
+     but still similar enough to GML to be familiar.
 
  - <span class="control">**</span><b>Pre-compilation of scripts</b><span class="control">**</span> ...
      to both reduce load times when initialising mods or obfuscate production
@@ -143,58 +210,259 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 
  - <span class="control">**</span><b>Cute name and mascot</b><span class="control">**</span>.</div>
 <span id=library_reference>================================================================================
-<b>Library Reference</b> (<a href="#library_reference">link</a>) .md
+<b>Library Reference</b> (<a href="#library_reference">link</a>) 
 ================================================================================</span>
 <div>The following sections feature documentation for all public Catspeak functions,
 macros, and structs.</div>
-<span id=scr_catspeak>  <b>scr_catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
+<span id=scr_catspeak>  <b>Scr Catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
   ==============================================================================</span>
 <div>  The primary user-facing interface for compiling and executing Catspeak
   programs.</div>
-<span id=scr_catspeak_init>  <b>scr_catspeak_init</b> (<a href="#scr_catspeak_init">link</a>) .gml
+<span id=catspeak_execute>    <b>function catspeak_execute</b> (<a href="#catspeak_execute">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_compile_buffer>    <b>function catspeak_compile_buffer</b> (<a href="#catspeak_compile_buffer">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_compile_string>    <b>function catspeak_compile_string</b> (<a href="#catspeak_compile_string">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_create_buffer_from_string>    <b>function catspeak_create_buffer_from_string</b> (<a href="#catspeak_create_buffer_from_string">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_config>    <b>function catspeak_config</b> (<a href="#catspeak_config">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_init>  <b>Scr Catspeak Init</b> (<a href="#scr_catspeak_init">link</a>) .gml
   ==============================================================================</span>
 <div>  Initialises core components of the Catspeak compiler. This includes
   any uninitialised global variables.</div>
-<span id=scr_catspeak_process>  <b>scr_catspeak_process</b> (<a href="#scr_catspeak_process">link</a>) .gml
+<span id=catspeak_force_init>    <b>function catspeak_force_init</b> (<a href="#catspeak_force_init">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_process>  <b>Scr Catspeak Process</b> (<a href="#scr_catspeak_process">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the creation of Catspeak processes, and divides execution time
   between them so each gets a change to progress during the current tick.</div>
-<span id=scr_catspeak_builtins>  <b>scr_catspeak_builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
+<span id=CatspeakProcess>    <b>function CatspeakProcess</b> (<a href="#CatspeakProcess">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakGMLProcess>    <b>function CatspeakGMLProcess</b> (<a href="#CatspeakGMLProcess">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakCompilerProcess>    <b>function CatspeakCompilerProcess</b> (<a href="#CatspeakCompilerProcess">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakVMProcess>    <b>function CatspeakVMProcess</b> (<a href="#CatspeakVMProcess">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_builtins>  <b>Scr Catspeak Builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
   ==============================================================================</span>
 <div>  Defines the standard library functions of the Catspeak prelude.</div>
-<span id=scr_catspeak_error>  <b>scr_catspeak_error</b> (<a href="#scr_catspeak_error">link</a>) .gml
+<span id=catspeak_string_to_builtin>    <b>function catspeak_string_to_builtin</b> (<a href="#catspeak_string_to_builtin">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_string_is_builtin>    <b>function catspeak_string_is_builtin</b> (<a href="#catspeak_string_is_builtin">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_error>  <b>Scr Catspeak Error</b> (<a href="#scr_catspeak_error">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles errors raised by the compiler and runtime environment.</div>
-<span id=scr_catspeak_vm>  <b>scr_catspeak_vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
+<span id=CatspeakLocation>    <b>function CatspeakLocation</b> (<a href="#CatspeakLocation">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakError>    <b>function CatspeakError</b> (<a href="#CatspeakError">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_assert>    <b>function catspeak_assert</b> (<a href="#catspeak_assert">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_vm>  <b>Scr Catspeak Vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the code execution stage of the Catspeak runtime.</div>
-<span id=scr_catspeak_ir>  <b>scr_catspeak_ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
+<span id=CatspeakVM>    <b>function CatspeakVM</b> (<a href="#CatspeakVM">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_ir>  <b>Scr Catspeak Ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the flat, executable representation of Catspeak programs.</div>
-<span id=scr_catspeak_intcode>  <b>scr_catspeak_intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
+<span id=CatspeakFunction>    <b>function CatspeakFunction</b> (<a href="#CatspeakFunction">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakBlock>    <b>function CatspeakBlock</b> (<a href="#CatspeakBlock">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakAccessor>    <b>function CatspeakAccessor</b> (<a href="#CatspeakAccessor">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakReadOnlyAccessor>    <b>function CatspeakReadOnlyAccessor</b> (<a href="#CatspeakReadOnlyAccessor">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakTempRegisterAccessor>    <b>function CatspeakTempRegisterAccessor</b> (<a href="#CatspeakTempRegisterAccessor">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_intcode>  <b>Scr Catspeak Intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b> enum.</div>
-<span id=scr_catspeak_compiler>  <b>scr_catspeak_compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
+<span id=catspeak_intcode_show>    <b>function catspeak_intcode_show</b> (<a href="#catspeak_intcode_show">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_intcode_read>    <b>function catspeak_intcode_read</b> (<a href="#catspeak_intcode_read">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_intcode_valueof>    <b>function catspeak_intcode_valueof</b> (<a href="#catspeak_intcode_valueof">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_intcode_sizeof>    <b>function catspeak_intcode_sizeof</b> (<a href="#catspeak_intcode_sizeof">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_compiler>  <b>Scr Catspeak Compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the parsing and codegen stage of the Catspeak compiler.</div>
-<span id=scr_catspeak_lexer>  <b>scr_catspeak_lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
+<span id=CatspeakCompiler>    <b>function CatspeakCompiler</b> (<a href="#CatspeakCompiler">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakLocalScope>    <b>function CatspeakLocalScope</b> (<a href="#CatspeakLocalScope">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakGlobalAccessor>    <b>function CatspeakGlobalAccessor</b> (<a href="#CatspeakGlobalAccessor">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=CatspeakCollectionAccessor>    <b>function CatspeakCollectionAccessor</b> (<a href="#CatspeakCollectionAccessor">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_lexer>  <b>Scr Catspeak Lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the lexical analysis stage of the Catspeak compiler.</div>
-<span id=scr_catspeak_token>  <b>scr_catspeak_token</b> (<a href="#scr_catspeak_token">link</a>) .gml
+<span id=CatspeakLexer>    <b>function CatspeakLexer</b> (<a href="#CatspeakLexer">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_token_is_operator>    <b>function catspeak_token_is_operator</b> (<a href="#catspeak_token_is_operator">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_token_is_expression>    <b>function catspeak_token_is_expression</b> (<a href="#catspeak_token_is_expression">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_token_skips_newline>    <b>function catspeak_token_skips_newline</b> (<a href="#catspeak_token_skips_newline">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_string_to_token_keyword>    <b>function catspeak_string_to_token_keyword</b> (<a href="#catspeak_string_to_token_keyword">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_byte_to_token>    <b>function catspeak_byte_to_token</b> (<a href="#catspeak_byte_to_token">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_byte_to_ascii_desc>    <b>function catspeak_byte_to_ascii_desc</b> (<a href="#catspeak_byte_to_ascii_desc">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_token>  <b>Scr Catspeak Token</b> (<a href="#scr_catspeak_token">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> enum.</div>
-<span id=scr_catspeak_ascii_desc>  <b>scr_catspeak_ascii_desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
+<span id=catspeak_token_show>    <b>function catspeak_token_show</b> (<a href="#catspeak_token_show">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_token_read>    <b>function catspeak_token_read</b> (<a href="#catspeak_token_read">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_token_valueof>    <b>function catspeak_token_valueof</b> (<a href="#catspeak_token_valueof">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_token_sizeof>    <b>function catspeak_token_sizeof</b> (<a href="#catspeak_token_sizeof">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_ascii_desc>  <b>Scr Catspeak Ascii Desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> enum.</div>
-<span id=scr_catspeak_alloc>  <b>scr_catspeak_alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
+<span id=catspeak_ascii_desc_contains>    <b>function catspeak_ascii_desc_contains</b> (<a href="#catspeak_ascii_desc_contains">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_ascii_desc_equals>    <b>function catspeak_ascii_desc_equals</b> (<a href="#catspeak_ascii_desc_equals">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_ascii_desc_intersects>    <b>function catspeak_ascii_desc_intersects</b> (<a href="#catspeak_ascii_desc_intersects">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_ascii_desc_show>    <b>function catspeak_ascii_desc_show</b> (<a href="#catspeak_ascii_desc_show">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_alloc>  <b>Scr Catspeak Alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the allocation of dynamic resources that need to be garbage
   collected manually.</div>
-<span id=scr_catspeak_compatibility>  <b>scr_catspeak_compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
+<span id=catspeak_alloc_ds_map>    <b>function catspeak_alloc_ds_map</b> (<a href="#catspeak_alloc_ds_map">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_alloc_ds_list>    <b>function catspeak_alloc_ds_list</b> (<a href="#catspeak_alloc_ds_list">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_alloc_ds_stack>    <b>function catspeak_alloc_ds_stack</b> (<a href="#catspeak_alloc_ds_stack">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_alloc_ds_priority>    <b>function catspeak_alloc_ds_priority</b> (<a href="#catspeak_alloc_ds_priority">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_alloc>    <b>function catspeak_alloc</b> (<a href="#catspeak_alloc">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_collect>    <b>function catspeak_collect</b> (<a href="#catspeak_collect">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=scr_catspeak_compatibility>  <b>Scr Catspeak Compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
   ==============================================================================</span>
 <div>  Compatibility scripts from version 1.2.3. All functions are deprecated
   and some have no implementations. There is no guarantee that old code
   will behave exactly as it did in the past because of huge design changes.</div>
+<span id=catspeak_start_frame>    <b>function catspeak_start_frame</b> (<a href="#catspeak_start_frame">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_update>    <b>function catspeak_update</b> (<a href="#catspeak_update">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_set_error_script>    <b>function catspeak_set_error_script</b> (<a href="#catspeak_set_error_script">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_set_max_iterations>    <b>function catspeak_set_max_iterations</b> (<a href="#catspeak_set_max_iterations">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_set_frame_allocation>    <b>function catspeak_set_frame_allocation</b> (<a href="#catspeak_set_frame_allocation">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_set_frame_threshold>    <b>function catspeak_set_frame_threshold</b> (<a href="#catspeak_set_frame_threshold">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_create>    <b>function catspeak_session_create</b> (<a href="#catspeak_session_create">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_destroy>    <b>function catspeak_session_destroy</b> (<a href="#catspeak_session_destroy">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_set_source>    <b>function catspeak_session_set_source</b> (<a href="#catspeak_session_set_source">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_enable_global_access>    <b>function catspeak_session_enable_global_access</b> (<a href="#catspeak_session_enable_global_access">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_enable_instance_access>    <b>function catspeak_session_enable_instance_access</b> (<a href="#catspeak_session_enable_instance_access">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_enable_implicit_return>    <b>function catspeak_session_enable_implicit_return</b> (<a href="#catspeak_session_enable_implicit_return">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_enable_shared_workspace>    <b>function catspeak_session_enable_shared_workspace</b> (<a href="#catspeak_session_enable_shared_workspace">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_add_constant>    <b>function catspeak_session_add_constant</b> (<a href="#catspeak_session_add_constant">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_add_function>    <b>function catspeak_session_add_function</b> (<a href="#catspeak_session_add_function">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_create_process>    <b>function catspeak_session_create_process</b> (<a href="#catspeak_session_create_process">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
+<span id=catspeak_session_create_process_greedy>    <b>function catspeak_session_create_process_greedy</b> (<a href="#catspeak_session_create_process_greedy">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
 <span id=LICENSE>================================================================================
 <b>LICENSE</b> (<a href="#LICENSE">link</a>) 
 ================================================================================</span>

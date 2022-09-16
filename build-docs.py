@@ -11,14 +11,15 @@ class Section:
     def __init__(self):
         global ANONYMOUS_SECTION_COUNT
         ANONYMOUS_SECTION_COUNT += 1
-        self.title = "anon_section_{}".format(ANONYMOUS_SECTION_COUNT)
+        self.id = "anon_section_{}".format(ANONYMOUS_SECTION_COUNT)
+        self.title = None
         self.extension = ""
         self.description = ""
         self.subsections = []
         self.depth = 0
 
     def render(self):
-        out = header(self.depth, self.title, self.extension)
+        out = header(self.depth, self.id, self.title, self.extension)
         if self.description.strip():
             description = "\n".join(
                 " " * self.depth + line
@@ -34,7 +35,7 @@ class Section:
     def from_content(title, content):
         sec = Section()
         parts = title.split(".")
-        sec.title = parts[0]
+        sec.id = parts[0]
         if len(parts) > 1:
             sec.extension = parts[1]
         if sec.extension == "gml":
@@ -44,6 +45,18 @@ class Section:
                     if line.startswith("//!")
                 )
             )
+            for line in content.splitlines():
+                if match := re.search('^\s*function\s*([A-Za-z0-9_]+)', line):
+                    name = match.group(1)
+                    if name.startswith("__"):
+                        continue
+                    print(match.group(1), "from", line)
+                    doc = "Undocumented."
+                    subsec = Section.from_content(name, doc)
+                    subsec.title = "function " + name
+                else:
+                    continue
+                sec.subsections.append(subsec)
         else:
             sec.description = content
         return sec
@@ -54,6 +67,11 @@ class Section:
             content = file.read()
         title = basename(path)
         return Section.from_content(title, content)
+
+    def update_depths(self):
+        for subsec in self.subsections:
+            subsec.depth = self.depth + 2
+            subsec.update_depths()
 
 # Stores information about the docs homepage and its sections.
 class Page:
@@ -67,7 +85,7 @@ class Page:
         sec = Section.from_file(path)
         if parent:
             parent.subsections.append(sec)
-            sec.depth = parent.depth + 2
+            parent.update_depths()
         else:
             self.sections.append(sec)
 
@@ -89,8 +107,8 @@ class Page:
             for sec in sections:
                 out += (
                     "\n" + (" " * sec.depth) +
-                    " - <a href=\"#{}\">".format(sec.title) +
-                    snake_to_title(sec.title) +
+                    " - <a href=\"#{}\">".format(sec.id) +
+                    (sec.title or snake_to_title(sec.id)) +
                     "</a>"
                 )
                 out += render_sections(sec.subsections)
@@ -110,9 +128,7 @@ class Page:
 
 # Converts snake_case into Title Case, with some exceptions for GML scripts.
 def snake_to_title(s):
-    if s.startswith("scr_catspeak"):
-        return s
-    elif s.startswith("not_catspeak_"):
+    if s.startswith("not_catspeak_"):
         s = s[len("not_catspeak_"):]
     elif s == "not_catspeak":
         return "Catspeak"
@@ -134,16 +150,17 @@ def simple_markdown(s):
     return s
 
 # Creates a simple section header.
-def header(depth, s, ext=""):
+def header(depth, id, title=None, ext=""):
+    title_text = title or snake_to_title(id)
     indent = " " * depth
     sep_top = "=" * (LINE_WIDTH if depth == 0 else 0)
     sep_bot = ("=" if depth <= 2 else "-") * (LINE_WIDTH - depth)
     if ext:
         ext = "." + ext
     return (
-        "\n" + (indent if sep_top else "") + "<span id={}>".format(s) + sep_top +
-        ("\n" if sep_top else "") + indent + "<b>" + snake_to_title(s) + "</b>" +
-        " (<a href=\"#{}\">link</a>) {}".format(s, ext) +
+        "\n" + (indent if sep_top else "") + "<span id={}>".format(id) + sep_top +
+        ("\n" if sep_top else "") + indent + "<b>" + title_text + "</b>" +
+        " (<a href=\"#{}\">link</a>) {}".format(id, ext) +
         "\n" + indent + sep_bot + "</span>"
     )
 
@@ -228,7 +245,7 @@ TEMPLATE = """
       }
 
       .title { --c : #526666 }
-      .control { opacity : 0.75 }
+      .control { opacity : 0.5 }
       .short-pause { height : 2em }
     </style>
   </head>
@@ -244,7 +261,7 @@ page = Page()
 page.add_section_note(
     "not_catspeak_features"
 )
-page.add_section_string("library_reference.md", """\
+page.add_section_string("library_reference", """\
 The following sections feature documentation for all public Catspeak functions,
 macros, and structs.
 """)
