@@ -33,21 +33,22 @@ class Section:
         return out
 
     def from_content(title, content):
+        content = content or "Undocumented."
         sec = Section()
         parts = title.split(".")
         sec.id = parts[0]
         if len(parts) > 1:
             sec.extension = parts[1]
         if sec.extension == "gml":
-            sec.title = sec.id
+            sec.title = "<span class=\"name-script\">" + sec.id + "</span>"
             sec.description = "\n".join(
                 (line[1:] if line else "") for line in (
                     line[len("//!"):] for line in content.splitlines()
                     if line.startswith("//!")
                 )
             )
+            doc = ""
             for line in content.splitlines():
-                doc = "Undocumented."
                 if match := re.search('^\s*function\s*([A-Z]+[A-Za-z0-9_]*)', line):
                     name = match.group(1)
                     prefix = "struct "
@@ -66,16 +67,31 @@ class Section:
                 elif match := re.search('^\s*static\s*([A-Za-z0-9_]+)', line):
                     name = match.group(1)
                     prefix = "field "
+                elif match := re.search('^\s*///(.*)', line):
+                    doc_line = match.group(1)
+                    if doc_line and doc_line[0] == " ":
+                        # skip first space
+                        doc_line = doc_line[1:]
+                    if doc:
+                        doc += "\n"
+                    doc += doc_line
+                    continue
                 else:
                     continue
-                if name.startswith("__"):
+                this_doc = doc
+                doc = ""
+                if name.startswith("__") or "@ignore" in this_doc:
                     continue
-                subsec = Section.from_content(name, doc)
-                subsec.title = prefix + name
+                subsec = Section.from_content(name, this_doc)
+                subsec.extension = "gml"
+                subsec.title = (
+                    "<span class=\"keyword\">" + prefix + "</span>" +
+                    "<span class=\"name\">" + name + "</span>"
+                )
                 if prefix.startswith("method") or prefix.startswith("field"):
                     # add methods to the previous definition
                     subsec_parent = sec.subsections[-1]
-                    if (subsec_parent.title or "").startswith("function"):
+                    if "function " in (subsec_parent.title or ""):
                         # if the previous context was a function, then we dont
                         # want to include it in the documentation
                         continue
@@ -164,13 +180,18 @@ def simple_markdown(s):
     def control(s):
         bold = s == "`" or s == "```"
         return "<{elem} class=\"control\">{}</{elem}>".format(s, elem="b" if bold else "span")
+    s = re.sub(r"@deprecated", r"{}<b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>".format(control("@")), s)
+    s = re.sub(r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_]*)\]", r"{}<b>param</b> <i>(optional)</i> <code>\2</code><b>:</b> <i>\1</i>".format(control("@")), s)
+    s = re.sub(r"@param\s*\{([^\}]*)\}\s*([A-Za-z0-9_]*)", r"{}<b>param</b> <code>\2</code><b>:</b> <i>\1</i>".format(control("@")), s)
+    s = re.sub(r"NOTE:", r"<em>NOTE</em>:".format(control("@")), s)
+    s = re.sub(r"@return\s*\{([^\}]*)\}", r"{}<b>returns</b> a value of <i>\1</i>".format(control("@")), s)
     s = re.sub(r"\*\*([^*]*)\*\*", r"{c}<b>\1</b>{c}".format(c=control("**")), s)
-    s = re.sub(r"_([^_]*)_", r"{c}<em>\1</em>{c}".format(c=control("_")), s)
+    #s = re.sub(r"_([^_]*)_", r"{c}<em>\1</em>{c}".format(c=control("_")), s)
     s = re.sub(r"```([^`]*)```", r"{c}<code>\1</code>{c}".format(c=control("```")), s)
-    s = re.sub(r"`([^`]+)`", r"{c}<code>\1</code>{c}".format(c=control("`")), s)
+    s = re.sub(r"`([^`<>]+)`", r"{c}<code>\1</code>{c}".format(c=control("`")), s)
     s = re.sub(r"\[([^]]+)\]\(([^)]+)\)",
             r"""{}<a href="\2">\1</a>{}""".format(control("["), control("]")), s)
-    s = re.sub(r"\[([^]<>]+)\]",
+    s = re.sub(r"\[([A-Za-z0-9_]+)\]",
             r"""{}<a href="#\1">\1</a>{}""".format(control("["), control("]")), s)
     return s
 
@@ -254,12 +275,11 @@ TEMPLATE = """
         --c : #202424;
       }
 
-      :not(pre, code) {
+      * {
         font-family : 'Ubuntu Mono', monospace;
       }
 
       pre, code {
-        font-family: 'Courier Prime', monospace;
         --c : #000;
       }
 
@@ -270,8 +290,10 @@ TEMPLATE = """
       }
 
       .title { --c : #526666 }
+      .keyword { --c : #34347e }
+      .name { --c : #808 }
+      .name-script { --c : #d54a07 }
       .control { opacity : 0.5 }
-      .short-pause { height : 2em }
     </style>
   </head>
   <body>
