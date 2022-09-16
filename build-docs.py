@@ -291,11 +291,11 @@ TEMPLATE = """
       }
 
       pre, code {
-        --c : #000;
+        --c : #385787;
       }
 
       a {
-        --c : #6082b6;
+        --c : #007ffd;
         text-decoration: none;
         cursor: pointer;
       }
