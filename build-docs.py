@@ -49,7 +49,12 @@ class Section:
             )
             doc = ""
             for line in content.splitlines():
-                if match := re.search('^\s*function\s*([A-Z]+[A-Za-z0-9_]*)', line):
+                derives = None
+                if match := re.search('^\s*function\s*([A-Z]+[A-Za-z0-9_]*)[^:]*:\s*([A-Z]+[A-Za-z0-9_]*)', line):
+                    name = match.group(1)
+                    derives = match.group(2)
+                    prefix = "struct "
+                elif match := re.search('^\s*function\s*([A-Z]+[A-Za-z0-9_]*)', line):
                     name = match.group(1)
                     prefix = "struct "
                 elif match := re.search('^\s*function\s*([A-Za-z0-9_]+)', line):
@@ -88,6 +93,11 @@ class Section:
                     "<span class=\"keyword\">" + prefix + "</span>" +
                     "<span class=\"name\">" + name + "</span>"
                 )
+                if derives:
+                    subsec.title += (
+                        " <span class=\"keyword\">extends</span>" +
+                        " <span class=\"name\">" + derives + "</span>"
+                    )
                 if prefix.startswith("method") or prefix.startswith("field"):
                     # add methods to the previous definition
                     subsec_parent = sec.subsections[-1]
@@ -167,7 +177,7 @@ class Page:
             return out
         body = ""
         body += "<b>{}</b>".format(HEADER)
-        body += "<span>{}</span>".format(ABSTRACT)
+        body += "<span>{}</span>".format(simple_markdown(ABSTRACT))
         contents = header(0, "contents")
         contents += render_sections(self.sections)
         body += contents + "\n"
@@ -186,7 +196,7 @@ def snake_to_title(s):
         return "Catspeak"
     return " ".join([x[0].upper() + x[1:] for x in s.split("_") if x])
 
-# Performs simple syntax highlighting on Feather types
+# Performs simple syntax highlighting on Feather types.
 def simple_syntax_higlight_types(s):
     s = re.sub(r"[|]", " | ", s)
     items = re.split(r'([<.>|\(\)\[\]\{\}])', s)
@@ -212,11 +222,24 @@ def simple_syntax_higlight_types(s):
         highlight = not highlight
     return out
 
+# Creates the HTML for a control character element.
+def control(s):
+    bold = s == "`" or s == "```"
+    return "<{elem} class=\"control\">{}</{elem}>".format(
+            s, elem="b" if bold else "span")
+
+# Creates a simple hyperlink to a resource.
+def simple_link(s, link=None):
+    if not link:
+        if "_" in s:
+            link = "#" + s
+        else:
+            link = "#not_catspeak_" + "_".join(item.lower() for item in s.split())
+    return r"""{}<a href="{}">{}</a>{}""".format(
+            control("["), link, s, control("]"))
+
 # Replaces simple markdown styles with HTML elements.
 def simple_markdown(s):
-    def control(s):
-        bold = s == "`" or s == "```"
-        return "<{elem} class=\"control\">{}</{elem}>".format(s, elem="b" if bold else "span")
     s = re.sub(r"@deprecated", r"{}<b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>".format(control("@")), s)
     s = re.sub(
         r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_]*)\]",
@@ -252,10 +275,16 @@ def simple_markdown(s):
     #s = re.sub(r"_([^_]*)_", r"{c}<em>\1</em>{c}".format(c=control("_")), s)
     s = re.sub(r"```([^`]*)```", r"{c}<code>\1</code>{c}".format(c=control("```")), s)
     s = re.sub(r"`([^`<>]+)`", r"{c}<code>\1</code>{c}".format(c=control("`")), s)
-    s = re.sub(r"\[([^]]+)\]\(([^)]+)\)",
-            r"""{}<a href="\2">\1</a>{}""".format(control("["), control("]")), s)
-    s = re.sub(r"\[([A-Za-z0-9_]+)\]",
-            r"""{}<a href="#\1">\1</a>{}""".format(control("["), control("]")), s)
+    s = re.sub(
+        r"\[([^]]+)\]\(([^)]+)\)",
+        lambda match: simple_link(match.group(1), match.group(2)),
+        s
+    )
+    s = re.sub(
+        r"\[([A-Za-z0-9_ ]+)\]",
+        lambda match: simple_link(match.group(1)),
+        s
+    )
     return s
 
 # Creates a simple section header.
@@ -288,10 +317,10 @@ HEADER = r"""
 
 ABSTRACT = r"""
 A cross-platform, expression oriented programming language for implementing
-modding support into your GameMaker Studio 2.3 games. ( o`w o`) b
+modding support into your GameMaker Studio 2.3 games. /( > w <") b
 
-Developed by <a href="https://www.katsaii.com/">katsaii</a>.
-Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
+Developed by [katsaii](https://www.katsaii.com/).
+Logo design by [mashmerlow](https://mashmerlow.github.io/).
 """
 
 FOOTER = r"""

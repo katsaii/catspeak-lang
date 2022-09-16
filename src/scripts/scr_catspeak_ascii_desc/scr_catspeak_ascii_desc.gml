@@ -26,7 +26,8 @@ enum CatspeakASCIIDesc {
     ),
 }
 
-/// Returns whether an instance of [CatspeakASCIIDesc] contains an expected flag.
+/// Compares instances of [CatspeakASCIIDesc].
+/// Returns whether one contains another.
 ///
 /// @param {Any} value
 ///   The value to check for flags of, must be a numeric value.
@@ -40,7 +41,8 @@ function catspeak_ascii_desc_contains(value, flags) {
     return (value & flags) == flags;
 }
 
-/// Returns whether an instance of [CatspeakASCIIDesc] equals an expected flag.
+/// Compares instances of [CatspeakASCIIDesc].
+/// Returns whether they are equal to each other.
 ///
 /// @param {Any} value
 ///   The value to check for flags of, must be a numeric value.
@@ -54,7 +56,8 @@ function catspeak_ascii_desc_equals(value, flags) {
     return value == flags;
 }
 
-/// Returns whether an instance of [CatspeakASCIIDesc] intersects a set of expected flags.
+/// Compares instances of [CatspeakASCIIDesc].
+/// Returns whether their flags intersect.
 ///
 /// @param {Any} value
 ///   The value to check for flags of, must be a numeric value.
@@ -68,7 +71,7 @@ function catspeak_ascii_desc_intersects(value, flags) {
     return (value & flags) != 0;
 }
 
-/// Gets the name for a value of [CatspeakASCIIDesc].
+/// Gets the name for an instance of [CatspeakASCIIDesc].
 /// Will return the empty string if the value is unexpected.
 ///
 /// @param {Enum.CatspeakASCIIDesc} value

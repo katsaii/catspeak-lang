@@ -3,14 +3,17 @@
      "update" functions.
 
  - **Cross-platform** ...
-     allowing mods to work on any platform out of the box.
+     allowing mods to work on any platform out of the box. Tried and tested on
+     the VM and YYC exports on windows, as well as HTML5.
 
  - **Sandboxed execution environment** ...
      so modders cannot modify the sensitive parts of your game you don't want
      them to.
 
  - **Customisable standard library** ...
-     exposing only the functions you want modders to have access to.
+     exposing only the functions you want modders to have access to. See the
+     sections on [Basic Usage] and the [Standard Library] for more
+     information and examples.
 
  - **Performant runtime** ...
      capable of interpreting thousands of (and even tens of thousands of)
@@ -23,10 +26,14 @@
      so no time is wasted idly waiting for new Catspeak programs to appear.
 
  - **Failsafes to catch unresponsive Catspeak processes**.
+     Customise how this is done through the [catspeak_config] function.
 
  - **Call GML code from Catspeak**.
+     Just use the syntax you're familiar with: `is_string(value)`. See more
+     in the [Syntax] section.
 
  - **Call Catspeak code from GML**.
+     Using the [catspeak_compile_string] and [catspeak_execute] functions.
 
  - **Simple, relaxed syntax** ...
      but still similar enough to GML to be familiar.
@@ -37,6 +44,6 @@
 
  - **Compiler internals exposed and well-documented** ...
      in order to give power users as much control over their programs as
-     possible.
+     possible. For examples, check out the [Advanced Usage] section.
 
  - **Cute name and mascot**.

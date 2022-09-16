@@ -9,7 +9,7 @@
 ///   The iterator that yields tokens to be consumed by the compiler. Must
 ///   be a struct with at least a [next] method on it.
 ///
-/// @param {Struct.CatspeakIR} [ir]
+/// @param {Struct.CatspeakFunction} [ir]
 ///   The Catspeak IR target to write code to, if left empty a new target is
 ///   created. This can be accessed using the `ir` field on a compiler
 ///   instance.

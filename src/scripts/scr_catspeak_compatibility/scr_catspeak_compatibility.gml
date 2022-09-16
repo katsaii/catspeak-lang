@@ -22,10 +22,10 @@ function catspeak_update() {
 
 /// Sets the error handler for Catspeak errors.
 ///
+/// @deprecated
+///
 /// @param {Function} script_id_or_method
 ///   The id of the script to execute upon encountering an error.
-///
-/// @deprecated
 function catspeak_set_error_script(script_id_or_method) {
     gml_pragma("forceinline");
     catspeak_config({ "exceptionHandler" : script_id_or_method });
@@ -34,11 +34,11 @@ function catspeak_set_error_script(script_id_or_method) {
 /// Sets the maximum number of iterations a process can perform before being
 /// stopped.
 ///
+/// @deprecated
+///
 /// @param {Real} iteration_count
 ///   The number of maximum number of iterations to perform. Use `-1` for
 ///   unlimited.
-///
-/// @deprecated
 function catspeak_set_max_iterations(iteration_count) {
     gml_pragma("forceinline");
     // from my tests, it seems like Catspeak 2 can handle around this many
@@ -48,10 +48,10 @@ function catspeak_set_max_iterations(iteration_count) {
 
 /// Sets the maximum percentage of a game frame to spend processing.
 ///
+/// @deprecated
+///
 /// @param {Real} amount
 ///   The amount in the range 0-1.
-///
-/// @deprecated
 function catspeak_set_frame_allocation(amount) {
     gml_pragma("forceinline");
     catspeak_config({ "frameAllocation" : amount });
@@ -60,10 +60,10 @@ function catspeak_set_frame_allocation(amount) {
 /// Sets the threshold for processing in the current frame. Processing will
 /// not continue beyond this point.
 ///
+/// @deprecated
+///
 /// @param {Real} amount
 ///   The amount in the range 0-1.
-///
-/// @deprecated
 function catspeak_set_frame_threshold(amount) {
     gml_pragma("forceinline");
     // does nothing in Catspeak 2
@@ -72,6 +72,7 @@ function catspeak_set_frame_threshold(amount) {
 /// Creates a new Catspeak session and returns its ID.
 ///
 /// @deprecated
+///
 /// @return {Struct}
 function catspeak_session_create() {
     gml_pragma("forceinline");
@@ -102,10 +103,10 @@ function catspeak_session_create() {
 
 /// Destroys an existing catspeak session.
 ///
+/// @deprecated
+///
 /// @param {Real} session_id
 ///   The ID of the session to destroy.
-///
-/// @deprecated
 function catspeak_session_destroy(session_id) {
     gml_pragma("forceinline");
     // does nothing in Catspeak 2
@@ -113,13 +114,13 @@ function catspeak_session_destroy(session_id) {
 
 /// Sets the source code for this session.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
 ///
 /// @param {String} src
 ///   The source code to compile and evaluate.
-///
-/// @deprecated
 function catspeak_session_set_source(session_id, src) {
     gml_pragma("forceinline");
     session_id.src = src;
@@ -128,13 +129,13 @@ function catspeak_session_set_source(session_id, src) {
 
 /// Enables access to global variables for this session.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
 ///
 /// @param {Bool} enable
 ///   Whether to enable this option.
-///
-/// @deprecated
 function catspeak_session_enable_global_access(session_id, enable) {
     gml_pragma("forceinline");
     session_id.globalAccess = enable;
@@ -143,13 +144,13 @@ function catspeak_session_enable_global_access(session_id, enable) {
 
 /// Enables access to instance variables for this session.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
 ///
 /// @param {Bool} enable
 ///   Whether to enable this option.
-///
-/// @deprecated
 function catspeak_session_enable_instance_access(session_id, enable) {
     gml_pragma("forceinline");
     // does nothing in Catspeak 2
@@ -157,13 +158,13 @@ function catspeak_session_enable_instance_access(session_id, enable) {
 
 /// Enables implicit returns for this session.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
 ///
 /// @param {Bool} enable
 ///   Whether to enable this option.
-///
-/// @deprecated
 function catspeak_session_enable_implicit_return(session_id, enable) {
     gml_pragma("forceinline");
     session_id.implicitReturn = enable;
@@ -172,19 +173,21 @@ function catspeak_session_enable_implicit_return(session_id, enable) {
 
 /// Makes all processes of this session use the same workspace.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
 ///
 /// @param {Bool} enable
 ///   Whether to enable this option.
-///
-/// @deprecated
 function catspeak_session_enable_shared_workspace(session_id, enable) {
     gml_pragma("forceinline");
     // does nothing in Catspeak 2
 }
 
 /// Inserts a new global variable into the interface of this session.
+///
+/// @deprecated
 ///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
@@ -194,14 +197,14 @@ function catspeak_session_enable_shared_workspace(session_id, enable) {
 ///
 /// @param {Any} value
 ///   The value of the variable.
-///
-/// @deprecated
 function catspeak_session_add_constant(session_id, name, value) {
     gml_pragma("forceinline");
     session_id.prelude[$ name] = value;
 }
 
 /// Inserts a new function into to the interface of this session.
+///
+/// @deprecated
 ///
 /// @param {Struct} session_id
 ///   The ID of the session to update.
@@ -211,8 +214,6 @@ function catspeak_session_add_constant(session_id, name, value) {
 ///
 /// @param {Any} script_id_or_method
 ///   The reference to the function.
-///
-/// @deprecated
 function catspeak_session_add_function(
     session_id, name, script_id_or_method
 ) {
@@ -231,6 +232,8 @@ function catspeak_session_add_function(
 
 /// Spawns a process from this session.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to spawn a process for.
 ///
@@ -239,8 +242,6 @@ function catspeak_session_add_function(
 ///
 /// @param {Array<Any>} [args]
 ///   The arguments to pass to the process.
-///
-/// @deprecated
 function catspeak_session_create_process(
     session_id, script_id_or_method, args=[]
 ) {
@@ -264,13 +265,14 @@ function catspeak_session_create_process(
 
 /// Spawns a process from this session which is evaluated immediately.
 ///
+/// @deprecated
+///
 /// @param {Struct} session_id
 ///   The ID of the session to spawn a process for.
 ///
 /// @param {Array<Any>} [args]
 ///   The arguments to pass to the process.
 ///
-/// @deprecated
 /// @return {Any}
 function catspeak_session_create_process_greedy(session_id, args=[]) {
     var ir = session_id;
@@ -296,6 +298,7 @@ function catspeak_session_create_process_greedy(session_id, args=[]) {
 }
 
 /// @deprecated
+///
 /// @ignore
 function __catspeak_session_extern(ir) {
     var vm = new CatspeakVM();

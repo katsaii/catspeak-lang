@@ -16,7 +16,7 @@ function CatspeakVM() constructor {
     /// @param {Struct} self_
     ///   The "self" scope to use when calling this function.
     ///
-    /// @param {Struct.CatspeakIR} ir
+    /// @param {Struct.CatspeakFunction} ir
     ///   The Catspeak IR to execute. The VM is pretty stupid, so if the code is
     ///   not well-formed, there are likely to be runtime errors and misbehaviour.
     ///
