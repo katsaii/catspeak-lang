@@ -81,70 +81,156 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 ================================================================================</span>
  - <a href="#not_catspeak_features">Features</a>
  - <a href="#library_reference">Library Reference</a>
-   - <a href="#scr_catspeak">Scr Catspeak</a>
+   - <a href="#scr_catspeak">scr_catspeak</a>
      - <a href="#catspeak_execute">function catspeak_execute</a>
      - <a href="#catspeak_compile_buffer">function catspeak_compile_buffer</a>
      - <a href="#catspeak_compile_string">function catspeak_compile_string</a>
      - <a href="#catspeak_create_buffer_from_string">function catspeak_create_buffer_from_string</a>
      - <a href="#catspeak_config">function catspeak_config</a>
-   - <a href="#scr_catspeak_init">Scr Catspeak Init</a>
+   - <a href="#scr_catspeak_init">scr_catspeak_init</a>
+     - <a href="#CATSPEAK_VERSION">macro CATSPEAK_VERSION</a>
      - <a href="#catspeak_force_init">function catspeak_force_init</a>
-   - <a href="#scr_catspeak_process">Scr Catspeak Process</a>
-     - <a href="#CatspeakProcess">function CatspeakProcess</a>
-     - <a href="#CatspeakGMLProcess">function CatspeakGMLProcess</a>
-     - <a href="#CatspeakCompilerProcess">function CatspeakCompilerProcess</a>
-     - <a href="#CatspeakVMProcess">function CatspeakVMProcess</a>
-   - <a href="#scr_catspeak_builtins">Scr Catspeak Builtins</a>
+   - <a href="#scr_catspeak_process">scr_catspeak_process</a>
+     - <a href="#CatspeakProcess">struct CatspeakProcess</a>
+       - <a href="#withTimeLimit">method withTimeLimit</a>
+       - <a href="#andThen">method andThen</a>
+       - <a href="#catchError">method catchError</a>
+       - <a href="#invoke">method invoke</a>
+     - <a href="#CatspeakGMLProcess">struct CatspeakGMLProcess</a>
+     - <a href="#CatspeakCompilerProcess">struct CatspeakCompilerProcess</a>
+     - <a href="#CatspeakVMProcess">struct CatspeakVMProcess</a>
+   - <a href="#scr_catspeak_builtins">scr_catspeak_builtins</a>
      - <a href="#catspeak_string_to_builtin">function catspeak_string_to_builtin</a>
      - <a href="#catspeak_string_is_builtin">function catspeak_string_is_builtin</a>
-   - <a href="#scr_catspeak_error">Scr Catspeak Error</a>
-     - <a href="#CatspeakLocation">function CatspeakLocation</a>
-     - <a href="#CatspeakError">function CatspeakError</a>
+   - <a href="#scr_catspeak_error">scr_catspeak_error</a>
+     - <a href="#CatspeakLocation">struct CatspeakLocation</a>
+       - <a href="#clone">method clone</a>
+       - <a href="#reflect">method reflect</a>
+       - <a href="#toString">method toString</a>
+     - <a href="#CatspeakError">struct CatspeakError</a>
+       - <a href="#toString">method toString</a>
      - <a href="#catspeak_assert">function catspeak_assert</a>
-   - <a href="#scr_catspeak_vm">Scr Catspeak Vm</a>
-     - <a href="#CatspeakVM">function CatspeakVM</a>
-   - <a href="#scr_catspeak_ir">Scr Catspeak Ir</a>
-     - <a href="#CatspeakFunction">function CatspeakFunction</a>
-     - <a href="#CatspeakBlock">function CatspeakBlock</a>
-     - <a href="#CatspeakAccessor">function CatspeakAccessor</a>
-     - <a href="#CatspeakReadOnlyAccessor">function CatspeakReadOnlyAccessor</a>
-     - <a href="#CatspeakTempRegisterAccessor">function CatspeakTempRegisterAccessor</a>
-   - <a href="#scr_catspeak_intcode">Scr Catspeak Intcode</a>
+   - <a href="#scr_catspeak_vm">scr_catspeak_vm</a>
+     - <a href="#CatspeakVM">struct CatspeakVM</a>
+       - <a href="#pushCallFrame">method pushCallFrame</a>
+       - <a href="#reuseCallFrame">method reuseCallFrame</a>
+       - <a href="#reuseCallFrameWithArgs">method reuseCallFrameWithArgs</a>
+       - <a href="#popCallFrame">method popCallFrame</a>
+       - <a href="#inProgress">method inProgress</a>
+       - <a href="#runProgram">method runProgram</a>
+   - <a href="#scr_catspeak_ir">scr_catspeak_ir</a>
+     - <a href="#CatspeakFunction">struct CatspeakFunction</a>
+       - <a href="#setGlobal">method setGlobal</a>
+       - <a href="#getGlobal">method getGlobal</a>
+       - <a href="#emitBlock">method emitBlock</a>
+       - <a href="#emitFunction">method emitFunction</a>
+       - <a href="#emitRegister">method emitRegister</a>
+       - <a href="#emitPermanentRegister">method emitPermanentRegister</a>
+       - <a href="#discardRegister">method discardRegister</a>
+       - <a href="#emitUnreachable">method emitUnreachable</a>
+       - <a href="#isUnreachable">method isUnreachable</a>
+       - <a href="#emitConstant">method emitConstant</a>
+       - <a href="#emitPermanentConstant">method emitPermanentConstant</a>
+       - <a href="#emitArgs">method emitArgs</a>
+       - <a href="#emitGlobalGet">method emitGlobalGet</a>
+       - <a href="#emitGlobalSet">method emitGlobalSet</a>
+       - <a href="#emitReturn">method emitReturn</a>
+       - <a href="#emitMove">method emitMove</a>
+       - <a href="#emitClone">method emitClone</a>
+       - <a href="#emitCloneTemp">method emitCloneTemp</a>
+       - <a href="#emitJump">method emitJump</a>
+       - <a href="#emitJumpFalse">method emitJumpFalse</a>
+       - <a href="#emitCall">method emitCall</a>
+       - <a href="#emitCode">method emitCode</a>
+       - <a href="#emitCodeHoisted">method emitCodeHoisted</a>
+       - <a href="#emitGet">method emitGet</a>
+       - <a href="#emitSet">method emitSet</a>
+       - <a href="#lastCode">method lastCode</a>
+       - <a href="#lastCodeHoisted">method lastCodeHoisted</a>
+       - <a href="#patchInst">method patchInst</a>
+       - <a href="#patchInst">method patchInst</a>
+       - <a href="#patchArg">method patchArg</a>
+       - <a href="#patchPermanentRegisters">method patchPermanentRegisters</a>
+       - <a href="#toString">method toString</a>
+       - <a href="#disassembly">method disassembly</a>
+     - <a href="#CatspeakBlock">struct CatspeakBlock</a>
+     - <a href="#CatspeakAccessor">struct CatspeakAccessor</a>
+     - <a href="#CatspeakReadOnlyAccessor">struct CatspeakReadOnlyAccessor</a>
+     - <a href="#CatspeakTempRegisterAccessor">struct CatspeakTempRegisterAccessor</a>
+   - <a href="#scr_catspeak_intcode">scr_catspeak_intcode</a>
+     - <a href="#CatspeakIntcode">enum CatspeakIntcode</a>
      - <a href="#catspeak_intcode_show">function catspeak_intcode_show</a>
      - <a href="#catspeak_intcode_read">function catspeak_intcode_read</a>
      - <a href="#catspeak_intcode_valueof">function catspeak_intcode_valueof</a>
      - <a href="#catspeak_intcode_sizeof">function catspeak_intcode_sizeof</a>
-   - <a href="#scr_catspeak_compiler">Scr Catspeak Compiler</a>
-     - <a href="#CatspeakCompiler">function CatspeakCompiler</a>
-     - <a href="#CatspeakLocalScope">function CatspeakLocalScope</a>
-     - <a href="#CatspeakGlobalAccessor">function CatspeakGlobalAccessor</a>
-     - <a href="#CatspeakCollectionAccessor">function CatspeakCollectionAccessor</a>
-   - <a href="#scr_catspeak_lexer">Scr Catspeak Lexer</a>
-     - <a href="#CatspeakLexer">function CatspeakLexer</a>
+   - <a href="#scr_catspeak_compiler">scr_catspeak_compiler</a>
+     - <a href="#CatspeakCompiler">struct CatspeakCompiler</a>
+       - <a href="#advance">method advance</a>
+       - <a href="#matches">method matches</a>
+       - <a href="#satisfies">method satisfies</a>
+       - <a href="#consume">method consume</a>
+       - <a href="#consumeLinebreaks">method consumeLinebreaks</a>
+       - <a href="#error">method error</a>
+       - <a href="#errorAndAdvance">method errorAndAdvance</a>
+       - <a href="#expects">method expects</a>
+       - <a href="#expectsSemicolon">method expectsSemicolon</a>
+       - <a href="#declareLocal">method declareLocal</a>
+       - <a href="#getVar">method getVar</a>
+       - <a href="#pushState">method pushState</a>
+       - <a href="#pushResult">method pushResult</a>
+       - <a href="#topResult">method topResult</a>
+       - <a href="#popResult">method popResult</a>
+       - <a href="#pushBlock">method pushBlock</a>
+       - <a href="#popBlock">method popBlock</a>
+       - <a href="#pushIt">method pushIt</a>
+       - <a href="#topIt">method topIt</a>
+       - <a href="#popIt">method popIt</a>
+       - <a href="#pushLoop">method pushLoop</a>
+       - <a href="#topLoop">method topLoop</a>
+       - <a href="#popLoop">method popLoop</a>
+       - <a href="#inProgress">method inProgress</a>
+       - <a href="#emitProgram">method emitProgram</a>
+     - <a href="#CatspeakLocalScope">struct CatspeakLocalScope</a>
+     - <a href="#CatspeakGlobalAccessor">struct CatspeakGlobalAccessor</a>
+     - <a href="#CatspeakCollectionAccessor">struct CatspeakCollectionAccessor</a>
+       - <a href="#getFunc">field getFunc</a>
+       - <a href="#setFunc">field setFunc</a>
+   - <a href="#scr_catspeak_lexer">scr_catspeak_lexer</a>
+     - <a href="#CatspeakLexer">struct CatspeakLexer</a>
+       - <a href="#registerByte">method registerByte</a>
+       - <a href="#registerLexeme">method registerLexeme</a>
+       - <a href="#clearLexeme">method clearLexeme</a>
+       - <a href="#advance">method advance</a>
+       - <a href="#peek">method peek</a>
+       - <a href="#advanceWhile">method advanceWhile</a>
+       - <a href="#nextWithWhitespace">method nextWithWhitespace</a>
+       - <a href="#next">method next</a>
      - <a href="#catspeak_token_is_operator">function catspeak_token_is_operator</a>
      - <a href="#catspeak_token_is_expression">function catspeak_token_is_expression</a>
      - <a href="#catspeak_token_skips_newline">function catspeak_token_skips_newline</a>
      - <a href="#catspeak_string_to_token_keyword">function catspeak_string_to_token_keyword</a>
      - <a href="#catspeak_byte_to_token">function catspeak_byte_to_token</a>
      - <a href="#catspeak_byte_to_ascii_desc">function catspeak_byte_to_ascii_desc</a>
-   - <a href="#scr_catspeak_token">Scr Catspeak Token</a>
+   - <a href="#scr_catspeak_token">scr_catspeak_token</a>
+     - <a href="#CatspeakToken">enum CatspeakToken</a>
      - <a href="#catspeak_token_show">function catspeak_token_show</a>
      - <a href="#catspeak_token_read">function catspeak_token_read</a>
      - <a href="#catspeak_token_valueof">function catspeak_token_valueof</a>
      - <a href="#catspeak_token_sizeof">function catspeak_token_sizeof</a>
-   - <a href="#scr_catspeak_ascii_desc">Scr Catspeak Ascii Desc</a>
+   - <a href="#scr_catspeak_ascii_desc">scr_catspeak_ascii_desc</a>
+     - <a href="#CatspeakASCIIDesc">enum CatspeakASCIIDesc</a>
      - <a href="#catspeak_ascii_desc_contains">function catspeak_ascii_desc_contains</a>
      - <a href="#catspeak_ascii_desc_equals">function catspeak_ascii_desc_equals</a>
      - <a href="#catspeak_ascii_desc_intersects">function catspeak_ascii_desc_intersects</a>
      - <a href="#catspeak_ascii_desc_show">function catspeak_ascii_desc_show</a>
-   - <a href="#scr_catspeak_alloc">Scr Catspeak Alloc</a>
+   - <a href="#scr_catspeak_alloc">scr_catspeak_alloc</a>
      - <a href="#catspeak_alloc_ds_map">function catspeak_alloc_ds_map</a>
      - <a href="#catspeak_alloc_ds_list">function catspeak_alloc_ds_list</a>
      - <a href="#catspeak_alloc_ds_stack">function catspeak_alloc_ds_stack</a>
      - <a href="#catspeak_alloc_ds_priority">function catspeak_alloc_ds_priority</a>
      - <a href="#catspeak_alloc">function catspeak_alloc</a>
      - <a href="#catspeak_collect">function catspeak_collect</a>
-   - <a href="#scr_catspeak_compatibility">Scr Catspeak Compatibility</a>
+   - <a href="#scr_catspeak_compatibility">scr_catspeak_compatibility</a>
      - <a href="#catspeak_start_frame">function catspeak_start_frame</a>
      - <a href="#catspeak_update">function catspeak_update</a>
      - <a href="#catspeak_set_error_script">function catspeak_set_error_script</a>
@@ -214,7 +300,7 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 ================================================================================</span>
 <div>The following sections feature documentation for all public Catspeak functions,
 macros, and structs.</div>
-<span id=scr_catspeak>  <b>Scr Catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
+<span id=scr_catspeak>  <b>scr_catspeak</b> (<a href="#scr_catspeak">link</a>) .gml
   ==============================================================================</span>
 <div>  The primary user-facing interface for compiling and executing Catspeak
   programs.</div>
@@ -233,30 +319,45 @@ macros, and structs.</div>
 <span id=catspeak_config>    <b>function catspeak_config</b> (<a href="#catspeak_config">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_init>  <b>Scr Catspeak Init</b> (<a href="#scr_catspeak_init">link</a>) .gml
+<span id=scr_catspeak_init>  <b>scr_catspeak_init</b> (<a href="#scr_catspeak_init">link</a>) .gml
   ==============================================================================</span>
 <div>  Initialises core components of the Catspeak compiler. This includes
   any uninitialised global variables.</div>
+<span id=CATSPEAK_VERSION>    <b>macro CATSPEAK_VERSION</b> (<a href="#CATSPEAK_VERSION">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
 <span id=catspeak_force_init>    <b>function catspeak_force_init</b> (<a href="#catspeak_force_init">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_process>  <b>Scr Catspeak Process</b> (<a href="#scr_catspeak_process">link</a>) .gml
+<span id=scr_catspeak_process>  <b>scr_catspeak_process</b> (<a href="#scr_catspeak_process">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the creation of Catspeak processes, and divides execution time
   between them so each gets a change to progress during the current tick.</div>
-<span id=CatspeakProcess>    <b>function CatspeakProcess</b> (<a href="#CatspeakProcess">link</a>) 
+<span id=CatspeakProcess>    <b>struct CatspeakProcess</b> (<a href="#CatspeakProcess">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakGMLProcess>    <b>function CatspeakGMLProcess</b> (<a href="#CatspeakGMLProcess">link</a>) 
+<span id=withTimeLimit>      <b>method withTimeLimit</b> (<a href="#withTimeLimit">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=andThen>      <b>method andThen</b> (<a href="#andThen">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=catchError>      <b>method catchError</b> (<a href="#catchError">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=invoke>      <b>method invoke</b> (<a href="#invoke">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=CatspeakGMLProcess>    <b>struct CatspeakGMLProcess</b> (<a href="#CatspeakGMLProcess">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakCompilerProcess>    <b>function CatspeakCompilerProcess</b> (<a href="#CatspeakCompilerProcess">link</a>) 
+<span id=CatspeakCompilerProcess>    <b>struct CatspeakCompilerProcess</b> (<a href="#CatspeakCompilerProcess">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakVMProcess>    <b>function CatspeakVMProcess</b> (<a href="#CatspeakVMProcess">link</a>) 
+<span id=CatspeakVMProcess>    <b>struct CatspeakVMProcess</b> (<a href="#CatspeakVMProcess">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_builtins>  <b>Scr Catspeak Builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
+<span id=scr_catspeak_builtins>  <b>scr_catspeak_builtins</b> (<a href="#scr_catspeak_builtins">link</a>) .gml
   ==============================================================================</span>
 <div>  Defines the standard library functions of the Catspeak prelude.</div>
 <span id=catspeak_string_to_builtin>    <b>function catspeak_string_to_builtin</b> (<a href="#catspeak_string_to_builtin">link</a>) 
@@ -265,45 +366,177 @@ macros, and structs.</div>
 <span id=catspeak_string_is_builtin>    <b>function catspeak_string_is_builtin</b> (<a href="#catspeak_string_is_builtin">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_error>  <b>Scr Catspeak Error</b> (<a href="#scr_catspeak_error">link</a>) .gml
+<span id=scr_catspeak_error>  <b>scr_catspeak_error</b> (<a href="#scr_catspeak_error">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles errors raised by the compiler and runtime environment.</div>
-<span id=CatspeakLocation>    <b>function CatspeakLocation</b> (<a href="#CatspeakLocation">link</a>) 
+<span id=CatspeakLocation>    <b>struct CatspeakLocation</b> (<a href="#CatspeakLocation">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakError>    <b>function CatspeakError</b> (<a href="#CatspeakError">link</a>) 
+<span id=clone>      <b>method clone</b> (<a href="#clone">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=reflect>      <b>method reflect</b> (<a href="#reflect">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=toString>      <b>method toString</b> (<a href="#toString">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=CatspeakError>    <b>struct CatspeakError</b> (<a href="#CatspeakError">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
+<span id=toString>      <b>method toString</b> (<a href="#toString">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
 <span id=catspeak_assert>    <b>function catspeak_assert</b> (<a href="#catspeak_assert">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_vm>  <b>Scr Catspeak Vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
+<span id=scr_catspeak_vm>  <b>scr_catspeak_vm</b> (<a href="#scr_catspeak_vm">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the code execution stage of the Catspeak runtime.</div>
-<span id=CatspeakVM>    <b>function CatspeakVM</b> (<a href="#CatspeakVM">link</a>) 
+<span id=CatspeakVM>    <b>struct CatspeakVM</b> (<a href="#CatspeakVM">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_ir>  <b>Scr Catspeak Ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
+<span id=pushCallFrame>      <b>method pushCallFrame</b> (<a href="#pushCallFrame">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=reuseCallFrame>      <b>method reuseCallFrame</b> (<a href="#reuseCallFrame">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=reuseCallFrameWithArgs>      <b>method reuseCallFrameWithArgs</b> (<a href="#reuseCallFrameWithArgs">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=popCallFrame>      <b>method popCallFrame</b> (<a href="#popCallFrame">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=inProgress>      <b>method inProgress</b> (<a href="#inProgress">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=runProgram>      <b>method runProgram</b> (<a href="#runProgram">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=scr_catspeak_ir>  <b>scr_catspeak_ir</b> (<a href="#scr_catspeak_ir">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the flat, executable representation of Catspeak programs.</div>
-<span id=CatspeakFunction>    <b>function CatspeakFunction</b> (<a href="#CatspeakFunction">link</a>) 
+<span id=CatspeakFunction>    <b>struct CatspeakFunction</b> (<a href="#CatspeakFunction">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakBlock>    <b>function CatspeakBlock</b> (<a href="#CatspeakBlock">link</a>) 
+<span id=setGlobal>      <b>method setGlobal</b> (<a href="#setGlobal">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=getGlobal>      <b>method getGlobal</b> (<a href="#getGlobal">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitBlock>      <b>method emitBlock</b> (<a href="#emitBlock">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitFunction>      <b>method emitFunction</b> (<a href="#emitFunction">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitRegister>      <b>method emitRegister</b> (<a href="#emitRegister">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitPermanentRegister>      <b>method emitPermanentRegister</b> (<a href="#emitPermanentRegister">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=discardRegister>      <b>method discardRegister</b> (<a href="#discardRegister">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitUnreachable>      <b>method emitUnreachable</b> (<a href="#emitUnreachable">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=isUnreachable>      <b>method isUnreachable</b> (<a href="#isUnreachable">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitConstant>      <b>method emitConstant</b> (<a href="#emitConstant">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitPermanentConstant>      <b>method emitPermanentConstant</b> (<a href="#emitPermanentConstant">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitArgs>      <b>method emitArgs</b> (<a href="#emitArgs">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitGlobalGet>      <b>method emitGlobalGet</b> (<a href="#emitGlobalGet">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitGlobalSet>      <b>method emitGlobalSet</b> (<a href="#emitGlobalSet">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitReturn>      <b>method emitReturn</b> (<a href="#emitReturn">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitMove>      <b>method emitMove</b> (<a href="#emitMove">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitClone>      <b>method emitClone</b> (<a href="#emitClone">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitCloneTemp>      <b>method emitCloneTemp</b> (<a href="#emitCloneTemp">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitJump>      <b>method emitJump</b> (<a href="#emitJump">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitJumpFalse>      <b>method emitJumpFalse</b> (<a href="#emitJumpFalse">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitCall>      <b>method emitCall</b> (<a href="#emitCall">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitCode>      <b>method emitCode</b> (<a href="#emitCode">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitCodeHoisted>      <b>method emitCodeHoisted</b> (<a href="#emitCodeHoisted">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitGet>      <b>method emitGet</b> (<a href="#emitGet">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitSet>      <b>method emitSet</b> (<a href="#emitSet">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=lastCode>      <b>method lastCode</b> (<a href="#lastCode">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=lastCodeHoisted>      <b>method lastCodeHoisted</b> (<a href="#lastCodeHoisted">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=patchInst>      <b>method patchInst</b> (<a href="#patchInst">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=patchInst>      <b>method patchInst</b> (<a href="#patchInst">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=patchArg>      <b>method patchArg</b> (<a href="#patchArg">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=patchPermanentRegisters>      <b>method patchPermanentRegisters</b> (<a href="#patchPermanentRegisters">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=toString>      <b>method toString</b> (<a href="#toString">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=disassembly>      <b>method disassembly</b> (<a href="#disassembly">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=CatspeakBlock>    <b>struct CatspeakBlock</b> (<a href="#CatspeakBlock">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakAccessor>    <b>function CatspeakAccessor</b> (<a href="#CatspeakAccessor">link</a>) 
+<span id=CatspeakAccessor>    <b>struct CatspeakAccessor</b> (<a href="#CatspeakAccessor">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakReadOnlyAccessor>    <b>function CatspeakReadOnlyAccessor</b> (<a href="#CatspeakReadOnlyAccessor">link</a>) 
+<span id=CatspeakReadOnlyAccessor>    <b>struct CatspeakReadOnlyAccessor</b> (<a href="#CatspeakReadOnlyAccessor">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakTempRegisterAccessor>    <b>function CatspeakTempRegisterAccessor</b> (<a href="#CatspeakTempRegisterAccessor">link</a>) 
+<span id=CatspeakTempRegisterAccessor>    <b>struct CatspeakTempRegisterAccessor</b> (<a href="#CatspeakTempRegisterAccessor">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_intcode>  <b>Scr Catspeak Intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
+<span id=scr_catspeak_intcode>  <b>scr_catspeak_intcode</b> (<a href="#scr_catspeak_intcode">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b> enum.</div>
+<span id=CatspeakIntcode>    <b>enum CatspeakIntcode</b> (<a href="#CatspeakIntcode">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
 <span id=catspeak_intcode_show>    <b>function catspeak_intcode_show</b> (<a href="#catspeak_intcode_show">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
@@ -316,27 +549,132 @@ macros, and structs.</div>
 <span id=catspeak_intcode_sizeof>    <b>function catspeak_intcode_sizeof</b> (<a href="#catspeak_intcode_sizeof">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_compiler>  <b>Scr Catspeak Compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
+<span id=scr_catspeak_compiler>  <b>scr_catspeak_compiler</b> (<a href="#scr_catspeak_compiler">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the parsing and codegen stage of the Catspeak compiler.</div>
-<span id=CatspeakCompiler>    <b>function CatspeakCompiler</b> (<a href="#CatspeakCompiler">link</a>) 
+<span id=CatspeakCompiler>    <b>struct CatspeakCompiler</b> (<a href="#CatspeakCompiler">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakLocalScope>    <b>function CatspeakLocalScope</b> (<a href="#CatspeakLocalScope">link</a>) 
+<span id=advance>      <b>method advance</b> (<a href="#advance">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=matches>      <b>method matches</b> (<a href="#matches">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=satisfies>      <b>method satisfies</b> (<a href="#satisfies">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=consume>      <b>method consume</b> (<a href="#consume">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=consumeLinebreaks>      <b>method consumeLinebreaks</b> (<a href="#consumeLinebreaks">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=error>      <b>method error</b> (<a href="#error">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=errorAndAdvance>      <b>method errorAndAdvance</b> (<a href="#errorAndAdvance">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=expects>      <b>method expects</b> (<a href="#expects">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=expectsSemicolon>      <b>method expectsSemicolon</b> (<a href="#expectsSemicolon">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=declareLocal>      <b>method declareLocal</b> (<a href="#declareLocal">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=getVar>      <b>method getVar</b> (<a href="#getVar">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=pushState>      <b>method pushState</b> (<a href="#pushState">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=pushResult>      <b>method pushResult</b> (<a href="#pushResult">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=topResult>      <b>method topResult</b> (<a href="#topResult">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=popResult>      <b>method popResult</b> (<a href="#popResult">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=pushBlock>      <b>method pushBlock</b> (<a href="#pushBlock">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=popBlock>      <b>method popBlock</b> (<a href="#popBlock">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=pushIt>      <b>method pushIt</b> (<a href="#pushIt">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=topIt>      <b>method topIt</b> (<a href="#topIt">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=popIt>      <b>method popIt</b> (<a href="#popIt">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=pushLoop>      <b>method pushLoop</b> (<a href="#pushLoop">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=topLoop>      <b>method topLoop</b> (<a href="#topLoop">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=popLoop>      <b>method popLoop</b> (<a href="#popLoop">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=inProgress>      <b>method inProgress</b> (<a href="#inProgress">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=emitProgram>      <b>method emitProgram</b> (<a href="#emitProgram">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=CatspeakLocalScope>    <b>struct CatspeakLocalScope</b> (<a href="#CatspeakLocalScope">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakGlobalAccessor>    <b>function CatspeakGlobalAccessor</b> (<a href="#CatspeakGlobalAccessor">link</a>) 
+<span id=CatspeakGlobalAccessor>    <b>struct CatspeakGlobalAccessor</b> (<a href="#CatspeakGlobalAccessor">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=CatspeakCollectionAccessor>    <b>function CatspeakCollectionAccessor</b> (<a href="#CatspeakCollectionAccessor">link</a>) 
+<span id=CatspeakCollectionAccessor>    <b>struct CatspeakCollectionAccessor</b> (<a href="#CatspeakCollectionAccessor">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_lexer>  <b>Scr Catspeak Lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
+<span id=getFunc>      <b>field getFunc</b> (<a href="#getFunc">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=setFunc>      <b>field setFunc</b> (<a href="#setFunc">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=scr_catspeak_lexer>  <b>scr_catspeak_lexer</b> (<a href="#scr_catspeak_lexer">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the lexical analysis stage of the Catspeak compiler.</div>
-<span id=CatspeakLexer>    <b>function CatspeakLexer</b> (<a href="#CatspeakLexer">link</a>) 
+<span id=CatspeakLexer>    <b>struct CatspeakLexer</b> (<a href="#CatspeakLexer">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
+<span id=registerByte>      <b>method registerByte</b> (<a href="#registerByte">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=registerLexeme>      <b>method registerLexeme</b> (<a href="#registerLexeme">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=clearLexeme>      <b>method clearLexeme</b> (<a href="#clearLexeme">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=advance>      <b>method advance</b> (<a href="#advance">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=peek>      <b>method peek</b> (<a href="#peek">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=advanceWhile>      <b>method advanceWhile</b> (<a href="#advanceWhile">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=nextWithWhitespace>      <b>method nextWithWhitespace</b> (<a href="#nextWithWhitespace">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
+<span id=next>      <b>method next</b> (<a href="#next">link</a>) 
+      --------------------------------------------------------------------------</span>
+<div>      Undocumented.</div>
 <span id=catspeak_token_is_operator>    <b>function catspeak_token_is_operator</b> (<a href="#catspeak_token_is_operator">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
@@ -355,9 +693,12 @@ macros, and structs.</div>
 <span id=catspeak_byte_to_ascii_desc>    <b>function catspeak_byte_to_ascii_desc</b> (<a href="#catspeak_byte_to_ascii_desc">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_token>  <b>Scr Catspeak Token</b> (<a href="#scr_catspeak_token">link</a>) .gml
+<span id=scr_catspeak_token>  <b>scr_catspeak_token</b> (<a href="#scr_catspeak_token">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> enum.</div>
+<span id=CatspeakToken>    <b>enum CatspeakToken</b> (<a href="#CatspeakToken">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
 <span id=catspeak_token_show>    <b>function catspeak_token_show</b> (<a href="#catspeak_token_show">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
@@ -370,9 +711,12 @@ macros, and structs.</div>
 <span id=catspeak_token_sizeof>    <b>function catspeak_token_sizeof</b> (<a href="#catspeak_token_sizeof">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_ascii_desc>  <b>Scr Catspeak Ascii Desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
+<span id=scr_catspeak_ascii_desc>  <b>scr_catspeak_ascii_desc</b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> enum.</div>
+<span id=CatspeakASCIIDesc>    <b>enum CatspeakASCIIDesc</b> (<a href="#CatspeakASCIIDesc">link</a>) 
+    ----------------------------------------------------------------------------</span>
+<div>    Undocumented.</div>
 <span id=catspeak_ascii_desc_contains>    <b>function catspeak_ascii_desc_contains</b> (<a href="#catspeak_ascii_desc_contains">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
@@ -385,7 +729,7 @@ macros, and structs.</div>
 <span id=catspeak_ascii_desc_show>    <b>function catspeak_ascii_desc_show</b> (<a href="#catspeak_ascii_desc_show">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_alloc>  <b>Scr Catspeak Alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
+<span id=scr_catspeak_alloc>  <b>scr_catspeak_alloc</b> (<a href="#scr_catspeak_alloc">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles the allocation of dynamic resources that need to be garbage
   collected manually.</div>
@@ -407,7 +751,7 @@ macros, and structs.</div>
 <span id=catspeak_collect>    <b>function catspeak_collect</b> (<a href="#catspeak_collect">link</a>) 
     ----------------------------------------------------------------------------</span>
 <div>    Undocumented.</div>
-<span id=scr_catspeak_compatibility>  <b>Scr Catspeak Compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
+<span id=scr_catspeak_compatibility>  <b>scr_catspeak_compatibility</b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
   ==============================================================================</span>
 <div>  Compatibility scripts from version 1.2.3. All functions are deprecated
   and some have no implementations. There is no guarantee that old code

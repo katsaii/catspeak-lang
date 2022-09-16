@@ -39,6 +39,7 @@ class Section:
         if len(parts) > 1:
             sec.extension = parts[1]
         if sec.extension == "gml":
+            sec.title = sec.id
             sec.description = "\n".join(
                 (line[1:] if line else "") for line in (
                     line[len("//!"):] for line in content.splitlines()
@@ -46,17 +47,41 @@ class Section:
                 )
             )
             for line in content.splitlines():
-                if match := re.search('^\s*function\s*([A-Za-z0-9_]+)', line):
+                doc = "Undocumented."
+                if match := re.search('^\s*function\s*([A-Z]+[A-Za-z0-9_]*)', line):
                     name = match.group(1)
-                    if name.startswith("__"):
-                        continue
-                    print(match.group(1), "from", line)
-                    doc = "Undocumented."
-                    subsec = Section.from_content(name, doc)
-                    subsec.title = "function " + name
+                    prefix = "struct "
+                elif match := re.search('^\s*function\s*([A-Za-z0-9_]+)', line):
+                    name = match.group(1)
+                    prefix = "function "
+                elif match := re.search('^\s*#macro\s*([A-Za-z0-9_]+)', line):
+                    name = match.group(1)
+                    prefix = "macro "
+                elif match := re.search('^\s*enum\s*([A-Za-z0-9_]+)', line):
+                    name = match.group(1)
+                    prefix = "enum "
+                elif match := re.search('^\s*static\s*([A-Za-z0-9_]+)\s*=\s*function', line):
+                    name = match.group(1)
+                    prefix = "method "
+                elif match := re.search('^\s*static\s*([A-Za-z0-9_]+)', line):
+                    name = match.group(1)
+                    prefix = "field "
                 else:
                     continue
-                sec.subsections.append(subsec)
+                if name.startswith("__"):
+                    continue
+                subsec = Section.from_content(name, doc)
+                subsec.title = prefix + name
+                if prefix.startswith("method") or prefix.startswith("field"):
+                    # add methods to the previous definition
+                    subsec_parent = sec.subsections[-1]
+                    if (subsec_parent.title or "").startswith("function"):
+                        # if the previous context was a function, then we dont
+                        # want to include it in the documentation
+                        continue
+                    subsec_parent.subsections.append(subsec)
+                else:
+                    sec.subsections.append(subsec)
         else:
             sec.description = content
         return sec
