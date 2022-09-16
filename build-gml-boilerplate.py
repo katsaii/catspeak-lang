@@ -201,7 +201,7 @@ def impl_enum_flags(name, desc):
         "///",
         "/// @param {{Enum.{}}} flags".format(typeName),
         "///   The flags of [{}] to check.".format(typeName),
-        "///"
+        "///",
         "/// @return {Bool}",
         "function catspeak_{}_intersects(value, flags) {{".format(lowerName),
         "    gml_pragma(\"forceinline\");",

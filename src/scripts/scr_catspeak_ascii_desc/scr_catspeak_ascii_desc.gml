@@ -61,7 +61,8 @@ function catspeak_ascii_desc_equals(value, flags) {
 ///
 /// @param {Enum.CatspeakASCIIDesc} flags
 ///   The flags of [CatspeakASCIIDesc] to check.
-////// @return {Bool}
+///
+/// @return {Bool}
 function catspeak_ascii_desc_intersects(value, flags) {
     gml_pragma("forceinline");
     return (value & flags) != 0;

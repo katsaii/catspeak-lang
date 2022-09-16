@@ -186,16 +186,68 @@ def snake_to_title(s):
         return "Catspeak"
     return " ".join([x[0].upper() + x[1:] for x in s.split("_") if x])
 
+# Performs simple syntax highlighting on Feather types
+def simple_syntax_higlight_types(s):
+    s = re.sub(r"[|]", " | ", s)
+    items = re.split(r'([<.>|\(\)\[\]\{\}])', s)
+    highlight = True
+    out = ""
+    for item in items:
+        if highlight:
+            if item.strip().lower() in {
+                "real", "bool", "string", "array", "pointer", "function",
+                "struct", "id", "asset", "constant", "any", "undefined",
+                "enum"
+            }:
+                item_ = "<b class=\"keyword\">" + item + "</b>"
+                item_ = "<a href=\"https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm\">{}</a>".format(item_)
+                out += item_
+            else:
+                item_ = "<span class=\"name\">" + item + "</span>"
+                if item.strip().lower().startswith("catspeak"):
+                    item_ = "<a href=\"#{}\">{}</a>".format(item, item_)
+                out += item_
+        else:
+            out += item
+        highlight = not highlight
+    return out
+
 # Replaces simple markdown styles with HTML elements.
 def simple_markdown(s):
     def control(s):
         bold = s == "`" or s == "```"
         return "<{elem} class=\"control\">{}</{elem}>".format(s, elem="b" if bold else "span")
     s = re.sub(r"@deprecated", r"{}<b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>".format(control("@")), s)
-    s = re.sub(r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_]*)\]", r"{}<b>param</b> <i>(optional)</i> <code>\2</code><b>:</b> <i>\1</i>".format(control("@")), s)
-    s = re.sub(r"@param\s*\{([^\}]*)\}\s*([A-Za-z0-9_]*)", r"{}<b>param</b> <code>\2</code><b>:</b> <i>\1</i>".format(control("@")), s)
+    s = re.sub(
+        r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_]*)\]",
+        lambda match: \
+            r"{}<b>param</b> <i>(optional)</i> <code>{}</code><b>:</b> <i>{}</i>".format(
+                control("@"),
+                match.group(2),
+                simple_syntax_higlight_types(match.group(1))
+            ),
+        s
+    )
+    s = re.sub(
+        r"@param\s*\{([^\}]*)\}\s*([A-Za-z0-9_]*)",
+        lambda match: \
+            r"{}<b>param</b> <code>{}</code><b>:</b> <i>{}</i>".format(
+                control("@"),
+                match.group(2),
+                simple_syntax_higlight_types(match.group(1))
+            ),
+        s
+    )
     s = re.sub(r"NOTE:", r"<em>NOTE</em>:".format(control("@")), s)
-    s = re.sub(r"@return\s*\{([^\}]*)\}", r"{}<b>returns</b> a value of <i>\1</i>".format(control("@")), s)
+    s = re.sub(
+        r"@return\s*\{([^\}]*)\}",
+        lambda match: \
+            r"{}<b>returns</b> a value of <i>{}</i>".format(
+                control("@"),
+                simple_syntax_higlight_types(match.group(1))
+            ),
+        s
+    )
     s = re.sub(r"\*\*([^*]*)\*\*", r"{c}<b>\1</b>{c}".format(c=control("**")), s)
     #s = re.sub(r"_([^_]*)_", r"{c}<em>\1</em>{c}".format(c=control("_")), s)
     s = re.sub(r"```([^`]*)```", r"{c}<code>\1</code>{c}".format(c=control("```")), s)
@@ -296,8 +348,8 @@ TEMPLATE = """
 
       a {
         --c : #007ffd;
-        text-decoration: none;
-        cursor: pointer;
+        text-decoration : none;
+        cursor : pointer;
       }
 
       .collapsible-content {
