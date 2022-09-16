@@ -1,0 +1,18 @@
+The challenge Catspeak faces as a modding language for GML is the lack of
+threads or syntactic sugar to write proper asynchronous code. Because GML is
+(mostly) is a single-threaded language, using a recursive method for parsing
+and interpreting the code would cause the application to freeze on very large
+inputs. This immediately rules out using recursive descent parsing, pratt
+parsing, and tree-walk interpreters.
+
+The problem of interpreting code had an existing solution: use a flat
+representation for the executable code. You may have heard of "bytecode" or
+"intcode" before, which are both flat representations of code. In fact,
+assembly code (which bytecode resembles) is also a flat representation. Not
+only would this be faster to execute (in theory), imperative code is very
+easy to "pause" compared to recursive approaches.
+
+This idea of a flat execution model was successfully applied to the Catspeak
+compiler by using pushdown automata instead of a typical recursive parsing
+method. This enables Catspeak programs to be passively compiled, executed, and
+paused at any time so the main thread is never blocked by heavy loads.

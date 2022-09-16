@@ -451,6 +451,9 @@ page.add_section_script(
     "scr_catspeak_alloc",
     "scr_catspeak_compatibility",
 )
+page.add_section_note(
+    "not_catspeak_theory"
+)
 page.add_section("./LICENSE")
 
 with open("docs/index.html", "w") as file:

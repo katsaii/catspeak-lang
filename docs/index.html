@@ -278,6 +278,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#catspeak_session_add_function"><span class="keyword">function </span><span class="name">catspeak_session_add_function</span></a>
         - <a href="#catspeak_session_create_process"><span class="keyword">function </span><span class="name">catspeak_session_create_process</span></a>
         - <a href="#catspeak_session_create_process_greedy"><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></a></div></div>
+    - <a href="#not_catspeak_theory">Theory</a>
     - <a href="#LICENSE">LICENSE</a>
 
 <span id=not_catspeak_installation>================================================================================
@@ -1729,6 +1730,27 @@ macros, and structs.</div>
       The arguments to pass to the process.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
+<span id=not_catspeak_theory>================================================================================
+<b>Theory</b> (<a href="#not_catspeak_theory">link</a>) .txt
+================================================================================</span>
+<div>The challenge Catspeak faces as a modding language for GML is the lack of
+threads or syntactic sugar to write proper asynchronous code. Because GML is
+(mostly) is a single-threaded language, using a recursive method for parsing
+and interpreting the code would cause the application to freeze on very large
+inputs. This immediately rules out using recursive descent parsing, pratt
+parsing, and tree-walk interpreters.
+
+The problem of interpreting code had an existing solution: use a flat
+representation for the executable code. You may have heard of "bytecode" or
+"intcode" before, which are both flat representations of code. In fact,
+assembly code (which bytecode resembles) is also a flat representation. Not
+only would this be faster to execute (in theory), imperative code is very
+easy to "pause" compared to recursive approaches.
+
+This idea of a flat execution model was successfully applied to the Catspeak
+compiler by using pushdown automata instead of a typical recursive parsing
+method. This enables Catspeak programs to be passively compiled, executed, and
+paused at any time so the main thread is never blocked by heavy loads.</div>
 <span id=LICENSE>================================================================================
 <b>LICENSE</b> (<a href="#LICENSE">link</a>) 
 ================================================================================</span>
