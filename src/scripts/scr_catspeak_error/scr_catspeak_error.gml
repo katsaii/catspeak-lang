@@ -23,7 +23,7 @@ function CatspeakLocation(line, column) constructor {
         return new CatspeakLocation(line, column);
     };
 
-    /// Copies values from this location to a new `CatspeakLocation` without
+    /// Copies values from this location to a new [CatspeakLocation] without
     /// creating a new instance.
     ///
     /// @param {Struct.CatspeakLocation} source

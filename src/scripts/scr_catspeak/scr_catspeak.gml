@@ -66,7 +66,7 @@ function catspeak_compile_buffer(buff, consume=false) {
 /// Creates a new Catspeak compiler process for a string containing Catspeak
 /// code. This will allocate a new buffer to store the string, if that isn't
 /// ideal then you will have to create and write to your own buffer, then
-/// pass it into the `catspeak_compile_buffer` function instead.
+/// pass it into the [catspeak_compile_buffer] function instead.
 ///
 /// @param {Any} src
 ///   The value containing the source code to compile.

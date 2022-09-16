@@ -3,11 +3,11 @@
 //# feather use syntax-errors
 
 /// Creates a new Catspeak compiler, responsible for converting a stream of
-/// `CatspeakToken` into executable code.
+/// [CatspeakToken] into executable code.
 ///
 /// @param {Struct.CatspeakLexer} lexer
 ///   The iterator that yields tokens to be consumed by the compiler. Must
-///   be a struct with at least a `next` method on it.
+///   be a struct with at least a [next] method on it.
 ///
 /// @param {Struct.CatspeakIR} [ir]
 ///   The Catspeak IR target to write code to, if left empty a new target is
@@ -81,7 +81,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         }
     }
 
-    /// @desc Throws a `CatspeakError` for the current token.
+    /// @desc Throws a [CatspeakError] for the current token.
     ///
     /// @param {String} [message]
     ///   The error message to use.
@@ -105,7 +105,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         error(message);
     };
 
-    /// Throws a `CatspeakError` if the current token is not the
+    /// Throws a [CatspeakError] if the current token is not the
     /// expected token. Advances the parser otherwise.
     ///
     /// @param {Enum.CatspeakToken} kind
@@ -119,7 +119,7 @@ function CatspeakCompiler(lexer, ir) constructor {
         }
     };
 
-    /// Throws a `CatspeakError` if the current token is not a semicolon
+    /// Throws a [CatspeakError] if the current token is not a semicolon
     /// or new line. Advances the parser otherwise.
     ///
     /// @param {String} [message]

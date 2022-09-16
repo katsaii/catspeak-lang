@@ -342,7 +342,13 @@ TEMPLATE = """
 
 page = Page()
 page.add_section_note(
-    "not_catspeak_features"
+    "not_catspeak_installation",
+    "not_catspeak_disclaimer",
+    "not_catspeak_features",
+    "not_catspeak_syntax",
+    "not_catspeak_basic_usage",
+    "not_catspeak_advanced_usage",
+    "not_catspeak_standard_library",
 )
 page.add_section_string("library_reference", """\
 The following sections feature documentation for all public Catspeak functions,

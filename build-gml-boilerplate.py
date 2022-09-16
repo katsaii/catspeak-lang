@@ -54,7 +54,7 @@ def impl_enum(name, desc):
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
-        "//! Boilerplate for the `{}` enum.".format(typeName),
+        "//! Boilerplate for the [{}] enum.".format(typeName),
         EMPTY_STRING,
         "// NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
         EMPTY_STRING,
@@ -66,11 +66,11 @@ def impl_enum(name, desc):
             for field in fields
         ), "}",
         EMPTY_STRING,
-        "/// Gets the name for a value of `{}`.".format(typeName),
+        "/// Gets the name for a value of [{}].".format(typeName),
         "/// Will return `<unknown>` if the value is unexpected.",
         "///",
         "/// @param {{Enum.{}}} value".format(typeName),
-        "///   The value of `{}` to convert.".format(typeName),
+        "///   The value of [{}] to convert.".format(typeName),
         "///",
         "/// @return {String}",
         "function catspeak_{}_show(value) {{".format(lowerName),
@@ -87,7 +87,7 @@ def impl_enum(name, desc):
         "    return \"<unknown>\";",
         "}",
         EMPTY_STRING,
-        "/// Parses a string into a value of `{}`.".format(typeName),
+        "/// Parses a string into a value of [{}].".format(typeName),
         "/// Will return `undefined` if the value cannot be parsed.",
         "///",
         "/// @param {Any} str",
@@ -108,11 +108,11 @@ def impl_enum(name, desc):
         "    return undefined;",
         "}",
         EMPTY_STRING,
-        "/// Returns the integer representation for a value of `{}`.".format(typeName),
+        "/// Returns the integer representation for a value of [{}].".format(typeName),
         "/// Will return `undefined` if the value is unexpected.",
         "///",
         "/// @param {{Enum.{}}} value".format(typeName),
-        "///   The value of `{}` to convert.".format(typeName),
+        "///   The value of [{}] to convert.".format(typeName),
         "///",
         "/// @return {Real}",
         "function catspeak_{}_valueof(value) {{".format(lowerName),
@@ -120,7 +120,7 @@ def impl_enum(name, desc):
         "    return value;",
         "}",
         EMPTY_STRING,
-        "/// Returns the number of elements of `{}`.".format(typeName),
+        "/// Returns the number of elements of [{}].".format(typeName),
         "///",
         "/// @return {Real}",
         "function catspeak_{}_sizeof() {{".format(lowerName),
@@ -141,7 +141,7 @@ def impl_enum_flags(name, desc):
     typeName = "Catspeak{}".format(name)
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
-        "//! Boilerplate for the `{}` enum.".format(typeName),
+        "//! Boilerplate for the [{}] enum.".format(typeName),
         EMPTY_STRING,
         "//NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!",
         EMPTY_STRING,
@@ -163,14 +163,14 @@ def impl_enum_flags(name, desc):
         "    ),",
         "}",
         EMPTY_STRING,
-        "/// Returns whether an instance of `{}` contains an expected flag."
+        "/// Returns whether an instance of [{}] contains an expected flag."
                 .format(typeName),
         "///",
         "/// @param {Any} value",
         "///   The value to check for flags of, must be a numeric value.",
         "///",
         "/// @param {{Enum.{}}} flags".format(typeName),
-        "///   The flags of `{}` to check.".format(typeName),
+        "///   The flags of [{}] to check.".format(typeName),
         "///",
         "/// @return {Bool}",
         "function catspeak_{}_contains(value, flags) {{".format(lowerName),
@@ -178,14 +178,14 @@ def impl_enum_flags(name, desc):
         "    return (value & flags) == flags;",
         "}",
         EMPTY_STRING,
-        "/// Returns whether an instance of `{}` equals an expected flag."
+        "/// Returns whether an instance of [{}] equals an expected flag."
                 .format(typeName),
         "///",
         "/// @param {Any} value",
         "///   The value to check for flags of, must be a numeric value.",
         "///",
         "/// @param {{Enum.{}}} flags".format(typeName),
-        "///   The flags of `{}` to check.".format(typeName),
+        "///   The flags of [{}] to check.".format(typeName),
         "///",
         "/// @return {Bool}",
         "function catspeak_{}_equals(value, flags) {{".format(lowerName),
@@ -193,26 +193,26 @@ def impl_enum_flags(name, desc):
         "    return value == flags;",
         "}",
         EMPTY_STRING,
-        "/// Returns whether an instance of `{}` intersects a set of expected flags."
+        "/// Returns whether an instance of [{}] intersects a set of expected flags."
                 .format(typeName),
         "///",
         "/// @param {Any} value",
         "///   The value to check for flags of, must be a numeric value.",
         "///",
         "/// @param {{Enum.{}}} flags".format(typeName),
-        "///   The flags of `{}` to check.".format(typeName),
-        "///",
+        "///   The flags of [{}] to check.".format(typeName),
+        "///"
         "/// @return {Bool}",
         "function catspeak_{}_intersects(value, flags) {{".format(lowerName),
         "    gml_pragma(\"forceinline\");",
         "    return (value & flags) != 0;",
         "}",
         EMPTY_STRING,
-        "/// Gets the name for a value of `{}`.".format(typeName),
+        "/// Gets the name for a value of [{}].".format(typeName),
         "/// Will return the empty string if the value is unexpected.",
         "///",
         "/// @param {{Enum.{}}} value".format(typeName),
-        "///   The value of `{}` to convert, must be a numeric value."
+        "///   The value of [{}] to convert, must be a numeric value."
                 .format(typeName),
         "///",
         "/// @return {String}",
@@ -238,10 +238,6 @@ def impl_enum_flags(name, desc):
 
 impl_enum("Token", "Represents a kind of Catspeak token.")
 impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")
-impl_enum_flags(
-    "Option",
-    "The set of feature flags Catspeak can be configured with."
-)
 impl_enum_flags(
     "ASCIIDesc",
     "Simple tags that identify ASCII characters read from a GML buffer."

@@ -78,7 +78,7 @@ function CatspeakVM() constructor {
         callFrame.block = callFrame.initialBlock;
     };
 
-    /// An unsafe function similar to `reuseCallFrame`, except a new set of
+    /// An unsafe function similar to [reuseCallFrame], except a new set of
     /// arguments can be passed into the frame.
     ///
     /// @param {Array<Any>} args

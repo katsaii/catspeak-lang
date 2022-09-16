@@ -1,4 +1,4 @@
-//! Boilerplate for the `CatspeakASCIIDesc` enum.
+//! Boilerplate for the [CatspeakASCIIDesc] enum.
 
 //NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!
 
@@ -26,13 +26,13 @@ enum CatspeakASCIIDesc {
     ),
 }
 
-/// Returns whether an instance of `CatspeakASCIIDesc` contains an expected flag.
+/// Returns whether an instance of [CatspeakASCIIDesc] contains an expected flag.
 ///
 /// @param {Any} value
 ///   The value to check for flags of, must be a numeric value.
 ///
 /// @param {Enum.CatspeakASCIIDesc} flags
-///   The flags of `CatspeakASCIIDesc` to check.
+///   The flags of [CatspeakASCIIDesc] to check.
 ///
 /// @return {Bool}
 function catspeak_ascii_desc_contains(value, flags) {
@@ -40,13 +40,13 @@ function catspeak_ascii_desc_contains(value, flags) {
     return (value & flags) == flags;
 }
 
-/// Returns whether an instance of `CatspeakASCIIDesc` equals an expected flag.
+/// Returns whether an instance of [CatspeakASCIIDesc] equals an expected flag.
 ///
 /// @param {Any} value
 ///   The value to check for flags of, must be a numeric value.
 ///
 /// @param {Enum.CatspeakASCIIDesc} flags
-///   The flags of `CatspeakASCIIDesc` to check.
+///   The flags of [CatspeakASCIIDesc] to check.
 ///
 /// @return {Bool}
 function catspeak_ascii_desc_equals(value, flags) {
@@ -54,25 +54,24 @@ function catspeak_ascii_desc_equals(value, flags) {
     return value == flags;
 }
 
-/// Returns whether an instance of `CatspeakASCIIDesc` intersects a set of expected flags.
+/// Returns whether an instance of [CatspeakASCIIDesc] intersects a set of expected flags.
 ///
 /// @param {Any} value
 ///   The value to check for flags of, must be a numeric value.
 ///
 /// @param {Enum.CatspeakASCIIDesc} flags
-///   The flags of `CatspeakASCIIDesc` to check.
-///
-/// @return {Bool}
+///   The flags of [CatspeakASCIIDesc] to check.
+////// @return {Bool}
 function catspeak_ascii_desc_intersects(value, flags) {
     gml_pragma("forceinline");
     return (value & flags) != 0;
 }
 
-/// Gets the name for a value of `CatspeakASCIIDesc`.
+/// Gets the name for a value of [CatspeakASCIIDesc].
 /// Will return the empty string if the value is unexpected.
 ///
 /// @param {Enum.CatspeakASCIIDesc} value
-///   The value of `CatspeakASCIIDesc` to convert, must be a numeric value.
+///   The value of [CatspeakASCIIDesc] to convert, must be a numeric value.
 ///
 /// @return {String}
 function catspeak_ascii_desc_show(value) {

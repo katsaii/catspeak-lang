@@ -1,4 +1,4 @@
-//! Boilerplate for the `CatspeakToken` enum.
+//! Boilerplate for the [CatspeakToken] enum.
 
 // NOTE: AVOID EDITING THIS FILE, IT HAS BEEN AUTOMATICALLY GENERATED!
 
@@ -52,11 +52,11 @@ enum CatspeakToken {
     __OPERATORS_END__,
 }
 
-/// Gets the name for a value of `CatspeakToken`.
+/// Gets the name for a value of [CatspeakToken].
 /// Will return `<unknown>` if the value is unexpected.
 ///
 /// @param {Enum.CatspeakToken} value
-///   The value of `CatspeakToken` to convert.
+///   The value of [CatspeakToken] to convert.
 ///
 /// @return {String}
 function catspeak_token_show(value) {
@@ -149,7 +149,7 @@ function catspeak_token_show(value) {
     return "<unknown>";
 }
 
-/// Parses a string into a value of `CatspeakToken`.
+/// Parses a string into a value of [CatspeakToken].
 /// Will return `undefined` if the value cannot be parsed.
 ///
 /// @param {Any} str
@@ -246,11 +246,11 @@ function catspeak_token_read(str) {
     return undefined;
 }
 
-/// Returns the integer representation for a value of `CatspeakToken`.
+/// Returns the integer representation for a value of [CatspeakToken].
 /// Will return `undefined` if the value is unexpected.
 ///
 /// @param {Enum.CatspeakToken} value
-///   The value of `CatspeakToken` to convert.
+///   The value of [CatspeakToken] to convert.
 ///
 /// @return {Real}
 function catspeak_token_valueof(value) {
@@ -258,7 +258,7 @@ function catspeak_token_valueof(value) {
     return value;
 }
 
-/// Returns the number of elements of `CatspeakToken`.
+/// Returns the number of elements of [CatspeakToken].
 ///
 /// @return {Real}
 function catspeak_token_sizeof() {

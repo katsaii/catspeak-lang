@@ -105,7 +105,13 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 <span id=contents>================================================================================
 <b>Contents</b> (<a href="#contents">link</a>) 
 ================================================================================</span>
+    - <a href="#not_catspeak_installation">Installation</a>
+    - <a href="#not_catspeak_disclaimer">Disclaimer</a>
     - <a href="#not_catspeak_features">Features</a>
+    - <a href="#not_catspeak_syntax">Syntax</a>
+    - <a href="#not_catspeak_basic_usage">Basic Usage</a>
+    - <a href="#not_catspeak_advanced_usage">Advanced Usage</a>
+    - <a href="#not_catspeak_standard_library">Standard Library</a>
 <input id="library_reference-checkbox" class="toggle" type="checkbox"><label for="library_reference-checkbox"> - </label><a href="#library_reference">Library Reference</a><div class="collapsible-content">
 <input id="scr_catspeak-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak-checkbox">   - </label><a href="#scr_catspeak"><span class="name-script">scr_catspeak</span></a><div class="collapsible-content">
         - <a href="#catspeak_execute"><span class="keyword">function </span><span class="name">catspeak_execute</span></a>
@@ -274,6 +280,14 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
         - <a href="#catspeak_session_create_process_greedy"><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></a></div></div>
     - <a href="#LICENSE">LICENSE</a>
 
+<span id=not_catspeak_installation>================================================================================
+<b>Installation</b> (<a href="#not_catspeak_installation">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
+<span id=not_catspeak_disclaimer>================================================================================
+<b>Disclaimer</b> (<a href="#not_catspeak_disclaimer">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
 <span id=not_catspeak_features>================================================================================
 <b>Features</b> (<a href="#not_catspeak_features">link</a>) .txt
 ================================================================================</span>
@@ -319,6 +333,22 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
      possible.
 
  - <span class="control">**</span><b>Cute name and mascot</b><span class="control">**</span>.</div>
+<span id=not_catspeak_syntax>================================================================================
+<b>Syntax</b> (<a href="#not_catspeak_syntax">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
+<span id=not_catspeak_basic_usage>================================================================================
+<b>Basic Usage</b> (<a href="#not_catspeak_basic_usage">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
+<span id=not_catspeak_advanced_usage>================================================================================
+<b>Advanced Usage</b> (<a href="#not_catspeak_advanced_usage">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
+<span id=not_catspeak_standard_library>================================================================================
+<b>Standard Library</b> (<a href="#not_catspeak_standard_library">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
 <span id=library_reference>================================================================================
 <b>Library Reference</b> (<a href="#library_reference">link</a>) 
 ================================================================================</span>
@@ -364,7 +394,7 @@ macros, and structs.</div>
 <div>    Creates a new Catspeak compiler process for a string containing Catspeak
     code. This will allocate a new buffer to store the string, if that isn't
     ideal then you will have to create and write to your own buffer, then
-    pass it into the <b class="control">`</b><code>catspeak_compile_buffer</code><b class="control">`</b> function instead.
+    pass it into the <span class="control">[</span><a href="#catspeak_compile_buffer">catspeak_compile_buffer</a><span class="control">]</span> function instead.
     
     <span class="control">@</span><b>param</b> <code>src</code><b>:</b> <i>Any</i>
       The value containing the source code to compile.
@@ -440,7 +470,7 @@ macros, and structs.</div>
 <span id=withTimeLimit>      <b><span class="keyword">method </span><span class="name">withTimeLimit</span></b> (<a href="#withTimeLimit">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Sets the time limit for this process, overrides the default time limit
-      defined using <b class="control">`</b><code>catspeak_config</code><b class="control">`</b>.
+      defined using <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span>.
       
       <span class="control">@</span><b>param</b> <code>t</code><b>:</b> <i>Real</i>
         The time limit (in seconds) the process is allowed to run for before
@@ -513,7 +543,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>returns</b> a value of <i>Struct.CatspeakLocation</i></div>
 <span id=reflect>      <b><span class="keyword">method </span><span class="name">reflect</span></b> (<a href="#reflect">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      Copies values from this location to a new <b class="control">`</b><code>CatspeakLocation</code><b class="control">`</b> without
+<div>      Copies values from this location to a new <span class="control">[</span><a href="#CatspeakLocation">CatspeakLocation</a><span class="control">]</span> without
       creating a new instance.
       
       <span class="control">@</span><b>param</b> <code>source</code><b>:</b> <i>Struct.CatspeakLocation</i>
@@ -593,7 +623,7 @@ macros, and structs.</div>
       checks that a valid callframe even exists, so keep that in mind.</div>
 <span id=reuseCallFrameWithArgs>      <b><span class="keyword">method </span><span class="name">reuseCallFrameWithArgs</span></b> (<a href="#reuseCallFrameWithArgs">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      An unsafe function similar to <b class="control">`</b><code>reuseCallFrame</code><b class="control">`</b>, except a new set of
+<div>      An unsafe function similar to <span class="control">[</span><a href="#reuseCallFrame">reuseCallFrame</a><span class="control">]</span>, except a new set of
       arguments can be passed into the frame.
       
       <span class="control">@</span><b>param</b> <code>args</code><b>:</b> <i>Array<Any></i>
@@ -1007,22 +1037,22 @@ macros, and structs.</div>
       The IR function associated with this register.</div>
 <span id=scr_catspeak_intcode>  <b><span class="name-script">scr_catspeak_intcode</span></b> (<a href="#scr_catspeak_intcode">link</a>) .gml
   ==============================================================================</span>
-<div>  Boilerplate for the <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b> enum.</div>
+<div>  Boilerplate for the <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span> enum.</div>
 <span id=CatspeakIntcode>    <b><span class="keyword">enum </span><span class="name">CatspeakIntcode</span></b> (<a href="#CatspeakIntcode">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Represents a kind of Catspeak VM instruction.</div>
 <span id=catspeak_intcode_show>    <b><span class="keyword">function </span><span class="name">catspeak_intcode_show</span></b> (<a href="#catspeak_intcode_show">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Gets the name for a value of <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b>.
+<div>    Gets the name for a value of <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span>.
     Will return `<unknown>` if the value is unexpected.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Enum.CatspeakIntcode</i>
-      The value of <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b> to convert.
+      The value of <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i>String</i></div>
 <span id=catspeak_intcode_read>    <b><span class="keyword">function </span><span class="name">catspeak_intcode_read</span></b> (<a href="#catspeak_intcode_read">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Parses a string into a value of <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b>.
+<div>    Parses a string into a value of <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>undefined</code><b class="control">`</b> if the value cannot be parsed.
     
     <span class="control">@</span><b>param</b> <code>str</code><b>:</b> <i>Any</i>
@@ -1031,16 +1061,16 @@ macros, and structs.</div>
     <span class="control">@</span><b>returns</b> a value of <i>Enum.CatspeakIntcode</i></div>
 <span id=catspeak_intcode_valueof>    <b><span class="keyword">function </span><span class="name">catspeak_intcode_valueof</span></b> (<a href="#catspeak_intcode_valueof">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns the integer representation for a value of <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b>.
+<div>    Returns the integer representation for a value of <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>undefined</code><b class="control">`</b> if the value is unexpected.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Enum.CatspeakIntcode</i>
-      The value of <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b> to convert.
+      The value of <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i>Real</i></div>
 <span id=catspeak_intcode_sizeof>    <b><span class="keyword">function </span><span class="name">catspeak_intcode_sizeof</span></b> (<a href="#catspeak_intcode_sizeof">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns the number of elements of <b class="control">`</b><code>CatspeakIntcode</code><b class="control">`</b>.
+<div>    Returns the number of elements of <span class="control">[</span><a href="#CatspeakIntcode">CatspeakIntcode</a><span class="control">]</span>.
     
     <span class="control">@</span><b>returns</b> a value of <i>Real</i></div>
 <span id=scr_catspeak_compiler>  <b><span class="name-script">scr_catspeak_compiler</span></b> (<a href="#scr_catspeak_compiler">link</a>) .gml
@@ -1049,11 +1079,11 @@ macros, and structs.</div>
 <span id=CatspeakCompiler>    <b><span class="keyword">struct </span><span class="name">CatspeakCompiler</span></b> (<a href="#CatspeakCompiler">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Creates a new Catspeak compiler, responsible for converting a stream of
-    <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> into executable code.
+    <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span> into executable code.
     
     <span class="control">@</span><b>param</b> <code>lexer</code><b>:</b> <i>Struct.CatspeakLexer</i>
       The iterator that yields tokens to be consumed by the compiler. Must
-      be a struct with at least a <b class="control">`</b><code>next</code><b class="control">`</b> method on it.
+      be a struct with at least a <span class="control">[</span><a href="#next">next</a><span class="control">]</span> method on it.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>ir</code><b>:</b> <i>Struct.CatspeakIR</i>
       The Catspeak IR target to write code to, if left empty a new target is
@@ -1096,7 +1126,7 @@ macros, and structs.</div>
       an unexpected location.</div>
 <span id=error>      <b><span class="keyword">method </span><span class="name">error</span></b> (<a href="#error">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      @desc Throws a <b class="control">`</b><code>CatspeakError</code><b class="control">`</b> for the current token.
+<div>      @desc Throws a <span class="control">[</span><a href="#CatspeakError">CatspeakError</a><span class="control">]</span> for the current token.
       
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>message</code><b>:</b> <i>String</i>
         The error message to use.</div>
@@ -1108,7 +1138,7 @@ macros, and structs.</div>
         The error message to use.</div>
 <span id=expects>      <b><span class="keyword">method </span><span class="name">expects</span></b> (<a href="#expects">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      Throws a <b class="control">`</b><code>CatspeakError</code><b class="control">`</b> if the current token is not the
+<div>      Throws a <span class="control">[</span><a href="#CatspeakError">CatspeakError</a><span class="control">]</span> if the current token is not the
       expected token. Advances the parser otherwise.
       
       <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i>Enum.CatspeakToken</i>
@@ -1118,7 +1148,7 @@ macros, and structs.</div>
         The error message to use.</div>
 <span id=expectsSemicolon>      <b><span class="keyword">method </span><span class="name">expectsSemicolon</span></b> (<a href="#expectsSemicolon">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      Throws a <b class="control">`</b><code>CatspeakError</code><b class="control">`</b> if the current token is not a semicolon
+<div>      Throws a <span class="control">[</span><a href="#CatspeakError">CatspeakError</a><span class="control">]</span> if the current token is not a semicolon
       or new line. Advances the parser otherwise.
       
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>message</code><b>:</b> <i>String</i>
@@ -1311,14 +1341,14 @@ macros, and structs.</div>
       <span class="control">@</span><b>returns</b> a value of <i>Real</i></div>
 <span id=nextWithWhitespace>      <b><span class="keyword">method </span><span class="name">nextWithWhitespace</span></b> (<a href="#nextWithWhitespace">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      Advances the lexer and returns the next <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b>. This includes
+<div>      Advances the lexer and returns the next <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span>. This includes
       additional whitespace and control tokens, like: line breaks <b class="control">`</b><code>;</code><b class="control">`</b>, line
       continuations <b class="control">`</b><code>...</code><b class="control">`</b>, and comments <b class="control">`</b><code>--</code><b class="control">`</b>.
       
       <span class="control">@</span><b>returns</b> a value of <i>Enum.CatspeakToken</i></div>
 <span id=next>      <b><span class="keyword">method </span><span class="name">next</span></b> (<a href="#next">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      Advances the lexer and returns the next <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b>, ingoring
+<div>      Advances the lexer and returns the next <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span>, ingoring
       any comments, whitespace, and line continuations.
       
       <span class="control">@</span><b>returns</b> a value of <i>Enum.CatspeakToken</i></div>
@@ -1375,22 +1405,22 @@ macros, and structs.</div>
     <span class="control">@</span><b>returns</b> a value of <i>Enum.CatspeakASCIIDesc</i></div>
 <span id=scr_catspeak_token>  <b><span class="name-script">scr_catspeak_token</span></b> (<a href="#scr_catspeak_token">link</a>) .gml
   ==============================================================================</span>
-<div>  Boilerplate for the <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> enum.</div>
+<div>  Boilerplate for the <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span> enum.</div>
 <span id=CatspeakToken>    <b><span class="keyword">enum </span><span class="name">CatspeakToken</span></b> (<a href="#CatspeakToken">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Represents a kind of Catspeak token.</div>
 <span id=catspeak_token_show>    <b><span class="keyword">function </span><span class="name">catspeak_token_show</span></b> (<a href="#catspeak_token_show">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Gets the name for a value of <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b>.
+<div>    Gets the name for a value of <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span>.
     Will return `<unknown>` if the value is unexpected.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Enum.CatspeakToken</i>
-      The value of <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> to convert.
+      The value of <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i>String</i></div>
 <span id=catspeak_token_read>    <b><span class="keyword">function </span><span class="name">catspeak_token_read</span></b> (<a href="#catspeak_token_read">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Parses a string into a value of <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b>.
+<div>    Parses a string into a value of <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>undefined</code><b class="control">`</b> if the value cannot be parsed.
     
     <span class="control">@</span><b>param</b> <code>str</code><b>:</b> <i>Any</i>
@@ -1399,64 +1429,63 @@ macros, and structs.</div>
     <span class="control">@</span><b>returns</b> a value of <i>Enum.CatspeakToken</i></div>
 <span id=catspeak_token_valueof>    <b><span class="keyword">function </span><span class="name">catspeak_token_valueof</span></b> (<a href="#catspeak_token_valueof">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns the integer representation for a value of <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b>.
+<div>    Returns the integer representation for a value of <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>undefined</code><b class="control">`</b> if the value is unexpected.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Enum.CatspeakToken</i>
-      The value of <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b> to convert.
+      The value of <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i>Real</i></div>
 <span id=catspeak_token_sizeof>    <b><span class="keyword">function </span><span class="name">catspeak_token_sizeof</span></b> (<a href="#catspeak_token_sizeof">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns the number of elements of <b class="control">`</b><code>CatspeakToken</code><b class="control">`</b>.
+<div>    Returns the number of elements of <span class="control">[</span><a href="#CatspeakToken">CatspeakToken</a><span class="control">]</span>.
     
     <span class="control">@</span><b>returns</b> a value of <i>Real</i></div>
 <span id=scr_catspeak_ascii_desc>  <b><span class="name-script">scr_catspeak_ascii_desc</span></b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
   ==============================================================================</span>
-<div>  Boilerplate for the <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> enum.</div>
+<div>  Boilerplate for the <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> enum.</div>
 <span id=CatspeakASCIIDesc>    <b><span class="keyword">enum </span><span class="name">CatspeakASCIIDesc</span></b> (<a href="#CatspeakASCIIDesc">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Simple tags that identify ASCII characters read from a GML buffer.</div>
 <span id=catspeak_ascii_desc_contains>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_contains</span></b> (<a href="#catspeak_ascii_desc_contains">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns whether an instance of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> contains an expected flag.
+<div>    Returns whether an instance of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> contains an expected flag.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Any</i>
       The value to check for flags of, must be a numeric value.
     
     <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i>Enum.CatspeakASCIIDesc</i>
-      The flags of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> to check.
+      The flags of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
     
     <span class="control">@</span><b>returns</b> a value of <i>Bool</i></div>
 <span id=catspeak_ascii_desc_equals>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_equals</span></b> (<a href="#catspeak_ascii_desc_equals">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns whether an instance of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> equals an expected flag.
+<div>    Returns whether an instance of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> equals an expected flag.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Any</i>
       The value to check for flags of, must be a numeric value.
     
     <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i>Enum.CatspeakASCIIDesc</i>
-      The flags of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> to check.
+      The flags of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
     
     <span class="control">@</span><b>returns</b> a value of <i>Bool</i></div>
 <span id=catspeak_ascii_desc_intersects>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_intersects</span></b> (<a href="#catspeak_ascii_desc_intersects">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Returns whether an instance of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> intersects a set of expected flags.
+<div>    Returns whether an instance of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> intersects a set of expected flags.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Any</i>
       The value to check for flags of, must be a numeric value.
     
     <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i>Enum.CatspeakASCIIDesc</i>
-      The flags of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> to check.
-    
-    <span class="control">@</span><b>returns</b> a value of <i>Bool</i></div>
+      The flags of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
+    /// <span class="control">@</span><b>returns</b> a value of <i>Bool</i></div>
 <span id=catspeak_ascii_desc_show>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_show</span></b> (<a href="#catspeak_ascii_desc_show">link</a>) .gml
     ----------------------------------------------------------------------------</span>
-<div>    Gets the name for a value of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b>.
+<div>    Gets the name for a value of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span>.
     Will return the empty string if the value is unexpected.
     
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i>Enum.CatspeakASCIIDesc</i>
-      The value of <b class="control">`</b><code>CatspeakASCIIDesc</code><b class="control">`</b> to convert, must be a numeric value.
+      The value of <span class="control">[</span><a href="#CatspeakASCIIDesc">CatspeakASCIIDesc</a><span class="control">]</span> to convert, must be a numeric value.
     
     <span class="control">@</span><b>returns</b> a value of <i>String</i></div>
 <span id=scr_catspeak_alloc>  <b><span class="name-script">scr_catspeak_alloc</span></b> (<a href="#scr_catspeak_alloc">link</a>) .gml

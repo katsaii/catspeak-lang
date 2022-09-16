@@ -124,7 +124,7 @@ function CatspeakLexer(buff) constructor {
         return byte;
     };
 
-    /// Advances the lexer and returns the next `CatspeakToken`. This includes
+    /// Advances the lexer and returns the next [CatspeakToken]. This includes
     /// additional whitespace and control tokens, like: line breaks `;`, line
     /// continuations `...`, and comments `--`.
     ///
@@ -228,7 +228,7 @@ function CatspeakLexer(buff) constructor {
         return token;
     };
 
-    /// Advances the lexer and returns the next `CatspeakToken`, ingoring
+    /// Advances the lexer and returns the next [CatspeakToken], ingoring
     /// any comments, whitespace, and line continuations.
     ///
     /// @return {Enum.CatspeakToken}
