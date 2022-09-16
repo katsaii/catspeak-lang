@@ -50,6 +50,31 @@
         cursor: pointer;
       }
 
+      .collapsible-content {
+        max-height : 0px;
+        overflow : hidden;
+        display : none;
+      }
+
+      .toggle:checked + label + a + .collapsible-content {
+        max-height : 100%;
+        display : block;
+      }
+
+      input[type='checkbox'] {
+        display : inline;
+        position : absolute;
+        visibility : hidden;
+      }
+
+      .toggle + label::before {
+        content : '[+]';
+      }
+
+      .toggle:checked + label::before {
+        content : '[-]';
+      }
+
       .title { --c : #526666 }
       .keyword { --c : #34347e }
       .name { --c : #808 }
@@ -80,174 +105,174 @@ Logo design by <a href="https://mashmerlow.github.io/">mashmerlow</a>.
 <span id=contents>================================================================================
 <b>Contents</b> (<a href="#contents">link</a>) 
 ================================================================================</span>
- - <a href="#not_catspeak_features">Features</a>
- - <a href="#library_reference">Library Reference</a>
-   - <a href="#scr_catspeak"><span class="name-script">scr_catspeak</span></a>
-     - <a href="#catspeak_execute"><span class="keyword">function </span><span class="name">catspeak_execute</span></a>
-     - <a href="#catspeak_compile_buffer"><span class="keyword">function </span><span class="name">catspeak_compile_buffer</span></a>
-     - <a href="#catspeak_compile_string"><span class="keyword">function </span><span class="name">catspeak_compile_string</span></a>
-     - <a href="#catspeak_create_buffer_from_string"><span class="keyword">function </span><span class="name">catspeak_create_buffer_from_string</span></a>
-     - <a href="#catspeak_config"><span class="keyword">function </span><span class="name">catspeak_config</span></a>
-   - <a href="#scr_catspeak_init"><span class="name-script">scr_catspeak_init</span></a>
-     - <a href="#CATSPEAK_VERSION"><span class="keyword">macro </span><span class="name">CATSPEAK_VERSION</span></a>
-     - <a href="#catspeak_force_init"><span class="keyword">function </span><span class="name">catspeak_force_init</span></a>
-   - <a href="#scr_catspeak_process"><span class="name-script">scr_catspeak_process</span></a>
-     - <a href="#CatspeakProcess"><span class="keyword">struct </span><span class="name">CatspeakProcess</span></a>
-       - <a href="#withTimeLimit"><span class="keyword">method </span><span class="name">withTimeLimit</span></a>
-       - <a href="#andThen"><span class="keyword">method </span><span class="name">andThen</span></a>
-       - <a href="#catchError"><span class="keyword">method </span><span class="name">catchError</span></a>
-       - <a href="#invoke"><span class="keyword">method </span><span class="name">invoke</span></a>
-     - <a href="#CatspeakGMLProcess"><span class="keyword">struct </span><span class="name">CatspeakGMLProcess</span></a>
-     - <a href="#CatspeakCompilerProcess"><span class="keyword">struct </span><span class="name">CatspeakCompilerProcess</span></a>
-     - <a href="#CatspeakVMProcess"><span class="keyword">struct </span><span class="name">CatspeakVMProcess</span></a>
-   - <a href="#scr_catspeak_builtins"><span class="name-script">scr_catspeak_builtins</span></a>
-     - <a href="#catspeak_string_to_builtin"><span class="keyword">function </span><span class="name">catspeak_string_to_builtin</span></a>
-     - <a href="#catspeak_string_is_builtin"><span class="keyword">function </span><span class="name">catspeak_string_is_builtin</span></a>
-   - <a href="#scr_catspeak_error"><span class="name-script">scr_catspeak_error</span></a>
-     - <a href="#CatspeakLocation"><span class="keyword">struct </span><span class="name">CatspeakLocation</span></a>
-       - <a href="#clone"><span class="keyword">method </span><span class="name">clone</span></a>
-       - <a href="#reflect"><span class="keyword">method </span><span class="name">reflect</span></a>
-       - <a href="#toString"><span class="keyword">method </span><span class="name">toString</span></a>
-     - <a href="#CatspeakError"><span class="keyword">struct </span><span class="name">CatspeakError</span></a>
-       - <a href="#toString"><span class="keyword">method </span><span class="name">toString</span></a>
-     - <a href="#catspeak_assert"><span class="keyword">function </span><span class="name">catspeak_assert</span></a>
-   - <a href="#scr_catspeak_vm"><span class="name-script">scr_catspeak_vm</span></a>
-     - <a href="#CatspeakVM"><span class="keyword">struct </span><span class="name">CatspeakVM</span></a>
-       - <a href="#pushCallFrame"><span class="keyword">method </span><span class="name">pushCallFrame</span></a>
-       - <a href="#reuseCallFrame"><span class="keyword">method </span><span class="name">reuseCallFrame</span></a>
-       - <a href="#reuseCallFrameWithArgs"><span class="keyword">method </span><span class="name">reuseCallFrameWithArgs</span></a>
-       - <a href="#popCallFrame"><span class="keyword">method </span><span class="name">popCallFrame</span></a>
-       - <a href="#inProgress"><span class="keyword">method </span><span class="name">inProgress</span></a>
-       - <a href="#runProgram"><span class="keyword">method </span><span class="name">runProgram</span></a>
-   - <a href="#scr_catspeak_ir"><span class="name-script">scr_catspeak_ir</span></a>
-     - <a href="#CatspeakFunction"><span class="keyword">struct </span><span class="name">CatspeakFunction</span></a>
-       - <a href="#setGlobal"><span class="keyword">method </span><span class="name">setGlobal</span></a>
-       - <a href="#getGlobal"><span class="keyword">method </span><span class="name">getGlobal</span></a>
-       - <a href="#emitBlock"><span class="keyword">method </span><span class="name">emitBlock</span></a>
-       - <a href="#emitFunction"><span class="keyword">method </span><span class="name">emitFunction</span></a>
-       - <a href="#emitRegister"><span class="keyword">method </span><span class="name">emitRegister</span></a>
-       - <a href="#emitPermanentRegister"><span class="keyword">method </span><span class="name">emitPermanentRegister</span></a>
-       - <a href="#discardRegister"><span class="keyword">method </span><span class="name">discardRegister</span></a>
-       - <a href="#emitUnreachable"><span class="keyword">method </span><span class="name">emitUnreachable</span></a>
-       - <a href="#isUnreachable"><span class="keyword">method </span><span class="name">isUnreachable</span></a>
-       - <a href="#emitConstant"><span class="keyword">method </span><span class="name">emitConstant</span></a>
-       - <a href="#emitPermanentConstant"><span class="keyword">method </span><span class="name">emitPermanentConstant</span></a>
-       - <a href="#emitArgs"><span class="keyword">method </span><span class="name">emitArgs</span></a>
-       - <a href="#emitGlobalGet"><span class="keyword">method </span><span class="name">emitGlobalGet</span></a>
-       - <a href="#emitGlobalSet"><span class="keyword">method </span><span class="name">emitGlobalSet</span></a>
-       - <a href="#emitReturn"><span class="keyword">method </span><span class="name">emitReturn</span></a>
-       - <a href="#emitMove"><span class="keyword">method </span><span class="name">emitMove</span></a>
-       - <a href="#emitClone"><span class="keyword">method </span><span class="name">emitClone</span></a>
-       - <a href="#emitCloneTemp"><span class="keyword">method </span><span class="name">emitCloneTemp</span></a>
-       - <a href="#emitJump"><span class="keyword">method </span><span class="name">emitJump</span></a>
-       - <a href="#emitJumpFalse"><span class="keyword">method </span><span class="name">emitJumpFalse</span></a>
-       - <a href="#emitCall"><span class="keyword">method </span><span class="name">emitCall</span></a>
-       - <a href="#emitCode"><span class="keyword">method </span><span class="name">emitCode</span></a>
-       - <a href="#emitCodeHoisted"><span class="keyword">method </span><span class="name">emitCodeHoisted</span></a>
-       - <a href="#emitGet"><span class="keyword">method </span><span class="name">emitGet</span></a>
-       - <a href="#emitSet"><span class="keyword">method </span><span class="name">emitSet</span></a>
-       - <a href="#lastCode"><span class="keyword">method </span><span class="name">lastCode</span></a>
-       - <a href="#lastCodeHoisted"><span class="keyword">method </span><span class="name">lastCodeHoisted</span></a>
-       - <a href="#patchInst"><span class="keyword">method </span><span class="name">patchInst</span></a>
-       - <a href="#patchInst"><span class="keyword">method </span><span class="name">patchInst</span></a>
-       - <a href="#patchArg"><span class="keyword">method </span><span class="name">patchArg</span></a>
-       - <a href="#patchPermanentRegisters"><span class="keyword">method </span><span class="name">patchPermanentRegisters</span></a>
-       - <a href="#toString"><span class="keyword">method </span><span class="name">toString</span></a>
-       - <a href="#disassembly"><span class="keyword">method </span><span class="name">disassembly</span></a>
-     - <a href="#CatspeakBlock"><span class="keyword">struct </span><span class="name">CatspeakBlock</span></a>
-     - <a href="#CatspeakAccessor"><span class="keyword">struct </span><span class="name">CatspeakAccessor</span></a>
-     - <a href="#CatspeakReadOnlyAccessor"><span class="keyword">struct </span><span class="name">CatspeakReadOnlyAccessor</span></a>
-     - <a href="#CatspeakTempRegisterAccessor"><span class="keyword">struct </span><span class="name">CatspeakTempRegisterAccessor</span></a>
-   - <a href="#scr_catspeak_intcode"><span class="name-script">scr_catspeak_intcode</span></a>
-     - <a href="#CatspeakIntcode"><span class="keyword">enum </span><span class="name">CatspeakIntcode</span></a>
-     - <a href="#catspeak_intcode_show"><span class="keyword">function </span><span class="name">catspeak_intcode_show</span></a>
-     - <a href="#catspeak_intcode_read"><span class="keyword">function </span><span class="name">catspeak_intcode_read</span></a>
-     - <a href="#catspeak_intcode_valueof"><span class="keyword">function </span><span class="name">catspeak_intcode_valueof</span></a>
-     - <a href="#catspeak_intcode_sizeof"><span class="keyword">function </span><span class="name">catspeak_intcode_sizeof</span></a>
-   - <a href="#scr_catspeak_compiler"><span class="name-script">scr_catspeak_compiler</span></a>
-     - <a href="#CatspeakCompiler"><span class="keyword">struct </span><span class="name">CatspeakCompiler</span></a>
-       - <a href="#advance"><span class="keyword">method </span><span class="name">advance</span></a>
-       - <a href="#matches"><span class="keyword">method </span><span class="name">matches</span></a>
-       - <a href="#satisfies"><span class="keyword">method </span><span class="name">satisfies</span></a>
-       - <a href="#consume"><span class="keyword">method </span><span class="name">consume</span></a>
-       - <a href="#consumeLinebreaks"><span class="keyword">method </span><span class="name">consumeLinebreaks</span></a>
-       - <a href="#error"><span class="keyword">method </span><span class="name">error</span></a>
-       - <a href="#errorAndAdvance"><span class="keyword">method </span><span class="name">errorAndAdvance</span></a>
-       - <a href="#expects"><span class="keyword">method </span><span class="name">expects</span></a>
-       - <a href="#expectsSemicolon"><span class="keyword">method </span><span class="name">expectsSemicolon</span></a>
-       - <a href="#declareLocal"><span class="keyword">method </span><span class="name">declareLocal</span></a>
-       - <a href="#getVar"><span class="keyword">method </span><span class="name">getVar</span></a>
-       - <a href="#pushState"><span class="keyword">method </span><span class="name">pushState</span></a>
-       - <a href="#pushResult"><span class="keyword">method </span><span class="name">pushResult</span></a>
-       - <a href="#topResult"><span class="keyword">method </span><span class="name">topResult</span></a>
-       - <a href="#popResult"><span class="keyword">method </span><span class="name">popResult</span></a>
-       - <a href="#pushBlock"><span class="keyword">method </span><span class="name">pushBlock</span></a>
-       - <a href="#popBlock"><span class="keyword">method </span><span class="name">popBlock</span></a>
-       - <a href="#pushIt"><span class="keyword">method </span><span class="name">pushIt</span></a>
-       - <a href="#topIt"><span class="keyword">method </span><span class="name">topIt</span></a>
-       - <a href="#popIt"><span class="keyword">method </span><span class="name">popIt</span></a>
-       - <a href="#pushLoop"><span class="keyword">method </span><span class="name">pushLoop</span></a>
-       - <a href="#topLoop"><span class="keyword">method </span><span class="name">topLoop</span></a>
-       - <a href="#popLoop"><span class="keyword">method </span><span class="name">popLoop</span></a>
-       - <a href="#inProgress"><span class="keyword">method </span><span class="name">inProgress</span></a>
-       - <a href="#emitProgram"><span class="keyword">method </span><span class="name">emitProgram</span></a>
-     - <a href="#CatspeakLocalScope"><span class="keyword">struct </span><span class="name">CatspeakLocalScope</span></a>
-     - <a href="#CatspeakGlobalAccessor"><span class="keyword">struct </span><span class="name">CatspeakGlobalAccessor</span></a>
-     - <a href="#CatspeakCollectionAccessor"><span class="keyword">struct </span><span class="name">CatspeakCollectionAccessor</span></a>
-   - <a href="#scr_catspeak_lexer"><span class="name-script">scr_catspeak_lexer</span></a>
-     - <a href="#CatspeakLexer"><span class="keyword">struct </span><span class="name">CatspeakLexer</span></a>
-       - <a href="#registerByte"><span class="keyword">method </span><span class="name">registerByte</span></a>
-       - <a href="#registerLexeme"><span class="keyword">method </span><span class="name">registerLexeme</span></a>
-       - <a href="#clearLexeme"><span class="keyword">method </span><span class="name">clearLexeme</span></a>
-       - <a href="#advance"><span class="keyword">method </span><span class="name">advance</span></a>
-       - <a href="#peek"><span class="keyword">method </span><span class="name">peek</span></a>
-       - <a href="#advanceWhile"><span class="keyword">method </span><span class="name">advanceWhile</span></a>
-       - <a href="#nextWithWhitespace"><span class="keyword">method </span><span class="name">nextWithWhitespace</span></a>
-       - <a href="#next"><span class="keyword">method </span><span class="name">next</span></a>
-     - <a href="#catspeak_token_is_operator"><span class="keyword">function </span><span class="name">catspeak_token_is_operator</span></a>
-     - <a href="#catspeak_token_is_expression"><span class="keyword">function </span><span class="name">catspeak_token_is_expression</span></a>
-     - <a href="#catspeak_token_skips_newline"><span class="keyword">function </span><span class="name">catspeak_token_skips_newline</span></a>
-     - <a href="#catspeak_string_to_token_keyword"><span class="keyword">function </span><span class="name">catspeak_string_to_token_keyword</span></a>
-     - <a href="#catspeak_byte_to_token"><span class="keyword">function </span><span class="name">catspeak_byte_to_token</span></a>
-     - <a href="#catspeak_byte_to_ascii_desc"><span class="keyword">function </span><span class="name">catspeak_byte_to_ascii_desc</span></a>
-   - <a href="#scr_catspeak_token"><span class="name-script">scr_catspeak_token</span></a>
-     - <a href="#CatspeakToken"><span class="keyword">enum </span><span class="name">CatspeakToken</span></a>
-     - <a href="#catspeak_token_show"><span class="keyword">function </span><span class="name">catspeak_token_show</span></a>
-     - <a href="#catspeak_token_read"><span class="keyword">function </span><span class="name">catspeak_token_read</span></a>
-     - <a href="#catspeak_token_valueof"><span class="keyword">function </span><span class="name">catspeak_token_valueof</span></a>
-     - <a href="#catspeak_token_sizeof"><span class="keyword">function </span><span class="name">catspeak_token_sizeof</span></a>
-   - <a href="#scr_catspeak_ascii_desc"><span class="name-script">scr_catspeak_ascii_desc</span></a>
-     - <a href="#CatspeakASCIIDesc"><span class="keyword">enum </span><span class="name">CatspeakASCIIDesc</span></a>
-     - <a href="#catspeak_ascii_desc_contains"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_contains</span></a>
-     - <a href="#catspeak_ascii_desc_equals"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_equals</span></a>
-     - <a href="#catspeak_ascii_desc_intersects"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_intersects</span></a>
-     - <a href="#catspeak_ascii_desc_show"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_show</span></a>
-   - <a href="#scr_catspeak_alloc"><span class="name-script">scr_catspeak_alloc</span></a>
-     - <a href="#catspeak_alloc_ds_map"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_map</span></a>
-     - <a href="#catspeak_alloc_ds_list"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_list</span></a>
-     - <a href="#catspeak_alloc_ds_stack"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_stack</span></a>
-     - <a href="#catspeak_alloc_ds_priority"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_priority</span></a>
-     - <a href="#catspeak_alloc"><span class="keyword">function </span><span class="name">catspeak_alloc</span></a>
-     - <a href="#catspeak_collect"><span class="keyword">function </span><span class="name">catspeak_collect</span></a>
-   - <a href="#scr_catspeak_compatibility"><span class="name-script">scr_catspeak_compatibility</span></a>
-     - <a href="#catspeak_start_frame"><span class="keyword">function </span><span class="name">catspeak_start_frame</span></a>
-     - <a href="#catspeak_update"><span class="keyword">function </span><span class="name">catspeak_update</span></a>
-     - <a href="#catspeak_set_error_script"><span class="keyword">function </span><span class="name">catspeak_set_error_script</span></a>
-     - <a href="#catspeak_set_max_iterations"><span class="keyword">function </span><span class="name">catspeak_set_max_iterations</span></a>
-     - <a href="#catspeak_set_frame_allocation"><span class="keyword">function </span><span class="name">catspeak_set_frame_allocation</span></a>
-     - <a href="#catspeak_set_frame_threshold"><span class="keyword">function </span><span class="name">catspeak_set_frame_threshold</span></a>
-     - <a href="#catspeak_session_create"><span class="keyword">function </span><span class="name">catspeak_session_create</span></a>
-     - <a href="#catspeak_session_destroy"><span class="keyword">function </span><span class="name">catspeak_session_destroy</span></a>
-     - <a href="#catspeak_session_set_source"><span class="keyword">function </span><span class="name">catspeak_session_set_source</span></a>
-     - <a href="#catspeak_session_enable_global_access"><span class="keyword">function </span><span class="name">catspeak_session_enable_global_access</span></a>
-     - <a href="#catspeak_session_enable_instance_access"><span class="keyword">function </span><span class="name">catspeak_session_enable_instance_access</span></a>
-     - <a href="#catspeak_session_enable_implicit_return"><span class="keyword">function </span><span class="name">catspeak_session_enable_implicit_return</span></a>
-     - <a href="#catspeak_session_enable_shared_workspace"><span class="keyword">function </span><span class="name">catspeak_session_enable_shared_workspace</span></a>
-     - <a href="#catspeak_session_add_constant"><span class="keyword">function </span><span class="name">catspeak_session_add_constant</span></a>
-     - <a href="#catspeak_session_add_function"><span class="keyword">function </span><span class="name">catspeak_session_add_function</span></a>
-     - <a href="#catspeak_session_create_process"><span class="keyword">function </span><span class="name">catspeak_session_create_process</span></a>
-     - <a href="#catspeak_session_create_process_greedy"><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></a>
- - <a href="#LICENSE">LICENSE</a>
+    - <a href="#not_catspeak_features">Features</a>
+<input id="library_reference-checkbox" class="toggle" type="checkbox"><label for="library_reference-checkbox"> - </label><a href="#library_reference">Library Reference</a><div class="collapsible-content">
+<input id="scr_catspeak-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak-checkbox">   - </label><a href="#scr_catspeak"><span class="name-script">scr_catspeak</span></a><div class="collapsible-content">
+        - <a href="#catspeak_execute"><span class="keyword">function </span><span class="name">catspeak_execute</span></a>
+        - <a href="#catspeak_compile_buffer"><span class="keyword">function </span><span class="name">catspeak_compile_buffer</span></a>
+        - <a href="#catspeak_compile_string"><span class="keyword">function </span><span class="name">catspeak_compile_string</span></a>
+        - <a href="#catspeak_create_buffer_from_string"><span class="keyword">function </span><span class="name">catspeak_create_buffer_from_string</span></a>
+        - <a href="#catspeak_config"><span class="keyword">function </span><span class="name">catspeak_config</span></a></div>
+<input id="scr_catspeak_init-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_init-checkbox">   - </label><a href="#scr_catspeak_init"><span class="name-script">scr_catspeak_init</span></a><div class="collapsible-content">
+        - <a href="#CATSPEAK_VERSION"><span class="keyword">macro </span><span class="name">CATSPEAK_VERSION</span></a>
+        - <a href="#catspeak_force_init"><span class="keyword">function </span><span class="name">catspeak_force_init</span></a></div>
+<input id="scr_catspeak_process-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_process-checkbox">   - </label><a href="#scr_catspeak_process"><span class="name-script">scr_catspeak_process</span></a><div class="collapsible-content">
+<input id="CatspeakProcess-checkbox" class="toggle" type="checkbox"><label for="CatspeakProcess-checkbox">     - </label><a href="#CatspeakProcess"><span class="keyword">struct </span><span class="name">CatspeakProcess</span></a><div class="collapsible-content">
+          - <a href="#withTimeLimit"><span class="keyword">method </span><span class="name">withTimeLimit</span></a>
+          - <a href="#andThen"><span class="keyword">method </span><span class="name">andThen</span></a>
+          - <a href="#catchError"><span class="keyword">method </span><span class="name">catchError</span></a>
+          - <a href="#invoke"><span class="keyword">method </span><span class="name">invoke</span></a></div>
+        - <a href="#CatspeakGMLProcess"><span class="keyword">struct </span><span class="name">CatspeakGMLProcess</span></a>
+        - <a href="#CatspeakCompilerProcess"><span class="keyword">struct </span><span class="name">CatspeakCompilerProcess</span></a>
+        - <a href="#CatspeakVMProcess"><span class="keyword">struct </span><span class="name">CatspeakVMProcess</span></a></div>
+<input id="scr_catspeak_builtins-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_builtins-checkbox">   - </label><a href="#scr_catspeak_builtins"><span class="name-script">scr_catspeak_builtins</span></a><div class="collapsible-content">
+        - <a href="#catspeak_string_to_builtin"><span class="keyword">function </span><span class="name">catspeak_string_to_builtin</span></a>
+        - <a href="#catspeak_string_is_builtin"><span class="keyword">function </span><span class="name">catspeak_string_is_builtin</span></a></div>
+<input id="scr_catspeak_error-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_error-checkbox">   - </label><a href="#scr_catspeak_error"><span class="name-script">scr_catspeak_error</span></a><div class="collapsible-content">
+<input id="CatspeakLocation-checkbox" class="toggle" type="checkbox"><label for="CatspeakLocation-checkbox">     - </label><a href="#CatspeakLocation"><span class="keyword">struct </span><span class="name">CatspeakLocation</span></a><div class="collapsible-content">
+          - <a href="#clone"><span class="keyword">method </span><span class="name">clone</span></a>
+          - <a href="#reflect"><span class="keyword">method </span><span class="name">reflect</span></a>
+          - <a href="#toString"><span class="keyword">method </span><span class="name">toString</span></a></div>
+<input id="CatspeakError-checkbox" class="toggle" type="checkbox"><label for="CatspeakError-checkbox">     - </label><a href="#CatspeakError"><span class="keyword">struct </span><span class="name">CatspeakError</span></a><div class="collapsible-content">
+          - <a href="#toString"><span class="keyword">method </span><span class="name">toString</span></a></div>
+        - <a href="#catspeak_assert"><span class="keyword">function </span><span class="name">catspeak_assert</span></a></div>
+<input id="scr_catspeak_vm-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_vm-checkbox">   - </label><a href="#scr_catspeak_vm"><span class="name-script">scr_catspeak_vm</span></a><div class="collapsible-content">
+<input id="CatspeakVM-checkbox" class="toggle" type="checkbox"><label for="CatspeakVM-checkbox">     - </label><a href="#CatspeakVM"><span class="keyword">struct </span><span class="name">CatspeakVM</span></a><div class="collapsible-content">
+          - <a href="#pushCallFrame"><span class="keyword">method </span><span class="name">pushCallFrame</span></a>
+          - <a href="#reuseCallFrame"><span class="keyword">method </span><span class="name">reuseCallFrame</span></a>
+          - <a href="#reuseCallFrameWithArgs"><span class="keyword">method </span><span class="name">reuseCallFrameWithArgs</span></a>
+          - <a href="#popCallFrame"><span class="keyword">method </span><span class="name">popCallFrame</span></a>
+          - <a href="#inProgress"><span class="keyword">method </span><span class="name">inProgress</span></a>
+          - <a href="#runProgram"><span class="keyword">method </span><span class="name">runProgram</span></a></div></div>
+<input id="scr_catspeak_ir-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_ir-checkbox">   - </label><a href="#scr_catspeak_ir"><span class="name-script">scr_catspeak_ir</span></a><div class="collapsible-content">
+<input id="CatspeakFunction-checkbox" class="toggle" type="checkbox"><label for="CatspeakFunction-checkbox">     - </label><a href="#CatspeakFunction"><span class="keyword">struct </span><span class="name">CatspeakFunction</span></a><div class="collapsible-content">
+          - <a href="#setGlobal"><span class="keyword">method </span><span class="name">setGlobal</span></a>
+          - <a href="#getGlobal"><span class="keyword">method </span><span class="name">getGlobal</span></a>
+          - <a href="#emitBlock"><span class="keyword">method </span><span class="name">emitBlock</span></a>
+          - <a href="#emitFunction"><span class="keyword">method </span><span class="name">emitFunction</span></a>
+          - <a href="#emitRegister"><span class="keyword">method </span><span class="name">emitRegister</span></a>
+          - <a href="#emitPermanentRegister"><span class="keyword">method </span><span class="name">emitPermanentRegister</span></a>
+          - <a href="#discardRegister"><span class="keyword">method </span><span class="name">discardRegister</span></a>
+          - <a href="#emitUnreachable"><span class="keyword">method </span><span class="name">emitUnreachable</span></a>
+          - <a href="#isUnreachable"><span class="keyword">method </span><span class="name">isUnreachable</span></a>
+          - <a href="#emitConstant"><span class="keyword">method </span><span class="name">emitConstant</span></a>
+          - <a href="#emitPermanentConstant"><span class="keyword">method </span><span class="name">emitPermanentConstant</span></a>
+          - <a href="#emitArgs"><span class="keyword">method </span><span class="name">emitArgs</span></a>
+          - <a href="#emitGlobalGet"><span class="keyword">method </span><span class="name">emitGlobalGet</span></a>
+          - <a href="#emitGlobalSet"><span class="keyword">method </span><span class="name">emitGlobalSet</span></a>
+          - <a href="#emitReturn"><span class="keyword">method </span><span class="name">emitReturn</span></a>
+          - <a href="#emitMove"><span class="keyword">method </span><span class="name">emitMove</span></a>
+          - <a href="#emitClone"><span class="keyword">method </span><span class="name">emitClone</span></a>
+          - <a href="#emitCloneTemp"><span class="keyword">method </span><span class="name">emitCloneTemp</span></a>
+          - <a href="#emitJump"><span class="keyword">method </span><span class="name">emitJump</span></a>
+          - <a href="#emitJumpFalse"><span class="keyword">method </span><span class="name">emitJumpFalse</span></a>
+          - <a href="#emitCall"><span class="keyword">method </span><span class="name">emitCall</span></a>
+          - <a href="#emitCode"><span class="keyword">method </span><span class="name">emitCode</span></a>
+          - <a href="#emitCodeHoisted"><span class="keyword">method </span><span class="name">emitCodeHoisted</span></a>
+          - <a href="#emitGet"><span class="keyword">method </span><span class="name">emitGet</span></a>
+          - <a href="#emitSet"><span class="keyword">method </span><span class="name">emitSet</span></a>
+          - <a href="#lastCode"><span class="keyword">method </span><span class="name">lastCode</span></a>
+          - <a href="#lastCodeHoisted"><span class="keyword">method </span><span class="name">lastCodeHoisted</span></a>
+          - <a href="#patchInst"><span class="keyword">method </span><span class="name">patchInst</span></a>
+          - <a href="#patchInst"><span class="keyword">method </span><span class="name">patchInst</span></a>
+          - <a href="#patchArg"><span class="keyword">method </span><span class="name">patchArg</span></a>
+          - <a href="#patchPermanentRegisters"><span class="keyword">method </span><span class="name">patchPermanentRegisters</span></a>
+          - <a href="#toString"><span class="keyword">method </span><span class="name">toString</span></a>
+          - <a href="#disassembly"><span class="keyword">method </span><span class="name">disassembly</span></a></div>
+        - <a href="#CatspeakBlock"><span class="keyword">struct </span><span class="name">CatspeakBlock</span></a>
+        - <a href="#CatspeakAccessor"><span class="keyword">struct </span><span class="name">CatspeakAccessor</span></a>
+        - <a href="#CatspeakReadOnlyAccessor"><span class="keyword">struct </span><span class="name">CatspeakReadOnlyAccessor</span></a>
+        - <a href="#CatspeakTempRegisterAccessor"><span class="keyword">struct </span><span class="name">CatspeakTempRegisterAccessor</span></a></div>
+<input id="scr_catspeak_intcode-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_intcode-checkbox">   - </label><a href="#scr_catspeak_intcode"><span class="name-script">scr_catspeak_intcode</span></a><div class="collapsible-content">
+        - <a href="#CatspeakIntcode"><span class="keyword">enum </span><span class="name">CatspeakIntcode</span></a>
+        - <a href="#catspeak_intcode_show"><span class="keyword">function </span><span class="name">catspeak_intcode_show</span></a>
+        - <a href="#catspeak_intcode_read"><span class="keyword">function </span><span class="name">catspeak_intcode_read</span></a>
+        - <a href="#catspeak_intcode_valueof"><span class="keyword">function </span><span class="name">catspeak_intcode_valueof</span></a>
+        - <a href="#catspeak_intcode_sizeof"><span class="keyword">function </span><span class="name">catspeak_intcode_sizeof</span></a></div>
+<input id="scr_catspeak_compiler-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_compiler-checkbox">   - </label><a href="#scr_catspeak_compiler"><span class="name-script">scr_catspeak_compiler</span></a><div class="collapsible-content">
+<input id="CatspeakCompiler-checkbox" class="toggle" type="checkbox"><label for="CatspeakCompiler-checkbox">     - </label><a href="#CatspeakCompiler"><span class="keyword">struct </span><span class="name">CatspeakCompiler</span></a><div class="collapsible-content">
+          - <a href="#advance"><span class="keyword">method </span><span class="name">advance</span></a>
+          - <a href="#matches"><span class="keyword">method </span><span class="name">matches</span></a>
+          - <a href="#satisfies"><span class="keyword">method </span><span class="name">satisfies</span></a>
+          - <a href="#consume"><span class="keyword">method </span><span class="name">consume</span></a>
+          - <a href="#consumeLinebreaks"><span class="keyword">method </span><span class="name">consumeLinebreaks</span></a>
+          - <a href="#error"><span class="keyword">method </span><span class="name">error</span></a>
+          - <a href="#errorAndAdvance"><span class="keyword">method </span><span class="name">errorAndAdvance</span></a>
+          - <a href="#expects"><span class="keyword">method </span><span class="name">expects</span></a>
+          - <a href="#expectsSemicolon"><span class="keyword">method </span><span class="name">expectsSemicolon</span></a>
+          - <a href="#declareLocal"><span class="keyword">method </span><span class="name">declareLocal</span></a>
+          - <a href="#getVar"><span class="keyword">method </span><span class="name">getVar</span></a>
+          - <a href="#pushState"><span class="keyword">method </span><span class="name">pushState</span></a>
+          - <a href="#pushResult"><span class="keyword">method </span><span class="name">pushResult</span></a>
+          - <a href="#topResult"><span class="keyword">method </span><span class="name">topResult</span></a>
+          - <a href="#popResult"><span class="keyword">method </span><span class="name">popResult</span></a>
+          - <a href="#pushBlock"><span class="keyword">method </span><span class="name">pushBlock</span></a>
+          - <a href="#popBlock"><span class="keyword">method </span><span class="name">popBlock</span></a>
+          - <a href="#pushIt"><span class="keyword">method </span><span class="name">pushIt</span></a>
+          - <a href="#topIt"><span class="keyword">method </span><span class="name">topIt</span></a>
+          - <a href="#popIt"><span class="keyword">method </span><span class="name">popIt</span></a>
+          - <a href="#pushLoop"><span class="keyword">method </span><span class="name">pushLoop</span></a>
+          - <a href="#topLoop"><span class="keyword">method </span><span class="name">topLoop</span></a>
+          - <a href="#popLoop"><span class="keyword">method </span><span class="name">popLoop</span></a>
+          - <a href="#inProgress"><span class="keyword">method </span><span class="name">inProgress</span></a>
+          - <a href="#emitProgram"><span class="keyword">method </span><span class="name">emitProgram</span></a></div>
+        - <a href="#CatspeakLocalScope"><span class="keyword">struct </span><span class="name">CatspeakLocalScope</span></a>
+        - <a href="#CatspeakGlobalAccessor"><span class="keyword">struct </span><span class="name">CatspeakGlobalAccessor</span></a>
+        - <a href="#CatspeakCollectionAccessor"><span class="keyword">struct </span><span class="name">CatspeakCollectionAccessor</span></a></div>
+<input id="scr_catspeak_lexer-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_lexer-checkbox">   - </label><a href="#scr_catspeak_lexer"><span class="name-script">scr_catspeak_lexer</span></a><div class="collapsible-content">
+<input id="CatspeakLexer-checkbox" class="toggle" type="checkbox"><label for="CatspeakLexer-checkbox">     - </label><a href="#CatspeakLexer"><span class="keyword">struct </span><span class="name">CatspeakLexer</span></a><div class="collapsible-content">
+          - <a href="#registerByte"><span class="keyword">method </span><span class="name">registerByte</span></a>
+          - <a href="#registerLexeme"><span class="keyword">method </span><span class="name">registerLexeme</span></a>
+          - <a href="#clearLexeme"><span class="keyword">method </span><span class="name">clearLexeme</span></a>
+          - <a href="#advance"><span class="keyword">method </span><span class="name">advance</span></a>
+          - <a href="#peek"><span class="keyword">method </span><span class="name">peek</span></a>
+          - <a href="#advanceWhile"><span class="keyword">method </span><span class="name">advanceWhile</span></a>
+          - <a href="#nextWithWhitespace"><span class="keyword">method </span><span class="name">nextWithWhitespace</span></a>
+          - <a href="#next"><span class="keyword">method </span><span class="name">next</span></a></div>
+        - <a href="#catspeak_token_is_operator"><span class="keyword">function </span><span class="name">catspeak_token_is_operator</span></a>
+        - <a href="#catspeak_token_is_expression"><span class="keyword">function </span><span class="name">catspeak_token_is_expression</span></a>
+        - <a href="#catspeak_token_skips_newline"><span class="keyword">function </span><span class="name">catspeak_token_skips_newline</span></a>
+        - <a href="#catspeak_string_to_token_keyword"><span class="keyword">function </span><span class="name">catspeak_string_to_token_keyword</span></a>
+        - <a href="#catspeak_byte_to_token"><span class="keyword">function </span><span class="name">catspeak_byte_to_token</span></a>
+        - <a href="#catspeak_byte_to_ascii_desc"><span class="keyword">function </span><span class="name">catspeak_byte_to_ascii_desc</span></a></div>
+<input id="scr_catspeak_token-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_token-checkbox">   - </label><a href="#scr_catspeak_token"><span class="name-script">scr_catspeak_token</span></a><div class="collapsible-content">
+        - <a href="#CatspeakToken"><span class="keyword">enum </span><span class="name">CatspeakToken</span></a>
+        - <a href="#catspeak_token_show"><span class="keyword">function </span><span class="name">catspeak_token_show</span></a>
+        - <a href="#catspeak_token_read"><span class="keyword">function </span><span class="name">catspeak_token_read</span></a>
+        - <a href="#catspeak_token_valueof"><span class="keyword">function </span><span class="name">catspeak_token_valueof</span></a>
+        - <a href="#catspeak_token_sizeof"><span class="keyword">function </span><span class="name">catspeak_token_sizeof</span></a></div>
+<input id="scr_catspeak_ascii_desc-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_ascii_desc-checkbox">   - </label><a href="#scr_catspeak_ascii_desc"><span class="name-script">scr_catspeak_ascii_desc</span></a><div class="collapsible-content">
+        - <a href="#CatspeakASCIIDesc"><span class="keyword">enum </span><span class="name">CatspeakASCIIDesc</span></a>
+        - <a href="#catspeak_ascii_desc_contains"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_contains</span></a>
+        - <a href="#catspeak_ascii_desc_equals"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_equals</span></a>
+        - <a href="#catspeak_ascii_desc_intersects"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_intersects</span></a>
+        - <a href="#catspeak_ascii_desc_show"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_show</span></a></div>
+<input id="scr_catspeak_alloc-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_alloc-checkbox">   - </label><a href="#scr_catspeak_alloc"><span class="name-script">scr_catspeak_alloc</span></a><div class="collapsible-content">
+        - <a href="#catspeak_alloc_ds_map"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_map</span></a>
+        - <a href="#catspeak_alloc_ds_list"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_list</span></a>
+        - <a href="#catspeak_alloc_ds_stack"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_stack</span></a>
+        - <a href="#catspeak_alloc_ds_priority"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_priority</span></a>
+        - <a href="#catspeak_alloc"><span class="keyword">function </span><span class="name">catspeak_alloc</span></a>
+        - <a href="#catspeak_collect"><span class="keyword">function </span><span class="name">catspeak_collect</span></a></div>
+<input id="scr_catspeak_compatibility-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_compatibility-checkbox">   - </label><a href="#scr_catspeak_compatibility"><span class="name-script">scr_catspeak_compatibility</span></a><div class="collapsible-content">
+        - <a href="#catspeak_start_frame"><span class="keyword">function </span><span class="name">catspeak_start_frame</span></a>
+        - <a href="#catspeak_update"><span class="keyword">function </span><span class="name">catspeak_update</span></a>
+        - <a href="#catspeak_set_error_script"><span class="keyword">function </span><span class="name">catspeak_set_error_script</span></a>
+        - <a href="#catspeak_set_max_iterations"><span class="keyword">function </span><span class="name">catspeak_set_max_iterations</span></a>
+        - <a href="#catspeak_set_frame_allocation"><span class="keyword">function </span><span class="name">catspeak_set_frame_allocation</span></a>
+        - <a href="#catspeak_set_frame_threshold"><span class="keyword">function </span><span class="name">catspeak_set_frame_threshold</span></a>
+        - <a href="#catspeak_session_create"><span class="keyword">function </span><span class="name">catspeak_session_create</span></a>
+        - <a href="#catspeak_session_destroy"><span class="keyword">function </span><span class="name">catspeak_session_destroy</span></a>
+        - <a href="#catspeak_session_set_source"><span class="keyword">function </span><span class="name">catspeak_session_set_source</span></a>
+        - <a href="#catspeak_session_enable_global_access"><span class="keyword">function </span><span class="name">catspeak_session_enable_global_access</span></a>
+        - <a href="#catspeak_session_enable_instance_access"><span class="keyword">function </span><span class="name">catspeak_session_enable_instance_access</span></a>
+        - <a href="#catspeak_session_enable_implicit_return"><span class="keyword">function </span><span class="name">catspeak_session_enable_implicit_return</span></a>
+        - <a href="#catspeak_session_enable_shared_workspace"><span class="keyword">function </span><span class="name">catspeak_session_enable_shared_workspace</span></a>
+        - <a href="#catspeak_session_add_constant"><span class="keyword">function </span><span class="name">catspeak_session_add_constant</span></a>
+        - <a href="#catspeak_session_add_function"><span class="keyword">function </span><span class="name">catspeak_session_add_function</span></a>
+        - <a href="#catspeak_session_create_process"><span class="keyword">function </span><span class="name">catspeak_session_create_process</span></a>
+        - <a href="#catspeak_session_create_process_greedy"><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></a></div></div>
+    - <a href="#LICENSE">LICENSE</a>
 
 <span id=not_catspeak_features>================================================================================
 <b>Features</b> (<a href="#not_catspeak_features">link</a>) .txt

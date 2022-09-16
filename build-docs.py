@@ -146,13 +146,24 @@ class Page:
         def render_sections(sections):
             out = ""
             for sec in sections:
+                if sec.subsections:
+                    checkbox_id = sec.id + "-checkbox"
+                    out += """\n<input id="{}" class="toggle" type="checkbox">""".format(checkbox_id)
+                    out += """<label for="{}">{} - </label>""".format(
+                        checkbox_id,
+                        " " * sec.depth
+                    )
+                else:
+                    out += "\n" + " " * (sec.depth + 3) + " - "
                 out += (
-                    "\n" + (" " * sec.depth) +
-                    " - <a href=\"#{}\">".format(sec.id) +
+                    "<a href=\"#{}\">".format(sec.id) +
                     (sec.title or snake_to_title(sec.id)) +
                     "</a>"
                 )
-                out += render_sections(sec.subsections)
+                if sec.subsections:
+                    out += """<div class="collapsible-content">"""
+                    out += render_sections(sec.subsections)
+                    out += """</div>"""
             return out
         body = ""
         body += "<b>{}</b>".format(HEADER)
@@ -287,6 +298,31 @@ TEMPLATE = """
         --c : #6082b6;
         text-decoration: none;
         cursor: pointer;
+      }
+
+      .collapsible-content {
+        max-height : 0px;
+        overflow : hidden;
+        display : none;
+      }
+
+      .toggle:checked + label + a + .collapsible-content {
+        max-height : 100%;
+        display : block;
+      }
+
+      input[type='checkbox'] {
+        display : inline;
+        position : absolute;
+        visibility : hidden;
+      }
+
+      .toggle + label::before {
+        content : '[+]';
+      }
+
+      .toggle:checked + label::before {
+        content : '[-]';
       }
 
       .title { --c : #526666 }
