@@ -41,6 +41,9 @@ class Section:
         sec = Section()
         parts = title.split(".")
         sec.id = parts[0]
+        if (sec.id.startswith("not_catspeak_")):
+            sec.id = sec.id[len("not_catspeak_"):]
+        sec.id = "_".join(item.lower() for item in sec.id.split())
         if len(parts) > 1:
             sec.extension = parts[1]
         if sec.extension == "gml":
@@ -125,7 +128,7 @@ class Section:
                             break
                         subsec_parent = subsec_parent.subsections[-1]
                     current_sec = Section()
-                    current_sec.id = heading
+                    current_sec.id = "_".join(item.lower() for item in heading.split())
                     current_sec.extension = sec.extension
                     subsec_parent.subsections.append(current_sec)
                 else:
@@ -259,7 +262,7 @@ def simple_link(s, link=None):
         if "_" in s:
             link = "#" + s
         else:
-            link = "#not_catspeak_" + "_".join(item.lower() for item in s.split())
+            link = "#" + "_".join(item.lower() for item in s.split())
     return r"""{}<a href="{}">{}</a>{}""".format(
             control("["), link, s, control("]"))
 
