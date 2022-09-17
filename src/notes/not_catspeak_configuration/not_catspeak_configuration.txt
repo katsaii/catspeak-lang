@@ -15,3 +15,17 @@ catspeak_config({
 ```
 This will update the global exception handler, so that if an error occurs a
 message will be displayed in the output window instead of crashing the game.
+
+To configure multiple options, you can pass in both simultaneously:
+```
+catspeak_config({
+    "frameAllocation": 0.25, // only run Catspeak for 25% of a frame
+
+    "processTimeLimit": 5,   // all processes can run for 5 seconds before
+                             // being forced to stop
+});
+```
+
+NOTE: There is currently no way to get the current value for a configuration
+      option. This will either be done using a new function, or by passing
+      the option name as a string to the [catspeak_config] function.

@@ -243,10 +243,11 @@ function CatspeakFunction(name, parent) constructor {
     ///
     /// @param {Any} reg
     ///   The register or accessor containing the register to write to.
-    ///   NOTE: this will also write values to following ``n`-many registers,
-    ///   depending on how many arguments you decide to load statically.
-    ///   Therefore, you should make sure to pre-allocate the registers
-    ///   for arguments before you make this call.
+    ///
+    ///   NOTE: this will also write values to following `n`-many registers,
+    ///         depending on how many arguments you decide to load statically.
+    ///         Therefore, you should make sure to pre-allocate the registers
+    ///         for arguments before you make this call.
     ///
     /// @param {Any} n
     ///   The number of arguments to load.

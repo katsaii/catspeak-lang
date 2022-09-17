@@ -379,7 +379,21 @@ catspeak_config({
 });
 </code><b class="control">```</b>
 This will update the global exception handler, so that if an error occurs a
-message will be displayed in the output window instead of crashing the game.</div>
+message will be displayed in the output window instead of crashing the game.
+
+To configure multiple options, you can pass in both simultaneously:
+<b class="control">```</b><code>
+catspeak_config({
+    &quot;frameAllocation&quot;: 0.25, // only run Catspeak for 25% of a frame
+
+    &quot;processTimeLimit&quot;: 5,   // all processes can run for 5 seconds before
+                             // being forced to stop
+});
+</code><b class="control">```</b>
+
+<em>NOTE</em>: There is currently no way to get the current value for a configuration
+      option. This will either be done using a new function, or by passing
+      the option name as a string to the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function.</div>
 <span id=not_catspeak_basic_usage>================================================================================
 <b>Basic Usage</b> (<a href="#not_catspeak_basic_usage">link</a>) .txt
 ================================================================================</span>
@@ -862,10 +876,11 @@ macros, and structs.</div>
       
       <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the register to write to.
-        <em>NOTE</em>: this will also write values to following `<b class="control">`</b><code>n</code><b class="control">`</b>-many registers,
-        depending on how many arguments you decide to load statically.
-        Therefore, you should make sure to pre-allocate the registers
-        for arguments before you make this call.
+      
+        <em>NOTE</em>: this will also write values to following <b class="control">`</b><code>n</code><b class="control">`</b>-many registers,
+              depending on how many arguments you decide to load statically.
+              Therefore, you should make sure to pre-allocate the registers
+              for arguments before you make this call.
       
       <span class="control">@</span><b>param</b> <code>n</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The number of arguments to load.
