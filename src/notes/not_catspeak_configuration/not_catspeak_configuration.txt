@@ -1,1 +1,17 @@
-TODO
+The primary method of configuring Catspeak is through the [catspeak_config]
+function. This function controls global settings, such as the default
+exception handler. Please read the documentation for the function to get an
+in-depth description of what each option does.
+
+As an example, to change the global exception handler for Catspeak programs
+you would use the [catspeak_config] function like so:
+```
+catspeak_config({
+    "exceptionHandler": function(error) {
+        show_debug_message("A Catspeak error occurred!");
+        show_debug_message(error);
+    },
+});
+```
+This will update the global exception handler, so that if an error occurs a
+message will be displayed in the output window instead of crashing the game.

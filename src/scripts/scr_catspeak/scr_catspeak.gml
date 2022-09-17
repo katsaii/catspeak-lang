@@ -112,7 +112,7 @@ function catspeak_create_buffer_from_string(src) {
 ///  - "processTimeLimit" should be a number greater than 0. Determines how
 ///    long (in seconds) a process can run for before it is assumed
 ///    unresponsive and terminated. The default value is 1 second. Setting
-///    this to `infinity` is technically possible, but will not be official
+///    this to `infinity` is technically possible, but will not be officially
 ///    supported.
 ///
 /// @param {Struct} configData

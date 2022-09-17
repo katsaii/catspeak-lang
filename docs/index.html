@@ -108,9 +108,10 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
     - <a href="#not_catspeak_installation">Installation</a>
     - <a href="#not_catspeak_disclaimer">Disclaimer</a>
     - <a href="#not_catspeak_features">Features</a>
-    - <a href="#not_catspeak_syntax">Syntax</a>
+    - <a href="#not_catspeak_configuration">Configuration</a>
     - <a href="#not_catspeak_basic_usage">Basic Usage</a>
     - <a href="#not_catspeak_advanced_usage">Advanced Usage</a>
+    - <a href="#not_catspeak_syntax">Syntax</a>
 <input id="not_catspeak_standard_library-checkbox" class="toggle" type="checkbox"><label for="not_catspeak_standard_library-checkbox"> - </label><a href="#not_catspeak_standard_library">Standard Library</a><div class="collapsible-content">
       - <a href="#Constants">Constants</a>
       - <a href="#Functions">Functions</a>
@@ -287,7 +288,20 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <span id=not_catspeak_installation>================================================================================
 <b>Installation</b> (<a href="#not_catspeak_installation">link</a>) .txt
 ================================================================================</span>
-<div>TODO</div>
+<div> 1) Get a recent release of Catspeak from the <span class="control">[</span><a href="https://github.com/NuxiiGit/catspeak-lang/releases">GitHub releases page</a><span class="control">]</span>.
+    You should see a download for a file with the extension <b class="control">`</b><code>.yymps</code><b class="control">`</b>.
+
+ 2) Open your project file in the GameMaker IDE.
+
+ 3) Navigate to the toolbar at the top of the IDE and find &quot;Tools&quot;. Click this
+    and select &quot;Import Local Package&quot; from the drop-down menu.
+
+ 4) Select the <b class="control">`</b><code>.yymps</code><b class="control">`</b> file you downloaded, and follow the wizard to import
+    the Catspeak resources. If you&#39;re not sure what to import, click &quot;Add All&quot;.
+
+Now you&#39;re setup, see the <span class="control">[</span><a href="#not_catspeak_basic_usage">Basic Usage</a><span class="control">]</span> section for some introductory examples,
+or the <span class="control">[</span><a href="#not_catspeak_configuration">Configuration</a><span class="control">]</span> section for details about what can be customised within
+the Catspeak engine.</div>
 <span id=not_catspeak_disclaimer>================================================================================
 <b>Disclaimer</b> (<a href="#not_catspeak_disclaimer">link</a>) .txt
 ================================================================================</span>
@@ -299,7 +313,7 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
 ================================================================================</span>
 <div> - <span class="control">**</span><b>Minimal setup required</b><span class="control">**</span> ...
      ready to use after installation. No need to call any weird &quot;init&quot; or
-     &quot;update&quot; functions.
+     &quot;update&quot; functions. (Unless you want to, as a treat!)
 
  - <span class="control">**</span><b>Cross-platform</b><span class="control">**</span> ...
      allowing mods to work on any platform out of the box. Tried and tested on
@@ -346,16 +360,36 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
      possible. For examples, check out the <span class="control">[</span><a href="#not_catspeak_advanced_usage">Advanced Usage</a><span class="control">]</span> section.
 
  - <span class="control">**</span><b>Cute name and mascot</b><span class="control">**</span>.</div>
-<span id=not_catspeak_syntax>================================================================================
-<b>Syntax</b> (<a href="#not_catspeak_syntax">link</a>) .txt
+<span id=not_catspeak_configuration>================================================================================
+<b>Configuration</b> (<a href="#not_catspeak_configuration">link</a>) .txt
 ================================================================================</span>
-<div>TODO</div>
+<div>The primary method of configuring Catspeak is through the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span>
+function. This function controls global settings, such as the default
+exception handler. Please read the documentation for the function to get an
+in-depth description of what each option does.
+
+As an example, to change the global exception handler for Catspeak programs
+you would use the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function like so:
+<b class="control">```</b><code>
+catspeak_config({
+    &quot;exceptionHandler&quot;: function(error) {
+        show_debug_message(&quot;A Catspeak error occurred!&quot;);
+        show_debug_message(error);
+    },
+});
+</code><b class="control">```</b>
+This will update the global exception handler, so that if an error occurs a
+message will be displayed in the output window instead of crashing the game.</div>
 <span id=not_catspeak_basic_usage>================================================================================
 <b>Basic Usage</b> (<a href="#not_catspeak_basic_usage">link</a>) .txt
 ================================================================================</span>
 <div>TODO</div>
 <span id=not_catspeak_advanced_usage>================================================================================
 <b>Advanced Usage</b> (<a href="#not_catspeak_advanced_usage">link</a>) .txt
+================================================================================</span>
+<div>TODO</div>
+<span id=not_catspeak_syntax>================================================================================
+<b>Syntax</b> (<a href="#not_catspeak_syntax">link</a>) .txt
 ================================================================================</span>
 <div>TODO</div>
 <span id=not_catspeak_standard_library>================================================================================
@@ -494,7 +528,7 @@ macros, and structs.</div>
      - &quot;processTimeLimit&quot; should be a number greater than 0. Determines how
        long (in seconds) a process can run for before it is assumed
        unresponsive and terminated. The default value is 1 second. Setting
-       this to <b class="control">`</b><code>infinity</code><b class="control">`</b> is technically possible, but will not be official
+       this to <b class="control">`</b><code>infinity</code><b class="control">`</b> is technically possible, but will not be officially
        supported.
     
     <span class="control">@</span><b>param</b> <code>configData</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>

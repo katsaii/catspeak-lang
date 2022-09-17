@@ -1,6 +1,6 @@
  - **Minimal setup required** ...
      ready to use after installation. No need to call any weird "init" or
-     "update" functions.
+     "update" functions. (Unless you want to, as a treat!)
 
  - **Cross-platform** ...
      allowing mods to work on any platform out of the box. Tried and tested on

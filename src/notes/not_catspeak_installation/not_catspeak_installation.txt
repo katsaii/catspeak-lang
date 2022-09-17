@@ -1,1 +1,14 @@
-TODO
+ 1) Get a recent release of Catspeak from the [GitHub releases page](https://github.com/NuxiiGit/catspeak-lang/releases).
+    You should see a download for a file with the extension `.yymps`.
+
+ 2) Open your project file in the GameMaker IDE.
+
+ 3) Navigate to the toolbar at the top of the IDE and find "Tools". Click this
+    and select "Import Local Package" from the drop-down menu.
+
+ 4) Select the `.yymps` file you downloaded, and follow the wizard to import
+    the Catspeak resources. If you're not sure what to import, click "Add All".
+
+Now you're setup, see the [Basic Usage] section for some introductory examples,
+or the [Configuration] section for details about what can be customised within
+the Catspeak engine.
