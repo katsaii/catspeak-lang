@@ -34,6 +34,10 @@ class Section:
 
     def from_content(title, content):
         content = content or "Undocumented."
+        escapes = { "\"": "&quot;", "\'": "&#39;", "<": "&lt;", ">": "&gt;" }
+        #content = content.replace('&', '&amp;')
+        for seq in escapes:
+            content = content.replace(seq, escapes[seq])
         sec = Section()
         parts = title.split(".")
         sec.id = parts[0]
@@ -108,8 +112,29 @@ class Section:
                     subsec_parent.subsections.append(subsec)
                 else:
                     sec.subsections.append(subsec)
+        elif sec.extension in { "md", "txt" }:
+            # put headings into subsections
+            current_sec = sec
+            for line in content.splitlines():
+                if match := re.search('^\s*(#+)(.*)', line):
+                    heading_depth = len(match.group(1))
+                    heading = match.group(2).strip()
+                    subsec_parent = sec
+                    for _ in range(heading_depth - 1):
+                        if not subsec_parent.subsections:
+                            break
+                        subsec_parent = subsec_parent.subsections[-1]
+                    current_sec = Section()
+                    current_sec.id = heading
+                    current_sec.extension = sec.extension
+                    subsec_parent.subsections.append(current_sec)
+                else:
+                    if current_sec.description:
+                        current_sec.description += "\n"
+                    current_sec.description += line
         else:
             sec.description = content
+        sec.update_depths()
         return sec
 
     def from_file(path):
@@ -199,7 +224,7 @@ def snake_to_title(s):
 # Performs simple syntax highlighting on Feather types.
 def simple_syntax_higlight_types(s):
     s = re.sub(r"[|]", " | ", s)
-    items = re.split(r'([<.>|\(\)\[\]\{\}])', s)
+    items = re.split(r'([<.>|\(\)\[\]\{\}]|&lt;|&gt;)', s)
     highlight = True
     out = ""
     for item in items:
