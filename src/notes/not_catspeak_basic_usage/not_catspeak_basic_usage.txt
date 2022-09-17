@@ -1,1 +1,47 @@
 TODO
+
+```
+// a simple example program that counts to 10 and then returns a message
+var src = @'
+    let n = 0
+    while (n <= 10) {
+        print n
+        n = it + 1
+    }
+    return "blast off!"
+';
+
+catspeak_compile_string(src).andThen(function(code) {
+    catspeak_execute(code).andThen(function(result) {
+        show_message(result);
+    });
+});
+```
+
+# Compiling Programs
+
+TODO
+
+## Compiling From a String
+
+TODO
+
+## Compiling From a Buffer
+
+TODO
+
+# Executing Programs
+
+TODO
+
+## Setting Global Variables
+
+TODO
+
+## Getting Global Variables
+
+TODO
+
+# Configuring Programs
+
+TODO

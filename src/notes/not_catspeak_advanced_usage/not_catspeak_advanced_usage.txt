@@ -1,1 +1,21 @@
 TODO
+
+# Pre-Compilation
+
+(Coming soon!)
+
+# Using the Compiler Internals Directly
+
+TODO
+
+# Building Your Own Catspeak Function
+
+TODO
+
+# Modifying the Standard Library
+
+TODO
+
+# Modifying the Syntax
+
+TODO
