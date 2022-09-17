@@ -123,7 +123,31 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
       - <a href="#Building Your Own Catspeak Function">Building Your Own Catspeak Function</a>
       - <a href="#Modifying the Standard Library">Modifying the Standard Library</a>
       - <a href="#Modifying the Syntax">Modifying the Syntax</a></div>
-    - <a href="#not_catspeak_syntax">Syntax</a>
+<input id="not_catspeak_syntax-checkbox" class="toggle" type="checkbox"><label for="not_catspeak_syntax-checkbox"> - </label><a href="#not_catspeak_syntax">Syntax</a><div class="collapsible-content">
+<input id="Lexical Grammar-checkbox" class="toggle" type="checkbox"><label for="Lexical Grammar-checkbox">   - </label><a href="#Lexical Grammar">Lexical Grammar</a><div class="collapsible-content">
+        - <a href="#Whitespace">Whitespace</a>
+        - <a href="#Comments">Comments</a>
+        - <a href="#Identifiers">Identifiers</a>
+        - <a href="#Keywords">Keywords</a>
+        - <a href="#Literals">Literals</a>
+        - <a href="#Automatic Semicolon Insertion">Automatic Semicolon Insertion</a></div>
+<input id="Statements-checkbox" class="toggle" type="checkbox"><label for="Statements-checkbox">   - </label><a href="#Statements">Statements</a><div class="collapsible-content">
+        - <a href="#Let Statement">Let Statement</a>
+        - <a href="#Expression Statement">Expression Statement</a></div>
+<input id="Expressions-checkbox" class="toggle" type="checkbox"><label for="Expressions-checkbox">   - </label><a href="#Expressions">Expressions</a><div class="collapsible-content">
+        - <a href="#Terminal Expression">Terminal Expression</a>
+        - <a href="#Operator Expression">Operator Expression</a>
+        - <a href="#Grouped Expression">Grouped Expression</a>
+        - <a href="#Array Expression">Array Expression</a>
+        - <a href="#Struct Expression">Struct Expression</a>
+        - <a href="#Call Expression">Call Expression</a>
+        - <a href="#Accessor Expression">Accessor Expression</a>
+        - <a href="#Block Expression">Block Expression</a>
+        - <a href="#If Expression">If Expression</a>
+        - <a href="#Loop Expression">Loop Expression</a>
+        - <a href="#Continue Expression">Continue Expression</a>
+        - <a href="#Break Expression">Break Expression</a>
+        - <a href="#Return Expression">Return Expression</a></div></div>
 <input id="not_catspeak_standard_library-checkbox" class="toggle" type="checkbox"><label for="not_catspeak_standard_library-checkbox"> - </label><a href="#not_catspeak_standard_library">Standard Library</a><div class="collapsible-content">
       - <a href="#Constants">Constants</a>
       - <a href="#Functions">Functions</a>
@@ -471,7 +495,114 @@ catspeak_compile_string(src).andThen(function(code) {
 <span id=not_catspeak_syntax>================================================================================
 <b>Syntax</b> (<a href="#not_catspeak_syntax">link</a>) .txt
 ================================================================================</span>
-<div>TODO</div>
+<div>Catspeak is a simple imperative language with a vaguely similar syntax to GML.
+As an example, consider the following program written in GML to calculate the
+factorial of a number <b class="control">`</b><code>n</code><b class="control">`</b>:
+<b class="control">```</b><code>
+// GML CODE
+function factorial(n) {
+    var m = 1;
+    if (n &gt; 1) {
+        m = n * factorial(n - 1);
+    }
+    return m;
+}
+
+factorial(5); // output: 120
+</code><b class="control">```</b>
+<em>NOTE</em>: This example is intentionally verbose in order to showcase: variables,
+      function declarations, identifiers, &quot;if&quot; statements, function calls,
+      assignment statements, return statements, and comments.
+
+Below is the same program written in Catspeak:
+<b class="control">```</b><code>
+-- CATSPEAK CODE
+factorial = fun(n) {
+    let m = 1
+    if (n &gt; 1) {
+        m = n * factorial(n - 1)
+    }
+    return m
+}
+
+factorial(5) -- output: 120
+</code><b class="control">```</b>
+There are some immediately obvious differences here, such as the <b class="control">`</b><code>m</code><b class="control">`</b> variable
+being declared using <b class="control">`</b><code>let</code><b class="control">`</b> instead of <b class="control">`</b><code>var</code><b class="control">`</b>, <b class="control">`</b><code>fun</code><b class="control">`</b> instead of <b class="control">`</b><code>function</code><b class="control">`</b>, and
+comments using <b class="control">`</b><code>--</code><b class="control">`</b> instead of <b class="control">`</b><code>//</code><b class="control">`</b>. All of these differences (and more) are
+described in the <span class="control">[</span><a href="#not_catspeak_lexical_grammar">Lexical Grammar</a><span class="control">]</span> section.</div>
+<span id=Lexical Grammar>  <b>Lexical Grammar</b> (<a href="#Lexical Grammar">link</a>) .txt
+  ==============================================================================</span>
+<div>  TODO</div>
+<span id=Whitespace>    <b>Whitespace</b> (<a href="#Whitespace">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Comments>    <b>Comments</b> (<a href="#Comments">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Identifiers>    <b>Identifiers</b> (<a href="#Identifiers">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Keywords>    <b>Keywords</b> (<a href="#Keywords">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Literals>    <b>Literals</b> (<a href="#Literals">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Automatic Semicolon Insertion>    <b>Automatic Semicolon Insertion</b> (<a href="#Automatic Semicolon Insertion">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Statements>  <b>Statements</b> (<a href="#Statements">link</a>) .txt
+  ==============================================================================</span>
+<div>  TODO</div>
+<span id=Let Statement>    <b>Let Statement</b> (<a href="#Let Statement">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Expression Statement>    <b>Expression Statement</b> (<a href="#Expression Statement">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Expressions>  <b>Expressions</b> (<a href="#Expressions">link</a>) .txt
+  ==============================================================================</span>
+<div>  TODO</div>
+<span id=Terminal Expression>    <b>Terminal Expression</b> (<a href="#Terminal Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Operator Expression>    <b>Operator Expression</b> (<a href="#Operator Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO <span class="control">[</span><a href="#not_catspeak_operators">Operators</a><span class="control">]</span></div>
+<span id=Grouped Expression>    <b>Grouped Expression</b> (<a href="#Grouped Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Array Expression>    <b>Array Expression</b> (<a href="#Array Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Struct Expression>    <b>Struct Expression</b> (<a href="#Struct Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Call Expression>    <b>Call Expression</b> (<a href="#Call Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Accessor Expression>    <b>Accessor Expression</b> (<a href="#Accessor Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Block Expression>    <b>Block Expression</b> (<a href="#Block Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=If Expression>    <b>If Expression</b> (<a href="#If Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Loop Expression>    <b>Loop Expression</b> (<a href="#Loop Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Continue Expression>    <b>Continue Expression</b> (<a href="#Continue Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Break Expression>    <b>Break Expression</b> (<a href="#Break Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
+<span id=Return Expression>    <b>Return Expression</b> (<a href="#Return Expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
 <span id=not_catspeak_standard_library>================================================================================
 <b>Standard Library</b> (<a href="#not_catspeak_standard_library">link</a>) .txt
 ================================================================================</span>

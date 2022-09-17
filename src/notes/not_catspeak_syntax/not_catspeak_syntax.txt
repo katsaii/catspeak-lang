@@ -1,1 +1,132 @@
+Catspeak is a simple imperative language with a vaguely similar syntax to GML.
+As an example, consider the following program written in GML to calculate the
+factorial of a number `n`:
+```
+// GML CODE
+function factorial(n) {
+    var m = 1;
+    if (n > 1) {
+        m = n * factorial(n - 1);
+    }
+    return m;
+}
+
+factorial(5); // output: 120
+```
+NOTE: This example is intentionally verbose in order to showcase: variables,
+      function declarations, identifiers, "if" statements, function calls,
+      assignment statements, return statements, and comments.
+
+Below is the same program written in Catspeak:
+```
+-- CATSPEAK CODE
+factorial = fun(n) {
+    let m = 1
+    if (n > 1) {
+        m = n * factorial(n - 1)
+    }
+    return m
+}
+
+factorial(5) -- output: 120
+```
+There are some immediately obvious differences here, such as the `m` variable
+being declared using `let` instead of `var`, `fun` instead of `function`, and
+comments using `--` instead of `//`. All of these differences (and more) are
+described in the [Lexical Grammar] section.
+
+# Lexical Grammar
+
+TODO
+
+## Whitespace
+
+TODO
+
+## Comments
+
+TODO
+
+## Identifiers
+
+TODO
+
+## Keywords
+
+TODO
+
+## Literals
+
+TODO
+
+## Automatic Semicolon Insertion
+
+TODO
+
+# Statements
+
+TODO
+
+## Let Statement
+
+TODO
+
+## Expression Statement
+
+TODO
+
+# Expressions
+
+TODO
+
+## Terminal Expression
+
+TODO
+
+## Operator Expression
+
+TODO [Operators]
+
+## Grouped Expression
+
+TODO
+
+## Array Expression
+
+TODO
+
+## Struct Expression
+
+TODO
+
+## Call Expression
+
+TODO
+
+## Accessor Expression
+
+TODO
+
+## Block Expression
+
+TODO
+
+## If Expression
+
+TODO
+
+## Loop Expression
+
+TODO
+
+## Continue Expression
+
+TODO
+
+## Break Expression
+
+TODO
+
+## Return Expression
+
 TODO
