@@ -37,17 +37,54 @@ described in the [Lexical Grammar] section.
 
 # Lexical Grammar
 
-TODO
+Catspeak source code is a sequence of ASCII characters. This unfortunately
+means that Unicode support is not guaranteed to work, but results in a faster
+compiler.
+
+This sequence of characters first needs to be transformed into larger groups
+of characters called "tokens". The following sections will cover what each
+of these tokens are composed of.
 
 ## Whitespace
 
-TODO
+For the most part, Catspeak is whitespace insensitive. There are exceptions
+to this for [Identifiers] and [Automatic Semicolon Insertion], but otherwise
+Catspeak ignores the following characters:
+
+ - Character tabulation '\t' (code point U+0009)
+ - Line feed            '\n' (code point U+000A)
+ - Line tabulation      '\v' (code point U+000B)
+ - Form feed            '\f' (code point U+000C)
+ - Carriage return      '\r' (code point U+000D)
+ - Space                     (code point U+0020)
+ - Next Line                 (code point U+0085)
 
 ## Comments
 
-TODO
+The only way to add a comment in Catspeak is to use the special `--` symbol.
+This will ignore all of the characters after it until a new line is reached.
+For example:
+```
+-- this is a Catspeak comment!
+```
+
+NOTE: Unlike GML, Catspeak does not support multi-line comments.
+      Use multiple comments instead.
+
+NOTE: Because Catspeak allows for custom operators, you **must only** use
+      `--` and not something like `---` or `--//`; otherwise it will be
+      considered a custom operator identifier. For more information, see the
+      [Operator Identifiers] section.
 
 ## Identifiers
+
+TODO
+
+### Raw Identifiers
+
+TODO
+
+### Operator Identifiers
 
 TODO
 

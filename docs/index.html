@@ -127,7 +127,9 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="lexical_grammar-checkbox" class="toggle" type="checkbox"><label for="lexical_grammar-checkbox">   - </label><a href="#lexical_grammar">Lexical Grammar</a><div class="collapsible-content">
         - <a href="#whitespace">Whitespace</a>
         - <a href="#comments">Comments</a>
-        - <a href="#identifiers">Identifiers</a>
+<input id="identifiers-checkbox" class="toggle" type="checkbox"><label for="identifiers-checkbox">     - </label><a href="#identifiers">Identifiers</a><div class="collapsible-content">
+          - <a href="#raw_identifiers">Raw Identifiers</a>
+          - <a href="#operator_identifiers">Operator Identifiers</a></div>
         - <a href="#keywords">Keywords</a>
         - <a href="#literals">Literals</a>
         - <a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a></div>
@@ -401,8 +403,8 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
 ================================================================================</span>
 <div>The primary method of configuring Catspeak is through the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span>
 function. This function controls global settings, such as the default
-exception handler. Please read the documentation for the function to get an
-in-depth description of what each option does.
+exception handler. <span class="control">**</span><b>Please read</b><span class="control">**</span> the documentation for <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> to
+get an in-depth description of what each option does.
 
 As an example, to change the global exception handler for Catspeak programs
 you would use the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function like so:
@@ -533,16 +535,51 @@ comments using <b class="control">`</b><code>--</code><b class="control">`</b> i
 described in the <span class="control">[</span><a href="#lexical_grammar">Lexical Grammar</a><span class="control">]</span> section.</div>
 <span id=lexical_grammar>  <b>Lexical Grammar</b> (<a href="#lexical_grammar">link</a>) .txt
   ==============================================================================</span>
-<div>  TODO</div>
+<div>  Catspeak source code is a sequence of ASCII characters. This unfortunately
+  means that Unicode support is not guaranteed to work, but results in a faster
+  compiler.
+  
+  This sequence of characters first needs to be transformed into larger groups
+  of characters called &quot;tokens&quot;. The following sections will cover what each
+  of these tokens are composed of.</div>
 <span id=whitespace>    <b>Whitespace</b> (<a href="#whitespace">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    For the most part, Catspeak is whitespace insensitive. There are exceptions
+    to this for <span class="control">[</span><a href="#identifiers">Identifiers</a><span class="control">]</span> and <span class="control">[</span><a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a><span class="control">]</span>, but otherwise
+    Catspeak ignores the following characters:
+    
+     - Character tabulation &#39;\t&#39; (code point U+0009)
+     - Line feed            &#39;\n&#39; (code point U+000A)
+     - Line tabulation      &#39;\v&#39; (code point U+000B)
+     - Form feed            &#39;\f&#39; (code point U+000C)
+     - Carriage return      &#39;\r&#39; (code point U+000D)
+     - Space                     (code point U+0020)
+     - Next Line                 (code point U+0085)</div>
 <span id=comments>    <b>Comments</b> (<a href="#comments">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    The only way to add a comment in Catspeak is to use the special <b class="control">`</b><code>--</code><b class="control">`</b> symbol.
+    This will ignore all of the characters after it until a new line is reached.
+    For example:
+    <b class="control">```</b><code>
+    -- this is a Catspeak comment!
+    </code><b class="control">```</b>
+    
+    <em>NOTE</em>: Unlike GML, Catspeak does not support multi-line comments.
+          Use multiple comments instead.
+    
+    <em>NOTE</em>: Because Catspeak allows for custom operators, you <span class="control">**</span><b>must only</b><span class="control">**</span> use
+          <b class="control">`</b><code>--</code><b class="control">`</b> and not something like <b class="control">`</b><code>---</code><b class="control">`</b> or <b class="control">`</b><code>--//</code><b class="control">`</b>; otherwise it will be
+          considered a custom operator identifier. For more information, see the
+          <span class="control">[</span><a href="#operator_identifiers">Operator Identifiers</a><span class="control">]</span> section.</div>
 <span id=identifiers>    <b>Identifiers</b> (<a href="#identifiers">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
+<span id=raw_identifiers>      <b>Raw Identifiers</b> (<a href="#raw_identifiers">link</a>) .txt
+      --------------------------------------------------------------------------</span>
+<div>      TODO</div>
+<span id=operator_identifiers>      <b>Operator Identifiers</b> (<a href="#operator_identifiers">link</a>) .txt
+      --------------------------------------------------------------------------</span>
+<div>      TODO</div>
 <span id=keywords>    <b>Keywords</b> (<a href="#keywords">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
