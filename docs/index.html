@@ -132,7 +132,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#operator_identifiers">Operator Identifiers</a></div>
         - <a href="#keywords">Keywords</a>
 <input id="literals-checkbox" class="toggle" type="checkbox"><label for="literals-checkbox">     - </label><a href="#literals">Literals</a><div class="collapsible-content">
-          - <a href="#numeric_literals">Numeric Literals</a></div>
+          - <a href="#numeric_literals">Numeric Literals</a>
+          - <a href="#string_literals">String Literals</a></div>
         - <a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a></div>
 <input id="statements-checkbox" class="toggle" type="checkbox"><label for="statements-checkbox">   - </label><a href="#statements">Statements</a><div class="collapsible-content">
         - <a href="#let_statement">Let Statement</a>
@@ -641,12 +642,68 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
      - <b class="control">`</b><code>return</code><b class="control">`</b>   see <span class="control">[</span><a href="#return_expression">Return Expression</a><span class="control">]</span></div>
 <span id=literals>    <b>Literals</b> (<a href="#literals">link</a>) .txt
     ----------------------------------------------------------------------------</span>
+<div>    A literal in Catspeak is either a <span class="control">[</span><a href="#numeric_literal">Numeric Literal</a><span class="control">]</span> or <span class="control">[</span><a href="#string_literal">String Literal</a><span class="control">]</span>.</div>
 <span id=numeric_literals>      <b>Numeric Literals</b> (<a href="#numeric_literals">link</a>) .txt
       --------------------------------------------------------------------------</span>
-<div>      TODO</div>
+<div>      Numeric literals are a sequence of ASCII digits, optionally separated by
+      a single decimal point:
+      <b class="control">```</b><code>
+      1234567890
+      3.1415
+      </code><b class="control">```</b></div>
+<span id=string_literals>      <b>String Literals</b> (<a href="#string_literals">link</a>) .txt
+      --------------------------------------------------------------------------</span>
+<div>      There are two types of string literal in Catspeak. The most common is
+      a sequence of characters starting and ending in double quotes (&quot;):
+      <b class="control">```</b><code>
+      let hi = &quot;hello world&quot;
+      </code><b class="control">```</b>
+      This type of string allows the following escape sequences to be used:
+      
+       - \&quot; Quotation mark
+       - \  Escape new line
+       - \\ Backslash
+       - \t Character tabulation
+       - \n Line feed
+       - \v Line tabulation
+       - \f Form feed
+       - \r Carriage return
+      
+      The other type of string is the <span class="control">**</span><b>raw string</b><span class="control">**</span>. A raw string is prefixed
+      by the <b class="control">`</b><code>@</code><b class="control">`</b> character, and does not interpret any of the previously
+      mentioned escape sequences:
+      <b class="control">```</b><code>
+      let hi_again = @&quot;\hello\&quot;
+      </code><b class="control">```</b></div>
 <span id=automatic_semicolon_insertion>    <b>Automatic Semicolon Insertion</b> (<a href="#automatic_semicolon_insertion">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Automatic semicolon insertion is a process used to help Catspeak understand
+    when a statement has ended so that another can begin. A semicolon or new
+    line will be expected after the <span class="control">[</span><a href="#let_statement">Let Statement</a><span class="control">]</span> and <span class="control">[</span><a href="#expression_statement">Expression Statement</a><span class="control">]</span>.
+    
+    All new lines are considered semicolons unless it is preceeded by the
+    <b class="control">`</b><code>...</code><b class="control">`</b> operator, or one of the following tokens:
+    
+     - Parens: <b class="control">`</b><code>(</code><b class="control">`</b>, <b class="control">`</b><code>[</code><b class="control">`</b>, <b class="control">`</b><code>{</code><b class="control">`</b>
+     - Built-in operators: <b class="control">`</b><code>.</code><b class="control">`</b>, <b class="control">`</b><code>:</code><b class="control">`</b>, <b class="control">`</b><code>,</code><b class="control">`</b>, <b class="control">`</b><code>=</code><b class="control">`</b>
+     - Keywords: <b class="control">`</b><code>do</code><b class="control">`</b>, <b class="control">`</b><code>if</code><b class="control">`</b>, <b class="control">`</b><code>else</code><b class="control">`</b>, <b class="control">`</b><code>while</code><b class="control">`</b>, <b class="control">`</b><code>for</code><b class="control">`</b>, <b class="control">`</b><code>let</code><b class="control">`</b>, <b class="control">`</b><code>fun</code><b class="control">`</b>
+     - User-defined operators, see <span class="control">[</span><a href="#operator_identifiers">Operator Identifiers</a><span class="control">]</span>
+    
+    This means that in order to write Catspeak code in the Allman style, you
+    must use <b class="control">`</b><code>...</code><b class="control">`</b> to tell Catspeak that you are continuing the line:
+    <b class="control">```</b><code>
+    while (x == y) ...
+    {
+        something()
+    }
+    </code><b class="control">```</b>
+    This is not necessary for styles where the first <b class="control">`</b><code>{</code><b class="control">`</b> appears on the same
+    line:
+    <b class="control">```</b><code>
+    while (x == y) {
+        something()
+    }
+    </code><b class="control">```</b></div>
 <span id=statements>  <b>Statements</b> (<a href="#statements">link</a>) .txt
   ==============================================================================</span>
 <div>  TODO</div>

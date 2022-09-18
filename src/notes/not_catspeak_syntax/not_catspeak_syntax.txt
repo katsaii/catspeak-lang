@@ -190,6 +190,30 @@ Automatic semicolon insertion is a process used to help Catspeak understand
 when a statement has ended so that another can begin. A semicolon or new
 line will be expected after the [Let Statement] and [Expression Statement].
 
+All new lines are considered semicolons unless it is preceeded by the
+`...` operator, or one of the following tokens:
+
+ - Parens: `(`, `[`, `{`
+ - Built-in operators: `.`, `:`, `,`, `=`
+ - Keywords: `do`, `if`, `else`, `while`, `for`, `let`, `fun`
+ - User-defined operators, see [Operator Identifiers]
+
+This means that in order to write Catspeak code in the Allman style, you
+must use `...` to tell Catspeak that you are continuing the line:
+```
+while (x == y) ...
+{
+    something()
+}
+```
+This is not necessary for styles where the first `{` appears on the same
+line:
+```
+while (x == y) {
+    something()
+}
+```
+
 # Statements
 
 TODO
