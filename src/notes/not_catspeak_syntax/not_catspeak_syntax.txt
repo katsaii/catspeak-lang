@@ -78,27 +78,117 @@ NOTE: Because Catspeak allows for custom operators, you **must only** use
 
 ## Identifiers
 
-TODO
+Identifiers are mainly used for variable names in Catspeak. The most common
+kind of identifier is the alphanumeric identifier. These identifiers start
+with a letter and are followed by a sequence of other letters, numbers,
+underscores (_), or apostrophes (').
+
+An example of an identifier which uses all of these is `Can't_count_to_10`.
+The following identifiers are invalid:
+```
+_invalid
+1Invalid
+'INVALID'
+```
 
 ### Raw Identifiers
 
-TODO
+Raw identifiers are a special type of identifier which starts and ends
+with the backtick symbol:
+```
+let `1st-of-march` = "2022-03-01"
+```
+
+You can use any valid identifier character between the backticks, in
+whatever order you decide. This includes [Operator Identifiers].
 
 ### Operator Identifiers
 
-TODO
+Operators in Catspeak aren't special, they are just a kind of identifier
+which use symbols instead of letters or numbers. Below is a list of valid
+characters which can be used as operators, sorted by highest precedence
+to lowest precedence.
+
+ highest precedence (7): `#`, `.`, `@`
+                    (6): `%`, `\`
+          .         (5): `*`, `/`
+          .         (4): `+`, `-`
+          .         (3): `!`, `<`, `=`, `>`, `?`, `~`
+          .         (2): `&`
+                    (1): `^`, `|`
+  lowest precedence (0): `$`, `:`, `;`
+
+Operators on the same line share the same precedence.
+
+You can combine as many, or as few, of these symbols together to create
+your very own operator. Here are a few: `>>=`, `><>`, `;~;`, `>*^-^*<`.
+The precedence of the new operator will be the same as its first
+character. So the `>>=` operator will have the same precedence as `>=`.
 
 ## Keywords
 
-TODO
+Catspeak reserves the following identifiers as keywords:
+
+ - `--`       see [Comments]
+ - `=`        see [Let Statement] and [Assignment Expression]
+ - `:`        see [Struct Expression]
+ - `;`        see [Automatic Semicolon Insertion]
+ - `.`        see [Accessor Expression]
+ - `...`      see [Automatic Semicolon Insertion]
+ - `do`       see [Block Expression]
+ - `if`       see [If Expression]
+ - `else`     see [If Expression]
+ - `while`    see [Loop Expression]
+ - `for`
+ - `let`      see [Let Statement]
+ - `fun`      see [Function Expression]
+ - `break`    see [Break Expression]
+ - `continue` see [Continue Expression]
+ - `return`   see [Return Expression]
 
 ## Literals
 
-TODO
+A literal in Catspeak is either a [Numeric Literal] or [String Literal].
+
+### Numeric Literals
+
+Numeric literals are a sequence of ASCII digits, optionally separated by
+a single decimal point:
+```
+1234567890
+3.1415
+```
+
+### String Literals
+
+There are two types of string literal in Catspeak. The most common is
+a sequence of characters starting and ending in double quotes ("):
+```
+let hi = "hello world"
+```
+This type of string allows the following escape sequences to be used:
+
+ - \" Quotation mark
+ - \  Escape new line
+ - \\ Backslash
+ - \t Character tabulation
+ - \n Line feed
+ - \v Line tabulation
+ - \f Form feed
+ - \r Carriage return
+
+The other type of string is the **raw string**. A raw string is prefixed
+by the `@` character, and does not interpret any of the previously
+mentioned escape sequences:
+```
+let hi_again = @"\hello\"
+```
 
 ## Automatic Semicolon Insertion
 
-TODO
+Automatic semicolon insertion is a process used to help Catspeak understand
+when a statement has ended so that another can begin. A semicolon or new
+line will be expected after the [Let Statement] and [Expression Statement].
 
 # Statements
 
@@ -123,6 +213,10 @@ TODO
 ## Operator Expression
 
 TODO [Operators]
+
+## Assignment Expression
+
+TODO
 
 ## Grouped Expression
 

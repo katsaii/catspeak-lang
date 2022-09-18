@@ -131,7 +131,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#raw_identifiers">Raw Identifiers</a>
           - <a href="#operator_identifiers">Operator Identifiers</a></div>
         - <a href="#keywords">Keywords</a>
-        - <a href="#literals">Literals</a>
+<input id="literals-checkbox" class="toggle" type="checkbox"><label for="literals-checkbox">     - </label><a href="#literals">Literals</a><div class="collapsible-content">
+          - <a href="#numeric_literals">Numeric Literals</a></div>
         - <a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a></div>
 <input id="statements-checkbox" class="toggle" type="checkbox"><label for="statements-checkbox">   - </label><a href="#statements">Statements</a><div class="collapsible-content">
         - <a href="#let_statement">Let Statement</a>
@@ -139,6 +140,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="expressions-checkbox" class="toggle" type="checkbox"><label for="expressions-checkbox">   - </label><a href="#expressions">Expressions</a><div class="collapsible-content">
         - <a href="#terminal_expression">Terminal Expression</a>
         - <a href="#operator_expression">Operator Expression</a>
+        - <a href="#assignment_expression">Assignment Expression</a>
         - <a href="#grouped_expression">Grouped Expression</a>
         - <a href="#array_expression">Array Expression</a>
         - <a href="#struct_expression">Struct Expression</a>
@@ -573,19 +575,75 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
           <span class="control">[</span><a href="#operator_identifiers">Operator Identifiers</a><span class="control">]</span> section.</div>
 <span id=identifiers>    <b>Identifiers</b> (<a href="#identifiers">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Identifiers are mainly used for variable names in Catspeak. The most common
+    kind of identifier is the alphanumeric identifier. These identifiers start
+    with a letter and are followed by a sequence of other letters, numbers,
+    underscores (_), or apostrophes (&#39;).
+    
+    An example of an identifier which uses all of these is <b class="control">`</b><code>Can&#39;t_count_to_10</code><b class="control">`</b>.
+    The following identifiers are invalid:
+    <b class="control">```</b><code>
+    _invalid
+    1Invalid
+    &#39;INVALID&#39;
+    </code><b class="control">```</b></div>
 <span id=raw_identifiers>      <b>Raw Identifiers</b> (<a href="#raw_identifiers">link</a>) .txt
       --------------------------------------------------------------------------</span>
-<div>      TODO</div>
+<div>      Raw identifiers are a special type of identifier which starts and ends
+      with the backtick symbol:
+      ``<b class="control">`</b><code>
+      let </code><b class="control">`</b>1st-of-march<b class="control">`</b><code> = &quot;2022-03-01&quot;
+      </code><b class="control">`</b>``
+      
+      You can use any valid identifier character between the backticks, in
+      whatever order you decide. This includes <span class="control">[</span><a href="#operator_identifiers">Operator Identifiers</a><span class="control">]</span>.</div>
 <span id=operator_identifiers>      <b>Operator Identifiers</b> (<a href="#operator_identifiers">link</a>) .txt
       --------------------------------------------------------------------------</span>
-<div>      TODO</div>
+<div>      Operators in Catspeak aren&#39;t special, they are just a kind of identifier
+      which use symbols instead of letters or numbers. Below is a list of valid
+      characters which can be used as operators, sorted by highest precedence
+      to lowest precedence.
+      
+       highest precedence (7): <b class="control">`</b><code>#</code><b class="control">`</b>, <b class="control">`</b><code>.</code><b class="control">`</b>, <b class="control">`</b><code>@</code><b class="control">`</b>
+                          (6): <b class="control">`</b><code>%</code><b class="control">`</b>, <b class="control">`</b><code>\</code><b class="control">`</b>
+                .         (5): <b class="control">`</b><code>*</code><b class="control">`</b>, <b class="control">`</b><code>/</code><b class="control">`</b>
+                .         (4): <b class="control">`</b><code>+</code><b class="control">`</b>, <b class="control">`</b><code>-</code><b class="control">`</b>
+                .         (3): <b class="control">`</b><code>!</code><b class="control">`</b>, <b class="control">`</b><code>&lt;</code><b class="control">`</b>, <b class="control">`</b><code>=</code><b class="control">`</b>, <b class="control">`</b><code>&gt;</code><b class="control">`</b>, <b class="control">`</b><code>?</code><b class="control">`</b>, <b class="control">`</b><code>~</code><b class="control">`</b>
+                .         (2): <b class="control">`</b><code>&</code><b class="control">`</b>
+                          (1): <b class="control">`</b><code>^</code><b class="control">`</b>, <b class="control">`</b><code>|</code><b class="control">`</b>
+        lowest precedence (0): <b class="control">`</b><code>$</code><b class="control">`</b>, <b class="control">`</b><code>:</code><b class="control">`</b>, <b class="control">`</b><code>;</code><b class="control">`</b>
+      
+      Operators on the same line share the same precedence.
+      
+      You can combine as many, or as few, of these symbols together to create
+      your very own operator. Here are a few: <b class="control">`</b><code>&gt;&gt;=</code><b class="control">`</b>, <b class="control">`</b><code>&gt;&lt;&gt;</code><b class="control">`</b>, <b class="control">`</b><code>;~;</code><b class="control">`</b>, <b class="control">`</b><code>&gt;*^-^*&lt;</code><b class="control">`</b>.
+      The precedence of the new operator will be the same as its first
+      character. So the <b class="control">`</b><code>&gt;&gt;=</code><b class="control">`</b> operator will have the same precedence as <b class="control">`</b><code>&gt;=</code><b class="control">`</b>.</div>
 <span id=keywords>    <b>Keywords</b> (<a href="#keywords">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Catspeak reserves the following identifiers as keywords:
+    
+     - <b class="control">`</b><code>--</code><b class="control">`</b>       see <span class="control">[</span><a href="#comments">Comments</a><span class="control">]</span>
+     - <b class="control">`</b><code>=</code><b class="control">`</b>        see <span class="control">[</span><a href="#let_statement">Let Statement</a><span class="control">]</span> and <span class="control">[</span><a href="#assignment_expression">Assignment Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>:</code><b class="control">`</b>        see <span class="control">[</span><a href="#struct_expression">Struct Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>;</code><b class="control">`</b>        see <span class="control">[</span><a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a><span class="control">]</span>
+     - <b class="control">`</b><code>.</code><b class="control">`</b>        see <span class="control">[</span><a href="#accessor_expression">Accessor Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>...</code><b class="control">`</b>      see <span class="control">[</span><a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a><span class="control">]</span>
+     - <b class="control">`</b><code>do</code><b class="control">`</b>       see <span class="control">[</span><a href="#block_expression">Block Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>if</code><b class="control">`</b>       see <span class="control">[</span><a href="#if_expression">If Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>else</code><b class="control">`</b>     see <span class="control">[</span><a href="#if_expression">If Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>while</code><b class="control">`</b>    see <span class="control">[</span><a href="#loop_expression">Loop Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>for</code><b class="control">`</b>
+     - <b class="control">`</b><code>let</code><b class="control">`</b>      see <span class="control">[</span><a href="#let_statement">Let Statement</a><span class="control">]</span>
+     - <b class="control">`</b><code>fun</code><b class="control">`</b>      see <span class="control">[</span><a href="#function_expression">Function Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>break</code><b class="control">`</b>    see <span class="control">[</span><a href="#break_expression">Break Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>continue</code><b class="control">`</b> see <span class="control">[</span><a href="#continue_expression">Continue Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>return</code><b class="control">`</b>   see <span class="control">[</span><a href="#return_expression">Return Expression</a><span class="control">]</span></div>
 <span id=literals>    <b>Literals</b> (<a href="#literals">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<span id=numeric_literals>      <b>Numeric Literals</b> (<a href="#numeric_literals">link</a>) .txt
+      --------------------------------------------------------------------------</span>
+<div>      TODO</div>
 <span id=automatic_semicolon_insertion>    <b>Automatic Semicolon Insertion</b> (<a href="#automatic_semicolon_insertion">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
@@ -607,6 +665,9 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
 <span id=operator_expression>    <b>Operator Expression</b> (<a href="#operator_expression">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO <span class="control">[</span><a href="#operators">Operators</a><span class="control">]</span></div>
+<span id=assignment_expression>    <b>Assignment Expression</b> (<a href="#assignment_expression">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    TODO</div>
 <span id=grouped_expression>    <b>Grouped Expression</b> (<a href="#grouped_expression">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
@@ -664,12 +725,12 @@ them to the <span class="control">[</span><a href="https://github.com/NuxiiGit/c
 <div>  Catspeak exposes the following GML functions for checking the types of
   values and performing conversions:
   
-   - <b class="control">`</b><code>bool</code><b class="control">`</b>        - <b class="control">`</b><code>is_array</code><b class="control">`</b>     - <b class="control">`</b><code>is_nan</code><b class="control">`</b>      - <b class="control">`</b><code>is_undefined</code><b class="control">`</b>
-   - <b class="control">`</b><code>string</code><b class="control">`</b>      - <b class="control">`</b><code>is_bool</code><b class="control">`</b>      - <b class="control">`</b><code>is_numeric</code><b class="control">`</b>  - <b class="control">`</b><code>is_vec3</code><b class="control">`</b>
-   - <b class="control">`</b><code>real</code><b class="control">`</b>        - <b class="control">`</b><code>is_infinity</code><b class="control">`</b>  - <b class="control">`</b><code>is_ptr</code><b class="control">`</b>      - <b class="control">`</b><code>is_vec4</code><b class="control">`</b>
-   - <b class="control">`</b><code>int64</code><b class="control">`</b>       - <b class="control">`</b><code>is_int32</code><b class="control">`</b>     - <b class="control">`</b><code>is_real</code><b class="control">`</b>
-   - <b class="control">`</b><code>typeof</code><b class="control">`</b>      - <b class="control">`</b><code>is_int64</code><b class="control">`</b>     - <b class="control">`</b><code>is_string</code><b class="control">`</b>
-   - <b class="control">`</b><code>instanceof</code><b class="control">`</b>  - <b class="control">`</b><code>is_method</code><b class="control">`</b>    - <b class="control">`</b><code>is_struct</code><b class="control">`</b>
+   - <b class="control">`</b><code>bool</code><b class="control">`</b>          - <b class="control">`</b><code>is_array</code><b class="control">`</b>      - <b class="control">`</b><code>is_nan</code><b class="control">`</b>        - <b class="control">`</b><code>is_undefined</code><b class="control">`</b>
+   - <b class="control">`</b><code>string</code><b class="control">`</b>        - <b class="control">`</b><code>is_bool</code><b class="control">`</b>       - <b class="control">`</b><code>is_numeric</code><b class="control">`</b>    - <b class="control">`</b><code>is_vec3</code><b class="control">`</b>
+   - <b class="control">`</b><code>real</code><b class="control">`</b>          - <b class="control">`</b><code>is_infinity</code><b class="control">`</b>   - <b class="control">`</b><code>is_ptr</code><b class="control">`</b>        - <b class="control">`</b><code>is_vec4</code><b class="control">`</b>
+   - <b class="control">`</b><code>int64</code><b class="control">`</b>         - <b class="control">`</b><code>is_int32</code><b class="control">`</b>      - <b class="control">`</b><code>is_real</code><b class="control">`</b>
+   - <b class="control">`</b><code>typeof</code><b class="control">`</b>        - <b class="control">`</b><code>is_int64</code><b class="control">`</b>      - <b class="control">`</b><code>is_string</code><b class="control">`</b>
+   - <b class="control">`</b><code>instanceof</code><b class="control">`</b>    - <b class="control">`</b><code>is_method</code><b class="control">`</b>     - <b class="control">`</b><code>is_struct</code><b class="control">`</b>
   
   In addition to these functions, there are two Catspeak-specific functions:
   
@@ -679,22 +740,26 @@ them to the <span class="control">[</span><a href="https://github.com/NuxiiGit/c
 <span id=operators>  <b>Operators</b> (<a href="#operators">link</a>) .txt
   ==============================================================================</span>
 <div>  Catspeak shares many operators with GML, but there are some differences.
-  Listed below are the default operators defined by Catspeak, sorted by their
-  precedence. Earlier operators have a higher precedence. Operators grouped
-  together share the same precedence, e.g. <b class="control">`</b><code>+</code><b class="control">`</b> and <b class="control">`</b><code>-</code><b class="control">`</b>.
+  Listed below are the default operators defined by Catspeak. You can find
+  their precedences in the section on <span class="control">[</span><a href="#operator_identifiers">Operator Identifiers</a><span class="control">]</span>.
   
-   - <b class="control">`</b><code>.</code><b class="control">`</b>
-   - <b class="control">`</b><code>%</code><b class="control">`</b>
-   - <b class="control">`</b><code>*</code><b class="control">`</b>, <b class="control">`</b><code>/</code><b class="control">`</b>, and <b class="control">`</b><code>//</code><b class="control">`</b> (integer division)
-   - <b class="control">`</b><code>+</code><b class="control">`</b>, <b class="control">`</b><code>-</code><b class="control">`</b>, and <b class="control">`</b><code>++</code><b class="control">`</b> (string addition)
-   - <b class="control">`</b><code>==</code><b class="control">`</b>, <b class="control">`</b><code>!=</code><b class="control">`</b>, <b class="control">`</b><code>&gt;</code><b class="control">`</b>, <b class="control">`</b><code>&gt;=</code><b class="control">`</b>, <b class="control">`</b><code>&lt;</code><b class="control">`</b>, <b class="control">`</b><code>&lt;=</code><b class="control">`</b>, <b class="control">`</b><code>!</code><b class="control">`</b>, <b class="control">`</b><code>~</code><b class="control">`</b>, <b class="control">`</b><code>&gt;&gt;</code><b class="control">`</b>, and <b class="control">`</b><code>&lt;&lt;</code><b class="control">`</b>
-   - <b class="control">`</b><code>&&</code><b class="control">`</b> and <b class="control">`</b><code>&</code><b class="control">`</b>
-   - <b class="control">`</b><code>^^</code><b class="control">`</b>, <b class="control">`</b><code>^</code><b class="control">`</b>, <b class="control">`</b><code>||</code><b class="control">`</b>, <b class="control">`</b><code>|</code><b class="control">`</b>
+   - <b class="control">`</b><code>.</code><b class="control">`</b>  field accessor               - <b class="control">`</b><code>&lt;</code><b class="control">`</b>  less-than
+   - <b class="control">`</b><code>%</code><b class="control">`</b>  remainder                    - <b class="control">`</b><code>&lt;=</code><b class="control">`</b> inclusive less-than
+   - <b class="control">`</b><code>*</code><b class="control">`</b>  multiplication               - <b class="control">`</b><code>!</code><b class="control">`</b>  logical negation
+   - <b class="control">`</b><code>/</code><b class="control">`</b>  division                     - <b class="control">`</b><code>~</code><b class="control">`</b>  bitwise negation
+   - <b class="control">`</b><code>//</code><b class="control">`</b> integer division             - <b class="control">`</b><code>&gt;&gt;</code><b class="control">`</b> bitwise right-shift
+   - <b class="control">`</b><code>-</code><b class="control">`</b>  subtraction, negation        - <b class="control">`</b><code>&lt;&lt;</code><b class="control">`</b> bitwise left-shift
+   - <b class="control">`</b><code>+</code><b class="control">`</b>  addition                     - <b class="control">`</b><code>&&</code><b class="control">`</b> logical <span class="control">**</span><b>AND</b><span class="control">**</span>
+   - <b class="control">`</b><code>++</code><b class="control">`</b> string addition              - <b class="control">`</b><code>&</code><b class="control">`</b>  bitwise <span class="control">**</span><b>AND</b><span class="control">**</span>
+   - <b class="control">`</b><code>==</code><b class="control">`</b> equals                       - <b class="control">`</b><code>^^</code><b class="control">`</b> logical <span class="control">**</span><b>XOR</b><span class="control">**</span>
+   - <b class="control">`</b><code>!=</code><b class="control">`</b> not-equals                   - <b class="control">`</b><code>^</code><b class="control">`</b>  bitwise <span class="control">**</span><b>XOR</b><span class="control">**</span>
+   - <b class="control">`</b><code>&gt;</code><b class="control">`</b>  greater-than                 - <b class="control">`</b><code>||</code><b class="control">`</b> logical <span class="control">**</span><b>OR</b><span class="control">**</span>
+   - <b class="control">`</b><code>&gt;=</code><b class="control">`</b> inclusive greater-than       - <b class="control">`</b><code>|</code><b class="control">`</b>  bitwise <span class="control">**</span><b>OR</b><span class="control">**</span>
   
   <em>NOTE</em>: All operators are left-associative in Catspeak.
   
-  Catspeak does not have <b class="control">`</b><code>and</code><b class="control">`</b>, <b class="control">`</b><code>or</code><b class="control">`</b>, <b class="control">`</b><code>xor</code><b class="control">`</b>, <b class="control">`</b><code>mod</code><b class="control">`</b> and <b class="control">`</b><code>div</code><b class="control">`</b> operators. You will
-  need to use <b class="control">`</b><code>&&</code><b class="control">`</b>, <b class="control">`</b><code>||</code><b class="control">`</b>, <b class="control">`</b><code>^^</code><b class="control">`</b>, <b class="control">`</b><code>%</code><b class="control">`</b>, and <b class="control">`</b><code>//</code><b class="control">`</b> instead.</div>
+  Catspeak does not have <b class="control">`</b><code>and</code><b class="control">`</b>, <b class="control">`</b><code>or</code><b class="control">`</b>, <b class="control">`</b><code>xor</code><b class="control">`</b>, <b class="control">`</b><code>mod</code><b class="control">`</b> and <b class="control">`</b><code>div</code><b class="control">`</b> operators. You
+  will need to use <b class="control">`</b><code>&&</code><b class="control">`</b>, <b class="control">`</b><code>||</code><b class="control">`</b>, <b class="control">`</b><code>^^</code><b class="control">`</b>, <b class="control">`</b><code>%</code><b class="control">`</b>, and <b class="control">`</b><code>//</code><b class="control">`</b> instead.</div>
 <span id=library_reference>================================================================================
 <b>Library Reference</b> (<a href="#library_reference">link</a>) 
 ================================================================================</span>

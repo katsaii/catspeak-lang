@@ -21,12 +21,12 @@ order to maintain compatibility with JSON.
 Catspeak exposes the following GML functions for checking the types of
 values and performing conversions:
 
- - `bool`        - `is_array`     - `is_nan`      - `is_undefined`
- - `string`      - `is_bool`      - `is_numeric`  - `is_vec3`
- - `real`        - `is_infinity`  - `is_ptr`      - `is_vec4`
- - `int64`       - `is_int32`     - `is_real`
- - `typeof`      - `is_int64`     - `is_string`
- - `instanceof`  - `is_method`    - `is_struct`
+ - `bool`          - `is_array`      - `is_nan`        - `is_undefined`
+ - `string`        - `is_bool`       - `is_numeric`    - `is_vec3`
+ - `real`          - `is_infinity`   - `is_ptr`        - `is_vec4`
+ - `int64`         - `is_int32`      - `is_real`
+ - `typeof`        - `is_int64`      - `is_string`
+ - `instanceof`    - `is_method`     - `is_struct`
 
 In addition to these functions, there are two Catspeak-specific functions:
 
@@ -37,19 +37,23 @@ In addition to these functions, there are two Catspeak-specific functions:
 # Operators
 
 Catspeak shares many operators with GML, but there are some differences.
-Listed below are the default operators defined by Catspeak, sorted by their
-precedence. Earlier operators have a higher precedence. Operators grouped
-together share the same precedence, e.g. `+` and `-`.
+Listed below are the default operators defined by Catspeak. You can find
+their precedences in the section on [Operator Identifiers].
 
- - `.`
- - `%`
- - `*`, `/`, and `//` (integer division)
- - `+`, `-`, and `++` (string addition)
- - `==`, `!=`, `>`, `>=`, `<`, `<=`, `!`, `~`, `>>`, and `<<`
- - `&&` and `&`
- - `^^`, `^`, `||`, `|`
+ - `.`  field accessor               - `<`  less-than
+ - `%`  remainder                    - `<=` inclusive less-than
+ - `*`  multiplication               - `!`  logical negation
+ - `/`  division                     - `~`  bitwise negation
+ - `//` integer division             - `>>` bitwise right-shift
+ - `-`  subtraction, negation        - `<<` bitwise left-shift
+ - `+`  addition                     - `&&` logical **AND**
+ - `++` string addition              - `&`  bitwise **AND**
+ - `==` equals                       - `^^` logical **XOR**
+ - `!=` not-equals                   - `^`  bitwise **XOR**
+ - `>`  greater-than                 - `||` logical **OR**
+ - `>=` inclusive greater-than       - `|`  bitwise **OR**
 
 NOTE: All operators are left-associative in Catspeak.
 
-Catspeak does not have `and`, `or`, `xor`, `mod` and `div` operators. You will
-need to use `&&`, `||`, `^^`, `%`, and `//` instead.
+Catspeak does not have `and`, `or`, `xor`, `mod` and `div` operators. You
+will need to use `&&`, `||`, `^^`, `%`, and `//` instead.
