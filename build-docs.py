@@ -347,7 +347,7 @@ ABSTRACT = r"""
 A cross-platform, expression oriented programming language for implementing
 modding support into your GameMaker Studio 2.3 games. /( > w <") b
 
-Developed by [katsaii](https://www.katsaii.com/).
+Developed by [katsaii](https://www.katsaii.com/) ([GitHub](https://github.com/NuxiiGit/catspeak-lang) page).
 Logo design by [mashmerlow](https://mashmerlow.github.io/).
 """
 
@@ -365,6 +365,7 @@ TEMPLATE = """
   <head>
     <meta charset="utf-8">
     <meta name="author" content="Kat @katsaii">
+    <link rel="shortcut icon" href="./catspeak-icon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catspeak Reference</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
