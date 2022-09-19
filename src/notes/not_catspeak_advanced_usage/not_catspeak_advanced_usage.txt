@@ -11,11 +11,3 @@ TODO
 # Building Your Own Catspeak Function
 
 TODO
-
-# Modifying the Standard Library
-
-TODO
-
-# Modifying the Syntax
-
-TODO

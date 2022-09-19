@@ -216,72 +216,150 @@ while (x == y) {
 
 # Statements
 
-TODO
+Unlike GML, Catspeak only has two kinds of statement: [Let Statements] and
+[Expression Statements]. This is because Catspeak is an expression-oriented
+language, so things like "if" statements become [If Expressions].
 
-## Let Statement
+## Let Statements
 
-TODO
+The `let` statement creates a new local variable in the current block scope.
+It can optionally be followed by an initialiser expression. If no
+initialiser expression is used, then the variable will be initialised to
+`undefined`:
+```
+let a = 1 + 3 -- initialised to the value 3
+let b         -- initialised to undefined
+```
 
-## Expression Statement
+Unlike GML, catspeak variables are no longer visible after the end of their
+enclosing block scope, unless another variable of the same name exists in
+an outer scope.
 
-TODO
+## Expression Statements
+
+Most often, an expression statement will evaluate its expression and ignore
+the result. There is an exception to this rule with [Do Expressions].
 
 # Expressions
 
-TODO
+An expression is is a term which always produces a value, and may be
+composed of many sub-expressions. All statements you would typically find
+in GML appear as expressions in Catspeak. This includes [Break Expressions],
+[Return Expressions], and [Continue Expressions], all of which return the
+**never** type; indicating that the expression never returns.
 
-## Terminal Expression
+## Terminal Expressions
 
-TODO
+Terminal expressions are either non-operator [Identifiers] or [Literals].
+These expressions have no further sub-expressions, hence the name.
 
-## Operator Expression
+## Operator Expressions
 
-TODO [Operators]
+Operator expressions can either be unary or binary. A unary operator
+expression is an operator identifier followed by an [Accessor Expression],
+[Terminal Expression], or [Grouped Expression]:
+```
+let unary = -2;
+```
 
-## Assignment Expression
+A binary operator is made up of an operator identifier sandwiched between
+two expressions:
+```
+let binary = 0.1 + 0.9
+```
 
-TODO
+Both unary and operator expressions are sugar for [Call Expressions]:
+```
+let unary = `-`(2)
+let binary = `+`(0.1, 0.9)
+```
 
-## Grouped Expression
-
-TODO
-
-## Array Expression
-
-TODO
-
-## Struct Expression
-
-TODO
-
-## Call Expression
-
-TODO
-
-## Accessor Expression
-
-TODO
-
-## Block Expression
+## Assignment Expressions
 
 TODO
 
-## If Expression
+## Grouped Expressions
+
+A grouped expression wraps a single sub-expression between `(` and `)`,
+evaluating the sub-expression. This is typically used to make the
+precedence of the inner expression clear:
+```
+let a = 1 + 2 * 3;   -- 7
+let b = (1 + 2) * 3; -- 9
+```
+
+## Array Expressions
 
 TODO
 
-## Loop Expression
+## Struct Expressions
 
 TODO
 
-## Continue Expression
+## Call Expressions
+
+A call expression calls a function with a set of arguments. The call syntax
+in Catspeak is a lot less restrictive than GML, allowing parenthesis on the
+arguments to be optional. This allows for the creation of statement-like
+function calls, like the `print` function found in the [Standard Library]:
+```
+print("hello", "world")
+
+-- this is also valid:
+print "hello", "world"
+```
+
+## Accessor Expressions
 
 TODO
 
-## Break Expression
+## Block Expressions
 
 TODO
 
-## Return Expression
+## If Expressions
 
 TODO
+
+## Loop Expressions
+
+TODO
+
+## Function Expressions
+
+TODO
+
+## Continue Expressions
+
+The `continue` expression will immediately jump to the start of the current
+loop body, entering the next iteration of the loop if one exists.
+
+## Break Expressions
+
+The `break` expression will immediately jump to the end of the current
+loop body:
+```
+let n = 0
+while (n < 100) {
+    n = n + 1
+    if (n > 10) {
+        break
+    }
+}
+
+print n -- outputs: 11
+```
+
+## Return Expressions
+
+The `return` expression will immediately terminate the current function call
+and returns its argument as the result of the current function call. If no
+argument is given, `undefined` is used as the result instead.
+```
+let max = fun(a, b) {
+    if (a > b) {
+        return a
+    }
+    return b
+}
+```

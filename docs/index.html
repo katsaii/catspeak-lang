@@ -136,23 +136,24 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#string_literals">String Literals</a></div>
         - <a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a></div>
 <input id="statements-checkbox" class="toggle" type="checkbox"><label for="statements-checkbox">   - </label><a href="#statements">Statements</a><div class="collapsible-content">
-        - <a href="#let_statement">Let Statement</a>
-        - <a href="#expression_statement">Expression Statement</a></div>
+        - <a href="#let_statements">Let Statements</a>
+        - <a href="#expression_statements">Expression Statements</a></div>
 <input id="expressions-checkbox" class="toggle" type="checkbox"><label for="expressions-checkbox">   - </label><a href="#expressions">Expressions</a><div class="collapsible-content">
-        - <a href="#terminal_expression">Terminal Expression</a>
-        - <a href="#operator_expression">Operator Expression</a>
-        - <a href="#assignment_expression">Assignment Expression</a>
-        - <a href="#grouped_expression">Grouped Expression</a>
-        - <a href="#array_expression">Array Expression</a>
-        - <a href="#struct_expression">Struct Expression</a>
-        - <a href="#call_expression">Call Expression</a>
-        - <a href="#accessor_expression">Accessor Expression</a>
-        - <a href="#block_expression">Block Expression</a>
-        - <a href="#if_expression">If Expression</a>
-        - <a href="#loop_expression">Loop Expression</a>
-        - <a href="#continue_expression">Continue Expression</a>
-        - <a href="#break_expression">Break Expression</a>
-        - <a href="#return_expression">Return Expression</a></div></div>
+        - <a href="#terminal_expressions">Terminal Expressions</a>
+        - <a href="#operator_expressions">Operator Expressions</a>
+        - <a href="#assignment_expressions">Assignment Expressions</a>
+        - <a href="#grouped_expressions">Grouped Expressions</a>
+        - <a href="#array_expressions">Array Expressions</a>
+        - <a href="#struct_expressions">Struct Expressions</a>
+        - <a href="#call_expressions">Call Expressions</a>
+        - <a href="#accessor_expressions">Accessor Expressions</a>
+        - <a href="#block_expressions">Block Expressions</a>
+        - <a href="#if_expressions">If Expressions</a>
+        - <a href="#loop_expressions">Loop Expressions</a>
+        - <a href="#function_expressions">Function Expressions</a>
+        - <a href="#continue_expressions">Continue Expressions</a>
+        - <a href="#break_expressions">Break Expressions</a>
+        - <a href="#return_expressions">Return Expressions</a></div></div>
 <input id="standard_library-checkbox" class="toggle" type="checkbox"><label for="standard_library-checkbox"> - </label><a href="#standard_library">Standard Library</a><div class="collapsible-content">
       - <a href="#constants">Constants</a>
       - <a href="#functions">Functions</a>
@@ -706,58 +707,135 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     </code><b class="control">```</b></div>
 <span id=statements>  <b>Statements</b> (<a href="#statements">link</a>) .txt
   ==============================================================================</span>
-<div>  TODO</div>
-<span id=let_statement>    <b>Let Statement</b> (<a href="#let_statement">link</a>) .txt
+<div>  Unlike GML, Catspeak only has two kinds of statement: <span class="control">[</span><a href="#let_statements">Let Statements</a><span class="control">]</span> and
+  <span class="control">[</span><a href="#expression_statements">Expression Statements</a><span class="control">]</span>. This is because Catspeak is an expression-oriented
+  language, so things like &quot;if&quot; statements become <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>.</div>
+<span id=let_statements>    <b>Let Statements</b> (<a href="#let_statements">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
-<span id=expression_statement>    <b>Expression Statement</b> (<a href="#expression_statement">link</a>) .txt
+<div>    The <b class="control">`</b><code>let</code><b class="control">`</b> statement creates a new local variable in the current block scope.
+    It can optionally be followed by an initialiser expression. If no
+    initialiser expression is used, then the variable will be initialised to
+    <b class="control">`</b><code>undefined</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    let a = 1 + 3 -- initialised to the value 3
+    let b         -- initialised to undefined
+    </code><b class="control">```</b>
+    
+    Unlike GML, catspeak variables are no longer visible after the end of their
+    enclosing block scope, unless another variable of the same name exists in
+    an outer scope.</div>
+<span id=expression_statements>    <b>Expression Statements</b> (<a href="#expression_statements">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Most often, an expression statement will evaluate its expression and ignore
+    the result. There is an exception to this rule with <span class="control">[</span><a href="#do_expressions">Do Expressions</a><span class="control">]</span>.</div>
 <span id=expressions>  <b>Expressions</b> (<a href="#expressions">link</a>) .txt
   ==============================================================================</span>
-<div>  TODO</div>
-<span id=terminal_expression>    <b>Terminal Expression</b> (<a href="#terminal_expression">link</a>) .txt
+<div>  An expression is is a term which always produces a value, and may be
+  composed of many sub-expressions. All statements you would typically find
+  in GML appear as expressions in Catspeak. This includes <span class="control">[</span><a href="#break_expressions">Break Expressions</a><span class="control">]</span>,
+  <span class="control">[</span><a href="#return_expressions">Return Expressions</a><span class="control">]</span>, and <span class="control">[</span><a href="#continue_expressions">Continue Expressions</a><span class="control">]</span>, all of which return the
+  <span class="control">**</span><b>never</b><span class="control">**</span> type; indicating that the expression never returns.</div>
+<span id=terminal_expressions>    <b>Terminal Expressions</b> (<a href="#terminal_expressions">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    Terminal expressions are either non-operator <span class="control">[</span><a href="#identifiers">Identifiers</a><span class="control">]</span> or <span class="control">[</span><a href="#literals">Literals</a><span class="control">]</span>.
+    These expressions have no further sub-expressions, hence the name.</div>
+<span id=operator_expressions>    <b>Operator Expressions</b> (<a href="#operator_expressions">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    Operator expressions can either be unary or binary. A unary operator
+    expression is an operator identifier followed by an <span class="control">[</span><a href="#accessor_expression">Accessor Expression</a><span class="control">]</span>,
+    <span class="control">[</span><a href="#terminal_expression">Terminal Expression</a><span class="control">]</span>, or <span class="control">[</span><a href="#grouped_expression">Grouped Expression</a><span class="control">]</span>:
+    <b class="control">```</b><code>
+    let unary = -2;
+    </code><b class="control">```</b>
+    
+    A binary operator is made up of an operator identifier sandwiched between
+    two expressions:
+    <b class="control">```</b><code>
+    let binary = 0.1 + 0.9
+    </code><b class="control">```</b>
+    
+    Both unary and operator expressions are sugar for <span class="control">[</span><a href="#call_expressions">Call Expressions</a><span class="control">]</span>:
+    ``<b class="control">`</b><code>
+    let unary = </code><b class="control">`</b>-<b class="control">`</b><code>(2)
+    let binary = </code><b class="control">`</b>+<b class="control">`</b><code>(0.1, 0.9)
+    </code><b class="control">`</b>``</div>
+<span id=assignment_expressions>    <b>Assignment Expressions</b> (<a href="#assignment_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=operator_expression>    <b>Operator Expression</b> (<a href="#operator_expression">link</a>) .txt
+<span id=grouped_expressions>    <b>Grouped Expressions</b> (<a href="#grouped_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO <span class="control">[</span><a href="#operators">Operators</a><span class="control">]</span></div>
-<span id=assignment_expression>    <b>Assignment Expression</b> (<a href="#assignment_expression">link</a>) .txt
-    ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
-<span id=grouped_expression>    <b>Grouped Expression</b> (<a href="#grouped_expression">link</a>) .txt
-    ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
-<span id=array_expression>    <b>Array Expression</b> (<a href="#array_expression">link</a>) .txt
-    ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
-<span id=struct_expression>    <b>Struct Expression</b> (<a href="#struct_expression">link</a>) .txt
+<div>    A grouped expression wraps a single sub-expression between <b class="control">`</b><code>(</code><b class="control">`</b> and <b class="control">`</b><code>)</code><b class="control">`</b>,
+    evaluating the sub-expression. This is typically used to make the
+    precedence of the inner expression clear:
+    <b class="control">```</b><code>
+    let a = 1 + 2 * 3;   -- 7
+    let b = (1 + 2) * 3; -- 9
+    </code><b class="control">```</b></div>
+<span id=array_expressions>    <b>Array Expressions</b> (<a href="#array_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=call_expression>    <b>Call Expression</b> (<a href="#call_expression">link</a>) .txt
+<span id=struct_expressions>    <b>Struct Expressions</b> (<a href="#struct_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=accessor_expression>    <b>Accessor Expression</b> (<a href="#accessor_expression">link</a>) .txt
+<span id=call_expressions>    <b>Call Expressions</b> (<a href="#call_expressions">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    A call expression calls a function with a set of arguments. The call syntax
+    in Catspeak is a lot less restrictive than GML, allowing parenthesis on the
+    arguments to be optional. This allows for the creation of statement-like
+    function calls, like the <b class="control">`</b><code>print</code><b class="control">`</b> function found in the <span class="control">[</span><a href="#standard_library">Standard Library</a><span class="control">]</span>:
+    <b class="control">```</b><code>
+    print(&quot;hello&quot;, &quot;world&quot;)
+    
+    -- this is also valid:
+    print &quot;hello&quot;, &quot;world&quot;
+    </code><b class="control">```</b></div>
+<span id=accessor_expressions>    <b>Accessor Expressions</b> (<a href="#accessor_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=block_expression>    <b>Block Expression</b> (<a href="#block_expression">link</a>) .txt
+<span id=block_expressions>    <b>Block Expressions</b> (<a href="#block_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=if_expression>    <b>If Expression</b> (<a href="#if_expression">link</a>) .txt
+<span id=if_expressions>    <b>If Expressions</b> (<a href="#if_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=loop_expression>    <b>Loop Expression</b> (<a href="#loop_expression">link</a>) .txt
+<span id=loop_expressions>    <b>Loop Expressions</b> (<a href="#loop_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=continue_expression>    <b>Continue Expression</b> (<a href="#continue_expression">link</a>) .txt
+<span id=function_expressions>    <b>Function Expressions</b> (<a href="#function_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
-<span id=break_expression>    <b>Break Expression</b> (<a href="#break_expression">link</a>) .txt
+<span id=continue_expressions>    <b>Continue Expressions</b> (<a href="#continue_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
-<span id=return_expression>    <b>Return Expression</b> (<a href="#return_expression">link</a>) .txt
+<div>    The <b class="control">`</b><code>continue</code><b class="control">`</b> expression will immediately jump to the start of the current
+    loop body, entering the next iteration of the loop if one exists.</div>
+<span id=break_expressions>    <b>Break Expressions</b> (<a href="#break_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    The <b class="control">`</b><code>break</code><b class="control">`</b> expression will immediately jump to the end of the current
+    loop body:
+    <b class="control">```</b><code>
+    let n = 0
+    while (n &lt; 100) {
+        n = n + 1
+        if (n &gt; 10) {
+            break
+        }
+    }
+    
+    print n -- outputs: 11
+    </code><b class="control">```</b></div>
+<span id=return_expressions>    <b>Return Expressions</b> (<a href="#return_expressions">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    The <b class="control">`</b><code>return</code><b class="control">`</b> expression will immediately terminate the current function call
+    and returns its argument as the result of the current function call. If no
+    argument is given, <b class="control">`</b><code>undefined</code><b class="control">`</b> is used as the result instead.
+    <b class="control">```</b><code>
+    let max = fun(a, b) {
+        if (a &gt; b) {
+            return a
+        }
+        return b
+    }
+    </code><b class="control">```</b></div>
 <span id=standard_library>================================================================================
 <b>Standard Library</b> (<a href="#standard_library">link</a>) .txt
 ================================================================================</span>
