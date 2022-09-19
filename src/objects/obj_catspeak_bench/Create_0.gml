@@ -1,13 +1,15 @@
 show_debug_overlay(true);
 
 catspeak_compile_string(@'
-    let n = 100000
-    while (n > 0) {
-        n = it - 1
+    let n = 0
+    while (n <= 10) {
+        print n
+        n = it + 1
     }
-    fun a, b { a ++ " "  ++ b }
+    return "blast off!"
 ').andThen(function(ir) {
     self.ir = ir;
+    clipboard_set_text(ir.disassembly())
 });
 
 /*show_debug_overlay(true);

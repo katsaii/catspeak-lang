@@ -114,13 +114,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#compiling_from_a_string">Compiling From A String</a>
         - <a href="#compiling_from_a_buffer">Compiling From A Buffer</a></div>
 <input id="executing_programs-checkbox" class="toggle" type="checkbox"><label for="executing_programs-checkbox">   - </label><a href="#executing_programs">Executing Programs</a><div class="collapsible-content">
-        - <a href="#setting_global_variables">Setting Global Variables</a>
-        - <a href="#getting_global_variables">Getting Global Variables</a></div>
+        - <a href="#global_variables">Global Variables</a></div>
       - <a href="#configuring_programs">Configuring Programs</a></div>
-<input id="advanced_usage-checkbox" class="toggle" type="checkbox"><label for="advanced_usage-checkbox"> - </label><a href="#advanced_usage">Advanced Usage</a><div class="collapsible-content">
-      - <a href="#pre-compilation">Pre-compilation</a>
-      - <a href="#using_the_compiler_internals_directly">Using The Compiler Internals Directly</a>
-      - <a href="#building_your_own_catspeak_function">Building Your Own Catspeak Function</a></div>
 <input id="syntax-checkbox" class="toggle" type="checkbox"><label for="syntax-checkbox"> - </label><a href="#syntax">Syntax</a><div class="collapsible-content">
 <input id="lexical_grammar-checkbox" class="toggle" type="checkbox"><label for="lexical_grammar-checkbox">   - </label><a href="#lexical_grammar">Lexical Grammar</a><div class="collapsible-content">
         - <a href="#whitespace">Whitespace</a>
@@ -439,57 +434,93 @@ catspeak_config({
 <span id=basic_usage>================================================================================
 <b>Basic Usage</b> (<a href="#basic_usage">link</a>) .txt
 ================================================================================</span>
-<div>TODO
-
-<b class="control">```</b><code>
-// a simple example program that counts to 10 and then returns a message
-var src = @&#39;
-    let n = 0
-    while (n &lt;= 10) {
-        print n
-        n = it + 1
-    }
-    return &quot;blast off!&quot;
-&#39;;
-
-catspeak_compile_string(src).andThen(function(code) {
-    catspeak_execute(code).andThen(function(result) {
-        show_message(result);
-    });
-});
-</code><b class="control">```</b></div>
+<div>In Catspeak, Compiling and running programs are separate steps. You should aim
+to perform any compilation of scripts during a loading screen so that running
+your programs is much faster.</div>
 <span id=compiling_programs>  <b>Compiling Programs</b> (<a href="#compiling_programs">link</a>) .txt
   ==============================================================================</span>
-<div>  TODO</div>
+<div>  The first step to running your Catspeak programs involves compiling the
+  source code from the human-readable form into an executable form. This can be
+  done in two ways: from a GML string, or from a character buffer.</div>
 <span id=compiling_from_a_string>    <b>Compiling From A String</b> (<a href="#compiling_from_a_string">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    If your Catspeak program is stored within a GML string, you can use the
+    <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function to compile it. For example, consider the
+    following program, stored in a multi-line GML string:
+    <b class="control">```</b><code>
+    // counts to 10 and then returns a message
+    var src = @&#39;
+        let n = 0
+        while (n &lt;= 10) {
+            print n
+            n = it + 1
+        }
+        return &quot;blast off!&quot;
+    &#39;;
+    </code><b class="control">```</b>
+    You can use the <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function to spawn a
+    <span class="control">[</span><a href="#catspeakcompilerprocess">CatspeakCompilerProcess</a><span class="control">]</span>:
+    <b class="control">```</b><code>
+    var process = catspeak_compile_string(src);
+    </code><b class="control">```</b>
+    The <b class="control">`</b><code>process</code><b class="control">`</b> variable stores a reference to the compiler process
+    responsible for compiling the code you passed as a parameter.
+    
+    As it stands, this example isn&#39;t very interesting because it ignores the
+    result produced by the compiler. In order to grab this result, the
+    <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method on <span class="control">[</span><a href="#catspeakprocess">CatspeakProcess</a><span class="control">]</span> needs to be used:
+    <b class="control">```</b><code>
+    process.andThen(function(code) {
+        show_message(code.disassembly());
+    });
+    </code><b class="control">```</b>
+    When the process completes, this callback function will be called with a
+    single parameter. This parameter will be the compiled program produced by
+    the compiler. In this example, the callback function uses the <span class="control">[</span><a href="#disassembly">disassembly</a><span class="control">]</span>
+    method to display the debug representation of the program in a pop-up
+    window; it should look like this:
+    <b class="control">```</b><code>
+    fun main() {
+    blk[&quot;init&quot;]:
+      r4 = LDC 3 ...
+      JMP blk[&quot;entry&quot;]
+    blk[&quot;entry&quot;]:
+      r0 = LDC 1 0
+      JMP blk_3_5[&quot;while begin&quot;]
+    blk_3_5[&quot;while begin&quot;]:
+      r1 = MOV 1 r0
+      r2 = LDC 1 10
+      r1 = CALL r4 r1 2
+      JMPF blk_3_5[&quot;while end&quot;] r1
+      r1 = MOV 1 r0
+      r1 = CALL r5 r1 1
+      r2 = MOV 1 r0
+      r3 = LDC 1 1
+      r2 = CALL r6 r2 2
+      r0 = MOV 1 r2
+      JMP blk_3_5[&quot;while begin&quot;]
+      JMP blk_3_5[&quot;while end&quot;]
+    blk_3_5[&quot;while end&quot;]:
+      r1 = LDC 2 undefined &quot;blast off!&quot;
+      RET r2
+      RET !
+    }
+    </code><b class="control">```</b>
+    If you see an output similar to this, <span class="control">**</span><b>congratulations!</b><span class="control">**</span> You have
+    successfully compiled your first Catspeak program. For information on how to
+    run this program, see the <span class="control">[</span><a href="#executing_programs">Executing Programs</a><span class="control">]</span> section.
+    
+    <em>NOTE</em>: The <b class="control">`</b><code>LDC</code><b class="control">`</b> instruction on line 3 has been shortened with <b class="control">`</b><code>...</code><b class="control">`</b>.</div>
 <span id=compiling_from_a_buffer>    <b>Compiling From A Buffer</b> (<a href="#compiling_from_a_buffer">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
 <span id=executing_programs>  <b>Executing Programs</b> (<a href="#executing_programs">link</a>) .txt
   ==============================================================================</span>
 <div>  TODO</div>
-<span id=setting_global_variables>    <b>Setting Global Variables</b> (<a href="#setting_global_variables">link</a>) .txt
-    ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
-<span id=getting_global_variables>    <b>Getting Global Variables</b> (<a href="#getting_global_variables">link</a>) .txt
+<span id=global_variables>    <b>Global Variables</b> (<a href="#global_variables">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    TODO</div>
 <span id=configuring_programs>  <b>Configuring Programs</b> (<a href="#configuring_programs">link</a>) .txt
-  ==============================================================================</span>
-<div>  TODO</div>
-<span id=advanced_usage>================================================================================
-<b>Advanced Usage</b> (<a href="#advanced_usage">link</a>) .txt
-================================================================================</span>
-<div>TODO</div>
-<span id=pre-compilation>  <b>Pre-compilation</b> (<a href="#pre-compilation">link</a>) .txt
-  ==============================================================================</span>
-<div>  (Coming soon!)</div>
-<span id=using_the_compiler_internals_directly>  <b>Using The Compiler Internals Directly</b> (<a href="#using_the_compiler_internals_directly">link</a>) .txt
-  ==============================================================================</span>
-<div>  TODO</div>
-<span id=building_your_own_catspeak_function>  <b>Building Your Own Catspeak Function</b> (<a href="#building_your_own_catspeak_function">link</a>) .txt
   ==============================================================================</span>
 <div>  TODO</div>
 <span id=syntax>================================================================================

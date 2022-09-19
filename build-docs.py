@@ -456,7 +456,6 @@ page.add_section_note(
     "not_catspeak_features",
     "not_catspeak_configuration",
     "not_catspeak_basic_usage",
-    "not_catspeak_advanced_usage",
     "not_catspeak_syntax",
     "not_catspeak_standard_library",
 )
