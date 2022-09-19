@@ -148,7 +148,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#accessor_expressions">Accessor Expressions</a>
         - <a href="#block_expressions">Block Expressions</a>
         - <a href="#if_expressions">If Expressions</a>
-        - <a href="#loop_expressions">Loop Expressions</a>
+<input id="loop_expressions-checkbox" class="toggle" type="checkbox"><label for="loop_expressions-checkbox">     - </label><a href="#loop_expressions">Loop Expressions</a><div class="collapsible-content">
+          - <a href="#while_expressions">While Expressions</a></div>
         - <a href="#function_expressions">Function Expressions</a>
         - <a href="#continue_expressions">Continue Expressions</a>
         - <a href="#break_expressions">Break Expressions</a>
@@ -619,21 +620,26 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
 <div>    Catspeak reserves the following identifiers as keywords:
     
      - <b class="control">`</b><code>--</code><b class="control">`</b>       see <span class="control">[</span><a href="#comments">Comments</a><span class="control">]</span>
-     - <b class="control">`</b><code>=</code><b class="control">`</b>        see <span class="control">[</span><a href="#let_statement">Let Statement</a><span class="control">]</span> and <span class="control">[</span><a href="#assignment_expression">Assignment Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>:</code><b class="control">`</b>        see <span class="control">[</span><a href="#struct_expression">Struct Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>=</code><b class="control">`</b>        see <span class="control">[</span><a href="#let_statements">Let Statements</a><span class="control">]</span> and <span class="control">[</span><a href="#assignment_expressions">Assignment Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>:</code><b class="control">`</b>        see <span class="control">[</span><a href="#struct_expressions">Struct Expressions</a><span class="control">]</span>
      - <b class="control">`</b><code>;</code><b class="control">`</b>        see <span class="control">[</span><a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a><span class="control">]</span>
-     - <b class="control">`</b><code>.</code><b class="control">`</b>        see <span class="control">[</span><a href="#accessor_expression">Accessor Expression</a><span class="control">]</span>
+     - <b class="control">`</b><code>.</code><b class="control">`</b>        see <span class="control">[</span><a href="#accessor_expressions">Accessor Expressions</a><span class="control">]</span>
      - <b class="control">`</b><code>...</code><b class="control">`</b>      see <span class="control">[</span><a href="#automatic_semicolon_insertion">Automatic Semicolon Insertion</a><span class="control">]</span>
-     - <b class="control">`</b><code>do</code><b class="control">`</b>       see <span class="control">[</span><a href="#block_expression">Block Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>if</code><b class="control">`</b>       see <span class="control">[</span><a href="#if_expression">If Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>else</code><b class="control">`</b>     see <span class="control">[</span><a href="#if_expression">If Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>while</code><b class="control">`</b>    see <span class="control">[</span><a href="#loop_expression">Loop Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>for</code><b class="control">`</b>
-     - <b class="control">`</b><code>let</code><b class="control">`</b>      see <span class="control">[</span><a href="#let_statement">Let Statement</a><span class="control">]</span>
-     - <b class="control">`</b><code>fun</code><b class="control">`</b>      see <span class="control">[</span><a href="#function_expression">Function Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>break</code><b class="control">`</b>    see <span class="control">[</span><a href="#break_expression">Break Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>continue</code><b class="control">`</b> see <span class="control">[</span><a href="#continue_expression">Continue Expression</a><span class="control">]</span>
-     - <b class="control">`</b><code>return</code><b class="control">`</b>   see <span class="control">[</span><a href="#return_expression">Return Expression</a><span class="control">]</span></div>
+     - <b class="control">`</b><code>do</code><b class="control">`</b>       see <span class="control">[</span><a href="#block_expressions">Block Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>if</code><b class="control">`</b>       see <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>else</code><b class="control">`</b>     see <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>while</code><b class="control">`</b>    see <span class="control">[</span><a href="#while_expressions">While Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>for</code><b class="control">`</b>      (reserved in case of <b class="control">`</b><code>for</code><b class="control">`</b> loops)
+     - <b class="control">`</b><code>loop</code><b class="control">`</b>     (reserved in case of infinite loops)
+     - <b class="control">`</b><code>let</code><b class="control">`</b>      see <span class="control">[</span><a href="#let_statements">Let Statements</a><span class="control">]</span>
+     - <b class="control">`</b><code>fun</code><b class="control">`</b>      see <span class="control">[</span><a href="#function_expressions">Function Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>break</code><b class="control">`</b>    see <span class="control">[</span><a href="#break_expressions">Break Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>continue</code><b class="control">`</b> see <span class="control">[</span><a href="#continue_expressions">Continue Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>return</code><b class="control">`</b>   see <span class="control">[</span><a href="#return_expressions">Return Expressions</a><span class="control">]</span>
+     - <b class="control">`</b><code>impl</code><b class="control">`</b>     (reserved in case of constructor functions)
+     - <b class="control">`</b><code>new</code><b class="control">`</b>      (reserved in case of constructor functions)
+     - <b class="control">`</b><code>and</code><b class="control">`</b>      (reserved in case of short-circuit AND)
+     - <b class="control">`</b><code>or</code><b class="control">`</b>       (reserved in case of short-circuit OR)</div>
 <span id=literals>    <b>Literals</b> (<a href="#literals">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    A literal in Catspeak is either a <span class="control">[</span><a href="#numeric_literal">Numeric Literal</a><span class="control">]</span> or <span class="control">[</span><a href="#string_literal">String Literal</a><span class="control">]</span>.</div>
@@ -709,8 +715,8 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
   language, so things like &quot;if&quot; statements become <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>.</div>
 <span id=let_statements>    <b>Let Statements</b> (<a href="#let_statements">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    The <b class="control">`</b><code>let</code><b class="control">`</b> statement creates a new local variable in the current block scope.
-    It can optionally be followed by an initialiser expression. If no
+<div>    The <b class="control">`</b><code>let</code><b class="control">`</b> statement creates a new local variable in the current block
+    scope. It can optionally be followed by an initialiser expression. If no
     initialiser expression is used, then the variable will be initialised to
     <b class="control">`</b><code>undefined</code><b class="control">`</b>:
     <b class="control">```</b><code>
@@ -787,6 +793,7 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
       <b class="control">```</b><code>
       x = update(it)
       </code><b class="control">```</b>
+      
       This becomes noticable useful when handling <span class="control">[</span><a href="#accessor_expressions">Accessor Expressions</a><span class="control">]</span>:
       <b class="control">```</b><code>
       arr.<span class="control">[</span><a href="#0">0</a><span class="control">]</span> = update(it)
@@ -907,20 +914,22 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     clause. So shortcuts <b class="control">`</b><code>else while</code><b class="control">`</b> or <b class="control">`</b><code>else do</code><b class="control">`</b> are not allowed.</div>
 <span id=loop_expressions>    <b>Loop Expressions</b> (<a href="#loop_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    The only type of loop Catspeak currently supports are the <b class="control">`</b><code>while</code><b class="control">`</b> loop.
-    The <b class="control">`</b><code>while</code><b class="control">`</b> expression resembles <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>, except the <b class="control">`</b><code>while</code><b class="control">`</b>
-    keyword is used instead of <b class="control">`</b><code>if</code><b class="control">`</b>:
-    <b class="control">```</b><code>
-    while (a &gt; b) {
-        a = it - 1
-    }
-    </code><b class="control">```</b>
-    Unlike <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>, the <b class="control">`</b><code>while</code><b class="control">`</b> expression will continue to repeat
-    the code between the <b class="control">`</b><code>{</code><b class="control">`</b> and <b class="control">`</b><code>}</code><b class="control">`</b> until the condition evaluates to
-    <b class="control">`</b><code>false</code><b class="control">`</b>.
-    
-    Use <span class="control">[</span><a href="#break_expressions">Break Expressions</a><span class="control">]</span> or <span class="control">[</span><a href="#continue_expressions">Continue Expressions</a><span class="control">]</span> to exit the loop or
-    skip to the next iteration early.</div>
+<div>    The only type of loop Catspeak currently supports is the <span class="control">[</span><a href="#while_expression">While Expression</a><span class="control">]</span>.</div>
+<span id=while_expressions>      <b>While Expressions</b> (<a href="#while_expressions">link</a>) .txt
+      --------------------------------------------------------------------------</span>
+<div>      The <b class="control">`</b><code>while</code><b class="control">`</b> expression resembles <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>, except the <b class="control">`</b><code>while</code><b class="control">`</b>
+      keyword is used instead of <b class="control">`</b><code>if</code><b class="control">`</b>:
+      <b class="control">```</b><code>
+      while (a &gt; b) {
+          a = it - 1
+      }
+      </code><b class="control">```</b>
+      Unlike <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>, the <b class="control">`</b><code>while</code><b class="control">`</b> expression will continue to repeat
+      the code between the <b class="control">`</b><code>{</code><b class="control">`</b> and <b class="control">`</b><code>}</code><b class="control">`</b> until the condition evaluates to
+      <b class="control">`</b><code>false</code><b class="control">`</b>.
+      
+      Use <span class="control">[</span><a href="#break_expressions">Break Expressions</a><span class="control">]</span> or <span class="control">[</span><a href="#continue_expressions">Continue Expressions</a><span class="control">]</span> to exit the loop or
+      skip to the next iteration early.</div>
 <span id=function_expressions>    <b>Function Expressions</b> (<a href="#function_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    Catspeak lets you define new functions using the <b class="control">`</b><code>fun</code><b class="control">`</b> keyword, followed
@@ -968,9 +977,9 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     </code><b class="control">```</b></div>
 <span id=return_expressions>    <b>Return Expressions</b> (<a href="#return_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    The <b class="control">`</b><code>return</code><b class="control">`</b> expression will immediately terminate the current function call
-    and returns its argument as the result of the current function call. If no
-    argument is given, <b class="control">`</b><code>undefined</code><b class="control">`</b> is used as the result instead.
+<div>    The <b class="control">`</b><code>return</code><b class="control">`</b> expression will immediately terminate the current function
+    call and returns its argument as its result. If no argument is given,
+    <b class="control">`</b><code>undefined</code><b class="control">`</b> is used as the result instead.
     <b class="control">```</b><code>
     let max = fun(a, b) {
         if (a &gt; b) {

@@ -130,21 +130,26 @@ character. So the `>>=` operator will have the same precedence as `>=`.
 Catspeak reserves the following identifiers as keywords:
 
  - `--`       see [Comments]
- - `=`        see [Let Statement] and [Assignment Expression]
- - `:`        see [Struct Expression]
+ - `=`        see [Let Statements] and [Assignment Expressions]
+ - `:`        see [Struct Expressions]
  - `;`        see [Automatic Semicolon Insertion]
- - `.`        see [Accessor Expression]
+ - `.`        see [Accessor Expressions]
  - `...`      see [Automatic Semicolon Insertion]
- - `do`       see [Block Expression]
- - `if`       see [If Expression]
- - `else`     see [If Expression]
- - `while`    see [Loop Expression]
- - `for`
- - `let`      see [Let Statement]
- - `fun`      see [Function Expression]
- - `break`    see [Break Expression]
- - `continue` see [Continue Expression]
- - `return`   see [Return Expression]
+ - `do`       see [Block Expressions]
+ - `if`       see [If Expressions]
+ - `else`     see [If Expressions]
+ - `while`    see [While Expressions]
+ - `for`      (reserved in case of `for` loops)
+ - `loop`     (reserved in case of infinite loops)
+ - `let`      see [Let Statements]
+ - `fun`      see [Function Expressions]
+ - `break`    see [Break Expressions]
+ - `continue` see [Continue Expressions]
+ - `return`   see [Return Expressions]
+ - `impl`     (reserved in case of constructor functions)
+ - `new`      (reserved in case of constructor functions)
+ - `and`      (reserved in case of short-circuit AND)
+ - `or`       (reserved in case of short-circuit OR)
 
 ## Literals
 
@@ -226,8 +231,8 @@ language, so things like "if" statements become [If Expressions].
 
 ## Let Statements
 
-The `let` statement creates a new local variable in the current block scope.
-It can optionally be followed by an initialiser expression. If no
+The `let` statement creates a new local variable in the current block
+scope. It can optionally be followed by an initialiser expression. If no
 initialiser expression is used, then the variable will be initialised to
 `undefined`:
 ```
@@ -507,9 +512,9 @@ print n -- outputs: 11
 
 ## Return Expressions
 
-The `return` expression will immediately terminate the current function call
-and returns its argument as the result of the current function call. If no
-argument is given, `undefined` is used as the result instead.
+The `return` expression will immediately terminate the current function
+call and returns its argument as its result. If no argument is given,
+`undefined` is used as the result instead.
 ```
 let max = fun(a, b) {
     if (a > b) {

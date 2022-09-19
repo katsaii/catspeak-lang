@@ -318,11 +318,16 @@ function __catspeak_init_database_token_keywords() {
     db[$ "else"] = CatspeakToken.ELSE;
     db[$ "while"] = CatspeakToken.WHILE;
     db[$ "for"] = CatspeakToken.FOR;
+    db[$ "loop"] = CatspeakToken.LOOP;
     db[$ "let"] = CatspeakToken.LET;
     db[$ "fun"] = CatspeakToken.FUN;
     db[$ "break"] = CatspeakToken.BREAK;
     db[$ "continue"] = CatspeakToken.CONTINUE;
     db[$ "return"] = CatspeakToken.RETURN;
+    db[$ "and"] = CatspeakToken.AND;
+    db[$ "or"] = CatspeakToken.OR;
+    db[$ "new"] = CatspeakToken.NEW;
+    db[$ "impl"] = CatspeakToken.IMPL;
     /// @ignore
     global.__catspeakDatabaseLexemeToKeyword = db;
 }

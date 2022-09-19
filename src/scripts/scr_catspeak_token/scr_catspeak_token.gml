@@ -24,6 +24,7 @@ enum CatspeakToken {
     ELSE,
     WHILE,
     FOR,
+    LOOP,
     LET,
     FUN,
     BREAK,
@@ -31,6 +32,8 @@ enum CatspeakToken {
     RETURN,
     AND,
     OR,
+    NEW,
+    IMPL,
     IDENT,
     STRING,
     NUMBER,
@@ -97,6 +100,8 @@ function catspeak_token_show(value) {
         return "WHILE";
     case CatspeakToken.FOR:
         return "FOR";
+    case CatspeakToken.LOOP:
+        return "LOOP";
     case CatspeakToken.LET:
         return "LET";
     case CatspeakToken.FUN:
@@ -111,6 +116,10 @@ function catspeak_token_show(value) {
         return "AND";
     case CatspeakToken.OR:
         return "OR";
+    case CatspeakToken.NEW:
+        return "NEW";
+    case CatspeakToken.IMPL:
+        return "IMPL";
     case CatspeakToken.IDENT:
         return "IDENT";
     case CatspeakToken.STRING:
@@ -194,6 +203,8 @@ function catspeak_token_read(str) {
         return CatspeakToken.WHILE;
     case "FOR":
         return CatspeakToken.FOR;
+    case "LOOP":
+        return CatspeakToken.LOOP;
     case "LET":
         return CatspeakToken.LET;
     case "FUN":
@@ -208,6 +219,10 @@ function catspeak_token_read(str) {
         return CatspeakToken.AND;
     case "OR":
         return CatspeakToken.OR;
+    case "NEW":
+        return CatspeakToken.NEW;
+    case "IMPL":
+        return CatspeakToken.IMPL;
     case "IDENT":
         return CatspeakToken.IDENT;
     case "STRING":
