@@ -134,4 +134,18 @@ NOTE: If you want to call a script from Catspeak, you must use `method` to
 
 # Configuring Programs
 
-TODO
+Both compiler and interpreter processes can be customised so that their time
+limit or exception handler is different from the defaults defined using the
+[catspeak_config] function. Use the [withTimeLimit] method to modify its time
+limit, and the [catchError] method to modify the exception handler function:
+```
+catspeak_execute(code)
+    .withTimeLimit(5) // 5 second time limit
+    .catchError(function(e) {
+        // handle the error by just outputting a debug message
+        show_debug_message("an error occurred! " + string(e));
+    })
+    .andThen(function(result) {
+        show_message(result);
+    });
+```

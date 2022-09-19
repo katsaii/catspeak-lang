@@ -564,7 +564,21 @@ your programs is much faster.</div>
           </code><b class="control">```</b></div>
 <span id=configuring_programs>  <b>Configuring Programs</b> (<a href="#configuring_programs">link</a>) .txt
   ==============================================================================</span>
-<div>  TODO</div>
+<div>  Both compiler and interpreter processes can be customised so that their time
+  limit or exception handler is different from the defaults defined using the
+  <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function. Use the <span class="control">[</span><a href="#withtimelimit">withTimeLimit</a><span class="control">]</span> method to modify its time
+  limit, and the <span class="control">[</span><a href="#catcherror">catchError</a><span class="control">]</span> method to modify the exception handler function:
+  <b class="control">```</b><code>
+  catspeak_execute(code)
+      .withTimeLimit(5) // 5 second time limit
+      .catchError(function(e) {
+          // handle the error by just outputting a debug message
+          show_debug_message(&quot;an error occurred! &quot; + string(e));
+      })
+      .andThen(function(result) {
+          show_message(result);
+      });
+  </code><b class="control">```</b></div>
 <span id=syntax>================================================================================
 <b>Syntax</b> (<a href="#syntax">link</a>) .txt
 ================================================================================</span>
