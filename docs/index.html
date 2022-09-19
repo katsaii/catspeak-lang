@@ -120,9 +120,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="advanced_usage-checkbox" class="toggle" type="checkbox"><label for="advanced_usage-checkbox"> - </label><a href="#advanced_usage">Advanced Usage</a><div class="collapsible-content">
       - <a href="#pre-compilation">Pre-compilation</a>
       - <a href="#using_the_compiler_internals_directly">Using The Compiler Internals Directly</a>
-      - <a href="#building_your_own_catspeak_function">Building Your Own Catspeak Function</a>
-      - <a href="#modifying_the_standard_library">Modifying The Standard Library</a>
-      - <a href="#modifying_the_syntax">Modifying The Syntax</a></div>
+      - <a href="#building_your_own_catspeak_function">Building Your Own Catspeak Function</a></div>
 <input id="syntax-checkbox" class="toggle" type="checkbox"><label for="syntax-checkbox"> - </label><a href="#syntax">Syntax</a><div class="collapsible-content">
 <input id="lexical_grammar-checkbox" class="toggle" type="checkbox"><label for="lexical_grammar-checkbox">   - </label><a href="#lexical_grammar">Lexical Grammar</a><div class="collapsible-content">
         - <a href="#whitespace">Whitespace</a>
@@ -492,12 +490,6 @@ catspeak_compile_string(src).andThen(function(code) {
 <span id=building_your_own_catspeak_function>  <b>Building Your Own Catspeak Function</b> (<a href="#building_your_own_catspeak_function">link</a>) .txt
   ==============================================================================</span>
 <div>  TODO</div>
-<span id=modifying_the_standard_library>  <b>Modifying The Standard Library</b> (<a href="#modifying_the_standard_library">link</a>) .txt
-  ==============================================================================</span>
-<div>  TODO</div>
-<span id=modifying_the_syntax>  <b>Modifying The Syntax</b> (<a href="#modifying_the_syntax">link</a>) .txt
-  ==============================================================================</span>
-<div>  TODO</div>
 <span id=syntax>================================================================================
 <b>Syntax</b> (<a href="#syntax">link</a>) .txt
 ================================================================================</span>
@@ -704,7 +696,11 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     while (x == y) {
         something()
     }
-    </code><b class="control">```</b></div>
+    </code><b class="control">```</b>
+    
+    <em>NOTE</em>: Although none of the examples in this document will use them, you
+          can add explicit semicolons after each of your statements if you
+          prefer.</div>
 <span id=statements>  <b>Statements</b> (<a href="#statements">link</a>) .txt
   ==============================================================================</span>
 <div>  Unlike GML, Catspeak only has two kinds of statement: <span class="control">[</span><a href="#let_statements">Let Statements</a><span class="control">]</span> and
@@ -768,15 +764,45 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     evaluating the sub-expression. This is typically used to make the
     precedence of the inner expression clear:
     <b class="control">```</b><code>
-    let a = 1 + 2 * 3;   -- 7
-    let b = (1 + 2) * 3; -- 9
+    let a = 1 + 2 * 3   -- 7
+    let b = (1 + 2) * 3 -- 9
     </code><b class="control">```</b></div>
 <span id=array_expressions>    <b>Array Expressions</b> (<a href="#array_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Arrays are a sequence of comma-separated sub-expressions wrapped between
+    <b class="control">`</b><code>[</code><b class="control">`</b> and <b class="control">`</b><code>]</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    let array = [1, 2, 3]
+    </code><b class="control">```</b>
+    
+    For information on how to modify array values see <span class="control">[</span><a href="#accessor_expressions">Accessor Expressions</a><span class="control">]</span>.</div>
 <span id=struct_expressions>    <b>Struct Expressions</b> (<a href="#struct_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Structs are a sequence of comma-separated key-value pairs wrapped between
+    <b class="control">`</b><code>{</code><b class="control">`</b> and <b class="control">`</b><code>}</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    let struct = { x: 1, y: 2 }
+    </code><b class="control">```</b>
+    Typically, the key-value pairs are separated by a single <b class="control">`</b><code>:</code><b class="control">`</b>. However,
+    there is a short-hand syntax for when the key and value use the same
+    identifier:
+    <b class="control">```</b><code>
+    { a, b, c }
+    </code><b class="control">```</b>
+    is short for
+    <b class="control">```</b><code>
+    { a: a, b: b, c: c }
+    </code><b class="control">```</b>
+    
+    Typically, the key for a struct element must be a <span class="control">[</span><a href="#terminal_expression">Terminal Expression</a><span class="control">]</span>;
+    these are either <span class="control">[</span><a href="#identifiers">Identifiers</a><span class="control">]</span> or <span class="control">[</span><a href="#literals">Literals</a><span class="control">]</span>. However, using an
+    expression for the key value is allowed, so long as the expression is
+    between <b class="control">`</b><code>[</code><b class="control">`</b> and <b class="control">`</b><code>]</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    { [&quot;hello&quot; ++ &quot;world&quot;]: 123 }
+    </code><b class="control">```</b>
+    
+    For information on how to modify struct values see <span class="control">[</span><a href="#accessor_expressions">Accessor Expressions</a><span class="control">]</span>.</div>
 <span id=call_expressions>    <b>Call Expressions</b> (<a href="#call_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    A call expression calls a function with a set of arguments. The call syntax
@@ -794,16 +820,82 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
 <div>    TODO</div>
 <span id=block_expressions>    <b>Block Expressions</b> (<a href="#block_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    The block expression is used to execute multiple statements or control
+    flow expressions before returning a final result. Create a block
+    expression by using the <b class="control">`</b><code>do</code><b class="control">`</b> keyword, following by a sequence of
+    <span class="control">[</span><a href="#statements">Statements</a><span class="control">]</span> wrapped between <b class="control">`</b><code>{</code><b class="control">`</b> and <b class="control">`</b><code>}</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    let a = do {
+        let a = 1
+        let b = 2
+        a + b
+    }
+    </code><b class="control">```</b>
+    
+    The result returned by the block expression will be the result of the
+    last expression in the block. If there is no expression, then the result
+    will be <b class="control">`</b><code>undefined</code><b class="control">`</b>.
+    
+    Reiterating what was said in the <span class="control">[</span><a href="#let_statements">Let Statements</a><span class="control">]</span> section, all local
+    variables defined within a block expression will become inaccessible after
+    the block has ended. This is different from GML variables, whose
+    definitions are hoisted.</div>
 <span id=if_expressions>    <b>If Expressions</b> (<a href="#if_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    The syntax for <b class="control">`</b><code>if</code><b class="control">`</b> expressions is similar to GML <b class="control">`</b><code>if</code><b class="control">`</b> statements:
+    <b class="control">```</b><code>
+    if (a &gt; b) {
+        -- a is greater than b
+    } else {
+        -- a is not greater than b
+    }
+    </code><b class="control">```</b>
+    Just like GML, the <b class="control">`</b><code>else</code><b class="control">`</b> clause is optional.
+    
+    However, unlike GML, only an <b class="control">`</b><code>if</code><b class="control">`</b> expression can be used after an <b class="control">`</b><code>else</code><b class="control">`</b>
+    clause. So shortcuts <b class="control">`</b><code>else while</code><b class="control">`</b> or <b class="control">`</b><code>else do</code><b class="control">`</b> are not allowed.</div>
 <span id=loop_expressions>    <b>Loop Expressions</b> (<a href="#loop_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    The only type of loop Catspeak currently supports are the <b class="control">`</b><code>while</code><b class="control">`</b> loop.
+    The <b class="control">`</b><code>while</code><b class="control">`</b> expression resembles <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>, except the <b class="control">`</b><code>while</code><b class="control">`</b>
+    keyword is used instead of <b class="control">`</b><code>if</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    while (a &gt; b) {
+        a = it - 1
+    }
+    </code><b class="control">```</b>
+    Unlike <span class="control">[</span><a href="#if_expressions">If Expressions</a><span class="control">]</span>, the <b class="control">`</b><code>while</code><b class="control">`</b> expression will continue to repeat
+    the code between the <b class="control">`</b><code>{</code><b class="control">`</b> and <b class="control">`</b><code>}</code><b class="control">`</b> until the condition evaluates to
+    <b class="control">`</b><code>false</code><b class="control">`</b>.
+    
+    Use <span class="control">[</span><a href="#break_expressions">Break Expressions</a><span class="control">]</span> or <span class="control">[</span><a href="#continue_expressions">Continue Expressions</a><span class="control">]</span> to exit the loop or
+    skip to the next iteration early.</div>
 <span id=function_expressions>    <b>Function Expressions</b> (<a href="#function_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Catspeak lets you define new functions using the <b class="control">`</b><code>fun</code><b class="control">`</b> keyword, followed
+    by a block of code to execute:
+    <b class="control">```</b><code>
+    let say_hello = fun() {
+        print &quot;Hello!&quot;
+    }
+    </code><b class="control">```</b>
+    
+    To create a function which accepts arguments, include the names of the
+    arguments after the <b class="control">`</b><code>fun</code><b class="control">`</b> keyword:
+    <b class="control">```</b><code>
+    let add = fun(a, b) {
+        return a + b
+    }
+    </code><b class="control">```</b>
+    Just like <span class="control">[</span><a href="#call_expressions">Call Expressions</a><span class="control">]</span>, the parenthesis around these arguments are
+    optional:
+    <b class="control">```</b><code>
+    let add = fun a, b {
+        return a + b
+    }
+    </code><b class="control">```</b>
+    
+    <em>NOTE</em>: All functions in Catspeak are anonymous.</div>
 <span id=continue_expressions>    <b>Continue Expressions</b> (<a href="#continue_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    The <b class="control">`</b><code>continue</code><b class="control">`</b> expression will immediately jump to the start of the current

@@ -214,6 +214,10 @@ while (x == y) {
 }
 ```
 
+NOTE: Although none of the examples in this document will use them, you
+      can add explicit semicolons after each of your statements if you
+      prefer.
+
 # Statements
 
 Unlike GML, Catspeak only has two kinds of statement: [Let Statements] and
@@ -284,17 +288,47 @@ A grouped expression wraps a single sub-expression between `(` and `)`,
 evaluating the sub-expression. This is typically used to make the
 precedence of the inner expression clear:
 ```
-let a = 1 + 2 * 3;   -- 7
-let b = (1 + 2) * 3; -- 9
+let a = 1 + 2 * 3   -- 7
+let b = (1 + 2) * 3 -- 9
 ```
 
 ## Array Expressions
 
-TODO
+Arrays are a sequence of comma-separated sub-expressions wrapped between
+`[` and `]`:
+```
+let array = [1, 2, 3]
+```
+
+For information on how to modify array values see [Accessor Expressions].
 
 ## Struct Expressions
 
-TODO
+Structs are a sequence of comma-separated key-value pairs wrapped between
+`{` and `}`:
+```
+let struct = { x: 1, y: 2 }
+```
+Typically, the key-value pairs are separated by a single `:`. However,
+there is a short-hand syntax for when the key and value use the same
+identifier:
+```
+{ a, b, c }
+```
+is short for
+```
+{ a: a, b: b, c: c }
+```
+
+Typically, the key for a struct element must be a [Terminal Expression];
+these are either [Identifiers] or [Literals]. However, using an
+expression for the key value is allowed, so long as the expression is
+between `[` and `]`:
+```
+{ ["hello" ++ "world"]: 123 }
+```
+
+For information on how to modify struct values see [Accessor Expressions].
 
 ## Call Expressions
 
@@ -315,19 +349,85 @@ TODO
 
 ## Block Expressions
 
-TODO
+The block expression is used to execute multiple statements or control
+flow expressions before returning a final result. Create a block
+expression by using the `do` keyword, following by a sequence of
+[Statements] wrapped between `{` and `}`:
+```
+let a = do {
+    let a = 1
+    let b = 2
+    a + b
+}
+```
+
+The result returned by the block expression will be the result of the
+last expression in the block. If there is no expression, then the result
+will be `undefined`.
+
+Reiterating what was said in the [Let Statements] section, all local
+variables defined within a block expression will become inaccessible after
+the block has ended. This is different from GML variables, whose
+definitions are hoisted.
 
 ## If Expressions
 
-TODO
+The syntax for `if` expressions is similar to GML `if` statements:
+```
+if (a > b) {
+    -- a is greater than b
+} else {
+    -- a is not greater than b
+}
+```
+Just like GML, the `else` clause is optional.
+
+However, unlike GML, only an `if` expression can be used after an `else`
+clause. So shortcuts `else while` or `else do` are not allowed.
 
 ## Loop Expressions
 
-TODO
+The only type of loop Catspeak currently supports are the `while` loop.
+The `while` expression resembles [If Expressions], except the `while`
+keyword is used instead of `if`:
+```
+while (a > b) {
+    a = it - 1
+}
+```
+Unlike [If Expressions], the `while` expression will continue to repeat
+the code between the `{` and `}` until the condition evaluates to
+`false`.
+
+Use [Break Expressions] or [Continue Expressions] to exit the loop or
+skip to the next iteration early.
 
 ## Function Expressions
 
-TODO
+Catspeak lets you define new functions using the `fun` keyword, followed
+by a block of code to execute:
+```
+let say_hello = fun() {
+    print "Hello!"
+}
+```
+
+To create a function which accepts arguments, include the names of the
+arguments after the `fun` keyword:
+```
+let add = fun(a, b) {
+    return a + b
+}
+```
+Just like [Call Expressions], the parenthesis around these arguments are
+optional:
+```
+let add = fun a, b {
+    return a + b
+}
+```
+
+NOTE: All functions in Catspeak are anonymous.
 
 ## Continue Expressions
 
