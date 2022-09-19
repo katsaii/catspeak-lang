@@ -310,6 +310,7 @@ function call:
 ```
 x = update(it)
 ```
+
 This becomes noticable useful when handling [Accessor Expressions]:
 ```
 arr.[0] = update(it)
@@ -382,7 +383,21 @@ print "hello", "world"
 
 ## Accessor Expressions
 
-TODO
+An accessor expression will allow you to access the elements of an array
+or struct. They consist of two expressions separated by a `.` symbol.
+The right-hand-side expression must be a [Terminal Expression], **or**
+an expression wrapped between `[` and `]`:
+```
+array.[0]
+
+struct.x
+struct.["y"]
+```
+
+NOTE: The `struct.x` syntax is short-hand for `struct.["x"]`.
+
+Depending on which side of an [Assignment Expression] the accessor
+expression is on, determines whether an element will be "get" or "set".
 
 ## Block Expressions
 
@@ -424,7 +439,10 @@ clause. So shortcuts `else while` or `else do` are not allowed.
 
 ## Loop Expressions
 
-The only type of loop Catspeak currently supports are the `while` loop.
+The only type of loop Catspeak currently supports is the [While Expression].
+
+### While Expressions
+
 The `while` expression resembles [If Expressions], except the `while`
 keyword is used instead of `if`:
 ```

@@ -854,7 +854,21 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     </code><b class="control">```</b></div>
 <span id=accessor_expressions>    <b>Accessor Expressions</b> (<a href="#accessor_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    An accessor expression will allow you to access the elements of an array
+    or struct. They consist of two expressions separated by a <b class="control">`</b><code>.</code><b class="control">`</b> symbol.
+    The right-hand-side expression must be a <span class="control">[</span><a href="#terminal_expression">Terminal Expression</a><span class="control">]</span>, <span class="control">**</span><b>or</b><span class="control">**</span>
+    an expression wrapped between <b class="control">`</b><code>[</code><b class="control">`</b> and <b class="control">`</b><code>]</code><b class="control">`</b>:
+    <b class="control">```</b><code>
+    array.<span class="control">[</span><a href="#0">0</a><span class="control">]</span>
+    
+    struct.x
+    struct.[&quot;y&quot;]
+    </code><b class="control">```</b>
+    
+    <em>NOTE</em>: The <b class="control">`</b><code>struct.x</code><b class="control">`</b> syntax is short-hand for <b class="control">`</b><code>struct.[&quot;x&quot;]</code><b class="control">`</b>.
+    
+    Depending on which side of an <span class="control">[</span><a href="#assignment_expression">Assignment Expression</a><span class="control">]</span> the accessor
+    expression is on, determines whether an element will be &quot;get&quot; or &quot;set&quot;.</div>
 <span id=block_expressions>    <b>Block Expressions</b> (<a href="#block_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    The block expression is used to execute multiple statements or control
