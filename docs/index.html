@@ -139,7 +139,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="expressions-checkbox" class="toggle" type="checkbox"><label for="expressions-checkbox">   - </label><a href="#expressions">Expressions</a><div class="collapsible-content">
         - <a href="#terminal_expressions">Terminal Expressions</a>
         - <a href="#operator_expressions">Operator Expressions</a>
-        - <a href="#assignment_expressions">Assignment Expressions</a>
+<input id="assignment_expressions-checkbox" class="toggle" type="checkbox"><label for="assignment_expressions-checkbox">     - </label><a href="#assignment_expressions">Assignment Expressions</a><div class="collapsible-content">
+          - <a href="#it_expressions">It Expressions</a></div>
         - <a href="#grouped_expressions">Grouped Expressions</a>
         - <a href="#array_expressions">Array Expressions</a>
         - <a href="#struct_expressions">Struct Expressions</a>
@@ -757,7 +758,43 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     </code><b class="control">`</b>``</div>
 <span id=assignment_expressions>    <b>Assignment Expressions</b> (<a href="#assignment_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Assignment expressions are made up of two sub-expressions separated by
+    the <b class="control">`</b><code>=</code><b class="control">`</b> symbol. The value of the right-hand-side expression will be
+    assigned to the memory location pointed to by the left-hand-side
+    expression.
+    
+    <em>NOTE</em>: The value of an assignment expression will be the value assigned
+          to the variable on the left-hand-side of the expression:
+          <b class="control">```</b><code>
+          let a
+          let b = a = 1
+          print a == b -- outputs: true
+          </code><b class="control">```</b></div>
+<span id=it_expressions>      <b>It Expressions</b> (<a href="#it_expressions">link</a>) .txt
+      --------------------------------------------------------------------------</span>
+<div>      Catspeak does not have reference types. Because of this, it cannot support
+      typical incrementation operators such as <b class="control">`</b><code>+=</code><b class="control">`</b>. To solve this problem,
+      Catspeak has an <b class="control">`</b><code>it</code><b class="control">`</b> keyword:
+      <b class="control">```</b><code>
+      x = it + 1 -- behaves like x += 1 would in GML
+      </code><b class="control">```</b>
+      The value of the <b class="control">`</b><code>it</code><b class="control">`</b> expression will be the value of the left-hand-side
+      sub-expression of its containing assignment expression. So, in the above
+      example, the value of <b class="control">`</b><code>it</code><b class="control">`</b> will be the value of the <b class="control">`</b><code>x</code><b class="control">`</b> variable.
+      
+      The nice thing about this syntax is it generalises to any expression or
+      function call:
+      <b class="control">```</b><code>
+      x = update(it)
+      </code><b class="control">```</b>
+      This becomes noticable useful when handling <span class="control">[</span><a href="#accessor_expressions">Accessor Expressions</a><span class="control">]</span>:
+      <b class="control">```</b><code>
+      arr.<span class="control">[</span><a href="#0">0</a><span class="control">]</span> = update(it)
+      </code><b class="control">```</b>
+      instead of
+      <b class="control">```</b><code>
+      arr.<span class="control">[</span><a href="#0">0</a><span class="control">]</span> = update(arr.<span class="control">[</span><a href="#0">0</a><span class="control">]</span>)
+      </code><b class="control">```</b></div>
 <span id=grouped_expressions>    <b>Grouped Expressions</b> (<a href="#grouped_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    A grouped expression wraps a single sub-expression between <b class="control">`</b><code>(</code><b class="control">`</b> and <b class="control">`</b><code>)</code><b class="control">`</b>,

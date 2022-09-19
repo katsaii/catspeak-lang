@@ -280,7 +280,44 @@ let binary = `+`(0.1, 0.9)
 
 ## Assignment Expressions
 
-TODO
+Assignment expressions are made up of two sub-expressions separated by
+the `=` symbol. The value of the right-hand-side expression will be
+assigned to the memory location pointed to by the left-hand-side
+expression.
+
+NOTE: The value of an assignment expression will be the value assigned
+      to the variable on the left-hand-side of the expression:
+      ```
+      let a
+      let b = a = 1
+      print a == b -- outputs: true
+      ```
+
+### It Expressions
+
+Catspeak does not have reference types. Because of this, it cannot support
+typical incrementation operators such as `+=`. To solve this problem,
+Catspeak has an `it` keyword:
+```
+x = it + 1 -- behaves like x += 1 would in GML
+```
+The value of the `it` expression will be the value of the left-hand-side
+sub-expression of its containing assignment expression. So, in the above
+example, the value of `it` will be the value of the `x` variable.
+
+The nice thing about this syntax is it generalises to any expression or
+function call:
+```
+x = update(it)
+```
+This becomes noticable useful when handling [Accessor Expressions]:
+```
+arr.[0] = update(it)
+```
+instead of
+```
+arr.[0] = update(arr.[0])
+```
 
 ## Grouped Expressions
 
