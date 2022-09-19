@@ -140,6 +140,10 @@ function CatspeakLexer(buff) constructor {
             return next();
         }
         var byte = advance();
+        if (byte == 0) {
+            eof = true;
+            return CatspeakToken.EOF;
+        }
         var token = catspeak_byte_to_token(byte);
         var desc = catspeak_byte_to_ascii_desc(byte);
         if (byte == ord("\"") || byte == ord("@") && peek(1) == ord("\"")) {

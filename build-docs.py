@@ -243,7 +243,7 @@ def simple_syntax_higlight_types(s):
             else:
                 item_ = "<span class=\"name\">" + item + "</span>"
                 if item.strip().lower().startswith("catspeak"):
-                    item_ = "<a href=\"#{}\">{}</a>".format(item, item_)
+                    item_ = "<a href=\"#{}\">{}</a>".format(item.lower(), item_)
                 out += item_
         else:
             out += item

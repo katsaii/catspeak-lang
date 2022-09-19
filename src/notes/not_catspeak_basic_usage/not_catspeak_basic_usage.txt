@@ -80,7 +80,21 @@ NOTE: The `LDC` instruction on line 3 has been shortened with `...`.
 
 ## Compiling From a Buffer
 
-TODO
+Compiling a buffer works similarly to [Compiling From a String], except you
+use the [catspeak_compile_buffer] function:
+```
+catspeak_compile_buffer(buff).andThen(function(code) {
+    show_message(code.disassembly());
+});
+```
+
+Different from the [catspeak_compile_string] function, the buffer version
+accepts an additional parameter, that if set to `true` will automatically
+delete the buffer once the compiler process ends so you don't have to. By
+default, this is set to `false`.
+
+NOTE: The seek of this buffer will not be reset to the start, this is
+      something you must maintain yourself.
 
 # Executing Programs
 

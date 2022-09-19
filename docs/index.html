@@ -513,7 +513,21 @@ your programs is much faster.</div>
     <em>NOTE</em>: The <b class="control">`</b><code>LDC</code><b class="control">`</b> instruction on line 3 has been shortened with <b class="control">`</b><code>...</code><b class="control">`</b>.</div>
 <span id=compiling_from_a_buffer>    <b>Compiling From A Buffer</b> (<a href="#compiling_from_a_buffer">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Compiling a buffer works similarly to <span class="control">[</span><a href="#compiling_from_a_string">Compiling From a String</a><span class="control">]</span>, except you
+    use the <span class="control">[</span><a href="#catspeak_compile_buffer">catspeak_compile_buffer</a><span class="control">]</span> function:
+    <b class="control">```</b><code>
+    catspeak_compile_buffer(buff).andThen(function(code) {
+        show_message(code.disassembly());
+    });
+    </code><b class="control">```</b>
+    
+    Different from the <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function, the buffer version
+    accepts an additional parameter, that if set to <b class="control">`</b><code>true</code><b class="control">`</b> will automatically
+    delete the buffer once the compiler process ends so you don&#39;t have to. By
+    default, this is set to <b class="control">`</b><code>false</code><b class="control">`</b>.
+    
+    <em>NOTE</em>: The seek of this buffer will not be reset to the start, this is
+          something you must maintain yourself.</div>
 <span id=executing_programs>  <b>Executing Programs</b> (<a href="#executing_programs">link</a>) .txt
   ==============================================================================</span>
 <div>  TODO</div>
@@ -1092,14 +1106,14 @@ macros, and structs.</div>
 <div>    Creates a new Catspeak runtime process for this Catspeak function. This
     function is also compatible with GML functions.
     
-    <span class="control">@</span><b>param</b> <code>scr</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function </b></a>|<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword"> Struct</b></a>.<a href="#CatspeakFunction"><span class="name">CatspeakFunction</span></a></i>
+    <span class="control">@</span><b>param</b> <code>scr</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function </b></a>|<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword"> Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i>
       The GML or Catspeak function to execute.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>args</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
       The array of arguments to pass to the function call. Defaults to the
       empty array.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakVMProcess "><span class="name">CatspeakVMProcess </span></a>|<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword"> Struct</b></a>.<a href="#CatspeakGMLProcess"><span class="name">CatspeakGMLProcess</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakvmprocess "><span class="name">CatspeakVMProcess </span></a>|<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword"> Struct</b></a>.<a href="#catspeakgmlprocess"><span class="name">CatspeakGMLProcess</span></a></i></div>
 <span id=catspeak_compile_buffer>    <b><span class="keyword">function </span><span class="name">catspeak_compile_buffer</span></b> (<a href="#catspeak_compile_buffer">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Creates a new Catspeak compiler process for a buffer containing Catspeak
@@ -1117,7 +1131,7 @@ macros, and structs.</div>
       Whether the buffer should be deleted after the compiler process is
       complete. Defaults to <b class="control">`</b><code>false</code><b class="control">`</b>.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakCompilerProcess"><span class="name">CatspeakCompilerProcess</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakcompilerprocess"><span class="name">CatspeakCompilerProcess</span></a></i></div>
 <span id=catspeak_compile_string>    <b><span class="keyword">function </span><span class="name">catspeak_compile_string</span></b> (<a href="#catspeak_compile_string">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Creates a new Catspeak compiler process for a string containing Catspeak
@@ -1128,7 +1142,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>src</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The value containing the source code to compile.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakCompilerProcess"><span class="name">CatspeakCompilerProcess</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakcompilerprocess"><span class="name">CatspeakCompilerProcess</span></a></i></div>
 <span id=catspeak_create_buffer_from_string>    <b><span class="keyword">function </span><span class="name">catspeak_create_buffer_from_string</span></b> (<a href="#catspeak_create_buffer_from_string">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    A helper function for creating a buffer from a string.
@@ -1269,13 +1283,13 @@ macros, and structs.</div>
       --------------------------------------------------------------------------</span>
 <div>      Creates an exact copy of this source location and returns it.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i></div>
 <span id=reflect>      <b><span class="keyword">method </span><span class="name">reflect</span></b> (<a href="#reflect">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Copies values from this location to a new <span class="control">[</span><a href="#catspeaklocation">CatspeakLocation</a><span class="control">]</span> without
       creating a new instance.
       
-      <span class="control">@</span><b>param</b> <code>source</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <code>source</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The target location to sample from.</div>
 <span id=tostring>      <b><span class="keyword">method </span><span class="name">toString</span></b> (<a href="#tostring">link</a>) .gml
       --------------------------------------------------------------------------</span>
@@ -1292,7 +1306,7 @@ macros, and structs.</div>
 <div>    Represents an error raised by the Catspeak runtime. Follows a similar
     structure to the built-in error struct.
     
-    <span class="control">@</span><b>param</b> <code>location</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+    <span class="control">@</span><b>param</b> <code>location</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
       The location where this error occurred.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>message</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
@@ -1314,7 +1328,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>condition</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
       The condition to check. Use <b class="control">`</b><code>false</code><b class="control">`</b> to raise an exception.
     
-    <span class="control">@</span><b>param</b> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+    <span class="control">@</span><b>param</b> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
       The location where this error occurred.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>message</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
@@ -1333,7 +1347,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>self_</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
         The &quot;self&quot; scope to use when calling this function.
       
-      <span class="control">@</span><b>param</b> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakFunction"><span class="name">CatspeakFunction</span></a></i>
+      <span class="control">@</span><b>param</b> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i>
         The Catspeak IR to execute. The VM is pretty stupid, so if the code is
         not well-formed, there are likely to be runtime errors and misbehaviour.
       
@@ -1390,7 +1404,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
       The name to give this function, defaults to &quot;main&quot;.
     
-    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>parent</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakFunction"><span class="name">CatspeakFunction</span></a></i>
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>parent</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i>
       The function this new function was defined in. Inherits its global
       variables.</div>
 <span id=setglobal>      <b><span class="keyword">method </span><span class="name">setGlobal</span></b> (<a href="#setglobal">link</a>) .gml
@@ -1414,10 +1428,10 @@ macros, and structs.</div>
       --------------------------------------------------------------------------</span>
 <div>      Adds a Catspeak block to the end of this function.
       
-      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakBlock"><span class="name">CatspeakBlock</span></a></i>
+      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i>
         The Catspeak block to insert.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakBlock"><span class="name">CatspeakBlock</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i></div>
 <span id=emitfunction>      <b><span class="keyword">method </span><span class="name">emitFunction</span></b> (<a href="#emitfunction">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Creates a new sub-function and returns its reference.
@@ -1425,13 +1439,13 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
         The name of the sub-function.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakFunction"><span class="name">CatspeakFunction</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i></div>
 <span id=emitregister>      <b><span class="keyword">method </span><span class="name">emitRegister</span></b> (<a href="#emitregister">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Allocates space for a new Catspeak register. This just returns the
       id of the register, since there is no &quot;physical&quot; representation.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this register.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
@@ -1444,7 +1458,7 @@ macros, and structs.</div>
       avoid messing up CALLSPAN instruction optimisations, where arguments are
       expected to be adjacent.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this register.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
@@ -1510,7 +1524,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
         The name of the global to read.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
@@ -1524,7 +1538,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the value to write.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
@@ -1536,7 +1550,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the value to return.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
@@ -1550,7 +1564,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>dest</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the destination to move to.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.</div>
 <span id=emitclone>      <b><span class="keyword">method </span><span class="name">emitClone</span></b> (<a href="#emitclone">link</a>) .gml
       --------------------------------------------------------------------------</span>
@@ -1559,7 +1573,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the value to copy.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.</div>
 <span id=emitclonetemp>      <b><span class="keyword">method </span><span class="name">emitCloneTemp</span></b> (<a href="#emitclonetemp">link</a>) .gml
       --------------------------------------------------------------------------</span>
@@ -1570,20 +1584,20 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the value to copy.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.</div>
 <span id=emitjump>      <b><span class="keyword">method </span><span class="name">emitJump</span></b> (<a href="#emitjump">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Generates the code to jump to a new block of code.
       
-      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakBlock"><span class="name">CatspeakBlock</span></a></i>
+      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i>
         The block to jump to.</div>
 <span id=emitjumpfalse>      <b><span class="keyword">method </span><span class="name">emitJumpFalse</span></b> (<a href="#emitjumpfalse">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Generates the code to jump to a new block of code if a condition
       is false.
       
-      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakBlock"><span class="name">CatspeakBlock</span></a></i>
+      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i>
         The block to jump to.
       
       <span class="control">@</span><b>param</b> <code>condition</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
@@ -1600,7 +1614,7 @@ macros, and structs.</div>
         The array of registers or accessors containing the arguments to
         pass.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
@@ -1609,7 +1623,7 @@ macros, and structs.</div>
 <div>      Emits a new Catspeak intcode instruction for the current block.
       Returns the array containing the instruction information.
       
-      <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakIntcode"><span class="name">CatspeakIntcode</span></a></i>
+      <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i>
         The Catspeak intcode instruction to perform.
       
       <span class="control">@</span><b>param</b> <code>returnReg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
@@ -1626,7 +1640,7 @@ macros, and structs.</div>
 <div>      Emits a new Catspeak intcode instruction, hoisted into the
       initialisation block.
       
-      <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakIntcode"><span class="name">CatspeakIntcode</span></a></i>
+      <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i>
         The Catspeak intcode instruction to perform.
       
       <span class="control">@</span><b>param</b> <code>returnReg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
@@ -1647,7 +1661,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>accessor</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor to get the value of.
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
@@ -1663,7 +1677,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor to assign to the accessor 
       
-      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
@@ -1688,7 +1702,7 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
         The instruction to modify.
       
-      <span class="control">@</span><b>param</b> <code>code</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakIntcode"><span class="name">CatspeakIntcode</span></a></i>
+      <span class="control">@</span><b>param</b> <code>code</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i>
         The opcode to replace the current opcode with.</div>
 <span id=patchinst>      <b><span class="keyword">method </span><span class="name">patchInst</span></b> (<a href="#patchinst">link</a>) .gml
       --------------------------------------------------------------------------</span>
@@ -1733,7 +1747,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The name to give this block, leave blank for no name.
     
-    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocation"><span class="name">CatspeakLocation</span></a></i>
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
       The debug info for this block.</div>
 <span id=catspeakaccessor>    <b><span class="keyword">struct </span><span class="name">CatspeakAccessor</span></b> (<a href="#catspeakaccessor">link</a>) .gml
     ----------------------------------------------------------------------------</span>
@@ -1763,7 +1777,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
       The register to read from once.
     
-    <span class="control">@</span><b>param</b> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakFunction"><span class="name">CatspeakFunction</span></a></i>
+    <span class="control">@</span><b>param</b> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i>
       The IR function associated with this register.</div>
 <span id=scr_catspeak_intcode>  <b><span class="name-script">scr_catspeak_intcode</span></b> (<a href="#scr_catspeak_intcode">link</a>) .gml
   ==============================================================================</span>
@@ -1776,7 +1790,7 @@ macros, and structs.</div>
 <div>    Gets the name for a value of <span class="control">[</span><a href="#catspeakintcode">CatspeakIntcode</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>&lt;unknown&gt;</code><b class="control">`</b> if the value is unexpected.
     
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakIntcode"><span class="name">CatspeakIntcode</span></a></i>
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i>
       The value of <span class="control">[</span><a href="#catspeakintcode">CatspeakIntcode</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i></div>
@@ -1788,13 +1802,13 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>str</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The string to parse.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakIntcode"><span class="name">CatspeakIntcode</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i></div>
 <span id=catspeak_intcode_valueof>    <b><span class="keyword">function </span><span class="name">catspeak_intcode_valueof</span></b> (<a href="#catspeak_intcode_valueof">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Returns the integer representation for a value of <span class="control">[</span><a href="#catspeakintcode">CatspeakIntcode</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>undefined</code><b class="control">`</b> if the value is unexpected.
     
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakIntcode"><span class="name">CatspeakIntcode</span></a></i>
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i>
       The value of <span class="control">[</span><a href="#catspeakintcode">CatspeakIntcode</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
@@ -1811,11 +1825,11 @@ macros, and structs.</div>
 <div>    Creates a new Catspeak compiler, responsible for converting a stream of
     <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span> into executable code.
     
-    <span class="control">@</span><b>param</b> <code>lexer</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLexer"><span class="name">CatspeakLexer</span></a></i>
+    <span class="control">@</span><b>param</b> <code>lexer</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklexer"><span class="name">CatspeakLexer</span></a></i>
       The iterator that yields tokens to be consumed by the compiler. Must
       be a struct with at least a <span class="control">[</span><a href="#next">next</a><span class="control">]</span> method on it.
     
-    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakFunction"><span class="name">CatspeakFunction</span></a></i>
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i>
       The Catspeak IR target to write code to, if left empty a new target is
       created. This can be accessed using the <b class="control">`</b><code>ir</code><b class="control">`</b> field on a compiler
       instance.</div>
@@ -1823,12 +1837,12 @@ macros, and structs.</div>
       --------------------------------------------------------------------------</span>
 <div>      Advances the parser and returns the current token.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
 <span id=matches>      <b><span class="keyword">method </span><span class="name">matches</span></b> (<a href="#matches">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Returns true if the current token matches this token kind.
       
-      <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+      <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
         The token kind to expect.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -1846,7 +1860,7 @@ macros, and structs.</div>
 <div>      Attempts to match against a token and advances the parser if there
       was a match. Returns whether the match was successful.
       
-      <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+      <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
         The token kind to expect.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -1871,7 +1885,7 @@ macros, and structs.</div>
 <div>      Throws a <span class="control">[</span><a href="#catspeakerror">CatspeakError</a><span class="control">]</span> if the current token is not the
       expected token. Advances the parser otherwise.
       
-      <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+      <span class="control">@</span><b>param</b> <code>kind</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
         The token kind to expect.
       
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>message</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
@@ -1963,10 +1977,10 @@ macros, and structs.</div>
       --------------------------------------------------------------------------</span>
 <div>      Pushes the loop onto the stack.
       
-      <span class="control">@</span><b>param</b> <code>breakBlock</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakBlock"><span class="name">CatspeakBlock</span></a></i>
+      <span class="control">@</span><b>param</b> <code>breakBlock</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i>
         The block to jump to if <b class="control">`</b><code>break</code><b class="control">`</b> is used.
       
-      <span class="control">@</span><b>param</b> <code>continueBlock</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakBlock"><span class="name">CatspeakBlock</span></a></i>
+      <span class="control">@</span><b>param</b> <code>continueBlock</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i>
         The block to jump to if <b class="control">`</b><code>continue</code><b class="control">`</b> is used.
       
       <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i></div>
@@ -1993,7 +2007,7 @@ macros, and structs.</div>
     ----------------------------------------------------------------------------</span>
 <div>    Represents a lexically scoped block of code in the compiler.
     
-    <span class="control">@</span><b>param</b> <code>parent</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakLocalScope"><span class="name">CatspeakLocalScope</span></a></i>
+    <span class="control">@</span><b>param</b> <code>parent</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocalscope"><span class="name">CatspeakLocalScope</span></a></i>
       The parent scope to inherit.
     
     <span class="control">@</span><b>param</b> <code>inherit</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
@@ -2002,7 +2016,7 @@ macros, and structs.</div>
     ----------------------------------------------------------------------------</span>
 <div>    An accessor for global variable accessor expressions.
     
-    <span class="control">@</span><b>param</b> <code>compiler</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakCompiler"><span class="name">CatspeakCompiler</span></a></i>
+    <span class="control">@</span><b>param</b> <code>compiler</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakcompiler"><span class="name">CatspeakCompiler</span></a></i>
       The Catspeak compiler which generated this accessor.
     
     <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
@@ -2011,7 +2025,7 @@ macros, and structs.</div>
     ----------------------------------------------------------------------------</span>
 <div>    An accessor for array and object access expressions.
     
-    <span class="control">@</span><b>param</b> <code>compiler</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#CatspeakCompiler"><span class="name">CatspeakCompiler</span></a></i>
+    <span class="control">@</span><b>param</b> <code>compiler</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakcompiler"><span class="name">CatspeakCompiler</span></a></i>
       The Catspeak compiler which generated this accessor.
     
     <span class="control">@</span><b>param</b> <code>collection</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
@@ -2061,7 +2075,7 @@ macros, and structs.</div>
 <div>      @desc Advances the lexer whilst a bytes contain some expected ASCII
       descriptor, or until the end of the file is reached.
       
-      <span class="control">@</span><b>param</b> <code>desc</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakASCIIDesc"><span class="name">CatspeakASCIIDesc</span></a></i>
+      <span class="control">@</span><b>param</b> <code>desc</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
         The descriptor to check for.
       
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>condition</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
@@ -2075,18 +2089,18 @@ macros, and structs.</div>
       additional whitespace and control tokens, like: line breaks <b class="control">`</b><code>;</code><b class="control">`</b>, line
       continuations <b class="control">`</b><code>...</code><b class="control">`</b>, and comments <b class="control">`</b><code>--</code><b class="control">`</b>.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
 <span id=next>      <b><span class="keyword">method </span><span class="name">next</span></b> (<a href="#next">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Advances the lexer and returns the next <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span>, ingoring
       any comments, whitespace, and line continuations.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
 <span id=catspeak_token_is_operator>    <b><span class="keyword">function </span><span class="name">catspeak_token_is_operator</span></b> (<a href="#catspeak_token_is_operator">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Returns whether a Catspeak token is a valid operator.
     
-    <span class="control">@</span><b>param</b> <code>token</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+    <span class="control">@</span><b>param</b> <code>token</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
       The ID of the token to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -2094,7 +2108,7 @@ macros, and structs.</div>
     ----------------------------------------------------------------------------</span>
 <div>    Returns whether a Catspeak token can start a new expression.
     
-    <span class="control">@</span><b>param</b> <code>token</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+    <span class="control">@</span><b>param</b> <code>token</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
       The ID of the token to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -2103,7 +2117,7 @@ macros, and structs.</div>
 <div>    Returns whether a Catspeak token ignores any succeeding newline
     characters.
     
-    <span class="control">@</span><b>param</b> <code>token</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+    <span class="control">@</span><b>param</b> <code>token</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
       The ID of the token to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -2115,7 +2129,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>str</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
       The lexeme to look-up the keyword for.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
 <span id=catspeak_byte_to_token>    <b><span class="keyword">function </span><span class="name">catspeak_byte_to_token</span></b> (<a href="#catspeak_byte_to_token">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Converts an ASCII character into a Catspeak token. This is only an
@@ -2124,7 +2138,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>char</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
       The character to check.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
 <span id=catspeak_byte_to_ascii_desc>    <b><span class="keyword">function </span><span class="name">catspeak_byte_to_ascii_desc</span></b> (<a href="#catspeak_byte_to_ascii_desc">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Converts an ASCII character into a Catspeak character descriptor.
@@ -2132,7 +2146,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>char</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
       The character to check.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakASCIIDesc"><span class="name">CatspeakASCIIDesc</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i></div>
 <span id=scr_catspeak_token>  <b><span class="name-script">scr_catspeak_token</span></b> (<a href="#scr_catspeak_token">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span> enum.</div>
@@ -2144,7 +2158,7 @@ macros, and structs.</div>
 <div>    Gets the name for a value of <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>&lt;unknown&gt;</code><b class="control">`</b> if the value is unexpected.
     
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
       The value of <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i></div>
@@ -2156,13 +2170,13 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>str</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The string to parse.
     
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i></div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
 <span id=catspeak_token_valueof>    <b><span class="keyword">function </span><span class="name">catspeak_token_valueof</span></b> (<a href="#catspeak_token_valueof">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Returns the integer representation for a value of <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span>.
     Will return <b class="control">`</b><code>undefined</code><b class="control">`</b> if the value is unexpected.
     
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakToken"><span class="name">CatspeakToken</span></a></i>
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i>
       The value of <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span> to convert.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
@@ -2185,7 +2199,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The value to check for flags of, must be a numeric value.
     
-    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakASCIIDesc"><span class="name">CatspeakASCIIDesc</span></a></i>
+    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
       The flags of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -2197,7 +2211,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The value to check for flags of, must be a numeric value.
     
-    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakASCIIDesc"><span class="name">CatspeakASCIIDesc</span></a></i>
+    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
       The flags of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -2209,7 +2223,7 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The value to check for flags of, must be a numeric value.
     
-    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakASCIIDesc"><span class="name">CatspeakASCIIDesc</span></a></i>
+    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
       The flags of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
@@ -2218,7 +2232,7 @@ macros, and structs.</div>
 <div>    Gets the name for an instance of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span>.
     Will return the empty string if the value is unexpected.
     
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#CatspeakASCIIDesc"><span class="name">CatspeakASCIIDesc</span></a></i>
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
       The value of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to convert, must be a numeric value.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i></div>
