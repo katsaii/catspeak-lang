@@ -98,11 +98,39 @@ NOTE: The seek of this buffer will not be reset to the start, this is
 
 # Executing Programs
 
-TODO
+The second step to running your Catspeak programs is to interpret the
+compiled code. This can be done using the `catspeak_execute` function.
+Following on from the example shown in [Compiling From a String], the
+function contained in the `code` variable can be interpreted like so:
+```
+catspeak_execute(code).andThen(function(result) {
+    show_message(result);
+});
+```
+This will spawn a new [CatspeakVMProcess] which goes through the process of
+interpreting the compiled code. Once the program has finished running, the
+callback to the [andThen] method is called with the result of the program. In
+this example, the result was the string `"blast off!"`, so a pop-up window
+with the message "blast off!" will be shown.
+
+If everything went to plan, you should have just compiled and executed your
+first Catspeak program!
+
+NOTE: If you do not care about the result of the call, you can just leave the
+      [andThen] method blank.
 
 ## Global Variables
 
-TODO
+Before you use the [catspeak_execute] function to interpret your programs,
+you can get and set global variables using the [getGlobal] and [setGlobal]
+methods on [CatspeakFunction].
+
+NOTE: If you want to call a script from Catspeak, you must use `method` to
+      turn the script into a method struct beforehand, otherwise the
+      interpreter will not see the script as a valid function reference:
+      ```
+      code.setGlobal("alert", method(, show_message));
+      ```
 
 # Configuring Programs
 

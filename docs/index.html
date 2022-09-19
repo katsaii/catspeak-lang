@@ -530,10 +530,38 @@ your programs is much faster.</div>
           something you must maintain yourself.</div>
 <span id=executing_programs>  <b>Executing Programs</b> (<a href="#executing_programs">link</a>) .txt
   ==============================================================================</span>
-<div>  TODO</div>
+<div>  The second step to running your Catspeak programs is to interpret the
+  compiled code. This can be done using the <b class="control">`</b><code>catspeak_execute</code><b class="control">`</b> function.
+  Following on from the example shown in <span class="control">[</span><a href="#compiling_from_a_string">Compiling From a String</a><span class="control">]</span>, the
+  function contained in the <b class="control">`</b><code>code</code><b class="control">`</b> variable can be interpreted like so:
+  <b class="control">```</b><code>
+  catspeak_execute(code).andThen(function(result) {
+      show_message(result);
+  });
+  </code><b class="control">```</b>
+  This will spawn a new <span class="control">[</span><a href="#catspeakvmprocess">CatspeakVMProcess</a><span class="control">]</span> which goes through the process of
+  interpreting the compiled code. Once the program has finished running, the
+  callback to the <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method is called with the result of the program. In
+  this example, the result was the string <b class="control">`</b><code>&quot;blast off!&quot;</code><b class="control">`</b>, so a pop-up window
+  with the message &quot;blast off!&quot; will be shown.
+  
+  If everything went to plan, you should have just compiled and executed your
+  first Catspeak program!
+  
+  <em>NOTE</em>: If you do not care about the result of the call, you can just leave the
+        <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method blank.</div>
 <span id=global_variables>    <b>Global Variables</b> (<a href="#global_variables">link</a>) .txt
     ----------------------------------------------------------------------------</span>
-<div>    TODO</div>
+<div>    Before you use the <span class="control">[</span><a href="#catspeak_execute">catspeak_execute</a><span class="control">]</span> function to interpret your programs,
+    you can get and set global variables using the <span class="control">[</span><a href="#getglobal">getGlobal</a><span class="control">]</span> and <span class="control">[</span><a href="#setglobal">setGlobal</a><span class="control">]</span>
+    methods on <span class="control">[</span><a href="#catspeakfunction">CatspeakFunction</a><span class="control">]</span>.
+    
+    <em>NOTE</em>: If you want to call a script from Catspeak, you must use <b class="control">`</b><code>method</code><b class="control">`</b> to
+          turn the script into a method struct beforehand, otherwise the
+          interpreter will not see the script as a valid function reference:
+          <b class="control">```</b><code>
+          code.setGlobal(&quot;alert&quot;, method(, show_message));
+          </code><b class="control">```</b></div>
 <span id=configuring_programs>  <b>Configuring Programs</b> (<a href="#configuring_programs">link</a>) .txt
   ==============================================================================</span>
 <div>  TODO</div>
