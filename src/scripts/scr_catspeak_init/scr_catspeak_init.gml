@@ -61,8 +61,8 @@ function __catspeak_init_process() {
             var duration = frameAllocation * idealTime / dtRatioCache;
             var timeLimit = get_timer() + min(idealTime, duration);
             var processes_ = processes;
-            var processCount = ds_list_size(processes_);
             var processIdx = 0;
+            var processCount = ds_list_size(processes_);
             var exceptionHandler_ = exceptionHandler;
             // TODO :: add a method of detecting whether a process has
             //         become unresponsive
@@ -77,6 +77,7 @@ function __catspeak_init_process() {
                 var process = processes_[| processIdx];
                 var catchFun = process.callbackCatch ?? exceptionHandler_;
                 var terminate = false;
+                var errorOccurred = false;
                 if (process.isBusy()) {
                     if (catchFun == undefined) {
                         // helps preserve the throw origin in the debugger
@@ -87,19 +88,21 @@ function __catspeak_init_process() {
                         } catch (e) {
                             catchFun(e);
                             terminate = true;
+                            errorOccurred = true;
                         }
                     }
                 } else {
                     terminate = true;
                 }
                 if (terminate) {
-                    processCount -= 1;
                     ds_list_delete(processes_, processIdx);
                     process.used = false;
                     // TODO :: pool processes to avoid constant allocation
-                    var resultFun = process.callback;
-                    if (resultFun != undefined) {
-                        resultFun(process.result());
+                    if (!errorOccurred) {
+                        var resultFun = process.callback;
+                        if (resultFun != undefined) {
+                            resultFun(process.result());
+                        }
                     }
                 } else {
                     var tSpent = process.timeSpent;
@@ -114,6 +117,7 @@ function __catspeak_init_process() {
                         }
                     }
                 }
+                processCount = ds_list_size(processes_);
                 processIdx -= 1;
                 if (processIdx < 0) {
                     processIdx = processCount - 1;

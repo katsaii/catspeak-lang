@@ -135,3 +135,25 @@ function catspeak_config(configData) {
         processManager.processTimeLimit = processTimeLimit;
     }
 }
+
+/// EXPERIMENTAL
+function catspeak_prelude_add_function() {
+    catspeak_force_init();
+    var db = global.__catspeakDatabasePrelude;
+    for (var i = 0; i < argument_count; i += 2) {
+        var f = argument[i + 1];
+        if (!is_method(f)) {
+            f = method(undefined, f);
+        }
+        db[$ argument[i + 0]] = f;
+    }
+}
+
+/// EXPERIMENTAL
+function catspeak_prelude_add_constant() {
+    catspeak_force_init();
+    var db = global.__catspeakDatabasePrelude;
+    for (var i = 0; i < argument_count; i += 2) {
+        db[$ argument[i + 0]] = argument[i + 1];
+    }
+}
