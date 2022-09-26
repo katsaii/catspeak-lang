@@ -208,6 +208,9 @@ function __catspeak_builtin_print() {
 /// @ignore
 function __catspeak_builtin_verify_struct(collection) {
     gml_pragma("forceinline");
+    if (!is_struct(collection)) {
+        return;
+    }
     if (string_pos("Catspeak", instanceof(collection)) == 1) {
         throw new CatspeakError(undefined,
                 "self-modification is prohibited by Catspeak");

@@ -49,6 +49,18 @@ function CatspeakFunction(name, parent) constructor {
         globalRegisters[@ gReg] = value;
     };
 
+    /// Behaves similarly to [setGlobal], except if the value is not a method
+    /// it is converted into a method type.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to set.
+    ///
+    /// @param {Any} value
+    ///   The value to assign to this global variable.
+    static setGlobalFunction = function(name, value) {
+        setGlobal(name, is_method(value) ? value : method(undefined, value));
+    };
+
     /// Gets the value of a global variable with this name.
     ///
     /// @param {String} name
