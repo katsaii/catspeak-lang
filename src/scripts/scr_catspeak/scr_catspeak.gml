@@ -136,7 +136,18 @@ function catspeak_config(configData) {
     }
 }
 
-/// EXPERIMENTAL
+/// Permanently adds a new Catspeak function to the default standard library.
+///
+/// @param {String} name
+///   The name of the function to add.
+///
+/// @param {Function} f
+///   The function to add, will be converted into a method if a script ID
+///   is used.
+///
+/// @param {Any} ...
+///   The remaining key-value pairs to add, in the same pattern as the two
+///   previous arguments.
 function catspeak_prelude_add_function() {
     catspeak_force_init();
     var db = global.__catspeakDatabasePrelude;
@@ -149,7 +160,20 @@ function catspeak_prelude_add_function() {
     }
 }
 
-/// EXPERIMENTAL
+/// Permanently adds a new Catspeak constant to the default standard library.
+/// If you want to add a function, use the [catspeak_prelude_add_function]
+/// function instead because it makes sure your value will be callable from
+/// within Catspeak.
+///
+/// @param {String} name
+///   The name of the constant to add.
+///
+/// @param {Any} value
+///   The value to add.
+///
+/// @param {Any} ...
+///   The remaining key-value pairs to add, in the same pattern as the two
+///   previous arguments.
 function catspeak_prelude_add_constant() {
     catspeak_force_init();
     var db = global.__catspeakDatabasePrelude;
