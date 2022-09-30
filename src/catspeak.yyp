@@ -4,7 +4,6 @@
     {"id":{"name":"scr_catspeak_alloc","path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},"order":7,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_error","path":"scripts/scr_catspeak_error/scr_catspeak_error.yy",},"order":3,},
-    {"id":{"name":"scr_catspeak_sandbox","path":"scripts/scr_catspeak_sandbox/scr_catspeak_sandbox.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_compatibility","path":"scripts/scr_catspeak_compatibility/scr_catspeak_compatibility.yy",},"order":1,},
     {"id":{"name":"not_catspeak_syntax","path":"notes/not_catspeak_syntax/not_catspeak_syntax.yy",},"order":4,},
     {"id":{"name":"obj_catspeak_bench","path":"objects/obj_catspeak_bench/obj_catspeak_bench.yy",},"order":0,},
@@ -24,7 +23,6 @@
     {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},"order":5,},
     {"id":{"name":"not_catspeak_configuration","path":"notes/not_catspeak_configuration/not_catspeak_configuration.yy",},"order":7,},
-    {"id":{"name":"scr_catspeak_bitstack","path":"scripts/scr_catspeak_bitstack/scr_catspeak_bitstack.yy",},"order":6,},
     {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":2,},
   ],
   "Options": [
