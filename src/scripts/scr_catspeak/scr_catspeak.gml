@@ -3,6 +3,26 @@
 
 //# feather use syntax-errors
 
+// EXPERIMENTAL
+function catspeak(arg) {
+    var kwargs = is_struct(arg) ? arg : { };
+    var src = kwargs[$ "src"] ?? arg;
+    var consume = is_string(src) || (kwargs[$ "consumeBuffer"] ?? false);
+    var functions = kwargs[$ "functions"] ?? { };
+    var constants = kwargs[$ "constants"] ?? { };
+}
+
+//catspeak({
+//    src : "hi",
+//    consumeBuffer : true,
+//    functions : { },
+//    constants : { }
+//}).andThen(function(result) {
+//    
+//}).catchError(function(e) {
+//    
+//}).withTimeLimit(10);
+
 /// Creates a new Catspeak runtime process for this Catspeak function. This
 /// function is also compatible with GML functions.
 ///
