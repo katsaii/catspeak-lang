@@ -4,13 +4,36 @@
 //# feather use syntax-errors
 
 // EXPERIMENTAL
-function catspeak(arg) {
-    var kwargs = is_struct(arg) ? arg : { };
-    var src = kwargs[$ "src"] ?? arg;
-    var consume = is_string(src) || (kwargs[$ "consumeBuffer"] ?? false);
-    var functions = kwargs[$ "functions"] ?? { };
-    var constants = kwargs[$ "constants"] ?? { };
+function catspeak_compile_and_execute(src, options={ }) {
+    if (!is_struct(options)) {
+        options = { };
+        options.args = options;
+    }
+    var process;
+    if (is_string(src)) {
+        process = catspeak_compile_string(src);
+    } else {
+        process = catspeak_compile_buffer(src, options[$ "cleanup"] ?? false);
+    }
+    process.andThen(method(process, function(ir) {
+        catspeak_execute(ir)
+                .andThen(callback2)
+                .catchError(callbackCatch)
+                .withTimeLimit(timeLimit);
+    }));
+    process.andThen = method(process, function(callback) {
+        callback2 = callback;
+    });
+    return process;
 }
+
+catspeak_execute(ir, [], function(result, err) {
+    
+});
+
+catspeak_compile_string("hi", function(result, err) {
+    
+});
 
 //catspeak({
 //    src : "hi",

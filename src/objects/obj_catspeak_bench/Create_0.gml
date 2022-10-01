@@ -12,6 +12,10 @@ catspeak_compile_string(@'
     clipboard_set_text(ir.disassembly())
 });
 
+catspeak("1 + 2 + 3 + 4").andThen(function(result) {
+    show_message("hi" + string(result));
+});
+
 /*show_debug_overlay(true);
 
 
