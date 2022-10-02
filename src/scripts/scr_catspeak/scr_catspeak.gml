@@ -3,48 +3,14 @@
 
 //# feather use syntax-errors
 
-// EXPERIMENTAL
-function catspeak_compile_and_execute(src, options={ }) {
-    if (!is_struct(options)) {
-        options = { };
-        options.args = options;
-    }
-    var process;
-    if (is_string(src)) {
-        process = catspeak_compile_string(src);
-    } else {
-        process = catspeak_compile_buffer(src, options[$ "cleanup"] ?? false);
-    }
-    process.andThen(method(process, function(ir) {
-        catspeak_execute(ir)
-                .andThen(callback2)
-                .catchError(callbackCatch)
-                .withTimeLimit(timeLimit);
-    }));
-    process.andThen = method(process, function(callback) {
-        callback2 = callback;
-    });
-    return process;
-}
-
-catspeak_execute(ir, [], function(result, err) {
-    
-});
-
-catspeak_compile_string("hi", function(result, err) {
-    
-});
-
-//catspeak({
-//    src : "hi",
-//    consumeBuffer : true,
-//    functions : { },
-//    constants : { }
-//}).andThen(function(result) {
-//    
-//}).catchError(function(e) {
-//    
-//}).withTimeLimit(10);
+// huh?
+catspeak_compile_string("hi").andThen(function(ir) {
+    return catspeak_execute(ir, []);
+}).andThen(function(result) {
+    show_message(result);
+}).catchError(function(err) {
+    show_message("oh no");
+}).withTimeLimit(10);
 
 /// Creates a new Catspeak runtime process for this Catspeak function. This
 /// function is also compatible with GML functions.
