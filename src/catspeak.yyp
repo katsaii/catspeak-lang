@@ -18,6 +18,7 @@
     {"id":{"name":"scr_catspeak_process","path":"scripts/scr_catspeak_process/scr_catspeak_process.yy",},"order":9,},
     {"id":{"name":"not_catspeak_installation","path":"notes/not_catspeak_installation/not_catspeak_installation.yy",},"order":3,},
     {"id":{"name":"not_catspeak_disclaimer","path":"notes/not_catspeak_disclaimer/not_catspeak_disclaimer.yy",},"order":5,},
+    {"id":{"name":"scr_catspeak_futures","path":"scripts/scr_catspeak_futures/scr_catspeak_futures.yy",},"order":11,},
     {"id":{"name":"not_catspeak_features","path":"notes/not_catspeak_features/not_catspeak_features.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},
