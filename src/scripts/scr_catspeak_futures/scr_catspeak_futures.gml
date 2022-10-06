@@ -7,36 +7,41 @@ function catspeak_futures_join(futures) {
     // TODO
 }
 
-/// Constructs a new Catspeak process. It accepts a single parameter; a
-/// struct containing the following fields:
-///
-///  - "update" should be a function which performs the necessary operations
-///    to progress the process. This should not attempt to perform all of the
-///    tasks in a single go, otherwise you risk freezing the game. This
-///    function should return `true` if the process is complete, or any other
-///    value otherwise.
-///
-///  - "getResult" should be a function which returns the final result of the
-///    process.
+/// Constructs a new Catspeak process.
 ///
 /// @param {Function} resolver
 ///   A function which performs the necessary operations to progress the state
-///   of this future. It accepts two parameters: the first parameter is the
-///   `success` callback; the second is the `reject` callback. It will be called repetitively until either 
-function CatspeakFuture(methods) constructor {
-    var manager = global.__catspeakProcessManager;
-    self.methods = methods;
-    self.callbacks = [];
+///   of this future. It accepts a single function as a parameter. Call this
+///   function with the result of the future to complete the computation.
+function CatspeakFuture(resolver) constructor {
+    self.resolver = resolver;
+    self.resolved = false;
+    self.result = undefined;
+    self.thenHandler = undefined;
     self.catchHandler = undefined;
     self.timeSpent = 0;
-    self.timeLimit = manager.processTimeLimit;
+    self.timeLimit = 0;
+    self.resolveFunc = function(result_) {
+        resolved = true;
+        result = result_;
+        if (thenHandler != undefined) {
+            thenHandler(result);
+        }
+    };
 
     // invoke the process
+    var manager = global.__catspeakProcessManager;
+    timeLimit = manager.processTimeLimit;
     ds_list_add(manager.processes, self);
     if (manager.inactive) {
         manager.inactive = false;
         time_source_start(manager.timeSource);
     }
+
+    /// Updates this Catspeak future by calling its resolver once.
+    static update = function() {
+        resolver(resolveFunc);
+    };
 
     /// Sets the time limit for this process, overrides the default time limit
     /// defined using [catspeak_config].
@@ -59,7 +64,7 @@ function CatspeakFuture(methods) constructor {
     ///
     /// @return {Struct.CatspeakFuture}
     static andThen = function(callback) {
-        self.catchHandler = callback;
+        self.callbacks = callback;
         return self;
     };
 
