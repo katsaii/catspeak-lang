@@ -3,10 +3,6 @@
 
 //# feather use syntax-errors
 
-function catspeak_futures_join(futures) {
-    // TODO
-}
-
 /// The different progress states of a Catspeak future.
 enum CatspeakFutureState {
     UNRESOLVED,
