@@ -93,9 +93,8 @@ function CatspeakFuture() constructor {
         }
         state = CatspeakFutureState.RESOLVED;
         result = value;
-    }
+    };
 }
-
 /*
 /// Constructs a new Catspeak process.
 ///
@@ -103,21 +102,11 @@ function CatspeakFuture() constructor {
 ///   A function which performs the necessary operations to progress the state
 ///   of this future. It accepts a single function as a parameter. Call this
 ///   function with the result of the future to complete the computation.
-function CatspeakFuture(resolver) constructor {
+function CatspeakProcess(resolver) : CatspeakFuture() constructor {
     self.resolver = resolver;
-    self.resolved = false;
-    self.result = undefined;
-    self.thenHandler = undefined;
-    self.catchHandler = undefined;
     self.timeSpent = 0;
     self.timeLimit = 0;
-    self.resolveFunc = function(result_) {
-        resolved = true;
-        result = result_;
-        if (thenHandler != undefined) {
-            thenHandler(result);
-        }
-    };
+    self.acceptFunc = function(result_) { accept(result_) };
 
     // invoke the process
     var manager = global.__catspeakProcessManager;
@@ -128,13 +117,19 @@ function CatspeakFuture(resolver) constructor {
         time_source_start(manager.timeSource);
     }
 
-    /// Updates this Catspeak future by calling its resolver once.
+    /// Updates this Catspeak process by calling its resolver once.
     static update = function() {
-        resolver(resolveFunc);
+        try {
+            resolver(acceptFunc);
+        } catch (ex) {
+            reject(ex);
+        }
     };
 
     /// Sets the time limit for this process, overrides the default time limit
     /// defined using [catspeak_config].
+    ///
+    /// @deprecated
     ///
     /// @param {Real} t
     ///   The time limit (in seconds) the process is allowed to run for before
@@ -144,29 +139,6 @@ function CatspeakFuture(resolver) constructor {
     /// @return {Struct.CatspeakFuture}
     static withTimeLimit = function(t) {
         timeLimit = t;
-        return self;
-    };
-
-    /// Sets the callback function to invoke once the process is complete.
-    ///
-    /// @param {Function} callback
-    ///   The function to invoke.
-    ///
-    /// @return {Struct.CatspeakFuture}
-    static andThen = function(callback) {
-        self.callbacks = callback;
-        return self;
-    };
-
-    /// Sets the callback function to invoke if an error occurrs whilst the
-    /// process is running.
-    ///
-    /// @param {Function} callback
-    ///   The function to invoke.
-    ///
-    /// @return {Struct.CatspeakFuture}
-    static andCatch = function(callback) {
-        self.catchHandler = callback;
         return self;
     };
 }
