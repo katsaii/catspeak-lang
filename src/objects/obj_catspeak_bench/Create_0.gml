@@ -12,9 +12,16 @@ catspeak_compile_string(@'
     clipboard_set_text(ir.disassembly())
 });
 
-catspeak("1 + 2 + 3 + 4").andThen(function(result) {
-    show_message("hi" + string(result));
+var future = new CatspeakFuture();
+future.andThen(function(a) {
+    show_message("hi");
+    show_message(a);
+}).andThen(function() {
+    show_message("cool");
+    show_message("wtf");
 });
+show_message("start!");
+future.accept("thing");
 
 /*show_debug_overlay(true);
 
