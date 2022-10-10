@@ -3,15 +3,6 @@
 
 //# feather use syntax-errors
 
-// huh?
-catspeak_compile_string("hi").andThen(function(ir) {
-    return catspeak_execute(ir, []);
-}).andThen(function(result) {
-    show_message(result);
-}).catchError(function(err) {
-    show_message("oh no");
-}).withTimeLimit(10);
-
 /// Creates a new Catspeak runtime process for this Catspeak function. This
 /// function is also compatible with GML functions.
 ///

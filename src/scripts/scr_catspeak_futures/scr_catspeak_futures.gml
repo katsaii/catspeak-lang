@@ -22,31 +22,17 @@ function CatspeakFuture() constructor {
     /// @param {Any} [value]
     ///   The value to reject.
     static accept = function(value) {
-        if (state == CatspeakFutureState.UNRESOLVED) {
-            var callbacks = thenCallbacks;
-            for (var i = array_length(callbacks) - 1; i >= 0; i -= 1) {
-                var callback = callbacks[i];
-                callback(value);
-            }
-        }
-        state = CatspeakFutureState.RESOLVED;
+        __handleEvents(value, thenCallbacks);
         result = value;
-    }
+    };
 
     /// Rejects this future with the supplied argument.
     ///
     /// @param {Any} [value]
     ///   The value to reject.
     static reject = function(value) {
-        if (state == CatspeakFutureState.UNRESOLVED) {
-            var callbacks = catchCallbacks;
-            for (var i = array_length(callbacks) - 1; i >= 0; i -= 1) {
-                var callback = callbacks[i];
-                callback(value);
-            }
-        }
-        state = CatspeakFutureState.RESOLVED;
-    }
+        __handleEvents(value, catchCallbacks);
+    };
 
     /// Sets the callback function to invoke once the process is complete.
     ///
@@ -55,18 +41,7 @@ function CatspeakFuture() constructor {
     ///
     /// @return {Struct.CatspeakFuture}
     static andThen = function(callback) {
-        var newFuture;
-        if (state == CatspeakFutureState.UNRESOLVED) {
-            array_push(thenCallbacks, callback);
-            // TODO
-        } else {
-            // evaluate immediately
-            newFuture = callback(result);
-        }
-        if (newFuture == undefined) {
-            newFuture = new CatspeakFuture();
-            newFuture.accept();
-        }
+        return __addEvent(thenCallbacks, callback);
     };
 
     /// Sets the callback function to invoke if an error occurrs whilst the
@@ -77,24 +52,51 @@ function CatspeakFuture() constructor {
     ///
     /// @return {Struct.CatspeakFuture}
     static andCatch = function(callback) {
+        return __addEvent(catchCallbacks, callback);
+    };
+
+    /// @ignore
+    static __addEvent = function(callbacks, callback) {
+        var newFuture;
         if (state == CatspeakFutureState.UNRESOLVED) {
-            array_push(catchCallbacks, callback);
-            // TODO
+            newFuture = new CatspeakFuture();
+            array_push(callbacks, callback, newFuture);
         } else {
             // evaluate immediately
-            var newFuture = callback(result);
-            if (newFuture == undefined) {
-                newFuture = new CatspeakFuture();
-                newFuture.accept();
-            }
+            newFuture = callback(result);
         }
         if (newFuture == undefined) {
             newFuture = new CatspeakFuture();
             newFuture.accept();
         }
+        return newFuture;
     };
+
+    /// @ignore
+    static __handleEvents = function(value, callbacks) {
+        if (state == CatspeakFutureState.UNRESOLVED) {
+            var count = array_length(callbacks);
+            for (var i = 0; i < count; i += 2) {
+                var callback = callbacks[i];
+                var future = callbacks[i + 1];
+                var result = callback(value);
+                if (result == undefined) {
+                    future.accept();
+                } else {
+                    result.andThen(method({
+                        future : future,
+                    }, function(value) {
+                        future.accept(value);
+                    }));
+                }
+            }
+        }
+        state = CatspeakFutureState.RESOLVED;
+        result = value;
+    }
 }
 
+/*
 /// Constructs a new Catspeak process.
 ///
 /// @param {Function} resolver
@@ -168,3 +170,4 @@ function CatspeakFuture(resolver) constructor {
         return self;
     };
 }
+*/
