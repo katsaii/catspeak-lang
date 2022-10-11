@@ -13,6 +13,7 @@ enum CatspeakFutureState {
 /// depending on whether the future was accepted or rejected.
 function CatspeakFuture() constructor {
     self.state = CatspeakFutureState.UNRESOLVED;
+    self.timeLimit = -1;
     self.result = undefined;
     self.thenCallbacks = [];
     self.catchCallbacks = [];
@@ -55,6 +56,23 @@ function CatspeakFuture() constructor {
         return __addEvent(catchCallbacks, callback);
     };
 
+    /// Sets the time limit for this process, overrides the default time limit
+    /// defined using [catspeak_config].
+    ///
+    /// NOTE: This method exists on [CatspeakFuture] for polymorphism reasons.
+    ///       the time limit will only affect instances of [CatspeakProcess].
+    ///
+    /// @param {Real} t
+    ///   The time limit (in seconds) the process is allowed to run for before
+    ///   it is assumed unresponsive and terminated. Set this to `undefined` to
+    ///   use the default time limit.
+    ///
+    /// @return {Struct.CatspeakFuture}
+    static withTimeLimit = function(t) {
+        timeLimit = t;
+        return self;
+    };
+
     /// @ignore
     static __addEvent = function(callbacks, callback) {
         var newFuture;
@@ -95,8 +113,9 @@ function CatspeakFuture() constructor {
         result = value;
     };
 }
-/*
-/// Constructs a new Catspeak process.
+
+/// Constructs a new Catspeak process. Instances of this struct will be
+/// managed globally by the Catspeak execution engine.
 ///
 /// @param {Function} resolver
 ///   A function which performs the necessary operations to progress the state
@@ -105,41 +124,27 @@ function CatspeakFuture() constructor {
 function CatspeakProcess(resolver) : CatspeakFuture() constructor {
     self.resolver = resolver;
     self.timeSpent = 0;
-    self.timeLimit = 0;
     self.acceptFunc = function(result_) { accept(result_) };
 
     // invoke the process
     var manager = global.__catspeakProcessManager;
-    timeLimit = manager.processTimeLimit;
+    withTimeLimit(manager.processTimeLimit);
+    var eh = manager.exceptionHandler;
+    if (eh != undefined) {
+        andCatch(eh);
+    }
     ds_list_add(manager.processes, self);
     if (manager.inactive) {
         manager.inactive = false;
         time_source_start(manager.timeSource);
     }
 
-    /// Updates this Catspeak process by calling its resolver once.
-    static update = function() {
+    /// @ignore
+    static __update = function() {
         try {
             resolver(acceptFunc);
         } catch (ex) {
             reject(ex);
         }
     };
-
-    /// Sets the time limit for this process, overrides the default time limit
-    /// defined using [catspeak_config].
-    ///
-    /// @deprecated
-    ///
-    /// @param {Real} t
-    ///   The time limit (in seconds) the process is allowed to run for before
-    ///   it is assumed unresponsive and terminated. Set this to `undefined` to
-    ///   use the default time limit.
-    ///
-    /// @return {Struct.CatspeakFuture}
-    static withTimeLimit = function(t) {
-        timeLimit = t;
-        return self;
-    };
 }
-*/

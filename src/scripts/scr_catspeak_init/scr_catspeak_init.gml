@@ -63,7 +63,6 @@ function __catspeak_init_process() {
             var processes_ = processes;
             var processIdx = 0;
             var processCount = ds_list_size(processes_);
-            var exceptionHandler_ = exceptionHandler;
             // TODO :: add a method of detecting whether a process has
             //         become unresponsive
             do {
@@ -75,46 +74,18 @@ function __catspeak_init_process() {
                     break;
                 }
                 var process = processes_[| processIdx];
-                var catchFun = process.callbackCatch ?? exceptionHandler_;
-                var terminate = false;
-                var errorOccurred = false;
-                if (process.isBusy()) {
-                    if (catchFun == undefined) {
-                        // helps preserve the throw origin in the debugger
-                        process.update();
-                    } else {
-                        try {
-                            process.update();
-                        } catch (e) {
-                            catchFun(e);
-                            terminate = true;
-                            errorOccurred = true;
-                        }
-                    }
-                } else {
-                    terminate = true;
+                if (process.state == CatspeakFutureState.UNRESOLVED) {
+                    process.__update();
                 }
-                if (terminate) {
+                if (process.state == CatspeakFutureState.RESOLVED) {
                     ds_list_delete(processes_, processIdx);
-                    process.used = false;
-                    // TODO :: pool processes to avoid constant allocation
-                    if (!errorOccurred) {
-                        var resultFun = process.callback;
-                        if (resultFun != undefined) {
-                            resultFun(process.result());
-                        }
-                    }
                 } else {
                     var tSpent = process.timeSpent;
                     process.timeSpent = tSpent + (get_timer() - tStart);
                     if (tSpent > process.timeLimit * oneSecond) {
                         var err = new CatspeakError(undefined,
                                 "exceeded process time limit");
-                        if (catchFun == undefined) {
-                            throw err;
-                        } else {
-                            catchFun(err);
-                        }
+                        process.reject(err);
                     }
                 }
                 processCount = ds_list_size(processes_);
