@@ -15,7 +15,7 @@
 ///
 /// Finally, the `result` field should be a function which returns the final
 /// result of the completed process.
-function CatspeakProcess() constructor {
+function CatspeakProcessOLD() constructor {
     self.update = undefined;
     self.isBusy = undefined;
     self.result = undefined;
@@ -103,7 +103,7 @@ function CatspeakGMLProcess() : CatspeakProcess() constructor {
 }
 
 /// Handles the exeuction of Catspeak compilation processes.
-function CatspeakCompilerProcess() : CatspeakProcess() constructor {
+function CatspeakCompilerProcess() : CatspeakProcessOLD() constructor {
     self.compiler = undefined;
     self.consume = undefined;
     self.update = function() { compiler.emitProgram(5) };
@@ -118,7 +118,7 @@ function CatspeakCompilerProcess() : CatspeakProcess() constructor {
 }
 
 /// Handles the exeuction of Catspeak runtime processes.
-function CatspeakVMProcess() : CatspeakProcess() constructor {
+function CatspeakVMProcess() : CatspeakProcessOLD() constructor {
     self.vm = undefined;
     self.update = function() { vm.runProgram(10) };
     self.isBusy = function() { return vm.inProgress() };

@@ -32,8 +32,8 @@
      Just use the syntax you're familiar with: `is_string(value)`. See more
      in the [Syntax] section.
 
- - **Call Catspeak code from GML**.
-     Using the [catspeak_execute] function. See [Basic Usage] for some
+ - **Call Catspeak code from GML** ...
+     using the [catspeak_execute] function. See [Basic Usage] for some
      examples.
 
  - **Simple, relaxed syntax** ...

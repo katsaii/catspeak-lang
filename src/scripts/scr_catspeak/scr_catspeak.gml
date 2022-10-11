@@ -19,22 +19,27 @@ function catspeak_execute(scr, args) {
     var args_ = args ?? noArgs;
     var argo = 0;
     var argc = array_length(args);
-    var process;
+    var future;
     if (instanceof(scr) == "CatspeakFunction") {
         var vm = new CatspeakVM();
         vm.pushCallFrame(self, scr, args, argo, argc);
-        process = new CatspeakVMProcess();
-        process.vm = vm;
+        future = new CatspeakProcess(method(vm, function(accept) {
+            if (inProgress()) {
+                runProgram(10);
+            } else {
+                accept(returnValue);
+            }
+        }));
     } else {
-        process = new CatspeakGMLProcess();
-        process.self_ = self;
-        process.f = scr;
-        process.argc = argc;
-        process.argo = argo;
-        process.args = args;
+        var result;
+        with (method_get_self(scr) ?? self) {
+            result = script_execute_ext(method_get_index(scr),
+                    args_, argo, argc);
+        }
+        future = new CatspeakFuture();
+        future.accept(result);
     }
-    process.invoke();
-    return process;
+    return future;
 }
 
 /// Creates a new Catspeak compiler process for a buffer containing Catspeak
@@ -56,11 +61,21 @@ function catspeak_execute(scr, args) {
 function catspeak_compile_buffer(buff, consume=false) {
     var lexer = new CatspeakLexer(buff);
     var compiler = new CatspeakCompiler(lexer);
-    var process = new CatspeakCompilerProcess();
-    process.compiler = compiler;
-    process.consume = consume;
-    process.invoke();
-    return process;
+    var future = new CatspeakProcess(method(compiler, function(accept) {
+        if (inProgress()) {
+            emitProgram(5);
+        } else {
+            accept(ir);
+        }
+    }));
+    if (consume) {
+        var deleteBuff = method(compiler, function() {
+            buffer_delete(lexer.buff);
+        });
+        future.andThen(deleteBuff);
+        future.andCatch(deleteBuff);
+    }
+    return future;
 }
 
 /// Creates a new Catspeak compiler process for a string containing Catspeak
