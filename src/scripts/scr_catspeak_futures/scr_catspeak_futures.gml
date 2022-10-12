@@ -96,7 +96,22 @@ function CatspeakFuture() constructor {
     ///
     /// @return {Struct.CatspeakFuture}
     static andThen = function(callback) {
-        return __addEvent(thenCallbacks, callback);
+        var newFuture;
+        if (state == CatspeakFutureState.UNRESOLVED) {
+            newFuture = new CatspeakFuture();
+            array_push(thenCallbacks, callback, newFuture);
+            andCatch(method(newFuture, function(result) {
+                reject(result);
+            }));
+        } else {
+            // evaluate immediately
+            newFuture = callback(result);
+        }
+        if (newFuture == undefined) {
+            newFuture = new CatspeakFuture();
+            newFuture.accept();
+        }
+        return newFuture;
     };
 
     /// Sets the callback function to invoke if an error occurrs whilst the
@@ -107,7 +122,16 @@ function CatspeakFuture() constructor {
     ///
     /// @return {Struct.CatspeakFuture}
     static andCatch = function(callback) {
-        return __addEvent(catchCallbacks, callback);
+        var newFuture;
+        if (state == CatspeakFutureState.UNRESOLVED) {
+            newFuture = new CatspeakFuture();
+            array_push(catchCallbacks, callback, newFuture);
+        }
+        if (newFuture == undefined) {
+            newFuture = new CatspeakFuture();
+            newFuture.accept();
+        }
+        return newFuture;
     };
 
     /// Sets the time limit for this process, overrides the default time limit
@@ -125,23 +149,6 @@ function CatspeakFuture() constructor {
     static withTimeLimit = function(t) {
         timeLimit = t;
         return self;
-    };
-
-    /// @ignore
-    static __addEvent = function(callbacks, callback) {
-        var newFuture;
-        if (state == CatspeakFutureState.UNRESOLVED) {
-            newFuture = new CatspeakFuture();
-            array_push(callbacks, callback, newFuture);
-        } else {
-            // evaluate immediately
-            newFuture = callback(result);
-        }
-        if (newFuture == undefined) {
-            newFuture = new CatspeakFuture();
-            newFuture.accept();
-        }
-        return newFuture;
     };
 
     /// @ignore
@@ -164,7 +171,6 @@ function CatspeakFuture() constructor {
             }
         }
         state = CatspeakFutureState.RESOLVED;
-        result = value;
     };
 }
 

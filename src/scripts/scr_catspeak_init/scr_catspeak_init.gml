@@ -49,7 +49,7 @@ function __catspeak_init_process() {
         processes : ds_list_create(),
         // only compute Catspeak programs for half of a frame
         frameAllocation : 0.5,
-        processTimeLimit : 1,
+        processTimeLimit : 1000,
         exceptionHandler : undefined,
         dtRatioCache : 1,
         inactive : true,
