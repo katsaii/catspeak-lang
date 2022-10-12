@@ -1,18 +1,19 @@
-//! Handles the creation of asynchronous Catspeak processes. Execution time
-//! is divided between them so each gets a chance to progress.
+//! A [Future] is similar a way of organising asynchronous code in a more
+//! manageable way than nested callbacks. This library contains methods of
+//! creating and combining new futures.
 
 //# feather use syntax-errors
 
-/// Creates a new [CatspeakFuture] which is resolved only when all other
+/// Creates a new [Future] which is resolved only when all other
 /// futures in an array are resolved.
 ///
-/// @param {Array<Struct.CatspeakFuture>} futures
+/// @param {Array<Struct.Future>} futures
 ///   The array of futures to await.
 ///
-/// @return {Struct.CatspeakFuture}
-function catspeak_futures_join(futures) {
+/// @return {Struct.Future}
+function future_join(futures) {
     var count = array_length(futures);
-    var newFuture = new CatspeakFuture();
+    var newFuture = new Future();
     if (count == 0) {
         newFuture.accept([]);
     } else {
@@ -49,17 +50,16 @@ function catspeak_futures_join(futures) {
     return newFuture;
 }
 
-/// The different progress states of a Catspeak future.
-enum CatspeakFutureState {
+/// The different progress states of a [Future].
+enum FutureState {
     UNRESOLVED,
     RESOLVED,
 }
 
-/// Constructs a new Catspeak future, allowing for deferred execution of code
-/// depending on whether the future was accepted or rejected.
-function CatspeakFuture() constructor {
-    self.state = CatspeakFutureState.UNRESOLVED;
-    self.timeLimit = -1;
+/// Constructs a new future, allowing for deferred execution of code
+/// depending on whether it was accepted or rejected.
+function Future() constructor {
+    self.state = FutureState.UNRESOLVED;
     self.result = undefined;
     self.thenCallbacks = [];
     self.catchCallbacks = [];
@@ -86,7 +86,7 @@ function CatspeakFuture() constructor {
     ///
     /// @return {Bool}
     static resolved = function() {
-        return state == CatspeakFutureState.RESOLVED;
+        return state == FutureState.RESOLVED;
     };
 
     /// Sets the callback function to invoke once the process is complete.
@@ -94,11 +94,11 @@ function CatspeakFuture() constructor {
     /// @param {Function} callback
     ///   The function to invoke.
     ///
-    /// @return {Struct.CatspeakFuture}
+    /// @return {Struct.Future}
     static andThen = function(callback) {
         var newFuture;
-        if (state == CatspeakFutureState.UNRESOLVED) {
-            newFuture = new CatspeakFuture();
+        if (state == FutureState.UNRESOLVED) {
+            newFuture = new Future();
             array_push(thenCallbacks, callback, newFuture);
             andCatch(method(newFuture, function(result) {
                 reject(result);
@@ -108,7 +108,7 @@ function CatspeakFuture() constructor {
             newFuture = callback(result);
         }
         if (newFuture == undefined) {
-            newFuture = new CatspeakFuture();
+            newFuture = new Future();
             newFuture.accept();
         }
         return newFuture;
@@ -120,40 +120,23 @@ function CatspeakFuture() constructor {
     /// @param {Function} callback
     ///   The function to invoke.
     ///
-    /// @return {Struct.CatspeakFuture}
+    /// @return {Struct.Future}
     static andCatch = function(callback) {
         var newFuture;
-        if (state == CatspeakFutureState.UNRESOLVED) {
-            newFuture = new CatspeakFuture();
+        if (state == FutureState.UNRESOLVED) {
+            newFuture = new Future();
             array_push(catchCallbacks, callback, newFuture);
         }
         if (newFuture == undefined) {
-            newFuture = new CatspeakFuture();
+            newFuture = new Future();
             newFuture.accept();
         }
         return newFuture;
     };
 
-    /// Sets the time limit for this process, overrides the default time limit
-    /// defined using [catspeak_config].
-    ///
-    /// NOTE: This method exists on [CatspeakFuture] for polymorphism reasons.
-    ///       the time limit will only affect instances of [CatspeakProcess].
-    ///
-    /// @param {Real} t
-    ///   The time limit (in seconds) the process is allowed to run for before
-    ///   it is assumed unresponsive and terminated. Set this to `undefined` to
-    ///   use the default time limit.
-    ///
-    /// @return {Struct.CatspeakFuture}
-    static withTimeLimit = function(t) {
-        timeLimit = t;
-        return self;
-    };
-
     /// @ignore
     static __handleEvents = function(value, callbacks) {
-        if (state == CatspeakFutureState.UNRESOLVED) {
+        if (state == FutureState.UNRESOLVED) {
             var count = array_length(callbacks);
             for (var i = 0; i < count; i += 2) {
                 var callback = callbacks[i];
@@ -170,41 +153,6 @@ function CatspeakFuture() constructor {
                 }
             }
         }
-        state = CatspeakFutureState.RESOLVED;
-    };
-}
-
-/// Constructs a new Catspeak process. Instances of this struct will be
-/// managed globally by the Catspeak execution engine.
-///
-/// @param {Function} resolver
-///   A function which performs the necessary operations to progress the state
-///   of this future. It accepts a single function as a parameter. Call this
-///   function with the result of the future to complete the computation.
-function CatspeakProcess(resolver) : CatspeakFuture() constructor {
-    self.resolver = resolver;
-    self.timeSpent = 0;
-    self.acceptFunc = function(result_) { accept(result_) };
-
-    // invoke the process
-    var manager = global.__catspeakProcessManager;
-    withTimeLimit(manager.processTimeLimit);
-    var eh = manager.exceptionHandler;
-    if (eh != undefined) {
-        andCatch(eh);
-    }
-    ds_list_add(manager.processes, self);
-    if (manager.inactive) {
-        manager.inactive = false;
-        time_source_start(manager.timeSource);
-    }
-
-    /// @ignore
-    static __update = function() {
-        try {
-            resolver(acceptFunc);
-        } catch (ex) {
-            reject(ex);
-        }
+        state = FutureState.RESOLVED;
     };
 }

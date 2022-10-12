@@ -74,10 +74,10 @@ function __catspeak_init_process() {
                     break;
                 }
                 var process = processes_[| processIdx];
-                if (process.state == CatspeakFutureState.UNRESOLVED) {
+                if (process.state == FutureState.UNRESOLVED) {
                     process.__update();
                 }
-                if (process.state == CatspeakFutureState.RESOLVED) {
+                if (process.state == FutureState.RESOLVED) {
                     ds_list_delete(processes_, processIdx);
                 } else {
                     var tSpent = process.timeSpent;

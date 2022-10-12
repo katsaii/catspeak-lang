@@ -14,9 +14,9 @@ comp.andThen(function(ir) {
     clipboard_set_text(ir.disassembly())
 });
 
-delayProc = new CatspeakFuture();
+delayProc = new Future();
 
-catspeak_futures_join([comp, delayProc]).andThen(function(results) {
+future_join([comp, delayProc]).andThen(function(results) {
     show_message(results);
 }).andCatch(function() {
     show_message("WHOOP");

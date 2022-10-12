@@ -2,11 +2,11 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "internals",
-    "path": "folders/Catspeak/internals.yy",
+    "name": "Future",
+    "path": "folders/Future.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_futures",
+  "name": "scr_future",
   "tags": [],
   "resourceType": "GMScript",
 }

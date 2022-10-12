@@ -36,7 +36,7 @@ function catspeak_execute(scr, args) {
             result = script_execute_ext(method_get_index(scr),
                     args_, argo, argc);
         }
-        future = new CatspeakFuture();
+        future = new Future();
         future.accept(result);
     }
     return future;
@@ -195,4 +195,41 @@ function catspeak_prelude_add_constant() {
     for (var i = 0; i < argument_count; i += 2) {
         db[$ argument[i + 0]] = argument[i + 1];
     }
+}
+
+/// Constructs a new asynchronous Catspeak process. Instances of this struct
+/// will be managed globally by the Catspeak execution engine. Execution time
+/// is divided between all active processes so each gets a chance to progress.
+///
+/// @param {Function} resolver
+///   A function which performs the necessary operations to progress the state
+///   of this future. It accepts a single function as a parameter. Call this
+///   function with the result of the future to complete the computation.
+function CatspeakProcess(resolver) : Future() constructor {
+    self.resolver = resolver;
+    self.timeSpent = 0;
+    self.timeLimit = undefined;
+    self.acceptFunc = function(result_) { accept(result_) };
+
+    // invoke the process
+    var manager = global.__catspeakProcessManager;
+    self.timeLimit ??= manager.processTimeLimit;
+    var eh = manager.exceptionHandler;
+    if (eh != undefined) {
+        andCatch(eh);
+    }
+    ds_list_add(manager.processes, self);
+    if (manager.inactive) {
+        manager.inactive = false;
+        time_source_start(manager.timeSource);
+    }
+
+    /// @ignore
+    static __update = function() {
+        try {
+            resolver(acceptFunc);
+        } catch (ex) {
+            reject(ex);
+        }
+    };
 }
