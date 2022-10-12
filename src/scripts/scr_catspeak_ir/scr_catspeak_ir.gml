@@ -310,7 +310,7 @@ function CatspeakFunction(name, parent) constructor {
     /// Generates the code to return a value from this function. Since
     /// statements are expressions, this returns the never register.
     ///
-    /// @param {Any} reg
+    /// @param {Any} [reg]
     ///   The register or accessor containing the value to return.
     ///
     /// @param {Struct.CatspeakLocation} [pos]
@@ -318,7 +318,7 @@ function CatspeakFunction(name, parent) constructor {
     ///
     /// @return {Real}
     static emitReturn = function(reg, pos) {
-        var reg_ = emitGet(reg, pos);
+        var reg_ = emitGet(reg ?? emitConstant(undefined), pos);
         var inst = emitCode(CatspeakIntcode.RET, undefined, reg_);
         __registerMark(inst, 2);
         currentBlock.terminated = true;

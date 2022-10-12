@@ -1,1 +1,1 @@
-delayProc.accept(1);
+delayProc.reject(1);

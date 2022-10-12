@@ -18,6 +18,24 @@ delayProc = new CatspeakFuture();
 
 catspeak_futures_join([comp, delayProc]).andThen(function(results) {
     show_message(results);
+}).andCatch(function() {
+    show_message("WHOOP");
+}).andThen(function() {
+    show_message("cool");
+});
+
+catspeak_compile_string(@'
+    let n = 0
+    while (n <= 10) {
+        print n
+        n = it + 1
+    }
+    return "blast off!"
+').andThen(function() {
+    show_message("cool");
+}).andCatch(function(ex) {
+    show_message("boo");
+    show_message(ex);
 });
 
 /*show_debug_overlay(true);
