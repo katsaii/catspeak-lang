@@ -461,14 +461,13 @@ page.add_section_note(
     "not_catspeak_syntax",
     "not_catspeak_standard_library",
 )
-page.add_section_string("library_reference", """\
+page.add_section_string("library_reference.md", """\
 The following sections feature documentation for all public Catspeak functions,
 macros, and structs.
 """)
 page.add_section_script(
     "scr_catspeak",
     "scr_catspeak_init",
-    "scr_catspeak_process",
     "scr_catspeak_builtins",
     "scr_catspeak_error",
     "scr_catspeak_vm",
@@ -480,6 +479,14 @@ page.add_section_script(
     "scr_catspeak_ascii_desc",
     "scr_catspeak_alloc",
     "scr_catspeak_compatibility",
+)
+page.add_section_string("futures_reference.md", """\
+The [Future library](https://github.com/NuxiiGit/future) is used by Catspeak in order to better organise
+asynchronous processes. The following sections document its usage.
+""")
+page.add_section_script(
+    "scr_future",
+    "scr_future_file",
 )
 page.add_section_note(
     "not_catspeak_theory"

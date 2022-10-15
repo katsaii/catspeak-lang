@@ -16,7 +16,7 @@ comp.andThen(function(ir) {
 
 delayProc = new Future();
 
-future_join([comp, delayProc]).andThen(function(results) {
+future_all([comp, delayProc]).andThen(function(results) {
     show_message(results);
 }).andCatch(function() {
     show_message("WHOOP");
