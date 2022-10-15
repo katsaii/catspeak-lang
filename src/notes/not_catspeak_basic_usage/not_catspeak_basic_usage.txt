@@ -25,7 +25,7 @@ var src = @'
 ';
 ```
 You can use the [catspeak_compile_string] function to spawn a
-[CatspeakCompilerProcess]:
+[CatspeakProcess]:
 ```
 var process = catspeak_compile_string(src);
 ```
@@ -96,6 +96,19 @@ default, this is set to `false`.
 NOTE: The seek of this buffer will not be reset to the start, this is
       something you must maintain yourself.
 
+## Customising the Standard Library
+
+You can expose additional functions and constants to Catspeak programs by
+using [catspeak_add_function] and [catspeak_add_constant]. For example,
+adding a new function to display a "hello" message in a pop-up window:
+```
+catspeak_add_function("say_hello", function() {
+    show_message("hello");
+});
+```
+From now on, any Catspeak programs will be able to use the `say_hello`
+function.
+
 # Executing Programs
 
 The second step to running your Catspeak programs is to interpret the
@@ -107,7 +120,7 @@ catspeak_execute(code).andThen(function(result) {
     show_message(result);
 });
 ```
-This will spawn a new [CatspeakVMProcess] which goes through the process of
+This will spawn a new [CatspeakProcess] which goes through the process of
 interpreting the compiled code. Once the program has finished running, the
 callback to the [andThen] method is called with the result of the program. In
 this example, the result was the string `"blast off!"`, so a pop-up window

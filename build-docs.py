@@ -242,7 +242,8 @@ def simple_syntax_higlight_types(s):
                 out += item_
             else:
                 item_ = "<span class=\"name\">" + item + "</span>"
-                if item.strip().lower().startswith("catspeak"):
+                if item.strip().lower().startswith("catspeak") or \
+                    item.strip().lower().startswith("future"):
                     item_ = "<a href=\"#{}\">{}</a>".format(item.lower(), item_)
                 out += item_
         else:
@@ -441,6 +442,12 @@ TEMPLATE = """
       .name { --c : #808 }
       .name-script { --c : #d54a07 }
       .control { opacity : 0.5 }
+
+      @keyframes keyframes-fade {
+        from { background-color : #ff43a4 }
+      }
+
+      :target { animation : keyframes-fade 0.5s }
     </style>
   </head>
   <body>

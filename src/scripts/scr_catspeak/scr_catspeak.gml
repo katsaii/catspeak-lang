@@ -13,7 +13,7 @@
 ///   The array of arguments to pass to the function call. Defaults to the
 ///   empty array.
 ///
-/// @return {Struct.CatspeakVMProcess|Struct.CatspeakGMLProcess}
+/// @return {Struct.CatspeakProcess}
 function catspeak_execute(scr, args) {
     static noArgs = [];
     var args_ = args ?? noArgs;
@@ -57,7 +57,7 @@ function catspeak_execute(scr, args) {
 ///   Whether the buffer should be deleted after the compiler process is
 ///   complete. Defaults to `false`.
 ///
-/// @return {Struct.CatspeakCompilerProcess}
+/// @return {Struct.CatspeakProcess}
 function catspeak_compile_buffer(buff, consume=false) {
     var lexer = new CatspeakLexer(buff);
     var compiler = new CatspeakCompiler(lexer);
@@ -86,7 +86,7 @@ function catspeak_compile_buffer(buff, consume=false) {
 /// @param {Any} src
 ///   The value containing the source code to compile.
 ///
-/// @return {Struct.CatspeakCompilerProcess}
+/// @return {Struct.CatspeakProcess}
 function catspeak_compile_string(src) {
     var src_ = is_string(src) ? src : string(src);
     var buff = catspeak_create_buffer_from_string(src_);
@@ -163,7 +163,7 @@ function catspeak_config(configData) {
 /// @param {Any} ...
 ///   The remaining key-value pairs to add, in the same pattern as the two
 ///   previous arguments.
-function catspeak_prelude_add_function() {
+function catspeak_add_function() {
     catspeak_force_init();
     var db = global.__catspeakDatabasePrelude;
     for (var i = 0; i < argument_count; i += 2) {
@@ -189,7 +189,7 @@ function catspeak_prelude_add_function() {
 /// @param {Any} ...
 ///   The remaining key-value pairs to add, in the same pattern as the two
 ///   previous arguments.
-function catspeak_prelude_add_constant() {
+function catspeak_add_constant() {
     catspeak_force_init();
     var db = global.__catspeakDatabasePrelude;
     for (var i = 0; i < argument_count; i += 2) {
