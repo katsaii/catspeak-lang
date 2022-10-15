@@ -116,8 +116,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#compiling_from_a_string">Compiling From A String</a>
         - <a href="#compiling_from_a_buffer">Compiling From A Buffer</a></div>
 <input id="executing_programs-checkbox" class="toggle" type="checkbox"><label for="executing_programs-checkbox">   - </label><a href="#executing_programs">Executing Programs</a><div class="collapsible-content">
-        - <a href="#global_variables">Global Variables</a></div>
-      - <a href="#configuring_programs">Configuring Programs</a></div>
+        - <a href="#global_variables">Global Variables</a></div></div>
 <input id="syntax-checkbox" class="toggle" type="checkbox"><label for="syntax-checkbox"> - </label><a href="#syntax">Syntax</a><div class="collapsible-content">
 <input id="lexical_grammar-checkbox" class="toggle" type="checkbox"><label for="lexical_grammar-checkbox">   - </label><a href="#lexical_grammar">Lexical Grammar</a><div class="collapsible-content">
         - <a href="#whitespace">Whitespace</a>
@@ -161,19 +160,13 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#catspeak_compile_buffer"><span class="keyword">function </span><span class="name">catspeak_compile_buffer</span></a>
         - <a href="#catspeak_compile_string"><span class="keyword">function </span><span class="name">catspeak_compile_string</span></a>
         - <a href="#catspeak_create_buffer_from_string"><span class="keyword">function </span><span class="name">catspeak_create_buffer_from_string</span></a>
-        - <a href="#catspeak_config"><span class="keyword">function </span><span class="name">catspeak_config</span></a></div>
+        - <a href="#catspeak_config"><span class="keyword">function </span><span class="name">catspeak_config</span></a>
+        - <a href="#catspeak_prelude_add_function"><span class="keyword">function </span><span class="name">catspeak_prelude_add_function</span></a>
+        - <a href="#catspeak_prelude_add_constant"><span class="keyword">function </span><span class="name">catspeak_prelude_add_constant</span></a>
+        - <a href="#catspeakprocess"><span class="keyword">struct </span><span class="name">CatspeakProcess</span> <span class="keyword">extends</span> <span class="name">Future</span></a></div>
 <input id="scr_catspeak_init-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_init-checkbox">   - </label><a href="#scr_catspeak_init"><span class="name-script">scr_catspeak_init</span></a><div class="collapsible-content">
         - <a href="#catspeak_version"><span class="keyword">macro </span><span class="name">CATSPEAK_VERSION</span></a>
         - <a href="#catspeak_force_init"><span class="keyword">function </span><span class="name">catspeak_force_init</span></a></div>
-<input id="scr_catspeak_process-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_process-checkbox">   - </label><a href="#scr_catspeak_process"><span class="name-script">scr_catspeak_process</span></a><div class="collapsible-content">
-<input id="catspeakprocess-checkbox" class="toggle" type="checkbox"><label for="catspeakprocess-checkbox">     - </label><a href="#catspeakprocess"><span class="keyword">struct </span><span class="name">CatspeakProcess</span></a><div class="collapsible-content">
-          - <a href="#withtimelimit"><span class="keyword">method </span><span class="name">withTimeLimit</span></a>
-          - <a href="#andthen"><span class="keyword">method </span><span class="name">andThen</span></a>
-          - <a href="#catcherror"><span class="keyword">method </span><span class="name">catchError</span></a>
-          - <a href="#invoke"><span class="keyword">method </span><span class="name">invoke</span></a></div>
-        - <a href="#catspeakgmlprocess"><span class="keyword">struct </span><span class="name">CatspeakGMLProcess</span> <span class="keyword">extends</span> <span class="name">CatspeakProcess</span></a>
-        - <a href="#catspeakcompilerprocess"><span class="keyword">struct </span><span class="name">CatspeakCompilerProcess</span> <span class="keyword">extends</span> <span class="name">CatspeakProcess</span></a>
-        - <a href="#catspeakvmprocess"><span class="keyword">struct </span><span class="name">CatspeakVMProcess</span> <span class="keyword">extends</span> <span class="name">CatspeakProcess</span></a></div>
 <input id="scr_catspeak_builtins-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_builtins-checkbox">   - </label><a href="#scr_catspeak_builtins"><span class="name-script">scr_catspeak_builtins</span></a><div class="collapsible-content">
         - <a href="#catspeak_string_to_builtin"><span class="keyword">function </span><span class="name">catspeak_string_to_builtin</span></a>
         - <a href="#catspeak_string_is_builtin"><span class="keyword">function </span><span class="name">catspeak_string_is_builtin</span></a></div>
@@ -196,6 +189,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="scr_catspeak_ir-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_ir-checkbox">   - </label><a href="#scr_catspeak_ir"><span class="name-script">scr_catspeak_ir</span></a><div class="collapsible-content">
 <input id="catspeakfunction-checkbox" class="toggle" type="checkbox"><label for="catspeakfunction-checkbox">     - </label><a href="#catspeakfunction"><span class="keyword">struct </span><span class="name">CatspeakFunction</span></a><div class="collapsible-content">
           - <a href="#setglobal"><span class="keyword">method </span><span class="name">setGlobal</span></a>
+          - <a href="#setglobalfunction"><span class="keyword">method </span><span class="name">setGlobalFunction</span></a>
           - <a href="#getglobal"><span class="keyword">method </span><span class="name">getGlobal</span></a>
           - <a href="#emitblock"><span class="keyword">method </span><span class="name">emitBlock</span></a>
           - <a href="#emitfunction"><span class="keyword">method </span><span class="name">emitFunction</span></a>
@@ -321,6 +315,25 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#catspeak_session_add_function"><span class="keyword">function </span><span class="name">catspeak_session_add_function</span></a>
         - <a href="#catspeak_session_create_process"><span class="keyword">function </span><span class="name">catspeak_session_create_process</span></a>
         - <a href="#catspeak_session_create_process_greedy"><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></a></div></div>
+<input id="futures_reference-checkbox" class="toggle" type="checkbox"><label for="futures_reference-checkbox"> - </label><a href="#futures_reference">Futures Reference</a><div class="collapsible-content">
+<input id="scr_future-checkbox" class="toggle" type="checkbox"><label for="scr_future-checkbox">   - </label><a href="#scr_future"><span class="name-script">scr_future</span></a><div class="collapsible-content">
+        - <a href="#futurestate"><span class="keyword">enum </span><span class="name">FutureState</span></a>
+<input id="future-checkbox" class="toggle" type="checkbox"><label for="future-checkbox">     - </label><a href="#future"><span class="keyword">struct </span><span class="name">Future</span></a><div class="collapsible-content">
+          - <a href="#accept"><span class="keyword">method </span><span class="name">accept</span></a>
+          - <a href="#reject"><span class="keyword">method </span><span class="name">reject</span></a>
+          - <a href="#resolved"><span class="keyword">method </span><span class="name">resolved</span></a>
+          - <a href="#andthen"><span class="keyword">method </span><span class="name">andThen</span></a>
+          - <a href="#andcatch"><span class="keyword">method </span><span class="name">andCatch</span></a></div>
+        - <a href="#future_all"><span class="keyword">function </span><span class="name">future_all</span></a>
+        - <a href="#future_any"><span class="keyword">function </span><span class="name">future_any</span></a>
+        - <a href="#future_ok"><span class="keyword">function </span><span class="name">future_ok</span></a>
+        - <a href="#future_error"><span class="keyword">function </span><span class="name">future_error</span></a></div>
+<input id="scr_future_file-checkbox" class="toggle" type="checkbox"><label for="scr_future_file-checkbox">   - </label><a href="#scr_future_file"><span class="name-script">scr_future_file</span></a><div class="collapsible-content">
+        - <a href="#future_file_title"><span class="keyword">macro </span><span class="name">FUTURE_FILE_TITLE</span></a>
+        - <a href="#future_file_read"><span class="keyword">function </span><span class="name">future_file_read</span></a>
+        - <a href="#future_file_read_string"><span class="keyword">function </span><span class="name">future_file_read_string</span></a>
+        - <a href="#future_file_write"><span class="keyword">function </span><span class="name">future_file_write</span></a>
+        - <a href="#future_file_write_string"><span class="keyword">function </span><span class="name">future_file_write_string</span></a></div></div>
     - <a href="#theory">Theory</a>
     - <a href="#license">License</a>
 
@@ -384,8 +397,8 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
      Just use the syntax you&#39;re familiar with: <b class="control">`</b><code>is_string(value)</code><b class="control">`</b>. See more
      in the <span class="control">[</span><a href="#syntax">Syntax</a><span class="control">]</span> section.
 
- - <span class="control">**</span><b>Call Catspeak code from GML</b><span class="control">**</span>.
-     Using the <span class="control">[</span><a href="#catspeak_execute">catspeak_execute</a><span class="control">]</span> function. See <span class="control">[</span><a href="#basic_usage">Basic Usage</a><span class="control">]</span> for some
+ - <span class="control">**</span><b>Call Catspeak code from GML</b><span class="control">**</span> ...
+     using the <span class="control">[</span><a href="#catspeak_execute">catspeak_execute</a><span class="control">]</span> function. See <span class="control">[</span><a href="#basic_usage">Basic Usage</a><span class="control">]</span> for some
      examples.
 
  - <span class="control">**</span><b>Simple, relaxed syntax</b><span class="control">**</span> ...
@@ -565,23 +578,6 @@ your programs is much faster.</div>
           <b class="control">```</b><code>
           code.setGlobal(&quot;alert&quot;, method(, show_message));
           </code><b class="control">```</b></div>
-<span id=configuring_programs>  <b>Configuring Programs</b> (<a href="#configuring_programs">link</a>) .txt
-  ==============================================================================</span>
-<div>  Both compiler and interpreter processes can be customised so that their time
-  limit or exception handler is different from the defaults defined using the
-  <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function. Use the <span class="control">[</span><a href="#withtimelimit">withTimeLimit</a><span class="control">]</span> method to modify its time
-  limit, and the <span class="control">[</span><a href="#catcherror">catchError</a><span class="control">]</span> method to modify the exception handler function:
-  <b class="control">```</b><code>
-  catspeak_execute(code)
-      .withTimeLimit(5) // 5 second time limit
-      .catchError(function(e) {
-          // handle the error by just outputting a debug message
-          show_debug_message(&quot;an error occurred! &quot; + string(e));
-      })
-      .andThen(function(result) {
-          show_message(result);
-      });
-  </code><b class="control">```</b></div>
 <span id=syntax>================================================================================
 <b>Syntax</b> (<a href="#syntax">link</a>) .txt
 ================================================================================</span>
@@ -1138,7 +1134,7 @@ them to the <span class="control">[</span><a href="https://github.com/NuxiiGit/c
   Catspeak does not have <b class="control">`</b><code>and</code><b class="control">`</b>, <b class="control">`</b><code>or</code><b class="control">`</b>, <b class="control">`</b><code>xor</code><b class="control">`</b>, <b class="control">`</b><code>mod</code><b class="control">`</b> and <b class="control">`</b><code>div</code><b class="control">`</b> operators. You
   will need to use <b class="control">`</b><code>&&</code><b class="control">`</b>, <b class="control">`</b><code>||</code><b class="control">`</b>, <b class="control">`</b><code>^^</code><b class="control">`</b>, <b class="control">`</b><code>%</code><b class="control">`</b>, and <b class="control">`</b><code>//</code><b class="control">`</b> instead.</div>
 <span id=library_reference>================================================================================
-<b>Library Reference</b> (<a href="#library_reference">link</a>) 
+<b>Library Reference</b> (<a href="#library_reference">link</a>) .md
 ================================================================================</span>
 <div>The following sections feature documentation for all public Catspeak functions,
 macros, and structs.</div>
@@ -1225,6 +1221,46 @@ macros, and structs.</div>
       A struct which can contain any one of the fields mentioned above. Only
       the fields which are passed will have their configuration changed, so
       if you don&#39;t want a value to change, leave it blank.</div>
+<span id=catspeak_prelude_add_function>    <b><span class="keyword">function </span><span class="name">catspeak_prelude_add_function</span></b> (<a href="#catspeak_prelude_add_function">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Permanently adds a new Catspeak function to the default standard library.
+    
+    <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The name of the function to add.
+    
+    <span class="control">@</span><b>param</b> <code>f</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+      The function to add, will be converted into a method if a script ID
+      is used.
+    
+    <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>...
+      The remaining key-value pairs to add, in the same pattern as the two
+      previous arguments.</div>
+<span id=catspeak_prelude_add_constant>    <b><span class="keyword">function </span><span class="name">catspeak_prelude_add_constant</span></b> (<a href="#catspeak_prelude_add_constant">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Permanently adds a new Catspeak constant to the default standard library.
+    If you want to add a function, use the <span class="control">[</span><a href="#catspeak_prelude_add_function">catspeak_prelude_add_function</a><span class="control">]</span>
+    function instead because it makes sure your value will be callable from
+    within Catspeak.
+    
+    <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The name of the constant to add.
+    
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+      The value to add.
+    
+    <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>...
+      The remaining key-value pairs to add, in the same pattern as the two
+      previous arguments.</div>
+<span id=catspeakprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakProcess</span> <span class="keyword">extends</span> <span class="name">Future</span></b> (<a href="#catspeakprocess">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Constructs a new asynchronous Catspeak process. Instances of this struct
+    will be managed globally by the Catspeak execution engine. Execution time
+    is divided between all active processes so each gets a chance to progress.
+    
+    <span class="control">@</span><b>param</b> <code>resolver</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+      A function which performs the necessary operations to progress the state
+      of this future. It accepts a single function as a parameter. Call this
+      function with the result of the future to complete the computation.</div>
 <span id=scr_catspeak_init>  <b><span class="name-script">scr_catspeak_init</span></b> (<a href="#scr_catspeak_init">link</a>) .gml
   ==============================================================================</span>
 <div>  Initialises core components of the Catspeak compiler. This includes
@@ -1237,59 +1273,6 @@ macros, and structs.</div>
 <div>    Makes sure that all Catspeak global variables are initialised. Only needs
     to be called if you are trying to use Catspeak from a script, or through
     <b class="control">`</b><code>gml_pragma</code><b class="control">`</b>. Otherwise you can just ignore this.</div>
-<span id=scr_catspeak_process>  <b><span class="name-script">scr_catspeak_process</span></b> (<a href="#scr_catspeak_process">link</a>) .gml
-  ==============================================================================</span>
-<div>  Handles the creation of Catspeak processes, and divides execution time
-  between them so each gets a change to progress during the current tick.</div>
-<span id=catspeakprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakProcess</span></b> (<a href="#catspeakprocess">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    An interface used by the Catspeak process manager.
-    
-    The <b class="control">`</b><code>update</code><b class="control">`</b> field should be a function which performs the necessary
-    operations to progress the process. This should not attempt to perform
-    all of the tasks of the process in a single go, otherwise you risk
-    freezing the game.
-    
-    The <b class="control">`</b><code>isBusy</code><b class="control">`</b> field should be a function which returns <b class="control">`</b><code>true</code><b class="control">`</b> or <b class="control">`</b><code>false</code><b class="control">`</b>
-    depending on whether the process is still busy with the task.
-    
-    Finally, the <b class="control">`</b><code>result</code><b class="control">`</b> field should be a function which returns the final
-    result of the completed process.</div>
-<span id=withtimelimit>      <b><span class="keyword">method </span><span class="name">withTimeLimit</span></b> (<a href="#withtimelimit">link</a>) .gml
-      --------------------------------------------------------------------------</span>
-<div>      Sets the time limit for this process, overrides the default time limit
-      defined using <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span>.
-      
-      <span class="control">@</span><b>param</b> <code>t</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-        The time limit (in seconds) the process is allowed to run for before
-        it is assumed unresponsive and terminated. Set this to <b class="control">`</b><code>undefined</code><b class="control">`</b> to
-        use the default time limit.</div>
-<span id=andthen>      <b><span class="keyword">method </span><span class="name">andThen</span></b> (<a href="#andthen">link</a>) .gml
-      --------------------------------------------------------------------------</span>
-<div>      Sets the callback function to invoke once the process is complete.
-      
-      <span class="control">@</span><b>param</b> <code>callback</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
-        The function to invoke once this process is complete.</div>
-<span id=catcherror>      <b><span class="keyword">method </span><span class="name">catchError</span></b> (<a href="#catcherror">link</a>) .gml
-      --------------------------------------------------------------------------</span>
-<div>      Sets the callback function to invoke if an error occurrs whilst the
-      process is running.
-      
-      <span class="control">@</span><b>param</b> <code>callback</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
-        The function to invoke if an error occurrs.</div>
-<span id=invoke>      <b><span class="keyword">method </span><span class="name">invoke</span></b> (<a href="#invoke">link</a>) .gml
-      --------------------------------------------------------------------------</span>
-<div>      Adds this process to the list of active processes in the next
-      execution tick.</div>
-<span id=catspeakgmlprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakGMLProcess</span> <span class="keyword">extends</span> <span class="name">CatspeakProcess</span></b> (<a href="#catspeakgmlprocess">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Handles the execution of a GML function.</div>
-<span id=catspeakcompilerprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakCompilerProcess</span> <span class="keyword">extends</span> <span class="name">CatspeakProcess</span></b> (<a href="#catspeakcompilerprocess">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Handles the exeuction of Catspeak compilation processes.</div>
-<span id=catspeakvmprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakVMProcess</span> <span class="keyword">extends</span> <span class="name">CatspeakProcess</span></b> (<a href="#catspeakvmprocess">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Handles the exeuction of Catspeak runtime processes.</div>
 <span id=scr_catspeak_builtins>  <b><span class="name-script">scr_catspeak_builtins</span></b> (<a href="#scr_catspeak_builtins">link</a>) .gml
   ==============================================================================</span>
 <div>  Defines the standard library functions of the Catspeak prelude.</div>
@@ -1461,6 +1444,16 @@ macros, and structs.</div>
       
       <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The value to assign to this global variable.</div>
+<span id=setglobalfunction>      <b><span class="keyword">method </span><span class="name">setGlobalFunction</span></b> (<a href="#setglobalfunction">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Behaves similarly to <span class="control">[</span><a href="#setglobal">setGlobal</a><span class="control">]</span>, except if the value is not a method
+      it is converted into a method type.
+      
+      <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+        The name of the global variable to set.
+      
+      <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+        The value to assign to this global variable.</div>
 <span id=getglobal>      <b><span class="keyword">method </span><span class="name">getGlobal</span></b> (<a href="#getglobal">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Gets the value of a global variable with this name.
@@ -1592,7 +1585,7 @@ macros, and structs.</div>
 <div>      Generates the code to return a value from this function. Since
       statements are expressions, this returns the never register.
       
-      <span class="control">@</span><b>param</b> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>reg</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the value to return.
       
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
@@ -2509,6 +2502,173 @@ macros, and structs.</div>
       The arguments to pass to the process.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
+<span id=futures_reference>================================================================================
+<b>Futures Reference</b> (<a href="#futures_reference">link</a>) .md
+================================================================================</span>
+<div>The <span class="control">[</span><a href="https://github.com/NuxiiGit/future">Future library</a><span class="control">]</span> is used by Catspeak in order to better organise
+asynchronous processes. The following sections document its usage.</div>
+<span id=scr_future>  <b><span class="name-script">scr_future</span></b> (<a href="#scr_future">link</a>) .gml
+  ==============================================================================</span>
+<div>  A <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> is method of organising asynchronous code in a more manageable
+  way compared to nested callbacks. This library contains methods of
+  creating and combining new futures.</div>
+<span id=futurestate>    <b><span class="keyword">enum </span><span class="name">FutureState</span></b> (<a href="#futurestate">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    The different progress states of a <span class="control">[</span><a href="#future">Future</a><span class="control">]</span>.</div>
+<span id=future>    <b><span class="keyword">struct </span><span class="name">Future</span></b> (<a href="#future">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Constructs a new future, allowing for deferred execution of code depending
+    on whether it was accepted or rejected.</div>
+<span id=accept>      <b><span class="keyword">method </span><span class="name">accept</span></b> (<a href="#accept">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Accepts this future with the supplied argument.
+      
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+        The value to reject.</div>
+<span id=reject>      <b><span class="keyword">method </span><span class="name">reject</span></b> (<a href="#reject">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Rejects this future with the supplied argument.
+      
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+        The value to reject.</div>
+<span id=resolved>      <b><span class="keyword">method </span><span class="name">resolved</span></b> (<a href="#resolved">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Returns whether this future has been resolved. A resolved future
+      may be the result of being accepted OR rejected.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
+<span id=andthen>      <b><span class="keyword">method </span><span class="name">andThen</span></b> (<a href="#andthen">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Sets the callback function to invoke once the process is complete.
+      
+      <span class="control">@</span><b>param</b> <code>callback</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+        The function to invoke.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=andcatch>      <b><span class="keyword">method </span><span class="name">andCatch</span></b> (<a href="#andcatch">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Sets the callback function to invoke if an error occurrs whilst the
+      process is running.
+      
+      <span class="control">@</span><b>param</b> <code>callback</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+        The function to invoke.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_all>    <b><span class="keyword">function </span><span class="name">future_all</span></b> (<a href="#future_all">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is accepted only when all other futures in an
+    array are accepted. If any future in the array is rejected, then the
+    resulting future is rejected with its value. If all futures are accepted,
+    then the resulting future is accepted with an array of their values.
+    
+    <span class="control">@</span><b>param</b> <code>futures</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span>&gt;<span class="name"></span></i>
+      The array of futures to await.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_any>    <b><span class="keyword">function </span><span class="name">future_any</span></b> (<a href="#future_any">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is accepted if any of the futures in an
+    array are accepted. If all futures in the array are rejected, then the
+    resulting future is rejected with an array of their values.
+    
+    <span class="control">@</span><b>param</b> <code>futures</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span>&gt;<span class="name"></span></i>
+      The array of futures to await.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_ok>    <b><span class="keyword">function </span><span class="name">future_ok</span></b> (<a href="#future_ok">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is immediately accepted with a value.
+    If the value itself it an instance of <span class="control">[</span><a href="#future">Future</a><span class="control">]</span>, then it is returned
+    instead.
+    
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+      The value to create a future from.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_error>    <b><span class="keyword">function </span><span class="name">future_error</span></b> (<a href="#future_error">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is immediately rejected with a value.
+    If the value itself it an instance of <span class="control">[</span><a href="#future">Future</a><span class="control">]</span>, then it is returned
+    instead.
+    
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+      The value to create a future from.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=scr_future_file>  <b><span class="name-script">scr_future_file</span></b> (<a href="#scr_future_file">link</a>) .gml
+  ==============================================================================</span>
+<div>  Wrapper functions for file handling tasks.</div>
+<span id=future_file_title>    <b><span class="keyword">macro </span><span class="name">FUTURE_FILE_TITLE</span></b> (<a href="#future_file_title">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    The default title used for game saves.</div>
+<span id=future_file_read>    <b><span class="keyword">function </span><span class="name">future_file_read</span></b> (<a href="#future_file_read">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Loads a buffer asynchronously and returns a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span>. This future is
+    accepted if the file was loaded successfully; or rejected if there was a
+    problem, such as the file not existing.
+    
+    <span class="control">@</span><b>param</b> <code>group</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The name of the group to match.
+    
+    <span class="control">@</span><b>param</b> <code>path</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The path of the file to read.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>title</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The title used to identify this file. Defaults to &quot;Save File&quot;.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_file_read_string>    <b><span class="keyword">function </span><span class="name">future_file_read_string</span></b> (<a href="#future_file_read_string">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Similar to <span class="control">[</span><a href="#future_file_read">future_file_read</a><span class="control">]</span>, except the result is converted into a
+    string value.
+    
+    <span class="control">@</span><b>param</b> <code>group</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The name of the group to match.
+    
+    <span class="control">@</span><b>param</b> <code>path</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The path of the file to read.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>title</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The title used to identify this file. Defaults to &quot;Save File&quot;.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_file_write>    <b><span class="keyword">function </span><span class="name">future_file_write</span></b> (<a href="#future_file_write">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Saves a buffer asynchronously and returns a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span>. This future is
+    accepted if the file was saved successfully; or rejected if there was a
+    problem saving the file.
+    
+    <span class="control">@</span><b>param</b> <code>group</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The name of the group to match.
+    
+    <span class="control">@</span><b>param</b> <code>path</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The path of the file to write to.
+    
+    <span class="control">@</span><b>param</b> <code>buffer</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">Buffer</span></i>
+      The ID of the buffer to write.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>title</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The title used to identify this file. Defaults to &quot;Save File&quot;.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
+<span id=future_file_write_string>    <b><span class="keyword">function </span><span class="name">future_file_write_string</span></b> (<a href="#future_file_write_string">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Similar to <span class="control">[</span><a href="#future_file_write">future_file_write</a><span class="control">]</span>, except the input is converted into a string
+    buffer before being written to the destination.
+    
+    <span class="control">@</span><b>param</b> <code>group</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The name of the group to match.
+    
+    <span class="control">@</span><b>param</b> <code>path</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The path of the file to read.
+    
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+      The value to write to the file. Implicitly converted into a string.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>title</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      The title used to identify this file. Defaults to &quot;Save File&quot;.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<span class="name">Future</span></i></div>
 <span id=theory>================================================================================
 <b>Theory</b> (<a href="#theory">link</a>) .txt
 ================================================================================</span>
