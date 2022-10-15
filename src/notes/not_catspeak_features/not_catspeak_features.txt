@@ -12,8 +12,8 @@
 
  - **Customisable standard library** ...
      exposing only the functions you want modders to have access to. See the
-     sections on [Global Variables] and the [Standard Library] for more
-     information and examples.
+     sections on [Customising the Standard Library] and [Global Variables] for
+     more information and examples.
 
  - **Performant runtime** ...
      capable of interpreting thousands of (and even tens of thousands of)
