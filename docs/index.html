@@ -334,7 +334,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#future_all"><span class="keyword">function </span><span class="name">future_all</span></a>
         - <a href="#future_any"><span class="keyword">function </span><span class="name">future_any</span></a>
         - <a href="#future_ok"><span class="keyword">function </span><span class="name">future_ok</span></a>
-        - <a href="#future_error"><span class="keyword">function </span><span class="name">future_error</span></a></div>
+        - <a href="#future_error"><span class="keyword">function </span><span class="name">future_error</span></a>
+        - <a href="#is_future"><span class="keyword">function </span><span class="name">is_future</span></a></div>
 <input id="scr_future_file-checkbox" class="toggle" type="checkbox"><label for="scr_future_file-checkbox">   - </label><a href="#scr_future_file"><span class="name-script">scr_future_file</span></a><div class="collapsible-content">
         - <a href="#future_file_title"><span class="keyword">macro </span><span class="name">FUTURE_FILE_TITLE</span></a>
         - <a href="#future_file_read"><span class="keyword">function </span><span class="name">future_file_read</span></a>
@@ -2614,6 +2615,14 @@ asynchronous processes. The following sections document its usage.</div>
       The value to create a future from.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#future"><span class="name">Future</span></a></i></div>
+<span id=is_future>    <b><span class="keyword">function </span><span class="name">is_future</span></b> (<a href="#is_future">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Returns whether this value represents a future instance.
+    
+    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+      The value to check.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
 <span id=scr_future_file>  <b><span class="name-script">scr_future_file</span></b> (<a href="#scr_future_file">link</a>) .gml
   ==============================================================================</span>
 <div>  Wrapper functions for file handling tasks.</div>
