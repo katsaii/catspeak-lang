@@ -17,6 +17,7 @@ function Future() constructor {
     self.result = undefined;
     self.thenCallbacks = [];
     self.catchCallbacks = [];
+    self.__futureFlag__ = true;
 
     /// Accepts this future with the supplied argument.
     ///
@@ -60,12 +61,10 @@ function Future() constructor {
         } else {
             // evaluate immediately
             newFuture = callback(result);
-            if (!is_struct(newFuture) || instanceof(newFuture) != "Future") {
-                if (newFuture != undefined) {
-                    var val = newFuture;
-                    newFuture = new Future();
-                    newFuture.accept(val);
-                }
+            if (newFuture != undefined && !is_future(newFuture)) {
+                var value = newFuture;
+                newFuture = new Future();
+                newFuture.accept(value);
             }
         }
         if (newFuture == undefined) {
@@ -103,7 +102,7 @@ function Future() constructor {
                 var callback = callbacks[i];
                 var future = callbacks[i + 1];
                 var result = callback(value);
-                if (is_struct(result) && instanceof(result) == "Future") {
+                if (is_future(result)) {
                     result.andThen(method({
                         future : future,
                     }, function(value) {
@@ -222,7 +221,7 @@ function future_any(futures) {
 ///
 /// @return {Struct.Future}
 function future_ok(value) {
-    if (is_struct(value) && instanceof(value) == "Future") {
+    if (is_future(value)) {
         return value;
     }
     var future = new Future();
@@ -239,10 +238,21 @@ function future_ok(value) {
 ///
 /// @return {Struct.Future}
 function future_error(value) {
-    if (is_struct(value) && instanceof(value) == "Future") {
+    if (is_future(value)) {
         return value;
     }
     var future = new Future();
     future.reject(value);
     return future;
+}
+
+/// Returns whether this value represents a future instance.
+///
+/// @param {Any} value
+///   The value to check.
+///
+/// @return {Bool}
+function is_future(value) {
+    gml_pragma("forceinline");
+    return is_struct(value) && variable_struct_exists(value, "__futureFlag__");
 }
