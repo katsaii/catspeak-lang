@@ -12,6 +12,8 @@ var comp = catspeak_compile_string(@'
 comp.andThen(function(ir) {
     self.ir = ir;
     clipboard_set_text(ir.disassembly())
+}).andCatch(function(ex) {
+    show_message("failed to compile");
 });
 
 delayProc = new Future();

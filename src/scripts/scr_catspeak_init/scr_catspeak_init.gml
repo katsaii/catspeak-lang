@@ -331,7 +331,9 @@ function __catspeak_init_database_ascii_desc() {
             | CatspeakASCIIDesc.GRAPHIC
             | CatspeakASCIIDesc.IDENT);
     mark(db, ["_", "'"],
-            CatspeakASCIIDesc.GRAPHIC | CatspeakASCIIDesc.IDENT);
+            CatspeakASCIIDesc.ALPHABETIC
+            | CatspeakASCIIDesc.GRAPHIC
+            | CatspeakASCIIDesc.IDENT);
     mark(db, function (char) {
         return char >= ord("0") && char <= ord("9");
     }, CatspeakASCIIDesc.DIGIT
