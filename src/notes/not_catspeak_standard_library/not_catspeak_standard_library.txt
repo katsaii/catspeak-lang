@@ -55,5 +55,9 @@ their precedences in the section on [Operator Identifiers].
 
 NOTE: All operators are left-associative in Catspeak.
 
+NOTE: Unlike GML, the operators `&&` and `||` are **not short-circuiting**.
+      This means that both the left and right hand-side of the operator will
+      be evaluated immediately.
+
 Catspeak does not have `and`, `or`, `xor`, `mod` and `div` operators. You
 will need to use `&&`, `||`, `^^`, `%`, and `//` instead.
