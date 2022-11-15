@@ -7,7 +7,8 @@
 /// The different progress states of a [Future].
 enum FutureState {
     UNRESOLVED,
-    RESOLVED,
+    ACCEPTED,
+    REJECTED,
 }
 
 /// Constructs a new future, allowing for deferred execution of code depending
@@ -15,8 +16,9 @@ enum FutureState {
 function Future() constructor {
     self.state = FutureState.UNRESOLVED;
     self.result = undefined;
-    self.thenCallbacks = [];
-    self.catchCallbacks = [];
+    self.thenFuncs = [];
+    self.catchFuncs = [];
+    self.finallyFuncs = [];
     self.__futureFlag__ = true;
 
     /// Accepts this future with the supplied argument.
@@ -24,8 +26,42 @@ function Future() constructor {
     /// @param {Any} [value]
     ///   The value to reject.
     static accept = function(value) {
-        __handleEvents(value, thenCallbacks);
-        result = value;
+        __resolve(FutureState.ACCEPTED, value);
+        var thenCount = array_length(thenFuncs);
+        for (var i = 0; i < thenCount; i += 2) {
+            // call then callbacks
+            var callback = thenFuncs[i + 0];
+            var nextFuture = thenFuncs[i + 1];
+            var result = callback(value);
+            if (is_future(result)) {
+                // if the result returned from the callback is another future,
+                // delay the next future until the result future has been
+                // resolved
+                result.andFinally(method(nextFuture, function(future) {
+                    if (future.state == FutureState.ACCEPTED) {
+                        accept(future.result);
+                    } else {
+                        reject(future.result);
+                    }
+                }));
+            } else {
+                nextFuture.accept(result);
+            }
+        }
+        var catchCount = array_length(catchFuncs);
+        for (var i = 0; i < catchCount; i += 2) {
+            // accept catch futures
+            var nextFuture = catchFuncs[i + 1];
+            nextFuture.accept(value);
+        }
+        var finallyCount = array_length(finallyFuncs);
+        for (var i = 0; i < finallyCount; i += 2) {
+            // accept finally futures and call their callbacks
+            var callback = finallyFuncs[i + 0];
+            var nextFuture = finallyFuncs[i + 1];
+            callback(self);
+            nextFuture.accept(value);
+        }
     };
 
     /// Rejects this future with the supplied argument.
@@ -33,7 +69,42 @@ function Future() constructor {
     /// @param {Any} [value]
     ///   The value to reject.
     static reject = function(value) {
-        __handleEvents(value, catchCallbacks);
+        __resolve(FutureState.REJECTED, value);
+        var thenCount = array_length(thenFuncs);
+        for (var i = 0; i < thenCount; i += 2) {
+            // reject then futures
+            var nextFuture = thenFuncs[i + 1];
+            nextFuture.reject(value);
+        }
+        var catchCount = array_length(catchFuncs);
+        for (var i = 0; i < catchCount; i += 2) {
+            // call catch callbacks
+            var callback = catchFuncs[i + 0];
+            var nextFuture = catchFuncs[i + 1];
+            var result = callback(value);
+            if (is_future(result)) {
+                // if the result returned from the callback is another future,
+                // delay the next future until the result future has been
+                // resolved
+                result.andFinally(method(nextFuture, function(future) {
+                    if (future.state == FutureState.ACCEPTED) {
+                        accept(future.result);
+                    } else {
+                        reject(future.result);
+                    }
+                }));
+            } else {
+                nextFuture.accept(result);
+            }
+        }
+        var finallyCount = array_length(finallyFuncs);
+        for (var i = 0; i < finallyCount; i += 2) {
+            // reject finally futures and call their callbacks
+            var callback = finallyFuncs[i + 0];
+            var nextFuture = finallyFuncs[i + 1];
+            callback(self);
+            nextFuture.reject(value);
+        }
     };
 
     /// Returns whether this future has been resolved. A resolved future
@@ -41,7 +112,7 @@ function Future() constructor {
     ///
     /// @return {Bool}
     static resolved = function() {
-        return state == FutureState.RESOLVED;
+        return state != FutureState.UNRESOLVED;
     };
 
     /// Sets the callback function to invoke once the process is complete.
@@ -51,27 +122,14 @@ function Future() constructor {
     ///
     /// @return {Struct.Future}
     static andThen = function(callback) {
-        var newFuture;
+        var future;
         if (state == FutureState.UNRESOLVED) {
-            newFuture = new Future();
-            array_push(thenCallbacks, callback, newFuture);
-            andCatch(method(newFuture, function(result) {
-                reject(result);
-            }));
-        } else {
-            // evaluate immediately
-            newFuture = callback(result);
-            if (newFuture != undefined && !is_future(newFuture)) {
-                var value = newFuture;
-                newFuture = new Future();
-                newFuture.accept(value);
-            }
+            future = new Future();
+            array_push(thenFuncs, callback, future);
+        } else if (state == FutureState.ACCEPTED) {
+            future = future_ok(callback(result));
         }
-        if (newFuture == undefined) {
-            newFuture = new Future();
-            newFuture.accept();
-        }
-        return newFuture;
+        return future;
     };
 
     /// Sets the callback function to invoke if an error occurrs whilst the
@@ -82,38 +140,43 @@ function Future() constructor {
     ///
     /// @return {Struct.Future}
     static andCatch = function(callback) {
-        var newFuture;
+        var future;
         if (state == FutureState.UNRESOLVED) {
-            newFuture = new Future();
-            array_push(catchCallbacks, callback, newFuture);
+            future = new Future();
+            array_push(catchFuncs, callback, future);
+        } else if (state == FutureState.REJECTED) {
+            future = future_ok(callback(result));
         }
-        if (newFuture == undefined) {
-            newFuture = new Future();
-            newFuture.accept();
+        return future;
+    };
+
+    /// Sets the callback function to invoke if this promise is resolved.
+    ///
+    /// @param {Function} callback
+    ///   The function to invoke.
+    ///
+    /// @return {Struct.Future}
+    static andFinally = function(callback) {
+        var future;
+        if (state == FutureState.UNRESOLVED) {
+            future = new Future();
+            array_push(finallyFuncs, callback, future);
+        } else {
+            future = future_ok(callback(self));
         }
-        return newFuture;
+        return future;
     };
 
     /// @ignore
-    static __handleEvents = function(value, callbacks) {
-        if (state == FutureState.UNRESOLVED) {
-            var count = array_length(callbacks);
-            for (var i = 0; i < count; i += 2) {
-                var callback = callbacks[i];
-                var future = callbacks[i + 1];
-                var result = callback(value);
-                if (is_future(result)) {
-                    result.andThen(method({
-                        future : future,
-                    }, function(value) {
-                        future.accept(value);
-                    }));
-                } else {
-                    future.accept(result);
-                }
-            }
+    static __resolve = function(newState, value) {
+        if (state != FutureState.UNRESOLVED) {
+            show_error(
+                    "future has already been resolved with a value of " +
+                    "'" + string(result) + "'", false);
+            return;
         }
-        state = FutureState.RESOLVED;
+        result = value;
+        state = newState;
     };
 }
 
@@ -205,6 +268,46 @@ function future_any(futures) {
                 joinData.count -= 1;
                 if (joinData.count <= 0) {
                     future.reject(results);
+                }
+            }));
+        }
+    }
+    return newFuture;
+}
+
+/// Creates a new [Future] which is accepted when all of the futures in an
+/// array are either accepted or rejected.
+///
+/// @param {Array<Struct.Future>} futures
+///   The array of futures to await.
+///
+/// @return {Struct.Future}
+function future_settled(futures) {
+    var count = array_length(futures);
+    var newFuture = new Future();
+    if (count == 0) {
+        newFuture.accept([]);
+    } else {
+        var joinData = {
+            future : newFuture,
+            count : count,
+            results : array_create(count, undefined),
+        };
+        for (var i = 0; i < count; i += 1) {
+            var future = futures[i];
+            future.andFinally(method({
+                pos : i,
+                joinData : joinData,
+            }, function(thisFuture) {
+                var future = joinData.future;
+                if (future.resolved()) {
+                    return;
+                }
+                var results = joinData.results;
+                results[@ pos] = thisFuture;
+                joinData.count -= 1;
+                if (joinData.count <= 0) {
+                    future.accept(results);
                 }
             }));
         }

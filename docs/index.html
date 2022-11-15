@@ -330,9 +330,11 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#reject"><span class="keyword">method </span><span class="name">reject</span></a>
           - <a href="#resolved"><span class="keyword">method </span><span class="name">resolved</span></a>
           - <a href="#andthen"><span class="keyword">method </span><span class="name">andThen</span></a>
-          - <a href="#andcatch"><span class="keyword">method </span><span class="name">andCatch</span></a></div>
+          - <a href="#andcatch"><span class="keyword">method </span><span class="name">andCatch</span></a>
+          - <a href="#andfinally"><span class="keyword">method </span><span class="name">andFinally</span></a></div>
         - <a href="#future_all"><span class="keyword">function </span><span class="name">future_all</span></a>
         - <a href="#future_any"><span class="keyword">function </span><span class="name">future_any</span></a>
+        - <a href="#future_settled"><span class="keyword">function </span><span class="name">future_settled</span></a>
         - <a href="#future_ok"><span class="keyword">function </span><span class="name">future_ok</span></a>
         - <a href="#future_error"><span class="keyword">function </span><span class="name">future_error</span></a>
         - <a href="#is_future"><span class="keyword">function </span><span class="name">is_future</span></a></div>
@@ -428,19 +430,6 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
 function. This function controls global settings, such as the default
 exception handler. <span class="control">**</span><b>Please read</b><span class="control">**</span> the documentation for <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> to
 get an in-depth description of what each option does.
-
-As an example, to change the global exception handler for Catspeak programs
-you would use the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function like so:
-<b class="control">```</b><code>
-catspeak_config({
-    &quot;exceptionHandler&quot;: function(error) {
-        show_debug_message(&quot;A Catspeak error occurred!&quot;);
-        show_debug_message(error);
-    },
-});
-</code><b class="control">```</b>
-This will update the global exception handler, so that if an error occurs a
-message will be displayed in the output window instead of crashing the game.
 
 To configure multiple options, you can pass in both simultaneously:
 <b class="control">```</b><code>
@@ -1226,10 +1215,6 @@ macros, and structs.</div>
        setting is 0.5 (50% of a frame). This leaves enough time for the other
        components of your game to complete, whilst also letting Catspeak be
        speedy.
-    
-     - &quot;exceptionHandler&quot; should be a script or method ID. This will set the
-       catch-all exception handler when no handler exists for a specific
-       process. Set to <b class="control">`</b><code>undefined</code><b class="control">`</b> to remove the handler.
     
      - &quot;processTimeLimit&quot; should be a number greater than 0. Determines how
        long (in seconds) a process can run for before it is assumed
@@ -2574,6 +2559,14 @@ asynchronous processes. The following sections document its usage.</div>
         The function to invoke.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#future"><span class="name">Future</span></a></i></div>
+<span id=andfinally>      <b><span class="keyword">method </span><span class="name">andFinally</span></b> (<a href="#andfinally">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Sets the callback function to invoke if this promise is resolved.
+      
+      <span class="control">@</span><b>param</b> <code>callback</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+        The function to invoke.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#future"><span class="name">Future</span></a></i></div>
 <span id=future_all>    <b><span class="keyword">function </span><span class="name">future_all</span></b> (<a href="#future_all">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is accepted only when all other futures in an
@@ -2590,6 +2583,15 @@ asynchronous processes. The following sections document its usage.</div>
 <div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is accepted if any of the futures in an
     array are accepted. If all futures in the array are rejected, then the
     resulting future is rejected with an array of their values.
+    
+    <span class="control">@</span><b>param</b> <code>futures</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#future"><span class="name">Future</span></a>&gt;<span class="name"></span></i>
+      The array of futures to await.
+    
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#future"><span class="name">Future</span></a></i></div>
+<span id=future_settled>    <b><span class="keyword">function </span><span class="name">future_settled</span></b> (<a href="#future_settled">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Creates a new <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> which is accepted when all of the futures in an
+    array are either accepted or rejected.
     
     <span class="control">@</span><b>param</b> <code>futures</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#future"><span class="name">Future</span></a>&gt;<span class="name"></span></i>
       The array of futures to await.

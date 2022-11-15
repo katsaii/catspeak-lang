@@ -120,10 +120,6 @@ function catspeak_create_buffer_from_string(src) {
 ///    components of your game to complete, whilst also letting Catspeak be
 ///    speedy.
 ///
-///  - "exceptionHandler" should be a script or method ID. This will set the
-///    catch-all exception handler when no handler exists for a specific
-///    process. Set to `undefined` to remove the handler.
-///
 ///  - "processTimeLimit" should be a number greater than 0. Determines how
 ///    long (in seconds) a process can run for before it is assumed
 ///    unresponsive and terminated. The default value is 1 second. Setting
@@ -140,10 +136,6 @@ function catspeak_config(configData) {
     var frameAllocation = configData[$ "frameAllocation"];
     if (is_real(frameAllocation)) {
         processManager.frameAllocation = clamp(frameAllocation, 0, 1);
-    }
-    if (variable_struct_exists(configData, "exceptionHandler")) {
-        var handler = configData[$ "exceptionHandler"];
-        processManager.exceptionHandler = handler;
     }
     var processTimeLimit = configData[$ "processTimeLimit"];
     if (is_real(processTimeLimit)) {
@@ -214,10 +206,6 @@ function CatspeakProcess(resolver) : Future() constructor {
     // invoke the process
     var manager = global.__catspeakProcessManager;
     self.timeLimit ??= manager.processTimeLimit;
-    var eh = manager.exceptionHandler;
-    if (eh != undefined) {
-        andCatch(eh);
-    }
     ds_list_add(manager.processes, self);
     if (manager.inactive) {
         manager.inactive = false;

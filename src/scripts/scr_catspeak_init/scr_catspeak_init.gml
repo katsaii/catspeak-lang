@@ -50,7 +50,6 @@ function __catspeak_init_process() {
         // only compute Catspeak programs for half of a frame
         frameAllocation : 0.5,
         processTimeLimit : 1000,
-        exceptionHandler : undefined,
         dtRatioPrev : 1,
         inactive : true,
         update : function() {
@@ -75,10 +74,10 @@ function __catspeak_init_process() {
                     break;
                 }
                 var process = processes_[| processIdx];
-                if (process.state == FutureState.UNRESOLVED) {
+                if (!process.resolved()) {
                     process.__update();
                 }
-                if (process.state == FutureState.RESOLVED) {
+                if (process.resolved()) {
                     ds_list_delete(processes_, processIdx);
                 } else {
                     var tSpent = process.timeSpent;
