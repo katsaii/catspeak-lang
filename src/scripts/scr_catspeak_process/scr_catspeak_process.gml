@@ -43,12 +43,7 @@ function catspeak_execute(scr, args) {
 }
 
 /// Creates a new Catspeak compiler process for a buffer containing Catspeak
-/// code. The seek position of the buffer will not be set to the beginning of
-/// the buffer, this is something you have to manage yourself:
-/// ```
-/// buffer_seek(buff, buffer_seek_start, 0); // reset seek
-/// catspeak_compile_buffer(buff);           // then compile
-/// ```
+/// code.
 ///
 /// @param {ID.Buffer} buff
 ///   A reference to the buffer containing the source code to compile.
@@ -57,12 +52,16 @@ function catspeak_execute(scr, args) {
 ///   Whether the buffer should be deleted after the compiler process is
 ///   complete. Defaults to `false`.
 ///
+/// @param {Real} [offset]
+///   The offset in the buffer to start parsing from. Defaults to 0, the
+///   start of the buffer.
+///
 /// @param {Real} [size]
 ///   The length of the buffer input. Any characters beyond this limit will
 ///   be treated as the end of the file. Defaults to `infinity`.
 ///
 /// @return {Struct.CatspeakProcess}
-function catspeak_compile_buffer(buff, consume=false, size=undefined) {
+function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) {
     var lexer = new CatspeakLexer(buff, size);
     var compiler = new CatspeakCompiler(lexer);
     var future = new CatspeakProcess(method(compiler, function(accept) {

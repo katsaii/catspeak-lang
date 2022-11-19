@@ -10,7 +10,8 @@
 ///   The ID of the GML buffer to use.
 ///
 /// @param {Real} [offset]
-///   The offset in the buffer to start parsing from.
+///   The offset in the buffer to start parsing from. Defaults to 0, the
+///   start of the buffer.
 ///
 /// @param {Real} [size]
 ///   The length of the buffer input. Any characters beyond this limit will
