@@ -162,8 +162,6 @@ function __catspeak_init_process() {
             var processes_ = processes;
             var processIdx = 0;
             var processCount = ds_list_size(processes_);
-            // TODO :: add a method of detecting whether a process has
-            //         become unresponsive
             do {
                 var tStart = get_timer();
                 if (processCount < 1) {
