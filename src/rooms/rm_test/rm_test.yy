@@ -46,8 +46,8 @@
     "PhysicsWorldPixToMetres": 0.1,
   },
   "parent": {
-    "name": "testing",
-    "path": "folders/Catspeak/testing.yy",
+    "name": "Testing",
+    "path": "folders/Testing.yy",
   },
   "resourceVersion": "1.0",
   "name": "rm_test",

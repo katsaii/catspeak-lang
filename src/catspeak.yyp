@@ -26,7 +26,7 @@
     {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},"order":5,},
     {"id":{"name":"not_catspeak_configuration","path":"notes/not_catspeak_configuration/not_catspeak_configuration.yy",},"order":7,},
-    {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":2,},
+    {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":1,},
   ],
   "Options": [
     {"name":"Linux","path":"options/linux/options_linux.yy",},
@@ -49,10 +49,10 @@
     {"folderPath":"folders/Catspeak.yy","order":0,"resourceVersion":"1.0","name":"Catspeak","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Catspeak/compiler.yy","order":0,"resourceVersion":"1.0","name":"compiler","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Catspeak/compiler/auto-generated.yy","order":2,"resourceVersion":"1.0","name":"auto-generated","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/testing.yy","order":1,"resourceVersion":"1.0","name":"testing","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Catspeak/notes.yy","order":4,"resourceVersion":"1.0","name":"notes","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Future.yy","order":1,"resourceVersion":"1.0","name":"Future","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Future/file.yy","order":1,"resourceVersion":"1.0","name":"file","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Testing.yy","order":2,"resourceVersion":"1.0","name":"Testing","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
