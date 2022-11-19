@@ -1,24 +1,40 @@
 //! The primary user-facing interface for configuring the Catspeak execution
 //! engine.
+//!
+//! Many parts of the Catspeak engine expose configuration features. These
+//! are:
+//!
+//!  - "frameAllocation" should be a number in the range [0, 1]. Determines
+//!    what percentage of a game frame should be reserved for processing
+//!    Catspeak programs. Catspeak will only spend this time when necessary,
+//!    and will not sit idly wasting time. A value of 1 will cause Catspeak
+//!    to spend the whole frame processing, and a value of 0 will cause
+//!    Catspeak to only process a single instruction per frame. The default
+//!    setting is 0.5 (50% of a frame). This leaves enough time for the other
+//!    components of your game to complete, whilst also letting Catspeak be
+//!    speedy.
+//!
+//!  - "processTimeLimit" should be a number greater than 0. Determines how
+//!    long (in seconds) a process can run for before it is assumed
+//!    unresponsive and terminated. The default value is 1 second. Setting
+//!    this to `infinity` is technically possible, but will not be officially
+//!    supported.
+//!
+//!  - "keywords" is a struct whose keys map to [CatspeakToken] values.
+//!    This struct can be modified to customise the keywords expected by the
+//!    Catspeak compiler. For example, if you would like to use "func" for
+//!    functions (instead of the default "fun"), you can add a new definition:
+//!    ```
+//!    var keywords = catspeak_config().keywords;
+//!    keywords[$ "func"] = CatspeakToken.FUN;
+//!    variable_struct_remove(keywords, "fun"); // delete the old keyword
+//!    ```
+//!    Please take care when modifying this struct because any changes will
+//!    be **permanent** until you close and re-open the game.
 
 /// Configures various global settings of the Catspeak compiler and runtime.
-/// Below is a list of configuration values available to be customised:
-///
-///  - "frameAllocation" should be a number in the range [0, 1]. Determines
-///    what percentage of a game frame should be reserved for processing
-///    Catspeak programs. Catspeak will only spend this time when necessary,
-///    and will not sit idly wasting time. A value of 1 will cause Catspeak
-///    to spend the whole frame processing, and a value of 0 will cause
-///    Catspeak to only process a single instruction per frame. The default
-///    setting is 0.5 (50% of a frame). This leaves enough time for the other
-///    components of your game to complete, whilst also letting Catspeak be
-///    speedy.
-///
-///  - "processTimeLimit" should be a number greater than 0. Determines how
-///    long (in seconds) a process can run for before it is assumed
-///    unresponsive and terminated. The default value is 1 second. Setting
-///    this to `infinity` is technically possible, but will not be officially
-///    supported.
+/// See the list in [scr_catspeak_config] for configuration values and their
+/// usages.
 ///
 /// @return {Struct}
 function catspeak_config() {
