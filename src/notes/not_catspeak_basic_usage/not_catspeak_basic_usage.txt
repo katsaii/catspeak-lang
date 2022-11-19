@@ -5,14 +5,14 @@ your programs is much faster.
 # Compiling Programs
 
 The first step to running your Catspeak programs involves compiling the
-source code from the human-readable form into an executable form. This can be
+source code from its human-readable form into an executable form. This can be
 done in two ways: from a GML string, or from a character buffer.
 
 ## Compiling From a String
 
 If your Catspeak program is stored within a GML string, you can use the
-[catspeak_compile_string] function to compile it. For example, consider the
-following program, stored in a multi-line GML string:
+[catspeak_compile_string] function to compile it. Consider the following
+program:
 ```
 // counts to 10 and then returns a message
 var src = @'
@@ -24,59 +24,33 @@ var src = @'
     return "blast off!"
 ';
 ```
-You can use the [catspeak_compile_string] function to spawn a
-[CatspeakProcess]:
+You can use the [catspeak_compile_string] function to asynchronously compile
+the sourc code:
 ```
 var process = catspeak_compile_string(src);
 ```
-The `process` variable stores a reference to the compiler process
-responsible for compiling the code you passed as a parameter.
-
-As it stands, this example isn't very interesting because it ignores the
-result produced by the compiler. In order to grab this result, the
-[andThen] method on [CatspeakProcess] needs to be used:
+The `process` variable stores a reference to a [CatspeakProcess] responsible
+for compiling your code. Once the process is complete, you can retreive the
+result using the [andThen] method:
 ```
 process.andThen(function(code) {
-    show_message(code.disassembly());
+    show_message("success!");
 });
 ```
-When the process completes, this callback function will be called with a
-single parameter. This parameter will be the compiled program produced by
-the compiler. In this example, the callback function uses the [disassembly]
-method to display the debug representation of the program in a pop-up
-window; it should look like this:
+If the program fails to compile, this callback function will never execute.
+In this case, you will need to use the `andCatch` method to catch the
+compilation error:
 ```
-fun main() {
-blk["init"]:
-  r4 = LDC 3 ...
-  JMP blk["entry"]
-blk["entry"]:
-  r0 = LDC 1 0
-  JMP blk_3_5["while begin"]
-blk_3_5["while begin"]:
-  r1 = MOV 1 r0
-  r2 = LDC 1 10
-  r1 = CALL r4 r1 2
-  JMPF blk_3_5["while end"] r1
-  r1 = MOV 1 r0
-  r1 = CALL r5 r1 1
-  r2 = MOV 1 r0
-  r3 = LDC 1 1
-  r2 = CALL r6 r2 2
-  r0 = MOV 1 r2
-  JMP blk_3_5["while begin"]
-  JMP blk_3_5["while end"]
-blk_3_5["while end"]:
-  r1 = LDC 2 undefined "blast off!"
-  RET r2
-  RET !
-}
+process.andCatch(function(err) {
+    show_message("oh no, an error occurred!");
+});
 ```
-If you see an output similar to this, **congratulations!** You have
-successfully compiled your first Catspeak program. For information on how to
-run this program, see the [Executing Programs] section.
+For more information on this behaviour, see the [Future] definition.
 
-NOTE: The `LDC` instruction on line 3 has been shortened with `...`.
+If after running this example you see a pop-up window with the message
+"success!", then **congratulations!** You have successfully compiled your
+first Catspeak program. For information on how to run this program, see the
+[Executing Programs] section.
 
 ## Compiling From a Buffer
 
@@ -95,19 +69,8 @@ default, this is set to `false`.
 
 NOTE: The seek of this buffer will not be reset to the start, this is
       something you must maintain yourself.
-
-## Customising the Standard Library
-
-You can expose additional functions and constants to Catspeak programs by
-using [catspeak_add_function] and [catspeak_add_constant]. For example,
-adding a new function to display a "hello" message in a pop-up window:
-```
-catspeak_add_function("say_hello", function() {
-    show_message("hello");
-});
-```
-From now on, any Catspeak programs will be able to use the `say_hello`
-function.
+TODO: Make it so that this isn't the case! If you're reading this from the
+      documentation page online, pester me to do this!
 
 # Executing Programs
 
@@ -132,15 +95,15 @@ first Catspeak program!
 NOTE: If you do not care about the result of the call, you can just leave the
       [andThen] method blank.
 
-## Global Variables
+# Customising the Standard Library
 
-Before you use the [catspeak_execute] function to interpret your programs,
-you can get and set global variables using the [getGlobal] and [setGlobal]
-methods on [CatspeakFunction].
-
-NOTE: If you want to call a script from Catspeak, you must use `method` to
-      turn the script into a method struct beforehand, otherwise the
-      interpreter will not see the script as a valid function reference:
-      ```
-      code.setGlobal("alert", method(, show_message));
-      ```
+You can expose additional functions and constants to Catspeak programs by
+using [catspeak_add_function] and [catspeak_add_constant]. For example,
+adding a new function to display a "hello" message in a pop-up window:
+```
+catspeak_add_function("say_hello", function() {
+    show_message("hello");
+});
+```
+From now on, any Catspeak **new** programs will be able to use the `say_hello`
+function.
