@@ -20,11 +20,11 @@ function CatspeakCompiler(lexer, ir) constructor {
     self.token = CatspeakToken.BOF;
     self.tokenPeeked = lexer.next();
     self.scope = undefined;
-    self.stateStack = catspeak_alloc_ds_stack(self);
-    self.resultStack = catspeak_alloc_ds_stack(self);
-    self.itStack = catspeak_alloc_ds_stack(self);
-    self.loopStack = catspeak_alloc_ds_stack(self);
-    self.irStack = catspeak_alloc_ds_stack(self);
+    self.stateStack = __catspeak_alloc_ds_stack(self);
+    self.resultStack = __catspeak_alloc_ds_stack(self);
+    self.itStack = __catspeak_alloc_ds_stack(self);
+    self.loopStack = __catspeak_alloc_ds_stack(self);
+    self.irStack = __catspeak_alloc_ds_stack(self);
     ds_stack_push(self.stateStack, __stateCheckAllParsed, __stateInit);
 
     /// Advances the parser and returns the current token.
@@ -173,8 +173,8 @@ function CatspeakCompiler(lexer, ir) constructor {
             }
             scope_ = scope_.inherited ? scope_.parent : undefined;
         }
-        if (catspeak_string_is_builtin(name)) {
-            var builtin = catspeak_string_to_builtin(name);
+        if (__catspeak_string_is_builtin(name)) {
+            var builtin = __catspeak_string_to_builtin(name);
             if (is_method(builtin)) {
                 // functions are less likely to be used as a parameter, so
                 // make them permanent

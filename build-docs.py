@@ -475,7 +475,6 @@ macros, and structs.
 page.add_section_script(
     "scr_catspeak",
     "scr_catspeak_init",
-    "scr_catspeak_builtins",
     "scr_catspeak_error",
     "scr_catspeak_vm",
     "scr_catspeak_ir",

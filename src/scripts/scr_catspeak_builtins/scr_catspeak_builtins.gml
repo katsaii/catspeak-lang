@@ -2,25 +2,14 @@
 
 //# feather use syntax-errors
 
-/// Returns the value of a built-in Catspeak constant, if one exists.
-/// Returns `undefined` if a built-in couldn't be found.
-///
-/// @param {String} name
-///   The name of the built-in to find.
-///
-/// @return {Any}
-function catspeak_string_to_builtin(name) {
+/// @ignore
+function __catspeak_string_to_builtin(name) {
     gml_pragma("forceinline");
     return global.__catspeakDatabasePrelude[$ name];
 }
 
-/// Returns whether this string represents a built-in Catspeak constant.
-///
-/// @param {String} name
-///   The name of the built-in to find.
-///
-/// @return {Bool}
-function catspeak_string_is_builtin(name) {
+/// @ignore
+function __catspeak_string_is_builtin(name) {
     gml_pragma("forceinline");
     return variable_struct_exists(global.__catspeakDatabasePrelude, name);
 }

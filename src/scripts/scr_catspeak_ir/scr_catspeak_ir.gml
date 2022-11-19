@@ -19,8 +19,8 @@ function CatspeakFunction(name, parent) constructor {
     self.permanentRegisters = [];
     // stores any previously allocated registers which are safe to reuse
     // using a priority queue offers more opportunity for optimisations
-    self.discardedRegisters = catspeak_alloc_ds_priority(self);
-    self.permanentConstantTable = catspeak_alloc_ds_map(self);
+    self.discardedRegisters = __catspeak_alloc_ds_priority(self);
+    self.permanentConstantTable = __catspeak_alloc_ds_map(self);
     // the NaN lookup needs to be handled separately because they are not
     // comparable
     self.permanentConstantNaN = undefined;
