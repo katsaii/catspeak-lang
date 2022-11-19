@@ -57,9 +57,13 @@ function catspeak_execute(scr, args) {
 ///   Whether the buffer should be deleted after the compiler process is
 ///   complete. Defaults to `false`.
 ///
+/// @param {Real} [size]
+///   The length of the buffer input. Any characters beyond this limit will
+///   be treated as the end of the file. Defaults to `infinity`.
+///
 /// @return {Struct.CatspeakProcess}
-function catspeak_compile_buffer(buff, consume=false) {
-    var lexer = new CatspeakLexer(buff);
+function catspeak_compile_buffer(buff, consume=false, size=undefined) {
+    var lexer = new CatspeakLexer(buff, size);
     var compiler = new CatspeakCompiler(lexer);
     var future = new CatspeakProcess(method(compiler, function(accept) {
         if (inProgress()) {
