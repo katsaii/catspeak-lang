@@ -1,5 +1,6 @@
 {
   "resources": [
+    {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_process","path":"scripts/scr_catspeak_process/scr_catspeak_process.yy",},"order":9,},
     {"id":{"name":"scr_catspeak_alloc","path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},"order":6,},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},"order":2,},
@@ -17,6 +18,7 @@
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
     {"id":{"name":"not_catspeak_standard_library","path":"notes/not_catspeak_standard_library/not_catspeak_standard_library.yy",},"order":6,},
     {"id":{"name":"scr_catspeak_token","path":"scripts/scr_catspeak_token/scr_catspeak_token.yy",},"order":0,},
+    {"id":{"name":"scr_testing_init","path":"scripts/scr_testing_init/scr_testing_init.yy",},"order":0,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
     {"id":{"name":"not_catspeak_installation","path":"notes/not_catspeak_installation/not_catspeak_installation.yy",},"order":3,},
     {"id":{"name":"not_catspeak_disclaimer","path":"notes/not_catspeak_disclaimer/not_catspeak_disclaimer.yy",},"order":5,},
@@ -53,6 +55,8 @@
     {"folderPath":"folders/Future.yy","order":1,"resourceVersion":"1.0","name":"Future","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Future/file.yy","order":1,"resourceVersion":"1.0","name":"file","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Testing.yy","order":2,"resourceVersion":"1.0","name":"Testing","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Testing/framework.yy","order":2,"resourceVersion":"1.0","name":"framework","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Testing/unit-tests.yy","order":3,"resourceVersion":"1.0","name":"unit-tests","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
