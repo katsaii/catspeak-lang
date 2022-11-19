@@ -9,15 +9,18 @@
 /// @param {Id.Buffer} buff
 ///   The ID of the GML buffer to use.
 ///
+/// @param {Real} [offset]
+///   The offset in the buffer to start parsing from.
+///
 /// @param {Real} [size]
 ///   The length of the buffer input. Any characters beyond this limit will
 ///   be treated as the end of the file. Defaults to `infinity`.
-function CatspeakLexer(buff, size=infinity) constructor {
+function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.buff = buff;
     self.alignment = buffer_get_alignment(buff);
-    self.offset = 0;
     self.capacity = buffer_get_size(buff);
-    self.limit = min(size, self.capacity);
+    self.offset = clamp(offset, 0, self.capacity);
+    self.limit = clamp(size, 0, self.capacity);
     self.eof = false;
     self.cr = false;
     self.skipNextByte = false;
