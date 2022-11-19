@@ -354,8 +354,8 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
 
  - <span class="control">**</span><b>Customisable standard library</b><span class="control">**</span> ...
      exposing only the functions you want modders to have access to. See the
-     sections on <span class="control">[</span><a href="#customising_the_standard_library">Customising the Standard Library</a><span class="control">]</span> and <span class="control">[</span><a href="#global_variables">Global Variables</a><span class="control">]</span> for
-     more information and examples.
+     section on <span class="control">[</span><a href="#customising_the_standard_library">Customising the Standard Library</a><span class="control">]</span> for more information and
+     examples.
 
  - <span class="control">**</span><b>Performant runtime</b><span class="control">**</span> ...
      capable of interpreting thousands of (and even tens of thousands of)
@@ -1104,12 +1104,7 @@ macros, and structs.</div>
 <span id=catspeak_compile_buffer>    <b><span class="keyword">function </span><span class="name">catspeak_compile_buffer</span></b> (<a href="#catspeak_compile_buffer">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Creates a new Catspeak compiler process for a buffer containing Catspeak
-    code. The seek position of the buffer will not be set to the beginning of
-    the buffer, this is something you have to manage yourself:
-    <b class="control">```</b><code>
-    buffer_seek(buff, buffer_seek_start, 0); // reset seek
-    catspeak_compile_buffer(buff);           // then compile
-    </code><b class="control">```</b>
+    code.
     
     <span class="control">@</span><b>param</b> <code>buff</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">ID</b></a>.<span class="name">Buffer</span></i>
       A reference to the buffer containing the source code to compile.
@@ -1117,6 +1112,10 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>consume</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
       Whether the buffer should be deleted after the compiler process is
       complete. Defaults to <b class="control">`</b><code>false</code><b class="control">`</b>.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>offset</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
+      The offset in the buffer to start parsing from. Defaults to 0, the
+      start of the buffer.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>size</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
       The length of the buffer input. Any characters beyond this limit will
@@ -1155,27 +1154,43 @@ macros, and structs.</div>
 <span id=scr_catspeak_config>  <b><span class="name-script">scr_catspeak_config</span></b> (<a href="#scr_catspeak_config">link</a>) .gml
   ==============================================================================</span>
 <div>  The primary user-facing interface for configuring the Catspeak execution
-  engine.</div>
+  engine.
+  
+  Many parts of the Catspeak engine expose configuration features. These
+  are:
+  
+   - &quot;frameAllocation&quot; should be a number in the range [0, 1]. Determines
+     what percentage of a game frame should be reserved for processing
+     Catspeak programs. Catspeak will only spend this time when necessary,
+     and will not sit idly wasting time. A value of 1 will cause Catspeak
+     to spend the whole frame processing, and a value of 0 will cause
+     Catspeak to only process a single instruction per frame. The default
+     setting is 0.5 (50% of a frame). This leaves enough time for the other
+     components of your game to complete, whilst also letting Catspeak be
+     speedy.
+  
+   - &quot;processTimeLimit&quot; should be a number greater than 0. Determines how
+     long (in seconds) a process can run for before it is assumed
+     unresponsive and terminated. The default value is 1 second. Setting
+     this to <b class="control">`</b><code>infinity</code><b class="control">`</b> is technically possible, but will not be officially
+     supported.
+  
+   - &quot;keywords&quot; is a struct whose keys map to <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span> values.
+     This struct can be modified to customise the keywords expected by the
+     Catspeak compiler. For example, if you would like to use &quot;func&quot; for
+     functions (instead of the default &quot;fun&quot;), you can add a new definition:
+     <b class="control">```</b><code>
+     var keywords = catspeak_config().keywords;
+     keywords[$ &quot;func&quot;] = CatspeakToken.FUN;
+     variable_struct_remove(keywords, &quot;fun&quot;); // delete the old keyword
+     </code><b class="control">```</b>
+     Please take care when modifying this struct because any changes will
+     be <span class="control">**</span><b>permanent</b><span class="control">**</span> until you close and re-open the game.</div>
 <span id=catspeak_config>    <b><span class="keyword">function </span><span class="name">catspeak_config</span></b> (<a href="#catspeak_config">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Configures various global settings of the Catspeak compiler and runtime.
-    Below is a list of configuration values available to be customised:
-    
-     - &quot;frameAllocation&quot; should be a number in the range [0, 1]. Determines
-       what percentage of a game frame should be reserved for processing
-       Catspeak programs. Catspeak will only spend this time when necessary,
-       and will not sit idly wasting time. A value of 1 will cause Catspeak
-       to spend the whole frame processing, and a value of 0 will cause
-       Catspeak to only process a single instruction per frame. The default
-       setting is 0.5 (50% of a frame). This leaves enough time for the other
-       components of your game to complete, whilst also letting Catspeak be
-       speedy.
-    
-     - &quot;processTimeLimit&quot; should be a number greater than 0. Determines how
-       long (in seconds) a process can run for before it is assumed
-       unresponsive and terminated. The default value is 1 second. Setting
-       this to <b class="control">`</b><code>infinity</code><b class="control">`</b> is technically possible, but will not be officially
-       supported.
+    See the list in <span class="control">[</span><a href="#scr_catspeak_config">scr_catspeak_config</a><span class="control">]</span> for configuration values and their
+    usages.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i></div>
 <span id=catspeak_add_function>    <b><span class="keyword">function </span><span class="name">catspeak_add_function</span></b> (<a href="#catspeak_add_function">link</a>) .gml
@@ -2011,7 +2026,8 @@ macros, and structs.</div>
       The ID of the GML buffer to use.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>offset</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-      The offset in the buffer to start parsing from.
+      The offset in the buffer to start parsing from. Defaults to 0, the
+      start of the buffer.
     
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>size</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
       The length of the buffer input. Any characters beyond this limit will
