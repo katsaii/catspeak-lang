@@ -15,7 +15,9 @@
 function CatspeakLexer(buff, size=infinity) constructor {
     self.buff = buff;
     self.alignment = buffer_get_alignment(buff);
-    self.limit = min(size, buffer_get_size(buff));
+    self.offset = 0;
+    self.capacity = buffer_get_size(buff);
+    self.limit = min(size, self.capacity);
     self.eof = false;
     self.cr = false;
     self.skipNextByte = false;
@@ -56,13 +58,18 @@ function CatspeakLexer(buff, size=infinity) constructor {
             return;
         }
         var buff_ = buff;
-        var offset = buffer_tell(buff_);
-        var byte = buffer_peek(buff_, offset, buffer_u8);
-        buffer_poke(buff_, offset, buffer_u8, 0x00);
-        buffer_seek(buff_, buffer_seek_start, offset - lexemeLength);
-        pos.lexeme = buffer_read(buff_, buffer_string);
-        buffer_seek(buff_, buffer_seek_relative, -1);
-        buffer_poke(buff_, offset, buffer_u8, byte);
+        if (offset >= capacity) {
+            // beyond the actual capacity of the buffer
+            var offsetStart = min(offset - lexemeLength, capacity);
+            pos.lexeme = buffer_peek(buff_, offsetStart, buffer_text);
+        } else {
+            // quickly write a null terminator and then read the string content
+            var offsetStart = max(offset - lexemeLength, 0);
+            var byte = buffer_peek(buff_, offset, buffer_u8);
+            buffer_poke(buff_, offset, buffer_u8, 0x00);
+            pos.lexeme = buffer_peek(buff_, offsetStart, buffer_string);
+            buffer_poke(buff_, offset, buffer_u8, byte);
+        }
     };
 
     /// Resets the current lexeme.
@@ -75,11 +82,11 @@ function CatspeakLexer(buff, size=infinity) constructor {
     ///
     /// @return {Real}
     static advance = function() {
-        var seek = buffer_tell(buff);
-        if (seek + 1 >= limit) {
+        if (offset + 1 >= limit) {
             eof = true;
         }
-        var byte = buffer_read(buff, buffer_u8);
+        var byte = buffer_peek(buff, offset, buffer_u8);
+        offset += 1;
         registerByte(byte);
         return byte;
     };
@@ -91,11 +98,11 @@ function CatspeakLexer(buff, size=infinity) constructor {
     ///
     /// @return {Real}
     static peek = function(n) {
-        var offset = buffer_tell(buff) + n - 1;
-        if (offset >= limit) {
+        var peekOffset = offset + n - 1;
+        if (peekOffset >= limit) {
             return -1;
         }
-        return buffer_peek(buff, offset, buffer_u8);
+        return buffer_peek(buff, peekOffset, buffer_u8);
     };
 
     /// @desc Advances the lexer whilst a bytes contain some expected ASCII
@@ -111,7 +118,7 @@ function CatspeakLexer(buff, size=infinity) constructor {
     /// @return {Real}
     static advanceWhile = function(predicate, condition=true) {
         var byte = undefined;
-        var seek = buffer_tell(buff);
+        var seek = offset;
         while (seek < limit) {
             byte = buffer_peek(buff, seek, buffer_u8);
             if (condition != predicate(byte)) {
@@ -123,7 +130,7 @@ function CatspeakLexer(buff, size=infinity) constructor {
         if (seek >= limit) {
             eof = true;
         }
-        buffer_seek(buff, buffer_seek_start, seek);
+        offset = seek;
         return byte;
     };
 
