@@ -271,7 +271,7 @@ def simple_link(s, link=None):
 def simple_markdown(s):
     s = re.sub(r"@deprecated", r"{}<b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>".format(control("@")), s)
     s = re.sub(
-        r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_]*)\]",
+        r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_.]*)\]",
         lambda match: \
             r"{}<b>param</b> <i>(optional)</i> <code>{}</code><b>:</b> <i>{}</i>".format(
                 control("@"),
@@ -281,7 +281,7 @@ def simple_markdown(s):
         s
     )
     s = re.sub(
-        r"@param\s*\{([^\}]*)\}\s*([A-Za-z0-9_]*)",
+        r"@param\s*\{([^\}]*)\}\s*([A-Za-z0-9_.]*)",
         lambda match: \
             r"{}<b>param</b> <code>{}</code><b>:</b> <i>{}</i>".format(
                 control("@"),
@@ -473,7 +473,8 @@ The following sections feature documentation for all public Catspeak functions,
 macros, and structs.
 """)
 page.add_section_script(
-    "scr_catspeak",
+    "scr_catspeak_process",
+    "scr_catspeak_config",
     "scr_catspeak_init",
     "scr_catspeak_error",
     "scr_catspeak_vm",
@@ -482,7 +483,6 @@ page.add_section_script(
     "scr_catspeak_compiler",
     "scr_catspeak_lexer",
     "scr_catspeak_token",
-    "scr_catspeak_ascii_desc",
     "scr_catspeak_alloc",
 )
 page.add_section_string("futures_reference.md", """\
