@@ -30,9 +30,9 @@ values and performing conversions:
 
 In addition to these functions, there are two Catspeak-specific functions:
 
- - `len` returns the number of items in a GML array.
  - `print` takes a variable number of values and prints them to the console
    window. Internally this behaves like `show_debug_message`.
+ - `len` returns the number of items in a GML array or struct.
 
 # Operators
 
