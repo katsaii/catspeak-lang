@@ -485,7 +485,6 @@ page.add_section_script(
     "scr_catspeak_token",
     "scr_catspeak_ascii_desc",
     "scr_catspeak_alloc",
-    "scr_catspeak_compatibility",
 )
 page.add_section_string("futures_reference.md", """\
 The [Future library](https://github.com/NuxiiGit/future) is used by Catspeak in order to better organise

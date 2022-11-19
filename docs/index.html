@@ -120,10 +120,9 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="basic_usage-checkbox" class="toggle" type="checkbox"><label for="basic_usage-checkbox"> - </label><a href="#basic_usage">Basic Usage</a><div class="collapsible-content">
 <input id="compiling_programs-checkbox" class="toggle" type="checkbox"><label for="compiling_programs-checkbox">   - </label><a href="#compiling_programs">Compiling Programs</a><div class="collapsible-content">
         - <a href="#compiling_from_a_string">Compiling From A String</a>
-        - <a href="#compiling_from_a_buffer">Compiling From A Buffer</a>
-        - <a href="#customising_the_standard_library">Customising The Standard Library</a></div>
-<input id="executing_programs-checkbox" class="toggle" type="checkbox"><label for="executing_programs-checkbox">   - </label><a href="#executing_programs">Executing Programs</a><div class="collapsible-content">
-        - <a href="#global_variables">Global Variables</a></div></div>
+        - <a href="#compiling_from_a_buffer">Compiling From A Buffer</a></div>
+      - <a href="#executing_programs">Executing Programs</a>
+      - <a href="#customising_the_standard_library">Customising The Standard Library</a></div>
 <input id="syntax-checkbox" class="toggle" type="checkbox"><label for="syntax-checkbox"> - </label><a href="#syntax">Syntax</a><div class="collapsible-content">
 <input id="lexical_grammar-checkbox" class="toggle" type="checkbox"><label for="lexical_grammar-checkbox">   - </label><a href="#lexical_grammar">Lexical Grammar</a><div class="collapsible-content">
         - <a href="#whitespace">Whitespace</a>
@@ -303,25 +302,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#catspeak_alloc_ds_stack"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_stack</span></a>
         - <a href="#catspeak_alloc_ds_priority"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_priority</span></a>
         - <a href="#catspeak_alloc"><span class="keyword">function </span><span class="name">catspeak_alloc</span></a>
-        - <a href="#catspeak_collect"><span class="keyword">function </span><span class="name">catspeak_collect</span></a></div>
-<input id="scr_catspeak_compatibility-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_compatibility-checkbox">   - </label><a href="#scr_catspeak_compatibility"><span class="name-script">scr_catspeak_compatibility</span></a><div class="collapsible-content">
-        - <a href="#catspeak_start_frame"><span class="keyword">function </span><span class="name">catspeak_start_frame</span></a>
-        - <a href="#catspeak_update"><span class="keyword">function </span><span class="name">catspeak_update</span></a>
-        - <a href="#catspeak_set_error_script"><span class="keyword">function </span><span class="name">catspeak_set_error_script</span></a>
-        - <a href="#catspeak_set_max_iterations"><span class="keyword">function </span><span class="name">catspeak_set_max_iterations</span></a>
-        - <a href="#catspeak_set_frame_allocation"><span class="keyword">function </span><span class="name">catspeak_set_frame_allocation</span></a>
-        - <a href="#catspeak_set_frame_threshold"><span class="keyword">function </span><span class="name">catspeak_set_frame_threshold</span></a>
-        - <a href="#catspeak_session_create"><span class="keyword">function </span><span class="name">catspeak_session_create</span></a>
-        - <a href="#catspeak_session_destroy"><span class="keyword">function </span><span class="name">catspeak_session_destroy</span></a>
-        - <a href="#catspeak_session_set_source"><span class="keyword">function </span><span class="name">catspeak_session_set_source</span></a>
-        - <a href="#catspeak_session_enable_global_access"><span class="keyword">function </span><span class="name">catspeak_session_enable_global_access</span></a>
-        - <a href="#catspeak_session_enable_instance_access"><span class="keyword">function </span><span class="name">catspeak_session_enable_instance_access</span></a>
-        - <a href="#catspeak_session_enable_implicit_return"><span class="keyword">function </span><span class="name">catspeak_session_enable_implicit_return</span></a>
-        - <a href="#catspeak_session_enable_shared_workspace"><span class="keyword">function </span><span class="name">catspeak_session_enable_shared_workspace</span></a>
-        - <a href="#catspeak_session_add_constant"><span class="keyword">function </span><span class="name">catspeak_session_add_constant</span></a>
-        - <a href="#catspeak_session_add_function"><span class="keyword">function </span><span class="name">catspeak_session_add_function</span></a>
-        - <a href="#catspeak_session_create_process"><span class="keyword">function </span><span class="name">catspeak_session_create_process</span></a>
-        - <a href="#catspeak_session_create_process_greedy"><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></a></div></div>
+        - <a href="#catspeak_collect"><span class="keyword">function </span><span class="name">catspeak_collect</span></a></div></div>
 <input id="futures_reference-checkbox" class="toggle" type="checkbox"><label for="futures_reference-checkbox"> - </label><a href="#futures_reference">Futures Reference</a><div class="collapsible-content">
 <input id="scr_future-checkbox" class="toggle" type="checkbox"><label for="scr_future-checkbox">   - </label><a href="#scr_future"><span class="name-script">scr_future</span></a><div class="collapsible-content">
         - <a href="#futurestate"><span class="keyword">enum </span><span class="name">FutureState</span></a>
@@ -427,23 +408,25 @@ do report it on <span class="control">[</span><a href="https://github.com/NuxiiG
 <b>Configuration</b> (<a href="#configuration">link</a>) .txt
 ================================================================================</span>
 <div>The primary method of configuring Catspeak is through the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span>
-function. This function controls global settings, such as the default
-exception handler. <span class="control">**</span><b>Please read</b><span class="control">**</span> the documentation for <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> to
-get an in-depth description of what each option does.
+function. This function exposes a struct containing all the global settings,
+such as how long processes are allowed to run before they become
+unresponsive.
 
-To configure multiple options, you can pass in both simultaneously:
+<span class="control">**</span><b>Please read</b><span class="control">**</span> the documentation for <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> to get an in-depth
+description of what each option does.
+
+Below are a couple of examples showing how to read/write configurations:
 <b class="control">```</b><code>
-catspeak_config({
-    &quot;frameAllocation&quot;: 0.25, // only run Catspeak for 25% of a frame
+var configs = catspeak_config();
 
-    &quot;processTimeLimit&quot;: 5,   // all processes can run for 5 seconds before
-                             // being forced to stop
-});
-</code><b class="control">```</b>
+configs.frameAllocation = 0.25; // only run Catspeak for 25% of a frame
 
-<em>NOTE</em>: There is currently no way to get the current value for a configuration
-      option. This will either be done using a new function, or by passing
-      the option name as a string to the <span class="control">[</span><a href="#catspeak_config">catspeak_config</a><span class="control">]</span> function.</div>
+configs.processTimeLimit = 5; // all processes can run for 5 seconds
+                              // before being forced to stop
+
+// get the current process time limit
+var timeLimit = configs.processTimeLimit;
+</code><b class="control">```</b></div>
 <span id=basic_usage>================================================================================
 <b>Basic Usage</b> (<a href="#basic_usage">link</a>) .txt
 ================================================================================</span>
@@ -453,13 +436,13 @@ your programs is much faster.</div>
 <span id=compiling_programs>  <b>Compiling Programs</b> (<a href="#compiling_programs">link</a>) .txt
   ==============================================================================</span>
 <div>  The first step to running your Catspeak programs involves compiling the
-  source code from the human-readable form into an executable form. This can be
+  source code from its human-readable form into an executable form. This can be
   done in two ways: from a GML string, or from a character buffer.</div>
 <span id=compiling_from_a_string>    <b>Compiling From A String</b> (<a href="#compiling_from_a_string">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    If your Catspeak program is stored within a GML string, you can use the
-    <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function to compile it. For example, consider the
-    following program, stored in a multi-line GML string:
+    <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function to compile it. Consider the following
+    program:
     <b class="control">```</b><code>
     // counts to 10 and then returns a message
     var src = @&#39;
@@ -471,59 +454,33 @@ your programs is much faster.</div>
         return &quot;blast off!&quot;
     &#39;;
     </code><b class="control">```</b>
-    You can use the <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function to spawn a
-    <span class="control">[</span><a href="#catspeakprocess">CatspeakProcess</a><span class="control">]</span>:
+    You can use the <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function to asynchronously compile
+    the sourc code:
     <b class="control">```</b><code>
     var process = catspeak_compile_string(src);
     </code><b class="control">```</b>
-    The <b class="control">`</b><code>process</code><b class="control">`</b> variable stores a reference to the compiler process
-    responsible for compiling the code you passed as a parameter.
-    
-    As it stands, this example isn&#39;t very interesting because it ignores the
-    result produced by the compiler. In order to grab this result, the
-    <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method on <span class="control">[</span><a href="#catspeakprocess">CatspeakProcess</a><span class="control">]</span> needs to be used:
+    The <b class="control">`</b><code>process</code><b class="control">`</b> variable stores a reference to a <span class="control">[</span><a href="#catspeakprocess">CatspeakProcess</a><span class="control">]</span> responsible
+    for compiling your code. Once the process is complete, you can retreive the
+    result using the <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method:
     <b class="control">```</b><code>
     process.andThen(function(code) {
-        show_message(code.disassembly());
+        show_message(&quot;success!&quot;);
     });
     </code><b class="control">```</b>
-    When the process completes, this callback function will be called with a
-    single parameter. This parameter will be the compiled program produced by
-    the compiler. In this example, the callback function uses the <span class="control">[</span><a href="#disassembly">disassembly</a><span class="control">]</span>
-    method to display the debug representation of the program in a pop-up
-    window; it should look like this:
+    If the program fails to compile, this callback function will never execute.
+    In this case, you will need to use the <b class="control">`</b><code>andCatch</code><b class="control">`</b> method to catch the
+    compilation error:
     <b class="control">```</b><code>
-    fun main() {
-    blk[&quot;init&quot;]:
-      r4 = LDC 3 ...
-      JMP blk[&quot;entry&quot;]
-    blk[&quot;entry&quot;]:
-      r0 = LDC 1 0
-      JMP blk_3_5[&quot;while begin&quot;]
-    blk_3_5[&quot;while begin&quot;]:
-      r1 = MOV 1 r0
-      r2 = LDC 1 10
-      r1 = CALL r4 r1 2
-      JMPF blk_3_5[&quot;while end&quot;] r1
-      r1 = MOV 1 r0
-      r1 = CALL r5 r1 1
-      r2 = MOV 1 r0
-      r3 = LDC 1 1
-      r2 = CALL r6 r2 2
-      r0 = MOV 1 r2
-      JMP blk_3_5[&quot;while begin&quot;]
-      JMP blk_3_5[&quot;while end&quot;]
-    blk_3_5[&quot;while end&quot;]:
-      r1 = LDC 2 undefined &quot;blast off!&quot;
-      RET r2
-      RET !
-    }
+    process.andCatch(function(err) {
+        show_message(&quot;oh no, an error occurred!&quot;);
+    });
     </code><b class="control">```</b>
-    If you see an output similar to this, <span class="control">**</span><b>congratulations!</b><span class="control">**</span> You have
-    successfully compiled your first Catspeak program. For information on how to
-    run this program, see the <span class="control">[</span><a href="#executing_programs">Executing Programs</a><span class="control">]</span> section.
+    For more information on this behaviour, see the <span class="control">[</span><a href="#future">Future</a><span class="control">]</span> definition.
     
-    <em>NOTE</em>: The <b class="control">`</b><code>LDC</code><b class="control">`</b> instruction on line 3 has been shortened with <b class="control">`</b><code>...</code><b class="control">`</b>.</div>
+    If after running this example you see a pop-up window with the message
+    &quot;success!&quot;, then <span class="control">**</span><b>congratulations!</b><span class="control">**</span> You have successfully compiled your
+    first Catspeak program. For information on how to run this program, see the
+    <span class="control">[</span><a href="#executing_programs">Executing Programs</a><span class="control">]</span> section.</div>
 <span id=compiling_from_a_buffer>    <b>Compiling From A Buffer</b> (<a href="#compiling_from_a_buffer">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    Compiling a buffer works similarly to <span class="control">[</span><a href="#compiling_from_a_string">Compiling From a String</a><span class="control">]</span>, except you
@@ -540,19 +497,9 @@ your programs is much faster.</div>
     default, this is set to <b class="control">`</b><code>false</code><b class="control">`</b>.
     
     <em>NOTE</em>: The seek of this buffer will not be reset to the start, this is
-          something you must maintain yourself.</div>
-<span id=customising_the_standard_library>    <b>Customising The Standard Library</b> (<a href="#customising_the_standard_library">link</a>) .txt
-    ----------------------------------------------------------------------------</span>
-<div>    You can expose additional functions and constants to Catspeak programs by
-    using <span class="control">[</span><a href="#catspeak_add_function">catspeak_add_function</a><span class="control">]</span> and <span class="control">[</span><a href="#catspeak_add_constant">catspeak_add_constant</a><span class="control">]</span>. For example,
-    adding a new function to display a &quot;hello&quot; message in a pop-up window:
-    <b class="control">```</b><code>
-    catspeak_add_function(&quot;say_hello&quot;, function() {
-        show_message(&quot;hello&quot;);
-    });
-    </code><b class="control">```</b>
-    From now on, any Catspeak programs will be able to use the <b class="control">`</b><code>say_hello</code><b class="control">`</b>
-    function.</div>
+          something you must maintain yourself.
+    TODO: Make it so that this isn&#39;t the case! If you&#39;re reading this from the
+          documentation page online, pester me to do this!</div>
 <span id=executing_programs>  <b>Executing Programs</b> (<a href="#executing_programs">link</a>) .txt
   ==============================================================================</span>
 <div>  The second step to running your Catspeak programs is to interpret the
@@ -575,18 +522,18 @@ your programs is much faster.</div>
   
   <em>NOTE</em>: If you do not care about the result of the call, you can just leave the
         <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method blank.</div>
-<span id=global_variables>    <b>Global Variables</b> (<a href="#global_variables">link</a>) .txt
-    ----------------------------------------------------------------------------</span>
-<div>    Before you use the <span class="control">[</span><a href="#catspeak_execute">catspeak_execute</a><span class="control">]</span> function to interpret your programs,
-    you can get and set global variables using the <span class="control">[</span><a href="#getglobal">getGlobal</a><span class="control">]</span> and <span class="control">[</span><a href="#setglobal">setGlobal</a><span class="control">]</span>
-    methods on <span class="control">[</span><a href="#catspeakfunction">CatspeakFunction</a><span class="control">]</span>.
-    
-    <em>NOTE</em>: If you want to call a script from Catspeak, you must use <b class="control">`</b><code>method</code><b class="control">`</b> to
-          turn the script into a method struct beforehand, otherwise the
-          interpreter will not see the script as a valid function reference:
-          <b class="control">```</b><code>
-          code.setGlobal(&quot;alert&quot;, method(, show_message));
-          </code><b class="control">```</b></div>
+<span id=customising_the_standard_library>  <b>Customising The Standard Library</b> (<a href="#customising_the_standard_library">link</a>) .txt
+  ==============================================================================</span>
+<div>  You can expose additional functions and constants to Catspeak programs by
+  using <span class="control">[</span><a href="#catspeak_add_function">catspeak_add_function</a><span class="control">]</span> and <span class="control">[</span><a href="#catspeak_add_constant">catspeak_add_constant</a><span class="control">]</span>. For example,
+  adding a new function to display a &quot;hello&quot; message in a pop-up window:
+  <b class="control">```</b><code>
+  catspeak_add_function(&quot;say_hello&quot;, function() {
+      show_message(&quot;hello&quot;);
+  });
+  </code><b class="control">```</b>
+  From now on, any Catspeak <span class="control">**</span><b>new</b><span class="control">**</span> programs will be able to use the <b class="control">`</b><code>say_hello</code><b class="control">`</b>
+  function.</div>
 <span id=syntax>================================================================================
 <b>Syntax</b> (<a href="#syntax">link</a>) .txt
 ================================================================================</span>
@@ -1116,9 +1063,9 @@ them to the <span class="control">[</span><a href="https://github.com/NuxiiGit/c
   
   In addition to these functions, there are two Catspeak-specific functions:
   
-   - <b class="control">`</b><code>len</code><b class="control">`</b> returns the number of items in a GML array.
    - <b class="control">`</b><code>print</code><b class="control">`</b> takes a variable number of values and prints them to the console
-     window. Internally this behaves like <b class="control">`</b><code>show_debug_message</code><b class="control">`</b>.</div>
+     window. Internally this behaves like <b class="control">`</b><code>show_debug_message</code><b class="control">`</b>.
+   - <b class="control">`</b><code>len</code><b class="control">`</b> returns the number of items in a GML array or struct.</div>
 <span id=operators>  <b>Operators</b> (<a href="#operators">link</a>) .txt
   ==============================================================================</span>
 <div>  Catspeak shares many operators with GML, but there are some differences.
@@ -1184,6 +1131,10 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <i>(optional)</i> <code>consume</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
       Whether the buffer should be deleted after the compiler process is
       complete. Defaults to <b class="control">`</b><code>false</code><b class="control">`</b>.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>size</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
+      The length of the buffer input. Any characters beyond this limit will
+      be treated as the end of the file. Defaults to <b class="control">`</b><code>infinity</code><b class="control">`</b>.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakprocess"><span class="name">CatspeakProcess</span></a></i></div>
 <span id=catspeak_compile_string>    <b><span class="keyword">function </span><span class="name">catspeak_compile_string</span></b> (<a href="#catspeak_compile_string">link</a>) .gml
@@ -2090,7 +2041,11 @@ macros, and structs.</div>
     sure to delete the buffer once parsing is complete.
     
     <span class="control">@</span><b>param</b> <code>buff</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">Buffer</span></i>
-      The ID of the GML buffer to use.</div>
+      The ID of the GML buffer to use.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>size</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
+      The length of the buffer input. Any characters beyond this limit will
+      be treated as the end of the file. Defaults to <b class="control">`</b><code>infinity</code><b class="control">`</b>.</div>
 <span id=registerbyte>      <b><span class="keyword">method </span><span class="name">registerByte</span></b> (<a href="#registerbyte">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Updates the line and column numbers of the lexer, also updates the.
@@ -2336,181 +2291,6 @@ macros, and structs.</div>
 <span id=catspeak_collect>    <b><span class="keyword">function </span><span class="name">catspeak_collect</span></b> (<a href="#catspeak_collect">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Forces the Catspeak engine to collect any discarded resources.</div>
-<span id=scr_catspeak_compatibility>  <b><span class="name-script">scr_catspeak_compatibility</span></b> (<a href="#scr_catspeak_compatibility">link</a>) .gml
-  ==============================================================================</span>
-<div>  Compatibility scripts from version 1.2.3. All functions are deprecated
-  and some have no implementations. There is no guarantee that old code
-  will behave exactly as it did in the past because of huge design changes.</div>
-<span id=catspeak_start_frame>    <b><span class="keyword">function </span><span class="name">catspeak_start_frame</span></b> (<a href="#catspeak_start_frame">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Updates the time limit for updating Catspeak processes.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em></div>
-<span id=catspeak_update>    <b><span class="keyword">function </span><span class="name">catspeak_update</span></b> (<a href="#catspeak_update">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Updates the catspeak manager.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em></div>
-<span id=catspeak_set_error_script>    <b><span class="keyword">function </span><span class="name">catspeak_set_error_script</span></b> (<a href="#catspeak_set_error_script">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Sets the error handler for Catspeak errors.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>script_id_or_method</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
-      The id of the script to execute upon encountering an error.</div>
-<span id=catspeak_set_max_iterations>    <b><span class="keyword">function </span><span class="name">catspeak_set_max_iterations</span></b> (<a href="#catspeak_set_max_iterations">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Sets the maximum number of iterations a process can perform before being
-    stopped.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>iteration_count</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-      The number of maximum number of iterations to perform. Use <b class="control">`</b><code>-1</code><b class="control">`</b> for
-      unlimited.</div>
-<span id=catspeak_set_frame_allocation>    <b><span class="keyword">function </span><span class="name">catspeak_set_frame_allocation</span></b> (<a href="#catspeak_set_frame_allocation">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Sets the maximum percentage of a game frame to spend processing.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>amount</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-      The amount in the range 0-1.</div>
-<span id=catspeak_set_frame_threshold>    <b><span class="keyword">function </span><span class="name">catspeak_set_frame_threshold</span></b> (<a href="#catspeak_set_frame_threshold">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Sets the threshold for processing in the current frame. Processing will
-    not continue beyond this point.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>amount</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-      The amount in the range 0-1.</div>
-<span id=catspeak_session_create>    <b><span class="keyword">function </span><span class="name">catspeak_session_create</span></b> (<a href="#catspeak_session_create">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Creates a new Catspeak session and returns its ID.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i></div>
-<span id=catspeak_session_destroy>    <b><span class="keyword">function </span><span class="name">catspeak_session_destroy</span></b> (<a href="#catspeak_session_destroy">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Destroys an existing catspeak session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-      The ID of the session to destroy.</div>
-<span id=catspeak_session_set_source>    <b><span class="keyword">function </span><span class="name">catspeak_session_set_source</span></b> (<a href="#catspeak_session_set_source">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Sets the source code for this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>src</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
-      The source code to compile and evaluate.</div>
-<span id=catspeak_session_enable_global_access>    <b><span class="keyword">function </span><span class="name">catspeak_session_enable_global_access</span></b> (<a href="#catspeak_session_enable_global_access">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Enables access to global variables for this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>enable</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
-      Whether to enable this option.</div>
-<span id=catspeak_session_enable_instance_access>    <b><span class="keyword">function </span><span class="name">catspeak_session_enable_instance_access</span></b> (<a href="#catspeak_session_enable_instance_access">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Enables access to instance variables for this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>enable</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
-      Whether to enable this option.</div>
-<span id=catspeak_session_enable_implicit_return>    <b><span class="keyword">function </span><span class="name">catspeak_session_enable_implicit_return</span></b> (<a href="#catspeak_session_enable_implicit_return">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Enables implicit returns for this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>enable</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
-      Whether to enable this option.</div>
-<span id=catspeak_session_enable_shared_workspace>    <b><span class="keyword">function </span><span class="name">catspeak_session_enable_shared_workspace</span></b> (<a href="#catspeak_session_enable_shared_workspace">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Makes all processes of this session use the same workspace.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>enable</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
-      Whether to enable this option.</div>
-<span id=catspeak_session_add_constant>    <b><span class="keyword">function </span><span class="name">catspeak_session_add_constant</span></b> (<a href="#catspeak_session_add_constant">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Inserts a new global variable into the interface of this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
-      The name of the variable.
-    
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
-      The value of the variable.</div>
-<span id=catspeak_session_add_function>    <b><span class="keyword">function </span><span class="name">catspeak_session_add_function</span></b> (<a href="#catspeak_session_add_function">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Inserts a new function into to the interface of this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to update.
-    
-    <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
-      The name of the function.
-    
-    <span class="control">@</span><b>param</b> <code>script_id_or_method</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
-      The reference to the function.</div>
-<span id=catspeak_session_create_process>    <b><span class="keyword">function </span><span class="name">catspeak_session_create_process</span></b> (<a href="#catspeak_session_create_process">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Spawns a process from this session.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to spawn a process for.
-    
-    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>script_id_or_method</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
-      The id of the script to execute upon completing the process.
-    
-    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>args</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
-      The arguments to pass to the process.</div>
-<span id=catspeak_session_create_process_greedy>    <b><span class="keyword">function </span><span class="name">catspeak_session_create_process_greedy</span></b> (<a href="#catspeak_session_create_process_greedy">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Spawns a process from this session which is evaluated immediately.
-    
-    <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
-    
-    <span class="control">@</span><b>param</b> <code>session_id</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The ID of the session to spawn a process for.
-    
-    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>args</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
-      The arguments to pass to the process.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
 <span id=futures_reference>================================================================================
 <b>Futures Reference</b> (<a href="#futures_reference">link</a>) .md
 ================================================================================</span>
