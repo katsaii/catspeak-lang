@@ -161,21 +161,19 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
       - <a href="#functions">Functions</a>
       - <a href="#operators">Operators</a></div>
 <input id="library_reference-checkbox" class="toggle" type="checkbox"><label for="library_reference-checkbox"> - </label><a href="#library_reference">Library Reference</a><div class="collapsible-content">
-<input id="scr_catspeak-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak-checkbox">   - </label><a href="#scr_catspeak"><span class="name-script">scr_catspeak</span></a><div class="collapsible-content">
+<input id="scr_catspeak_process-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_process-checkbox">   - </label><a href="#scr_catspeak_process"><span class="name-script">scr_catspeak_process</span></a><div class="collapsible-content">
         - <a href="#catspeak_execute"><span class="keyword">function </span><span class="name">catspeak_execute</span></a>
         - <a href="#catspeak_compile_buffer"><span class="keyword">function </span><span class="name">catspeak_compile_buffer</span></a>
         - <a href="#catspeak_compile_string"><span class="keyword">function </span><span class="name">catspeak_compile_string</span></a>
         - <a href="#catspeak_create_buffer_from_string"><span class="keyword">function </span><span class="name">catspeak_create_buffer_from_string</span></a>
+        - <a href="#catspeakprocess"><span class="keyword">struct </span><span class="name">CatspeakProcess</span> <span class="keyword">extends</span> <span class="name">Future</span></a></div>
+<input id="scr_catspeak_config-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_config-checkbox">   - </label><a href="#scr_catspeak_config"><span class="name-script">scr_catspeak_config</span></a><div class="collapsible-content">
         - <a href="#catspeak_config"><span class="keyword">function </span><span class="name">catspeak_config</span></a>
         - <a href="#catspeak_add_function"><span class="keyword">function </span><span class="name">catspeak_add_function</span></a>
-        - <a href="#catspeak_add_constant"><span class="keyword">function </span><span class="name">catspeak_add_constant</span></a>
-        - <a href="#catspeakprocess"><span class="keyword">struct </span><span class="name">CatspeakProcess</span> <span class="keyword">extends</span> <span class="name">Future</span></a></div>
+        - <a href="#catspeak_add_constant"><span class="keyword">function </span><span class="name">catspeak_add_constant</span></a></div>
 <input id="scr_catspeak_init-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_init-checkbox">   - </label><a href="#scr_catspeak_init"><span class="name-script">scr_catspeak_init</span></a><div class="collapsible-content">
         - <a href="#catspeak_version"><span class="keyword">macro </span><span class="name">CATSPEAK_VERSION</span></a>
         - <a href="#catspeak_force_init"><span class="keyword">function </span><span class="name">catspeak_force_init</span></a></div>
-<input id="scr_catspeak_builtins-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_builtins-checkbox">   - </label><a href="#scr_catspeak_builtins"><span class="name-script">scr_catspeak_builtins</span></a><div class="collapsible-content">
-        - <a href="#catspeak_string_to_builtin"><span class="keyword">function </span><span class="name">catspeak_string_to_builtin</span></a>
-        - <a href="#catspeak_string_is_builtin"><span class="keyword">function </span><span class="name">catspeak_string_is_builtin</span></a></div>
 <input id="scr_catspeak_error-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_error-checkbox">   - </label><a href="#scr_catspeak_error"><span class="name-script">scr_catspeak_error</span></a><div class="collapsible-content">
 <input id="catspeaklocation-checkbox" class="toggle" type="checkbox"><label for="catspeaklocation-checkbox">     - </label><a href="#catspeaklocation"><span class="keyword">struct </span><span class="name">CatspeakLocation</span></a><div class="collapsible-content">
           - <a href="#clone"><span class="keyword">method </span><span class="name">clone</span></a>
@@ -282,26 +280,14 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#catspeak_token_is_expression"><span class="keyword">function </span><span class="name">catspeak_token_is_expression</span></a>
         - <a href="#catspeak_token_skips_newline"><span class="keyword">function </span><span class="name">catspeak_token_skips_newline</span></a>
         - <a href="#catspeak_string_to_token_keyword"><span class="keyword">function </span><span class="name">catspeak_string_to_token_keyword</span></a>
-        - <a href="#catspeak_byte_to_token"><span class="keyword">function </span><span class="name">catspeak_byte_to_token</span></a>
-        - <a href="#catspeak_byte_to_ascii_desc"><span class="keyword">function </span><span class="name">catspeak_byte_to_ascii_desc</span></a></div>
+        - <a href="#catspeak_byte_to_token"><span class="keyword">function </span><span class="name">catspeak_byte_to_token</span></a></div>
 <input id="scr_catspeak_token-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_token-checkbox">   - </label><a href="#scr_catspeak_token"><span class="name-script">scr_catspeak_token</span></a><div class="collapsible-content">
         - <a href="#catspeaktoken"><span class="keyword">enum </span><span class="name">CatspeakToken</span></a>
         - <a href="#catspeak_token_show"><span class="keyword">function </span><span class="name">catspeak_token_show</span></a>
         - <a href="#catspeak_token_read"><span class="keyword">function </span><span class="name">catspeak_token_read</span></a>
         - <a href="#catspeak_token_valueof"><span class="keyword">function </span><span class="name">catspeak_token_valueof</span></a>
         - <a href="#catspeak_token_sizeof"><span class="keyword">function </span><span class="name">catspeak_token_sizeof</span></a></div>
-<input id="scr_catspeak_ascii_desc-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_ascii_desc-checkbox">   - </label><a href="#scr_catspeak_ascii_desc"><span class="name-script">scr_catspeak_ascii_desc</span></a><div class="collapsible-content">
-        - <a href="#catspeakasciidesc"><span class="keyword">enum </span><span class="name">CatspeakASCIIDesc</span></a>
-        - <a href="#catspeak_ascii_desc_contains"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_contains</span></a>
-        - <a href="#catspeak_ascii_desc_equals"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_equals</span></a>
-        - <a href="#catspeak_ascii_desc_intersects"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_intersects</span></a>
-        - <a href="#catspeak_ascii_desc_show"><span class="keyword">function </span><span class="name">catspeak_ascii_desc_show</span></a></div>
 <input id="scr_catspeak_alloc-checkbox" class="toggle" type="checkbox"><label for="scr_catspeak_alloc-checkbox">   - </label><a href="#scr_catspeak_alloc"><span class="name-script">scr_catspeak_alloc</span></a><div class="collapsible-content">
-        - <a href="#catspeak_alloc_ds_map"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_map</span></a>
-        - <a href="#catspeak_alloc_ds_list"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_list</span></a>
-        - <a href="#catspeak_alloc_ds_stack"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_stack</span></a>
-        - <a href="#catspeak_alloc_ds_priority"><span class="keyword">function </span><span class="name">catspeak_alloc_ds_priority</span></a>
-        - <a href="#catspeak_alloc"><span class="keyword">function </span><span class="name">catspeak_alloc</span></a>
         - <a href="#catspeak_collect"><span class="keyword">function </span><span class="name">catspeak_collect</span></a></div></div>
 <input id="futures_reference-checkbox" class="toggle" type="checkbox"><label for="futures_reference-checkbox"> - </label><a href="#futures_reference">Futures Reference</a><div class="collapsible-content">
 <input id="scr_future-checkbox" class="toggle" type="checkbox"><label for="scr_future-checkbox">   - </label><a href="#scr_future"><span class="name-script">scr_future</span></a><div class="collapsible-content">
@@ -1098,7 +1084,7 @@ them to the <span class="control">[</span><a href="https://github.com/NuxiiGit/c
 ================================================================================</span>
 <div>The following sections feature documentation for all public Catspeak functions,
 macros, and structs.</div>
-<span id=scr_catspeak>  <b><span class="name-script">scr_catspeak</span></b> (<a href="#scr_catspeak">link</a>) .gml
+<span id=scr_catspeak_process>  <b><span class="name-script">scr_catspeak_process</span></b> (<a href="#scr_catspeak_process">link</a>) .gml
   ==============================================================================</span>
 <div>  The primary user-facing interface for compiling and executing Catspeak
   programs.</div>
@@ -1156,6 +1142,20 @@ macros, and structs.</div>
       The source code to convert into a buffer.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">Buffer</span></i></div>
+<span id=catspeakprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakProcess</span> <span class="keyword">extends</span> <span class="name">Future</span></b> (<a href="#catspeakprocess">link</a>) .gml
+    ----------------------------------------------------------------------------</span>
+<div>    Constructs a new asynchronous Catspeak process. Instances of this struct
+    will be managed globally by the Catspeak execution engine. Execution time
+    is divided between all active processes so each gets a chance to progress.
+    
+    <span class="control">@</span><b>param</b> <code>resolver</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+      A function which performs the necessary operations to progress the state
+      of this future. It accepts a single function as a parameter. Call this
+      function with the result of the future to complete the computation.</div>
+<span id=scr_catspeak_config>  <b><span class="name-script">scr_catspeak_config</span></b> (<a href="#scr_catspeak_config">link</a>) .gml
+  ==============================================================================</span>
+<div>  The primary user-facing interface for configuring the Catspeak execution
+  engine.</div>
 <span id=catspeak_config>    <b><span class="keyword">function </span><span class="name">catspeak_config</span></b> (<a href="#catspeak_config">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Configures various global settings of the Catspeak compiler and runtime.
@@ -1177,10 +1177,7 @@ macros, and structs.</div>
        this to <b class="control">`</b><code>infinity</code><b class="control">`</b> is technically possible, but will not be officially
        supported.
     
-    <span class="control">@</span><b>param</b> <code>configData</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      A struct which can contain any one of the fields mentioned above. Only
-      the fields which are passed will have their configuration changed, so
-      if you don&#39;t want a value to change, leave it blank.</div>
+    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i></div>
 <span id=catspeak_add_function>    <b><span class="keyword">function </span><span class="name">catspeak_add_function</span></b> (<a href="#catspeak_add_function">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Permanently adds a new Catspeak function to the default standard library.
@@ -1192,7 +1189,7 @@ macros, and structs.</div>
       The function to add, will be converted into a method if a script ID
       is used.
     
-    <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>...
+    <span class="control">@</span><b>param</b> <code>...</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The remaining key-value pairs to add, in the same pattern as the two
       previous arguments.</div>
 <span id=catspeak_add_constant>    <b><span class="keyword">function </span><span class="name">catspeak_add_constant</span></b> (<a href="#catspeak_add_constant">link</a>) .gml
@@ -1208,19 +1205,9 @@ macros, and structs.</div>
     <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The value to add.
     
-    <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>...
+    <span class="control">@</span><b>param</b> <code>...</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
       The remaining key-value pairs to add, in the same pattern as the two
       previous arguments.</div>
-<span id=catspeakprocess>    <b><span class="keyword">struct </span><span class="name">CatspeakProcess</span> <span class="keyword">extends</span> <span class="name">Future</span></b> (<a href="#catspeakprocess">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Constructs a new asynchronous Catspeak process. Instances of this struct
-    will be managed globally by the Catspeak execution engine. Execution time
-    is divided between all active processes so each gets a chance to progress.
-    
-    <span class="control">@</span><b>param</b> <code>resolver</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
-      A function which performs the necessary operations to progress the state
-      of this future. It accepts a single function as a parameter. Call this
-      function with the result of the future to complete the computation.</div>
 <span id=scr_catspeak_init>  <b><span class="name-script">scr_catspeak_init</span></b> (<a href="#scr_catspeak_init">link</a>) .gml
   ==============================================================================</span>
 <div>  Initialises core components of the Catspeak compiler. This includes
@@ -1233,26 +1220,6 @@ macros, and structs.</div>
 <div>    Makes sure that all Catspeak global variables are initialised. Only needs
     to be called if you are trying to use Catspeak from a script, or through
     <b class="control">`</b><code>gml_pragma</code><b class="control">`</b>. Otherwise you can just ignore this.</div>
-<span id=scr_catspeak_builtins>  <b><span class="name-script">scr_catspeak_builtins</span></b> (<a href="#scr_catspeak_builtins">link</a>) .gml
-  ==============================================================================</span>
-<div>  Defines the standard library functions of the Catspeak prelude.</div>
-<span id=catspeak_string_to_builtin>    <b><span class="keyword">function </span><span class="name">catspeak_string_to_builtin</span></b> (<a href="#catspeak_string_to_builtin">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Returns the value of a built-in Catspeak constant, if one exists.
-    Returns <b class="control">`</b><code>undefined</code><b class="control">`</b> if a built-in couldn&#39;t be found.
-    
-    <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
-      The name of the built-in to find.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
-<span id=catspeak_string_is_builtin>    <b><span class="keyword">function </span><span class="name">catspeak_string_is_builtin</span></b> (<a href="#catspeak_string_is_builtin">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Returns whether this string represents a built-in Catspeak constant.
-    
-    <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
-      The name of the built-in to find.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
 <span id=scr_catspeak_error>  <b><span class="name-script">scr_catspeak_error</span></b> (<a href="#scr_catspeak_error">link</a>) .gml
   ==============================================================================</span>
 <div>  Handles errors raised by the compiler and runtime environment.</div>
@@ -1628,7 +1595,7 @@ macros, and structs.</div>
         The register to return the value to. If the return value is ignored,
         then use <b class="control">`</b><code>undefined</code><b class="control">`</b>.
       
-      <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>...
+      <span class="control">@</span><b>param</b> <code>...</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The parameters to emit for this instruction, can be any kind of
         value, but most likely will be register IDs.
       
@@ -1645,7 +1612,7 @@ macros, and structs.</div>
         The register to return the value to. If the return value is ignored,
         then use <b class="control">`</b><code>undefined</code><b class="control">`</b>.
       
-      <span class="control">@</span><b>param</b> <code></code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>...
+      <span class="control">@</span><b>param</b> <code>...</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The parameters to emit for this instruction, can be any kind of
         value, but most likely will be register IDs.
       
@@ -2077,8 +2044,8 @@ macros, and structs.</div>
 <div>      @desc Advances the lexer whilst a bytes contain some expected ASCII
       descriptor, or until the end of the file is reached.
       
-      <span class="control">@</span><b>param</b> <code>desc</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
-        The descriptor to check for.
+      <span class="control">@</span><b>param</b> <code>predicate</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Function</b></a></i>
+        The predicate to satisfy.
       
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>condition</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i>
         The condition to expect. Defaults to <b class="control">`</b><code>true</code><b class="control">`</b>, set the <b class="control">`</b><code>false</code><b class="control">`</b> to
@@ -2141,14 +2108,6 @@ macros, and structs.</div>
       The character to check.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeaktoken"><span class="name">CatspeakToken</span></a></i></div>
-<span id=catspeak_byte_to_ascii_desc>    <b><span class="keyword">function </span><span class="name">catspeak_byte_to_ascii_desc</span></b> (<a href="#catspeak_byte_to_ascii_desc">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Converts an ASCII character into a Catspeak character descriptor.
-    
-    <span class="control">@</span><b>param</b> <code>char</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
-      The character to check.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i></div>
 <span id=scr_catspeak_token>  <b><span class="name-script">scr_catspeak_token</span></b> (<a href="#scr_catspeak_token">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span> enum.</div>
@@ -2187,107 +2146,10 @@ macros, and structs.</div>
 <div>    Returns the number of elements of <span class="control">[</span><a href="#catspeaktoken">CatspeakToken</a><span class="control">]</span>.
     
     <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
-<span id=scr_catspeak_ascii_desc>  <b><span class="name-script">scr_catspeak_ascii_desc</span></b> (<a href="#scr_catspeak_ascii_desc">link</a>) .gml
-  ==============================================================================</span>
-<div>  Boilerplate for the <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> enum.</div>
-<span id=catspeakasciidesc>    <b><span class="keyword">enum </span><span class="name">CatspeakASCIIDesc</span></b> (<a href="#catspeakasciidesc">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Simple tags that identify ASCII characters read from a GML buffer.</div>
-<span id=catspeak_ascii_desc_contains>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_contains</span></b> (<a href="#catspeak_ascii_desc_contains">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Compares instances of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span>.
-    Returns whether one contains another.
-    
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
-      The value to check for flags of, must be a numeric value.
-    
-    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
-      The flags of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
-<span id=catspeak_ascii_desc_equals>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_equals</span></b> (<a href="#catspeak_ascii_desc_equals">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Compares instances of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span>.
-    Returns whether they are equal to each other.
-    
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
-      The value to check for flags of, must be a numeric value.
-    
-    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
-      The flags of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
-<span id=catspeak_ascii_desc_intersects>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_intersects</span></b> (<a href="#catspeak_ascii_desc_intersects">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Compares instances of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span>.
-    Returns whether their flags intersect.
-    
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
-      The value to check for flags of, must be a numeric value.
-    
-    <span class="control">@</span><b>param</b> <code>flags</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
-      The flags of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to check.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
-<span id=catspeak_ascii_desc_show>    <b><span class="keyword">function </span><span class="name">catspeak_ascii_desc_show</span></b> (<a href="#catspeak_ascii_desc_show">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Gets the name for an instance of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span>.
-    Will return the empty string if the value is unexpected.
-    
-    <span class="control">@</span><b>param</b> <code>value</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakasciidesc"><span class="name">CatspeakASCIIDesc</span></a></i>
-      The value of <span class="control">[</span><a href="#catspeakasciidesc">CatspeakASCIIDesc</a><span class="control">]</span> to convert, must be a numeric value.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i></div>
 <span id=scr_catspeak_alloc>  <b><span class="name-script">scr_catspeak_alloc</span></b> (<a href="#scr_catspeak_alloc">link</a>) .gml
   ==============================================================================</span>
-<div>  Handles the allocation of dynamic resources that need to be garbage
-  collected manually.</div>
-<span id=catspeak_alloc_ds_map>    <b><span class="keyword">function </span><span class="name">catspeak_alloc_ds_map</span></b> (<a href="#catspeak_alloc_ds_map">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Allocates a new DsMap resource and returns its ID.
-    
-    <span class="control">@</span><b>param</b> <code>struct</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The struct whose lifetime determines how long the DsMap lives.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">DsMap</span></i></div>
-<span id=catspeak_alloc_ds_list>    <b><span class="keyword">function </span><span class="name">catspeak_alloc_ds_list</span></b> (<a href="#catspeak_alloc_ds_list">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Allocates a new DsList resource and returns its ID.
-    
-    <span class="control">@</span><b>param</b> <code>struct</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The struct whose lifetime determines how long the DsList lives.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">DsList</span></i></div>
-<span id=catspeak_alloc_ds_stack>    <b><span class="keyword">function </span><span class="name">catspeak_alloc_ds_stack</span></b> (<a href="#catspeak_alloc_ds_stack">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Allocates a new DsStack resource and returns its ID.
-    
-    <span class="control">@</span><b>param</b> <code>struct</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The struct whose lifetime determines how long the DsStack lives.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">DsStack</span></i></div>
-<span id=catspeak_alloc_ds_priority>    <b><span class="keyword">function </span><span class="name">catspeak_alloc_ds_priority</span></b> (<a href="#catspeak_alloc_ds_priority">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Allocates a new DsPriority resource and returns its ID.
-    
-    <span class="control">@</span><b>param</b> <code>struct</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The struct whose lifetime determines how long the DsPriority lives.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Id</b></a>.<span class="name">DsPriority</span></i></div>
-<span id=catspeak_alloc>    <b><span class="keyword">function </span><span class="name">catspeak_alloc</span></b> (<a href="#catspeak_alloc">link</a>) .gml
-    ----------------------------------------------------------------------------</span>
-<div>    Allocates a new resource with the same lifetime as a given struct.
-    
-    <span class="control">@</span><b>param</b> <code>struct</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      The struct whose lifetime determines how long the resource lives.
-    
-    <span class="control">@</span><b>param</b> <code>adapter</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a></i>
-      A struct containing two fields: <b class="control">`</b><code>create</code><b class="control">`</b> and <b class="control">`</b><code>destroy</code><b class="control">`</b>. The <b class="control">`</b><code>create</code><b class="control">`</b>
-      field contains a function which is called to construct the resource.
-      The <b class="control">`</b><code>destroy</code><b class="control">`</b> field is a function expecting a single parameter, used
-      to destroy the allocated resource.
-    
-    <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
+<div>  The Catspeak engine creates a lot of garbage sometimes, this module is
+  responsible for the allocation and collection of that garbage.</div>
 <span id=catspeak_collect>    <b><span class="keyword">function </span><span class="name">catspeak_collect</span></b> (<a href="#catspeak_collect">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Forces the Catspeak engine to collect any discarded resources.</div>
