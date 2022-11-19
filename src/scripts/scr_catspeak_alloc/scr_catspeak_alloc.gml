@@ -1,69 +1,28 @@
-//! Handles the allocation of dynamic resources that need to be garbage
-//! collected manually.
+//! The Catspeak engine creates a lot of garbage sometimes, this module is
+//! responsible for the allocation and collection of that garbage.
 
 //# feather use syntax-errors
 
-/// Allocates a new DsMap resource and returns its ID.
-///
-/// @param {Struct} struct
-///   The struct whose lifetime determines how long the DsMap lives.
-///
-/// @return {Id.DsMap}
-function catspeak_alloc_ds_map(struct) {
-    gml_pragma("forceinline");
-    return catspeak_alloc(struct, global.__catspeakAllocDSMapAdapter);
+/// Forces the Catspeak engine to collect any discarded resources.
+function catspeak_collect() {
+    var pool = global.__catspeakAllocPool;
+    var poolSize = array_length(pool);
+    for (var i = 0; i < poolSize; i += 1) {
+        var weakRef = pool[i];
+        if (weak_ref_alive(weakRef)) {
+            continue;
+        }
+        weakRef.adapter.destroy(weakRef.ds);
+        array_delete(pool, i, 1);
+    }
 }
 
-/// Allocates a new DsList resource and returns its ID.
-///
-/// @param {Struct} struct
-///   The struct whose lifetime determines how long the DsList lives.
-///
-/// @return {Id.DsList}
-function catspeak_alloc_ds_list(struct) {
-    gml_pragma("forceinline");
-    return catspeak_alloc(struct, global.__catspeakAllocDSListAdapter);
-}
-
-/// Allocates a new DsStack resource and returns its ID.
-///
-/// @param {Struct} struct
-///   The struct whose lifetime determines how long the DsStack lives.
-///
-/// @return {Id.DsStack}
-function catspeak_alloc_ds_stack(struct) {
-    gml_pragma("forceinline");
-    return catspeak_alloc(struct, global.__catspeakAllocDSStackAdapter);
-}
-
-/// Allocates a new DsPriority resource and returns its ID.
-///
-/// @param {Struct} struct
-///   The struct whose lifetime determines how long the DsPriority lives.
-///
-/// @return {Id.DsPriority}
-function catspeak_alloc_ds_priority(struct) {
-    gml_pragma("forceinline");
-    return catspeak_alloc(struct, global.__catspeakAllocDSPriorityAdapter);
-}
-
-/// Allocates a new resource with the same lifetime as a given struct.
-///
-/// @param {Struct} struct
-///   The struct whose lifetime determines how long the resource lives.
-///
-/// @param {Struct} adapter
-///   A struct containing two fields: `create` and `destroy`. The `create`
-///   field contains a function which is called to construct the resource.
-///   The `destroy` field is a function expecting a single parameter, used
-///   to destroy the allocated resource.
-///
-/// @return {Any}
-function catspeak_alloc(struct, adapter) {
+/// @ignore
+function __catspeak_alloc(struct, adapter) {
     var pool = global.__catspeakAllocPool;
     var poolMax = array_length(pool) - 1;
     if (poolMax >= 0) {
-        repeat (3) { // the number of retries until a new map is created
+        repeat (3) { // the number of retries until a new resource is created
             var i = irandom(poolMax);
             var weakRef = pool[i];
             if (weak_ref_alive(weakRef)) {
@@ -86,16 +45,26 @@ function catspeak_alloc(struct, adapter) {
     return resource;
 }
 
-/// Forces the Catspeak engine to collect any discarded resources.
-function catspeak_collect() {
-    var pool = global.__catspeakAllocPool;
-    var poolSize = array_length(pool);
-    for (var i = 0; i < poolSize; i += 1) {
-        var weakRef = pool[i];
-        if (weak_ref_alive(weakRef)) {
-            continue;
-        }
-        weakRef.adapter.destroy(weakRef.ds);
-        array_delete(pool, i, 1);
-    }
+/// @ignore
+function __catspeak_alloc_ds_map(struct) {
+    gml_pragma("forceinline");
+    return __catspeak_alloc(struct, global.__catspeakAllocDSMapAdapter);
+}
+
+/// @ignore
+function __catspeak_alloc_ds_list(struct) {
+    gml_pragma("forceinline");
+    return __catspeak_alloc(struct, global.__catspeakAllocDSListAdapter);
+}
+
+/// @ignore
+function __catspeak_alloc_ds_stack(struct) {
+    gml_pragma("forceinline");
+    return __catspeak_alloc(struct, global.__catspeakAllocDSStackAdapter);
+}
+
+/// @ignore
+function __catspeak_alloc_ds_priority(struct) {
+    gml_pragma("forceinline");
+    return __catspeak_alloc(struct, global.__catspeakAllocDSPriorityAdapter);
 }
