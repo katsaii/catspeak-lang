@@ -68,3 +68,29 @@ function __catspeak_alloc_ds_priority(struct) {
     gml_pragma("forceinline");
     return __catspeak_alloc(struct, global.__catspeakAllocDSPriorityAdapter);
 }
+
+/// @ignore
+function __catspeak_init_alloc() {
+    /// @ignore
+    global.__catspeakAllocPool = [];
+    /// @ignore
+    global.__catspeakAllocDSMapAdapter = {
+        create : ds_map_create,
+        destroy : ds_map_destroy,
+    };
+    /// @ignore
+    global.__catspeakAllocDSListAdapter = {
+        create : ds_list_create,
+        destroy : ds_list_destroy,
+    };
+    /// @ignore
+    global.__catspeakAllocDSStackAdapter = {
+        create : ds_stack_create,
+        destroy : ds_stack_destroy,
+    };
+    /// @ignore
+    global.__catspeakAllocDSPriorityAdapter = {
+        create : ds_priority_create,
+        destroy : ds_priority_destroy,
+    };
+}

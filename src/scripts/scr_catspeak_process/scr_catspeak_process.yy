@@ -6,7 +6,7 @@
     "path": "folders/Catspeak/compiler.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_builtins",
+  "name": "scr_catspeak_process",
   "tags": [],
   "resourceType": "GMScript",
 }
