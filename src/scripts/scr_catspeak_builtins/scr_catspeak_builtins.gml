@@ -205,3 +205,65 @@ function __catspeak_builtin_verify_struct(collection) {
                 "self-modification is prohibited by Catspeak");
     }
 }
+
+/// @ignore
+function __catspeak_init_builtins() {
+    catspeak_add_function(
+        "+", __catspeak_builtin_add,
+        "++", __catspeak_builtin_add_string,
+        "-", __catspeak_builtin_sub,
+        "*", __catspeak_builtin_mul,
+        "/", __catspeak_builtin_div,
+        "%", __catspeak_builtin_mod,
+        "//", __catspeak_builtin_div_int,
+        "|", __catspeak_builtin_bit_or,
+        "&", __catspeak_builtin_bit_and,
+        "^", __catspeak_builtin_bit_xor,
+        "~", __catspeak_builtin_bit_not,
+        "<<", __catspeak_builtin_bit_lshift,
+        ">>", __catspeak_builtin_bit_rshift,
+        "||", __catspeak_builtin_or,
+        "&&", __catspeak_builtin_and,
+        "^^", __catspeak_builtin_xor,
+        "!", __catspeak_builtin_not,
+        "==", __catspeak_builtin_eq,
+        "!=", __catspeak_builtin_neq,
+        ">=", __catspeak_builtin_geq,
+        "<=", __catspeak_builtin_leq,
+        ">", __catspeak_builtin_gt,
+        "<", __catspeak_builtin_lt,
+        "[]", __catspeak_builtin_get,
+        "[]=", __catspeak_builtin_set,
+        "len", __catspeak_builtin_length,
+        "print", __catspeak_builtin_print,
+        "bool", bool,
+        "string", string,
+        "real", real,
+        "int64", int64,
+        "typeof", typeof,
+        "instanceof", instanceof,
+        "is_array", is_array,
+        "is_bool", is_bool,
+        "is_infinity", is_infinity,
+        "is_int32", is_int32,
+        "is_int64", is_int64,
+        "is_method", is_method,
+        "is_nan", is_nan,
+        "is_numeric", is_numeric,
+        "is_ptr", is_ptr,
+        "is_real", is_real,
+        "is_string", is_string,
+        "is_struct", is_struct,
+        "is_undefined", is_undefined,
+        "is_vec3", is_vec3,
+        "is_vec4", is_vec4
+    );
+    catspeak_add_constant(
+        "null", pointer_null,
+        "undefiend", undefined,
+        "true", true,
+        "false", false,
+        "NaN", NaN,
+        "infinity", infinity
+    );
+}
