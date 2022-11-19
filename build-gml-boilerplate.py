@@ -49,9 +49,14 @@ def flatten(iterable):
     return out
 
 # Generates the boilerplate code for a schema of enum values.
-def impl_enum(name, desc):
+def impl_enum(name, desc, private=False):
     lowerName = camel_to_snake(name)
     typeName = "Catspeak{}".format(name)
+    typeNameLower = "catspeak_{}".format(lowerName)
+    privateDesc = "/// @ignore"
+    if private:
+        typeName = "__{}".format(typeName)
+        typeNameLower = "__{}".format(typeNameLower)
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the [{}] enum.".format(typeName),
@@ -60,20 +65,22 @@ def impl_enum(name, desc):
         EMPTY_STRING,
         "//# feather use syntax-errors",
         EMPTY_STRING,
-        "/// {}".format(desc),
+        privateDesc if private else "/// {}".format(desc),
         "enum {} {{".format(typeName), (
             "    {},".format(field)
             for field in fields
         ), "}",
         EMPTY_STRING,
-        "/// Gets the name for a value of [{}].".format(typeName),
-        "/// Will return `<unknown>` if the value is unexpected.",
-        "///",
-        "/// @param {{Enum.{}}} value".format(typeName),
-        "///   The value of [{}] to convert.".format(typeName),
-        "///",
-        "/// @return {String}",
-        "function catspeak_{}_show(value) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Gets the name for a value of [{}].".format(typeName),
+            "/// Will return `<unknown>` if the value is unexpected.",
+            "///",
+            "/// @param {{Enum.{}}} value".format(typeName),
+            "///   The value of [{}] to convert.".format(typeName),
+            "///",
+            "/// @return {String}",
+        ],
+        "function {}_show(value) {{".format(typeNameLower),
         "    switch (value) {",
         (
             [
@@ -87,14 +94,16 @@ def impl_enum(name, desc):
         "    return \"<unknown>\";",
         "}",
         EMPTY_STRING,
-        "/// Parses a string into a value of [{}].".format(typeName),
-        "/// Will return `undefined` if the value cannot be parsed.",
-        "///",
-        "/// @param {Any} str",
-        "///   The string to parse.",
-        "///",
-        "/// @return {{Enum.{}}}".format(typeName),
-        "function catspeak_{}_read(str) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Parses a string into a value of [{}].".format(typeName),
+            "/// Will return `undefined` if the value cannot be parsed.",
+            "///",
+            "/// @param {Any} str",
+            "///   The string to parse.",
+            "///",
+            "/// @return {{Enum.{}}}".format(typeName),
+        ],
+        "function {}_read(str) {{".format(typeNameLower),
         "    switch (str) {",
         (
             [
@@ -108,22 +117,27 @@ def impl_enum(name, desc):
         "    return undefined;",
         "}",
         EMPTY_STRING,
-        "/// Returns the integer representation for a value of [{}].".format(typeName),
-        "/// Will return `undefined` if the value is unexpected.",
-        "///",
-        "/// @param {{Enum.{}}} value".format(typeName),
-        "///   The value of [{}] to convert.".format(typeName),
-        "///",
-        "/// @return {Real}",
-        "function catspeak_{}_valueof(value) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Returns the integer representation for a value of [{}]."
+                    .format(typeName),
+            "/// Will return `undefined` if the value is unexpected.",
+            "///",
+            "/// @param {{Enum.{}}} value".format(typeName),
+            "///   The value of [{}] to convert.".format(typeName),
+            "///",
+            "/// @return {Real}",
+        ],
+        "function {}_valueof(value) {{".format(typeNameLower),
         "    gml_pragma(\"forceinline\");",
         "    return value;",
         "}",
         EMPTY_STRING,
-        "/// Returns the number of elements of [{}].".format(typeName),
-        "///",
-        "/// @return {Real}",
-        "function catspeak_{}_sizeof() {{".format(lowerName),
+        privateDesc if private else [
+            "/// Returns the number of elements of [{}].".format(typeName),
+            "///",
+            "/// @return {Real}",
+        ],
+        "function {}_sizeof() {{".format(typeNameLower),
         "    gml_pragma(\"forceinline\");",
         "    return {}.{} + 1;".format(typeName, fields[-1])
                 if fields else "    return 0;",
@@ -136,9 +150,14 @@ def impl_enum(name, desc):
     )
 
 # Generates the boilerplate code for a schema of enum flags.
-def impl_enum_flags(name, desc):
+def impl_enum_flags(name, desc, private=False):
     lowerName = camel_to_snake(name)
     typeName = "Catspeak{}".format(name)
+    typeNameLower = "catspeak_{}".format(lowerName)
+    privateDesc = "/// @ignore"
+    if private:
+        typeName = "__{}".format(typeName)
+        typeNameLower = "__{}".format(typeNameLower)
     fields = read_values("enums/{}.tsv".format(lowerName))
     lines = flatten([
         "//! Boilerplate for the [{}] enum.".format(typeName),
@@ -147,7 +166,7 @@ def impl_enum_flags(name, desc):
         EMPTY_STRING,
         "//# feather use syntax-errors",
         EMPTY_STRING,
-        "/// {}".format(desc),
+        privateDesc if private else "/// {}".format(desc),
         "enum {} {{".format(typeName),
         "    NONE = 0,",
         (
@@ -163,60 +182,68 @@ def impl_enum_flags(name, desc):
         "    ),",
         "}",
         EMPTY_STRING,
-        "/// Compares instances of [{}].".format(typeName),
-        "/// Returns whether one contains another.",
-        "///",
-        "/// @param {Any} value",
-        "///   The value to check for flags of, must be a numeric value.",
-        "///",
-        "/// @param {{Enum.{}}} flags".format(typeName),
-        "///   The flags of [{}] to check.".format(typeName),
-        "///",
-        "/// @return {Bool}",
-        "function catspeak_{}_contains(value, flags) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Compares instances of [{}].".format(typeName),
+            "/// Returns whether one contains another.",
+            "///",
+            "/// @param {Any} value",
+            "///   The value to check for flags of, must be a numeric value.",
+            "///",
+            "/// @param {{Enum.{}}} flags".format(typeName),
+            "///   The flags of [{}] to check.".format(typeName),
+            "///",
+            "/// @return {Bool}",
+        ],
+        "function {}_contains(value, flags) {{".format(typeNameLower),
         "    gml_pragma(\"forceinline\");",
         "    return (value & flags) == flags;",
         "}",
         EMPTY_STRING,
-        "/// Compares instances of [{}].".format(typeName),
-        "/// Returns whether they are equal to each other.",
-        "///",
-        "/// @param {Any} value",
-        "///   The value to check for flags of, must be a numeric value.",
-        "///",
-        "/// @param {{Enum.{}}} flags".format(typeName),
-        "///   The flags of [{}] to check.".format(typeName),
-        "///",
-        "/// @return {Bool}",
-        "function catspeak_{}_equals(value, flags) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Compares instances of [{}].".format(typeName),
+            "/// Returns whether they are equal to each other.",
+            "///",
+            "/// @param {Any} value",
+            "///   The value to check for flags of, must be a numeric value.",
+            "///",
+            "/// @param {{Enum.{}}} flags".format(typeName),
+            "///   The flags of [{}] to check.".format(typeName),
+            "///",
+            "/// @return {Bool}",
+        ],
+        "function {}_equals(value, flags) {{".format(typeNameLower),
         "    gml_pragma(\"forceinline\");",
         "    return value == flags;",
         "}",
         EMPTY_STRING,
-        "/// Compares instances of [{}].".format(typeName),
-        "/// Returns whether their flags intersect.",
-        "///",
-        "/// @param {Any} value",
-        "///   The value to check for flags of, must be a numeric value.",
-        "///",
-        "/// @param {{Enum.{}}} flags".format(typeName),
-        "///   The flags of [{}] to check.".format(typeName),
-        "///",
-        "/// @return {Bool}",
-        "function catspeak_{}_intersects(value, flags) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Compares instances of [{}].".format(typeName),
+            "/// Returns whether their flags intersect.",
+            "///",
+            "/// @param {Any} value",
+            "///   The value to check for flags of, must be a numeric value.",
+            "///",
+            "/// @param {{Enum.{}}} flags".format(typeName),
+            "///   The flags of [{}] to check.".format(typeName),
+            "///",
+            "/// @return {Bool}",
+        ],
+        "function {}_intersects(value, flags) {{".format(typeNameLower),
         "    gml_pragma(\"forceinline\");",
         "    return (value & flags) != 0;",
         "}",
         EMPTY_STRING,
-        "/// Gets the name for an instance of [{}].".format(typeName),
-        "/// Will return the empty string if the value is unexpected.",
-        "///",
-        "/// @param {{Enum.{}}} value".format(typeName),
-        "///   The value of [{}] to convert, must be a numeric value."
-                .format(typeName),
-        "///",
-        "/// @return {String}",
-        "function catspeak_{}_show(value) {{".format(lowerName),
+        privateDesc if private else [
+            "/// Gets the name for an instance of [{}].".format(typeName),
+            "/// Will return the empty string if the value is unexpected.",
+            "///",
+            "/// @param {{Enum.{}}} value".format(typeName),
+            "///   The value of [{}] to convert, must be a numeric value."
+                    .format(typeName),
+            "///",
+            "/// @return {String}",
+        ],
+        "function {}_show(value) {{".format(typeNameLower),
         "    var msg = \"\";",
         "    var delimiter = undefined;",
         (
@@ -240,5 +267,6 @@ impl_enum("Token", "Represents a kind of Catspeak token.")
 impl_enum("Intcode", "Represents a kind of Catspeak VM instruction.")
 impl_enum_flags(
     "ASCIIDesc",
-    "Simple tags that identify ASCII characters read from a GML buffer."
+    "Simple tags that identify ASCII characters read from a GML buffer.",
+    private=True,
 )
