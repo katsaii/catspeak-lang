@@ -139,6 +139,10 @@ function Test(name) constructor {
     }
 }
 
+function AsyncTest(name) : Test(name) constructor {
+    completeAutomatically(false);
+}
+
 function run_test(f) {
     var test = new f();
     if (test.automatic) {

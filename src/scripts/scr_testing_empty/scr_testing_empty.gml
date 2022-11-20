@@ -1,6 +1,5 @@
 
-run_test(function() : Test("empty-string") constructor {
-    completeAutomatically(false);
+run_test(function() : AsyncTest("empty-string") constructor {
     catspeak_compile_string("").andCatch(function() {
         fail()
     }).andFinally(function() {
@@ -8,8 +7,7 @@ run_test(function() : Test("empty-string") constructor {
     });
 });
 
-run_test(function() : Test("empty-string-raw") constructor {
-    completeAutomatically(false);
+run_test(function() : AsyncTest("empty-string-raw") constructor {
     catspeak_compile_string(@'').andCatch(function() {
         fail()
     }).andFinally(function() {
@@ -17,8 +15,7 @@ run_test(function() : Test("empty-string-raw") constructor {
     });
 });
 
-run_test(function() : Test("empty-string-whitespace") constructor {
-    completeAutomatically(false);
+run_test(function() : AsyncTest("empty-string-whitespace") constructor {
     catspeak_compile_string("	       ").andCatch(function() {
         fail()
     }).andFinally(function() {
@@ -26,8 +23,7 @@ run_test(function() : Test("empty-string-whitespace") constructor {
     });
 });
 
-run_test(function() : Test("empty-string-whitespace-escape") constructor {
-    completeAutomatically(false);
+run_test(function() : AsyncTest("empty-string-whitespace-escape") constructor {
     catspeak_compile_string("\t \n \v \f \r \r\n \n\n").andCatch(function() {
         fail()
     }).andFinally(function() {
@@ -35,8 +31,7 @@ run_test(function() : Test("empty-string-whitespace-escape") constructor {
     });
 });
 
-run_test(function() : Test("empty-string-whitespace-raw") constructor {
-    completeAutomatically(false);
+run_test(function() : AsyncTest("empty-string-whitespace-raw") constructor {
     catspeak_compile_string(@'
         	       
     ').andCatch(function() {
@@ -46,8 +41,7 @@ run_test(function() : Test("empty-string-whitespace-raw") constructor {
     });
 });
 
-run_test(function() : Test("empty-comment") constructor {
-    completeAutomatically(false);
+run_test(function() : AsyncTest("empty-comment") constructor {
     catspeak_compile_string(@'
         -- nothing
     ').andCatch(function() {
