@@ -68,10 +68,8 @@ function CatspeakFunction(name, parent) constructor {
     ///
     /// @return {Any}
     static getGlobal = function(name) {
-        if (variable_struct_exists(globalRegisterTable, name)) {
-            return globalRegisterTable[$ name];
-        }
-        return undefined;
+        var gReg = __getGlobalRegister(name);
+        return globalRegisters[gReg];
     };
 
     /// Adds a Catspeak block to the end of this function.
