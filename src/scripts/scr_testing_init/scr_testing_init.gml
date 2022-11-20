@@ -1,19 +1,17 @@
 
-{
-    var test = new TestCase("init-exists");
-    test.assertAsset("scr_catspeak_init", asset_script, "missing script");
-    test.complete();
-}
+run_test(function() : Test("init-entrypoint") constructor {
+    assertAsset("scr_catspeak_init", asset_script)
+            .withMessage("missing entrypoint");
+});
 
-{
-    var test = new TestCase("init-version");
-    test.assertEq(CATSPEAK_VERSION, CATSPEAK_VERSION, "not constant");
-    test.assertTypeof(CATSPEAK_VERSION, "string", "not a string");
-    test.complete();
-}
+run_test(function() : Test("init-version") constructor {
+    assertEq(CATSPEAK_VERSION, CATSPEAK_VERSION)
+            .withMessage("not constant");
+    assertTypeof(CATSPEAK_VERSION, "string")
+            .withMessage("not a string");
+});
 
-{
-    var test = new TestCase("init-dependencies");
-    test.assertAsset("scr_future", asset_script, "depends on Future");
-    test.complete();
-}
+run_test(function() : Test("init-dependency") constructor {
+    assertAsset("scr_future", asset_script)
+            .withMessage("depends on Future");
+});

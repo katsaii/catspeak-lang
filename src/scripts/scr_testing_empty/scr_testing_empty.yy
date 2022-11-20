@@ -6,7 +6,7 @@
     "path": "folders/Testing/unit-tests.yy",
   },
   "resourceVersion": "1.0",
-  "name": "scr_testing_compile",
+  "name": "scr_testing_empty",
   "tags": [],
   "resourceType": "GMScript",
 }

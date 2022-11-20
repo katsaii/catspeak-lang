@@ -1,12 +1,17 @@
 //! Helper functions for managing unit tests.
 
-function TestCase(name="unnamed") constructor {
+function Test(name) constructor {
     self.name = __cat(name);
     self.fails = [];
+    self.automatic = true;
 
     catspeak_force_init();
 
-    static complete = function() {
+    completeAutomatically = function(enable) {
+        automatic = enable;
+    };
+
+    complete = function() {
         var passed = array_length(fails) < 1;
         var msg = " ---===--- test ";
         if (passed) {
@@ -25,68 +30,121 @@ function TestCase(name="unnamed") constructor {
         show_debug_message(msg);
     };
 
-    static fail = function(msg="no message") {
-        array_push(global.currentTest.fails, msg);
+    fail = function() {
+        var testCase = __makeTestCaseStruct();
+        testCase.fail("failed test");
+        return testCase;
     };
 
-    static assert = function(condition, msg) {
+    assert = function(condition) {
+        var testCase = __makeTestCaseStruct();
         if (!condition) {
-            fail(__cat("condition must be true: ", msg));
+            testCase.fail(__cat("condition must be true"));
         }
+        return testCase;
     };
 
-    static assertFalse = function(condition, msg) {
+    assertFalse = function(condition) {
+        var testCase = __makeTestCaseStruct();
         if (condition) {
-            fail(__cat("condition must be false: ", msg));
+            testCase.fail(__cat("condition must be false"));
         }
+        return testCase;
     };
 
-    static assertEq = function(a, b, msg) {
+    assertEq = function(a, b) {
+        var testCase = __makeTestCaseStruct();
         if (a != b) {
-            fail(__cat(
-                "values are not the same (", a, "!=", b, "): ", msg
+            testCase.fail(__cat(
+                "values are not the same (", a, "!=", b, ")"
             ));
         }
+        return testCase;
     };
 
-    static assertTypeof = function(value, expectedType, msg) {
+    assertNeq = function(a, b) {
+        var testCase = __makeTestCaseStruct();
+        if (a == b) {
+            testCase.fail(__cat(
+                "values are the same (", a, "!=", b, ")"
+            ));
+        }
+        return testCase;
+    };
+
+    assertTypeof = function(value, expectedType) {
+        var testCase = __makeTestCaseStruct();
         var type = typeof(value);
         if (type != expectedType) {
-            fail(__cat(
+            testCase.fail(__cat(
                 "value '", value, "' ",
                 "must have the type \"", expectedType, "\", ",
-                "but got \"", type, "\": ", msg
+                "but got \"", type, "\""
             ));
         }
+        return testCase;
     };
 
-    static assertInstanceof = function(value, expectedType, msg) {
+    assertInstanceof = function(value, expectedType) {
+        var testCase = __makeTestCaseStruct();
         var type = instanceof(value);
         if (type != expectedType) {
-            fail(__cat(
+            testCase.fail(__cat(
                 "value '", value, "' ",
                 "must derive the type \"", expectedType, "\", ",
-                "but got \"", type, "\": ", msg
+                "but got \"", type, "\""
             ));
         }
-    }
+        return testCase;
+    };
 
-    static assertAsset = function(name, expectedType, msg) {
+    assertAsset = function(name, expectedType) {
+        var testCase = __makeTestCaseStruct();
         if (asset_get_index(name) == -1) {
-            fail(__cat(
-                "an asset with the name '", name, "' must exist: ", msg
+            testCase.fail(__cat(
+                "an asset with the name '", name, "' must exist"
             ));
         } else {
             var type = asset_get_type(name);
             if (type != expectedType) {
-                fail(__cat(
+                testCase.fail(__cat(
                     "an asset with the name '", name, "' exists, ",
                     "but is the wrong asset type (", type, " != ",
-                    expectedType, "): ", msg
+                    expectedType, ")"
                 ));
             }
         }
+        return testCase;
     };
+
+    __makeTestCaseStruct = function() {
+        return {
+            idx : -1,
+            fails : fails,
+            fail : function(msg="no message") {
+                if (idx < 0) {
+                    idx = array_length(fails);
+                    fails[idx] = __cat(msg);
+                } else {
+                    fails[idx] = __cat(fails[idx], " + ", msg);
+                }
+            },
+            withMessage : function(msg) {
+                if (idx < 0) {
+                    return;
+                }
+                fails[idx] += __cat(": ", msg);
+            }
+        };
+    }
+}
+
+function run_test(f) {
+    var test = new f();
+    if (test.automatic) {
+        // otherwise `complete()` needs to be called manually
+        test.complete();
+    }
 }
 
 function __cat() {
