@@ -117,7 +117,9 @@ function Test(name) constructor {
         return {
             idx : -1,
             fails : fails,
+            failed : false,
             fail : function(msg="no message") {
+                failed = true;
                 if (idx < 0) {
                     idx = array_length(fails);
                     fails[@ idx] = __cat(msg);

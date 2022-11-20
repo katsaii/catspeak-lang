@@ -1,5 +1,6 @@
 {
   "resources": [
+    {"id":{"name":"scr_testing_grouping","path":"scripts/scr_testing_grouping/scr_testing_grouping.yy",},"order":4,},
     {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_process","path":"scripts/scr_catspeak_process/scr_catspeak_process.yy",},"order":9,},
     {"id":{"name":"scr_catspeak_alloc","path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},"order":6,},

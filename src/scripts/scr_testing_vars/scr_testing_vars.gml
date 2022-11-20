@@ -94,6 +94,28 @@ run_test(function() : AsyncTest("vars-global-read") constructor {
     });
 });
 
+run_test(function() : AsyncTest("vars-global-read-2") constructor {
+    catspeak_compile_string(@'
+        a = -3
+        b = 12
+        c = a * b + -a
+        d = max a, b, c
+        return [a, b, c, d]
+    ').andThen(function(ir) {
+        ir.setGlobalFunction("max", max);
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq(-3, result[0]);
+        assertEq(12, result[1]);
+        assertEq(-33, result[2]);
+        assertEq(12, result[3]);
+    }).andCatch(function() {
+        fail()
+    }).andFinally(function() {
+        complete();
+    });
+});
+
 run_test(function() : AsyncTest("vars-global-write") constructor {
     catsFunc = undefined;
     catspeak_compile_string(@'
