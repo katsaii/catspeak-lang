@@ -7,10 +7,6 @@ function Test(name) constructor {
 
     catspeak_force_init();
 
-    completeAutomatically = function(enable) {
-        automatic = enable;
-    };
-
     complete = function() {
         var passed = array_length(fails) < 1;
         var msg = " ---===--- test ";
@@ -124,23 +120,23 @@ function Test(name) constructor {
             fail : function(msg="no message") {
                 if (idx < 0) {
                     idx = array_length(fails);
-                    fails[idx] = __cat(msg);
+                    fails[@ idx] = __cat(msg);
                 } else {
-                    fails[idx] = __cat(fails[idx], " + ", msg);
+                    fails[@ idx] = __cat(fails[idx], " + ", msg);
                 }
             },
             withMessage : function(msg) {
                 if (idx < 0) {
                     return;
                 }
-                fails[idx] += __cat(": ", msg);
+                fails[@ idx] += __cat(": ", msg);
             }
         };
     }
 }
 
 function AsyncTest(name) : Test(name) constructor {
-    completeAutomatically(false);
+    automatic = false;
 }
 
 function run_test(f) {
