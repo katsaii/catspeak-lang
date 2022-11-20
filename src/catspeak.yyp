@@ -14,6 +14,7 @@
     {"id":{"name":"not_catspeak_basic_usage","path":"notes/not_catspeak_basic_usage/not_catspeak_basic_usage.yy",},"order":8,},
     {"id":{"name":"scr_catspeak_config","path":"scripts/scr_catspeak_config/scr_catspeak_config.yy",},"order":10,},
     {"id":{"name":"scr_catspeak_compiler","path":"scripts/scr_catspeak_compiler/scr_catspeak_compiler.yy",},"order":4,},
+    {"id":{"name":"scr_testing_compile","path":"scripts/scr_testing_compile/scr_testing_compile.yy",},"order":7,},
     {"id":{"name":"scr_catspeak_vm","path":"scripts/scr_catspeak_vm/scr_catspeak_vm.yy",},"order":8,},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
     {"id":{"name":"not_catspeak_standard_library","path":"notes/not_catspeak_standard_library/not_catspeak_standard_library.yy",},"order":6,},
