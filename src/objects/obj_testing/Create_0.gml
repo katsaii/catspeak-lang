@@ -5,11 +5,30 @@
 
 show_debug_overlay(true);
 
-currentExample = undefined;
-currentExampleId = -1;
+exampleCurrent = -1;
 examples = [
     {
         title : "factorial",
         obj : obj_testing_example_factorial,
     }
 ];
+exampleIsValid = function(idx) {
+    return idx >= 0 && idx < array_length(examples);
+};
+exampleChange = function(idx) {
+    if (exampleIsValid(exampleCurrent)) {
+        instance_destroy(examples[exampleCurrent].obj);
+    }
+    if (exampleIsValid(idx)) {
+        instance_create_depth(0, 0, 0, examples[idx].obj);
+        exampleCurrent = idx;
+    } else {
+        exampleCurrent = -1;
+    }
+};
+
+exampleChange(0);
+
+// so that the output of fps_real in the GUI is somewhat readable
+fpsRealCache = 0;
+alarm[0] = 30;
