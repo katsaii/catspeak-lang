@@ -10,6 +10,7 @@
     {"id":{"name":"scr_testing_while","path":"scripts/scr_testing_while/scr_testing_while.yy",},"order":9,},
     {"id":{"name":"scr_catspeak_error","path":"scripts/scr_catspeak_error/scr_catspeak_error.yy",},"order":3,},
     {"id":{"name":"not_catspeak_syntax","path":"notes/not_catspeak_syntax/not_catspeak_syntax.yy",},"order":4,},
+    {"id":{"name":"scr_testing_function","path":"scripts/scr_testing_function/scr_testing_function.yy",},"order":11,},
     {"id":{"name":"obj_catspeak_bench","path":"objects/obj_catspeak_bench/obj_catspeak_bench.yy",},"order":0,},
     {"id":{"name":"not_catspeak_theory","path":"notes/not_catspeak_theory/not_catspeak_theory.yy",},"order":9,},
     {"id":{"name":"scr_catspeak_ascii_desc","path":"scripts/scr_catspeak_ascii_desc/scr_catspeak_ascii_desc.yy",},"order":3,},
