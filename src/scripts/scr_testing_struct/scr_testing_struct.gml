@@ -31,3 +31,34 @@ run_test(function() : AsyncTest("struct-literal-access") constructor {
         complete();
     });
 });
+
+run_test(function() : AsyncTest("struct-literal-access-2") constructor {
+    catspeak_compile_string(@'
+        let s = { ["meow"] : ":33" }
+        [s.["meow"], s.meow]
+    ').andThen(function(ir) {
+        show_message(ir.disassembly());
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq(":33", result[0]);
+        assertEq(":33", result[1]);
+    }).andCatch(function() {
+        fail()
+    }).andFinally(function() {
+        complete();
+    });
+});
+
+run_test(function() : AsyncTest("struct-literal-access-3") constructor {
+    catspeak_compile_string(@'
+        { huh : "???" }."huh"
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq("???", result);
+    }).andCatch(function() {
+        fail()
+    }).andFinally(function() {
+        complete();
+    });
+});
