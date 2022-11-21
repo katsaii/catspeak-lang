@@ -1,7 +1,8 @@
 #macro TESTING_COL_BLACK #333333
 #macro TESTING_COL_WHITE #DDDDDD
-#macro TESTING_COL_PASS #64b58e
-#macro TESTING_COL_FAIL #cc4e67
+#macro TESTING_COL_GREY #AAAAAA
+#macro TESTING_COL_PASS #64B58E
+#macro TESTING_COL_FAIL #CC4E67
 
 show_debug_overlay(true);
 
@@ -32,3 +33,9 @@ exampleChange(0);
 // so that the output of fps_real in the GUI is somewhat readable
 fpsRealCache = 0;
 alarm[0] = 30;
+
+// example region
+exampleLeft = 0;
+exampleTop = 0;
+exampleRight = 0;
+exampleBottom = 0;

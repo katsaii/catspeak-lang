@@ -7,6 +7,16 @@ var headerHeight = 15;
 
 draw_set_font(fnt_testing_mono);
 
+// update the example region so it doesn't overlap with the outside UI
+exampleLeft = pad;
+exampleTop = headerHeight + pad + 4 * lineHeight;
+exampleRight = width - pad;
+exampleBottom = height - pad - 5 * lineHeight;
+
+// draw example region
+draw_set_colour(TESTING_COL_GREY);
+draw_rectangle(exampleLeft, exampleTop, exampleRight, exampleBottom, true);
+
 // draw watermark
 draw_set_colour(TESTING_COL_WHITE);
 draw_set_valign(fa_bottom);

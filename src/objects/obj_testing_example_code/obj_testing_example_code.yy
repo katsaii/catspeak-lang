@@ -5,10 +5,7 @@
   "managed": true,
   "spriteMaskId": null,
   "persistent": false,
-  "parentObjectId": {
-    "name": "obj_testing_example_code",
-    "path": "objects/obj_testing_example_code/obj_testing_example_code.yy",
-  },
+  "parentObjectId": null,
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,
@@ -21,7 +18,10 @@
   "physicsStartAwake": true,
   "physicsKinematic": false,
   "physicsShapePoints": [],
-  "eventList": [],
+  "eventList": [
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":64,"eventType":8,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+  ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
@@ -29,7 +29,7 @@
     "path": "folders/Testing/demo/examples.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_testing_example_factorial",
+  "name": "obj_testing_example_code",
   "tags": [],
   "resourceType": "GMObject",
 }
