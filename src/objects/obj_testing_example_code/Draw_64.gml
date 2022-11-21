@@ -29,12 +29,12 @@ draw_set_halign(fa_center);
 draw_text(mean(right, midX), offset, "Output");
 draw_set_colour(TESTING_COL_GREY);
 draw_set_halign(fa_left);
-var logSize = array_length(log);
 offset += 2 * lineHeight;
 var finalOffset = offset + logLength * lineHeight;
-for (var i = max(0, logSize - logLength); i < logSize; i += 1) {
-    draw_set_colour(severities[$ logSeverity[i]]);
-    draw_text(midX + pad, offset, log[i]);
+for (var i = 0; i < logLength; i += 1) {
+    var idx = (logTail + i) % logLength;
+    draw_set_colour(severities[$ logSeverity[idx]]);
+    draw_text(midX + pad, offset, log[idx]);
     offset += lineHeight;
 }
 offset = finalOffset;
