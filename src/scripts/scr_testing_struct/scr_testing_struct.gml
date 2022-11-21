@@ -37,7 +37,6 @@ run_test(function() : AsyncTest("struct-literal-access-2") constructor {
         let s = { ["meow"] : ":33" }
         [s.["meow"], s.meow]
     ').andThen(function(ir) {
-        show_message(ir.disassembly());
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(":33", result[0]);
@@ -56,6 +55,36 @@ run_test(function() : AsyncTest("struct-literal-access-3") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("???", result);
+    }).andCatch(function() {
+        fail()
+    }).andFinally(function() {
+        complete();
+    });
+});
+
+run_test(function() : AsyncTest("struct-json") constructor {
+    jsonStr = @'
+    {
+        "Arrs": [1, 2, 3],
+        "Objs": {
+            "x": "hello",
+            "y": "world"
+        },
+        "Lits": [null, true, false]
+    }
+    ';
+    catspeak_compile_string(jsonStr).andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        var json = json_parse(jsonStr);
+        assertEq(json[$ "Arrs"][0], result[$ "Arrs"][0]);
+        assertEq(json[$ "Arrs"][1], result[$ "Arrs"][1]);
+        assertEq(json[$ "Arrs"][2], result[$ "Arrs"][2]);
+        assertEq(json[$ "Objs"][$ "x"], result[$ "Objs"][$ "x"]);
+        assertEq(json[$ "Objs"][$ "y"], result[$ "Objs"][$ "y"]);
+        assertEq(json[$ "Lits"][0], result[$ "Lits"][0]);
+        assertEq(json[$ "Lits"][1], result[$ "Lits"][1]);
+        assertEq(json[$ "Lits"][2], result[$ "Lits"][2]);
     }).andCatch(function() {
         fail()
     }).andFinally(function() {

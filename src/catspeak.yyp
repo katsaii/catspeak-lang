@@ -1,11 +1,13 @@
 {
   "resources": [
+    {"id":{"name":"scr_testing_op","path":"scripts/scr_testing_op/scr_testing_op.yy",},"order":10,},
     {"id":{"name":"scr_testing_grouping","path":"scripts/scr_testing_grouping/scr_testing_grouping.yy",},"order":4,},
     {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_process","path":"scripts/scr_catspeak_process/scr_catspeak_process.yy",},"order":9,},
     {"id":{"name":"scr_catspeak_alloc","path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},"order":6,},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},"order":2,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
+    {"id":{"name":"scr_testing_while","path":"scripts/scr_testing_while/scr_testing_while.yy",},"order":9,},
     {"id":{"name":"scr_catspeak_error","path":"scripts/scr_catspeak_error/scr_catspeak_error.yy",},"order":3,},
     {"id":{"name":"not_catspeak_syntax","path":"notes/not_catspeak_syntax/not_catspeak_syntax.yy",},"order":4,},
     {"id":{"name":"obj_catspeak_bench","path":"objects/obj_catspeak_bench/obj_catspeak_bench.yy",},"order":0,},
@@ -20,6 +22,7 @@
     {"id":{"name":"not_catspeak_standard_library","path":"notes/not_catspeak_standard_library/not_catspeak_standard_library.yy",},"order":6,},
     {"id":{"name":"scr_catspeak_token","path":"scripts/scr_catspeak_token/scr_catspeak_token.yy",},"order":0,},
     {"id":{"name":"scr_testing_init","path":"scripts/scr_testing_init/scr_testing_init.yy",},"order":0,},
+    {"id":{"name":"scr_testing_if","path":"scripts/scr_testing_if/scr_testing_if.yy",},"order":8,},
     {"id":{"name":"scr_testing_struct","path":"scripts/scr_testing_struct/scr_testing_struct.yy",},"order":7,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
     {"id":{"name":"not_catspeak_installation","path":"notes/not_catspeak_installation/not_catspeak_installation.yy",},"order":3,},
