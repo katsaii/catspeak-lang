@@ -1,21 +1,21 @@
 var width = display_get_gui_width();
 var height = display_get_gui_height();
 var stats = test_stats();
-var lineHeight = string_height("@C");
 var pad = 10;
 var headerHeight = 15;
 
-draw_set_font(fnt_testing_mono);
+draw_set_font(fnt_testing);
 
 // update the example region so it doesn't overlap with the outside UI
 exampleLeft = pad;
 exampleTop = headerHeight + pad + 4 * lineHeight;
 exampleRight = width - pad;
 exampleBottom = height - pad - 5 * lineHeight;
+lineHeight = string_height("@C");
 
 // draw example region
-draw_set_colour(TESTING_COL_GREY);
-draw_rectangle(exampleLeft, exampleTop, exampleRight, exampleBottom, true);
+//draw_set_colour(TESTING_COL_DARK_GREY);
+//draw_rectangle(exampleLeft, exampleTop, exampleRight, exampleBottom, true);
 
 // draw watermark
 draw_set_colour(TESTING_COL_WHITE);

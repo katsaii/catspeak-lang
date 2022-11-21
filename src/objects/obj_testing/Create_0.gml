@@ -1,6 +1,7 @@
 #macro TESTING_COL_BLACK #333333
 #macro TESTING_COL_WHITE #DDDDDD
 #macro TESTING_COL_GREY #AAAAAA
+#macro TESTING_COL_DARK_GREY #777777
 #macro TESTING_COL_PASS #64B58E
 #macro TESTING_COL_FAIL #CC4E67
 
@@ -39,3 +40,4 @@ exampleLeft = 0;
 exampleTop = 0;
 exampleRight = 0;
 exampleBottom = 0;
+lineHeight = 0;
