@@ -1,5 +1,5 @@
 {
-  "name": "fnt_testing_mono",
+  "name": "fnt_testing",
   "includeTTF": false,
   "size": 15.0,
   "sampleText": "abcdef ABCDEF\n0123456789 .,<>\"'&!?\nthe quick brown fox jumps over the lazy dog\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG\nDefault character: ▯ (9647)",
