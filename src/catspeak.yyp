@@ -13,6 +13,7 @@
     {"id":{"name":"scr_testing_function","path":"scripts/scr_testing_function/scr_testing_function.yy",},"order":11,},
     {"id":{"name":"obj_catspeak_bench","path":"objects/obj_catspeak_bench/obj_catspeak_bench.yy",},"order":0,},
     {"id":{"name":"not_catspeak_theory","path":"notes/not_catspeak_theory/not_catspeak_theory.yy",},"order":9,},
+    {"id":{"name":"obj_testing_example_code","path":"objects/obj_testing_example_code/obj_testing_example_code.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_ascii_desc","path":"scripts/scr_catspeak_ascii_desc/scr_catspeak_ascii_desc.yy",},"order":3,},
     {"id":{"name":"scr_catspeak_builtins","path":"scripts/scr_catspeak_builtins/scr_catspeak_builtins.yy",},"order":7,},
     {"id":{"name":"not_catspeak_basic_usage","path":"notes/not_catspeak_basic_usage/not_catspeak_basic_usage.yy",},"order":8,},
