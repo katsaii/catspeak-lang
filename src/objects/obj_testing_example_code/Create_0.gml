@@ -3,10 +3,12 @@ desc = "No further description...\n/(.Ö x Ö.)\\ !!";
 logLength = 6;
 log = array_create(logLength, "");
 logSeverity = array_create(logLength, "ok");
+logTail = 0;
 
 addLog = function(msg, severity="ok") {
-    array_push(log, is_string(msg) ? msg : string(msg));
-    array_push(logSeverity, severity);
+    log[@ logTail] = is_string(msg) ? msg : string(msg);
+    logSeverity[@ logTail] = severity;
+    logTail = (logTail + 1) % logLength;
     return undefined;
 };
 
