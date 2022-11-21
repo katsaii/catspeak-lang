@@ -23,7 +23,7 @@
   "overriddenProperties": [],
   "parent": {
     "name": "examples",
-    "path": "folders/Testing/examples.yy",
+    "path": "folders/Testing/demo/examples.yy",
   },
   "resourceVersion": "1.0",
   "name": "obj_testing_example_factorial",

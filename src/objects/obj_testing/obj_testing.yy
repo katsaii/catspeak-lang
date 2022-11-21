@@ -28,8 +28,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "examples",
-    "path": "folders/Testing/examples.yy",
+    "name": "demo",
+    "path": "folders/Testing/demo.yy",
   },
   "resourceVersion": "1.0",
   "name": "obj_testing",

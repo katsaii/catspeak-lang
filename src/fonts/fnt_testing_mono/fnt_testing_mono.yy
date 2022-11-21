@@ -130,8 +130,8 @@
   "canGenerateBitmap": true,
   "maintainGms1Font": false,
   "parent": {
-    "name": "examples",
-    "path": "folders/Testing/examples.yy",
+    "name": "demo",
+    "path": "folders/Testing/demo.yy",
   },
   "resourceVersion": "1.0",
   "tags": [],
