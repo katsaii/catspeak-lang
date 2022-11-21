@@ -12,6 +12,10 @@ examples = [
     {
         title : "factorial",
         obj : obj_testing_example_factorial,
+    },
+    {
+        title : "count down",
+        obj : obj_testing_example_countdown,
     }
 ];
 exampleIsValid = function(idx) {

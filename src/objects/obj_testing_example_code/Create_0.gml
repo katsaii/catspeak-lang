@@ -1,8 +1,8 @@
 code = "-- no code";
 desc = "No further description...\n/(.Ö x Ö.)\\ !!";
-log = [];
-logSeverity = [];
 logLength = 6;
+log = array_create(logLength, "");
+logSeverity = array_create(logLength, "ok");
 
 addLog = function(msg, severity="ok") {
     array_push(log, is_string(msg) ? msg : string(msg));
