@@ -1,6 +1,9 @@
 //! Helper functions for managing unit tests.
 
 function Test(name) constructor {
+    static totalCount = 0;
+    totalCount += 1;
+    self.number = totalCount;
     self.name = __cat(name);
     self.fails = [];
     self.automatic = true;
@@ -10,6 +13,7 @@ function Test(name) constructor {
     complete = function() {
         var passed = array_length(fails) < 1;
         var msg = " ---===--- test ";
+        msg += "#" + string(number) + " ";
         if (passed) {
             msg += "PASSED";
         } else {
