@@ -1,9 +1,17 @@
 //! Helper functions for managing unit tests.
 
+function test_stats() {
+    static stats = {
+        total : 0,
+        totalFailed : 0,
+    };
+    return stats;
+}
+
 function Test(name) constructor {
-    static totalCount = 0;
-    totalCount += 1;
-    self.number = totalCount;
+    var stats = test_stats();
+    stats.total += 1;
+    self.number = stats.total;
     self.name = __cat(name);
     self.fails = [];
     self.automatic = true;
@@ -17,6 +25,7 @@ function Test(name) constructor {
         if (passed) {
             msg += "PASSED";
         } else {
+            test_stats().totalFailed += 1;
             msg += "FAILED";
         }
         msg += " '" + name + "'";
