@@ -16,7 +16,10 @@
     {"id":{"name":"scr_catspeak_ascii_desc","path":"scripts/scr_catspeak_ascii_desc/scr_catspeak_ascii_desc.yy",},"order":3,},
     {"id":{"name":"scr_catspeak_builtins","path":"scripts/scr_catspeak_builtins/scr_catspeak_builtins.yy",},"order":7,},
     {"id":{"name":"not_catspeak_basic_usage","path":"notes/not_catspeak_basic_usage/not_catspeak_basic_usage.yy",},"order":8,},
+    {"id":{"name":"fnt_testing_prop","path":"fonts/fnt_testing_prop/fnt_testing_prop.yy",},"order":2,},
     {"id":{"name":"scr_catspeak_config","path":"scripts/scr_catspeak_config/scr_catspeak_config.yy",},"order":10,},
+    {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":4,},
+    {"id":{"name":"obj_testing_example_factorial","path":"objects/obj_testing_example_factorial/obj_testing_example_factorial.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_compiler","path":"scripts/scr_catspeak_compiler/scr_catspeak_compiler.yy",},"order":4,},
     {"id":{"name":"scr_catspeak_vm","path":"scripts/scr_catspeak_vm/scr_catspeak_vm.yy",},"order":8,},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
@@ -26,6 +29,7 @@
     {"id":{"name":"scr_testing_if","path":"scripts/scr_testing_if/scr_testing_if.yy",},"order":8,},
     {"id":{"name":"scr_testing_struct","path":"scripts/scr_testing_struct/scr_testing_struct.yy",},"order":7,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
+    {"id":{"name":"fnt_testing_mono","path":"fonts/fnt_testing_mono/fnt_testing_mono.yy",},"order":3,},
     {"id":{"name":"not_catspeak_installation","path":"notes/not_catspeak_installation/not_catspeak_installation.yy",},"order":3,},
     {"id":{"name":"scr_testing_empty","path":"scripts/scr_testing_empty/scr_testing_empty.yy",},"order":1,},
     {"id":{"name":"scr_testing_return","path":"scripts/scr_testing_return/scr_testing_return.yy",},"order":2,},
@@ -39,7 +43,7 @@
     {"id":{"name":"scr_testing_array","path":"scripts/scr_testing_array/scr_testing_array.yy",},"order":6,},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},"order":5,},
     {"id":{"name":"not_catspeak_configuration","path":"notes/not_catspeak_configuration/not_catspeak_configuration.yy",},"order":7,},
-    {"id":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},"order":1,},
+    {"id":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},"order":1,},
   ],
   "Options": [
     {"name":"Linux","path":"options/linux/options_linux.yy",},
@@ -56,7 +60,7 @@
     "children": [],
   },
   "RoomOrderNodes": [
-    {"roomId":{"name":"rm_test","path":"rooms/rm_test/rm_test.yy",},},
+    {"roomId":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},},
   ],
   "Folders": [
     {"folderPath":"folders/Catspeak.yy","order":0,"resourceVersion":"1.0","name":"Catspeak","tags":[],"resourceType":"GMFolder",},
@@ -68,6 +72,7 @@
     {"folderPath":"folders/Testing.yy","order":2,"resourceVersion":"1.0","name":"Testing","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Testing/framework.yy","order":2,"resourceVersion":"1.0","name":"framework","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Testing/unit-tests.yy","order":3,"resourceVersion":"1.0","name":"unit-tests","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Testing/examples.yy","order":5,"resourceVersion":"1.0","name":"examples","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
