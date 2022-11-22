@@ -1,9 +1,5 @@
 code = "-- no code";
 desc = "No further description...\n/(.Ö x Ö.)\\ !!";
-logLength = 6;
-log = array_create(logLength, "");
-logSeverity = array_create(logLength, "ok");
-logTail = 0;
 
 addLog = function(msg, severity="ok") {
     log[@ logTail] = is_string(msg) ? msg : string(msg);
@@ -11,6 +7,15 @@ addLog = function(msg, severity="ok") {
     logTail = (logTail + 1) % logLength;
     return undefined;
 };
+
+resizeLog = function(length) {
+    logLength = length;
+    log = array_create(logLength, "");
+    logSeverity = array_create(logLength, "ok");
+    logTail = 0;
+};
+
+resizeLog(6);
 
 severities = {
     "ok" : TESTING_COL_WHITE,
