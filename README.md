@@ -63,7 +63,7 @@ a full overview of the language.
 
 ### Syntax
 
-```
+```hs
 factorial = fun(n) {
   if (n <= 1) {
     return 1
