@@ -6,8 +6,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "obj_testing_example_code",
-    "path": "objects/obj_testing_example_code/obj_testing_example_code.yy",
+    "name": "obj_testing_example_base",
+    "path": "objects/obj_testing_example_base/obj_testing_example_base.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,

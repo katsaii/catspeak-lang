@@ -30,7 +30,7 @@
     "path": "folders/Testing/demo/examples.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_testing_example_code",
+  "name": "obj_testing_example_base",
   "tags": [],
   "resourceType": "GMObject",
 }
