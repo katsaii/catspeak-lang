@@ -256,6 +256,14 @@ function CatspeakCompiler(lexer, ir) constructor {
     ///   The register or accessor representing the left-hand-side of an
     ///   assignment expression.
     static pushIt = function(reg) {
+        if (is_struct(reg) && instanceof(reg) == "CatspeakCollectionAccessor") {
+            // if this is the case, then it is possible that
+            // ```
+            // a.[0] = it + it
+            // ```
+            // will happen, so the accessor registers need to be non-temporary
+            reg.isTemporary = false;
+        }
         ds_stack_push(itStack, {
             ir : ir,
             it : new CatspeakReadOnlyAccessor(reg),
@@ -983,21 +991,27 @@ function CatspeakCollectionAccessor(
     var ir_ = compiler.ir;
     self.pos = pos_;
     self.ir = ir_;
-    self.collection = ir_.emitGet(collection, pos_);
-    self.index = ir_.emitGet(index, pos_);
+    self.isTemporary = true;
+    // TODO :: figure out how to handle accessors better, they seem a bit rough
+    self.collection = collection;
+    self.index = index;
     self.getReg = undefined;
     self.getValue = function() {
         if (getReg != undefined) {
             return getReg;
         }
-        // could improve this to only copy if necessary
-        // e.g. constant registers don't need to copied
-        collection = ir.emitClone(collection);
-        index = ir.emitClone(index);
+        if (!isTemporary) {
+            // could improve this to only copy if necessary
+            // e.g. constant registers don't need to copied
+            collection = ir.emitClone(collection);
+            index = ir.emitClone(index);
+        }
         var getFuncReg = ir.emitPermanentConstant(getFunc);
-        var result = ir.emitClone(
-                ir.emitCall(getFuncReg, [collection, index], pos));
-        getReg = result;
+        var result = ir.emitCall(getFuncReg, [collection, index], pos)
+        if (!isTemporary) {
+            result = ir.emitClone(result);
+            getReg = result;
+        }
         return result;
     };
     self.setValue = function(value) {

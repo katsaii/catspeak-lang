@@ -14,7 +14,7 @@ run_test(function() : AsyncTest("struct-literal") constructor {
     });
 });
 
-run_test(function() : AsyncTest("struct-literal-access") constructor {
+run_test(function() : AsyncTest("struct-access") constructor {
     catspeak_compile_string(@'
         let s = { ["meow"] : ":33" }
         [s.["meow"], s.meow, s.`meow`, s."meow"]
@@ -32,7 +32,7 @@ run_test(function() : AsyncTest("struct-literal-access") constructor {
     });
 });
 
-run_test(function() : AsyncTest("struct-literal-access-2") constructor {
+run_test(function() : AsyncTest("struct-access-2") constructor {
     catspeak_compile_string(@'
         let s = { ["meow"] : ":33" }
         [s.["meow"], s.meow]
@@ -48,7 +48,25 @@ run_test(function() : AsyncTest("struct-literal-access-2") constructor {
     });
 });
 
-run_test(function() : AsyncTest("struct-literal-access-3") constructor {
+run_test(function() : AsyncTest("struct-access-3") constructor {
+    catspeak_compile_string(@'
+        let s = { meow : ":33" }
+        s.["meow"]
+        s.meow
+    ').andThen(function(ir) {
+        clipboard_set_text(ir.disassembly())
+        show_message(ir.disassembly())
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq(":33", result);
+    }).andCatch(function() {
+        fail()
+    }).andFinally(function() {
+        complete();
+    });
+}, true);
+
+run_test(function() : AsyncTest("struct-access-literal") constructor {
     catspeak_compile_string(@'
         { huh : "???" }."huh"
     ').andThen(function(ir) {
