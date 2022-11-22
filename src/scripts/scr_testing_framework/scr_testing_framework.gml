@@ -1,5 +1,8 @@
 //! Helper functions for managing unit tests.
 
+#macro TEST_RUN_ENABLED true
+#macro NoTest:TEST_RUN_ENABLED false
+
 function test_stats() {
     static stats = {
         total : 0,
@@ -154,7 +157,10 @@ function AsyncTest(name) : Test(name) constructor {
     automatic = false;
 }
 
-function run_test(f) {
+function run_test(f, forceRun=false) {
+    if (!forceRun && !TEST_RUN_ENABLED) {
+        return;
+    }
     var test = new f();
     if (test.automatic) {
         // otherwise `complete()` needs to be called manually
