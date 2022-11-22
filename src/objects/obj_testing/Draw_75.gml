@@ -59,11 +59,11 @@ draw_text(width * 0.5, headerHeight + pad + lineHeight,
         "example\n" + exampleName);
 if (exampleIsValid(exampleCurrent - 1)) {
     draw_text(width * 0.25, headerHeight + pad + lineHeight, 
-            "previous example\n(left arrow)");
+            "previous example\n<left arrow key>");
 }
 if (exampleIsValid(exampleCurrent + 1)) {
     draw_text(width * 0.75, headerHeight + pad + lineHeight, 
-            "next example\n(right arrow)");
+            "next example\n<right arrow key>");
 }
 
 draw_set_valign(fa_top);

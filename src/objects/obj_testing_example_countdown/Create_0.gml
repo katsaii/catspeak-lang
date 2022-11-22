@@ -1,5 +1,7 @@
 event_inherited();
 
+resizeLog(10);
+
 code = @'-- count down from 10000
 let n = 10000
 while (n > 0) {
@@ -8,5 +10,5 @@ while (n > 0) {
 }
 return "blast off!"';
 
-desc = "This example computes the factorial of four numbers and outputs " +
-        "their result to the log window.";
+desc = "This example counts down from ten thousand and outputs the result " +
+        "to the log window.";
