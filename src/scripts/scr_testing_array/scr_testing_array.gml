@@ -9,7 +9,7 @@ run_test(function() : AsyncTest("array-literal") constructor {
         assertEq(true, result[1]);
         assertEq(false, result[2]);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -23,7 +23,7 @@ run_test(function() : AsyncTest("array-literal-access") constructor {
     }).andThen(function(result) {
         assertEq("?:B", result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });

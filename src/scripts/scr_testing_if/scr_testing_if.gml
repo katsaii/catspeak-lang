@@ -17,7 +17,7 @@ run_test(function() : AsyncTest("if-elseif-else") constructor {
     }).andThen(function(result) {
         assertEq("less", result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });

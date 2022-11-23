@@ -5,7 +5,7 @@ run_test(function() : AsyncTest("prim-int") constructor {
     }).andThen(function(result) {
         assertEq(88888888, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -17,7 +17,7 @@ run_test(function() : AsyncTest("prim-float") constructor {
     }).andThen(function(result) {
         assertEq(1.5, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -29,7 +29,7 @@ run_test(function() : AsyncTest("prim-nan") constructor {
     }).andThen(function(result) {
         assert(is_nan(result)).withMessage("should be NaN");
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -42,7 +42,7 @@ run_test(function() : AsyncTest("prim-infinity") constructor {
         assert(is_infinity(result[0])).withMessage("should be infinity");
         assert(is_infinity(result[1])).withMessage("should be -infinity");
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -55,7 +55,7 @@ run_test(function() : AsyncTest("prim-bool") constructor {
         assertEq(true, result[0]);
         assertEq(false, result[1]);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -67,7 +67,7 @@ run_test(function() : AsyncTest("prim-undefined") constructor {
     }).andThen(function(result) {
         assertEq(undefined, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -79,7 +79,7 @@ run_test(function() : AsyncTest("prim-null") constructor {
     }).andThen(function(result) {
         assertEq(pointer_null, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });

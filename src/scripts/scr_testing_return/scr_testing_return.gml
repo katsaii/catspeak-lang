@@ -5,7 +5,7 @@ run_test(function() : AsyncTest("return") constructor {
     }).andThen(function(result) {
         assertEq(1, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -17,7 +17,7 @@ run_test(function() : AsyncTest("return-implicit") constructor {
     }).andThen(function(result) {
         assertEq(2, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
