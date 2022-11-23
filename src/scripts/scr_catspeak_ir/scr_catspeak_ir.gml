@@ -80,7 +80,9 @@ function CatspeakFunction(name, parent) constructor {
     /// @return {Struct.CatspeakBlock}
     static emitBlock = function(block) {
         var idx = array_length(blocks);
-        if (idx > 0) {
+        if (idx > 0 && !blocks[idx - 1].terminated) {
+            // jump from the previous block if it exists and has not
+            // been terminated yet
             emitJump(block);
         }
         array_push(blocks, block);
@@ -403,6 +405,22 @@ function CatspeakFunction(name, parent) constructor {
         var condition_ = emitGet(condition);
         var inst = emitCode(CatspeakIntcode.JMPF, undefined, block, condition_);
         __registerMark(inst, 3);
+    };
+
+    /// Generates the code to jump to a new block of code if a condition
+    /// is true.
+    ///
+    /// @param {Struct.CatspeakBlock} block
+    ///   The block to jump to.
+    ///
+    /// @param {Any} condition
+    ///   The register or accessor containing the condition code to check.
+    static emitJumpTrue = function(block, condition) {
+        var entry = new CatspeakBlock(
+                (block.name ?? "jump") + " entry", block.pos);
+        emitJumpFalse(entry, condition);
+        emitJump(block);
+        emitBlock(entry);
     };
 
     /// Generates the code to call a Catspeak function. Returns a register
