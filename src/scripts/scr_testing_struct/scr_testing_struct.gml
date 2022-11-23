@@ -54,8 +54,6 @@ run_test(function() : AsyncTest("struct-access-3") constructor {
         s.["meow"]
         s.meow
     ').andThen(function(ir) {
-        clipboard_set_text(ir.disassembly())
-        show_message(ir.disassembly())
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(":33", result);
@@ -64,7 +62,7 @@ run_test(function() : AsyncTest("struct-access-3") constructor {
     }).andFinally(function() {
         complete();
     });
-}, true);
+});
 
 run_test(function() : AsyncTest("struct-access-literal") constructor {
     catspeak_compile_string(@'
