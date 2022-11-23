@@ -660,8 +660,9 @@ function CatspeakCompiler(lexer, ir) constructor {
                 reg : condition,
                 orEnd : blk,
             });
-            //ir.emitJumpFalse(blk, condition);
-            //pushState(__stateExprOpLogicalBegin);
+            ir.emitJumpTrue(blk, condition);
+            pushState(__stateExprOpLogicalEndOr);
+            pushState(__stateExprOpLogicalBegin);
         } else {
             pushResult(lhs);
         }
@@ -678,7 +679,11 @@ function CatspeakCompiler(lexer, ir) constructor {
 
     /// @ignore
     static __stateExprOpLogicalEndOr = function() {
+        var rhs = popResult();
         var info = popResult();
+        ir.emitMove(rhs, info.reg);
+        ir.emitBlock(info.orEnd);
+        pushResult(new CatspeakTempRegisterAccessor(info.reg, ir));
     };
 
     /// @ignore
