@@ -5,7 +5,7 @@ run_test(function() : AsyncTest("grouping-paren") constructor {
     }).andThen(function(result) {
         assertEq(3, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -17,7 +17,7 @@ run_test(function() : AsyncTest("grouping-box") constructor {
     }).andThen(function(result) {
         assertEq(0, array_length(result[0][0]));
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -30,7 +30,7 @@ run_test(function() : AsyncTest("grouping-brace") constructor {
         assertEq(1, variable_struct_names_count(result));
         assertEq(0, variable_struct_names_count(result[$ "1"]));
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });

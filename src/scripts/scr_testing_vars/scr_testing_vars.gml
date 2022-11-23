@@ -8,7 +8,7 @@ run_test(function() : AsyncTest("vars-let") constructor {
     }).andThen(function(result) {
         assertEq("uwu", result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -23,7 +23,7 @@ run_test(function() : AsyncTest("vars-let-default") constructor {
     }).andThen(function(result) {
         assertEq(undefined, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -39,7 +39,7 @@ run_test(function() : AsyncTest("vars-let-assign") constructor {
     }).andThen(function(result) {
         assertEq("o_o", result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -56,7 +56,7 @@ run_test(function() : AsyncTest("vars-let-it") constructor {
     }).andThen(function(result) {
         assertEq(110, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -72,7 +72,7 @@ run_test(function() : AsyncTest("vars-let-it-twice") constructor {
     }).andThen(function(result) {
         assertEq(20, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -88,7 +88,7 @@ run_test(function() : AsyncTest("vars-global-read") constructor {
         assertEq(-12, result[0]);
         assertEq(f, result[1]);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -110,7 +110,7 @@ run_test(function() : AsyncTest("vars-global-read-2") constructor {
         assertEq(-33, result[2]);
         assertEq(12, result[3]);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -128,7 +128,7 @@ run_test(function() : AsyncTest("vars-global-write") constructor {
         assertEq(pointer_null, catsFunc.getGlobal("zero"));
         assertEq("<@_", catsFunc.getGlobal("snail"));
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -145,7 +145,7 @@ run_test(function() : AsyncTest("vars-global-it") constructor {
     }).andThen(function(result) {
         assertEq(110, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -161,7 +161,7 @@ run_test(function() : AsyncTest("vars-global-it-twice") constructor {
     }).andThen(function(result) {
         assertEq(20, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });

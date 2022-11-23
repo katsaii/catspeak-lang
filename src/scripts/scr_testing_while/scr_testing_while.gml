@@ -18,7 +18,7 @@ run_test(function() : AsyncTest("while-count-up") constructor {
         assertEq(10, result);
         assertEq(count, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -36,7 +36,7 @@ run_test(function() : AsyncTest("while-break") constructor {
         });
         return catspeak_execute(ir);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -57,7 +57,7 @@ run_test(function() : AsyncTest("while-continue") constructor {
         });
         return catspeak_execute(ir);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });

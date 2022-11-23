@@ -5,7 +5,7 @@ run_test(function() : AsyncTest("op-arithmetic") constructor {
     }).andThen(function(result) {
         assertEq((1 + 2 + 4 + 8) ^ (1 + 2 + 4 + (8 * 4)), result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -23,7 +23,7 @@ run_test(function() : AsyncTest("op-and") constructor {
     }).andThen(function(result) {
         assertEq(5000, result);
     }).andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -41,7 +41,21 @@ run_test(function() : AsyncTest("op-or") constructor {
     }).andThen(function(result) {
         assertEq("wtf", result);
     }).andCatch(function() {
-        fail()
+        fail();
+    }).andFinally(function() {
+        complete();
+    });
+});
+
+run_test(function() : AsyncTest("op-or-chain") constructor {
+    catspeak_compile_string(@'
+        false or 0 or "hi"
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq("hi", result);
+    }).andCatch(function() {
+        fail();
     }).andFinally(function() {
         complete();
     });

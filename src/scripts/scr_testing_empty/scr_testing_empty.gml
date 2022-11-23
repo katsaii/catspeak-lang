@@ -1,7 +1,7 @@
 
 run_test(function() : AsyncTest("empty-string") constructor {
     catspeak_compile_string("").andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -9,7 +9,7 @@ run_test(function() : AsyncTest("empty-string") constructor {
 
 run_test(function() : AsyncTest("empty-string-raw") constructor {
     catspeak_compile_string(@'').andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -17,7 +17,7 @@ run_test(function() : AsyncTest("empty-string-raw") constructor {
 
 run_test(function() : AsyncTest("empty-string-whitespace") constructor {
     catspeak_compile_string("	 ").andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -25,7 +25,7 @@ run_test(function() : AsyncTest("empty-string-whitespace") constructor {
 
 run_test(function() : AsyncTest("empty-string-whitespace-escape") constructor {
     catspeak_compile_string("\t \n \v \f \r \r\n \n\n").andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -35,7 +35,7 @@ run_test(function() : AsyncTest("empty-string-whitespace-raw") constructor {
     catspeak_compile_string(@'
         	 
     ').andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
@@ -47,7 +47,7 @@ run_test(function() : AsyncTest("empty-comment") constructor {
         --also nothing, but with not space
         -- //
     ').andCatch(function() {
-        fail()
+        fail();
     }).andFinally(function() {
         complete();
     });
