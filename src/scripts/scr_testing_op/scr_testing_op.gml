@@ -27,7 +27,7 @@ run_test(function() : AsyncTest("op-and") constructor {
     }).andFinally(function() {
         complete();
     });
-});
+}, true);
 
 run_test(function() : AsyncTest("op-or") constructor {
     catspeak_compile_string(@'

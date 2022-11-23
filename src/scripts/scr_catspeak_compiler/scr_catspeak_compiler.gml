@@ -609,8 +609,7 @@ function CatspeakCompiler(lexer, ir) constructor {
     /// @ignore
     static __stateExprAssignBegin = function() {
         pushState(__stateExprAssign);
-        pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
-        pushState(__stateExprOpBinaryBegin);
+        pushState(__stateExprOpLogicalBegin);
     };
 
     /// @ignore
@@ -632,6 +631,54 @@ function CatspeakCompiler(lexer, ir) constructor {
         var lhs = popResult();
         popIt();
         pushResult(ir.emitSet(lhs, rhs, pos));
+    };
+
+    /// @ignore
+    static __stateExprOpLogicalBegin = function() {
+        pushState(__stateExprOpLogical);
+        pushResult(CatspeakToken.__OPERATORS_BEGIN__ + 1);
+        pushState(__stateExprOpBinaryBegin);
+    };
+
+    /// @ignore
+    static __stateExprOpLogical = function() {
+        var lhs = popResult();
+        if (consume(CatspeakToken.AND)) {
+            var blk = new CatspeakBlock("and end", pos);
+            var condition = ir.emitClone(lhs, pos);
+            pushResult({
+                reg : condition,
+                andEnd : blk,
+            });
+            ir.emitJumpFalse(blk, condition);
+            pushState(__stateExprOpLogicalEndAnd);
+            pushState(__stateExprOpLogicalBegin);
+        } else if (consume(CatspeakToken.OR)) {
+            var blk = new CatspeakBlock("or end", pos);
+            var condition = ir.emitClone(lhs, pos);
+            pushResult({
+                reg : condition,
+                orEnd : blk,
+            });
+            //ir.emitJumpFalse(blk, condition);
+            //pushState(__stateExprOpLogicalBegin);
+        } else {
+            pushResult(lhs);
+        }
+    };
+
+    /// @ignore
+    static __stateExprOpLogicalEndAnd = function() {
+        var rhs = popResult();
+        var info = popResult();
+        ir.emitMove(rhs, info.reg);
+        ir.emitBlock(info.andEnd);
+        pushResult(new CatspeakTempRegisterAccessor(info.reg, ir));
+    };
+
+    /// @ignore
+    static __stateExprOpLogicalEndOr = function() {
+        var info = popResult();
     };
 
     /// @ignore

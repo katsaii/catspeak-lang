@@ -412,6 +412,8 @@ function __catspeak_init_lexer_database_token_starts_expression() {
         CatspeakToken.BOF,
         CatspeakToken.EOF,
         CatspeakToken.OTHER,
+        CatspeakToken.AND,
+        CatspeakToken.OR,
         CatspeakToken.OP_LOW,
         CatspeakToken.OP_OR,
         CatspeakToken.OP_AND,
