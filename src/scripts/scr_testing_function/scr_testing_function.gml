@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("function-define") constructor {
     catspeak_compile_string("fun() { failure() }").andThen(function(ir) {
         ir.setGlobal("failure", function() {

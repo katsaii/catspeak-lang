@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("struct-literal") constructor {
     catspeak_compile_string(@'
         { x : "ecks", y : "why?" }

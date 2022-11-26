@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("empty-string") constructor {
     catspeak_compile_string("").andCatch(function() {
         fail();

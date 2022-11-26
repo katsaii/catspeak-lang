@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("return") constructor {
     catspeak_compile_string("return 1").andThen(function(ir) {
         return catspeak_execute(ir);

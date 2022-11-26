@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("if-elseif-else") constructor {
     catspeak_compile_string(@'
         a = 3

@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("prim-int") constructor {
     catspeak_compile_string("88888888").andThen(function(ir) {
         return catspeak_execute(ir);

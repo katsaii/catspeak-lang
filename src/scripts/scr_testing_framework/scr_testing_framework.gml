@@ -1,5 +1,7 @@
 //! Helper functions for managing unit tests.
 
+//# feather use syntax-errors
+
 #macro TEST_RUN_ENABLED true
 #macro NoTest:TEST_RUN_ENABLED false
 
