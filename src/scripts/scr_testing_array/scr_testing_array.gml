@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("array-literal") constructor {
     catspeak_compile_string(@'
         ["hello world", true, false]

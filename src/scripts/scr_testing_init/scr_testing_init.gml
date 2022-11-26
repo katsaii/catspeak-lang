@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : Test("init-entrypoint") constructor {
     assertAsset("scr_catspeak_init", asset_script)
             .withMessage("missing entrypoint");

@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("grouping-paren") constructor {
     catspeak_compile_string("(1 + (1 + 1))").andThen(function(ir) {
         return catspeak_execute(ir);

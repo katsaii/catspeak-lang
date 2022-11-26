@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("while-count-up") constructor {
     count = 0;
     catspeak_compile_string(@'

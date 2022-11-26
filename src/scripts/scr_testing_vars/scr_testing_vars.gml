@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 run_test(function() : AsyncTest("vars-let") constructor {
     catspeak_compile_string(@'
         let a = "uwu"
