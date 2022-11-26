@@ -27,7 +27,21 @@ run_test(function() : AsyncTest("op-and") constructor {
     }).andFinally(function() {
         complete();
     });
-}, true);
+});
+
+run_test(function() : AsyncTest("op-and-chain") constructor {
+    catspeak_compile_string(@'
+        true and 1 and "wah"
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq("wah", result);
+    }).andCatch(function() {
+        fail();
+    }).andFinally(function() {
+        complete();
+    });
+});
 
 run_test(function() : AsyncTest("op-or") constructor {
     catspeak_compile_string(@'
@@ -54,6 +68,22 @@ run_test(function() : AsyncTest("op-or-chain") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("hi", result);
+    }).andCatch(function() {
+        fail();
+    }).andFinally(function() {
+        complete();
+    });
+});
+
+run_test(function() : AsyncTest("op-and-or-chain") constructor {
+    catspeak_compile_string(@'
+        let even = true
+        let odd = false
+        even and odd or "schmeven"
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq("schmeven", result);
     }).andCatch(function() {
         fail();
     }).andFinally(function() {
