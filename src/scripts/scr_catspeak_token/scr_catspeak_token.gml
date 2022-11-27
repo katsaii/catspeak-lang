@@ -34,6 +34,7 @@ enum CatspeakToken {
     OR,
     NEW,
     IMPL,
+    SELF,
     IDENT,
     STRING,
     NUMBER,
@@ -120,6 +121,8 @@ function catspeak_token_show(value) {
         return "NEW";
     case CatspeakToken.IMPL:
         return "IMPL";
+    case CatspeakToken.SELF:
+        return "SELF";
     case CatspeakToken.IDENT:
         return "IDENT";
     case CatspeakToken.STRING:
@@ -223,6 +226,8 @@ function catspeak_token_read(str) {
         return CatspeakToken.NEW;
     case "IMPL":
         return CatspeakToken.IMPL;
+    case "SELF":
+        return CatspeakToken.SELF;
     case "IDENT":
         return CatspeakToken.IDENT;
     case "STRING":

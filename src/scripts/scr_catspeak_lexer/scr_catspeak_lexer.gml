@@ -496,6 +496,7 @@ function __catspeak_init_lexer_database_token_keywords() {
     db[$ "or"] = CatspeakToken.OR;
     db[$ "new"] = CatspeakToken.NEW;
     db[$ "impl"] = CatspeakToken.IMPL;
+    db[$ "self"] = CatspeakToken.SELF;
     global.__catspeakConfig.keywords = db;
     /// @ignore
     global.__catspeakDatabaseLexemeToKeyword = db;

@@ -8,6 +8,7 @@
 enum CatspeakIntcode {
     CALLSPAN,
     CALL,
+    SELF,
     JMP,
     JMPF,
     RET,
@@ -31,6 +32,8 @@ function catspeak_intcode_show(value) {
         return "CALLSPAN";
     case CatspeakIntcode.CALL:
         return "CALL";
+    case CatspeakIntcode.SELF:
+        return "SELF";
     case CatspeakIntcode.JMP:
         return "JMP";
     case CatspeakIntcode.JMPF:
@@ -64,6 +67,8 @@ function catspeak_intcode_read(str) {
         return CatspeakIntcode.CALLSPAN;
     case "CALL":
         return CatspeakIntcode.CALL;
+    case "SELF":
+        return CatspeakIntcode.SELF;
     case "JMP":
         return CatspeakIntcode.JMP;
     case "JMPF":

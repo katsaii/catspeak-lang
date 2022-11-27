@@ -148,6 +148,7 @@ Catspeak reserves the following identifiers as keywords:
  - `return`   see [Return Expressions]
  - `impl`     (reserved in case of constructor functions)
  - `new`      (reserved in case of constructor functions)
+ - `self`     (reserved in case of method binding)
  - `and`      (reserved in case of short-circuit AND)
  - `or`       (reserved in case of short-circuit OR)
 
