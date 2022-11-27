@@ -198,6 +198,10 @@ function CatspeakVM() constructor {
                 g[@ inst[2]] = r[inst[3]];
                 pc += 1;
                 break;
+            case CatspeakIntcode.SELF:
+                r[@ inst[1]] = self_;
+                pc += 1;
+                break;
             case CatspeakIntcode.MOV:
                 array_copy(r, inst[1], r, inst[3], inst[2]);
                 pc += 1;
