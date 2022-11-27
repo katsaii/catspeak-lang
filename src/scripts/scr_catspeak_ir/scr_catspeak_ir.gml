@@ -959,12 +959,20 @@ function CatspeakReadOnlyAccessor(reg) : CatspeakAccessor() constructor {
 ///
 /// @param {Struct.CatspeakFunction} ir
 ///   The IR function associated with this register.
-function CatspeakTempRegisterAccessor(reg, ir) : CatspeakAccessor() constructor {
+///
+/// @param {Real} [count]
+///   The number of times this register can be read before it's discarded.
+///   Defaults to 1 time.
+function CatspeakTempRegisterAccessor(reg, ir, count=1) : CatspeakAccessor() constructor {
     self.reg = reg;
     self.ir = ir;
+    self.count = count;
     self.getValue = function() {
-        getValue = undefined;
-        ir.discardRegister(reg);
+        count -= 1;
+        if (count < 1) {
+            getValue = undefined;
+            ir.discardRegister(reg);
+        }
         return reg;
     };
 }
