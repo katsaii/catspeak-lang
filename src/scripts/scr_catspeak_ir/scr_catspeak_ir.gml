@@ -440,8 +440,9 @@ function CatspeakFunction(name, parent) constructor {
     static emitCall = function(callee, args, pos) {
         var callee_ = emitGet(callee, pos);
         var argCount = array_length(args);
-        var inst = [CatspeakIntcode.CALLSPAN, undefined, callee_, 0];
-        __registerMark(inst, 1, 2);
+        var selfReg = undefined;
+        var inst = [CatspeakIntcode.CALLSPAN, undefined, selfReg, callee_, 0];
+        __registerMark(inst, 1, 3);
         // add arguments using run-length encoding, in the best case all
         // arguments can be simplified to a single span
         if (argCount > 0) {
@@ -455,7 +456,7 @@ function CatspeakFunction(name, parent) constructor {
                 } else {
                     array_push(inst, prevReg - currLength + 1, currLength);
                     __registerMark(inst, array_length(inst) - 2);
-                    inst[@ 3] += 1;
+                    inst[@ 4] += 1;
                     currLength = 1;
                     simpleCall = false;
                 }
@@ -465,7 +466,7 @@ function CatspeakFunction(name, parent) constructor {
                 array_pop(inst);
                 inst[@ 0] = CatspeakIntcode.CALL;
             } else {
-                inst[@ 3] += 1;
+                inst[@ 4] += 1;
             }
             array_push(inst, prevReg - currLength + 1, currLength);
             __registerMark(inst, array_length(inst) - 2);
@@ -759,8 +760,9 @@ function CatspeakFunction(name, parent) constructor {
                     break;
                 case CatspeakIntcode.CALLSPAN:
                     msg += " " + __registerName(inst[2]);
-                    msg += " " + __valueName(inst[3]);
-                    for (var k = 4; k < instCount; k += 2) {
+                    msg += " " + __registerName(inst[3]);
+                    msg += " " + __valueName(inst[4]);
+                    for (var k = 5; k < instCount; k += 2) {
                         msg += " " + __registerName(inst[k + 0]);
                         msg += " " + __valueName(inst[k + 1]);
                     }
@@ -768,7 +770,8 @@ function CatspeakFunction(name, parent) constructor {
                 case CatspeakIntcode.CALL:
                     msg += " " + __registerName(inst[2]);
                     msg += " " + __registerName(inst[3]);
-                    msg += " " + __valueName(inst[4]);
+                    msg += " " + __registerName(inst[4]);
+                    msg += " " + __valueName(inst[5]);
                     break;
                 case CatspeakIntcode.RET:
                     msg += " " + __registerName(inst[2]);

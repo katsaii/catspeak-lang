@@ -9,8 +9,8 @@ run_test(function() : AsyncTest("function-define") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertInstanceof(result, "CatspeakFunction");
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -24,8 +24,8 @@ run_test(function() : AsyncTest("function-call") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("Kat Kat", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -41,8 +41,8 @@ run_test(function() : AsyncTest("function-call-side-effect") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(3, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -58,8 +58,8 @@ run_test(function() : AsyncTest("function-args") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(1 + 3, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -79,8 +79,8 @@ run_test(function() : AsyncTest("function-recursion") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -103,8 +103,8 @@ run_test(function() : AsyncTest("function-scope") constructor {
         assertEq(2, result[1]);
         assertEq(3, result[2]);
         assertEq(undefined, result[3]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });

@@ -9,8 +9,8 @@ run_test(function() : AsyncTest("struct-literal") constructor {
     }).andThen(function(result) {
         assertEq("ecks", result[$ "x"]);
         assertEq("why?", result[$ "y"]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -27,8 +27,8 @@ run_test(function() : AsyncTest("struct-access") constructor {
         assertEq(":33", result[1]);
         assertEq(":33", result[2]);
         assertEq(":33", result[3]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -43,8 +43,8 @@ run_test(function() : AsyncTest("struct-access-2") constructor {
     }).andThen(function(result) {
         assertEq(":33", result[0]);
         assertEq(":33", result[1]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -59,8 +59,8 @@ run_test(function() : AsyncTest("struct-access-3") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(":33", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -73,8 +73,8 @@ run_test(function() : AsyncTest("struct-access-literal") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("???", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -103,8 +103,8 @@ run_test(function() : AsyncTest("struct-json") constructor {
         assertEq(json[$ "Lits"][0], result[$ "Lits"][0]);
         assertEq(json[$ "Lits"][1], result[$ "Lits"][1]);
         assertEq(json[$ "Lits"][2], result[$ "Lits"][2]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });

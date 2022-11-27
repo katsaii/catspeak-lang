@@ -18,8 +18,8 @@ run_test(function() : AsyncTest("if-elseif-else") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("less", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });

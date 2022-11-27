@@ -6,8 +6,8 @@ run_test(function() : AsyncTest("return") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(1, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -18,8 +18,8 @@ run_test(function() : AsyncTest("return-implicit") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(2, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
