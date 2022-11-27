@@ -168,7 +168,7 @@ function __catspeak_builtin_set(collection, key, value) {
     if (is_array(collection)) {
         collection[@ key] = value;
     } else {
-        __catspeak_verify_struct(collection);
+        __catspeak_builtin_verify_struct(collection);
         collection[$ key] = value;
     }
     return value;

@@ -39,6 +39,7 @@
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
     {"id":{"name":"scr_testing_prim","path":"scripts/scr_testing_prim/scr_testing_prim.yy",},"order":5,},
     {"id":{"name":"scr_testing_vars","path":"scripts/scr_testing_vars/scr_testing_vars.yy",},"order":3,},
+    {"id":{"name":"scr_testing_self","path":"scripts/scr_testing_self/scr_testing_self.yy",},"order":12,},
     {"id":{"name":"scr_catspeak_intcode","path":"scripts/scr_catspeak_intcode/scr_catspeak_intcode.yy",},"order":1,},
     {"id":{"name":"scr_testing_array","path":"scripts/scr_testing_array/scr_testing_array.yy",},"order":6,},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},"order":5,},
