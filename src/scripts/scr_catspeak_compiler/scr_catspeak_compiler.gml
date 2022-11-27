@@ -812,6 +812,9 @@ function CatspeakCompiler(lexer, ir) constructor {
         } else if (consume(CatspeakToken.IT)) {
             var reg = topIt();
             pushResult(reg);
+        } else if (consume(CatspeakToken.SELF)) {
+            var self_ = ir.emitSelf();
+            pushResult(self_);
         } else {
             pushState(__stateExprGroupingBegin);
         }

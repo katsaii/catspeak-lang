@@ -424,7 +424,11 @@ function CatspeakFunction(name, parent) constructor {
     };
 
     /// Generates the code to call a Catspeak function. Returns a register
-    /// containing the result of the call.
+    /// containing the result of the call. This version takes an additional
+    /// argument for setting the "self".
+    ///
+    /// @param {Any} self_
+    ///   The register or accessor containing self value.
     ///
     /// @param {Any} callee
     ///   The register or accessor containing function to be called.
@@ -436,8 +440,8 @@ function CatspeakFunction(name, parent) constructor {
     /// @param {Struct.CatspeakLocation} [pos]
     ///   The debug info for this instruction.
     ///
-    /// @return {Real}
-    static emitCall = function(callee, args, pos) {
+    /// @return {Any}
+    static emitCallSelf = function(self_, callee, args, pos) {
         var callee_ = emitGet(callee, pos);
         var argCount = array_length(args);
         var selfReg = undefined;
@@ -479,6 +483,37 @@ function CatspeakFunction(name, parent) constructor {
         // must push the instruction after emitting code for the accessors
         array_push(currentBlock.code, inst);
         return new CatspeakTempRegisterAccessor(result, self);
+    };
+
+    /// Generates the code to call a Catspeak function. Returns a register
+    /// containing the result of the call.
+    ///
+    /// @param {Any} callee
+    ///   The register or accessor containing function to be called.
+    ///
+    /// @param {Array<Any>} args
+    ///   The array of registers or accessors containing the arguments to
+    ///   pass.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    ///
+    /// @return {Any}
+    static emitCall = function(callee, args, pos) {
+        return emitCallSelf(undefined, callee, args, pos);
+    };
+
+    /// Generates the code to get the current "self" context.
+    ///
+    /// @param {Struct.CatspeakLocation} [pos]
+    ///   The debug info for this instruction.
+    ///
+    /// @return {Any}
+    static emitSelf = function(pos) {
+        var result = emitRegister(pos);
+        var inst = emitCode(CatspeakIntcode.SELF, result);
+        __registerMark(inst, 1);
+        return result;
     };
 
     /// Emits a new Catspeak intcode instruction for the current block.
