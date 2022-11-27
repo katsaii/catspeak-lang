@@ -16,6 +16,21 @@ run_test(function() : AsyncTest("struct-literal") constructor {
     });
 });
 
+run_test(function() : AsyncTest("struct-literal-weird") constructor {
+    catspeak_compile_string(@'
+        { `:33` : 1, "kewl" : "..." }
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq(1, result[$ ":33"]);
+        assertEq("...", result[$ "kewl"]);
+    }).andCatch(function(e) {
+        fail().withMessage(e);
+    }).andFinally(function() {
+        complete();
+    });
+});
+
 run_test(function() : AsyncTest("struct-access") constructor {
     catspeak_compile_string(@'
         let s = { ["meow"] : ":33" }
