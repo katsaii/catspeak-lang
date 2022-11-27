@@ -134,15 +134,16 @@ function CatspeakVM() constructor {
                 break;
             case CatspeakIntcode.CALLSPAN:
             case CatspeakIntcode.CALL:
-                var callee = r[inst[2]];
+                var callself = inst[2];
+                var callee = r[inst[3]];
                 var argC, argO, argB;
                 if (code == CatspeakIntcode.CALL) {
-                    argC = inst[4];
-                    argO = inst[3];
+                    argC = inst[5];
+                    argO = inst[4];
                     argB = r;
                 } else {
-                    var spanCount = inst[3];
-                    var instOffset = 4;
+                    var spanCount = inst[4];
+                    var instOffset = 5;
                     var argOffset = 0;
                     repeat (spanCount) {
                         var spanReg = inst[instOffset];
@@ -155,11 +156,16 @@ function CatspeakVM() constructor {
                     argO = 0;
                     argB = args_;
                 }
+                if (callself == undefined) {
+                    callself = self;
+                } else {
+                    callself = r[callself];
+                }
                 if (instanceof(callee) == "CatspeakFunction") {
                     // call Catspeak function
                     callFrame.pc = pc;
                     callFrame.block = block;
-                    pushCallFrame(self_, callee, argB, argO, argC);
+                    pushCallFrame(callself, callee, argB, argO, argC);
                     callFrame = callFrames_[callHead];
                     pc = callFrame.pc;
                     r = callFrame.registers;
@@ -168,7 +174,7 @@ function CatspeakVM() constructor {
                 } else {
                     // call GML function
                     r[@ inst[1]] = __catspeak_vm_function_execute(
-                            self_, callee, argC, argO, argB);
+                            callself, callee, argC, argO, argB);
                     pc += 1;
                 }
                 break;

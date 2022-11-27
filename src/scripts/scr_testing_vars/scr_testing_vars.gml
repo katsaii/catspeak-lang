@@ -9,8 +9,8 @@ run_test(function() : AsyncTest("vars-let") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("uwu", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -24,8 +24,8 @@ run_test(function() : AsyncTest("vars-let-default") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(undefined, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -40,8 +40,8 @@ run_test(function() : AsyncTest("vars-let-assign") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("o_o", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -57,8 +57,8 @@ run_test(function() : AsyncTest("vars-let-it") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(110, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -73,8 +73,8 @@ run_test(function() : AsyncTest("vars-let-it-twice") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(20, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -89,8 +89,8 @@ run_test(function() : AsyncTest("vars-global-read") constructor {
     }).andThen(function(result) {
         assertEq(-12, result[0]);
         assertEq(f, result[1]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -111,8 +111,8 @@ run_test(function() : AsyncTest("vars-global-read-2") constructor {
         assertEq(12, result[1]);
         assertEq(-33, result[2]);
         assertEq(12, result[3]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -129,8 +129,8 @@ run_test(function() : AsyncTest("vars-global-write") constructor {
     }).andThen(function() {
         assertEq(pointer_null, catsFunc.getGlobal("zero"));
         assertEq("<@_", catsFunc.getGlobal("snail"));
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -146,8 +146,8 @@ run_test(function() : AsyncTest("vars-global-it") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(110, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -162,8 +162,8 @@ run_test(function() : AsyncTest("vars-global-it-twice") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(20, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });

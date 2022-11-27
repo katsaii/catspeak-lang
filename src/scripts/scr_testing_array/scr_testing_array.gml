@@ -10,8 +10,8 @@ run_test(function() : AsyncTest("array-literal") constructor {
         assertEq("hello world", result[0]);
         assertEq(true, result[1]);
         assertEq(false, result[2]);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -24,8 +24,8 @@ run_test(function() : AsyncTest("array-literal-access") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq("?:B", result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });

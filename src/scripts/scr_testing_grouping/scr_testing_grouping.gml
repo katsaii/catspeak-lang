@@ -6,8 +6,8 @@ run_test(function() : AsyncTest("grouping-paren") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(3, result);
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -18,8 +18,8 @@ run_test(function() : AsyncTest("grouping-box") constructor {
         return catspeak_execute(ir);
     }).andThen(function(result) {
         assertEq(0, array_length(result[0][0]));
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
@@ -31,8 +31,8 @@ run_test(function() : AsyncTest("grouping-brace") constructor {
     }).andThen(function(result) {
         assertEq(1, variable_struct_names_count(result));
         assertEq(0, variable_struct_names_count(result[$ "1"]));
-    }).andCatch(function() {
-        fail();
+    }).andCatch(function(e) {
+        fail().withMessage(e);
     }).andFinally(function() {
         complete();
     });
