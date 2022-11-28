@@ -135,11 +135,11 @@ function CatspeakProcess(resolver) : Future() constructor {
 
     /// @ignore
     static __update = function() {
-        //try {
+        try {
             resolver(acceptFunc);
-        //} catch (ex) {
-        //    reject(ex);
-        //}
+        } catch (ex) {
+            reject(ex);
+        }
     };
 }
 
@@ -197,7 +197,7 @@ function __catspeak_init_process() {
                 info.update, [], -1);
     // only compute Catspeak programs for half of a frame
     global.__catspeakConfig.frameAllocation = 0.5;
-    global.__catspeakConfig.processTimeLimit = 1000;
+    global.__catspeakConfig.processTimeLimit = 1; // one second
     /// @ignore
     global.__catspeakProcessManager = info;
 }
