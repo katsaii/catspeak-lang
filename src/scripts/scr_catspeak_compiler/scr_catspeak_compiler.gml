@@ -780,7 +780,17 @@ function CatspeakCompiler(lexer, ir) constructor {
                     "expected `)` at end of function call");
         }
         var callee = popResult();
-        pushResult(ir.emitCall(callee, callArgs));
+        if (is_struct(callee) &&
+                instanceof(callee) == "CatspeakCollectionAccessor") {
+            // create a call with the collection as the "self"
+            var callself = ir.emitClone(callee.collection); // take ownership
+            callself = new CatspeakTempRegisterAccessor(callself, ir, 2);
+            callee.collection = callself;
+            pushResult(ir.emitCallSelf(callself, callee, callArgs, pos));
+        } else {
+            // use the global self
+            pushResult(ir.emitCall(callee, callArgs, pos));
+        }
     };
 
     /// @ignore

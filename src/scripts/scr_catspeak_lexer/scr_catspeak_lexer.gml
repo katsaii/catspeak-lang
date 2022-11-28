@@ -231,7 +231,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             pos.lexeme = real(pos.lexeme);
         } else if (byte == ord("`")) {
             clearLexeme();
-            advanceWhile(__isIdent);
+            advanceWhile(__isNotWhitespaceOrBacktick);
             registerLexeme();
             if (peek(1) == ord("`")) {
                 // similar to strings, I don't care about raising an error in
@@ -314,6 +314,17 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         return __catspeak_ascii_desc_contains(
             __catspeak_byte_to_ascii_desc(byte),
             __CatspeakASCIIDesc.IDENT
+        );
+    };
+
+    /// @ignore
+    static __isNotWhitespaceOrBacktick = function(byte) {
+        if (byte == ord("`")) {
+            return false;
+        }
+        return !__catspeak_ascii_desc_contains(
+            __catspeak_byte_to_ascii_desc(byte),
+            __CatspeakASCIIDesc.WHITESPACE
         );
     };
 }
