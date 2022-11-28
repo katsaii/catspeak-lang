@@ -150,6 +150,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
         - <a href="#accessor_expressions">Accessor Expressions</a>
         - <a href="#block_expressions">Block Expressions</a>
         - <a href="#if_expressions">If Expressions</a>
+        - <a href="#and_expressions">And Expressions</a>
+        - <a href="#or_expressions">Or Expressions</a>
 <input id="loop_expressions-checkbox" class="toggle" type="checkbox"><label for="loop_expressions-checkbox">     - </label><a href="#loop_expressions">Loop Expressions</a><div class="collapsible-content">
           - <a href="#while_expressions">While Expressions</a></div>
         - <a href="#function_expressions">Function Expressions</a>
@@ -939,6 +941,30 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
     
     However, unlike GML, only an <b class="control">`</b><code>if</code><b class="control">`</b> expression can be used after an <b class="control">`</b><code>else</code><b class="control">`</b>
     clause. So shortcuts <b class="control">`</b><code>else while</code><b class="control">`</b> or <b class="control">`</b><code>else do</code><b class="control">`</b> are not allowed.</div>
+<span id=and_expressions>    <b>And Expressions</b> (<a href="#and_expressions">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    Similar to GML, Catspeak has native <b class="control">`</b><code>and</code><b class="control">`</b> operators:
+    <b class="control">```</b><code>
+    a and b
+    </code><b class="control">```</b>
+    
+    In this example, if the expression <b class="control">`</b><code>a</code><b class="control">`</b> evaluates to <b class="control">`</b><code>true</code><b class="control">`</b>, then the
+    result of the expression is the value of <b class="control">`</b><code>b</code><b class="control">`</b>. Otherwise, the value of <b class="control">`</b><code>a</code><b class="control">`</b>
+    is used.
+    
+    <em>NOTE</em>: If <b class="control">`</b><code>a</code><b class="control">`</b> is false, the value of <b class="control">`</b><code>b</code><b class="control">`</b> is <span class="control">**</span><b>never calculated</b><span class="control">**</span>.</div>
+<span id=or_expressions>    <b>Or Expressions</b> (<a href="#or_expressions">link</a>) .txt
+    ----------------------------------------------------------------------------</span>
+<div>    Similar to GML, Catspeak has native <b class="control">`</b><code>or</code><b class="control">`</b> operators:
+    <b class="control">```</b><code>
+    a or b
+    </code><b class="control">```</b>
+    
+    In this example, if the expression <b class="control">`</b><code>a</code><b class="control">`</b> evaluates to <b class="control">`</b><code>false</code><b class="control">`</b>, then the
+    result of the expression is the value of <b class="control">`</b><code>b</code><b class="control">`</b>. Otherwise, the value of <b class="control">`</b><code>a</code><b class="control">`</b>
+    is used.
+    
+    <em>NOTE</em>: If <b class="control">`</b><code>a</code><b class="control">`</b> is true, the value of <b class="control">`</b><code>b</code><b class="control">`</b> is <span class="control">**</span><b>never calculated</b><span class="control">**</span>.</div>
 <span id=loop_expressions>    <b>Loop Expressions</b> (<a href="#loop_expressions">link</a>) .txt
     ----------------------------------------------------------------------------</span>
 <div>    The only type of loop Catspeak currently supports is the <span class="control">[</span><a href="#while_expression">While Expression</a><span class="control">]</span>.</div>
@@ -1074,10 +1100,11 @@ them to the <span class="control">[</span><a href="https://github.com/NuxiiGit/c
   
   <em>NOTE</em>: Unlike GML, the operators <b class="control">`</b><code>&&</code><b class="control">`</b> and <b class="control">`</b><code>||</code><b class="control">`</b> are <span class="control">**</span><b>not short-circuiting</b><span class="control">**</span>.
         This means that both the left and right hand-side of the operator will
-        be evaluated immediately.
+        be evaluated immediately. If you need this behaviour, you should use
+        <span class="control">[</span><a href="#and_expressions">And Expressions</a><span class="control">]</span> and <span class="control">[</span><a href="#or_expressions">Or Expressions</a><span class="control">]</span>.
   
-  Catspeak does not have <b class="control">`</b><code>and</code><b class="control">`</b>, <b class="control">`</b><code>or</code><b class="control">`</b>, <b class="control">`</b><code>xor</code><b class="control">`</b>, <b class="control">`</b><code>mod</code><b class="control">`</b> and <b class="control">`</b><code>div</code><b class="control">`</b> operators. You
-  will need to use <b class="control">`</b><code>&&</code><b class="control">`</b>, <b class="control">`</b><code>||</code><b class="control">`</b>, <b class="control">`</b><code>^^</code><b class="control">`</b>, <b class="control">`</b><code>%</code><b class="control">`</b>, and <b class="control">`</b><code>//</code><b class="control">`</b> instead.</div>
+  Catspeak does not have <b class="control">`</b><code>xor</code><b class="control">`</b>, <b class="control">`</b><code>mod</code><b class="control">`</b> and <b class="control">`</b><code>div</code><b class="control">`</b> operators. You will need to
+  use <b class="control">`</b><code>^^</code><b class="control">`</b>, <b class="control">`</b><code>%</code><b class="control">`</b>, and <b class="control">`</b><code>//</code><b class="control">`</b> instead.</div>
 <span id=library_reference>================================================================================
 <b>Library Reference</b> (<a href="#library_reference">link</a>) .md
 ================================================================================</span>
