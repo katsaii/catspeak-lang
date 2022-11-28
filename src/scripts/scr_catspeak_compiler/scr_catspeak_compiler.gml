@@ -732,9 +732,11 @@ function CatspeakCompiler(lexer, ir) constructor {
             var opReg = getVar(pos.lexeme);
             pushResult(opReg);
             pushState(__stateExprOpUnaryEnd);
+            pushState(__stateExprIndexBegin);
             pushState(__stateExprTerminal);
         } else {
             pushState(__stateExprCallBegin);
+            pushState(__stateExprIndexBegin);
             pushState(__stateExprTerminal);
         }
     };
@@ -746,20 +748,23 @@ function CatspeakCompiler(lexer, ir) constructor {
         pushResult(ir.emitCall(op, [val]));
     };
 
+    /// @ignore
     static __stateExprCallBegin = function() {
+        pushState(__stateExprCall);
+    };
+
+    static __stateExprCall = function() {
         if (satisfies(__tokenIsExpr)) {
             var parens = consume(CatspeakToken.PAREN_LEFT);
             if (parens && consume(CatspeakToken.PAREN_RIGHT)) {
                 var callee = popResult();
-                pushResult(ir.emitCall(callee, []));
+                pushResult(__emitMethodCall(callee, []));
                 return;
             }
             pushResult(parens);
             pushResult([]);
             pushState(__stateExprCallEnd);
             pushState(__stateExpr);
-        } else {
-            pushState(__stateExprIndexBegin);
         }
     };
 
@@ -780,16 +785,21 @@ function CatspeakCompiler(lexer, ir) constructor {
                     "expected `)` at end of function call");
         }
         var callee = popResult();
+        pushResult(__emitMethodCall(callee, callArgs));
+    };
+
+    /// @ignore
+    static __emitMethodCall = function(callee, args) {
         if (is_struct(callee) &&
                 instanceof(callee) == "CatspeakCollectionAccessor") {
             // create a call with the collection as the "self"
             var callself = ir.emitClone(callee.collection); // take ownership
             callself = new CatspeakTempRegisterAccessor(callself, ir, 2);
             callee.collection = callself;
-            pushResult(ir.emitCallSelf(callself, callee, callArgs, pos));
+            return ir.emitCallSelf(callself, callee, args, pos);
         } else {
             // use the global self
-            pushResult(ir.emitCall(callee, callArgs, pos));
+            return ir.emitCall(callee, args, pos);
         }
     };
 
