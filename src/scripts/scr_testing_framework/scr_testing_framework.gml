@@ -9,6 +9,7 @@ function test_stats() {
     static stats = {
         total : 0,
         totalFailed : 0,
+        totalActive : 0,
     };
     return stats;
 }
@@ -16,6 +17,7 @@ function test_stats() {
 function Test(name) constructor {
     var stats = test_stats();
     stats.total += 1;
+    stats.totalActive += 1;
     self.number = stats.total;
     self.name = __cat(name);
     self.fails = [];
@@ -24,13 +26,15 @@ function Test(name) constructor {
     catspeak_force_init();
 
     complete = function() {
+        var stats = test_stats();
+        stats.totalActive -= 1;
         var passed = array_length(fails) < 1;
         var msg = " ---===--- test ";
         msg += "#" + string(number) + " ";
         if (passed) {
             msg += "PASSED";
         } else {
-            test_stats().totalFailed += 1;
+            stats.totalFailed += 1;
             msg += "FAILED";
         }
         msg += " '" + name + "'";
