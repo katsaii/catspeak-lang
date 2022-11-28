@@ -443,6 +443,32 @@ Just like GML, the `else` clause is optional.
 However, unlike GML, only an `if` expression can be used after an `else`
 clause. So shortcuts `else while` or `else do` are not allowed.
 
+## And Expressions
+
+Similar to GML, Catspeak has native `and` operators:
+```
+a and b
+```
+
+In this example, if the expression `a` evaluates to `true`, then the
+result of the expression is the value of `b`. Otherwise, the value of `a`
+is used.
+
+NOTE: If `a` is false, the value of `b` is **never calculated**.
+
+## Or Expressions
+
+Similar to GML, Catspeak has native `or` operators:
+```
+a or b
+```
+
+In this example, if the expression `a` evaluates to `false`, then the
+result of the expression is the value of `b`. Otherwise, the value of `a`
+is used.
+
+NOTE: If `a` is true, the value of `b` is **never calculated**.
+
 ## Loop Expressions
 
 The only type of loop Catspeak currently supports is the [While Expression].
