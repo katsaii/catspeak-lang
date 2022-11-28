@@ -213,7 +213,10 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#emitclonetemp"><span class="keyword">method </span><span class="name">emitCloneTemp</span></a>
           - <a href="#emitjump"><span class="keyword">method </span><span class="name">emitJump</span></a>
           - <a href="#emitjumpfalse"><span class="keyword">method </span><span class="name">emitJumpFalse</span></a>
+          - <a href="#emitjumptrue"><span class="keyword">method </span><span class="name">emitJumpTrue</span></a>
+          - <a href="#emitcallself"><span class="keyword">method </span><span class="name">emitCallSelf</span></a>
           - <a href="#emitcall"><span class="keyword">method </span><span class="name">emitCall</span></a>
+          - <a href="#emitself"><span class="keyword">method </span><span class="name">emitSelf</span></a>
           - <a href="#emitcode"><span class="keyword">method </span><span class="name">emitCode</span></a>
           - <a href="#emitcodehoisted"><span class="keyword">method </span><span class="name">emitCodeHoisted</span></a>
           - <a href="#emitget"><span class="keyword">method </span><span class="name">emitGet</span></a>
@@ -480,12 +483,7 @@ your programs is much faster.</div>
     Different from the <span class="control">[</span><a href="#catspeak_compile_string">catspeak_compile_string</a><span class="control">]</span> function, the buffer version
     accepts an additional parameter, that if set to <b class="control">`</b><code>true</code><b class="control">`</b> will automatically
     delete the buffer once the compiler process ends so you don&#39;t have to. By
-    default, this is set to <b class="control">`</b><code>false</code><b class="control">`</b>.
-    
-    <em>NOTE</em>: The seek of this buffer will not be reset to the start, this is
-          something you must maintain yourself.
-    TODO: Make it so that this isn&#39;t the case! If you&#39;re reading this from the
-          documentation page online, pester me to do this!</div>
+    default, this is set to <b class="control">`</b><code>false</code><b class="control">`</b>.</div>
 <span id=executing_programs>  <b>Executing Programs</b> (<a href="#executing_programs">link</a>) .txt
   ==============================================================================</span>
 <div>  The second step to running your Catspeak programs is to interpret the
@@ -506,8 +504,8 @@ your programs is much faster.</div>
   If everything went to plan, you should have just compiled and executed your
   first Catspeak program!
   
-  <em>NOTE</em>: If you do not care about the result of the call, you can just leave the
-        <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method blank.</div>
+  <em>NOTE</em>: If you do not care about the result of the program, you can omit the
+        <span class="control">[</span><a href="#andthen">andThen</a><span class="control">]</span> method call.</div>
 <span id=customising_the_standard_library>  <b>Customising The Standard Library</b> (<a href="#customising_the_standard_library">link</a>) .txt
   ==============================================================================</span>
 <div>  You can expose additional functions and constants to Catspeak programs by
@@ -666,6 +664,7 @@ described in the <span class="control">[</span><a href="#lexical_grammar">Lexica
      - <b class="control">`</b><code>return</code><b class="control">`</b>   see <span class="control">[</span><a href="#return_expressions">Return Expressions</a><span class="control">]</span>
      - <b class="control">`</b><code>impl</code><b class="control">`</b>     (reserved in case of constructor functions)
      - <b class="control">`</b><code>new</code><b class="control">`</b>      (reserved in case of constructor functions)
+     - <b class="control">`</b><code>self</code><b class="control">`</b>     (reserved in case of method binding)
      - <b class="control">`</b><code>and</code><b class="control">`</b>      (reserved in case of short-circuit AND)
      - <b class="control">`</b><code>or</code><b class="control">`</b>       (reserved in case of short-circuit OR)</div>
 <span id=literals>    <b>Literals</b> (<a href="#literals">link</a>) .txt
@@ -1582,6 +1581,36 @@ macros, and structs.</div>
       
       <span class="control">@</span><b>param</b> <code>condition</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
         The register or accessor containing the condition code to check.</div>
+<span id=emitjumptrue>      <b><span class="keyword">method </span><span class="name">emitJumpTrue</span></b> (<a href="#emitjumptrue">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Generates the code to jump to a new block of code if a condition
+      is true.
+      
+      <span class="control">@</span><b>param</b> <code>block</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakblock"><span class="name">CatspeakBlock</span></a></i>
+        The block to jump to.
+      
+      <span class="control">@</span><b>param</b> <code>condition</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+        The register or accessor containing the condition code to check.</div>
+<span id=emitcallself>      <b><span class="keyword">method </span><span class="name">emitCallSelf</span></b> (<a href="#emitcallself">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Generates the code to call a Catspeak function. Returns a register
+      containing the result of the call. This version takes an additional
+      argument for setting the &quot;self&quot;.
+      
+      <span class="control">@</span><b>param</b> <code>self_</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+        The register or accessor containing self value.
+      
+      <span class="control">@</span><b>param</b> <code>callee</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i>
+        The register or accessor containing function to be called.
+      
+      <span class="control">@</span><b>param</b> <code>args</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
+        The array of registers or accessors containing the arguments to
+        pass.
+      
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
+        The debug info for this instruction.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
 <span id=emitcall>      <b><span class="keyword">method </span><span class="name">emitCall</span></b> (<a href="#emitcall">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Generates the code to call a Catspeak function. Returns a register
@@ -1597,7 +1626,15 @@ macros, and structs.</div>
       <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The debug info for this instruction.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
+<span id=emitself>      <b><span class="keyword">method </span><span class="name">emitSelf</span></b> (<a href="#emitself">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Generates the code to get the current &quot;self&quot; context.
+      
+      <span class="control">@</span><b>param</b> <i>(optional)</i> <code>pos</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
+        The debug info for this instruction.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
 <span id=emitcode>      <b><span class="keyword">method </span><span class="name">emitCode</span></b> (<a href="#emitcode">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Emits a new Catspeak intcode instruction for the current block.
@@ -1758,7 +1795,11 @@ macros, and structs.</div>
       The register to read from once.
     
     <span class="control">@</span><b>param</b> <code>ir</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeakfunction"><span class="name">CatspeakFunction</span></a></i>
-      The IR function associated with this register.</div>
+      The IR function associated with this register.
+    
+    <span class="control">@</span><b>param</b> <i>(optional)</i> <code>count</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Real</b></a></i>
+      The number of times this register can be read before it&#39;s discarded.
+      Defaults to 1 time.</div>
 <span id=scr_catspeak_intcode>  <b><span class="name-script">scr_catspeak_intcode</span></b> (<a href="#scr_catspeak_intcode">link</a>) .gml
   ==============================================================================</span>
 <div>  Boilerplate for the <span class="control">[</span><a href="#catspeakintcode">CatspeakIntcode</a><span class="control">]</span> enum.</div>
