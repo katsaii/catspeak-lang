@@ -54,21 +54,3 @@ run_test(function() : AsyncTest("stress-10000") constructor {
         complete();
     });
 });
-
-run_test(function() : AsyncTest("stress-100000") constructor {
-    catspeak_compile_string(@'
-        count = 0
-        while (count < 100000) {
-            count = count + 1
-        }
-        count
-    ').andThen(function(ir) {
-        return catspeak_execute(ir);
-    }).andThen(function(result) {
-        assertEq(100000, result);
-    }).andCatch(function(e) {
-        fail().withMessage(e);
-    }).andFinally(function() {
-        complete();
-    });
-});
