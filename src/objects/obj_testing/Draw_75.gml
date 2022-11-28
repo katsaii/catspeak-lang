@@ -30,15 +30,16 @@ draw_text(pad, height - pad - lineHeight, @'
 
 // draw test results
 draw_set_halign(fa_right);
-if (stats.totalFailed > 0) {
+if (stats.totalActive > 0) {
+    draw_set_colour(TESTING_COL_WORKING);
+} else if (stats.totalFailed > 0) {
     draw_set_colour(TESTING_COL_FAIL);
-    draw_text(width - pad, height - pad,
-            string(stats.totalFailed) + " of " +
-            string(stats.total) + " tests failed");
 } else {
     draw_set_colour(TESTING_COL_PASS);
-    draw_text(width - pad, height - pad, "no tests failed");
 }
+draw_text(width - pad, height - pad,
+        string(stats.total - stats.totalFailed - stats.totalActive) + " of " +
+        string(stats.total) + " tests passed");
 var goodFPS = 60;
 draw_set_colour(fps_real < goodFPS ? TESTING_COL_FAIL : TESTING_COL_PASS);
 draw_text(width - pad, height - pad - lineHeight,
