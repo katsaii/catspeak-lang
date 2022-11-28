@@ -39,7 +39,7 @@ run_test(function() : AsyncTest("self-call") constructor {
         let gamzee = {
             `:o)` : fun() { self }
         };
-        gamzee.`:o)`() == gamzee
+        gamzee.`:o)`()
     ').andThen(function(ir) {
         return catspeak_execute(ir);
     }).andThen(function(result) {
@@ -49,4 +49,4 @@ run_test(function() : AsyncTest("self-call") constructor {
     }).andFinally(function() {
         complete();
     });
-});
+}, true);

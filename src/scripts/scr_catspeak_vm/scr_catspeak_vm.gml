@@ -171,6 +171,7 @@ function CatspeakVM() constructor {
                     r = callFrame.registers;
                     g = callFrame.globals;
                     block = callFrame.block;
+                    self_ = callFrame.self_;
                 } else {
                     // call GML function
                     r[@ inst[1]] = __catspeak_vm_function_execute(
@@ -236,6 +237,7 @@ function CatspeakVM() constructor {
                 r = callFrame.registers;
                 g = callFrame.globals;
                 block = callFrame.block;
+                self_ = callFrame.self_;
                 r[@ block[pc][1]] = returnValue;
                 pc += 1;
                 break;

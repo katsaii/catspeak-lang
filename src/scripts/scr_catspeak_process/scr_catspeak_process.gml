@@ -135,11 +135,11 @@ function CatspeakProcess(resolver) : Future() constructor {
 
     /// @ignore
     static __update = function() {
-        try {
+        //try {
             resolver(acceptFunc);
-        } catch (ex) {
-            reject(ex);
-        }
+        //} catch (ex) {
+        //    reject(ex);
+        //}
     };
 }
 

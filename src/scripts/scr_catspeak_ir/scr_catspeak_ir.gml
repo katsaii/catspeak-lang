@@ -444,8 +444,8 @@ function CatspeakFunction(name, parent) constructor {
     static emitCallSelf = function(self_, callee, args, pos) {
         var callee_ = emitGet(callee, pos);
         var argCount = array_length(args);
-        var selfReg = undefined;
-        var inst = [CatspeakIntcode.CALLSPAN, undefined, selfReg, callee_, 0];
+        var callself = self_ == undefined ? undefined : emitGet(self_, pos);
+        var inst = [CatspeakIntcode.CALLSPAN, undefined, callself, callee_, 0];
         __registerMark(inst, 1, 3);
         // add arguments using run-length encoding, in the best case all
         // arguments can be simplified to a single span
@@ -849,6 +849,9 @@ function CatspeakFunction(name, parent) constructor {
 
     /// @ignore
     static __registerName = function(reg) {
+        if (reg == undefined) {
+            return "none";
+        }
         if (isUnreachable(reg)) {
             return "!";
         }
