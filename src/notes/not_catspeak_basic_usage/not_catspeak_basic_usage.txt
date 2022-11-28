@@ -67,11 +67,6 @@ accepts an additional parameter, that if set to `true` will automatically
 delete the buffer once the compiler process ends so you don't have to. By
 default, this is set to `false`.
 
-NOTE: The seek of this buffer will not be reset to the start, this is
-      something you must maintain yourself.
-TODO: Make it so that this isn't the case! If you're reading this from the
-      documentation page online, pester me to do this!
-
 # Executing Programs
 
 The second step to running your Catspeak programs is to interpret the
@@ -92,8 +87,8 @@ with the message "blast off!" will be shown.
 If everything went to plan, you should have just compiled and executed your
 first Catspeak program!
 
-NOTE: If you do not care about the result of the call, you can just leave the
-      [andThen] method blank.
+NOTE: If you do not care about the result of the program, you can omit the
+      [andThen] method call.
 
 # Customising the Standard Library
 
