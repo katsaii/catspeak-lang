@@ -49,4 +49,65 @@ run_test(function() : AsyncTest("self-call") constructor {
     }).andFinally(function() {
         complete();
     });
-}, true);
+});
+
+run_test(function() : AsyncTest("self-counter") constructor {
+    func = function() {
+        return self;
+    };
+    catspeak_compile_string(@'
+        let counter = {
+            n: 0, inc : fun() { self.n = it + 1},
+        };
+
+        counter.inc(); counter.inc(); counter.inc();
+        counter.inc(); counter.inc(); counter.inc();
+        counter.inc(); counter.inc(); counter.inc();
+
+        counter.n
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq(9, result);
+    }).andCatch(function(e) {
+        fail().withMessage(e);
+    }).andFinally(function() {
+        complete();
+    });
+});
+
+run_test(function() : AsyncTest("self-shared") constructor {
+    func = function() {
+        return self;
+    };
+    catspeak_compile_string(@'
+        let s = {
+            a: 1
+        }
+
+        let t = {
+            a: 3
+        }
+
+        function = fun() {
+            self.a = it + 1
+        }
+
+        s.function = function
+        t.function = function
+
+        s.function()
+        t.function()
+
+        [s.a, t.a]
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq(2, result[0]);
+        assertEq(4, result[1]);
+    }).andCatch(function(e) {
+        fail().withMessage(e);
+    }).andFinally(function() {
+        complete();
+    });
+});
