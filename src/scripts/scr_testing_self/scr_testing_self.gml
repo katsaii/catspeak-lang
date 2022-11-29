@@ -111,3 +111,29 @@ run_test(function() : AsyncTest("self-shared") constructor {
         complete();
     });
 });
+
+run_test(function() : AsyncTest("self-side-effect") constructor {
+    func = function() {
+        return self;
+    };
+    catspeak_compile_string(@'
+        let bunny = {
+            n : 0,
+            speak : fun() {
+                self.n = it + 1
+                "purr"
+            },
+        }
+        bunny.speak()
+        [bunny.speak(), bunny.n]
+    ').andThen(function(ir) {
+        return catspeak_execute(ir);
+    }).andThen(function(result) {
+        assertEq("purr", result[0]);
+        assertEq(2, result[1]);
+    }).andCatch(function(e) {
+        fail().withMessage(e);
+    }).andFinally(function() {
+        complete();
+    });
+});
