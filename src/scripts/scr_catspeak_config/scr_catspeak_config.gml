@@ -79,9 +79,9 @@ function catspeak_add_function() {
 }
 
 /// Permanently adds a new Catspeak constant to the default standard library.
-/// If you want to add a function, use the [catspeak_prelude_add_function]
-/// function instead because it makes sure your value will be callable from
-/// within Catspeak.
+/// If you want to add a function, use the [catspeak_add_function] function
+/// instead because it makes sure your value will be callable from within
+/// Catspeak.
 ///
 /// @param {String} name
 ///   The name of the constant to add.

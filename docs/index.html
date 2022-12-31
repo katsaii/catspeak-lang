@@ -226,7 +226,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#lastcode"><span class="keyword">method </span><span class="name">lastCode</span></a>
           - <a href="#lastcodehoisted"><span class="keyword">method </span><span class="name">lastCodeHoisted</span></a>
           - <a href="#patchinst"><span class="keyword">method </span><span class="name">patchInst</span></a>
-          - <a href="#patchinst"><span class="keyword">method </span><span class="name">patchInst</span></a>
+          - <a href="#patchinstreturn"><span class="keyword">method </span><span class="name">patchInstReturn</span></a>
           - <a href="#patcharg"><span class="keyword">method </span><span class="name">patchArg</span></a>
           - <a href="#patchpermanentregisters"><span class="keyword">method </span><span class="name">patchPermanentRegisters</span></a>
           - <a href="#tostring"><span class="keyword">method </span><span class="name">toString</span></a>
@@ -1236,9 +1236,9 @@ macros, and structs.</div>
 <span id=catspeak_add_constant>    <b><span class="keyword">function </span><span class="name">catspeak_add_constant</span></b> (<a href="#catspeak_add_constant">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Permanently adds a new Catspeak constant to the default standard library.
-    If you want to add a function, use the <span class="control">[</span><a href="#catspeak_prelude_add_function">catspeak_prelude_add_function</a><span class="control">]</span>
-    function instead because it makes sure your value will be callable from
-    within Catspeak.
+    If you want to add a function, use the <span class="control">[</span><a href="#catspeak_add_function">catspeak_add_function</a><span class="control">]</span> function
+    instead because it makes sure your value will be callable from within
+    Catspeak.
     
     <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
       The name of the constant to add.
@@ -1743,14 +1743,18 @@ macros, and structs.</div>
       --------------------------------------------------------------------------</span>
 <div>      Modifies the opcode component of this instruction.
       
+      <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
+      
       <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
         The instruction to modify.
       
       <span class="control">@</span><b>param</b> <code>code</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Enum</b></a>.<a href="#catspeakintcode"><span class="name">CatspeakIntcode</span></a></i>
         The opcode to replace the current opcode with.</div>
-<span id=patchinst>      <b><span class="keyword">method </span><span class="name">patchInst</span></b> (<a href="#patchinst">link</a>) .gml
+<span id=patchinstreturn>      <b><span class="keyword">method </span><span class="name">patchInstReturn</span></b> (<a href="#patchinstreturn">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Modifies the return register of this instruction.
+      
+      <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
       
       <span class="control">@</span><b>param</b> <code>inst</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a>&gt;<span class="name"></span></i>
         The instruction to modify.
