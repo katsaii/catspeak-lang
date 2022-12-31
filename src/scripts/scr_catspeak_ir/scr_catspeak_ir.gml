@@ -661,6 +661,8 @@ function CatspeakFunction(name, parent) constructor {
 
     /// Modifies the opcode component of this instruction.
     ///
+    /// @deprecated
+    ///
     /// @param {Array<Any>} inst
     ///   The instruction to modify.
     ///
@@ -672,12 +674,14 @@ function CatspeakFunction(name, parent) constructor {
 
     /// Modifies the return register of this instruction.
     ///
+    /// @deprecated
+    ///
     /// @param {Array<Any>} inst
     ///   The instruction to modify.
     ///
     /// @param {Real} reg
     ///   The register to return the result of the instruction to.
-    static patchInst = function(inst, reg) {
+    static patchInstReturn = function(inst, reg) {
         inst[@ 1] = reg;
         __registerMark(inst, 1);
     };
