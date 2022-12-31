@@ -72,6 +72,23 @@ function CatspeakFunction(name, parent) constructor {
         return globalRegisters[gReg];
     };
 
+    /// Returns whether a global variable exists with this name.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to get.
+    ///
+    /// @return {Bool}
+    static existsGlobal = function(name) {
+        return variable_struct_exists(globalRegisterTable, name);
+    };
+
+    /// Returns the names of all created global variables
+    ///
+    /// @return {Array<String>}
+    static getGlobalNames = function() {
+        return variable_struct_get_names(globalRegisterTable);
+    };
+
     /// Adds a Catspeak block to the end of this function.
     ///
     /// @param {Struct.CatspeakBlock} block
