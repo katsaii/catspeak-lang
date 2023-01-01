@@ -1,4 +1,7 @@
-//! Handles errors raised by the compiler and runtime environment.
+//! Responsible for the creation and manipulation of Catspeak errors raised
+//! by the compiler and runtime environment. Actual error information is
+//! located in instances of the [CatspeakError] struct. This struct may also
+//! contain debug information, located in instances of [CatspeakLocation].
 
 //# feather use syntax-errors
 
@@ -11,17 +14,22 @@
 ///   The column number this position is found on. This is the number of
 ///   characters since the previous new-line character; therefore, tabs are
 ///   considered a single column, not 2, 4, 8, etc. columns.
+///
 function CatspeakLocation(line, column) constructor {
     self.line = line;
     self.column = column;
     self.lexeme = undefined;
 
-    /// Creates an exact copy of this source location and returns it.
+    /// Returns an exact copy of this debug information.
     ///
     /// @return {Struct.CatspeakLocation}
-    static clone = function () {
-        return new CatspeakLocation(line, column);
-    };
+    ///
+    /// @example
+    /// ```
+    /// var pos = new CatspeakLocation(10, 20);
+    /// var pos2 = pos.clone();
+    /// ```
+    static clone = function () { return new CatspeakLocation(line, column) };
 
     /// Copies values from this location to a new [CatspeakLocation] without
     /// creating a new instance.
