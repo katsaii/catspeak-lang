@@ -270,6 +270,7 @@ def simple_link(s, link=None):
 # Replaces simple markdown styles with HTML elements.
 def simple_markdown(s):
     s = re.sub(r"@deprecated", r"{}<b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>".format(control("@")), s)
+    s = re.sub(r"@example", r"{}<b>example</b>".format(control("@")), s)
     s = re.sub(
         r"@param\s*\{([^\}]*)\}\s*\[([A-Za-z0-9_.]*)\]",
         lambda match: \

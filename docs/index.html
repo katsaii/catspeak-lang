@@ -180,6 +180,7 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
 <input id="catspeaklocation-checkbox" class="toggle" type="checkbox"><label for="catspeaklocation-checkbox">     - </label><a href="#catspeaklocation"><span class="keyword">struct </span><span class="name">CatspeakLocation</span></a><div class="collapsible-content">
           - <a href="#clone"><span class="keyword">method </span><span class="name">clone</span></a>
           - <a href="#reflect"><span class="keyword">method </span><span class="name">reflect</span></a>
+          - <a href="#assign"><span class="keyword">method </span><span class="name">assign</span></a>
           - <a href="#tostring"><span class="keyword">method </span><span class="name">toString</span></a></div>
 <input id="catspeakerror-checkbox" class="toggle" type="checkbox"><label for="catspeakerror-checkbox">     - </label><a href="#catspeakerror"><span class="keyword">struct </span><span class="name">CatspeakError</span></a><div class="collapsible-content">
           - <a href="#tostring"><span class="keyword">method </span><span class="name">toString</span></a></div>
@@ -197,6 +198,8 @@ Logo design by <span class="control">[</span><a href="https://mashmerlow.github.
           - <a href="#setglobal"><span class="keyword">method </span><span class="name">setGlobal</span></a>
           - <a href="#setglobalfunction"><span class="keyword">method </span><span class="name">setGlobalFunction</span></a>
           - <a href="#getglobal"><span class="keyword">method </span><span class="name">getGlobal</span></a>
+          - <a href="#existsglobal"><span class="keyword">method </span><span class="name">existsGlobal</span></a>
+          - <a href="#getglobalnames"><span class="keyword">method </span><span class="name">getGlobalNames</span></a>
           - <a href="#emitblock"><span class="keyword">method </span><span class="name">emitBlock</span></a>
           - <a href="#emitfunction"><span class="keyword">method </span><span class="name">emitFunction</span></a>
           - <a href="#emitregister"><span class="keyword">method </span><span class="name">emitRegister</span></a>
@@ -1263,7 +1266,10 @@ macros, and structs.</div>
     <b class="control">`</b><code>gml_pragma</code><b class="control">`</b>. Otherwise you can just ignore this.</div>
 <span id=scr_catspeak_error>  <b><span class="name-script">scr_catspeak_error</span></b> (<a href="#scr_catspeak_error">link</a>) .gml
   ==============================================================================</span>
-<div>  Handles errors raised by the compiler and runtime environment.</div>
+<div>  Responsible for the creation and manipulation of Catspeak errors raised
+  by the compiler and runtime environment. Actual error information is
+  located in instances of the <span class="control">[</span><a href="#catspeakerror">CatspeakError</a><span class="control">]</span> struct. This struct may also
+  contain debug information, located in instances of <span class="control">[</span><a href="#catspeaklocation">CatspeakLocation</a><span class="control">]</span>.</div>
 <span id=catspeaklocation>    <b><span class="keyword">struct </span><span class="name">CatspeakLocation</span></b> (<a href="#catspeaklocation">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Represents a line and column number in a Catspeak source file.
@@ -1277,16 +1283,39 @@ macros, and structs.</div>
       considered a single column, not 2, 4, 8, etc. columns.</div>
 <span id=clone>      <b><span class="keyword">method </span><span class="name">clone</span></b> (<a href="#clone">link</a>) .gml
       --------------------------------------------------------------------------</span>
-<div>      Creates an exact copy of this source location and returns it.
+<div>      Returns an exact copy of this debug information.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
+      
+      <span class="control">@</span><b>example</b>
+      <b class="control">```</b><code>
+      var a = new CatspeakLocation(10, 20);
+      var b = a.clone();
+      </code><b class="control">```</b></div>
 <span id=reflect>      <b><span class="keyword">method </span><span class="name">reflect</span></b> (<a href="#reflect">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Copies values from this location to a new <span class="control">[</span><a href="#catspeaklocation">CatspeakLocation</a><span class="control">]</span> without
       creating a new instance.
       
+      <span class="control">@</span><b>deprecated</b> <em>This function is deprecated and its usage is discouraged!</em>
+        Use <span class="control">[</span><a href="#assign">assign</a><span class="control">]</span> instead.
+      
       <span class="control">@</span><b>param</b> <code>source</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
         The target location to sample from.</div>
+<span id=assign>      <b><span class="keyword">method </span><span class="name">assign</span></b> (<a href="#assign">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Assigns the values of another instance of <span class="control">[</span><a href="#catspeaklocation">CatspeakLocation</a><span class="control">]</span> to this
+      instance.
+      
+      <span class="control">@</span><b>param</b> <code>source</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Struct</b></a>.<a href="#catspeaklocation"><span class="name">CatspeakLocation</span></a></i>
+        The target location to sample from.
+      
+      <span class="control">@</span><b>example</b>
+      ``<b class="control">`</b><code>
+      var a = new CatspeakLocation(10, 20);
+      var b = new CatspeakLocation(-1);
+      b.assign(a); // copies the line and column values from </code><b class="control">`</b>a<b class="control">`</b><code> to </code><b class="control">`</b>b<b class="control">`</b><code>
+      </code><b class="control">`</b>``</div>
 <span id=tostring>      <b><span class="keyword">method </span><span class="name">toString</span></b> (<a href="#tostring">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Renders this Catspeak location. If a line number and column number
@@ -1296,7 +1325,13 @@ macros, and structs.</div>
       If this source location also includes a debug text, it is also included
       in the debug output between square brackets.
       
-      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i></div>
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+      
+      <span class="control">@</span><b>example</b>
+      <b class="control">```</b><code>
+      show_message(new CatspeakLocation(20));     // (line 20)
+      show_message(new CatspeakLocation(20, 16)); // (line 20, column 16)
+      </code><b class="control">```</b></div>
 <span id=catspeakerror>    <b><span class="keyword">struct </span><span class="name">CatspeakError</span></b> (<a href="#catspeakerror">link</a>) .gml
     ----------------------------------------------------------------------------</span>
 <div>    Represents an error raised by the Catspeak runtime. Follows a similar
@@ -1430,6 +1465,19 @@ macros, and structs.</div>
         The name of the global variable to get.
       
       <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Any</b></a></i></div>
+<span id=existsglobal>      <b><span class="keyword">method </span><span class="name">existsGlobal</span></b> (<a href="#existsglobal">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Returns whether a global variable exists with this name.
+      
+      <span class="control">@</span><b>param</b> <code>name</code><b>:</b> <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a></i>
+        The name of the global variable to get.
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Bool</b></a></i></div>
+<span id=getglobalnames>      <b><span class="keyword">method </span><span class="name">getGlobalNames</span></b> (<a href="#getglobalnames">link</a>) .gml
+      --------------------------------------------------------------------------</span>
+<div>      Returns the names of all created global variables
+      
+      <span class="control">@</span><b>returns</b> a value of <i><a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">Array</b></a>&lt;<a href="https://manual.yoyogames.com/The_Asset_Editors/Code_Editor_Properties/Feather_Data_Types.htm"><b class="keyword">String</b></a>&gt;<span class="name"></span></i></div>
 <span id=emitblock>      <b><span class="keyword">method </span><span class="name">emitBlock</span></b> (<a href="#emitblock">link</a>) .gml
       --------------------------------------------------------------------------</span>
 <div>      Adds a Catspeak block to the end of this function.
