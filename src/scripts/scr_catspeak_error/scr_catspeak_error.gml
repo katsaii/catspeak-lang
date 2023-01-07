@@ -33,7 +33,8 @@ function CatspeakLocation(line, column) constructor {
     /// Copies values from this location to a new [CatspeakLocation] without
     /// creating a new instance.
     ///
-    /// @deprecated Use [assign] instead.
+    /// @deprecated
+    ///   Use [assign] instead.
     ///
     /// @param {Struct.CatspeakLocation} source
     ///   The target location to sample from.
