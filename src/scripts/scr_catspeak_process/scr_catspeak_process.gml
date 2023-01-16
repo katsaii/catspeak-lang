@@ -42,6 +42,41 @@ function catspeak_execute(scr, args) {
     return future;
 }
 
+/// Creates a new Catspeak runtime process that can be executed at any time.
+///
+/// @param {Struct.CatspeakFunction} scr
+///   The Catspeak function to execute.
+///
+/// @return {Any}
+function catspeak_session_extern(scr) {
+	if (instanceof(scr) == "CatspeakFunction") {
+    var vm = new CatspeakVM();
+		vm.pushCallFrame(self, scr);
+		vm.popCallFrame();
+		var s = {
+		    vm : vm,
+			argc : scr.argCount,
+			args : array_create(scr.argCount),
+		    go : function() {
+		        // extern functions compute everything in one go
+		        var vm_ = vm;
+                var argc_ = argc;
+                var args_ = args;
+		        for (var i = 0; i < argument_count; i += 1) {
+		            args_[@ i] = argument[i];
+		        }
+		        vm_.reuseCallFrameWithArgs(args_, 0, argc_);
+				var vmc_ = array_length(vm_.callFrames);
+		        while (vm_.inProgress()) {
+		            vm_.runProgram(10);
+		        }
+		        return vm_.returnValue;
+		    },
+		};
+		return s.go;
+	}
+}
+
 /// Creates a new Catspeak compiler process for a buffer containing Catspeak
 /// code.
 ///
