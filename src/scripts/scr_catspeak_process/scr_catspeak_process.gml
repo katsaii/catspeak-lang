@@ -75,7 +75,7 @@ function catspeak_session_extern(scr) {
 		};
 		return s.go;
 	}
-	show_error(string(scr) + " is not a valid CatspeakFunction!", false);
+	CatspeakError(undefined, string(scr) + " is not a valid CatspeakFunction!");
 }
 
 /// Creates a new Catspeak compiler process for a buffer containing Catspeak
