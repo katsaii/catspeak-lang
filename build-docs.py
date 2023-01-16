@@ -499,7 +499,13 @@ page.add_section_note(
 )
 page.add_section("./LICENSE")
 
+import sys
+
+print("Writing docs...")
+content = page.render()
 with open("docs/index.html", "w") as file:
-    print("Writing docs...")
-    file.write(page.render())
-    print("Done!")
+    file.write(content)
+if sys.argv:
+    with open(f"docs/{sys.argv[1]}.html", "w") as file:
+        file.write(content)
+print("Done!")
