@@ -42,40 +42,56 @@ function catspeak_execute(scr, args) {
     return future;
 }
 
-/// Creates a new Catspeak runtime process that can be executed at any time.
+/// The old name of [catspeak_into_gml_function] from the compatibility
+/// runtime for Catspeak.
+///
+/// @deprecated
+///  Use [catspeak_into_gml_function] instead.
 ///
 /// @param {Struct.CatspeakFunction} scr
 ///   The Catspeak function to execute.
 ///
-/// @return {Any}
+/// @return {Function}
 function catspeak_session_extern(scr) {
-	if (instanceof(scr) == "CatspeakFunction") {
+    return catspeak_into_gml_function(scr);
+}
+
+/// Converts a Catspeak function into a GML function which is executed
+/// immediately.
+///
+/// @param {Struct.CatspeakFunction} scr
+///   The Catspeak function to execute.
+///
+/// @return {Function}
+function catspeak_into_gml_function(scr) {
+    if (instanceof(scr) == "CatspeakFunction") {
     var vm = new CatspeakVM();
-		vm.pushCallFrame(self, scr);
-		vm.popCallFrame();
-		var s = {
-		    vm : vm,
-			argc : scr.argCount,
-			args : array_create(scr.argCount),
-		    go : function() {
-		        // extern functions compute everything in one go
-		        var vm_ = vm;
+        vm.pushCallFrame(self, scr);
+        vm.popCallFrame();
+        var s = {
+            vm : vm,
+            argc : scr.argCount,
+            args : array_create(scr.argCount),
+            go : function() {
+                // extern functions compute everything in one go
+                var vm_ = vm;
                 var argc_ = argc;
                 var args_ = args;
-		        for (var i = 0; i < argument_count; i += 1) {
-		            args_[@ i] = argument[i];
-		        }
-		        vm_.reuseCallFrameWithArgs(args_, 0, argc_);
-				var vmc_ = array_length(vm_.callFrames);
-		        while (vm_.inProgress()) {
-		            vm_.runProgram(10);
-		        }
-		        return vm_.returnValue;
-		    },
-		};
-		return s.go;
-	}
-	CatspeakError(undefined, string(scr) + " is not a valid CatspeakFunction!");
+                for (var i = 0; i < argument_count; i += 1) {
+                    args_[@ i] = argument[i];
+                }
+                vm_.reuseCallFrameWithArgs(args_, 0, argc_);
+                var vmc_ = array_length(vm_.callFrames);
+                while (vm_.inProgress()) {
+                    vm_.runProgram(10);
+                }
+                return vm_.returnValue;
+            },
+        };
+        return s.go;
+    }
+    throw new CatspeakError(undefined,
+            string(scr) + " is not a valid CatspeakFunction!");
 }
 
 /// Creates a new Catspeak compiler process for a buffer containing Catspeak
