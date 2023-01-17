@@ -14,6 +14,7 @@
 ///   The column number this position is found on. This is the number of
 ///   characters since the previous new-line character; therefore, tabs are
 ///   considered a single column, not 2, 4, 8, etc. columns.
+///
 function CatspeakLocation(line, column) constructor {
     self.line = line;
     self.column = column;
