@@ -15,7 +15,7 @@
 //# feather use syntax-errors
 
 /// The compiler version, should be updated before each release.
-#macro CATSPEAK_VERSION "2.3.0"
+#macro CATSPEAK_VERSION "2.3.1"
 
 /// Makes sure that all Catspeak global variables are initialised. Only needs
 /// to be called if you are trying to use Catspeak from a script, or through
