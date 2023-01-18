@@ -33,6 +33,9 @@ _Developed by
 Check out the [online documentation](https://www.katsaii.com/catspeak-lang) for
 a full overview of the language.
 
+If you run into any issues using this project, please create a [GitHub issue](https://github.com/katsaii/catspeak-lang/issues/new)
+or get in contact on Discord through the [GameMaker Kitchen](https://discord.com/channels/724320164371497020/1007968808926982184) server.
+
 ### Features
 
  - [x] **Minimal setup required**; ready to use after installation, no need to
