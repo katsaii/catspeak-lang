@@ -36,3 +36,58 @@ brief tips:
 
 I will still probably merge your PR if your code deviates from the style, but
 please try and keep the codebase consistent.
+
+### Testing
+
+Running the developer project for Catspeak will also invoke the unit testing
+framework. You can find these under `Testing/unit-tests` in the GameMaker IDE.
+
+If you add new logic, please add a relevant unit test.
+
+### Documentation
+
+The documentation is generated completely automatically using a custom python
+script located in the root directory of this project. For this reason, please
+try to add good documentation to any new functions and methods.
+
+However, if you don't want to write the documentation, please create an issue
+mentioning which items are missing documentation so that someone else can look
+into it.
+
+#### Documentation Format
+
+The general format of "doc comments" is similar to JSDoc, with some exceptions.
+Below is a template which should be followed for doc comments attached to
+functions and methods:
+```js
+/// Description for `catspeak_example`.
+///
+/// @param {TypeName} arg1
+///   A short description of what `arg1` is used for.
+///
+/// @example
+/// ```
+/// // add a GML example of how to use `catspeak_example`
+/// ```
+///
+/// @return {TypeName}
+function catspeak_example(arg1) { ... }
+```
+
+All public functions should have **explicit** types for their arguments and
+return types. The only exception to this is if the return type is `undefined`,
+the `@return` tag does not need to be included.
+
+You don't need to write documentation for internal functions.
+
+#### Building the Documentation
+
+1. Open a new terminal window.
+2. Navigate to the root directory of this repo, you should see `build-docs.py`.
+3. Run
+   ```sh
+   python ./build-docs.py
+   ```
+
+If you encounter no errors, then a new documentation page will be written to
+`docs/index.html`.
