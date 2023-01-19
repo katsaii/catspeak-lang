@@ -20,6 +20,14 @@ content.
 If you would like to work on solving an issue, feel free to pick one and work
 on it. I wont assign issues to anyone.
 
+### Commit messages
+
+This isn't necessarily  very important, but please try and keep commit messages
+in the past tense and lower-case. Examples of commit messages include:
+ - [added new `self` keyword](https://github.com/katsaii/catspeak-lang/commit/e839bac400aaf1874f4bf3e87487813a8354bff7)
+ - [implemented 'or' logical operator](https://github.com/katsaii/catspeak-lang/commit/c432c6c21f53feaf7968c0e6453af548932e4844)
+ - [updated README.md](https://github.com/katsaii/catspeak-lang/commit/18989abe7a8ebca0965ac1d6e77b596b0ca18340)
+
 ### Style
 
 Please try your best to follow the style of any surrounding code. Here are some
