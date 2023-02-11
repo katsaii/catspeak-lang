@@ -501,11 +501,15 @@ page.add_section("./LICENSE")
 
 import sys
 
-print("Writing docs...")
-content = page.render()
-with open("docs/index.html", "w") as file:
-    file.write(content)
-if sys.argv:
-    with open(f"docs/{sys.argv[1]}.html", "w") as file:
+if sys.argv and len(sys.argv) == 2:
+    version = sys.argv[1]
+    print("rendering docs...")
+    content = page.render()
+    print(f"writing to 'docs/{version}.html'...")
+    with open(f"docs/{version}.html", "w") as file:
         file.write(content)
-print("Done!")
+    print(f"updating index.html...")
+    # TODO
+    print("done")
+else:
+    print("usage: ./build-docs.py <version>")
