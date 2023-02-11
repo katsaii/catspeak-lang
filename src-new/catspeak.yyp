@@ -3,6 +3,8 @@
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},"order":2,},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
+    {"id":{"name":"scr_catspeak_diagnostic","path":"scripts/scr_catspeak_diagnostic/scr_catspeak_diagnostic.yy",},"order":0,},
+    {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
     {"id":{"name":"obj_future_file_load","path":"objects/obj_future_file_load/obj_future_file_load.yy",},"order":0,},
   ],
   "Options": [
@@ -27,6 +29,7 @@
     {"folderPath":"folders/Future.yy","order":1,"resourceVersion":"1.0","name":"Future","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Future/file.yy","order":1,"resourceVersion":"1.0","name":"file","tags":[],"resourceType":"GMFolder",},
     {"folderPath":"folders/Testing.yy","order":2,"resourceVersion":"1.0","name":"Testing","tags":[],"resourceType":"GMFolder",},
+    {"folderPath":"folders/Catspeak/common.yy","order":1,"resourceVersion":"1.0","name":"common","tags":[],"resourceType":"GMFolder",},
   ],
   "AudioGroups": [
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
