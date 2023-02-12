@@ -1,4 +1,38 @@
 {
+  "resourceType": "GMProject",
+  "resourceVersion": "1.6",
+  "name": "catspeak",
+  "AudioGroups": [
+    {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
+  ],
+  "configs": {
+    "children": [
+      {"children":[],"name":"NoTest",},
+    ],
+    "name": "Default",
+  },
+  "defaultScriptType": 1,
+  "Folders": [
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak","folderPath":"folders/Catspeak.yy","order":0,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"common","folderPath":"folders/Catspeak/common.yy","order":7,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"compiler","folderPath":"folders/Catspeak/compiler.yy","order":5,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"legacy","folderPath":"folders/Catspeak/legacy.yy","order":0,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"auto-generated","folderPath":"folders/Catspeak/legacy/auto-generated.yy","order":2,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"notes","folderPath":"folders/Catspeak/notes.yy","order":4,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"runtime","folderPath":"folders/Catspeak/runtime.yy","order":6,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Future","folderPath":"folders/Future.yy","order":1,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"file","folderPath":"folders/Future/file.yy","order":1,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Testing","folderPath":"folders/Testing.yy","order":2,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"demo","folderPath":"folders/Testing/demo.yy","order":5,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"examples","folderPath":"folders/Testing/demo/examples.yy","order":5,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"framework","folderPath":"folders/Testing/framework.yy","order":2,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"unit-tests","folderPath":"folders/Testing/unit-tests.yy","order":3,},
+  ],
+  "IncludedFiles": [],
+  "isEcma": false,
+  "MetaData": {
+    "IDEVersion": "2023.1.0.58",
+  },
   "resources": [
     {"id":{"name":"scr_testing_op","path":"scripts/scr_testing_op/scr_testing_op.yy",},"order":10,},
     {"id":{"name":"scr_testing_grouping","path":"scripts/scr_testing_grouping/scr_testing_grouping.yy",},"order":4,},
@@ -48,53 +82,10 @@
     {"id":{"name":"not_catspeak_configuration","path":"notes/not_catspeak_configuration/not_catspeak_configuration.yy",},"order":7,},
     {"id":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},"order":1,},
   ],
-  "Options": [
-    {"name":"Linux","path":"options/linux/options_linux.yy",},
-    {"name":"macOS","path":"options/mac/options_mac.yy",},
-    {"name":"Main","path":"options/main/options_main.yy",},
-    {"name":"Windows","path":"options/windows/options_windows.yy",},
-    {"name":"HTML5","path":"options/html5/options_html5.yy",},
-    {"name":"operagx","path":"options/operagx/options_operagx.yy",},
-  ],
-  "defaultScriptType": 1,
-  "isEcma": false,
-  "configs": {
-    "name": "Default",
-    "children": [
-      {"name":"NoTest","children":[],},
-    ],
-  },
   "RoomOrderNodes": [
     {"roomId":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},},
   ],
-  "Folders": [
-    {"folderPath":"folders/Catspeak.yy","order":0,"resourceVersion":"1.0","name":"Catspeak","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/legacy.yy","order":0,"resourceVersion":"1.0","name":"legacy","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/legacy/auto-generated.yy","order":2,"resourceVersion":"1.0","name":"auto-generated","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/notes.yy","order":4,"resourceVersion":"1.0","name":"notes","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Future.yy","order":1,"resourceVersion":"1.0","name":"Future","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Future/file.yy","order":1,"resourceVersion":"1.0","name":"file","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Testing.yy","order":2,"resourceVersion":"1.0","name":"Testing","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Testing/framework.yy","order":2,"resourceVersion":"1.0","name":"framework","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Testing/unit-tests.yy","order":3,"resourceVersion":"1.0","name":"unit-tests","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Testing/demo.yy","order":5,"resourceVersion":"1.0","name":"demo","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Testing/demo/examples.yy","order":5,"resourceVersion":"1.0","name":"examples","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/compiler.yy","order":5,"resourceVersion":"1.0","name":"compiler","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/runtime.yy","order":6,"resourceVersion":"1.0","name":"runtime","tags":[],"resourceType":"GMFolder",},
-    {"folderPath":"folders/Catspeak/common.yy","order":7,"resourceVersion":"1.0","name":"common","tags":[],"resourceType":"GMFolder",},
-  ],
-  "AudioGroups": [
-    {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
-  ],
   "TextureGroups": [
-    {"isScaled":true,"compressFormat":"bz2","autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
+    {"resourceType":"GMTextureGroup","resourceVersion":"1.3","name":"Default","autocrop":true,"border":2,"compressFormat":"bz2","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"targets":-1,},
   ],
-  "IncludedFiles": [],
-  "MetaData": {
-    "IDEVersion": "2022.6.1.26",
-  },
-  "resourceVersion": "1.5",
-  "name": "catspeak",
-  "tags": [],
-  "resourceType": "GMProject",
 }
