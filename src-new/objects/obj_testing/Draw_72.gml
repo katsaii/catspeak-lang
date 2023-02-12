@@ -1,0 +1,1 @@
+draw_clear(TESTING_COL_BLACK);
