@@ -24,6 +24,35 @@
 /// ```
 #macro CATSPEAK_DEBUG_MODE true
 
+/// Makes sure that all Catspeak global variables are initialised. Only needs
+/// to be called if you are trying to use Catspeak from a script, or through
+/// `gml_pragma`. Otherwise you can just ignore this.
+function catspeak_force_init() {
+    static initialised = false;
+    if (initialised) {
+        return;
+    }
+    initialised = true;
+    /*
+    // call initialisers
+    __catspeak_init_config();
+    __catspeak_init_process();
+    __catspeak_init_alloc();
+    __catspeak_init_builtins();
+    __catspeak_init_lexer_database_token_starts_expression();
+    __catspeak_init_lexer_database_token_skips_line();
+    __catspeak_init_lexer_database_token_keywords();
+    __catspeak_init_lexer_database_token();
+    __catspeak_init_lexer_database_ascii_desc();
+    */
+    // display the initialisation message
+    var motd = "you are now using Catspeak v" + CATSPEAK_VERSION +
+            " by @katsaii";
+    show_debug_message(motd);
+}
+
+catspeak_force_init();
+
 /// @ignore
 function __catspeak_string(val) {
     gml_pragma("forceinline");
@@ -31,20 +60,14 @@ function __catspeak_string(val) {
 }
 
 /// @ignore
-function __catspeak_assert(msg="no message") {
+function __catspeak_error() {
     gml_pragma("forceinline");
-    show_error("Catspeak: " + __catspeak_string(msg), false);
-}
-
-/// @ignore
-function __catspeak_assert_arg_typeof(arg, val, expect) {
-    var actual = typeof(val);
-    if (actual != expect) {
-        __catspeak_assert(
-            "expected arg " + __catspeak_string(arg) + " (" +
-                    __catspeak_string(val) + ") to have the type" +
-                    __catspeak_string(expect) + ", but got " +
-                    __catspeak_string(actual)
-        );
+    var msg = "Catspeak v" + CATSPEAK_VERSION;
+    if (argument_count > 0) {
+        msg += ": ";
+        for (var i = 0; i < argument_count; i += 1) {
+            msg += __catspeak_string(argument[i]);
+        }
     }
+    show_error(msg, false);
 }
