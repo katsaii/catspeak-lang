@@ -39,10 +39,26 @@ enum CatspeakToken {
 /// sure to delete the buffer once parsing is complete.
 ///
 /// @param {Id.Buffer} buff
-/// @param {Real} offset
-/// @param {Real} size
+///   The ID of the GML buffer to use.
 ///
-/// @ignore
-function __CatspeakLexer(buff, offset, size) constructor {
-    
+/// @param {Real} [offset]
+///   The offset in the buffer to start parsing from. Defaults to 0, the
+///   start of the buffer.
+///
+/// @param {Real} [size]
+///   The length of the buffer input. Any characters beyond this limit will
+///   be treated as the end of the file. Defaults to `infinity`.
+function CatspeakLexer(buff, offset=0, size=infinity) constructor {
+    self.buff = buff;
+    self.alignment = buffer_get_alignment(buff);
+    self.capacity = buffer_get_size(buff);
+    self.offset = clamp(offset, 0, self.capacity);
+    self.limit = clamp(size, 0, self.capacity);
+    self.eof = false;
+    self.cr = false;
+    self.skipNextByte = false;
+    self.skipNextSemicolon = false;
+    self.lexemeLength = 0;
+    self.pos = new CatspeakLocation(1, 1);
+    self.posNext = self.pos.clone();
 }
