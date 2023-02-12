@@ -6,6 +6,7 @@
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
     {"id":{"name":"scr_catspeak_diagnostic","path":"scripts/scr_catspeak_diagnostic/scr_catspeak_diagnostic.yy",},"order":0,},
+    {"id":{"name":"scr_catspeak_alloc","path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},"order":2,},
     {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
     {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":2,},
