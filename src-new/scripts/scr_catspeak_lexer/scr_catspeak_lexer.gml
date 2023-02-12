@@ -34,3 +34,15 @@ enum CatspeakToken {
     __SIZE__
 }
 
+/// Tokenises the contents of a GML buffer. The lexer does not take ownership
+/// of this buffer, but it may mutate it so beware. Therefore you should make
+/// sure to delete the buffer once parsing is complete.
+///
+/// @param {Id.Buffer} buff
+/// @param {Real} offset
+/// @param {Real} size
+///
+/// @ignore
+function __CatspeakLexer(buff, offset, size) constructor {
+    
+}
