@@ -17,6 +17,14 @@ function catspeak_collect() {
     }
 }
 
+/// "adapter" here is a struct with two fields: "create" and "destroy" which
+/// indicates how to construct and destruct the resource once the owner gets
+/// collected.
+///
+/// "owner" is a struct whose lifetime determines whether the resource needs
+/// to be collected as well. Once "owner" gets collected by the garbage
+/// collector, any resources it owns will eventually get collected as well.
+///
 /// @ignore
 function __catspeak_alloc(owner, adapter) {
     var pool = global.__catspeakAllocPool;
