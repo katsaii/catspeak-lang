@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_token",
+  "name": "scr_catspeak_lexer",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "lexical-analysis",
-    "path": "folders/Catspeak/compiler/lexical-analysis.yy",
+    "name": "compiler",
+    "path": "folders/Catspeak/compiler.yy",
   },
 }

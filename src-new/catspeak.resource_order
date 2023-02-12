@@ -2,7 +2,6 @@
   "FolderOrderSettings": [
     {"name":"common","order":1,"path":"folders/Catspeak/common.yy",},
     {"name":"compiler","order":2,"path":"folders/Catspeak/compiler.yy",},
-    {"name":"lexical-analysis","order":1,"path":"folders/Catspeak/compiler/lexical-analysis.yy",},
     {"name":"Future","order":1,"path":"folders/Future.yy",},
     {"name":"file","order":1,"path":"folders/Future/file.yy",},
     {"name":"Testing","order":2,"path":"folders/Testing.yy",},
@@ -17,6 +16,7 @@
     {"name":"scr_catspeak_alloc","order":2,"path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},
     {"name":"scr_testing_framework","order":1,"path":"scripts/scr_testing_framework/scr_testing_framework.yy",},
     {"name":"scr_catspeak_init","order":1,"path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},
+    {"name":"scr_catspeak_lexer","order":1,"path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},
     {"name":"obj_testing","order":2,"path":"objects/obj_testing/obj_testing.yy",},
     {"name":"rm_testing","order":1,"path":"rooms/rm_testing/rm_testing.yy",},
   ],
