@@ -34,9 +34,22 @@ enum CatspeakToken {
     __SIZE__
 }
 
-/// Tokenises the contents of a GML buffer. The lexer does not take ownership
-/// of this buffer, but it may mutate it so beware. Therefore you should make
-/// sure to delete the buffer once parsing is complete.
+/// @ignore
+///
+/// @param {Id.Buffer} buff
+/// @param {Real} offset
+/// @return {Real}
+function __catspeak_buffer_next_unicode_codepoint(buff, offset) {
+    
+}
+
+/// Responsible for tokenising the contents of a GML buffer. This can be used
+/// for syntax highlighting in a programming game which uses the Catspeak
+/// engine.
+///
+/// NOTE: The lexer does not take ownership of this buffer, but it may mutate
+///       it so beware. Therefore you should make sure to delete the buffer
+///       once parsing is complete.
 ///
 /// @param {Id.Buffer} buff
 ///   The ID of the GML buffer to use.
@@ -59,6 +72,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.skipNextByte = false;
     self.skipNextSemicolon = false;
     self.lexemeLength = 0;
-    self.pos = new CatspeakLocation(1, 1);
+    self.line = 1;
+    self.column = 1;
     self.posNext = self.pos.clone();
 }
