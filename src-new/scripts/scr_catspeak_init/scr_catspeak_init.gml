@@ -52,22 +52,3 @@ function catspeak_force_init() {
 }
 
 catspeak_force_init();
-
-/// @ignore
-function __catspeak_string(val) {
-    gml_pragma("forceinline");
-    return is_string(val) ? val : string(val);
-}
-
-/// @ignore
-function __catspeak_error() {
-    gml_pragma("forceinline");
-    var msg = "Catspeak v" + CATSPEAK_VERSION;
-    if (argument_count > 0) {
-        msg += ": ";
-        for (var i = 0; i < argument_count; i += 1) {
-            msg += __catspeak_string(argument[i]);
-        }
-    }
-    show_error(msg, false);
-}
