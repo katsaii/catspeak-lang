@@ -5,6 +5,9 @@
 
 /// Forces the Catspeak engine to collect any discarded resources.
 function catspeak_collect() {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_global_exists("__catspeakAllocPool");
+    }
     var pool = global.__catspeakAllocPool;
     var poolSize = array_length(pool);
     for (var i = 0; i < poolSize; i += 1) {
@@ -31,6 +34,9 @@ function catspeak_collect() {
 /// @param {Struct} adapter
 /// @return {Any}
 function __catspeak_alloc(owner, adapter) {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_global_exists("__catspeakAllocPool");
+    }
     var pool = global.__catspeakAllocPool;
     var poolMax = array_length(pool) - 1;
     if (poolMax >= 0) {
@@ -62,6 +68,9 @@ function __catspeak_alloc(owner, adapter) {
 /// @param {Struct} owner
 function __catspeak_alloc_ds_map(owner) {
     gml_pragma("forceinline");
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_global_exists("__catspeakAllocDSMapAdapter");
+    }
     return __catspeak_alloc(owner, global.__catspeakAllocDSMapAdapter);
 }
 
@@ -70,6 +79,9 @@ function __catspeak_alloc_ds_map(owner) {
 /// @param {Struct} owner
 function __catspeak_alloc_ds_list(owner) {
     gml_pragma("forceinline");
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_global_exists("__catspeakAllocDSListAdapter");
+    }
     return __catspeak_alloc(owner, global.__catspeakAllocDSListAdapter);
 }
 
@@ -78,6 +90,9 @@ function __catspeak_alloc_ds_list(owner) {
 /// @param {Struct} owner
 function __catspeak_alloc_ds_stack(owner) {
     gml_pragma("forceinline");
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_global_exists("__catspeakAllocDSStackAdapter");
+    }
     return __catspeak_alloc(owner, global.__catspeakAllocDSStackAdapter);
 }
 
@@ -86,6 +101,9 @@ function __catspeak_alloc_ds_stack(owner) {
 /// @param {Struct} owner
 function __catspeak_alloc_ds_priority(owner) {
     gml_pragma("forceinline");
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_global_exists("__catspeakAllocDSPriorityAdapter");
+    }
     return __catspeak_alloc(owner, global.__catspeakAllocDSPriorityAdapter);
 }
 
