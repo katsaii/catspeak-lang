@@ -63,3 +63,22 @@ function __catspeak_file_location(filename, location) {
     msg += ":" + __catspeak_string(__catspeak_location_get_column(location));
     return "'" + msg + "'";
 }
+
+/// @ignore
+function __catspeak_error() {
+    gml_pragma("forceinline");
+    var msg = "Catspeak v" + CATSPEAK_VERSION;
+    if (argument_count > 0) {
+        msg += ": ";
+        for (var i = 0; i < argument_count; i += 1) {
+            msg += __catspeak_string(argument[i]);
+        }
+    }
+    show_error(msg, false);
+}
+
+/// @ignore
+function __catspeak_string(val) {
+    gml_pragma("forceinline");
+    return is_string(val) ? val : string(val);
+}
