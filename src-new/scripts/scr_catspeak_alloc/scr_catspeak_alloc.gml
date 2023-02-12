@@ -26,6 +26,10 @@ function catspeak_collect() {
 /// collector, any resources it owns will eventually get collected as well.
 ///
 /// @ignore
+///
+/// @param {Struct} owner
+/// @param {Struct} adapter
+/// @return {Any}
 function __catspeak_alloc(owner, adapter) {
     var pool = global.__catspeakAllocPool;
     var poolMax = array_length(pool) - 1;
@@ -54,24 +58,32 @@ function __catspeak_alloc(owner, adapter) {
 }
 
 /// @ignore
+///
+/// @param {Struct} owner
 function __catspeak_alloc_ds_map(owner) {
     gml_pragma("forceinline");
     return __catspeak_alloc(owner, global.__catspeakAllocDSMapAdapter);
 }
 
 /// @ignore
+///
+/// @param {Struct} owner
 function __catspeak_alloc_ds_list(owner) {
     gml_pragma("forceinline");
     return __catspeak_alloc(owner, global.__catspeakAllocDSListAdapter);
 }
 
 /// @ignore
+///
+/// @param {Struct} owner
 function __catspeak_alloc_ds_stack(owner) {
     gml_pragma("forceinline");
     return __catspeak_alloc(owner, global.__catspeakAllocDSStackAdapter);
 }
 
 /// @ignore
+///
+/// @param {Struct} owner
 function __catspeak_alloc_ds_priority(owner) {
     gml_pragma("forceinline");
     return __catspeak_alloc(owner, global.__catspeakAllocDSPriorityAdapter);
