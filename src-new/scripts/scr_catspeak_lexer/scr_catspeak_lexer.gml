@@ -10,6 +10,9 @@
 ///   - `else` (is a `CatspeakToken.ELSE`)
 ///   - `12.3` (is a `CatspeakToken.NUMBER`)
 ///   - `+`    (is a `CatspeakToken.OP_ADD`)
+///
+/// The following enum represents all possible token types understood by the
+/// Catspeak language.
 enum CatspeakToken {
     PAREN_LEFT, PAREN_RIGHT,
     BOX_LEFT, BOX_RIGHT,
@@ -32,15 +35,6 @@ enum CatspeakToken {
     OP_HIGH,
     __OPERATORS_END__,
     __SIZE__
-}
-
-/// @ignore
-///
-/// @param {Id.Buffer} buff
-/// @param {Real} offset
-/// @return {Real}
-function __catspeak_buffer_next_unicode_codepoint(buff, offset) {
-    
 }
 
 /// Responsible for tokenising the contents of a GML buffer. This can be used
@@ -75,4 +69,94 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.line = 1;
     self.column = 1;
     self.posNext = self.pos.clone();
+
+    /// @ignore
+    ///
+    /// @param {Id.Buffer} buff
+    /// @param {Real} offset
+    /// @return {Real}
+    static __nextCodepoint = function(buff, offset) {
+        // TODO
+    };
+
+    /// Returns the string representation of the most recent token emitted by
+    /// the [nextWithWhitespace] method.
+    ///
+    /// @example
+    ///   Prints the string content of the first [CatspeakToken] emitted by a
+    ///   lexer.
+    /// ```
+    /// lexer.next();
+    /// show_debug_message(lexer.getLexeme());
+    /// ```
+    static getLexeme = function() {
+        // TODO
+    };
+
+    /// Advances the lexer and returns the next type of [CatspeakToken]. This
+    /// includes additional whitespace and control tokens, like:
+    ///  - line breaks `;`          (`CatspeakToken.BREAK_LINE`)
+    ///  - line continuations `...` (`CatspeakToken.CONTINUE_LINE`)
+    ///  - comments `--`            (`CatspeakToken.COMMENT`)
+    ///
+    /// To get the string content of the token, you should use the [getLexeme]
+    /// method.
+    ///
+    /// @example
+    ///   Iterates through all tokens of a buffer containing Catspeak code,
+    ///   printing each non-whitespace token out as a debug message.
+    /// ```
+    /// var lexer = new CatspeakLexer(buff);
+    /// do {
+    ///   var token = lexer.nextWithWhitespace();
+    ///   if (token != CatspeakToken.WHITESPACE) {
+    ///     show_debug_message(lexer.getLexeme());
+    ///   }
+    /// } until (token == CatspeakToken.EOF);
+    /// ```
+    ///
+    /// @return {Enum.CatspeakToken}
+    static nextWithWhitespace = function() {
+        // TODO
+    };
+
+    /// Advances the lexer and returns the next [CatspeakToken], ingoring
+    /// any comments, whitespace, and line continuations.
+    ///
+    /// To get the string content of the token, you should use the [getLexeme]
+    /// method.
+    ///
+    /// @example
+    ///   Iterates through all tokens of a buffer containing Catspeak code,
+    ///   printing each token out as a debug message.
+    /// ```
+    /// var lexer = new CatspeakLexer(buff);
+    /// do {
+    ///   var token = lexer.nextWithWhitespace();
+    ///   show_debug_message(lexer.getLexeme());
+    /// } until (token == CatspeakToken.EOF);
+    /// ```
+    ///
+    /// @return {Enum.CatspeakToken}
+    static next = function() {
+        var skipSemicolon = skipNextSemicolon;
+        skipNextSemicolon = false;
+        while (true) {
+            var token = nextWithWhitespace();
+            if (token == CatspeakToken.WHITESPACE
+                    || token == CatspeakToken.COMMENT) {
+                continue;
+            }
+            if (token == CatspeakToken.CONTINUE_LINE) {
+                skipSemicolon = true;
+                continue;
+            //} else if (catspeak_token_skips_newline(token)) {
+            //    skipNextSemicolon = true;
+            }
+            if (skipSemicolon && token == CatspeakToken.BREAK_LINE) {
+                continue;
+            }
+            return token;
+        }
+    };
 }
