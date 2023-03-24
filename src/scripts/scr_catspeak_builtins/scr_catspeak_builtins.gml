@@ -254,9 +254,7 @@ function __catspeak_init_builtins() {
         "is_real", is_real,
         "is_string", is_string,
         "is_struct", is_struct,
-        "is_undefined", is_undefined,
-        "is_vec3", is_vec3,
-        "is_vec4", is_vec4
+        "is_undefined", is_undefined
     );
     catspeak_add_constant(
         "null", pointer_null,
