@@ -27,6 +27,17 @@ function __catspeak_error() {
 }
 
 /// @ignore
+function __catspeak_check_init() {
+    if (catspeak_force_init()) {
+        __catspeak_error(
+            "Catspeak was not initialised at this point, make sure to call ",
+            "'catspeak_force_init' at the start of your code if you are ",
+            "using Catspeak inside of a script resource"
+        );
+    }
+}
+
+/// @ignore
 ///
 /// @param {Any} name
 /// @param {Any} val

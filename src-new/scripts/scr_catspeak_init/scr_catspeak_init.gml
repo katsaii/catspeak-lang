@@ -17,20 +17,27 @@
 /// The compiler version, should be updated before each release.
 #macro CATSPEAK_VERSION "3.0.0"
 
-/// Whether sanity checks are enabled on Catspeak functions. You can override
-/// this using a configuration macro:
-/// ```
+/// Whether sanity checks and unsafe developer features are enabled at runtime.
+/// You can override this using a configuration macro:
+///
+/// ```gml
 /// #macro Release:CATSPEAK_DEBUG_MODE false
 /// ```
-#macro CATSPEAK_DEBUG_MODE true
+#macro CATSPEAK_DEBUG_MODE (GM_build_type == "run")
 
-/// Makes sure that all Catspeak global variables are initialised. Only needs
-/// to be called if you are trying to use Catspeak from a script, or through
-/// `gml_pragma`. Otherwise you can just ignore this.
+/// Makes sure that all Catspeak global variables are initialised.
+/// Returns `true` if this is the first time this function was called, and
+/// `false` otherwise.
+///
+/// NOTE: This only needs to be called if you are trying to use Catspeak from
+///       within a script, or through `gml_pragma`. Otherwise you can just
+///       forget this function exists.
+///
+/// @return {Bool}
 function catspeak_force_init() {
     static initialised = false;
     if (initialised) {
-        return;
+        return false;
     }
     initialised = true;
     // call initialisers
@@ -47,6 +54,7 @@ function catspeak_force_init() {
     var motd = "you are now using Catspeak v" + CATSPEAK_VERSION +
             " by @katsaii";
     show_debug_message(motd);
+    return true;
 }
 
 catspeak_force_init();
