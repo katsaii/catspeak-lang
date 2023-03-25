@@ -56,6 +56,13 @@ enum CatspeakToken {
 ///   The length of the buffer input. Any characters beyond this limit will
 ///   be treated as the end of the file. Defaults to `infinity`.
 function CatspeakLexer(buff, offset=0, size=infinity) constructor {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_init();
+        __catspeak_check_typeof_numeric("buff", buff);
+        __catspeak_check_typeof_numeric("offset", offset);
+        __catspeak_check_typeof_numeric("size", size);
+    }
+
     self.buff = buff;
     self.alignment = buffer_get_alignment(buff);
     self.capacity = buffer_get_size(buff);
@@ -85,7 +92,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @example
     ///   Prints the string content of the first [CatspeakToken] emitted by a
     ///   lexer.
-    /// ```
+    ///
+    /// ```gml
     /// lexer.next();
     /// show_debug_message(lexer.getLexeme());
     /// ```
@@ -105,7 +113,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @example
     ///   Iterates through all tokens of a buffer containing Catspeak code,
     ///   printing each non-whitespace token out as a debug message.
-    /// ```
+    ///
+    /// ```gml
     /// var lexer = new CatspeakLexer(buff);
     /// do {
     ///   var token = lexer.nextWithWhitespace();
@@ -129,7 +138,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @example
     ///   Iterates through all tokens of a buffer containing Catspeak code,
     ///   printing each token out as a debug message.
-    /// ```
+    ///
+    /// ```gml
     /// var lexer = new CatspeakLexer(buff);
     /// do {
     ///   var token = lexer.nextWithWhitespace();
