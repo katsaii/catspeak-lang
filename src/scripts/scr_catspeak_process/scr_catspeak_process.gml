@@ -18,7 +18,7 @@ function catspeak_execute(scr, args) {
     static noArgs = [];
     var args_ = args ?? noArgs;
     var argo = 0;
-    var argc = array_length(args);
+    var argc = array_length(args_);
     var future;
     if (instanceof(scr) == "CatspeakFunction") {
         var vm = new CatspeakVM();
