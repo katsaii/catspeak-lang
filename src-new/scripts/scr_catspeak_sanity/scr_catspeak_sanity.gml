@@ -15,7 +15,6 @@ function __catspeak_string(val) {
 ///
 /// @param {Any} ...
 function __catspeak_error() {
-    gml_pragma("forceinline");
     var msg = "Catspeak v" + CATSPEAK_VERSION;
     if (argument_count > 0) {
         msg += ": ";
@@ -27,7 +26,18 @@ function __catspeak_error() {
 }
 
 /// @ignore
+function __catspeak_error_bug() {
+    gml_pragma("forceinline");
+    __catspeak_error(
+        "you have likely encountered a compiler bug! ",
+        "please get in contact and report this as an issue on the official ",
+        "GitHub page: https://github.com/katsaii/catspeak-lang/issues"
+    );
+}
+
+/// @ignore
 function __catspeak_check_init() {
+    gml_pragma("forceinline");
     if (catspeak_force_init()) {
         __catspeak_error(
             "Catspeak was not initialised at this point, make sure to call ",
