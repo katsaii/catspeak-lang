@@ -17,12 +17,12 @@ enum CatspeakToken {
     PAREN_LEFT, PAREN_RIGHT,
     BOX_LEFT, BOX_RIGHT,
     BRACE_LEFT, BRACE_RIGHT,
-    DOT, COLON, COMMA, ASSIGN, BREAK_LINE, CONTINUE_LINE,
+    DOT, COLON, COMMA, ASSIGN,
     DO, IT, IF, ELSE, WHILE, FOR, LOOP, LET, FUN, BREAK, CONTINUE, RETURN,
     AND, OR,
     NEW, IMPL, SELF,
     IDENT, STRING, NUMBER,
-    WHITESPACE, COMMENT,
+    WHITESPACE, COMMENT, BREAK_LINE, CONTINUE_LINE,
     EOL, BOF, EOF, OTHER,
     __OPERATORS_BEGIN__,
     OP_LOW,
@@ -64,27 +64,51 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     }
 
     self.buff = buff;
-    self.alignment = buffer_get_alignment(buff);
-    self.capacity = buffer_get_size(buff);
-    self.offset = clamp(offset, 0, self.capacity);
-    self.limit = clamp(size, 0, self.capacity);
-    self.eof = false;
-    self.cr = false;
-    self.skipNextByte = false;
-    self.skipNextSemicolon = false;
-    self.lexemeLength = 0;
-    self.line = 1;
+    self.buffAlignment = buffer_get_alignment(buff);
+    self.buffCapacity = buffer_get_size(buff);
+    self.offset = clamp(offset, 0, self.buffCapacity);
+    self.size = clamp(size, 0, self.buffCapacity);
+    self.row = 1;
     self.column = 1;
-    self.posNext = self.pos.clone();
+    self.lexemeStart = 0;
+    self.lexemeEnd = 0;
+    self.lexemePos = catspeak_location_create(self.row, self.column);
+    self.lexeme = undefined;
+    self.charCurr = -1;
+    self.charNext = -1;
 
     /// @ignore
     ///
-    /// @param {Id.Buffer} buff
-    /// @param {Real} offset
     /// @return {Real}
-    static __nextCodepoint = function(buff, offset) {
+    static __nextUTF8Char = function() {
         // TODO
     };
+
+    /// @ignore
+    static __advance = function() {
+        lexemeEnd = offset;
+        if (charNext == ord("\r")) {
+            column = 1;
+            row += 1;
+        } else if (charNext == ord("\n")) {
+            column = 1;
+            if (charCurr != ord("\r")) {
+                row += 1;
+            }
+        } else {
+            column += 1;
+        }
+        // actually update chars now
+        charCurr = charNext;
+        charNext = __nextUTF8Char();
+    };
+
+    /// @ignore
+    static __clearLexeme = function() {
+        lexemeStart = lexemeEnd;
+        lexemePos = catspeak_location_create(self.row, self.column);
+        lexeme = undefined;
+    }
 
     /// Returns the string representation of the most recent token emitted by
     /// the [nextWithWhitespace] method.
@@ -98,7 +122,27 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// show_debug_message(lexer.getLexeme());
     /// ```
     static getLexeme = function() {
-        // TODO
+        if (lexeme == undefined) {
+            var buff_ = buff;
+            if (lexemeEnd <= lexemeStart) {
+                // always an empty slice
+                lexeme = "";
+                if (CATSPEAK_DEBUG_MODE && lexemeEnd < lexemeStart) {
+                    __catspeak_error_bug();
+                }
+            } else if (lexemeEnd >= buffCapacity) {
+                // beyond the actual capacity of the buffer
+                // not safe to use `buffer_string`, which expects a null char
+                lexeme = buffer_peek(buff_, lexemeStart, buffer_text);
+            } else {
+                // quickly write a null terminator and then read the content
+                var byte = buffer_peek(buff_, lexemeEnd, buffer_u8);
+                buffer_poke(buff_, lexemeEnd, buffer_u8, 0x00);
+                lexeme = buffer_peek(buff_, lexemeStart, buffer_string);
+                buffer_poke(buff_, lexemeEnd, buffer_u8, byte);
+            }
+        }
+        return lexeme;
     };
 
     /// Advances the lexer and returns the next type of [CatspeakToken]. This
