@@ -37,6 +37,21 @@ enum CatspeakToken {
     __SIZE__
 }
 
+/// Returns whether a Catspeak token is a valid operator.
+///
+/// @param {Enum.CatspeakToken} token
+///   The ID of the token to check.
+///
+/// @return {Bool}
+function catspeak_token_is_operator(token) {
+    gml_pragma("forceinline");
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_typeof_numeric("token", token);
+    }
+    return token > CatspeakToken.__OPERATORS_BEGIN__
+            && token < CatspeakToken.__OPERATORS_END__;
+}
+
 /// @ignore
 ///
 /// @param {String} src
@@ -86,7 +101,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.lexemeEnd = 0;
     self.lexemePos = catspeak_location_create(self.row, self.column);
     self.lexeme = undefined;
-    self.charCurr = -1;
+    self.charCurr = 0;
     self.charNext = __nextUTF8Char();
 
     /// @ignore
@@ -94,7 +109,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @return {Real}
     static __nextUTF8Char = function () {
         if (offset >= size) {
-            return -1;
+            return 0;
         }
         var byte = buffer_peek(buff, offset, buffer_u8);
         offset += 1;
@@ -228,7 +243,43 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     ///
     /// @return {Enum.CatspeakToken}
     static nextWithWhitespace = function () {
-        // TODO
+        __clearLexeme();
+        if (charNext == 0) {
+            return CatspeakToken.EOF;
+        }
+        __advance();
+        var token = CatspeakToken.OTHER;
+        if (charCurr >= 0 && charCurr < __CATSPEAK_CODEPAGE_SIZE) {
+            token = global.__catspeakChar2Token[charCurr];
+        }
+        if (charCurr == ord("\"")) {
+            // strings
+            __clearLexeme();
+            // TODO
+        } else if (charCurr == ord("@") && charNext == ord("\"")) {
+            // raw strings
+            token = CatspeakToken.STRING; // since `@` is an operator
+            __advance();
+            __clearLexeme();
+            // TODO
+        } else if (catspeak_token_is_operator(token)) {
+            // operator identifiers
+            // TODO
+        } else if (charCurr == ord("`")) {
+            // literal identifiers
+            __clearLexeme();
+            // TODO
+        } else if (token == CatspeakToken.IDENT) {
+            // alphanumeric identifiers
+            // TODO
+        } else if (charCurr == ord("'")) {
+            // character literals
+            __clearLexeme();
+            // TODO
+        } else if (token == CatspeakToken.NUMBER) {
+            // numeric literals
+            // TODO
+        }
     };
 
     /// Advances the lexer and returns the next [CatspeakToken], ingoring
@@ -331,10 +382,13 @@ function __catspeak_init_lexer_codepage() {
         } else if (
             __catspeak_code_range(code, "a", "z") ||
             __catspeak_code_range(code, "Z", "Z") ||
-            __catspeak_code_set(code, "_", "`")
+            __catspeak_code_set(code, "_", "`") // identifier literals
         ) {
             tokenType = CatspeakToken.IDENT;
-        } else if (__catspeak_code_range(code, "0", "9")) {
+        } else if (
+            __catspeak_code_range(code, "0", "9") ||
+            __catspeak_code_set(code, "'") // character literals
+        ) {
             tokenType = CatspeakToken.NUMBER;
         } else if (__catspeak_code_set(code, "$", ":", ";")) {
             tokenType = CatspeakToken.OP_LOW;
