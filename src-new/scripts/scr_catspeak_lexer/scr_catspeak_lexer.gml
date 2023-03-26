@@ -155,16 +155,18 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         } else if ((byte & __CATSPEAK_UTF8_0b11000000) == __CATSPEAK_UTF8_0b11000000) {
             codepointCount = 1;
             headerMask = __CATSPEAK_UTF8_0b11000000;
-        } else if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_error("invalid UTF8 header codepoint '", byte, "'");
+        } else {
+            //__catspeak_error("invalid UTF8 header codepoint '", byte, "'");
+            return -1;
         }
         // parse UTF8 continuations
         var utf8Value = (byte & ~headerMask) << (codepointCount * __CATSPEAK_UTF8_WIDTH);
         for (var i = codepointCount - 1; i >= 0; i -= 1) {
             byte = buffer_peek(buff, offset, buffer_u8);
             offset += 1;
-            if (CATSPEAK_DEBUG_MODE && (byte & __CATSPEAK_UTF8_0b10000000) == 0) {
-                __catspeak_error("invalid UTF8 continuation codepoint '", byte, "'");
+            if ((byte & __CATSPEAK_UTF8_0b10000000) == 0) {
+                //__catspeak_error("invalid UTF8 continuation codepoint '", byte, "'");
+                return -1;
             }
             utf8Value |= (byte & ~__CATSPEAK_UTF8_0b11000000) << (i * __CATSPEAK_UTF8_WIDTH);
         }
