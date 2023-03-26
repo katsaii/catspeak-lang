@@ -37,6 +37,18 @@ enum CatspeakToken {
     __SIZE__
 }
 
+/// @ignore
+enum __CatspeakCharDesc {
+    NONE = 0,
+    NEWLINE = (1 << 1),
+    WHITESPACE = (1 << 2),
+    ALPHABETIC = (1 << 3),
+    NUMERIC = (1 << 4),
+    ALPHANUMERIC = (1 << 5),
+    OPERATOR = (1 << 6),
+    BACKTICK = (1 << 7),
+}
+
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses the Catspeak
 /// engine.
@@ -86,42 +98,43 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         }
         var byte = buffer_peek(buff, offset, buffer_u8);
         offset += 1;
-        if ((byte & __CATSPEAK_UTF8_H1) == 0) {
+        if ((byte & 0b10000000) == 0) {
             // ASCII digit
             return byte;
         }
         var codepointCount;
         var headerMask;
-        // parse UTF8 header
-        if ((byte & __CATSPEAK_UTF8_H6) == __CATSPEAK_UTF8_H6) {
+        // parse UTF8 header, could maybe hand-roll a binary search
+        if ((byte & 0b11111100) == 0b11111100) {
             codepointCount = 5;
-            headerMask = __CATSPEAK_UTF8_H6;
-        } else if ((byte & __CATSPEAK_UTF8_H5) == __CATSPEAK_UTF8_H5) {
+            headerMask = 0b11111100;
+        } else if ((byte & 0b11111000) == 0b11111000) {
             codepointCount = 4;
-            headerMask = __CATSPEAK_UTF8_H5;
-        } else if ((byte & __CATSPEAK_UTF8_H4) == __CATSPEAK_UTF8_H4) {
+            headerMask = 0b11111000;
+        } else if ((byte & 0b11110000) == 0b11110000) {
             codepointCount = 3;
-            headerMask = __CATSPEAK_UTF8_H4;
-        } else if ((byte & __CATSPEAK_UTF8_H3) == __CATSPEAK_UTF8_H3) {
+            headerMask = 0b11110000;
+        } else if ((byte & 0b11100000) == 0b11100000) {
             codepointCount = 2;
-            headerMask = __CATSPEAK_UTF8_H3;
-        } else if ((byte & __CATSPEAK_UTF8_H2) == __CATSPEAK_UTF8_H2) {
+            headerMask = 0b11100000;
+        } else if ((byte & 0b11000000) == 0b11000000) {
             codepointCount = 1;
-            headerMask = __CATSPEAK_UTF8_H2;
+            headerMask = 0b11000000;
         } else {
             //__catspeak_error("invalid UTF8 header codepoint '", byte, "'");
             return -1;
         }
-        // parse UTF8 continuations
-        var utf8Value = (byte & ~headerMask) << (codepointCount * __CATSPEAK_UTF8_WIDTH);
+        // parse UTF8 continuations (2 bit header, followed by 6 bits of data)
+        var dataWidth = 6;
+        var utf8Value = (byte & ~headerMask) << (codepointCount * dataWidth);
         for (var i = codepointCount - 1; i >= 0; i -= 1) {
             byte = buffer_peek(buff, offset, buffer_u8);
             offset += 1;
-            if ((byte & __CATSPEAK_UTF8_H1) == 0) {
+            if ((byte & 0b10000000) == 0) {
                 //__catspeak_error("invalid UTF8 continuation codepoint '", byte, "'");
                 return -1;
             }
-            utf8Value |= (byte & ~__CATSPEAK_UTF8_H2) << (i * __CATSPEAK_UTF8_WIDTH);
+            utf8Value |= (byte & ~0b11000000) << (i * dataWidth);
         }
         return utf8Value;
     };
@@ -273,55 +286,9 @@ function __catspeak_create_buffer_from_string(src) {
 }
 
 /// @ignore
-///
-/// @param {Real} char
-/// @return {Bool}
-function __catspeak_is_alphabetic(char) {
-    gml_pragma("forceinline");
-    return char >= ord("A") && char <= ord("Z") ||
-            char >= ord("a") && char <= ord("z");
+function __catspeak_init_lexer() {
+    // initialise map from character to descriptor
+    // TODO
+    // initialise map from character to token type
+    // TODO
 }
-
-/// @ignore
-///
-/// @param {Real} char
-/// @return {Bool}
-function __catspeak_is_digit(char) {
-    gml_pragma("forceinline");
-    return char >= ord("0") && char <= ord("9");
-}
-
-/// 0b10000000
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_H1 0x80
-
-/// 0b11000000
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_H2 0xC0
-
-/// 0b11100000
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_H3 0xE0
-
-/// 0b11110000
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_H4 0xF0
-
-/// 0b11111000
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_H5 0xF8
-
-/// 0b11111100
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_H6 0xFC
-
-/// UTF8 continuation bytes have a 2 bit header, followed by 6 bits of data
-///
-/// @ignore
-#macro __CATSPEAK_UTF8_WIDTH 6
