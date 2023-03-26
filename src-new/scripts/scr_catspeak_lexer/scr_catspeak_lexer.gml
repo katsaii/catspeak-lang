@@ -279,7 +279,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
 /// @ignore
 function __catspeak_init_lexer() {
     // initialise map from character to token type
-    global.__catspeakCodepageChar2Token = __catspeak_init_lexer_codepage();
+    global.__catspeakChar2Token = __catspeak_init_lexer_codepage();
+    global.__catspeakString2Token = __catspeak_init_lexer_keywords();
 }
 
 /// @ignore
@@ -374,4 +375,34 @@ function __catspeak_init_lexer_codepage() {
         }
     }
     return page;
+}
+
+/// @ignore
+function __catspeak_init_lexer_keywords() {
+    var keywords = { };
+    keywords[$ "--"] = CatspeakToken.COMMENT;
+    keywords[$ "="] = CatspeakToken.ASSIGN;
+    keywords[$ ":"] = CatspeakToken.COLON;
+    keywords[$ ";"] = CatspeakToken.BREAK_LINE;
+    keywords[$ "."] = CatspeakToken.DOT;
+    keywords[$ "..."] = CatspeakToken.CONTINUE_LINE;
+    keywords[$ "do"] = CatspeakToken.DO;
+    keywords[$ "it"] = CatspeakToken.IT;
+    keywords[$ "if"] = CatspeakToken.IF;
+    keywords[$ "else"] = CatspeakToken.ELSE;
+    keywords[$ "while"] = CatspeakToken.WHILE;
+    keywords[$ "for"] = CatspeakToken.FOR;
+    keywords[$ "loop"] = CatspeakToken.LOOP;
+    keywords[$ "let"] = CatspeakToken.LET;
+    keywords[$ "fun"] = CatspeakToken.FUN;
+    keywords[$ "break"] = CatspeakToken.BREAK;
+    keywords[$ "continue"] = CatspeakToken.CONTINUE;
+    keywords[$ "return"] = CatspeakToken.RETURN;
+    keywords[$ "and"] = CatspeakToken.AND;
+    keywords[$ "or"] = CatspeakToken.OR;
+    keywords[$ "new"] = CatspeakToken.NEW;
+    keywords[$ "impl"] = CatspeakToken.IMPL;
+    keywords[$ "self"] = CatspeakToken.SELF;
+    global.__catspeakConfig.keywords = keywords;
+    return keywords;
 }
