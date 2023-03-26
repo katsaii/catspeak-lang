@@ -21,7 +21,7 @@ enum CatspeakToken {
     DO, IT, IF, ELSE, WHILE, FOR, LOOP, LET, FUN, BREAK, CONTINUE, RETURN,
     AND, OR,
     NEW, IMPL, SELF,
-    IDENT, STRING, NUMBER,
+    IDENT, STRING, CHAR, NUMBER,
     WHITESPACE, COMMENT, BREAK_LINE, CONTINUE_LINE,
     EOL, BOF, EOF, OTHER,
     __OPERATORS_BEGIN__,
@@ -38,15 +38,15 @@ enum CatspeakToken {
 }
 
 /// @ignore
-enum __CatspeakCharDesc {
-    NONE = 0,
-    NEWLINE = (1 << 1),
-    WHITESPACE = (1 << 2),
-    ALPHABETIC = (1 << 3),
-    NUMERIC = (1 << 4),
-    ALPHANUMERIC = (1 << 5),
-    OPERATOR = (1 << 6),
-    BACKTICK = (1 << 7),
+///
+/// @param {String} src
+/// @return {Id.Buffer}
+function __catspeak_create_buffer_from_string(src) {
+    var capacity = string_byte_length(src);
+    var buff = buffer_create(capacity, buffer_fixed, 1);
+    buffer_write(buff, buffer_text, src);
+    buffer_seek(buff, buffer_seek_start, 0);
+    return buff;
 }
 
 /// Responsible for tokenising the contents of a GML buffer. This can be used
@@ -92,7 +92,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @ignore
     ///
     /// @return {Real}
-    static __nextUTF8Char = function() {
+    static __nextUTF8Char = function () {
         if (offset >= size) {
             return -1;
         }
@@ -140,7 +140,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     };
 
     /// @ignore
-    static __advance = function() {
+    static __advance = function () {
         lexemeEnd = offset;
         if (charNext == ord("\r")) {
             column = 1;
@@ -159,7 +159,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     };
 
     /// @ignore
-    static __clearLexeme = function() {
+    static __clearLexeme = function () {
         lexemeStart = lexemeEnd;
         lexemePos = catspeak_location_create(self.row, self.column);
         lexeme = undefined;
@@ -176,7 +176,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// lexer.next();
     /// show_debug_message(lexer.getLexeme());
     /// ```
-    static getLexeme = function() {
+    static getLexeme = function () {
         if (lexeme == undefined) {
             var buff_ = buff;
             // don't read outside bounds of `size`
@@ -227,7 +227,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// ```
     ///
     /// @return {Enum.CatspeakToken}
-    static nextWithWhitespace = function() {
+    static nextWithWhitespace = function () {
         // TODO
     };
 
@@ -250,7 +250,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// ```
     ///
     /// @return {Enum.CatspeakToken}
-    static next = function() {
+    static next = function () {
         var skipSemicolon = skipNextSemicolon;
         skipNextSemicolon = false;
         while (true) {
@@ -274,21 +274,104 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
 }
 
 /// @ignore
-///
-/// @param {String} src
-/// @return {Id.Buffer}
-function __catspeak_create_buffer_from_string(src) {
-    var capacity = string_byte_length(src);
-    var buff = buffer_create(capacity, buffer_fixed, 1);
-    buffer_write(buff, buffer_text, src);
-    buffer_seek(buff, buffer_seek_start, 0);
-    return buff;
-}
+#macro __CATSPEAK_CODEPAGE_SIZE 128
 
 /// @ignore
 function __catspeak_init_lexer() {
-    // initialise map from character to descriptor
-    // TODO
     // initialise map from character to token type
-    // TODO
+    global.__catspeakCodepageChar2Token = __catspeak_init_lexer_codepage();
+}
+
+/// @ignore
+function __catspeak_code_value(code) {
+    gml_pragma("forceinline");
+    return is_string(code) ? ord(code) : code;
+}
+
+/// @ignore
+function __catspeak_code_range(code, minCode, maxCode) {
+    gml_pragma("forceinline");
+    var codeVal = __catspeak_code_value(code);
+    var minVal = __catspeak_code_value(minCode);
+    var maxVal = __catspeak_code_value(maxCode);
+    return codeVal >= ord(minVal) && codeVal <= ord(maxVal);
+}
+
+/// @ignore
+function __catspeak_code_set(code) {
+    gml_pragma("forceinline");
+    var codeVal = __catspeak_code_value(code);
+    for (var i = 1; i < argument_count; i += 1) {
+        if (codeVal == __catspeak_code_value(argument[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// @ignore
+function __catspeak_init_lexer_codepage() {
+    var page = array_create(__CATSPEAK_CODEPAGE_SIZE, CatspeakToken.OTHER);
+    for (var code = 0; code < __CATSPEAK_CODEPAGE_SIZE; code += 1) {
+        var tokenType;
+        if (__catspeak_code_set(code,
+            0x09, // CHARACTER TABULATION ('\t')
+            0x0B, // LINE TABULATION      ('\v')
+            0x0C, // FORM FEED            ('\f')
+            0x20, // SPACE                (' ')
+            0x85  // NEXT LINE
+        )) {
+            tokenType = CatspeakToken.WHITESPACE;
+        } else if (__catspeak_code_set(code,
+            0x0A, // LINE FEED            ('\n')
+            0x0D  // CARRIAGE RETURN      ('\r')
+        )) {
+            tokenType = CatspeakToken.BREAK_LINE;
+        } else if (
+            __catspeak_code_range(code, "a", "z") ||
+            __catspeak_code_range(code, "Z", "Z") ||
+            __catspeak_code_set(code, "_", "`")
+        ) {
+            tokenType = CatspeakToken.IDENT;
+        } else if (__catspeak_code_range(code, "0", "9")) {
+            tokenType = CatspeakToken.NUMBER;
+        } else if (__catspeak_code_set(code, "$", ":", ";")) {
+            tokenType = CatspeakToken.OP_LOW;
+        } else if (__catspeak_code_set(code, "^", "|")) {
+            tokenType = CatspeakToken.OP_OR;
+        } else if (__catspeak_code_set(code, "&")) {
+            tokenType = CatspeakToken.OP_AND;
+        } else if (__catspeak_code_set(code, "!", "<", "=", ">", "?", "~")) {
+            tokenType = CatspeakToken.OP_COMP;
+        } else if (__catspeak_code_set(code, "+", "-")) {
+            tokenType = CatspeakToken.OP_ADD;
+        } else if (__catspeak_code_set(code, "*", "/")) {
+            tokenType = CatspeakToken.OP_MUL;
+        } else if (__catspeak_code_set(code, "%", "\\")) {
+            tokenType = CatspeakToken.OP_DIV;
+        } else if (__catspeak_code_set(code, "#", ".", "@")) {
+            tokenType = CatspeakToken.OP_HIGH;
+        } else if (__catspeak_code_set(code, "\"")) {
+            tokenType = CatspeakToken.STRING;
+        } else if (__catspeak_code_set(code, "'")) {
+            tokenType = CatspeakToken.CHAR;
+        } else if (__catspeak_code_set(code, "(")) {
+            tokenType = CatspeakToken.PAREN_LEFT;
+        } else if (__catspeak_code_set(code, ")")) {
+            tokenType = CatspeakToken.PAREN_RIGHT;
+        } else if (__catspeak_code_set(code, "[")) {
+            tokenType = CatspeakToken.BOX_LEFT;
+        } else if (__catspeak_code_set(code, "]")) {
+            tokenType = CatspeakToken.BOX_RIGHT;
+        } else if (__catspeak_code_set(code, "{")) {
+            tokenType = CatspeakToken.BRACE_LEFT;
+        } else if (__catspeak_code_set(code, "}")) {
+            tokenType = CatspeakToken.BRACE_RIGHT;
+        } else if (__catspeak_code_set(code, ",")) {
+            tokenType = CatspeakToken.COMMA;
+        } else {
+            continue;
+        }
+    }
+    return page;
 }
