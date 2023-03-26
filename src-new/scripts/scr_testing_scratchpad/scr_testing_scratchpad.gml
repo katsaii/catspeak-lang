@@ -8,25 +8,13 @@ var runExperiment = "lexer";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
-    var buff = __catspeak_create_buffer_from_string(@'let a = 1;');
+    var buff = __catspeak_create_buffer_from_string(@'🙀會意字');
     var lexer = new CatspeakLexer(buff);
+    lexer.__advance(); // 🙀
+    lexer.__advance(); // 會
+    lexer.__advance(); // 意
     show_message("'" + string(lexer.getLexeme()) + "'");
     lexer.__clearLexeme();
-    lexer.__advance(); // l
-    lexer.__advance(); // e
-    lexer.__advance(); // t
-    lexer.__advance(); //
-    lexer.__advance(); // a
-    show_message("'" + string(lexer.getLexeme()) + "'");
-    lexer.__clearLexeme();
-    lexer.__advance(); //
-    lexer.__advance(); // =
-    show_message("'" + string(lexer.getLexeme()) + "'");
-    lexer.__clearLexeme();
-    lexer.__advance(); //
-    lexer.__advance(); // 1
-    lexer.__advance(); // ;
-    lexer.__advance(); // EOF
-    lexer.__advance(); // EOF
+    lexer.__advance(); // 字
     show_message("'" + string(lexer.getLexeme()) + "'");
 }

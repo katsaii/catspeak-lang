@@ -49,6 +49,41 @@ function __catspeak_create_buffer_from_string(src) {
     return buff;
 }
 
+/// 0b10000000
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_0b10000000 0x80
+
+/// 0b11000000
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_0b11000000 0xC0
+
+/// 0b11100000
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_0b11100000 0xE0
+
+/// 0b11110000
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_0b11110000 0xF0
+
+/// 0b11111000
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_0b11111000 0xF8
+
+/// 0b11111100
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_0b11111100 0xFC
+
+/// UTF8 continuation bytes have a 2 bit header, followed by 6 bits of data
+///
+/// @ignore
+#macro __CATSPEAK_UTF8_WIDTH 6
+
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses the Catspeak
 /// engine.
@@ -93,13 +128,47 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     ///
     /// @return {Real}
     static __nextUTF8Char = function() {
-        // TODO UTF8
         if (offset >= size) {
             return -1;
         }
         var byte = buffer_peek(buff, offset, buffer_u8);
         offset += 1;
-        return byte;
+        if ((byte & __CATSPEAK_UTF8_0b10000000) == 0) {
+            // ASCII digit
+            return byte;
+        }
+        var codepointCount;
+        var headerMask;
+        // parse UTF8 header
+        if ((byte & __CATSPEAK_UTF8_0b11111100) == __CATSPEAK_UTF8_0b11111100) {
+            codepointCount = 5;
+            headerMask = __CATSPEAK_UTF8_0b11111100;
+        } else if ((byte & __CATSPEAK_UTF8_0b11111000) == __CATSPEAK_UTF8_0b11111000) {
+            codepointCount = 4;
+            headerMask = __CATSPEAK_UTF8_0b11111000;
+        } else if ((byte & __CATSPEAK_UTF8_0b11110000) == __CATSPEAK_UTF8_0b11110000) {
+            codepointCount = 3;
+            headerMask = __CATSPEAK_UTF8_0b11110000;
+        } else if ((byte & __CATSPEAK_UTF8_0b11100000) == __CATSPEAK_UTF8_0b11100000) {
+            codepointCount = 2;
+            headerMask = __CATSPEAK_UTF8_0b11100000;
+        } else if ((byte & __CATSPEAK_UTF8_0b11000000) == __CATSPEAK_UTF8_0b11000000) {
+            codepointCount = 1;
+            headerMask = __CATSPEAK_UTF8_0b11000000;
+        } else if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_error("invalid UTF8 header codepoint '", byte, "'");
+        }
+        // parse UTF8 continuations
+        var utf8Value = (byte & ~headerMask) << (codepointCount * __CATSPEAK_UTF8_WIDTH);
+        for (var i = codepointCount - 1; i >= 0; i -= 1) {
+            byte = buffer_peek(buff, offset, buffer_u8);
+            offset += 1;
+            if (CATSPEAK_DEBUG_MODE && (byte & __CATSPEAK_UTF8_0b10000000) == 0) {
+                __catspeak_error("invalid UTF8 continuation codepoint '", byte, "'");
+            }
+            utf8Value |= (byte & ~__CATSPEAK_UTF8_0b11000000) << (i * __CATSPEAK_UTF8_WIDTH);
+        }
+        return utf8Value;
     };
 
     /// @ignore
