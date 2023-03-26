@@ -21,6 +21,7 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Testing","folderPath":"folders/Testing.yy","order":2,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"demo","folderPath":"folders/Testing/demo.yy","order":3,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"unit-tests","folderPath":"folders/Testing/unit-tests.yy","order":2,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"lexer","folderPath":"folders/Testing/unit-tests/lexer.yy","order":0,},
   ],
   "IncludedFiles": [],
   "isEcma": false,
@@ -30,6 +31,7 @@
   "resources": [
     {"id":{"name":"scr_testing_location","path":"scripts/scr_testing_location/scr_testing_location.yy",},"order":0,},
     {"id":{"name":"fnt_testing","path":"fonts/fnt_testing/fnt_testing.yy",},"order":3,},
+    {"id":{"name":"scr_testing_lexer_internal","path":"scripts/scr_testing_lexer_internal/scr_testing_lexer_internal.yy",},"order":0,},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},"order":2,},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
@@ -38,6 +40,7 @@
     {"id":{"name":"scr_catspeak_alloc","path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},"order":2,},
     {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":1,},
+    {"id":{"name":"scr_testing_lexer_locale","path":"scripts/scr_testing_lexer_locale/scr_testing_lexer_locale.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_sanity","path":"scripts/scr_catspeak_sanity/scr_catspeak_sanity.yy",},"order":0,},
     {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":2,},
