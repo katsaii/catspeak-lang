@@ -13,6 +13,7 @@
     {"name":"scr_future_file","order":2,"path":"scripts/scr_future_file/scr_future_file.yy",},
     {"name":"obj_future_file_save","order":1,"path":"objects/obj_future_file_save/obj_future_file_save.yy",},
     {"name":"scr_future","order":2,"path":"scripts/scr_future/scr_future.yy",},
+    {"name":"scr_testing_lexer","order":1,"path":"scripts/scr_testing_lexer/scr_testing_lexer.yy",},
     {"name":"scr_catspeak_alloc","order":2,"path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},
     {"name":"scr_testing_framework","order":1,"path":"scripts/scr_testing_framework/scr_testing_framework.yy",},
     {"name":"scr_catspeak_init","order":1,"path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},
@@ -20,5 +21,6 @@
     {"name":"scr_catspeak_sanity","order":3,"path":"scripts/scr_catspeak_sanity/scr_catspeak_sanity.yy",},
     {"name":"obj_testing","order":2,"path":"objects/obj_testing/obj_testing.yy",},
     {"name":"rm_testing","order":1,"path":"rooms/rm_testing/rm_testing.yy",},
+    {"name":"scr_testing_scratchpad","order":4,"path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},
   ],
 }
