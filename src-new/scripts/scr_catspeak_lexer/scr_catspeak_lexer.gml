@@ -37,6 +37,18 @@ enum CatspeakToken {
     __SIZE__
 }
 
+/// @ignore
+///
+/// @param {String} src
+/// @return {Id.Buffer}
+function __catspeak_create_buffer_from_string(src) {
+    var capacity = string_byte_length(src);
+    var buff = buffer_create(capacity, buffer_fixed, 1);
+    buffer_write(buff, buffer_text, src);
+    buffer_seek(buff, buffer_seek_start, 0);
+    return buff;
+}
+
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses the Catspeak
 /// engine.
@@ -75,13 +87,19 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.lexemePos = catspeak_location_create(self.row, self.column);
     self.lexeme = undefined;
     self.charCurr = -1;
-    self.charNext = -1;
+    self.charNext = __nextUTF8Char();
 
     /// @ignore
     ///
     /// @return {Real}
     static __nextUTF8Char = function() {
-        // TODO
+        // TODO UTF8
+        if (offset >= size) {
+            return -1;
+        }
+        var byte = buffer_peek(buff, offset, buffer_u8);
+        offset += 1;
+        return byte;
     };
 
     /// @ignore
@@ -111,7 +129,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     }
 
     /// Returns the string representation of the most recent token emitted by
-    /// the [nextWithWhitespace] method.
+    /// the [next] or [nextWithWhitespace] methods.
     ///
     /// @example
     ///   Prints the string content of the first [CatspeakToken] emitted by a
@@ -124,22 +142,25 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     static getLexeme = function() {
         if (lexeme == undefined) {
             var buff_ = buff;
-            if (lexemeEnd <= lexemeStart) {
+            // don't read outside bounds of `size`
+            var clipStart = min(lexemeStart, size);
+            var clipEnd = min(lexemeEnd, size);
+            if (clipEnd <= clipStart) {
                 // always an empty slice
                 lexeme = "";
-                if (CATSPEAK_DEBUG_MODE && lexemeEnd < lexemeStart) {
+                if (CATSPEAK_DEBUG_MODE && clipEnd < clipStart) {
                     __catspeak_error_bug();
                 }
-            } else if (lexemeEnd >= buffCapacity) {
+            } else if (clipEnd >= buffCapacity) {
                 // beyond the actual capacity of the buffer
                 // not safe to use `buffer_string`, which expects a null char
-                lexeme = buffer_peek(buff_, lexemeStart, buffer_text);
+                lexeme = buffer_peek(buff_, clipStart, buffer_text);
             } else {
                 // quickly write a null terminator and then read the content
-                var byte = buffer_peek(buff_, lexemeEnd, buffer_u8);
-                buffer_poke(buff_, lexemeEnd, buffer_u8, 0x00);
-                lexeme = buffer_peek(buff_, lexemeStart, buffer_string);
-                buffer_poke(buff_, lexemeEnd, buffer_u8, byte);
+                var byte = buffer_peek(buff_, clipEnd, buffer_u8);
+                buffer_poke(buff_, clipEnd, buffer_u8, 0x00);
+                lexeme = buffer_peek(buff_, clipStart, buffer_string);
+                buffer_poke(buff_, clipEnd, buffer_u8, byte);
             }
         }
         return lexeme;
