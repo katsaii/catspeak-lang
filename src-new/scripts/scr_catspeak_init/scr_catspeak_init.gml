@@ -41,9 +41,11 @@ function catspeak_force_init() {
     }
     initialised = true;
     // call initialisers
+    __catspeak_init_alloc();
+    __catspeak_init_lexer();
+    
     //__catspeak_init_config();
     //__catspeak_init_process();
-    __catspeak_init_alloc();
     //__catspeak_init_builtins();
     //__catspeak_init_lexer_database_token_starts_expression();
     //__catspeak_init_lexer_database_token_skips_line();
