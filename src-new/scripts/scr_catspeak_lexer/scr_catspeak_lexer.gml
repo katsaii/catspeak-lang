@@ -14,24 +14,93 @@
 /// The following enum represents all possible token types understood by the
 /// Catspeak language.
 enum CatspeakToken {
-    PAREN_LEFT, PAREN_RIGHT,
-    BOX_LEFT, BOX_RIGHT,
-    BRACE_LEFT, BRACE_RIGHT,
-    DOT, COLON, COMMA, ASSIGN,
-    DO, IT, IF, ELSE, WHILE, FOR, LOOP, LET, FUN, BREAK, CONTINUE, RETURN,
-    AND, OR,
-    NEW, IMPL, SELF,
-    IDENT, STRING, CHAR, NUMBER,
-    WHITESPACE, COMMENT, BREAK_LINE, CONTINUE_LINE,
-    EOL, BOF, EOF, OTHER,
+    /// The `(` character.
+    PAREN_LEFT,
+    /// The `)` character.
+    PAREN_RIGHT,
+    /// The `[` character.
+    BOX_LEFT,
+    /// The `]` character.
+    BOX_RIGHT,
+    /// The `{` character.
+    BRACE_LEFT,
+    /// The `}` character.
+    BRACE_RIGHT,
+    /// The `.` character.
+    DOT,
+    /// The `:` character.
+    COLON,
+    /// The `,` character.
+    COMMA,
+    /// The `=` character.
+    ASSIGN,
+    /// The `do` keyword.
+    DO,
+    /// The `it` keyword.
+    IT,
+    /// The `if` keyword.
+    IF,
+    /// The `else` keyword.
+    ELSE,
+    /// The `while` keyword.
+    WHILE,
+    /// The `for` keyword.
+    FOR,
+    /// The `loop` keyword.
+    LOOP,
+    /// The `let` keyword.
+    LET,
+    /// The `fun` keyword.
+    FUN,
+    /// The `break` keyword.
+    BREAK,
+    /// The `continue` keyword.
+    CONTINUE,
+    /// The `return` keyword.
+    RETURN,
+    /// The `and` keyword.
+    AND,
+    /// The `or` keyword.
+    OR,
+    /// The `new` keyword.
+    NEW,
+    /// The `impl` keyword.
+    IMPL,
+    /// The `self` keyword.
+    SELF,
+    /// Represents a variable name.
+    IDENT,
+    /// Represents a GML value.
+    VALUE,
+    /// Represents a sequence of non-breaking whitespace characters.
+    WHITESPACE,
+    /// Represents a comment.
+    COMMENT,
+    /// Represents a sequence of newline or `;` characters.
+    BREAK_LINE,
+    /// The `...` operator.
+    CONTINUE_LINE,
+    /// Represents the end of the file.
+    EOF,
+    /// Represents any other unrecognised character.
+    OTHER,
     __OPERATORS_BEGIN__,
+    /// Represents any operator identifier starting with `$`, `:`, or `;`.
     OP_LOW,
+    /// Represents any operator identifier starting with `^` or `|`.
     OP_OR,
+    /// Represents any operator identifier starting with `&`.
     OP_AND,
+    /// Represents any operator identifier starting with
+    ///   `!`, `<`, `=`, `>`, `?` or `~`.
     OP_COMP,
+    /// Represents any operator identifier starting with `+` or `-`.
     OP_ADD,
+    /// Represents any operator identifier starting with `*` or `/`.
     OP_MUL,
+    /// Represents any operator identifier starting with `%` or `\`.
     OP_DIV,
+    /// Represents any operator identifier starting with `#`, `.` or `@`.
     OP_HIGH,
     __OPERATORS_END__,
     __SIZE__
