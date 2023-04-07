@@ -70,8 +70,13 @@ enum CatspeakToken {
     SELF,
     /// Represents a variable name.
     IDENT,
-    /// Represents a GML value.
-    VALUE,
+    /// Represents a GML string value.
+    STRING,
+    /// Represents a GML numeric value. This could be one of:
+    ///  - integer:   1, 2, 5
+    ///  - float:     1.25, 0.5
+    ///  - character: 'A', '0', '\n'
+    NUMBER,
     /// Represents a sequence of non-breaking whitespace characters.
     WHITESPACE,
     /// Represents a comment.
@@ -170,6 +175,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.lexemeEnd = 0;
     self.lexemePos = catspeak_location_create(self.row, self.column);
     self.lexeme = undefined;
+    self.value = undefined;
     self.charCurr = 0;
     self.charNext = __nextUTF8Char();
 
@@ -247,7 +253,34 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         lexemeStart = lexemeEnd;
         lexemePos = catspeak_location_create(self.row, self.column);
         lexeme = undefined;
-    }
+        value = undefined;
+    };
+
+    /// @ignore
+    static __slice = function(start, end_) {
+        var buff_ = buff;
+        // don't read outside bounds of `size`
+        var clipStart = min(start, size);
+        var clipEnd = min(end_, size);
+        if (clipEnd <= clipStart) {
+            // always an empty slice
+            if (CATSPEAK_DEBUG_MODE && clipEnd < clipStart) {
+                __catspeak_error_bug();
+            }
+            return "";
+        } else if (clipEnd >= buffCapacity) {
+            // beyond the actual capacity of the buffer
+            // not safe to use `buffer_string`, which expects a null char
+            return buffer_peek(buff_, clipStart, buffer_text);
+        } else {
+            // quickly write a null terminator and then read the content
+            var byte = buffer_peek(buff_, clipEnd, buffer_u8);
+            buffer_poke(buff_, clipEnd, buffer_u8, 0x00);
+            var result = buffer_peek(buff_, clipStart, buffer_string);
+            buffer_poke(buff_, clipEnd, buffer_u8, byte);
+            return result;
+        }
+    };
 
     /// Returns the string representation of the most recent token emitted by
     /// the [next] or [nextWithWhitespace] methods.
@@ -261,30 +294,18 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// show_debug_message(lexer.getLexeme());
     /// ```
     static getLexeme = function () {
-        if (lexeme == undefined) {
-            var buff_ = buff;
-            // don't read outside bounds of `size`
-            var clipStart = min(lexemeStart, size);
-            var clipEnd = min(lexemeEnd, size);
-            if (clipEnd <= clipStart) {
-                // always an empty slice
-                lexeme = "";
-                if (CATSPEAK_DEBUG_MODE && clipEnd < clipStart) {
-                    __catspeak_error_bug();
-                }
-            } else if (clipEnd >= buffCapacity) {
-                // beyond the actual capacity of the buffer
-                // not safe to use `buffer_string`, which expects a null char
-                lexeme = buffer_peek(buff_, clipStart, buffer_text);
-            } else {
-                // quickly write a null terminator and then read the content
-                var byte = buffer_peek(buff_, clipEnd, buffer_u8);
-                buffer_poke(buff_, clipEnd, buffer_u8, 0x00);
-                lexeme = buffer_peek(buff_, clipStart, buffer_string);
-                buffer_poke(buff_, clipEnd, buffer_u8, byte);
-            }
-        }
+        lexeme ??= __slice(lexemeStart, lexemeEnd);
         return lexeme;
+    };
+
+    /// Returns the actual value representation of the most recent token
+    /// emitted by the [next] or [nextWithWhitespace] methods.
+    ///
+    /// NOTE: Unlike [getLexeme] this value is not always a string. For numeric
+    ///       literals, the value will be converted into an integer or real.
+    static getValue = function () {
+        value ??= getLexeme();
+        return value;
     };
 
     /// Advances the lexer and returns the next type of [CatspeakToken]. This
@@ -477,8 +498,6 @@ function __catspeak_init_lexer_codepage() {
             tokenType = CatspeakToken.OP_HIGH;
         } else if (__catspeak_code_set(code, "\"")) {
             tokenType = CatspeakToken.STRING;
-        } else if (__catspeak_code_set(code, "'")) {
-            tokenType = CatspeakToken.CHAR;
         } else if (__catspeak_code_set(code, "(")) {
             tokenType = CatspeakToken.PAREN_LEFT;
         } else if (__catspeak_code_set(code, ")")) {
