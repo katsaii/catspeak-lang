@@ -384,16 +384,14 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             // TODO
         } else if (charCurr_ == ord("`")) {
             // literal identifiers
-            __clearLexeme();
             // TODO
         } else if (token == CatspeakToken.IDENT) {
             // alphanumeric identifiers
             while (true) {
                 var charNext_ = charNext;
                 if (
-                    charNext_ >= ord("0") && charNext_ <= ord("9") ||
-                    charNext_ >= ord("a") && charNext_ <= ord("z") ||
-                    charNext_ >= ord("A") && charNext_ <= ord("Z") ||
+                    __catspeak_char_is_digit(charNext_) ||
+                    __catspeak_char_is_alphabetic(charNext_) ||
                     charNext_ == ord("_")
                 ) {
                     __advance();
@@ -407,11 +405,30 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             }
         } else if (charCurr_ == ord("'")) {
             // character literals
-            __clearLexeme();
             // TODO
         } else if (token == CatspeakToken.NUMBER) {
             // numeric literals
-            // TODO
+            var hasUnderscores = false;
+            var hasDecimal = false;
+            while (true) {
+                var charNext_ = charNext;
+                if (__catspeak_char_is_digit(charNext_)) {
+                    __advance();
+                } else if (charNext_ == ord("_")) {
+                    __advance();
+                    hasUnderscores = true;
+                } else if (!hasDecimal && charNext_ == ord(".")) {
+                    __advance();
+                    hasDecimal = true;
+                } else {
+                    break;
+                }
+            }
+            var digits = getLexeme();
+            if (hasUnderscores) {
+                digits = string_replace_all(digits, "_", "");
+            }
+            value = real(digits);
         }
         return token;
     };
@@ -469,26 +486,39 @@ function __catspeak_init_lexer() {
 }
 
 /// @ignore
-function __catspeak_code_value(code) {
+function __catspeak_char_is_digit(char) {
+    gml_pragma("forceinline");
+    return char >= ord("0") && char <= ord("9");
+}
+
+/// @ignore
+function __catspeak_char_is_alphabetic(char) {
+    gml_pragma("forceinline");
+    return char >= ord("a") && char <= ord("z") ||
+            char >= ord("A") && char <= ord("A");
+}
+
+/// @ignore
+function __catspeak_codepage_value(code) {
     gml_pragma("forceinline");
     return is_string(code) ? ord(code) : code;
 }
 
 /// @ignore
-function __catspeak_code_range(code, minCode, maxCode) {
+function __catspeak_codepage_range(code, minCode, maxCode) {
     gml_pragma("forceinline");
-    var codeVal = __catspeak_code_value(code);
-    var minVal = __catspeak_code_value(minCode);
-    var maxVal = __catspeak_code_value(maxCode);
+    var codeVal = __catspeak_codepage_value(code);
+    var minVal = __catspeak_codepage_value(minCode);
+    var maxVal = __catspeak_codepage_value(maxCode);
     return codeVal >= minVal && codeVal <= maxVal;
 }
 
 /// @ignore
-function __catspeak_code_set(code) {
+function __catspeak_codepage_set(code) {
     gml_pragma("forceinline");
-    var codeVal = __catspeak_code_value(code);
+    var codeVal = __catspeak_codepage_value(code);
     for (var i = 1; i < argument_count; i += 1) {
-        if (codeVal == __catspeak_code_value(argument[i])) {
+        if (codeVal == __catspeak_codepage_value(argument[i])) {
             return true;
         }
     }
@@ -500,7 +530,7 @@ function __catspeak_init_lexer_codepage() {
     var page = array_create(__CATSPEAK_CODEPAGE_SIZE, CatspeakToken.OTHER);
     for (var code = 0; code < __CATSPEAK_CODEPAGE_SIZE; code += 1) {
         var tokenType;
-        if (__catspeak_code_set(code,
+        if (__catspeak_codepage_set(code,
             0x09, // CHARACTER TABULATION ('\t')
             0x0B, // LINE TABULATION      ('\v')
             0x0C, // FORM FEED            ('\f')
@@ -508,53 +538,53 @@ function __catspeak_init_lexer_codepage() {
             0x85  // NEXT LINE
         )) {
             tokenType = CatspeakToken.WHITESPACE;
-        } else if (__catspeak_code_set(code,
+        } else if (__catspeak_codepage_set(code,
             0x0A, // LINE FEED            ('\n')
             0x0D  // CARRIAGE RETURN      ('\r')
         )) {
             tokenType = CatspeakToken.BREAK_LINE;
         } else if (
-            __catspeak_code_range(code, "a", "z") ||
-            __catspeak_code_range(code, "A", "Z") ||
-            __catspeak_code_set(code, "_", "`") // identifier literals
+            __catspeak_codepage_range(code, "a", "z") ||
+            __catspeak_codepage_range(code, "A", "Z") ||
+            __catspeak_codepage_set(code, "_", "`") // identifier literals
         ) {
             tokenType = CatspeakToken.IDENT;
         } else if (
-            __catspeak_code_range(code, "0", "9") ||
-            __catspeak_code_set(code, "'") // character literals
+            __catspeak_codepage_range(code, "0", "9") ||
+            __catspeak_codepage_set(code, "'") // character literals
         ) {
             tokenType = CatspeakToken.NUMBER;
-        } else if (__catspeak_code_set(code, "$", ":", ";")) {
+        } else if (__catspeak_codepage_set(code, "$", ":", ";")) {
             tokenType = CatspeakToken.OP_LOW;
-        } else if (__catspeak_code_set(code, "^", "|")) {
+        } else if (__catspeak_codepage_set(code, "^", "|")) {
             tokenType = CatspeakToken.OP_OR;
-        } else if (__catspeak_code_set(code, "&")) {
+        } else if (__catspeak_codepage_set(code, "&")) {
             tokenType = CatspeakToken.OP_AND;
-        } else if (__catspeak_code_set(code, "!", "<", "=", ">", "?", "~")) {
+        } else if (__catspeak_codepage_set(code, "!", "<", "=", ">", "?", "~")) {
             tokenType = CatspeakToken.OP_COMP;
-        } else if (__catspeak_code_set(code, "+", "-")) {
+        } else if (__catspeak_codepage_set(code, "+", "-")) {
             tokenType = CatspeakToken.OP_ADD;
-        } else if (__catspeak_code_set(code, "*", "/")) {
+        } else if (__catspeak_codepage_set(code, "*", "/")) {
             tokenType = CatspeakToken.OP_MUL;
-        } else if (__catspeak_code_set(code, "%", "\\")) {
+        } else if (__catspeak_codepage_set(code, "%", "\\")) {
             tokenType = CatspeakToken.OP_DIV;
-        } else if (__catspeak_code_set(code, "#", ".", "@")) {
+        } else if (__catspeak_codepage_set(code, "#", ".", "@")) {
             tokenType = CatspeakToken.OP_HIGH;
-        } else if (__catspeak_code_set(code, "\"")) {
+        } else if (__catspeak_codepage_set(code, "\"")) {
             tokenType = CatspeakToken.STRING;
-        } else if (__catspeak_code_set(code, "(")) {
+        } else if (__catspeak_codepage_set(code, "(")) {
             tokenType = CatspeakToken.PAREN_LEFT;
-        } else if (__catspeak_code_set(code, ")")) {
+        } else if (__catspeak_codepage_set(code, ")")) {
             tokenType = CatspeakToken.PAREN_RIGHT;
-        } else if (__catspeak_code_set(code, "[")) {
+        } else if (__catspeak_codepage_set(code, "[")) {
             tokenType = CatspeakToken.BOX_LEFT;
-        } else if (__catspeak_code_set(code, "]")) {
+        } else if (__catspeak_codepage_set(code, "]")) {
             tokenType = CatspeakToken.BOX_RIGHT;
-        } else if (__catspeak_code_set(code, "{")) {
+        } else if (__catspeak_codepage_set(code, "{")) {
             tokenType = CatspeakToken.BRACE_LEFT;
-        } else if (__catspeak_code_set(code, "}")) {
+        } else if (__catspeak_codepage_set(code, "}")) {
             tokenType = CatspeakToken.BRACE_RIGHT;
-        } else if (__catspeak_code_set(code, ",")) {
+        } else if (__catspeak_codepage_set(code, ",")) {
             tokenType = CatspeakToken.COMMA;
         } else {
             continue;

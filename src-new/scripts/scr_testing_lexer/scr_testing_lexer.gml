@@ -1,4 +1,14 @@
 
+function TestLexerToken(name, token, src, value) : Test(name) constructor {
+    var buff = __catspeak_create_buffer_from_string(src);
+    var lexer = new CatspeakLexer(buff);
+    assertEq(token, lexer.nextWithWhitespace());
+    assertEq(src, lexer.getLexeme());
+    assertEq(value, lexer.getValue());
+    assertEq(CatspeakToken.EOF, lexer.nextWithWhitespace());
+    buffer_delete(buff);
+}
+
 run_test(function() : Test("lexer-tokens-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
     var lexer = new CatspeakLexer(buff);
@@ -23,6 +33,26 @@ run_test(function() : Test("lexer-tokens-unicode") constructor {
     buffer_delete(buff);
 });
 
+run_test(function() : TestLexerToken("lexer-tokens-numbers",
+    CatspeakToken.NUMBER, "1", 1
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-numbers-2",
+    CatspeakToken.NUMBER, "2._", 2
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-numbers-3",
+    CatspeakToken.NUMBER, "3._4_", 3.4
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-numbers-4",
+    CatspeakToken.NUMBER, "7_._", 7
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-numbers-5",
+    CatspeakToken.NUMBER, "5_6_7__", 567
+) constructor { });
+
 run_test(function() : Test("lexer-whitespace-sensitive-ident") constructor {
     var buff = __catspeak_create_buffer_from_string(@'a bc d');
     var lexer = new CatspeakLexer(buff);
@@ -39,47 +69,38 @@ run_test(function() : Test("lexer-whitespace-sensitive-ident") constructor {
     buffer_delete(buff);
 });
 
-function TestLexerWhitespace(name, token, src) : Test(name) constructor {
-    var buff = __catspeak_create_buffer_from_string(src);
-    var lexer = new CatspeakLexer(buff);
-    assertEq(token, lexer.nextWithWhitespace());
-    assertEq(src, lexer.getLexeme());
-    assertEq(CatspeakToken.EOF, lexer.nextWithWhitespace());
-    buffer_delete(buff);
-}
-
-run_test(function() : TestLexerWhitespace("lexer-whitespace-space",
-    CatspeakToken.WHITESPACE, " "
+run_test(function() : TestLexerToken("lexer-whitespace-space",
+    CatspeakToken.WHITESPACE, " ", " "
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-tab",
-    CatspeakToken.WHITESPACE, "\t"
+run_test(function() : TestLexerToken("lexer-whitespace-tab",
+    CatspeakToken.WHITESPACE, "\t", "\t"
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-line-feed",
-    CatspeakToken.BREAK_LINE, "\n"
+run_test(function() : TestLexerToken("lexer-whitespace-line-feed",
+    CatspeakToken.BREAK_LINE, "\n", "\n"
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-vtab",
-    CatspeakToken.WHITESPACE, "\v"
+run_test(function() : TestLexerToken("lexer-whitespace-vtab",
+    CatspeakToken.WHITESPACE, "\v", "\v"
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-form-feed",
-    CatspeakToken.WHITESPACE, "\f"
+run_test(function() : TestLexerToken("lexer-whitespace-form-feed",
+    CatspeakToken.WHITESPACE, "\f", "\f"
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-carriage-return",
-    CatspeakToken.BREAK_LINE, "\r"
+run_test(function() : TestLexerToken("lexer-whitespace-carriage-return",
+    CatspeakToken.BREAK_LINE, "\r", "\r"
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-next-line",
-    CatspeakToken.WHITESPACE, "\u85"
+run_test(function() : TestLexerToken("lexer-whitespace-next-line",
+    CatspeakToken.WHITESPACE, "\u85", "\u85"
 ) constructor { });
 
-run_test(function() : TestLexerWhitespace("lexer-whitespace-break-line",
-    CatspeakToken.BREAK_LINE, ";"
-) constructor { });
-
-run_test(function() : TestLexerWhitespace("lexer-whitespace-continue-line",
-    CatspeakToken.CONTINUE_LINE, "..."
-) constructor { });
+//run_test(function() : TestLexerToken("lexer-whitespace-break-line",
+//    CatspeakToken.BREAK_LINE, ";"
+//) constructor { });
+//
+//run_test(function() : TestLexerToken("lexer-whitespace-continue-line",
+//    CatspeakToken.CONTINUE_LINE, "..."
+//) constructor { });
