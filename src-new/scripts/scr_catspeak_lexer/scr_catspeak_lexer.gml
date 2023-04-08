@@ -386,7 +386,18 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             }
         } else if (charCurr_ == ord("`")) {
             // literal identifiers
-            while (!__catspeak_char_is_whitespace(charNext)) {
+            while (true) {
+                var charNext_ = charNext;
+                if (
+                    charNext_ == ord("`") || charNext_ == 0 ||
+                    __catspeak_char_is_whitespace(charNext_)
+                ) {
+                    break;
+                }
+                __advance();
+            }
+            value = __slice(lexemeStart + 1, lexemeEnd);
+            if (charNext == ord("`")) {
                 __advance();
             }
         } else if (token == CatspeakToken.IDENT) {

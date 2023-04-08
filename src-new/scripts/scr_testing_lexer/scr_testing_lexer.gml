@@ -53,6 +53,50 @@ run_test(function() : TestLexerToken("lexer-tokens-numbers-5",
     CatspeakToken.NUMBER, "5_6_7__", 567
 ) constructor { });
 
+run_test(function() : TestLexerToken("lexer-tokens-numbers-char",
+    CatspeakToken.NUMBER, "'a'", ord("a")
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-numbers-char-2",
+    CatspeakToken.NUMBER, "'A'", ord("A")
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-numbers-char-3",
+    CatspeakToken.NUMBER, "'🙀'", ord("🙀")
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident",
+    CatspeakToken.IDENT, "cool", "cool"
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-2",
+    CatspeakToken.IDENT, "abc_2", "abc_2"
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-3",
+    CatspeakToken.IDENT, "__karkitty", "__karkitty"
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-literal",
+    CatspeakToken.IDENT, "`🙀abc`", "🙀abc"
+) constructor { }, true);
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-literal-2",
+    CatspeakToken.IDENT, "`>>=`", ">>="
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-literal-3",
+    CatspeakToken.IDENT, "`1_+_2_=_?`", "1_+_2_=_?"
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-op",
+    CatspeakToken.OP_ADD, "++", "++"
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-tokens-ident-op-2",
+    CatspeakToken.OP_COMP, "<=>", "<=>"
+) constructor { });
+
 run_test(function() : Test("lexer-whitespace-sensitive-ident") constructor {
     var buff = __catspeak_create_buffer_from_string(@'a bc d');
     var lexer = new CatspeakLexer(buff);
