@@ -257,7 +257,10 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     };
 
     /// @ignore
-    static __slice = function(start, end_) {
+    ///
+    /// @param {Real} start
+    /// @param {Real} end_
+    static __slice = function (start, end_) {
         var buff_ = buff;
         // don't read outside bounds of `size`
         var clipStart = min(start, size);
@@ -296,6 +299,31 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     static getLexeme = function () {
         lexeme ??= __slice(lexemeStart, lexemeEnd);
         return lexeme;
+    };
+
+    /// @ignore
+    ///
+    /// @param {String} str
+    static __getKeyword = function (str) {
+        var keyword = global.__catspeakString2Token[$ str];
+        if (CATSPEAK_DEBUG_MODE && keyword != undefined) {
+            // the user can modify what keywords are, so just check
+            // that they've used one of the enum types instead of a
+            // random ass value
+            __catspeak_check_typeof_numeric("keyword", keyword);
+            if (
+                keyword < 0 || keyword >= CatspeakToken.__SIZE__ ||
+                keyword == CatspeakToken.__OPERATORS_BEGIN__ ||
+                keyword == CatspeakToken.__OPERATORS_END__
+            ) {
+                __catspeak_error(
+                    "custom keyword aliases must map to a numeric ",
+                    "type corresponding to a `CatspeakToken`, e.g. ",
+                    "`keywords[$ \"func\"] = CatspeakToken.FUN;`"
+                );
+            }
+        }
+        return keyword;
     };
 
     /// Returns the actual value representation of the most recent token
@@ -339,30 +367,45 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         }
         __advance();
         var token = CatspeakToken.OTHER;
-        if (charCurr >= 0 && charCurr < __CATSPEAK_CODEPAGE_SIZE) {
-            token = global.__catspeakChar2Token[charCurr];
+        var charCurr_ = charCurr; // micro-optimisation, locals are faster
+        if (charCurr_ >= 0 && charCurr_ < __CATSPEAK_CODEPAGE_SIZE) {
+            token = global.__catspeakChar2Token[charCurr_];
         }
-        if (charCurr == ord("\"")) {
+        if (charCurr_ == ord("\"")) {
             // strings
-            __clearLexeme();
             // TODO
-        } else if (charCurr == ord("@") && charNext == ord("\"")) {
+        } else if (charCurr_ == ord("@") && charNext == ord("\"")) {
             // raw strings
             token = CatspeakToken.STRING; // since `@` is an operator
             __advance();
-            __clearLexeme();
             // TODO
         } else if (catspeak_token_is_operator(token)) {
             // operator identifiers
             // TODO
-        } else if (charCurr == ord("`")) {
+        } else if (charCurr_ == ord("`")) {
             // literal identifiers
             __clearLexeme();
             // TODO
         } else if (token == CatspeakToken.IDENT) {
             // alphanumeric identifiers
-            // TODO
-        } else if (charCurr == ord("'")) {
+            while (true) {
+                var charNext_ = charNext;
+                if (
+                    charNext_ >= ord("0") && charNext_ <= ord("9") ||
+                    charNext_ >= ord("a") && charNext_ <= ord("z") ||
+                    charNext_ >= ord("A") && charNext_ <= ord("Z") ||
+                    charNext_ == ord("_")
+                ) {
+                    __advance();
+                } else {
+                    break;
+                }
+            }
+            var keyword = __getKeyword(getLexeme());
+            if (keyword != undefined) {
+                token = keyword;
+            }
+        } else if (charCurr_ == ord("'")) {
             // character literals
             __clearLexeme();
             // TODO
@@ -370,6 +413,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             // numeric literals
             // TODO
         }
+        return token;
     };
 
     /// Advances the lexer and returns the next [CatspeakToken], ingoring
@@ -415,7 +459,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
 }
 
 /// @ignore
-#macro __CATSPEAK_CODEPAGE_SIZE 128
+#macro __CATSPEAK_CODEPAGE_SIZE 256
 
 /// @ignore
 function __catspeak_init_lexer() {
@@ -436,7 +480,7 @@ function __catspeak_code_range(code, minCode, maxCode) {
     var codeVal = __catspeak_code_value(code);
     var minVal = __catspeak_code_value(minCode);
     var maxVal = __catspeak_code_value(maxCode);
-    return codeVal >= ord(minVal) && codeVal <= ord(maxVal);
+    return codeVal >= minVal && codeVal <= maxVal;
 }
 
 /// @ignore
@@ -471,7 +515,7 @@ function __catspeak_init_lexer_codepage() {
             tokenType = CatspeakToken.BREAK_LINE;
         } else if (
             __catspeak_code_range(code, "a", "z") ||
-            __catspeak_code_range(code, "Z", "Z") ||
+            __catspeak_code_range(code, "A", "Z") ||
             __catspeak_code_set(code, "_", "`") // identifier literals
         ) {
             tokenType = CatspeakToken.IDENT;
@@ -515,6 +559,7 @@ function __catspeak_init_lexer_codepage() {
         } else {
             continue;
         }
+        page[@ code] = tokenType;
     }
     return page;
 }

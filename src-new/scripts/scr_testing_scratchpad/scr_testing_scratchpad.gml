@@ -8,13 +8,37 @@ var runExperiment = "none";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
-    var buff = __catspeak_create_buffer_from_string(@'🙀會意字');
+    var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
     var lexer = new CatspeakLexer(buff);
-    lexer.__advance(); // 🙀
-    lexer.__advance(); // 會
-    lexer.__advance(); // 意
-    show_message("'" + string(lexer.getLexeme()) + "'");
-    lexer.__clearLexeme();
-    lexer.__advance(); // 字
-    show_message("'" + string(lexer.getLexeme()) + "'");
+    show_message([CatspeakToken.OTHER, CatspeakToken.WHITESPACE, CatspeakToken.IDENT]);
+    // other
+    show_message(
+        "'" + string(lexer.nextWithWhitespace()) + "' " +
+        "'" + string(lexer.getLexeme()) + "'"
+    );
+    // other
+    show_message(
+        "'" + string(lexer.nextWithWhitespace()) + "' " +
+        "'" + string(lexer.getLexeme()) + "'"
+    );
+    // other
+    show_message(
+        "'" + string(lexer.nextWithWhitespace()) + "' " +
+        "'" + string(lexer.getLexeme()) + "'"
+    );
+    // other
+    show_message(
+        "'" + string(lexer.nextWithWhitespace()) + "' " +
+        "'" + string(lexer.getLexeme()) + "'"
+    );
+    // whitespace
+    show_message(
+        "'" + string(lexer.nextWithWhitespace()) + "' " +
+        "'" + string(lexer.getLexeme()) + "'"
+    );
+    // identifier
+    show_message(
+        "'" + string(lexer.nextWithWhitespace()) + "' " +
+        "'" + string(lexer.getLexeme()) + "'"
+    );
 }
