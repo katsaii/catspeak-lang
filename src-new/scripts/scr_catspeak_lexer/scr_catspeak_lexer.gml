@@ -381,23 +381,18 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             // TODO
         } else if (catspeak_token_is_operator(token)) {
             // operator identifiers
-            // TODO
+            while (__catspeak_char_is_operator(charNext)) {
+                __advance();
+            }
         } else if (charCurr_ == ord("`")) {
             // literal identifiers
-            // TODO
+            while (!__catspeak_char_is_whitespace(charNext)) {
+                __advance();
+            }
         } else if (token == CatspeakToken.IDENT) {
             // alphanumeric identifiers
-            while (true) {
-                var charNext_ = charNext;
-                if (
-                    __catspeak_char_is_digit(charNext_) ||
-                    __catspeak_char_is_alphabetic(charNext_) ||
-                    charNext_ == ord("_")
-                ) {
-                    __advance();
-                } else {
-                    break;
-                }
+            while (__catspeak_char_is_alphanumeric(charNext)) {
+                __advance();
             }
             var keyword = __getKeyword(getLexeme());
             if (keyword != undefined) {
@@ -405,7 +400,11 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             }
         } else if (charCurr_ == ord("'")) {
             // character literals
-            // TODO
+            __advance();
+            value = charCurr;
+            if (charNext == ord("'")) {
+                __advance();
+            }
         } else if (token == CatspeakToken.NUMBER) {
             // numeric literals
             var hasUnderscores = false;
@@ -492,10 +491,28 @@ function __catspeak_char_is_digit(char) {
 }
 
 /// @ignore
-function __catspeak_char_is_alphabetic(char) {
+function __catspeak_char_is_alphanumeric(char) {
     gml_pragma("forceinline");
     return char >= ord("a") && char <= ord("z") ||
-            char >= ord("A") && char <= ord("A");
+            char >= ord("A") && char <= ord("Z") ||
+            char >= ord("0") && char <= ord("9") ||
+            char == ord("_");
+}
+
+/// @ignore
+function __catspeak_char_is_operator(char) {
+    gml_pragma("forceinline");
+    return char >= ord("!") && char <= ord("&") && char != ord("\"") ||
+            char >= ord("*") && char <= ord("/") && char != ord(",") ||
+            char >= ord(":") && char <= ord("@") ||
+            char == ord("\\") || char == ord("^") ||
+            char == ord("|") || char == ord("~");
+}
+
+/// @ignore
+function __catspeak_char_is_whitespace(char) {
+    gml_pragma("forceinline");
+    return char >= 0x09 && char <= 0x0D || char == 0x20 || char == 0x85;
 }
 
 /// @ignore
