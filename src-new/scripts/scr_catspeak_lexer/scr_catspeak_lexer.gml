@@ -384,6 +384,26 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             while (__catspeak_char_is_operator(charNext)) {
                 __advance();
             }
+            var keyword = __getKeyword(getLexeme());
+            if (keyword != undefined) {
+                token = keyword;
+                if (keyword == CatspeakToken.COMMENT) {
+                    // consume the comment
+                    lexeme = undefined; // since the lexeme is now invalid
+                                        // we have more work to do
+                    while (true) {
+                        var charNext_ = charNext;
+                        if (
+                            charNext_ == ord("\n") ||
+                            charNext_ == ord("\r") ||
+                            charNext_ == 0
+                        ) {
+                            break;
+                        }
+                        __advance();
+                    }
+                }
+            }
         } else if (charCurr_ == ord("`")) {
             // literal identifiers
             while (true) {
