@@ -178,6 +178,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.value = undefined;
     self.charCurr = 0;
     self.charNext = __nextUTF8Char();
+    self.skipNextSemicolon = false;
 
     /// @ignore
     ///
@@ -296,6 +297,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// lexer.next();
     /// show_debug_message(lexer.getLexeme());
     /// ```
+    ///
+    /// @return {String}
     static getLexeme = function () {
         lexeme ??= __slice(lexemeStart, lexemeEnd);
         return lexeme;
@@ -317,6 +320,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 keyword == CatspeakToken.__OPERATORS_END__
             ) {
                 __catspeak_error(
+                    __catspeak_location_show(getLocation()), ": ",
                     "custom keyword aliases must map to a numeric ",
                     "type corresponding to a `CatspeakToken`, e.g. ",
                     "`keywords[$ \"func\"] = CatspeakToken.FUN;`"
@@ -331,9 +335,19 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     ///
     /// NOTE: Unlike [getLexeme] this value is not always a string. For numeric
     ///       literals, the value will be converted into an integer or real.
+    ///
+    /// @return {Any}
     static getValue = function () {
         value ??= getLexeme();
         return value;
+    };
+
+    /// Returns the location information for the most recent token emitted by
+    /// the [next] or [nextWithWhitespace] methods.
+    ///
+    /// @return {Real}
+    static getLocation = function () {
+        return catspeak_location_create(row, column);
     };
 
     /// Advances the lexer and returns the next type of [CatspeakToken]. This
@@ -476,7 +490,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// ```gml
     /// var lexer = new CatspeakLexer(buff);
     /// do {
-    ///   var token = lexer.nextWithWhitespace();
+    ///   var token = lexer.next();
     ///   show_debug_message(lexer.getLexeme());
     /// } until (token == CatspeakToken.EOF);
     /// ```
@@ -485,6 +499,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     static next = function () {
         var skipSemicolon = skipNextSemicolon;
         skipNextSemicolon = false;
+        var tokenSkipsNewlinePage = global.__catspeakTokenSkipsNewline;
         while (true) {
             var token = nextWithWhitespace();
             if (token == CatspeakToken.WHITESPACE
@@ -494,8 +509,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             if (token == CatspeakToken.CONTINUE_LINE) {
                 skipSemicolon = true;
                 continue;
-            //} else if (catspeak_token_skips_newline(token)) {
-            //    skipNextSemicolon = true;
+            } else if (tokenSkipsNewlinePage[token]) {
+                skipNextSemicolon = true;
             }
             if (skipSemicolon && token == CatspeakToken.BREAK_LINE) {
                 continue;
@@ -513,6 +528,7 @@ function __catspeak_init_lexer() {
     // initialise map from character to token type
     global.__catspeakChar2Token = __catspeak_init_lexer_codepage();
     global.__catspeakString2Token = __catspeak_init_lexer_keywords();
+    global.__catspeakTokenSkipsNewline = __catspeak_init_lexer_newlines();
 }
 
 /// @ignore
@@ -670,4 +686,43 @@ function __catspeak_init_lexer_keywords() {
     keywords[$ "self"] = CatspeakToken.SELF;
     global.__catspeakConfig.keywords = keywords;
     return keywords;
+}
+
+/// @ignore
+function __catspeak_init_lexer_newlines() {
+    var page = array_create(CatspeakToken.__SIZE__, false);
+    var tokens = [
+        // !! DO NOT ADD `BREAK_LINE` HERE, IT WILL RUIN EVERYTHING !!
+        //              you have been warned... (*^_^*) b
+        CatspeakToken.PAREN_LEFT,
+        CatspeakToken.BOX_LEFT,
+        CatspeakToken.BRACE_LEFT,
+        CatspeakToken.DOT,
+        CatspeakToken.COLON,
+        CatspeakToken.COMMA,
+        CatspeakToken.ASSIGN,
+        // this token technically does, but it's handled in a different
+        // way to the others, so it's only here honorarily
+        //CatspeakToken.CONTINUE_LINE,
+        CatspeakToken.DO,
+        CatspeakToken.IF,
+        CatspeakToken.ELSE,
+        CatspeakToken.WHILE,
+        CatspeakToken.FOR,
+        CatspeakToken.LET,
+        CatspeakToken.FUN,
+        CatspeakToken.OP_LOW,
+        CatspeakToken.OP_OR,
+        CatspeakToken.OP_AND,
+        CatspeakToken.OP_COMP,
+        CatspeakToken.OP_ADD,
+        CatspeakToken.OP_MUL,
+        CatspeakToken.OP_DIV,
+        CatspeakToken.OP_HIGH,
+    ];
+    var count = array_length(tokens);
+    for (var i = 0; i < count; i += 1) {
+        page[@ tokens[i]] = true;
+    }
+    return page;
 }

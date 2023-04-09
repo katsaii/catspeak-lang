@@ -1,4 +1,6 @@
 
+//# feather use syntax-errors
+
 function TestLexerToken(name, token, src, value) : Test(name) constructor {
     var buff = __catspeak_create_buffer_from_string(src);
     var lexer = new CatspeakLexer(buff);
@@ -152,3 +154,21 @@ run_test(function() : TestLexerToken("lexer-whitespace-continue-line",
 run_test(function() : TestLexerToken("lexer-whitespace-comment",
     CatspeakToken.COMMENT, "-- hello world", "-- hello world"
 ) constructor { });
+
+run_test(function() : Test("lexer-whitespace-semicolon-insertion") constructor {
+    var buff = __catspeak_create_buffer_from_string(@'...
+        let a = (
+            1,
+            2,...
+            3,...
+        )...
+... ...
+    ');
+    var lexer = new CatspeakLexer(buff);
+    var token;
+    do {
+        token = lexer.next();
+        assertNeq(CatspeakToken.BREAK_LINE, token);
+    } until (token == CatspeakToken.EOF);
+    buffer_delete(buff);
+});
