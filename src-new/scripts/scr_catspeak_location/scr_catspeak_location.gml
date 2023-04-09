@@ -77,3 +77,18 @@ function catspeak_location_get_column(location) {
     }
     return (location & __CATSPEAK_LOCATION_COLUMN_MASK) >> 20;
 }
+
+/// @ignore
+///
+/// @param {Real} pos
+function __catspeak_location_show(location) {
+    var msg = "in a file";
+    if (location != undefined) {
+        msg += " at (line" + 
+                __catspeak_string(catspeak_location_get_row(location)) +
+                ", column " +
+                __catspeak_string(catspeak_location_get_column(location)) +
+                ")";
+    }
+    return msg;
+}
