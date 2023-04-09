@@ -141,10 +141,14 @@ run_test(function() : TestLexerToken("lexer-whitespace-next-line",
     CatspeakToken.WHITESPACE, "\u85", "\u85"
 ) constructor { });
 
-//run_test(function() : TestLexerToken("lexer-whitespace-break-line",
-//    CatspeakToken.BREAK_LINE, ";"
-//) constructor { });
-//
-//run_test(function() : TestLexerToken("lexer-whitespace-continue-line",
-//    CatspeakToken.CONTINUE_LINE, "..."
-//) constructor { });
+run_test(function() : TestLexerToken("lexer-whitespace-break-line",
+    CatspeakToken.BREAK_LINE, ";", ";"
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-whitespace-continue-line",
+    CatspeakToken.CONTINUE_LINE, "...", "..."
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-whitespace-comment",
+    CatspeakToken.COMMENT, "-- hello world", "-- hello world"
+) constructor { });
