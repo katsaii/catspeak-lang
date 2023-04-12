@@ -1,16 +1,6 @@
 
 //# feather use syntax-errors
 
-function TestLexerToken(name, token, src, value) : Test(name) constructor {
-    var buff = __catspeak_create_buffer_from_string(src);
-    var lexer = new CatspeakLexer(buff);
-    assertEq(token, lexer.nextWithWhitespace());
-    assertEq(src, lexer.getLexeme());
-    assertEq(value, lexer.getValue());
-    assertEq(CatspeakToken.EOF, lexer.nextWithWhitespace());
-    buffer_delete(buff);
-}
-
 run_test(function() : Test("lexer-tokens-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
     var lexer = new CatspeakLexer(buff);
@@ -34,6 +24,16 @@ run_test(function() : Test("lexer-tokens-unicode") constructor {
     assertEq("abcde1", lexer.getLexeme());
     buffer_delete(buff);
 });
+
+function TestLexerToken(name, token, src, value) : Test(name) constructor {
+    var buff = __catspeak_create_buffer_from_string(src);
+    var lexer = new CatspeakLexer(buff);
+    assertEq(token, lexer.nextWithWhitespace());
+    assertEq(src, lexer.getLexeme());
+    assertEq(value, lexer.getValue());
+    assertEq(CatspeakToken.EOF, lexer.nextWithWhitespace());
+    buffer_delete(buff);
+}
 
 run_test(function() : TestLexerToken("lexer-tokens-numbers",
     CatspeakToken.NUMBER, "1", 1
@@ -98,6 +98,41 @@ run_test(function() : TestLexerToken("lexer-tokens-ident-op",
 run_test(function() : TestLexerToken("lexer-tokens-ident-op-2",
     CatspeakToken.OP_COMP, "<=>", "<=>"
 ) constructor { });
+
+function TestLexerTokenStream(name, src) : Test(name) constructor {
+    self.src = src;
+
+    static checkTokens = function () {
+        var buff = __catspeak_create_buffer_from_string(src);
+        var lexer = new CatspeakLexer(buff);
+        for (var i = 0; i < argument_count; i += 1) {
+            assertEq(argument[i], lexer.next());
+        }
+        assertEq(CatspeakToken.EOF, lexer.next());
+        buffer_delete(buff);
+    };
+}
+
+run_test(function() : TestLexerTokenStream("lexer-tokens-stream",
+    "return (fun (a, b) { a + b })"
+) constructor {
+    checkTokens(
+        CatspeakToken.RETURN,
+        CatspeakToken.PAREN_LEFT,
+        CatspeakToken.FUN,
+        CatspeakToken.PAREN_LEFT,
+        CatspeakToken.IDENT,
+        CatspeakToken.COMMA,
+        CatspeakToken.IDENT,
+        CatspeakToken.PAREN_RIGHT,
+        CatspeakToken.BRACE_LEFT,
+        CatspeakToken.IDENT,
+        CatspeakToken.OP_ADD,
+        CatspeakToken.IDENT,
+        CatspeakToken.BRACE_RIGHT,
+        CatspeakToken.PAREN_RIGHT
+    )
+});
 
 run_test(function() : Test("lexer-whitespace-sensitive-ident") constructor {
     var buff = __catspeak_create_buffer_from_string(@'a bc d');
