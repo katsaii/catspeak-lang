@@ -15,6 +15,7 @@
     {"name":"scr_future_file","order":2,"path":"scripts/scr_future_file/scr_future_file.yy",},
     {"name":"obj_future_file_save","order":1,"path":"objects/obj_future_file_save/obj_future_file_save.yy",},
     {"name":"scr_future","order":2,"path":"scripts/scr_future/scr_future.yy",},
+    {"name":"scr_catspeak_parser","order":2,"path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},
     {"name":"scr_catspeak_alloc","order":2,"path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},
     {"name":"scr_testing_framework","order":1,"path":"scripts/scr_testing_framework/scr_testing_framework.yy",},
     {"name":"scr_catspeak_init","order":1,"path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},
