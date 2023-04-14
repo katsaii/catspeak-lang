@@ -176,6 +176,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.lexemePos = catspeak_location_create(self.row, self.column);
     self.lexeme = undefined;
     self.value = undefined;
+    self.peeked = undefined;
     self.charCurr = 0;
     self.charNext = __nextUTF8Char();
     self.skipNextSemicolon = false;
@@ -497,6 +498,11 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     ///
     /// @return {Enum.CatspeakToken}
     static next = function () {
+        if (peeked != undefined) {
+            var token = peeked;
+            peeked = undefined;
+            return token;
+        }
         var skipSemicolon = skipNextSemicolon;
         skipNextSemicolon = false;
         var tokenSkipsNewlinePage = global.__catspeakTokenSkipsNewline;
@@ -517,6 +523,26 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             }
             return token;
         }
+    };
+
+    /// Peeks at the next non-whitespace character without advancing the lexer.
+    ///
+    /// @example
+    ///   Iterates through all tokens of a buffer containing Catspeak code,
+    ///   printing each token out as a debug message.
+    ///
+    /// ```gml
+    /// var lexer = new CatspeakLexer(buff);
+    /// while (lexer.peek() != CatspeakToken.EOF) {
+    ///   lexer.next();
+    ///   show_debug_message(lexer.getLexeme());
+    /// }
+    /// ```
+    ///
+    /// @return {Enum.CatspeakToken}
+    static peek = function () {
+        peeked ??= next();
+        return peeked;
     };
 }
 
