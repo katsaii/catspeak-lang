@@ -32,3 +32,19 @@ run_test(function() : TestLexerToken("lexer-numbers-char-2",
 run_test(function() : TestLexerToken("lexer-numbers-char-3",
     CatspeakToken.NUMBER, "'🙀'", ord("🙀")
 ) constructor { });
+
+run_test(function() : TestLexerToken("lexer-numbers-char-malformed-eof",
+    CatspeakToken.NUMBER, "'", 0
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-numbers-char-malformed",
+    CatspeakToken.NUMBER, "'a'", ord("a")
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-numbers-char-malformed-2",
+    CatspeakToken.NUMBER, "'A'", ord("A")
+) constructor { });
+
+run_test(function() : TestLexerToken("lexer-numbers-char-malformed-3",
+    CatspeakToken.NUMBER, "'🙀'", ord("🙀")
+) constructor { });

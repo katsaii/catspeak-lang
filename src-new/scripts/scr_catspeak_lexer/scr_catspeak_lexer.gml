@@ -405,6 +405,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 }
                 if (skipNextChar) {
                     __advance();
+                    skipNextChar = false;
                     continue;
                 }
                 if (!isRaw && charNext == ord("\\")) {
@@ -422,15 +423,12 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             if (processEscapes) {
                 // TODO :: may be very slow, figure out how to do it faster
                 value_ = string_replace_all(value_, "\\\"", "\"");
-                value_ = string_replace_all(value_, "\\\r\n", "");
-                value_ = string_replace_all(value_, "\\\n", "");
-                value_ = string_replace_all(value_, "\\\r", "");
-                value_ = string_replace_all(value_, "\\\\", "\\");
                 value_ = string_replace_all(value_, "\\t", "\t");
                 value_ = string_replace_all(value_, "\\n", "\n");
                 value_ = string_replace_all(value_, "\\v", "\v");
                 value_ = string_replace_all(value_, "\\f", "\f");
                 value_ = string_replace_all(value_, "\\r", "\r");
+                value_ = string_replace_all(value_, "\\\\", "\\");
             }
             value = value_;
         } else if (catspeak_token_is_operator(token)) {
