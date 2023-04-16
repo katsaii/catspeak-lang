@@ -22,6 +22,7 @@
     {"name":"scr_catspeak_alloc","order":2,"path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},
     {"name":"scr_testing_framework","order":1,"path":"scripts/scr_testing_framework/scr_testing_framework.yy",},
     {"name":"scr_catspeak_init","order":1,"path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},
+    {"name":"scr_testing_lexer_string","order":10,"path":"scripts/scr_testing_lexer_string/scr_testing_lexer_string.yy",},
     {"name":"scr_catspeak_lexer","order":1,"path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},
     {"name":"scr_catspeak_sanity","order":3,"path":"scripts/scr_catspeak_sanity/scr_catspeak_sanity.yy",},
     {"name":"scr_testing_lexer_keyword","order":9,"path":"scripts/scr_testing_lexer_keyword/scr_testing_lexer_keyword.yy",},
