@@ -42,6 +42,22 @@ function TestLexerUTF8(name, src) : Test(name) constructor {
     buffer_delete(buff);
 }
 
+function TestLexerKeyword(name, token, src) : Test(name) constructor {
+    var buff = __catspeak_create_buffer_from_string(src);
+    var customKeywords = { };
+    customKeywords[$ src] = token;
+    var lexer = new CatspeakLexer(buff).withKeywords(customKeywords);
+    assertEq(token, lexer.next());
+    assertEq(src, lexer.getLexeme());
+    // part 2
+    var customKeywords2 = catspeak_keywords_create();
+    catspeak_keywords_replace(customKeywords2, src, token);
+    var lexer2 = new CatspeakLexer(buff).withKeywords(customKeywords2);
+    assertEq(token, lexer2.next());
+    assertEq(src, lexer2.getLexeme());
+    buffer_delete(buff);
+}
+
 run_test(function() : Test("lexer-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
     var lexer = new CatspeakLexer(buff);
