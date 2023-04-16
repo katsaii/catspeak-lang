@@ -576,8 +576,13 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             } else if (tokenSkipsNewlinePage[token]) {
                 skipNextSemicolon = true;
             }
-            if (skipSemicolon && token == CatspeakToken.BREAK_LINE) {
-                continue;
+            if (token == CatspeakToken.BREAK_LINE) {
+                if (skipSemicolon) {
+                    continue;
+                }
+                // doing this makes it so that multiple new line characters
+                // only count as a single line break token
+                skipNextSemicolon = true;
             }
             return token;
         }

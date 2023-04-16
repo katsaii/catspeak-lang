@@ -15,7 +15,7 @@ run_test(function() : TestLexerToken("lexer-ident-3",
 
 run_test(function() : TestLexerToken("lexer-tokens-ident-literal",
     CatspeakToken.IDENT, "`🙀abc`", "🙀abc"
-) constructor { }, true);
+) constructor { });
 
 run_test(function() : TestLexerToken("lexer-tokens-ident-literal-2",
     CatspeakToken.IDENT, "`>>=`", ">>="
@@ -27,7 +27,7 @@ run_test(function() : TestLexerToken("lexer-tokens-ident-literal-3",
 
 run_test(function() : TestLexerToken("lexer-tokens-ident-literal-malformed",
     CatspeakToken.IDENT, "`🙀abc", "🙀abc"
-) constructor { }, true);
+) constructor { });
 
 run_test(function() : TestLexerToken("lexer-tokens-ident-literal-malformed-2",
     CatspeakToken.IDENT, "`>>=", ">>="

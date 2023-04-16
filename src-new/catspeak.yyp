@@ -51,6 +51,7 @@
     {"id":{"name":"scr_testing_lexer_keyword","path":"scripts/scr_testing_lexer_keyword/scr_testing_lexer_keyword.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_number","path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},"order":0,},
     {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":2,},
+    {"id":{"name":"scr_testing_lexer_misc","path":"scripts/scr_testing_lexer_misc/scr_testing_lexer_misc.yy",},"order":0,},
     {"id":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},"order":1,},
     {"id":{"name":"scr_testing_scratchpad","path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_ident","path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},"order":0,},
