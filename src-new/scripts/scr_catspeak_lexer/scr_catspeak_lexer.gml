@@ -148,21 +148,30 @@ function __catspeak_create_buffer_from_string(src) {
 ///
 /// @param {Id.Buffer} buff
 ///   The ID of the GML buffer to use.
-function CatspeakLexer(buff) constructor {
+///
+/// @param {Real} [offset]
+///   The offset in the buffer to start parsing from. Defaults to 0.
+///
+/// @param {Real} [size]
+///   The length of the buffer input. Any characters beyond this limit
+///   will be treated as the end of the file. Defaults to `infinity`.
+function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
         __catspeak_check_typeof_numeric("buff", buff);
+        __catspeak_check_typeof_numeric("offset", offset);
+        __catspeak_check_typeof_numeric("size", size);
     }
 
     self.buff = buff;
     self.buffAlignment = buffer_get_alignment(buff);
     self.buffCapacity = buffer_get_size(buff);
-    self.buffOffset = 0;
-    self.buffSize = self.buffCapacity;
+    self.buffOffset = clamp(offset, 0, self.buffCapacity);
+    self.buffSize = clamp(offset + size, 0, self.buffCapacity);
     self.row = 1;
     self.column = 1;
-    self.lexemeStart = 0;
-    self.lexemeEnd = 0;
+    self.lexemeStart = self.buffOffset;
+    self.lexemeEnd = self.lexemeStart;
     self.lexemePos = catspeak_location_create(self.row, self.column);
     self.lexeme = undefined;
     self.value = undefined;
@@ -171,26 +180,6 @@ function CatspeakLexer(buff) constructor {
     self.charNext = __nextUTF8Char();
     self.skipNextSemicolon = false;
     self.keywords = global.__catspeakString2Token;
-
-    /// Sets the byte offset to parse tokens from in the buffer.
-    ///
-    /// @param {Real} offset
-    ///   The offset in the buffer to start parsing from.
-    ///
-    /// @param {Real} [size]
-    ///   The length of the buffer input. Any characters beyond this limit
-    ///   will be treated as the end of the file. Defaults to `infinity`.
-    ///
-    /// @return {Struct.CatspeakLexer}
-    static withOffset = function (offset, size=infinity) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof_numeric("offset", offset);
-            __catspeak_check_typeof_numeric("size", size);
-        }
-        buffOffset = clamp(offset, 0, self.buffCapacity);
-        buffSize = clamp(size, 0, self.buffCapacity);
-        return self;
-    };
 
     /// Sets the keyword database for the lexer to use.
     ///

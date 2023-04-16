@@ -3,7 +3,7 @@
 
 run_test(function() : Test("lexer-config-offset") constructor {
     var buff = __catspeak_create_buffer_from_string(@'hello world :3');
-    var lexer = new CatspeakLexer(buff).withOffset(6);
+    var lexer = new CatspeakLexer(buff, 6);
     // identifier
     assertEq(CatspeakToken.IDENT, lexer.nextWithWhitespace());
     assertEq("world", lexer.getLexeme());
@@ -23,7 +23,7 @@ run_test(function() : Test("lexer-config-offset") constructor {
 
 run_test(function() : Test("lexer-config-offset-2") constructor {
     var buff = __catspeak_create_buffer_from_string(@'hello world :3');
-    var lexer = new CatspeakLexer(buff).withOffset(6, 5);
+    var lexer = new CatspeakLexer(buff, 6, 5);
     // identifier
     assertEq(CatspeakToken.IDENT, lexer.nextWithWhitespace());
     assertEq("world", lexer.getLexeme());
