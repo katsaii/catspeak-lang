@@ -386,14 +386,53 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         if (charCurr_ >= 0 && charCurr_ < __CATSPEAK_CODEPAGE_SIZE) {
             token = global.__catspeakChar2Token[charCurr_];
         }
-        if (charCurr_ == ord("\"")) {
+        if (
+            charCurr_ == ord("\"") ||
+            charCurr_ == ord("@") && charNext == ord("\"")
+        ) {
             // strings
-            // TODO
-        } else if (charCurr_ == ord("@") && charNext == ord("\"")) {
-            // raw strings
-            token = CatspeakToken.STRING; // since `@` is an operator
-            __advance();
-            // TODO
+            var isRaw = charCurr_ == ord("@");
+            if (isRaw) {
+                token = CatspeakToken.STRING; // since `@` is an operator
+                __advance();
+            }
+            var skipNextChar = false;
+            var processEscapes = false;
+            while (true) {
+                var charNext_ = charNext;
+                if (charNext_ == 0) {
+                    break;
+                }
+                if (skipNextChar) {
+                    __advance();
+                    continue;
+                }
+                if (!isRaw && charNext == ord("\\")) {
+                    skipNextChar = true;
+                    processEscapes = true;
+                } else if (charNext_ == ord("\"")) {
+                    break;
+                }
+                __advance();
+            }
+            var value_ = __slice(lexemeStart + (isRaw ? 2 : 1), lexemeEnd);
+            if (charNext == ord("\"")) {
+                __advance();
+            }
+            if (processEscapes) {
+                // TODO :: may be very slow, figure out how to do it faster
+                value_ = string_replace_all(value_, "\\\"", "\"");
+                value_ = string_replace_all(value_, "\\\r\n", "");
+                value_ = string_replace_all(value_, "\\\n", "");
+                value_ = string_replace_all(value_, "\\\r", "");
+                value_ = string_replace_all(value_, "\\\\", "\\");
+                value_ = string_replace_all(value_, "\\t", "\t");
+                value_ = string_replace_all(value_, "\\n", "\n");
+                value_ = string_replace_all(value_, "\\v", "\v");
+                value_ = string_replace_all(value_, "\\f", "\f");
+                value_ = string_replace_all(value_, "\\r", "\r");
+            }
+            value = value_;
         } else if (catspeak_token_is_operator(token)) {
             // operator identifiers
             while (__catspeak_char_is_operator(charNext)) {
