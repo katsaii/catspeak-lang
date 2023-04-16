@@ -8,7 +8,11 @@ function TestLexerTokenStream(name, src) : Test(name) constructor {
         var buff = __catspeak_create_buffer_from_string(src);
         var lexer = new CatspeakLexer(buff);
         for (var i = 0; i < argument_count; i += 1) {
-            assertEq(argument[i], lexer.next());
+            var peeked = lexer.peek();
+            var nexted = lexer.next();
+            assertEq(argument[i], peeked);
+            assertEq(argument[i], nexted);
+            assertEq(peeked, nexted);
         }
         assertEq(CatspeakToken.EOF, lexer.next());
         buffer_delete(buff);

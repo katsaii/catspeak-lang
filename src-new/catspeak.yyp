@@ -31,7 +31,7 @@
   "resources": [
     {"id":{"name":"scr_testing_location","path":"scripts/scr_testing_location/scr_testing_location.yy",},"order":0,},
     {"id":{"name":"fnt_testing","path":"fonts/fnt_testing/fnt_testing.yy",},"order":3,},
-    {"id":{"name":"scr_testing_lexer_tokens_whitespace","path":"scripts/scr_testing_lexer_tokens_whitespace/scr_testing_lexer_tokens_whitespace.yy",},"order":0,},
+    {"id":{"name":"scr_testing_lexer_whitespace","path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_internals","path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},"order":0,},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},"order":2,},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
@@ -46,7 +46,8 @@
     {"id":{"name":"scr_testing_lexer_locale","path":"scripts/scr_testing_lexer_locale/scr_testing_lexer_locale.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_sanity","path":"scripts/scr_catspeak_sanity/scr_catspeak_sanity.yy",},"order":0,},
-    {"id":{"name":"scr_testing_lexer_tokens_number","path":"scripts/scr_testing_lexer_tokens_number/scr_testing_lexer_tokens_number.yy",},"order":0,},
+    {"id":{"name":"scr_testing_lexer_keyword","path":"scripts/scr_testing_lexer_keyword/scr_testing_lexer_keyword.yy",},"order":0,},
+    {"id":{"name":"scr_testing_lexer_number","path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},"order":0,},
     {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":2,},
     {"id":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},"order":1,},
     {"id":{"name":"scr_testing_scratchpad","path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},"order":0,},
