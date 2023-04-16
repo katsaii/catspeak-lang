@@ -31,3 +31,35 @@ run_test(function() : Test("lexer-config-offset-2") constructor {
     assertEq(CatspeakToken.EOF, lexer.nextWithWhitespace());
     buffer_delete(buff);
 });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword",
+    CatspeakToken.FUN, @'\'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-2",
+    CatspeakToken.FUN, @'f'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-3",
+    CatspeakToken.FUN, @'fn'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-4",
+    CatspeakToken.FUN, @'fun'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-5",
+    CatspeakToken.FUN, @'func'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-6",
+    CatspeakToken.FUN, @'fnc'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-7",
+    CatspeakToken.FUN, @'funct'
+) constructor { });
+
+run_test(function() : TestLexerKeyword("lexer-config-custom-keyword-8",
+    CatspeakToken.FUN, @'function'
+) constructor { });

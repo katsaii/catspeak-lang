@@ -111,6 +111,27 @@ enum CatspeakToken {
     __SIZE__
 }
 
+/// @ignore
+///
+/// @param {Any} keyword
+function __catspeak_check_token(name, keyword) {
+    // the user can modify what keywords are, so just check
+    // that they've used one of the enum types instead of a
+    // random ass value
+    __catspeak_check_typeof_numeric(name, keyword);
+    if (
+        keyword < 0 || keyword >= CatspeakToken.__SIZE__ ||
+        keyword == CatspeakToken.__OPERATORS_BEGIN__ ||
+        keyword == CatspeakToken.__OPERATORS_END__
+    ) {
+        __catspeak_error(
+            "custom keyword aliases must map to a numeric ",
+            "type corresponding to a `CatspeakToken`, e.g. ",
+            "`keywords[$ \"func\"] = CatspeakToken.FUN;`"
+        );
+    }
+}
+
 /// Returns whether a Catspeak token is a valid operator.
 ///
 /// @param {Enum.CatspeakToken} token
@@ -326,22 +347,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     static __getKeyword = function (str) {
         var keyword = keywords[$ str];
         if (CATSPEAK_DEBUG_MODE && keyword != undefined) {
-            // the user can modify what keywords are, so just check
-            // that they've used one of the enum types instead of a
-            // random ass value
-            __catspeak_check_typeof_numeric("keyword", keyword);
-            if (
-                keyword < 0 || keyword >= CatspeakToken.__SIZE__ ||
-                keyword == CatspeakToken.__OPERATORS_BEGIN__ ||
-                keyword == CatspeakToken.__OPERATORS_END__
-            ) {
-                __catspeak_error(
-                    __catspeak_location_show(getLocation()), ": ",
-                    "custom keyword aliases must map to a numeric ",
-                    "type corresponding to a `CatspeakToken`, e.g. ",
-                    "`keywords[$ \"func\"] = CatspeakToken.FUN;`"
-                );
-            }
+            __catspeak_check_token("keyword", keyword);
         }
         return keyword;
     };
@@ -736,8 +742,10 @@ function __catspeak_init_lexer_codepage() {
     return page;
 }
 
-/// @ignore
-function __catspeak_init_lexer_keywords() {
+/// Creates a new struct containing all of the default Catspeak keywords.
+///
+/// @return {Struct}
+function catspeak_keywords_create() {
     var keywords = { };
     keywords[$ "--"] = CatspeakToken.COMMENT;
     keywords[$ "="] = CatspeakToken.ASSIGN;
@@ -762,6 +770,41 @@ function __catspeak_init_lexer_keywords() {
     keywords[$ "new"] = CatspeakToken.NEW;
     keywords[$ "impl"] = CatspeakToken.IMPL;
     keywords[$ "self"] = CatspeakToken.SELF;
+    return keywords;
+}
+
+/// Used to replace a token in a Catspeak keyword database. The old keyword
+/// with the that token type will be deleted, and the new name will take its
+/// place.
+///
+/// @param {Struct} keywords
+///   The keyword database to modify.
+///
+/// @param {String} name
+///   The new string representation of the keyword to use.
+///
+/// @param {Enum.CatspeakToken} token
+///   The token type to replace.
+function catspeak_keywords_replace(keywords, name, token) {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_typeof("keywords", keywords, "struct");
+        __catspeak_check_typeof("name", name, "string");
+        __catspeak_check_token("token", token);
+    }
+    var variables = variable_struct_get_names(keywords);
+    var variableCount = array_length(variables);
+    for (var i = 0; i < variableCount; i += 1) {
+        var variable = variables[i];
+        if (keywords[$ variable] == token) {
+            variable_struct_remove(keywords, variable);
+        }
+    }
+    keywords[$ name] = token;
+}
+
+/// @ignore
+function __catspeak_init_lexer_keywords() {
+    var keywords = catspeak_keywords_create();
     global.__catspeakConfig.keywords = keywords;
     return keywords;
 }
