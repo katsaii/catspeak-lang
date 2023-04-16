@@ -5,6 +5,7 @@
 #macro TESTING_COL_PASS #64B58E
 #macro TESTING_COL_WORKING #BDBD4D
 #macro TESTING_COL_FAIL #CC4E67
+#macro TESTING_COL_FATAL #FF0000
 
 show_debug_overlay(true);
 

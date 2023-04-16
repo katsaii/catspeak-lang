@@ -148,27 +148,17 @@ function __catspeak_create_buffer_from_string(src) {
 ///
 /// @param {Id.Buffer} buff
 ///   The ID of the GML buffer to use.
-///
-/// @param {Real} [offset]
-///   The offset in the buffer to start parsing from. Defaults to 0, the
-///   start of the buffer.
-///
-/// @param {Real} [size]
-///   The length of the buffer input. Any characters beyond this limit will
-///   be treated as the end of the file. Defaults to `infinity`.
-function CatspeakLexer(buff, offset=0, size=infinity) constructor {
+function CatspeakLexer(buff) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
         __catspeak_check_typeof_numeric("buff", buff);
-        __catspeak_check_typeof_numeric("offset", offset);
-        __catspeak_check_typeof_numeric("size", size);
     }
 
     self.buff = buff;
     self.buffAlignment = buffer_get_alignment(buff);
     self.buffCapacity = buffer_get_size(buff);
-    self.offset = clamp(offset, 0, self.buffCapacity);
-    self.size = clamp(size, 0, self.buffCapacity);
+    self.buffOffset = 0;
+    self.buffSize = self.buffCapacity;
     self.row = 1;
     self.column = 1;
     self.lexemeStart = 0;
@@ -180,16 +170,52 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.charCurr = 0;
     self.charNext = __nextUTF8Char();
     self.skipNextSemicolon = false;
+    self.keywords = global.__catspeakString2Token;
+
+    /// Sets the byte offset to parse tokens from in the buffer.
+    ///
+    /// @param {Real} offset
+    ///   The offset in the buffer to start parsing from.
+    ///
+    /// @param {Real} [size]
+    ///   The length of the buffer input. Any characters beyond this limit
+    ///   will be treated as the end of the file. Defaults to `infinity`.
+    ///
+    /// @return {Struct.CatspeakLexer}
+    static withOffset = function (offset, size=infinity) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_typeof_numeric("offset", offset);
+            __catspeak_check_typeof_numeric("size", size);
+        }
+        buffOffset = clamp(offset, 0, self.buffCapacity);
+        buffSize = clamp(size, 0, self.buffCapacity);
+        return self;
+    };
+
+    /// Sets the keyword database for the lexer to use.
+    ///
+    /// @param {Struct} database
+    ///   A struct whose keys map to the corresponding Catspeak tokens they
+    ///   represent.
+    ///
+    /// @return {Struct.CatspeakLexer}
+    static withKeywords = function (database) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_typeof("database", database, "struct");
+        }
+        keywords = database;
+        return self;
+    };
 
     /// @ignore
     ///
     /// @return {Real}
     static __nextUTF8Char = function () {
-        if (offset >= size) {
+        if (buffOffset >= buffSize) {
             return 0;
         }
-        var byte = buffer_peek(buff, offset, buffer_u8);
-        offset += 1;
+        var byte = buffer_peek(buff, buffOffset, buffer_u8);
+        buffOffset += 1;
         if ((byte & 0b10000000) == 0) {
             // ASCII digit
             return byte;
@@ -220,8 +246,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         var dataWidth = 6;
         var utf8Value = (byte & ~headerMask) << (codepointCount * dataWidth);
         for (var i = codepointCount - 1; i >= 0; i -= 1) {
-            byte = buffer_peek(buff, offset, buffer_u8);
-            offset += 1;
+            byte = buffer_peek(buff, buffOffset, buffer_u8);
+            buffOffset += 1;
             if ((byte & 0b10000000) == 0) {
                 //__catspeak_error("invalid UTF8 continuation codepoint '", byte, "'");
                 return -1;
@@ -233,7 +259,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
 
     /// @ignore
     static __advance = function () {
-        lexemeEnd = offset;
+        lexemeEnd = buffOffset;
         if (charNext == ord("\r")) {
             column = 1;
             row += 1;
@@ -264,9 +290,9 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @param {Real} end_
     static __slice = function (start, end_) {
         var buff_ = buff;
-        // don't read outside bounds of `size`
-        var clipStart = min(start, size);
-        var clipEnd = min(end_, size);
+        // don't read outside bounds of `buffSize`
+        var clipStart = min(start, buffSize);
+        var clipEnd = min(end_, buffSize);
         if (clipEnd <= clipStart) {
             // always an empty slice
             if (CATSPEAK_DEBUG_MODE && clipEnd < clipStart) {
@@ -309,7 +335,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     ///
     /// @param {String} str
     static __getKeyword = function (str) {
-        var keyword = global.__catspeakString2Token[$ str];
+        var keyword = keywords[$ str];
         if (CATSPEAK_DEBUG_MODE && keyword != undefined) {
             // the user can modify what keywords are, so just check
             // that they've used one of the enum types instead of a

@@ -14,6 +14,7 @@
     {"name":"scr_testing_lexer_whitespace","order":7,"path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},
     {"name":"scr_testing_lexer_internals","order":1,"path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},
     {"name":"scr_future_file","order":2,"path":"scripts/scr_future_file/scr_future_file.yy",},
+    {"name":"scr_testing_lexer_config","order":11,"path":"scripts/scr_testing_lexer_config/scr_testing_lexer_config.yy",},
     {"name":"obj_future_file_save","order":1,"path":"objects/obj_future_file_save/obj_future_file_save.yy",},
     {"name":"scr_future","order":2,"path":"scripts/scr_future/scr_future.yy",},
     {"name":"scr_testing_lexer_symbols","order":8,"path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},
