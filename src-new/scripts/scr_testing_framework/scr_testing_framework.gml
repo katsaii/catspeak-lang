@@ -169,7 +169,7 @@ function run_test(f, forceRun=false) {
         return;
     }
     try {
-        var test = new f();
+        test = new f();
         if (test.automatic) {
             // otherwise `complete()` needs to be called manually
             test.complete();
