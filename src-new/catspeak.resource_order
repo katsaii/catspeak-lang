@@ -19,6 +19,7 @@
     {"name":"scr_future","order":2,"path":"scripts/scr_future/scr_future.yy",},
     {"name":"scr_testing_lexer_symbols","order":8,"path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},
     {"name":"scr_catspeak_parser","order":2,"path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},
+    {"name":"scr_testing_engine","order":3,"path":"scripts/scr_testing_engine/scr_testing_engine.yy",},
     {"name":"scr_testing_lexer","order":4,"path":"scripts/scr_testing_lexer/scr_testing_lexer.yy",},
     {"name":"scr_catspeak_alloc","order":2,"path":"scripts/scr_catspeak_alloc/scr_catspeak_alloc.yy",},
     {"name":"scr_testing_framework","order":1,"path":"scripts/scr_testing_framework/scr_testing_framework.yy",},
