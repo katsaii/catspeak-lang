@@ -34,6 +34,7 @@
     {"id":{"name":"scr_testing_lexer_whitespace","path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_internals","path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},"order":0,},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},"order":2,},
+    {"id":{"name":"scr_catspeak_engine","path":"scripts/scr_catspeak_engine/scr_catspeak_engine.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_config","path":"scripts/scr_testing_lexer_config/scr_testing_lexer_config.yy",},"order":0,},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},"order":1,},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},"order":2,},
