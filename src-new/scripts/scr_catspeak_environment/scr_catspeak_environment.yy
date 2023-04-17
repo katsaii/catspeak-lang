@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_engine",
+  "name": "scr_catspeak_environment",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
