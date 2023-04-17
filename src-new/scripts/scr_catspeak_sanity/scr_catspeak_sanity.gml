@@ -62,10 +62,10 @@ function __catspeak_check_typeof(name, val) {
         if (expect != "") {
             expect += " | ";
         }
-        expect += __catspeak_string(argument[i]);
+        expect += "'" + __catspeak_string(argument[i]) + "'";
     }
     __catspeak_error(
-        "expected arg ", name, ": ", expect,
+        "expected arg '", name, "' to be one of ", expect,
         ", but got '", actual, "'"
     );
 }
