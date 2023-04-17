@@ -1,7 +1,7 @@
 
 //# feather use syntax-errors
 
-run_test(function() : Test("location-1") constructor {
+run_test(function() : Test("location") constructor {
     var pos = catspeak_location_create(0, 0);
     assertEq(0, catspeak_location_get_row(pos));
     assertEq(0, catspeak_location_get_column(pos));
@@ -19,7 +19,7 @@ run_test(function() : Test("location-3") constructor {
     assertEq(4096 - 1, catspeak_location_get_column(pos));
 });
 
-run_test(function() : Test("location-negative-row-1") constructor {
+run_test(function() : Test("location-negative-row") constructor {
     try {
         catspeak_location_create(1048576, 0);
     } catch (e) {
@@ -37,7 +37,7 @@ run_test(function() : Test("location-negative-row-2") constructor {
     fail("expected to error when the row number is < 0");
 });
 
-run_test(function() : Test("location-negative-column-1") constructor {
+run_test(function() : Test("location-negative-column") constructor {
     try {
         catspeak_location_create(0, 4096);
     } catch (e) {
