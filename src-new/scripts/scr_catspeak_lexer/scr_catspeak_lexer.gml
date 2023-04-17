@@ -778,22 +778,21 @@ function catspeak_keywords_create() {
     return keywords;
 }
 
-/// Used to replace a token in a Catspeak keyword database. The old keyword
-/// with the that token type will be deleted, and the new name will take its
-/// place.
+/// Find the string representation of a [CatspeakToken], if one exists.
+///
+/// NOTE: This is an O(n) operation. This means that it's slow, and should
+///       only be used for debugging purposes.
 ///
 /// @param {Struct} keywords
-///   The keyword database to modify.
-///
-/// @param {String} name
-///   The new string representation of the keyword to use.
+///   The keyword database to search.
 ///
 /// @param {Enum.CatspeakToken} token
-///   The token type to replace.
-function catspeak_keywords_replace(keywords, name, token) {
+///   The token type to search for.
+///
+/// @return {String}
+function catspeak_keywords_find_name(keywords, token) {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_typeof("keywords", keywords, "struct");
-        __catspeak_check_typeof("name", name, "string");
         __catspeak_check_token("token", token);
     }
     var variables = variable_struct_get_names(keywords);
@@ -801,10 +800,39 @@ function catspeak_keywords_replace(keywords, name, token) {
     for (var i = 0; i < variableCount; i += 1) {
         var variable = variables[i];
         if (keywords[$ variable] == token) {
-            variable_struct_remove(keywords, variable);
+            return variable;
         }
     }
-    keywords[$ name] = token;
+    return undefined;
+}
+
+/// Used to change the string representation of a Catspeak keyword.
+///
+/// @param {Struct} keywords
+///   The keyword database to modify.
+///
+/// @param {String} currentName
+///   The current string representation of the keyword to change.
+///
+/// @param {String} newName
+///   The new string representation of the keyword.
+function catspeak_keywords_rename(keywords, currentName, newName) {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_typeof("keywords", keywords, "struct");
+        __catspeak_check_typeof("currentName", currentName, "string");
+        __catspeak_check_typeof("newName", newName, "string");
+    }
+    if (!variable_struct_exists(keywords, currentName)) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_error(
+                "no keyword with the name '", currentName, "' exists"
+            );
+        }
+        return;
+    }
+    var token = keywords[$ currentName];
+    variable_struct_remove(keywords, currentName);
+    keywords[$ newName] = token;
 }
 
 /// @ignore
