@@ -2,7 +2,8 @@
 
 //# feather use syntax-errors
 
-function CatspeakEngine() constructor {
+/// Packages all common Catspeak features into a neat, configurable box.
+function CatspeakEnvironment() constructor {
     self.keywords = undefined;
 
     /// Returns the keyword store for this Catspeak engine, allowing you to
@@ -41,11 +42,11 @@ function CatspeakEngine() constructor {
     };
 }
 
-/// The default Catspeak engine. Mainly exists for UX reasons.
+/// The default Catspeak environment. Mainly exists for UX reasons.
 globalvar Catspeak;
 
 /// @ignore
 function __catspeak_init_engine() {
     // initialise the default Catspeak engine
-    Catspeak = new CatspeakEngine();
+    Catspeak = new CatspeakEnvironment();
 }

@@ -2,7 +2,7 @@
 //# feather use syntax-errors
 
 run_test(function() : Test("engine-tokenise") constructor {
-    var engine = new CatspeakEngine();
+    var engine = new CatspeakEnvironment();
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = engine.tokenise(buff);
     assertEq(CatspeakToken.IDENT, lexer.next());
@@ -16,7 +16,7 @@ run_test(function() : Test("engine-tokenise") constructor {
 });
 
 run_test(function() : Test("engine-tokenise-2") constructor {
-    var engine = new CatspeakEngine();
+    var engine = new CatspeakEnvironment();
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = engine.tokenise(buff, 3, 5);
     assertEq(CatspeakToken.IDENT, lexer.next());
@@ -30,7 +30,7 @@ run_test(function() : Test("engine-tokenise-2") constructor {
 });
 
 run_test(function() : Test("engine-tokenise-keywords") constructor {
-    var engine = new CatspeakEngine();
+    var engine = new CatspeakEnvironment();
     catspeak_keywords_rename(
         engine.getKeywords(),
         "while", "world"
