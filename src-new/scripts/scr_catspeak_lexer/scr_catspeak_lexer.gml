@@ -778,7 +778,8 @@ function catspeak_keywords_create() {
     return keywords;
 }
 
-/// Find the string representation of a [CatspeakToken], if one exists.
+/// Find the string representation of a [CatspeakToken]. If the token does
+/// not appear in the database, then `undefined` is returned instead.
 ///
 /// NOTE: This is an O(n) operation. This means that it's slow, and should
 ///       only be used for debugging purposes.
@@ -833,6 +834,23 @@ function catspeak_keywords_rename(keywords, currentName, newName) {
     var token = keywords[$ currentName];
     variable_struct_remove(keywords, currentName);
     keywords[$ newName] = token;
+}
+
+/// Erases the identity of Catspeak programs by replacing all keywords with
+/// GML-adjacent alternatives.
+///
+/// @param {Struct} keywords
+///   The keyword database to modify.
+function catspeak_keywords_rename_gml(keywords) {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_typeof("keywords", keywords, "struct");
+    }
+    catspeak_keywords_rename(keywords, "--", "//");
+    catspeak_keywords_rename(keywords, "let", "var");
+    catspeak_keywords_rename(keywords, "fun", "function");
+    catspeak_keywords_rename(keywords, "impl", "constructor");
+    keywords[$ "&&"] = CatspeakToken.AND;
+    keywords[$ "||"] = CatspeakToken.OR;
 }
 
 /// @ignore
