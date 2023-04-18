@@ -83,6 +83,29 @@ function __catspeak_check_typeof_numeric(name, val) {
 ///
 /// @param {Any} name
 /// @param {Any} val
+/// @param {Any} ...
+function __catspeak_check_instanceof(name, val) {
+    var actual = instanceof(val);
+    var expect = "";
+    for (var i = 2; i < argument_count; i += 1) {
+        if (actual == argument[i]) {
+            return;
+        }
+        if (expect != "") {
+            expect += " | ";
+        }
+        expect += "'" + __catspeak_string(argument[i]) + "'";
+    }
+    __catspeak_error(
+        "expected arg '", name, "' to be one of ", expect,
+        ", but got '", actual, "'"
+    );
+}
+
+/// @ignore
+///
+/// @param {Any} name
+/// @param {Any} val
 /// @param {Real} size
 function __catspeak_check_size_bits(name, val, size) {
     gml_pragma("forceinline");
