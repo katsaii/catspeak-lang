@@ -13,6 +13,10 @@ function CatspeakParser(lexer) {
     self.lexer = lexer;
     self.asg = undefined;
 
+    /// Builds the syntax graph of the completed Catspeak program and returns
+    /// it as a JSON struct.
+    ///
+    /// @return {Struct}
     static complete = function () {
         asg ??= { }; // TODO
         return asg;
