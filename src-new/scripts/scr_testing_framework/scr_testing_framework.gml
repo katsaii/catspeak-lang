@@ -73,7 +73,7 @@ function Test(name) constructor {
 
     assertEq = function(a, b) {
         var testCase = __makeTestCaseStruct();
-        if (a != b) {
+        if (!__structuralEq(a, b)) {
             testCase.fail(__cat(
                 "values are not the same (", a, "!=", b, ")"
             ));
@@ -83,9 +83,29 @@ function Test(name) constructor {
 
     assertNeq = function(a, b) {
         var testCase = __makeTestCaseStruct();
-        if (a == b) {
+        if (__structuralEq(a, b)) {
             testCase.fail(__cat(
-                "values are the same (", a, "!=", b, ")"
+                "values are the same (", a, "==", b, ")"
+            ));
+        }
+        return testCase;
+    };
+
+    assertStrictEq = function(a, b) {
+        var testCase = __makeTestCaseStruct();
+        if (!__strictEq(a, b)) {
+            testCase.fail(__cat(
+                "values are not the same [strict!] (", a, "!=", b, ")"
+            ));
+        }
+        return testCase;
+    };
+
+    assertStrictNeq = function(a, b) {
+        var testCase = __makeTestCaseStruct();
+        if (__strictEq(a, b)) {
+            testCase.fail(__cat(
+                "values are the same [strict!] (", a, "==", b, ")"
             ));
         }
         return testCase;
@@ -191,3 +211,75 @@ function __cat() {
     }
     return msg;
 }
+
+function __strictEq(a, b) {
+    if (typeof(a) != typeof(b)) {
+        return false;
+    }
+    return a == b || is_nan(a) && is_nan(b);
+};
+
+function __structuralEq(a, b) {
+    // value type comparison
+    if (a == b || is_nan(a) && is_nan(b)) {
+        return true;
+    }
+    // method comparison
+    if (is_method(a) && is_method(b)) {
+        if (method_get_index(a) != method_get_index(b)) {
+            return false;
+        }
+        return __structuralEq(method_get_self(a), method_get_self(b));
+    }
+    // array comparison
+    if (is_array(a) && is_array(b)) {
+        if (array_equals(a, b)) {
+            return true;
+        }
+        var n = array_length(a);
+        var m = array_length(b);
+        if (n != m) {
+            return false;
+        }
+        for (var i = 0; i < n; i += 1) {
+            if (!__structuralEq(a[i], b[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    // struct comparison
+    if (is_struct(a) && is_struct(b)) {
+        if (instanceof(a) != instanceof(b)) {
+            return false;
+        }
+        var aNames = variable_struct_get_names(a);
+        var bNames = variable_struct_get_names(b);
+        var n = array_length(aNames);
+        var m = array_length(bNames);
+        if (n != m) {
+            return false;
+        }
+        for (var i = 0; i < n; i += 1) {
+            var name = aNames[i];
+            if (!variable_struct_exists(b, name)) {
+                return false;
+            }
+            if (!__structuralEq(a[$ name], b[$ name])) {
+                return false;
+            }
+        }
+        for (var i = 0; i < m; i += 1) {
+            var name = bNames[i];
+            if (!variable_struct_exists(a, name)) {
+                return false;
+            }
+            if (!__structuralEq(a[$ name], b[$ name])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    // not equal
+    return false;
+};
