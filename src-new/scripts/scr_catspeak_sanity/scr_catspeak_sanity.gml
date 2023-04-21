@@ -111,11 +111,11 @@ function __catspeak_check_size_bits(name, val, size) {
     gml_pragma("forceinline");
     __catspeak_check_typeof_numeric(name, val);
     if (val < 0) {
-        __catspeak_error("arg ", name, " must not be negative, got", val);
+        __catspeak_error("arg '", name, "' must not be negative, got", val);
     }
     if (val >= power(2, size)) {
         __catspeak_error(
-            "arg ", name, " is too large, it must fit within ", size, " bits"
+            "arg '", name, "' is too large, it must fit within ", size, " bits"
         );
     }
 }
@@ -123,8 +123,20 @@ function __catspeak_check_size_bits(name, val, size) {
 /// @ignore
 ///
 /// @param {Any} name
-/// @param {Any} val
-/// @param {Real} size
+/// @param {Any} struct
+/// @param {Any} key
+function __catspeak_check_var_exists(name, struct, key) {
+    gml_pragma("forceinline");
+    if (!variable_struct_exists(struct, key)) {
+        __catspeak_error(
+            "arg '", name, "' struct variable '", key, "' does not exist"
+        );
+    }
+}
+
+/// @ignore
+///
+/// @param {Any} name
 function __catspeak_check_global_exists(name) {
     gml_pragma("forceinline");
     if (!variable_global_exists(name)) {
