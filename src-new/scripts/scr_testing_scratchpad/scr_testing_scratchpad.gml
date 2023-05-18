@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "none";
+var runExperiment = "parser";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -21,4 +21,13 @@ TEST_EXPERIMENT "lexer" {
     lexer.nextWithWhitespace(); // whitespace
     lexer.nextWithWhitespace(); // 5_6_7__
     show_message([lexer.getLexeme(), lexer.getValue()]);
+}
+
+TEST_EXPERIMENT "parser" {
+    var buff = __catspeak_create_buffer_from_string(@'123_4.5');
+    var lexer = new CatspeakLexer(buff);
+    var builder = new CatspeakASGBuilder();
+    var parser = new CatspeakParser(lexer, builder);
+    parser.parseExpression();
+    show_message(builder.get());
 }
