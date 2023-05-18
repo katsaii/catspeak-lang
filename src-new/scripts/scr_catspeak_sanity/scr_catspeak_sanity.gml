@@ -83,6 +83,22 @@ function __catspeak_check_typeof_numeric(name, val) {
 ///
 /// @param {Any} name
 /// @param {Any} val
+/// @param {Function} p
+/// @param {Any} handleType
+function __catspeak_check_typeof_handle(name, val, p, handleType) {
+    gml_pragma("forceinline");
+    __catspeak_check_typeof_numeric(name, val);
+    if (!p(val)) {
+        __catspeak_error(
+            "expected arg '", name, "' to be a valid ", handleType
+        );
+    }
+}
+
+/// @ignore
+///
+/// @param {Any} name
+/// @param {Any} val
 /// @param {Any} ...
 function __catspeak_check_instanceof(name, val) {
     var actual = instanceof(val);

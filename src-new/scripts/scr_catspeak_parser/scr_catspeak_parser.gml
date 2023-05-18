@@ -29,7 +29,7 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Bool}
     static empty = function () {
-        return lexer.peek() == 0;
+        return lexer.peek() == CatspeakToken.EOF;
     };
 
     /// Parses a single Catspeak expression from the lexer and adds relevant
@@ -48,8 +48,13 @@ function CatspeakParser(lexer, builder) constructor {
             return asg.addValue(lexer.getValue());
         } else if (token == CatspeakToken.IDENT) {
             __catspeak_error_bug();
+        } else if (token == CatspeakToken.EOF) {
+            __ex("unexpected end of file");
         } else {
-            __ex("unexpected token '", lexer.getLexeme(), "' in expression");
+            __ex(
+                "unexpected token '", lexer.getLexeme(),
+                "' (", token,") in expression"
+            );
         }
     };
 
