@@ -33,6 +33,7 @@
     {"name":"scr_testing_lexer_misc","order":12,"path":"scripts/scr_testing_lexer_misc/scr_testing_lexer_misc.yy",},
     {"name":"rm_testing","order":1,"path":"rooms/rm_testing/rm_testing.yy",},
     {"name":"scr_testing_scratchpad","order":4,"path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},
+    {"name":"scr_catspeak_codegen","order":4,"path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},
     {"name":"scr_testing_lexer_ident","order":5,"path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},
   ],
 }

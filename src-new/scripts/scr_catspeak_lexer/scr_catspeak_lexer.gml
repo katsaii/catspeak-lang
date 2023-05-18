@@ -179,7 +179,7 @@ function __catspeak_create_buffer_from_string(src) {
 function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
-        __catspeak_check_typeof_numeric("buff", buff);
+        __catspeak_check_typeof_handle("buff", buff, buffer_exists, "buffer");
         __catspeak_check_typeof_numeric("offset", offset);
         __catspeak_check_typeof_numeric("size", size);
     }

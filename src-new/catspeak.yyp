@@ -57,6 +57,7 @@
     {"id":{"name":"scr_testing_lexer_misc","path":"scripts/scr_testing_lexer_misc/scr_testing_lexer_misc.yy",},},
     {"id":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},},
     {"id":{"name":"scr_testing_scratchpad","path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},},
+    {"id":{"name":"scr_catspeak_codegen","path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},},
     {"id":{"name":"scr_testing_lexer_ident","path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},},
     {"id":{"name":"obj_future_file_load","path":"objects/obj_future_file_load/obj_future_file_load.yy",},},
   ],
