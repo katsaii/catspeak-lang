@@ -23,6 +23,23 @@ function CatspeakParser(lexer, builder) constructor {
 
     self.lexer = lexer;
     self.asg = builder;
+    self.total = false;
+
+    /// Enables or disables any additional features for this parser, according
+    /// to the supplied feature flags. 
+    ///
+    /// @param {Enum.CatspeakFeature} featureFlags
+    ///   An instance of [CatspeakFeature] specifying which features to enable.
+    ///
+    /// @return {Struct}
+    static withFeatures = function (featureFlags) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_typeof_numeric("featureFlags", featureFlags);
+        }
+
+        total = (featureFlags & CatspeakFeature.TOTAL) != 0;
+        return self;
+    };
 
     /// Returns `true` if the parser has reached the end of the file, or
     /// `false` if there is still more left to parse.
