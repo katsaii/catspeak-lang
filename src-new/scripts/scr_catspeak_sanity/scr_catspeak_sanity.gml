@@ -36,6 +36,16 @@ function __catspeak_error_bug() {
 }
 
 /// @ignore
+///
+/// @param {Any} feature
+function __catspeak_error_unimplemented(feature) {
+    gml_pragma("forceinline");
+    __catspeak_error(
+        "the feature '", feature, "' has not been implemented yet"
+    );
+}
+
+/// @ignore
 function __catspeak_check_init() {
     gml_pragma("forceinline");
     if (catspeak_force_init()) {
