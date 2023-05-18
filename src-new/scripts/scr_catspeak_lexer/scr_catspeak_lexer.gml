@@ -143,6 +143,7 @@ function catspeak_token_is_operator(token) {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_typeof_numeric("token", token);
     }
+
     return token > CatspeakToken.__OPERATORS_BEGIN__
             && token < CatspeakToken.__OPERATORS_END__;
 }
@@ -213,6 +214,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_typeof("database", database, "struct");
         }
+
         keywords = database;
         return self;
     };
@@ -796,6 +798,7 @@ function catspeak_keywords_find_name(keywords, token) {
         __catspeak_check_typeof("keywords", keywords, "struct");
         __catspeak_check_token("token", token);
     }
+
     var variables = variable_struct_get_names(keywords);
     var variableCount = array_length(variables);
     for (var i = 0; i < variableCount; i += 1) {
@@ -823,6 +826,7 @@ function catspeak_keywords_rename(keywords, currentName, newName) {
         __catspeak_check_typeof("currentName", currentName, "string");
         __catspeak_check_typeof("newName", newName, "string");
     }
+
     if (!variable_struct_exists(keywords, currentName)) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_error(
@@ -845,6 +849,7 @@ function catspeak_keywords_rename_gml(keywords) {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_typeof("keywords", keywords, "struct");
     }
+
     catspeak_keywords_rename(keywords, "--", "//");
     catspeak_keywords_rename(keywords, "let", "var");
     catspeak_keywords_rename(keywords, "fun", "function");

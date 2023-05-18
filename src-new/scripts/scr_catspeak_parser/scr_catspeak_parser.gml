@@ -26,7 +26,7 @@ function CatspeakParser(lexer, builder) constructor {
     self.total = false;
 
     /// Enables or disables any additional features for this parser, according
-    /// to the supplied feature flags. 
+    /// to the supplied feature flags.
     ///
     /// @param {Enum.CatspeakFeature} featureFlags
     ///   An instance of [CatspeakFeature] specifying which features to enable.
@@ -103,6 +103,8 @@ function CatspeakASGBuilder() constructor {
     };
 
     /// Returns the underlying syntax graph for this builder.
+    ///
+    /// @return {Struct}
     static get = function () {
         return asg;
     };
