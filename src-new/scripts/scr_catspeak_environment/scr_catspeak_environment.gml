@@ -2,9 +2,20 @@
 
 //# feather use syntax-errors
 
+/// Represents optional features which can be passed to various parts of
+/// the Catspeak environment to modify their behaviours.
+enum CatspeakFeature {
+    /// No features.
+    NONE,
+    /// Perform totality checking when parsing programs to ensure programs
+    /// never enter infinite loops.
+    TOTAL = 0x1,
+}
+
 /// Packages all common Catspeak features into a neat, configurable box.
 function CatspeakEnvironment() constructor {
     self.keywords = undefined;
+    self.features = undefined;
 
     /// Returns the keyword store for this Catspeak engine, allowing you to
     /// modify how the Catspeak lexer interprets keywords.
@@ -13,6 +24,16 @@ function CatspeakEnvironment() constructor {
     static getKeywords = function () {
         keywords ??= catspeak_keywords_create();
         return keywords;
+    };
+
+    /// Sets the list of features to enable for any Catspeak programs compiled
+    /// with this Catspeak engine. Pass `undefined` to reset the feature flags
+    /// back to the defaults.
+    ///
+    /// @param {Enum.CatspeakFeature} featureFlags
+    ///   The Catspeak features to enable.
+    static withFeatures = function (featureFlags) {
+        self.features = featureFlags;
     };
 
     /// Creates a new [CatspeakLexer] from the supplied buffer, overriding
@@ -66,6 +87,10 @@ function CatspeakEnvironment() constructor {
         var lexer = tokenise(buff, offset, size);
         var builder = new CatspeakASGBuilder();
         var parser = new CatspeakParser(lexer, builder);
+        if (features != undefined) {
+            // withFeatures() will do argument validation
+            parser.withFeatures(features);
+        }
         while (!parser.empty()) {
             parser.parseExpression();
         }
