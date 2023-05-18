@@ -96,6 +96,32 @@ function CatspeakEnvironment() constructor {
         }
         return builder.get();
     };
+
+    /// Similar to [parse], except it will pass the responsibility of
+    /// parsing to this sessions async handler.
+    ///
+    /// NOTE: The async handler can be customised, and therefore any
+    ///       third-party handlers are not guaranteed to finish within a
+    ///       reasonable time.
+    ///
+    /// NOTE: The parser does not take ownership of this buffer, but it may
+    ///       mutate it so beware. Therefore you should make sure to delete
+    ///       the buffer once parsing is complete.
+    ///
+    /// @param {Id.Buffer} buff
+    ///   The ID of the GML buffer to use.
+    ///
+    /// @param {Real} [offset]
+    ///   The offset in the buffer to start parsing from. Defaults to 0.
+    ///
+    /// @param {Real} [size]
+    ///   The length of the buffer input. Any characters beyond this limit
+    ///   will be treated as the end of the file. Defaults to `infinity`.
+    ///
+    /// @return {Struct.Future}
+    static parseAsync = function (buff, offset=undefined, size=undefined) {
+        __catspeak_error_unimplemented("async-parsing");
+    };
 }
 
 /// The default Catspeak environment. Mainly exists for UX reasons.
