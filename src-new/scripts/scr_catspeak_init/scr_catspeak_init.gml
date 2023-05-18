@@ -23,6 +23,12 @@
 /// ```gml
 /// #macro Release:CATSPEAK_DEBUG_MODE false
 /// ```
+///
+/// NOTE: Disabling this will give a significant performance boost, but may
+///       result in undefined behaviour or cryptic error messages if an error
+///       occurs. If you are getting errors in your game, and you suspect
+///       Catspeak may be the cause, make sure to re-enable debug mode if you
+///       have it disabled.
 #macro CATSPEAK_DEBUG_MODE (GM_build_type == "run")
 
 /// Makes sure that all Catspeak global variables are initialised.
