@@ -91,8 +91,8 @@ function CatspeakEnvironment() constructor {
             // withFeatures() will do argument validation
             parser.withFeatures(features);
         }
-        while (!parser.empty()) {
-            parser.parseExpression();
+        while (parser.inProgress()) {
+            parser.update();
         }
         return builder.get();
     };

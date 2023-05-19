@@ -41,17 +41,17 @@ function CatspeakParser(lexer, builder) constructor {
         return self;
     };
 
-    /// Returns `true` if the parser has reached the end of the file, or
-    /// `false` if there is still more left to parse.
+    /// Returns `false` if the parser has reached the end of the file, or
+    /// `true` if there is still more left to parse.
     ///
     /// @return {Bool}
-    static empty = function () {
-        return lexer.peek() == CatspeakToken.EOF;
+    static inProgress = function () {
+        return lexer.peek() != CatspeakToken.EOF;
     };
 
     /// Parses a single Catspeak expression from the lexer and adds relevant
     /// parse information to the syntax graph.
-    static parseExpression = function () {
+    static update = function () {
         var term = __parseTerminal();
         asg.addRoot(term);
     };
@@ -94,12 +94,12 @@ function CatspeakParser(lexer, builder) constructor {
 /// Handles the generation and optimisation of a syntax graph.
 function CatspeakASGBuilder() constructor {
     self.globals = [];
-    self.root = [];
     self.terms = [];
+    self.rootTerms = [];
     self.asg = {
-        globals : self.globals,
-        root : self.root,
-        terms : self.terms,
+        globals : globals,
+        rootTerms : rootTerms,
+        terms : terms,
     };
 
     /// Returns the underlying syntax graph for this builder.
@@ -130,7 +130,7 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_typeof_numeric("termId", termId);
         }
 
-        array_push(root, termId);
+        array_push(rootTerms, termId);
     };
 
     /// @ignore
