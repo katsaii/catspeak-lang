@@ -123,7 +123,13 @@ function CatspeakEnvironment() constructor {
         __catspeak_error_unimplemented("async-parsing");
     };
 
-    /// TODO: Docs
+    /// Compiles a syntax graph into a GML function. See the [parse] function
+    /// for how to generate a syntax graph from a Catspeak script.
+    ///
+    /// @param {Struct} asg
+    ///   The syntax graph to convert into a GML function.
+    ///
+    /// @return {Function}
     static compileGML = function (asg) {
         // tokenise() will do argument validation
         var compiler = new CatspeakGMLCompiler(asg);
