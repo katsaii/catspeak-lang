@@ -122,6 +122,16 @@ function CatspeakEnvironment() constructor {
     static parseAsync = function (buff, offset=undefined, size=undefined) {
         __catspeak_error_unimplemented("async-parsing");
     };
+
+    /// TODO: Docs
+    static compileGML = function (asg) {
+        // tokenise() will do argument validation
+        var compiler = new CatspeakGMLCompiler(asg);
+        while (compiler.inProgress()) {
+            compiler.update();
+        }
+        return compiler.get();
+    };
 }
 
 /// The default Catspeak environment. Mainly exists for UX reasons.

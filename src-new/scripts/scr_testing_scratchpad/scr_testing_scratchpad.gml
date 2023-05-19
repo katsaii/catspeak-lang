@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "parser-2";
+var runExperiment = "compiler";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -38,8 +38,9 @@ TEST_EXPERIMENT "parser-2" {
     show_message(asg);
 }
 
-TEST_EXPERIMENT "compiler-2" {
+TEST_EXPERIMENT "compiler" {
     var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
     var asg = Catspeak.parse(buff);
-    show_message(asg);
+    var f = Catspeak.compileGML(asg);
+    show_message([f(), f]);
 }
