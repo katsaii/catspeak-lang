@@ -37,3 +37,9 @@ TEST_EXPERIMENT "parser-2" {
     var asg = Catspeak.parse(buff);
     show_message(asg);
 }
+
+TEST_EXPERIMENT "compiler-2" {
+    var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
+    var asg = Catspeak.parse(buff);
+    show_message(asg);
+}
