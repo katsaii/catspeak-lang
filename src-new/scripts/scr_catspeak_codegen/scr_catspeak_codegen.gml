@@ -52,33 +52,7 @@ function CatspeakGMLCompiler(asg) constructor {
         programCount : rootCount,
         self_ : undefined,
     };
-    self.gmlFunc = method(self.programContext, function() {
-        var startTimer = startTime < 0;
-        if (startTimer) {
-            startTime = current_time;
-        } else {
-            __catspeak_timeout_check(startTime);
-        }
-        var oldSelf = self_;
-        self_ = other;
-        var lastValue = undefined;
-        try {
-            var i = 0;
-            var program_ = program;
-            repeat (programCount) {
-                var f = program_[i];
-                lastValue = f();
-                i += 1;
-            }
-        } finally {
-            self_ = oldSelf;
-            if (startTimer) {
-                // reset the timer
-                startTime = -1;
-            }
-        }
-        return lastValue;
-    });
+    self.gmlFunc = method(self.programContext, __catspeak_function__);
 
     /// Returns `false` if the compiler has finished compiling, or `true` if
     /// there is still more left to compile.
@@ -115,4 +89,33 @@ function CatspeakGMLCompiler(asg) constructor {
     static get = function () {
         return gmlFunc;
     };
+}
+
+/// @ignore
+function __catspeak_function__() {
+    var startTimer = startTime < 0;
+    if (startTimer) {
+        startTime = current_time;
+    } else {
+        __catspeak_timeout_check(startTime);
+    }
+    var oldSelf = self_;
+    self_ = other;
+    var lastValue = undefined;
+    try {
+        var i = 0;
+        var program_ = program;
+        repeat (programCount) {
+            var f = program_[i];
+            lastValue = f();
+            i += 1;
+        }
+    } finally {
+        self_ = oldSelf;
+        if (startTimer) {
+            // reset the timer
+            startTime = -1;
+        }
+    }
+    return lastValue;
 }
