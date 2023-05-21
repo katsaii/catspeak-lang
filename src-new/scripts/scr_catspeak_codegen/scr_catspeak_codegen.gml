@@ -36,15 +36,13 @@ function CatspeakGMLCompiler(asg) constructor {
         __catspeak_check_var_exists("asg", asg, "rootTerms");
         __catspeak_check_var_exists("asg", asg, "terms");
         __catspeak_check_typeof("asg.globals", asg.globals, "array");
-        __catspeak_check_typeof("asg.rootTerms", asg.rootTerms, "array");
+        __catspeak_check_typeof_numeric("asg.rootTerms", asg.rootTerms);
         __catspeak_check_typeof("asg.terms", asg.terms, "array");
     }
 
     self.globals = asg.globals;
-    self.rootTerms = asg.rootTerms;
-    self.rootCount = array_length(self.rootTerms);
-    self.rootCurrent = 0;
     self.terms = asg.terms;
+    self.curr = self.terms[asg.root];
     self.program = array_create(rootCount);
     self.programContext = {
         startTime : -1,
@@ -59,7 +57,7 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @return {Bool}
     static inProgress = function () {
-        return rootCurrent < rootCount;
+        return curr != undefined;
     };
 
     /// Compiles a single root term from the supplied syntax graph and writes

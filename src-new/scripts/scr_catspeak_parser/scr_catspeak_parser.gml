@@ -95,10 +95,10 @@ function CatspeakParser(lexer, builder) constructor {
 function CatspeakASGBuilder() constructor {
     self.globals = [];
     self.terms = [];
-    self.rootTerms = [];
+    self.root = addValue(undefined);
     self.asg = {
         globals : globals,
-        rootTerms : rootTerms,
+        root : -1,
         terms : terms,
     };
 
@@ -106,6 +106,8 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static get = function () {
+        // patch the root before getting the asg
+        asg.root = root;
         return asg;
     };
 
@@ -130,8 +132,22 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_typeof_numeric("termId", termId);
         }
 
-        array_push(rootTerms, termId);
+        root = __mergeTerms(root, termId);
     };
+
+    /// @ignore
+    ///
+    /// @param {Real} termAId
+    /// @param {Real} termBId
+    /// @return {Real}
+    static __mergeTerms = function (termAId, termBId) {
+        var termA = terms[termAId];
+        if (termA.type == CatspeakTerm.VALUE) {
+            return termBId;
+        } else {
+            __catspeak_error_unimplemented("other-terms");
+        }
+    }
 
     /// @ignore
     ///
