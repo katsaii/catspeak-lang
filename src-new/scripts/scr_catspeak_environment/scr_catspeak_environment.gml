@@ -7,9 +7,6 @@
 enum CatspeakFeature {
     /// No features.
     NONE,
-    /// Perform totality checking when parsing programs to ensure programs
-    /// never enter infinite loops.
-    TOTAL = 0x1,
 }
 
 /// Packages all common Catspeak features into a neat, configurable box.
@@ -91,9 +88,10 @@ function CatspeakEnvironment() constructor {
             // withFeatures() will do argument validation
             parser.withFeatures(features);
         }
-        while (parser.inProgress()) {
-            parser.update();
-        }
+        var moreToParse;
+        do {
+            moreToParse = parser.update();
+        } until (!moreToParse);
         return builder.get();
     };
 
@@ -131,12 +129,13 @@ function CatspeakEnvironment() constructor {
     ///
     /// @return {Function}
     static compileGML = function (asg) {
-        // tokenise() will do argument validation
+        // CatspeakGMLCompiler() will do argument validation
         var compiler = new CatspeakGMLCompiler(asg);
-        while (compiler.inProgress()) {
-            compiler.update();
-        }
-        return compiler.get();
+        var result;
+        do {
+            result = compiler.update();
+        } until (result != undefined);
+        return result;
     };
 }
 

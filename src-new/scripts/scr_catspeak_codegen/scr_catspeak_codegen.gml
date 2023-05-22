@@ -52,43 +52,30 @@ function CatspeakGMLCompiler(asg) constructor {
         self_ : undefined,
     };
     self.gmlFunc = method(self.context, __catspeak_function__);
+    //# feather disable once GM2043
     self.context.program = __compileTerm(asg.root);
 
-    /// Returns the compiled GML function.
+    /// Updates the compiler by generating the code for a single term from the
+    /// supplied syntax graph. Returns the result of the compilation if there
+    /// are no more terms to compile, or `undefined` if there are still more
+    /// terms left to compile.
     ///
-    /// NOTE: If you attempt to call this function before compilation is
-    ///       complete, then it will be undefined behaviour in release mode.
+    /// @example
+    ///   Creates a new [CatspeakGMLCompiler] from the variable `asg` and
+    ///   loops until the compiler is finished compiling. The final result is
+    ///   assigned to the `result` local variable.
+    ///
+    /// ```gml
+    /// var compiler = new CatspeakGMLCompiler(asg);
+    /// var result;
+    /// do {
+    ///     result = compiler.update();
+    /// } until (result != undefined);
+    /// ```
     ///
     /// @return {Function}
-    static get = function () {
-        if (CATSPEAK_DEBUG_MODE) {
-            if (inProgress()) {
-                __catspeak_error(
-                    "cannot finalise CatspeakGMLCompiler whilst ",
-                    "compilation is still in progress"
-                );
-            }
-        }
-
-        return gmlFunc;
-    };
-
-    /// Returns `false` if the compiler has finished compiling, or `true` if
-    /// there is still more left to compile.
-    ///
-    /// @return {Bool}
-    static inProgress = function () {
-        return false;
-    };
-
-    /// Compiles a single root term from the supplied syntax graph and writes
-    /// it to the GML function.
     static update = function () {
-        if (CATSPEAK_DEBUG_MODE) {
-            if (!inProgress) {
-                __catspeak_error("nothing left to compile");
-            }
-        }
+        return gmlFunc;
     };
 
     /// @ignore

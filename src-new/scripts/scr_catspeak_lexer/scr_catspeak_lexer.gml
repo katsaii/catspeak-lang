@@ -199,6 +199,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.value = undefined;
     self.peeked = undefined;
     self.charCurr = 0;
+    //# feather disable once GM2043
     self.charNext = __nextUTF8Char();
     self.skipNextSemicolon = false;
     self.keywords = global.__catspeakString2Token;
