@@ -70,9 +70,9 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertEq = function(a, b) {
+    assertEq = function(a, b, exact=true) {
         var testCase = __makeTestCaseStruct();
-        if (!__structuralEq(a, b)) {
+        if (!__structuralEq(a, b, exact)) {
             testCase.fail(__cat(
                 "values are not the same (", a, "!=", b, ")"
             ));
@@ -80,9 +80,9 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertNeq = function(a, b) {
+    assertNeq = function(a, b, exact=true) {
         var testCase = __makeTestCaseStruct();
-        if (__structuralEq(a, b)) {
+        if (__structuralEq(a, b, exact)) {
             testCase.fail(__cat(
                 "values are the same (", a, "==", b, ")"
             ));
@@ -230,7 +230,7 @@ function __strictEq(a, b) {
     return a == b || is_nan(a) && is_nan(b);
 };
 
-function __structuralEq(a, b) {
+function __structuralEq(a, b, exact) {
     // value type comparison
     if (a == b || is_nan(a) && is_nan(b)) {
         return true;
@@ -240,7 +240,7 @@ function __structuralEq(a, b) {
         if (method_get_index(a) != method_get_index(b)) {
             return false;
         }
-        return __structuralEq(method_get_self(a), method_get_self(b));
+        return __structuralEq(method_get_self(a), method_get_self(b), exact);
     }
     // array comparison
     if (is_array(a) && is_array(b)) {
@@ -253,7 +253,7 @@ function __structuralEq(a, b) {
             return false;
         }
         for (var i = 0; i < n; i += 1) {
-            if (!__structuralEq(a[i], b[i])) {
+            if (!__structuralEq(a[i], b[i], exact)) {
                 return false;
             }
         }
@@ -268,25 +268,37 @@ function __structuralEq(a, b) {
         var bNames = variable_struct_get_names(b);
         var n = array_length(aNames);
         var m = array_length(bNames);
-        if (n != m) {
-            return false;
-        }
-        for (var i = 0; i < n; i += 1) {
-            var name = aNames[i];
-            if (!variable_struct_exists(b, name)) {
+        if (exact) {
+            if (n != m) {
                 return false;
             }
-            if (!__structuralEq(a[$ name], b[$ name])) {
-                return false;
+            for (var i = 0; i < n; i += 1) {
+                var name = aNames[i];
+                if (!variable_struct_exists(b, name)) {
+                    return false;
+                }
+                if (!__structuralEq(a[$ name], b[$ name], exact)) {
+                    return false;
+                }
             }
-        }
-        for (var i = 0; i < m; i += 1) {
-            var name = bNames[i];
-            if (!variable_struct_exists(a, name)) {
-                return false;
+            for (var i = 0; i < m; i += 1) {
+                var name = bNames[i];
+                if (!variable_struct_exists(a, name)) {
+                    return false;
+                }
+                if (!__structuralEq(a[$ name], b[$ name], exact)) {
+                    return false;
+                }
             }
-            if (!__structuralEq(a[$ name], b[$ name])) {
-                return false;
+        } else {
+            for (var i = 0; i < m; i += 1) {
+                var name = bNames[i];
+                if (!variable_struct_exists(a, name)) {
+                    return false;
+                }
+                if (!__structuralEq(a[$ name], b[$ name], exact)) {
+                    return false;
+                }
             }
         }
         return true;
