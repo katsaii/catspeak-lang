@@ -23,7 +23,6 @@ function CatspeakParser(lexer, builder) constructor {
 
     self.lexer = lexer;
     self.asg = builder;
-    self.total = false;
 
     /// Enables or disables any additional features for this parser, according
     /// to the supplied feature flags.
@@ -37,7 +36,6 @@ function CatspeakParser(lexer, builder) constructor {
             __catspeak_check_typeof_numeric("featureFlags", featureFlags);
         }
 
-        total = (featureFlags & CatspeakFeature.TOTAL) != 0;
         return self;
     };
 

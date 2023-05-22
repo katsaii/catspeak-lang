@@ -117,6 +117,7 @@ function __catspeak_function__() {
     if (startTimer) {
         callTime = current_time;
     } else {
+        // if the program runs for too long, crash instead of hanging
         __catspeak_timeout_check(callTime);
     }
     var oldSelf = self_;

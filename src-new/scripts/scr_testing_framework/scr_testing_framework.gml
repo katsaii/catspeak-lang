@@ -11,14 +11,13 @@ function test_stats() {
         totalFailed : 0,
         totalActive : 0,
         totalFatal : 0,
+        testQueue : ds_queue_create(),
     };
     return stats;
 }
 
 function Test(name) constructor {
     var stats = test_stats();
-    stats.total += 1;
-    stats.totalActive += 1;
     self.number = stats.total;
     self.name = __cat(name);
     self.fails = [];
@@ -184,18 +183,30 @@ function AsyncTest(name) : Test(name) constructor {
     automatic = false;
 }
 
-function run_test(f, forceRun=false) {
+function test_add(f, forceRun=false) {
     if (!forceRun && !TEST_RUN_ENABLED) {
         return;
     }
+    var stats = test_stats();
+    stats.total += 1;
+    stats.totalActive += 1;
+    ds_queue_enqueue(stats.testQueue, f);
+}
+
+function test_run() {
+    var stats = test_stats();
+    if (ds_queue_empty(stats.testQueue)) {
+        return;
+    }
+    var testFunc = ds_queue_dequeue(stats.testQueue);
     try {
-        test = new f();
+        test = new testFunc();
         if (test.automatic) {
             // otherwise `complete()` needs to be called manually
             test.complete();
         }
     } catch (e) {
-        test_stats().totalFatal += 1;
+        stats.totalFatal += 1;
         show_debug_message(
             "encountered a fatal error when running one of the test cases:\n"
             + __catspeak_string(e)
