@@ -41,19 +41,32 @@ function CatspeakParser(lexer, builder) constructor {
         return self;
     };
 
-    /// Returns `false` if the parser has reached the end of the file, or
-    /// `true` if there is still more left to parse.
+    /// Updates the parser by parsing a simple Catspeak expression from the
+    /// supplied lexer, adding any relevant parse information to the supplied
+    /// syntax graph.
     ///
-    /// @return {Bool}
-    static inProgress = function () {
-        return lexer.peek() != CatspeakToken.EOF;
-    };
-
-    /// Parses a single Catspeak expression from the lexer and adds relevant
-    /// parse information to the syntax graph.
+    /// Returns `true` if there is still more data left to parse, and `false`
+    /// if the parser has reached the end of the file.
+    ///
+    /// @example
+    ///   Creates a new [CatspeakParser] from the variables `lexer` and
+    ///   `builder`, then loops until there is nothing left to parse.
+    ///
+    /// ```gml
+    /// var parser = new CatspeakParser(lexer, builder);
+    /// var moreToParse;
+    /// do {
+    ///     moreToParse = parser.update();
+    /// } until (!moreToParse);
+    /// ```
+    ///
+    /// @return {Function}
     static update = function () {
-        var term = __parseTerminal();
-        asg.addRoot(term);
+        if (lexer.peek() == CatspeakToken.EOF) {
+            return false;
+        }
+        asg.addRoot(__parseTerminal());
+        return true;
     };
 
     /// @ignore
@@ -95,6 +108,7 @@ function CatspeakParser(lexer, builder) constructor {
 function CatspeakASGBuilder() constructor {
     self.globals = [];
     self.terms = [];
+    //# feather disable once GM2043
     self.root = addValue(undefined);
     self.asg = {
         globals : globals,
