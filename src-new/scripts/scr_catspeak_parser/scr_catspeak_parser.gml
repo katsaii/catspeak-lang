@@ -73,7 +73,7 @@ function CatspeakParser(lexer, builder) constructor {
         var token = lexer.peek();
         if (token == CatspeakToken.STRING || token == CatspeakToken.NUMBER) {
             lexer.next();
-            return asg.addValue(lexer.getValue());
+            return asg.addValue(lexer.getValue(), lexer.getLocation());
         } else if (token == CatspeakToken.IDENT) {
             __catspeak_error_bug();
         } else if (token == CatspeakToken.EOF) {
@@ -124,9 +124,12 @@ function CatspeakASGBuilder() constructor {
     /// @param {Any} value
     ///   The value this term should resolve to.
     ///
+    /// @param {Real} [location]
+    ///   The value this term should resolve to.
+    ///
     /// @return {Real}
-    static addValue = function (value) {
-        return __createTerm(CatspeakTerm.VALUE, {
+    static addValue = function (value, location=undefined) {
+        return __createTerm(CatspeakTerm.VALUE, location, {
             value : value
         });
     };
@@ -161,10 +164,18 @@ function CatspeakASGBuilder() constructor {
     /// @ignore
     ///
     /// @param {Enum.CatspeakTerm} term
+    /// @param {Real} location
     /// @param {Struct} container
     /// @return {Struct}
-    static __createTerm = function (term, container) {
+    static __createTerm = function (term, location, container) {
         container.type = term;
+        if (location != undefined) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_size_bits("location", location, 32);
+            }
+
+            container.dbg = location;
+        }
         return container;
     };
 }
