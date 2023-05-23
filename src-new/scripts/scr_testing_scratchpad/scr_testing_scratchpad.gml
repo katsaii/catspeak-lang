@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "parser-2";
+var runExperiment = "compiler";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -43,4 +43,5 @@ TEST_EXPERIMENT "compiler" {
     var asg = Catspeak.parse(buff);
     var f = Catspeak.compileGML(asg);
     show_message([f(), f]);
+    show_message([asg]);
 }

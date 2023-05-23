@@ -105,7 +105,6 @@ function CatspeakParser(lexer, builder) constructor {
 /// Handles the generation and optimisation of a syntax graph.
 function CatspeakASGBuilder() constructor {
     self.asg = {
-        globals : [],
         localCount : 0,
         root : undefined,
     };
@@ -182,5 +181,6 @@ function CatspeakASGBuilder() constructor {
 
 /// Indicates the type of term within a Catspeak syntax graph.
 enum CatspeakTerm {
-    VALUE
+    VALUE,
+    __SIZE__
 }
