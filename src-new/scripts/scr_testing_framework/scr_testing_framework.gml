@@ -17,6 +17,8 @@ function test_stats() {
 }
 
 function Test(name) constructor {
+    show_debug_message("RUNNING TEST " + string(name));
+
     var stats = test_stats();
     self.number = stats.total;
     self.name = __cat(name);

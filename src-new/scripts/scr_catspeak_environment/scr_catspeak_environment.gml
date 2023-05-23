@@ -95,6 +95,17 @@ function CatspeakEnvironment() constructor {
         return builder.get();
     };
 
+    /// Similar to [parse], except a string is used instead of a buffer.
+    ///
+    /// @param {String} src
+    ///   The string containing Catspeak source code to parse.
+    ///
+    /// @return {Struct.CatspeakLexer}
+    static parseString = function (src) {
+        var buff = __catspeak_create_buffer_from_string(src);
+        return Catspeak.parse(buff);
+    };
+
     /// Similar to [parse], except it will pass the responsibility of
     /// parsing to this sessions async handler.
     ///

@@ -1,3 +1,6 @@
+
+//# feather use syntax-errors
+
 var width = display_get_gui_width();
 var height = display_get_gui_height();
 var stats = test_stats();
