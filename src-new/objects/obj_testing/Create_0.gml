@@ -1,3 +1,6 @@
+
+//# feather use syntax-errors
+
 #macro TESTING_COL_BLACK #333333
 #macro TESTING_COL_WHITE #DDDDDD
 #macro TESTING_COL_GREY #AAAAAA
@@ -11,6 +14,10 @@ show_debug_overlay(true);
 
 exampleCurrent = -1;
 examples = [
+    {
+        title : "basic performance",
+        obj : obj_testing_example_performance_basic,
+    },
     /*
     {
         title : "factorial",
