@@ -104,22 +104,18 @@ function CatspeakParser(lexer, builder) constructor {
 
 /// Handles the generation and optimisation of a syntax graph.
 function CatspeakASGBuilder() constructor {
-    self.globals = [];
-    self.terms = [];
-    //# feather disable once GM2043
-    self.root = addValue(undefined);
     self.asg = {
-        globals : globals,
-        root : -1,
-        terms : terms,
+        globals : [],
+        localCount : 0,
+        root : undefined,
     };
+    //# feather disable once GM2043
+    self.asg.root = addValue(undefined);
 
     /// Returns the underlying syntax graph for this builder.
     ///
     /// @return {Struct}
     static get = function () {
-        // patch the root before getting the asg
-        asg.root = root;
         return asg;
     };
 
@@ -130,32 +126,33 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Real}
     static addValue = function (value) {
-        return __addTerm(CatspeakTerm.VALUE, {
+        return __createTerm(CatspeakTerm.VALUE, {
             value : value
         });
     };
 
     /// Adds an existing node to the program's root node.
     ///
-    /// @param {Real} termId
+    /// @param {Real} term
     ///   The term to register to the root node.
-    static addRoot = function (termId) {
+    static addRoot = function (term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof_numeric("termId", termId);
+            __catspeak_check_typeof("term", term, "struct");
+            __catspeak_check_var_exists("term", term, "type");
+            __catspeak_check_typeof_numeric("term.type", term.type);
         }
 
-        root = __mergeTerms(root, termId);
+        asg.root = __mergeTerms(asg.root, term);
     };
 
     /// @ignore
     ///
-    /// @param {Real} termAId
-    /// @param {Real} termBId
+    /// @param {Real} termA
+    /// @param {Real} termB
     /// @return {Real}
-    static __mergeTerms = function (termAId, termBId) {
-        var termA = terms[termAId];
+    static __mergeTerms = function (termA, termB) {
         if (termA.type == CatspeakTerm.VALUE) {
-            return termBId;
+            return termB;
         } else {
             __catspeak_error_unimplemented("other-terms");
         }
@@ -165,12 +162,10 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @param {Enum.CatspeakTerm} term
     /// @param {Struct} container
-    /// @return {Real}
-    static __addTerm = function (term, container) {
+    /// @return {Struct}
+    static __createTerm = function (term, container) {
         container.type = term;
-        var idx = array_length(terms);
-        array_push(terms, container);
-        return idx;
+        return container;
     };
 }
 
