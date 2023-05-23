@@ -17,3 +17,14 @@ function TestParserASG(name, src) : Test(name) constructor {
         assertEq(builder.get(), asg, false);
     };
 }
+
+function TestParserASGValue(name, src, expect) : TestParserASG(
+    name, src
+) constructor {
+    checkASG({
+        root : {
+            type : CatspeakTerm.VALUE,
+            value : expect
+        }
+    });
+};

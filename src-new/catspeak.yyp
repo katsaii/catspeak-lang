@@ -41,6 +41,7 @@
     {"id":{"name":"scr_testing_lexer_config","path":"scripts/scr_testing_lexer_config/scr_testing_lexer_config.yy",},},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},},
     {"id":{"name":"scr_future","path":"scripts/scr_future/scr_future.yy",},},
+    {"id":{"name":"scr_testing_parser_value","path":"scripts/scr_testing_parser_value/scr_testing_parser_value.yy",},},
     {"id":{"name":"scr_testing_lexer_symbols","path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},},
     {"id":{"name":"scr_catspeak_parser","path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},},
     {"id":{"name":"scr_catspeak_location","path":"scripts/scr_catspeak_location/scr_catspeak_location.yy",},},
