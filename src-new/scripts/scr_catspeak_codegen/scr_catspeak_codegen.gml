@@ -32,24 +32,16 @@ function __catspeak_timeout_check(t) {
 ///   The syntax graph to compile.
 function CatspeakGMLCompiler(asg) constructor {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_var_exists("asg", asg, "globals");
         __catspeak_check_var_exists("asg", asg, "root");
-        __catspeak_check_var_exists("asg", asg, "terms");
-        __catspeak_check_typeof("asg.globals", asg.globals, "array");
-        __catspeak_check_typeof_numeric("asg.root", asg.root);
-        __catspeak_check_typeof("asg.terms", asg.terms, "array");
-        self.asgTermsLength = array_length(asg.terms);
-        if (asg.root < 0) {
-            __catspeak_error("no valid root found for Catspeak program");
-        }
+        __catspeak_check_var_exists("asg", asg, "localCount");
+        __catspeak_check_typeof_numeric("asg.localCount", asg.localCount);
     }
 
-    self.asgGlobals = asg.globals;
-    self.asgTerms = asg.terms;
     self.context = {
         callTime : -1,
         program : undefined,
         self_ : undefined,
+        localCount : asg.localCount,
     };
     self.gmlFunc = method(self.context, __catspeak_function__);
     //# feather disable once GM2043
@@ -82,6 +74,10 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @param {Any} value
     static __compileValue = function(term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "value");
+        }
+
         return method({ value : term.value }, function() {
             return value;
         });
@@ -90,25 +86,22 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Any} value
-    static __compileTerm = function(termId) {
+    static __compileTerm = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
-            if (termId < 0 || termId >= asgTermsLength) {
-                __catspeak_error(
-                    "invalid term id '", termId,
-                    "', must be within the range 0..", asgTermsLength
-                );
-            }
+            __catspeak_check_typeof("term", term, "struct");
+            __catspeak_check_var_exists("term", term, "type");
+            __catspeak_check_typeof_numeric("term.type", term.type);
         }
 
-        // TODO :: Figure out how to remove this switch statement
-        var term = asgTerms[termId];
-        switch (term.type) {
-        case CatspeakTerm.VALUE:
-            return __compileValue(term);
-        }
-
-        __catspeak_error_bug();
+        var prod = __productionLookup[term.type];
+        return prod(term);
     };
+
+    static __productionLookup = (function () {
+        var db = array_create(CatspeakTerm.__SIZE__, undefined);
+        db[@ CatspeakTerm.VALUE] = __compileValue;
+        return db;
+    })();
 }
 
 /// @ignore
