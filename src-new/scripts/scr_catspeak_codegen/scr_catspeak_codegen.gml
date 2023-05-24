@@ -86,6 +86,41 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Any} value
+    static __compileBlock = function(term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "terms");
+            __catspeak_check_var_exists("term", term, "result");
+            __catspeak_check_typeof("term.terms", term.terms, "array");
+            __catspeak_check_typeof("term.result", term.result, "struct");
+        }
+
+        var terms = term.terms;
+        var termCount = array_length(terms);
+        var exprs = array_create(termCount);
+        for (var i = 0; i < termCount; i += 1) {
+            exprs[@ i] = __compileTerm(terms[i]);
+        }
+        var resultExpr = __compileTerm(term.result);
+        return method({
+            exprs : exprs,
+            n : termCount,
+            result : resultExpr,
+        }, function() {
+            var i = 0;
+            repeat (n) {
+                // not sure if this is even fast
+                // but people will cry if I don't do it
+                var expr = exprs[i];
+                expr();
+                i += 1;
+            }
+            return result();
+        });
+    };
+
+    /// @ignore
+    ///
+    /// @param {Any} value
     static __compileTerm = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_typeof("term", term, "struct");
@@ -100,6 +135,7 @@ function CatspeakGMLCompiler(asg) constructor {
     static __productionLookup = (function () {
         var db = array_create(CatspeakTerm.__SIZE__, undefined);
         db[@ CatspeakTerm.VALUE] = __compileValue;
+        db[@ CatspeakTerm.BLOCK] = __compileBlock;
         return db;
     })();
 }

@@ -39,7 +39,7 @@
     {"id":{"name":"scr_testing_lexer_internals","path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},},
     {"id":{"name":"scr_catspeak_environment","path":"scripts/scr_catspeak_environment/scr_catspeak_environment.yy",},},
-    {"id":{"name":"obj_testing_example_performance_basic","path":"objects/obj_testing_example_performance_basic/obj_testing_example_performance_basic.yy",},},
+    {"id":{"name":"obj_testing_example_bench_basic","path":"objects/obj_testing_example_bench_basic/obj_testing_example_bench_basic.yy",},},
     {"id":{"name":"scr_testing_parser","path":"scripts/scr_testing_parser/scr_testing_parser.yy",},},
     {"id":{"name":"scr_testing_lexer_config","path":"scripts/scr_testing_lexer_config/scr_testing_lexer_config.yy",},},
     {"id":{"name":"obj_future_file_save","path":"objects/obj_future_file_save/obj_future_file_save.yy",},},
@@ -69,6 +69,7 @@
     {"id":{"name":"scr_testing_scratchpad","path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},},
     {"id":{"name":"scr_catspeak_codegen","path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},},
     {"id":{"name":"scr_testing_lexer_ident","path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},},
+    {"id":{"name":"obj_testing_example_base_gml_bench","path":"objects/obj_testing_example_base_gml_bench/obj_testing_example_base_gml_bench.yy",},},
     {"id":{"name":"obj_future_file_load","path":"objects/obj_future_file_load/obj_future_file_load.yy",},},
   ],
   "RoomOrderNodes": [

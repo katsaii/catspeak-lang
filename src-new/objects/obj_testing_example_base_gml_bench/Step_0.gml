@@ -18,25 +18,32 @@ if (frame < 120) {
     frame += 1;
 
     if (frame >= 120) {
-        addLog("Catspeak avg. = " + string(countTotal / 120));
+        addLog("Catspeak avg. n = " + string(countTotal / 120));
         countTotal = 0;
 
         addLog("running GML...", "boring");
     }
 } else if (frame < 120 * 2) {
-    var countTotal_ = countTotal;
+    if (nativeFunc == undefined) {
+        addLog("skipping GML test");
+        frame = 120 * 2;
+    } else {
+        var countTotal_ = countTotal;
 
-    var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
-    while (get_timer() < expectTime) {
-        nativeFunc();
-        countTotal_ += 1;
+        var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
+        while (get_timer() < expectTime) {
+            nativeFunc();
+            countTotal_ += 1;
+        }
+
+        countTotal = countTotal_;
+        frame += 1;
     }
 
-    countTotal = countTotal_;
-    frame += 1;
-
     if (frame >= 120 * 2) {
-        addLog("GML avg. = " + string(countTotal / 120));
+        if (nativeFunc != undefined) {
+            addLog("GML avg. n = " + string(countTotal / 120));
+        }
         countTotal = 0;
 
         addLog("running compiler...", "boring");
@@ -55,7 +62,7 @@ if (frame < 120) {
     frame += 1;
 
     if (frame >= 120 * 3) {
-        addLog("Parse avg. = " + string(countTotal / 120));
+        addLog("Parse avg. n = " + string(countTotal / 120));
         countTotal = 0;
     }
 } else if (frame < 120 * 4) {
@@ -73,7 +80,7 @@ if (frame < 120) {
     frame += 1;
 
     if (frame >= 120 * 4) {
-        addLog("Compile avg. = " + string(countTotal / 120));
+        addLog("Compile avg. n = " + string(countTotal / 120));
         countTotal = 0;
         gmlFunc = undefined;
     }
