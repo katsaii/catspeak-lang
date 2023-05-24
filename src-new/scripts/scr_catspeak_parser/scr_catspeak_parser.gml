@@ -63,26 +63,56 @@ function CatspeakParser(lexer, builder) constructor {
         if (lexer.peek() == CatspeakToken.EOF) {
             return false;
         }
-        asg.addRoot(__parseTerminal());
+        asg.addRoot(__parseExpression());
         return true;
     };
 
     /// @ignore
-    /// @return {Real}
+    /// @return {Struct}
+    static __parseExpression = function() {
+        return __parseTerminal();
+    };
+
+    /// @ignore
+    /// @return {Struct}
     static __parseTerminal = function () {
-        var token = lexer.peek();
-        if (token == CatspeakToken.STRING || token == CatspeakToken.NUMBER) {
+        var peeked = lexer.peek();
+        if (peeked == CatspeakToken.STRING || peeked == CatspeakToken.NUMBER) {
             lexer.next();
             return asg.addValue(lexer.getValue(), lexer.getLocation());
-        } else if (token == CatspeakToken.IDENT) {
+        } else if (peeked == CatspeakToken.IDENT) {
             __catspeak_error_bug();
-        } else if (token == CatspeakToken.EOF) {
-            __ex("unexpected end of file");
         } else {
-            __ex(
-                "unexpected token '", lexer.getLexeme(),
-                "' (", token,") in expression"
-            );
+            return __parseGrouping();
+        }
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseGrouping = function () {
+        var peeked = lexer.peek();
+        if (peeked == CatspeakToken.PAREN_LEFT) {
+            lexer.next();
+            var inner = __parseExpression();
+            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                __ex("expected closing ')' after group expression");
+            }
+            return inner;
+        } else if (peeked == CatspeakToken.DO) {
+            lexer.next();
+            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+                __ex("expected opening '{' after 'do' keyword");
+            }
+            var inner = asg.addValue(undefined, lexer.getLocation());
+            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+                inner = asg.mergeTerms(inner, __parseExpression());
+            }
+            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+                __ex("expected closing '}' after 'do' block");
+            }
+            return inner;
+        } else {
+            __ex("malformed expression");
         }
     };
 
@@ -97,9 +127,37 @@ function CatspeakParser(lexer, builder) constructor {
             for (var i = 0; i < argument_count; i += 1) {
                 msg += __catspeak_string(argument[i]);
             }
-            __catspeak_error(dbg, " -- ", msg);
+            __catspeak_error(dbg, " -- ", msg, ", got ", __tokenDebug());
         }
-    }
+    };
+
+    /// @ignore
+    /// @return {String}
+    static __tokenDebug = function () {
+        var peeked = lexer.peek();
+        if (peeked == CatspeakToken.EOF) {
+            return "end of file";
+        } else if (peeked == CatspeakToken.BREAK_LINE) {
+            return "line break ';'";
+        }
+        return "token '" + lexer.getLexeme() + "' (" + string() + ")";
+    };
+
+    /// @ignore
+    /// @param {Enum.CatspeakToken} expect
+    /// @return {Bool}
+    static __isNot = function (expect) {
+        var peeked = lexer.peek();
+        return peeked != expect && peeked != CatspeakToken.EOF;
+    };
+
+    /// @ignore
+    /// @param {Enum.CatspeakToken} expect
+    /// @return {Bool}
+    static __is = function (expect) {
+        var peeked = lexer.peek();
+        return peeked == expect && peeked != CatspeakToken.EOF;
+    };
 }
 
 /// Handles the generation and optimisation of a syntax graph.
@@ -144,19 +202,59 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_typeof_numeric("term.type", term.type);
         }
 
-        asg.root = __mergeTerms(asg.root, term);
+        asg.root = mergeTerms(asg.root, term);
     };
 
-    /// @ignore
+    /// Composes two terms together, producing a new term where term A
+    /// executes first, followed by term B.
+    ///
+    /// NOTE: Either terms A or B could be optimised or modified, therefore
+    ///       you should always treat both terms as being invalid after
+    ///       calling this method. Always use the result returned by this
+    ///       method as the new source of truth.
     ///
     /// @param {Real} termA
+    ///   The term to execute first.
+    ///
     /// @param {Real} termB
+    ///   The term to execute second.
+    ///
     /// @return {Real}
-    static __mergeTerms = function (termA, termB) {
-        if (termA.type == CatspeakTerm.VALUE) {
+    static mergeTerms = function (termA, termB) {
+        var aType = termA.type;
+        var bType = termB.type;
+        var aIsBlock = aType == CatspeakTerm.BLOCK;
+        var bIsBlock = bType == CatspeakTerm.BLOCK;
+        if (aIsBlock && !bIsBlock) {
+            if (termA.result.type != CatspeakTerm.VALUE) {
+                array_push(termA.terms, termA.result);
+            }
+            termA.result = termB;
+            return termA;
+        } else if (aIsBlock && bIsBlock) {
+            var aTerms = termA.terms;
+            var bTerms = termB.terms;
+            var aResult = termA.result;
+            if (aResult.type == CatspeakTerm.VALUE) {
+                array_push(aTerms, aResult);
+            }
+            array_copy(
+                aTerms, array_length(aTerms),
+                bTerms, 0, array_length(bTerms)
+            );
+            termA.result = termB.result;
+            return termA;
+        } else if (aType == CatspeakTerm.VALUE) {
+            return termB;
+        } else if (!aIsBlock && bIsBlock) {
+            // hoping that this doesn't happen often
+            array_insert(termB.terms, 0, termA);
             return termB;
         } else {
-            __catspeak_error_unimplemented("other-terms");
+            return __createTerm(CatspeakTerm.BLOCK, termA.location, {
+                terms : [termA],
+                result : termB,
+            });
         }
     }
 
@@ -182,5 +280,6 @@ function CatspeakASGBuilder() constructor {
 /// Indicates the type of term within a Catspeak syntax graph.
 enum CatspeakTerm {
     VALUE,
+    BLOCK,
     __SIZE__
 }

@@ -84,7 +84,7 @@ function catspeak_location_get_column(location) {
 function __catspeak_location_show(location) {
     var msg = "in a file";
     if (location != undefined) {
-        msg += " at (line" + 
+        msg += " at (line " + 
                 __catspeak_string(catspeak_location_get_row(location)) +
                 ", column " +
                 __catspeak_string(catspeak_location_get_column(location)) +
