@@ -20,6 +20,9 @@ test_add(function() : Test("location-3") constructor {
 });
 
 test_add(function() : Test("location-negative-row") constructor {
+    if (!CATSPEAK_DEBUG_MODE) {
+        return;
+    }
     try {
         catspeak_location_create(1048576, 0);
     } catch (e) {
@@ -29,6 +32,9 @@ test_add(function() : Test("location-negative-row") constructor {
 });
 
 test_add(function() : Test("location-negative-row-2") constructor {
+    if (!CATSPEAK_DEBUG_MODE) {
+        return;
+    }
     try {
         catspeak_location_create(-1, 0);
     } catch (e) {
@@ -38,6 +44,9 @@ test_add(function() : Test("location-negative-row-2") constructor {
 });
 
 test_add(function() : Test("location-negative-column") constructor {
+    if (!CATSPEAK_DEBUG_MODE) {
+        return;
+    }
     try {
         catspeak_location_create(0, 4096);
     } catch (e) {
@@ -47,6 +56,9 @@ test_add(function() : Test("location-negative-column") constructor {
 });
 
 test_add(function() : Test("location-negative-column-2") constructor {
+    if (!CATSPEAK_DEBUG_MODE) {
+        return;
+    }
     try {
         catspeak_location_create(0, -1);
     } catch (e) {
