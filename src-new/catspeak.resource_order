@@ -10,6 +10,7 @@
     {"name":"codegen","order":5,"path":"folders/Testing/unit-tests/codegen.yy",},
     {"name":"lexer","order":1,"path":"folders/Testing/unit-tests/lexer.yy",},
     {"name":"parser","order":4,"path":"folders/Testing/unit-tests/parser.yy",},
+    {"name":"base","order":5,"path":"folders/Testing/demo/examples/base.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"fnt_testing","order":3,"path":"fonts/fnt_testing/fnt_testing.yy",},
@@ -32,9 +33,8 @@
     {"name":"scr_testing_lexer_string","order":10,"path":"scripts/scr_testing_lexer_string/scr_testing_lexer_string.yy",},
     {"name":"scr_catspeak_lexer","order":1,"path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},
     {"name":"scr_catspeak_sanity","order":3,"path":"scripts/scr_catspeak_sanity/scr_catspeak_sanity.yy",},
-    {"name":"obj_testing_example_base_gml","order":3,"path":"objects/obj_testing_example_base_gml/obj_testing_example_base_gml.yy",},
+    {"name":"obj_testing_example_base_gml","order":1,"path":"objects/obj_testing_example_base_gml/obj_testing_example_base_gml.yy",},
     {"name":"scr_testing_lexer_keyword","order":9,"path":"scripts/scr_testing_lexer_keyword/scr_testing_lexer_keyword.yy",},
-    {"name":"obj_testing_example_base","order":2,"path":"objects/obj_testing_example_base/obj_testing_example_base.yy",},
     {"name":"scr_testing_lexer_number","order":6,"path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},
     {"name":"obj_testing","order":2,"path":"objects/obj_testing/obj_testing.yy",},
     {"name":"scr_testing_lexer_misc","order":12,"path":"scripts/scr_testing_lexer_misc/scr_testing_lexer_misc.yy",},
@@ -42,6 +42,6 @@
     {"name":"scr_testing_scratchpad","order":3,"path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},
     {"name":"scr_catspeak_codegen","order":4,"path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},
     {"name":"scr_testing_lexer_ident","order":5,"path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},
-    {"name":"obj_testing_example_base_gml_bench","order":4,"path":"objects/obj_testing_example_base_gml_bench/obj_testing_example_base_gml_bench.yy",},
+    {"name":"obj_testing_example_base_gml_bench","order":2,"path":"objects/obj_testing_example_base_gml_bench/obj_testing_example_base_gml_bench.yy",},
   ],
 }

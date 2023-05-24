@@ -10,8 +10,8 @@
   "managed": true,
   "overriddenProperties": [],
   "parent": {
-    "name": "examples",
-    "path": "folders/Testing/demo/examples.yy",
+    "name": "base",
+    "path": "folders/Testing/demo/examples/base.yy",
   },
   "parentObjectId": {
     "name": "obj_testing_example_base_gml",
