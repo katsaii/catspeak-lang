@@ -16,7 +16,7 @@ exampleCurrent = -1;
 examples = [
     {
         title : "basic performance",
-        obj : obj_testing_example_performance_basic,
+        obj : obj_testing_example_bench_basic,
     },
     /*
     {

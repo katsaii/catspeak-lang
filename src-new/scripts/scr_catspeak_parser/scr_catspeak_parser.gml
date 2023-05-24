@@ -261,8 +261,10 @@ function CatspeakASGBuilder() constructor {
             array_insert(termB.terms, 0, termA);
             return termB;
         } else {
-            return __createTerm(CatspeakTerm.BLOCK, termA.location, {
-                terms : [termA],
+            var terms = array_create(32, termA);
+            array_resize(terms, 1);
+            return __createTerm(CatspeakTerm.BLOCK, termA.dbg, {
+                terms : terms,
                 result : termB,
             });
         }
@@ -275,14 +277,12 @@ function CatspeakASGBuilder() constructor {
     /// @param {Struct} container
     /// @return {Struct}
     static __createTerm = function (term, location, container) {
-        container.type = term;
-        if (location != undefined) {
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_size_bits("location", location, 32);
-            }
-
-            container.dbg = location;
+        if (CATSPEAK_DEBUG_MODE && location != undefined) {
+            __catspeak_check_size_bits("location", location, 32);
         }
+
+        container.type = term;
+        container.dbg = location;
         return container;
     };
 }
