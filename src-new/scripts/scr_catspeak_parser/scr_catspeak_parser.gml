@@ -63,8 +63,18 @@ function CatspeakParser(lexer, builder) constructor {
         if (lexer.peek() == CatspeakToken.EOF) {
             return false;
         }
-        asg.addRoot(__parseExpression());
+        asg.addRoot(__parseStatement());
         return true;
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseStatement = function() {
+        var result = __parseExpression();
+        if (lexer.peek() == CatspeakToken.BREAK_LINE) {
+            lexer.next();
+        }
+        return result;
     };
 
     /// @ignore
@@ -105,7 +115,7 @@ function CatspeakParser(lexer, builder) constructor {
             }
             var inner = asg.addValue(undefined, lexer.getLocation());
             while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                inner = asg.mergeTerms(inner, __parseExpression());
+                inner = asg.mergeTerms(inner, __parseStatement());
             }
             if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
                 __ex("expected closing '}' after 'do' block");

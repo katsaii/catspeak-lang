@@ -8,9 +8,9 @@ resizeLog(10);
 code = @'do {
   "hello world"
   123
-  3.14_15
+  "yippee!"
   do {
-    "yippee!"
+    3.14_15
   }
 }';
 
