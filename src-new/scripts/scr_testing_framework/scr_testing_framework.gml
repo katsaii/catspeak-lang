@@ -229,12 +229,12 @@ function __strictEq(a, b) {
     if (typeof(a) != typeof(b)) {
         return false;
     }
-    return a == b || is_nan(a) && is_nan(b);
+    return a == b || is_real(a) && is_real(b) && is_nan(a) && is_nan(b);
 };
 
 function __structuralEq(a, b, exact) {
     // value type comparison
-    if (a == b || is_nan(a) && is_nan(b)) {
+    if (a == b || is_real(a) && is_real(b) && is_nan(a) && is_nan(b)) {
         return true;
     }
     // method comparison
