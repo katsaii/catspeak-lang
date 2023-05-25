@@ -37,14 +37,15 @@ function CatspeakGMLCompiler(asg) constructor {
         __catspeak_check_typeof_numeric("asg.localCount", asg.localCount);
     }
 
+    var localCount = asg.localCount;
     self.funcBase = __catspeak_function__;
     self.context = {
         callTime : -1,
         program : undefined,
         self_ : undefined,
-        localCount : asg.localCount,
+        localCount : localCount,
         localsOffset : 0,
-        locals : array_create(asg.localCount),
+        locals : array_create(localCount),
         globals : { },
     };
     //# feather disable once GM2043
