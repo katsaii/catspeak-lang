@@ -70,7 +70,24 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     /// @return {Struct}
     static __parseStatement = function() {
-        var result = __parseExpression();
+        var result;
+        if (lexer.peek() == CatspeakToken.LET) {
+            lexer.next();
+            if (lexer.next() != CatspeakToken.IDENT) {
+                __ex("expected identifier after 'let' keyword");
+            }
+            var location = lexer.getLocation();
+            var getter = asg.allocLocal(lexer.getValue(), location);
+            if (lexer.peek() == CatspeakToken.ASSIGN) {
+                lexer.next();
+                result = asg.assignTerms(getter, __parseExpression());
+            } else {
+                var undefinedValue = asg.createValue(undefined, location);
+                result = asg.assignTerms(getter, undefinedValue);
+            }
+        } else {
+            result = __parseExpression();
+        }
         if (lexer.peek() == CatspeakToken.BREAK_LINE) {
             lexer.next();
         }
@@ -111,6 +128,7 @@ function CatspeakParser(lexer, builder) constructor {
             return inner;
         } else if (peeked == CatspeakToken.DO) {
             lexer.next();
+            asg.pushLocalScope();
             if (lexer.next() != CatspeakToken.BRACE_LEFT) {
                 __ex("expected opening '{' after 'do' keyword");
             }
@@ -121,6 +139,7 @@ function CatspeakParser(lexer, builder) constructor {
             if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
                 __ex("expected closing '}' after 'do' block");
             }
+            asg.popLocalScope();
             return inner;
         } else {
             __ex("malformed expression");
@@ -174,7 +193,7 @@ function CatspeakParser(lexer, builder) constructor {
 /// Handles the generation and optimisation of a syntax graph.
 function CatspeakASGBuilder() constructor {
     self.asg = {
-        localCount : 0,
+        localsData : [],
         root : undefined,
     };
     //# feather disable once GM2043
@@ -182,6 +201,7 @@ function CatspeakASGBuilder() constructor {
     self.localScopes = __catspeak_alloc_ds_list(self);
     ds_list_add(self.localScopes, __catspeak_alloc_ds_map(self));
     self.localScopeHead = 0;
+    self.localCount = 0;
 
     /// Returns the underlying syntax graph for this builder.
     ///
@@ -214,7 +234,7 @@ function CatspeakASGBuilder() constructor {
     /// @param {Real} [location]
     ///   The source location of this term.
     static createGet = function (name, location=undefined) {
-        var localData = undefined;
+        var localIdx = undefined;
         for (var i = localScopeHead; i >= 0; i -= 1) {
             var scope = localScopes[| i];
             if (ds_map_exists(scope, name)) {
@@ -222,13 +242,14 @@ function CatspeakASGBuilder() constructor {
                 break;
             }
         }
-        if (localData == undefined) {
+        if (localIdx == undefined) {
             return __createTerm(CatspeakTerm.GET_GLOBAL, location, {
                 name : name
             });
         } else {
+            asg.localsData[localIdx].reads += 1;
             return __createTerm(CatspeakTerm.GET_LOCAL, location, {
-                idx : localData
+                idx : localIdx
             });
         }
     };
@@ -302,6 +323,42 @@ function CatspeakASGBuilder() constructor {
         }
     };
 
+    /// Attempts to assign a right-hand-side value to a left-hand-side target.
+    ///
+    /// NOTE: Either terms A or B could be optimised or modified, therefore
+    ///       you should always treat both terms as being invalid after
+    ///       calling this method. Always use the result returned by this
+    ///       method as the new source of truth.
+    ///
+    /// @param {Struct} lhs
+    ///   The assignment target to use. Typically this is a local/global
+    ///   variable get expression.
+    ///
+    /// @param {Struct} rhs
+    ///   The assignment target to use. Typically this is a local/global
+    ///   variable get expression.
+    ///
+    /// @return {Struct}
+    static assignTerms = function (lhs, rhs) {
+        var lhsType = lhs.type;
+        if (lhsType == CatspeakTerm.GET_LOCAL) {
+            lhs.type = CatspeakTerm.SET_LOCAL;
+            var data = asg.localsData[lhs.idx];
+            data.reads -= 1;
+            data.writes += 1;
+        } else if (lhsType == CatspeakTerm.GET_GLOBAL) {
+            lhs.type = CatspeakTerm.SET_GLOBAL;
+        } else {
+            __catspeak_error(
+                __catspeak_location_show(lexer.getLocation()),
+                " -- unable to assignment target, ",
+                "must be an identifier or accessor expression"
+            );
+        }
+        lhs.value = rhs;
+        return lhs;
+    };
+
     /// Starts a new local variable block scope. Any local variables
     /// allocated in this scope will be cleared after [popLocalScope] is
     /// called.
@@ -319,13 +376,15 @@ function CatspeakASGBuilder() constructor {
     };
 
     /// Allocates a new local variable with the supplied name in the current
-    /// scope.
+    /// scope. Returns a term to get or set the value of this local variable.
     ///
     /// @param {String} name
     ///   The name of the local variable to allocate.
     ///
     /// @param {Real} [location]
     ///   The source location of this local variable.
+    ///
+    /// @return {Struct}
     static allocLocal = function (name, location=undefined) {
         var scope = localScopes[| localScopeHead];
         if (ds_map_exists(scope, name)) {
@@ -335,14 +394,22 @@ function CatspeakASGBuilder() constructor {
                 "defined in this scope"
             );
         }
-        scope[? name] = asg.localCount;
-        asg.localCount += 1;
+        var idx = localCount;
+        scope[? name] = idx;
+        asg.localsData[@ idx] = {
+            reads : 0,
+            writes : 0,
+        };
+        localCount += 1;
+        return __createTerm(CatspeakTerm.GET_LOCAL, location, {
+            idx : idx
+        });
     };
 
     /// Clears the most recent local scope and frees any allocated local
     /// variables.
     static popLocalScope = function () {
-        localScopeHead_ -= 1;
+        localScopeHead -= 1;
     };
 
     /// @ignore
