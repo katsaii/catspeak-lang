@@ -37,14 +37,20 @@ function CatspeakGMLCompiler(asg) constructor {
         __catspeak_check_typeof_numeric("asg.localCount", asg.localCount);
     }
 
+    var funcBase = __catspeak_function__;
+    if (asg.localCount < 1) {
+        funcBase = __catspeak_function_simple__;
+    }
+
     self.context = {
         callTime : -1,
         program : undefined,
         self_ : undefined,
         localCount : asg.localCount,
+        locals : undefined,
         globals : { },
     };
-    self.gmlFunc = method(self.context, __catspeak_function__);
+    self.gmlFunc = method(self.context, funcBase);
     //# feather disable once GM2043
     self.context.program = __compileTerm(asg.root);
 
@@ -138,6 +144,65 @@ function CatspeakGMLCompiler(asg) constructor {
 
     /// @ignore
     ///
+    /// @param {Struct} term
+    static __compileGlobalSet = function(term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "name");
+            __catspeak_check_var_exists("term", term, "value");
+            __catspeak_check_typeof("term.name", term.name, "string");
+        }
+
+        return method({
+            globals : context.globals,
+            name : term.name,
+            value : __compileTerm(term.value),
+        }, function() {
+            var val = value();
+            globals[$ name] = val;
+            return val;
+        });
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileLocalGet = function(term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "idx");
+            __catspeak_check_typeof_numeric("term.idx", term.idx);
+        }
+
+        return method({
+            context : context,
+            idx : term.name,
+        }, function() {
+            return context.locals[idx];
+        });
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileLocalSet = function(term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "idx");
+            __catspeak_check_var_exists("term", term, "value");
+            __catspeak_check_typeof_numeric("term.idx", term.idx);
+        }
+
+        return method({
+            context : context,
+            idx : term.name,
+            value : __compileTerm(term.value),
+        }, function() {
+            var val = value();
+            context.locals[@ idx] = val;
+            return val;
+        });
+    };
+
+    /// @ignore
+    ///
     /// @param {Any} value
     static __compileTerm = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
@@ -157,7 +222,10 @@ function CatspeakGMLCompiler(asg) constructor {
         var db = array_create(CatspeakTerm.__SIZE__, undefined);
         db[@ CatspeakTerm.VALUE] = __compileValue;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
-        db[@ CatspeakTerm.GLOBAL_GET] = __compileGlobalGet;
+        db[@ CatspeakTerm.GET_GLOBAL] = __compileGlobalGet;
+        db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
+        db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
+        db[@ CatspeakTerm.SET_LOCAL] = __compileLocalSet;
         return db;
     })();
 }
@@ -171,6 +239,9 @@ function __catspeak_function__() {
         // if the program runs for too long, crash instead of hanging
         __catspeak_timeout_check(callTime);
     }
+    var oldLocals = locals;
+    var localCount_ = localCount;
+    locals = localCount_ > 0 ? array_create(localCount_) : undefined;
     var oldSelf = self_;
     self_ = other;
     var value;
@@ -178,10 +249,16 @@ function __catspeak_function__() {
         value = program();
     } finally {
         self_ = oldSelf;
+        locals = oldLocals;
         if (startTimer) {
             // reset the timer
             callTime = -1;
         }
     }
     return value;
+}
+
+/// @ignore
+function __catspeak_function_simple__() {
+    return program();
 }
