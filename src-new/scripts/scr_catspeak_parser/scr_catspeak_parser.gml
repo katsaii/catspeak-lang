@@ -193,7 +193,7 @@ function CatspeakParser(lexer, builder) constructor {
 /// Handles the generation and optimisation of a syntax graph.
 function CatspeakASGBuilder() constructor {
     self.asg = {
-        localsData : [],
+        localCount : 0,
         root : undefined,
     };
     //# feather disable once GM2043
@@ -201,7 +201,6 @@ function CatspeakASGBuilder() constructor {
     self.localScopes = __catspeak_alloc_ds_list(self);
     ds_list_add(self.localScopes, __catspeak_alloc_ds_map(self));
     self.localScopeHead = 0;
-    self.localCount = 0;
 
     /// Returns the underlying syntax graph for this builder.
     ///
@@ -238,7 +237,7 @@ function CatspeakASGBuilder() constructor {
         for (var i = localScopeHead; i >= 0; i -= 1) {
             var scope = localScopes[| i];
             if (ds_map_exists(scope, name)) {
-                localData = scope[? name];
+                localIdx = scope[? name];
                 break;
             }
         }
@@ -247,7 +246,6 @@ function CatspeakASGBuilder() constructor {
                 name : name
             });
         } else {
-            asg.localsData[localIdx].reads += 1;
             return __createTerm(CatspeakTerm.GET_LOCAL, location, {
                 idx : localIdx
             });
@@ -289,7 +287,7 @@ function CatspeakASGBuilder() constructor {
         var aIsBlock = aType == CatspeakTerm.BLOCK;
         var bIsBlock = bType == CatspeakTerm.BLOCK;
         if (aIsBlock && !bIsBlock) {
-            if (termA.result.type != CatspeakTerm.VALUE) {
+            if (!__catspeak_term_is_pure(termA.result.type)) {
                 array_push(termA.terms, termA.result);
             }
             termA.result = termB;
@@ -298,7 +296,7 @@ function CatspeakASGBuilder() constructor {
             var aTerms = termA.terms;
             var bTerms = termB.terms;
             var aResult = termA.result;
-            if (aResult.type == CatspeakTerm.VALUE) {
+            if (__catspeak_term_is_pure(aResult.type)) {
                 array_push(aTerms, aResult);
             }
             array_copy(
@@ -307,7 +305,7 @@ function CatspeakASGBuilder() constructor {
             );
             termA.result = termB.result;
             return termA;
-        } else if (aType == CatspeakTerm.VALUE) {
+        } else if (__catspeak_term_is_pure(aType)) {
             return termB;
         } else if (!aIsBlock && bIsBlock) {
             // hoping that this doesn't happen often
@@ -343,9 +341,6 @@ function CatspeakASGBuilder() constructor {
         var lhsType = lhs.type;
         if (lhsType == CatspeakTerm.GET_LOCAL) {
             lhs.type = CatspeakTerm.SET_LOCAL;
-            var data = asg.localsData[lhs.idx];
-            data.reads -= 1;
-            data.writes += 1;
         } else if (lhsType == CatspeakTerm.GET_GLOBAL) {
             lhs.type = CatspeakTerm.SET_GLOBAL;
         } else {
@@ -394,13 +389,9 @@ function CatspeakASGBuilder() constructor {
                 "defined in this scope"
             );
         }
-        var idx = localCount;
+        var idx = asg.localCount;
         scope[? name] = idx;
-        asg.localsData[@ idx] = {
-            reads : 0,
-            writes : 0,
-        };
-        localCount += 1;
+        asg.localCount += 1;
         return __createTerm(CatspeakTerm.GET_LOCAL, location, {
             idx : idx
         });
@@ -414,19 +405,28 @@ function CatspeakASGBuilder() constructor {
 
     /// @ignore
     ///
-    /// @param {Enum.CatspeakTerm} term
+    /// @param {Enum.CatspeakTerm} kind
     /// @param {Real} location
     /// @param {Struct} container
     /// @return {Struct}
-    static __createTerm = function (term, location, container) {
+    static __createTerm = function (kind, location, container) {
         if (CATSPEAK_DEBUG_MODE && location != undefined) {
             __catspeak_check_size_bits("location", location, 32);
         }
 
-        container.type = term;
+        container.type = kind;
         container.dbg = location;
         return container;
     };
+}
+
+/// @ignore
+///
+/// @param {Enum.CatspeakTerm} kind
+function __catspeak_term_is_pure(kind) {
+    return kind == CatspeakTerm.VALUE ||
+            kind == CatspeakTerm.GET_LOCAL ||
+            kind == CatspeakTerm.GET_GLOBAL;
 }
 
 /// Indicates the type of term within a Catspeak syntax graph.
