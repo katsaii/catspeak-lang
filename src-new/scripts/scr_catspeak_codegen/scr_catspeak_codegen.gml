@@ -42,6 +42,7 @@ function CatspeakGMLCompiler(asg) constructor {
         program : undefined,
         self_ : undefined,
         localCount : asg.localCount,
+        globals : { },
     };
     self.gmlFunc = method(self.context, __catspeak_function__);
     //# feather disable once GM2043
@@ -72,7 +73,7 @@ function CatspeakGMLCompiler(asg) constructor {
 
     /// @ignore
     ///
-    /// @param {Any} value
+    /// @param {Struct} term
     static __compileValue = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "value");
@@ -85,7 +86,7 @@ function CatspeakGMLCompiler(asg) constructor {
 
     /// @ignore
     ///
-    /// @param {Any} value
+    /// @param {Struct} term
     static __compileBlock = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "terms");
@@ -120,6 +121,23 @@ function CatspeakGMLCompiler(asg) constructor {
 
     /// @ignore
     ///
+    /// @param {Struct} term
+    static __compileGlobalGet = function(term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "name");
+            __catspeak_check_typeof("term.name", term.name, "string");
+        }
+
+        return method({
+            name : term.name,
+            globals : context.globals,
+        }, function() {
+            return globals[$ name];
+        });
+    };
+
+    /// @ignore
+    ///
     /// @param {Any} value
     static __compileTerm = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
@@ -129,6 +147,9 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         var prod = __productionLookup[term.type];
+        if (CATSPEAK_DEBUG_MODE && prod == undefined) {
+            __catspeak_error_bug();
+        }
         return prod(term);
     };
 
@@ -136,6 +157,7 @@ function CatspeakGMLCompiler(asg) constructor {
         var db = array_create(CatspeakTerm.__SIZE__, undefined);
         db[@ CatspeakTerm.VALUE] = __compileValue;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
+        db[@ CatspeakTerm.GLOBAL_GET] = __compileGlobalGet;
         return db;
     })();
 }
