@@ -6,11 +6,11 @@
     {"name":"Testing","order":2,"path":"folders/Testing.yy",},
     {"name":"demo","order":2,"path":"folders/Testing/demo.yy",},
     {"name":"examples","order":4,"path":"folders/Testing/demo/examples.yy",},
+    {"name":"base","order":5,"path":"folders/Testing/demo/examples/base.yy",},
     {"name":"unit-tests","order":1,"path":"folders/Testing/unit-tests.yy",},
     {"name":"codegen","order":5,"path":"folders/Testing/unit-tests/codegen.yy",},
     {"name":"lexer","order":1,"path":"folders/Testing/unit-tests/lexer.yy",},
     {"name":"parser","order":4,"path":"folders/Testing/unit-tests/parser.yy",},
-    {"name":"base","order":5,"path":"folders/Testing/demo/examples/base.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"fnt_testing","order":3,"path":"fonts/fnt_testing/fnt_testing.yy",},

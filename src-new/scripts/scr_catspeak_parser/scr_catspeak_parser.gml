@@ -223,11 +223,11 @@ function CatspeakASGBuilder() constructor {
             }
         }
         if (localData == undefined) {
-            return __createTerm(CatspeakTerm.GLOBAL_GET, location, {
+            return __createTerm(CatspeakTerm.GET_GLOBAL, location, {
                 name : name
             });
         } else {
-            return __createTerm(CatspeakTerm.LOCAL_GET, location, {
+            return __createTerm(CatspeakTerm.GET_LOCAL, location, {
                 idx : localData
             });
         }
@@ -366,7 +366,9 @@ function CatspeakASGBuilder() constructor {
 enum CatspeakTerm {
     VALUE,
     BLOCK,
-    LOCAL_GET,
-    GLOBAL_GET,
+    GET_LOCAL,
+    SET_LOCAL,
+    GET_GLOBAL,
+    SET_GLOBAL,
     __SIZE__
 }
