@@ -216,6 +216,7 @@ function test_run() {
     }
 }
 
+/// @ignore
 function __cat() {
     var msg = "";
     for (var i = 0; i < argument_count; i += 1) {
@@ -225,6 +226,7 @@ function __cat() {
     return msg;
 }
 
+/// @ignore
 function __strictEq(a, b) {
     if (typeof(a) != typeof(b)) {
         return false;
@@ -232,6 +234,7 @@ function __strictEq(a, b) {
     return a == b || is_real(a) && is_real(b) && is_nan(a) && is_nan(b);
 };
 
+/// @ignore
 function __structuralEq(a, b, exact) {
     // value type comparison
     if (a == b || is_real(a) && is_real(b) && is_nan(a) && is_nan(b)) {
