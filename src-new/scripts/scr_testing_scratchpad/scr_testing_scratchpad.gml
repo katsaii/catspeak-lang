@@ -53,9 +53,9 @@ TEST_EXPERIMENT "compiler" {
 }
 
 TEST_EXPERIMENT "compiler-2" {
-    var buff = __catspeak_create_buffer_from_string(@'1 a 2 `sdghdsdashj`');
+    var buff = __catspeak_create_buffer_from_string(@'let `hi` = do { let b = 3; b } ; hi ');
     var asg = Catspeak.parse(buff);
     var f = Catspeak.compileGML(asg);
-    show_message([f(), f]);
-    show_message([asg]);
+    show_message(f());
+    //show_message([asg]);
 }

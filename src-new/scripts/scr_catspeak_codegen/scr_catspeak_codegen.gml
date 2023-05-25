@@ -37,20 +37,16 @@ function CatspeakGMLCompiler(asg) constructor {
         __catspeak_check_typeof_numeric("asg.localCount", asg.localCount);
     }
 
-    var funcBase = __catspeak_function__;
-    if (asg.localCount < 1) {
-        funcBase = __catspeak_function_simple__;
-    }
-
+    self.funcBase = __catspeak_function__;
     self.context = {
         callTime : -1,
         program : undefined,
         self_ : undefined,
         localCount : asg.localCount,
-        locals : undefined,
+        localsOffset : 0,
+        locals : array_create(asg.localCount),
         globals : { },
     };
-    self.gmlFunc = method(self.context, funcBase);
     //# feather disable once GM2043
     self.context.program = __compileTerm(asg.root);
 
@@ -74,7 +70,7 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @return {Function}
     static update = function () {
-        return gmlFunc;
+        return method(context, funcBase);
     };
 
     /// @ignore
@@ -157,9 +153,7 @@ function CatspeakGMLCompiler(asg) constructor {
             name : term.name,
             value : __compileTerm(term.value),
         }, function() {
-            var val = value();
-            globals[$ name] = val;
-            return val;
+            globals[$ name] = value();
         });
     };
 
@@ -174,7 +168,7 @@ function CatspeakGMLCompiler(asg) constructor {
 
         return method({
             context : context,
-            idx : term.name,
+            idx : term.idx,
         }, function() {
             return context.locals[idx];
         });
@@ -192,12 +186,10 @@ function CatspeakGMLCompiler(asg) constructor {
 
         return method({
             context : context,
-            idx : term.name,
+            idx : term.idx,
             value : __compileTerm(term.value),
         }, function() {
-            var val = value();
-            context.locals[@ idx] = val;
-            return val;
+            context.locals[@ idx] = value();
         });
     };
 
@@ -232,29 +224,34 @@ function CatspeakGMLCompiler(asg) constructor {
 
 /// @ignore
 function __catspeak_function__() {
-    var startTimer = callTime < 0;
-    if (startTimer) {
-        callTime = current_time;
-    } else {
-        // if the program runs for too long, crash instead of hanging
+    var isRecursing = callTime >= 0;
+    if (isRecursing) {
+        // catch unbound recursion
         __catspeak_timeout_check(callTime);
+        var localCount_ = localCount;
+        localsOffset += localCount_;
+        // allocate space for new function frame
+        locals[@ localsOffset + localCount_] = 0;
+    } else {
+        callTime = current_time;
     }
-    var oldLocals = locals;
-    var localCount_ = localCount;
-    locals = localCount_ > 0 ? array_create(localCount_) : undefined;
     var oldSelf = self_;
     self_ = other;
     var value;
     try {
         value = program();
     } finally {
-        self_ = oldSelf;
-        locals = oldLocals;
-        if (startTimer) {
+        if (isRecursing) {
+            // bad practice to use `localCount_` here, but it saves
+            // a tiny bit of time so I'll be a bit evil
+            //# feather disable once GM2043
+            localsOffset -= localCount_;
+        } else {
             // reset the timer
             callTime = -1;
         }
     }
+    self_ = oldSelf;
     return value;
 }
 
