@@ -342,9 +342,14 @@ function CatspeakASGBuilder() constructor {
     static assignTerms = function (lhs, rhs) {
         var lhsType = lhs.type;
         if (lhsType == CatspeakTerm.GET_LOCAL) {
-            // TODO :: optimise x = x away
+            if (rhs.type == CatspeakTerm.GET_LOCAL && lhs.idx == rhs.idx) {
+                return createValue(undefined, lhs.location);
+            }
             lhs.type = CatspeakTerm.SET_LOCAL;
         } else if (lhsType == CatspeakTerm.GET_GLOBAL) {
+            if (rhs.type == CatspeakTerm.GET_GLOBAL && lhs.name == rhs.name) {
+                return createValue(undefined, lhs.location);
+            }
             lhs.type = CatspeakTerm.SET_GLOBAL;
         } else {
             __catspeak_error(
