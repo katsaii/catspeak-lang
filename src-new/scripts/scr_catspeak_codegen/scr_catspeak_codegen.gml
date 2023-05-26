@@ -93,18 +93,16 @@ function CatspeakGMLCompiler(asg) constructor {
     static __compileBlock = function(term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "terms");
-            __catspeak_check_var_exists("term", term, "result");
             __catspeak_check_typeof("term.terms", term.terms, "array");
-            __catspeak_check_typeof("term.result", term.result, "struct");
         }
 
         var terms = term.terms;
         var termCount = array_length(terms);
         var exprs = array_create(termCount);
-        for (var i = 0; i < termCount; i += 1) {
+        for (var i = 0; i < termCount - 1; i += 1) {
             exprs[@ i] = __compileTerm(terms[i]);
         }
-        var resultExpr = __compileTerm(term.result);
+        var resultExpr = __compileTerm(terms[termCount - 1]);
         return method({
             exprs : exprs,
             n : termCount,

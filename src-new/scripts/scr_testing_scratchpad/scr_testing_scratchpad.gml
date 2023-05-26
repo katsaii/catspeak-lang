@@ -53,7 +53,7 @@ TEST_EXPERIMENT "compiler" {
 }
 
 TEST_EXPERIMENT "compiler-2" {
-    var buff = __catspeak_create_buffer_from_string(@'let `hi` = do { let b = 3; b } ; hi ');
+    var buff = __catspeak_create_buffer_from_string(@'let `hi` = do { let b = 3; b } ; hi 1 ');
     var asg = Catspeak.parse(buff);
     var f = Catspeak.compileGML(asg);
     show_message(json_stringify(asg, true));
