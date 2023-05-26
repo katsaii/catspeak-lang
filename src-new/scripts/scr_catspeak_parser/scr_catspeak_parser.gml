@@ -76,15 +76,17 @@ function CatspeakParser(lexer, builder) constructor {
             if (lexer.next() != CatspeakToken.IDENT) {
                 __ex("expected identifier after 'let' keyword");
             }
+            var localName = lexer.getValue();
             var location = lexer.getLocation();
-            var getter = asg.allocLocal(lexer.getValue(), location);
+            var valueTerm;
             if (lexer.peek() == CatspeakToken.ASSIGN) {
                 lexer.next();
-                result = asg.assignTerms(getter, __parseExpression());
+                valueTerm = __parseExpression();
             } else {
-                var undefinedValue = asg.createValue(undefined, location);
-                result = asg.assignTerms(getter, undefinedValue);
+                valueTerm = asg.createValue(undefined, location);
             }
+            var getter = asg.allocLocal(localName, location);
+            result = asg.assignTerms(getter, valueTerm);
         } else {
             result = __parseExpression();
         }
@@ -375,6 +377,7 @@ function CatspeakASGBuilder() constructor {
                 "defined in this scope"
             );
         }
+        block.localCount += 1;
         var localIdx = nextLocalIdx;
         var nextLocalIdx_ = localIdx + 1;
         nextLocalIdx = nextLocalIdx_;
