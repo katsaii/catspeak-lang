@@ -211,6 +211,7 @@ function CatspeakGMLCompiler(asg) constructor {
         return prod(term);
     };
 
+    /// @ignore
     static __productionLookup = (function () {
         var db = array_create(CatspeakTerm.__SIZE__, undefined);
         db[@ CatspeakTerm.VALUE] = __compileValue;
