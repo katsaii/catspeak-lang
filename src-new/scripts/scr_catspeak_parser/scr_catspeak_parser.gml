@@ -198,9 +198,12 @@ function CatspeakASGBuilder() constructor {
     };
     //# feather disable once GM2043
     self.asg.root = createValue(undefined);
-    //self.localScopes = __catspeak_alloc_ds_list(self);
-    //self.localScopeHead = 0;
-    //self.nextLocalIdx = 0;
+    self.blocks = __catspeak_alloc_ds_list(self);
+    self.blocksTop = -1;
+    self.nextLocalIdx = 0;
+
+    // Feather disable once GM2043
+    pushLocalScope(); // TODO :: yuck!
 
     /// Returns the underlying syntax graph for this builder.
     ///
@@ -233,23 +236,20 @@ function CatspeakASGBuilder() constructor {
     /// @param {Real} [location]
     ///   The source location of this term.
     static createGet = function (name, location=undefined) {
-        //var localIdx = undefined;
-        //for (var i = localScopeHead; i >= 0; i -= __CATSPEAK_ASG_SCOPE_STEP) {
-        //    var scope = localScopes[| i];
-        //    if (ds_map_exists(scope, name)) {
-        //        localIdx = scope[? name];
-        //        break;
-        //    }
-        //}
-        //if (localIdx == undefined) {
-        //    return __createTerm(CatspeakTerm.GET_GLOBAL, location, {
-        //        name : name
-        //    });
-        //} else {
-        //    return __createTerm(CatspeakTerm.GET_LOCAL, location, {
-        //        idx : localIdx
-        //    });
-        //}
+        var localIdx = undefined;
+        for (var i = blocksTop; localIdx == undefined && i >= 0; i -= 1) {
+            var scope = blocks[| i].locals;
+            localIdx = scope[? name];
+        }
+        if (localIdx == undefined) {
+            return __createTerm(CatspeakTerm.GET_GLOBAL, location, {
+                name : name
+            });
+        } else {
+            return __createTerm(CatspeakTerm.GET_LOCAL, location, {
+                idx : localIdx
+            });
+        }
     };
 
     /// Adds an existing node to the program's root node.
@@ -366,20 +366,26 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static allocLocal = function (name, location=undefined) {
-        //var scope = localScopes[| localScopeHead];
-        //if (ds_map_exists(scope, name)) {
-        //    __catspeak_error(
-        //        __catspeak_location_show(lexer.getLocation()),
-        //        " -- a local variable with the name '", name, "' is already ",
-        //        "defined in this scope"
-        //    );
-        //}
-        //var idx = asg.localCount;
-        //scope[? name] = idx;
-        //asg.localCount += 1;
-        //return __createTerm(CatspeakTerm.GET_LOCAL, location, {
-        //    idx : idx
-        //});
+        var block = blocks[| blocksTop];
+        var scope = block.locals;
+        if (ds_map_exists(scope, name)) {
+            __catspeak_error(
+                __catspeak_location_show(lexer.getLocation()),
+                " -- a local variable with the name '", name, "' is already ",
+                "defined in this scope"
+            );
+        }
+        var localIdx = nextLocalIdx;
+        var nextLocalIdx_ = localIdx + 1;
+        nextLocalIdx = nextLocalIdx_;
+        var asg_ = asg;
+        if (nextLocalIdx_ > asg_.localCount) {
+            asg_.localCount = nextLocalIdx_;
+        }
+        scope[? name] = localIdx;
+        return __createTerm(CatspeakTerm.GET_LOCAL, location, {
+            idx : localIdx
+        });
     };
 
     /// Starts a new local variable block scope. Any local variables
@@ -391,30 +397,26 @@ function CatspeakASGBuilder() constructor {
     ///   `false`, which will always create a new block term per local
     ///   scope.
     static pushLocalScope = function (implicit=false) {
-        //var localScopeHead_ = localScopeHead;
-        //var localScopes_ = localScopes;
-        //var terms = implicit
-        //        ? localScopes_[localScopeHead_ + 1]
-        //        : __catspeak_alloc_ds_list(self);
-        //localScopeHead_ += __CATSPEAK_ASG_SCOPE_STEP;
-        //localScopeHead = localScopeHead_;
-        //var scope = localScopes_[| localScopeHead_];
-        //if (scope == undefined) {
-        //    ds_list_add(localScopes_,
-        //        __catspeak_alloc_ds_map(self),
-        //        terms,
-        //        0
-        //    );
-        //} else {
-        //    ds_map_clear(scope);
-        //    localScopes_[| localScopeHead_ + 1]
-        //}
+        var blocks_ = blocks;
+        var blocksTop_ = blocksTop + 1;
+        blocksTop = blocksTop_;
+        var block = blocks_[| blocksTop_];
+        if (block == undefined) {
+            ds_list_add(blocks_, {
+                locals : __catspeak_alloc_ds_map(self),
+                localCount : 0,
+            });
+        } else {
+            ds_map_clear(block.locals);
+            block.localCount = 0;
+        }
     };
 
     /// Clears the most recent local scope and frees any allocated local
     /// variables.
     static popLocalScope = function () {
-        //localScopeHead -= 1;
+        nextLocalIdx -= blocks[| blocksTop].localCount;
+        blocksTop -= 1;
     };
 
     /// @ignore
