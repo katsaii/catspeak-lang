@@ -63,12 +63,11 @@ function CatspeakParser(lexer, builder) constructor {
         if (lexer.peek() == CatspeakToken.EOF) {
             return false;
         }
-        asg.addRoot(__parseStatement());
+        __parseStatement();
         return true;
     };
 
     /// @ignore
-    /// @return {Struct}
     static __parseStatement = function() {
         var result;
         if (lexer.peek() == CatspeakToken.LET) {
@@ -93,7 +92,7 @@ function CatspeakParser(lexer, builder) constructor {
         if (lexer.peek() == CatspeakToken.BREAK_LINE) {
             lexer.next();
         }
-        return result;
+        asg.createStatement(result);
     };
 
     /// @ignore
@@ -130,19 +129,17 @@ function CatspeakParser(lexer, builder) constructor {
             return inner;
         } else if (peeked == CatspeakToken.DO) {
             lexer.next();
-            asg.pushLocalScope();
+            asg.pushBlock();
             if (lexer.next() != CatspeakToken.BRACE_LEFT) {
                 __ex("expected opening '{' after 'do' keyword");
             }
-            var inner = asg.createValue(undefined, lexer.getLocation());
             while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                inner = asg.mergeTerms(inner, __parseStatement());
+                __parseStatement();
             }
             if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
                 __ex("expected closing '}' after 'do' block");
             }
-            asg.popLocalScope();
-            return inner;
+            return asg.popBlock();
         } else {
             __ex("malformed expression");
         }
@@ -198,19 +195,18 @@ function CatspeakASGBuilder() constructor {
         localCount : 0,
         root : undefined,
     };
-    //# feather disable once GM2043
-    self.asg.root = createValue(undefined);
     self.blocks = __catspeak_alloc_ds_list(self);
     self.blocksTop = -1;
     self.nextLocalIdx = 0;
 
     // Feather disable once GM2043
-    pushLocalScope(); // TODO :: yuck!
+    pushBlock(); // TODO :: yuck!
 
     /// Returns the underlying syntax graph for this builder.
     ///
     /// @return {Struct}
     static get = function () {
+        asg.root = popBlock(); // TODO :: yuck!
         return asg;
     };
 
@@ -254,18 +250,18 @@ function CatspeakASGBuilder() constructor {
         }
     };
 
-    /// Adds an existing node to the program's root node.
+    /// Adds an existing node to the current block's statement list.
     ///
     /// @param {Real} term
-    ///   The term to register to the root node.
-    static addRoot = function (term) {
+    ///   The term to register to the current block.
+    static createStatement = function (term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_typeof("term", term, "struct");
             __catspeak_check_var_exists("term", term, "type");
             __catspeak_check_typeof_numeric("term.type", term.type);
         }
-
-        asg.root = mergeTerms(asg.root, term);
+        var block = blocks[| blocksTop];
+        ds_list_add(block.terms, term);
     };
 
     /// Composes two terms together, producing a new term where term A
@@ -397,14 +393,15 @@ function CatspeakASGBuilder() constructor {
     };
 
     /// Starts a new local variable block scope. Any local variables
-    /// allocated in this scope will be cleared after [popLocalScope] is
+    /// allocated in this scope will be cleared after [popBlock] is
     /// called.
     ///
     /// @param {Bool} [implicit]
     ///   Whether to write terms to the parent block or not. Defaults to
     ///   `false`, which will always create a new block term per local
     ///   scope.
-    static pushLocalScope = function (implicit=false) {
+    static pushBlock = function (implicit=false) {
+        // TODO :: implement `implicit`
         var blocks_ = blocks;
         var blocksTop_ = blocksTop + 1;
         blocksTop = blocksTop_;
@@ -412,19 +409,52 @@ function CatspeakASGBuilder() constructor {
         if (block == undefined) {
             ds_list_add(blocks_, {
                 locals : __catspeak_alloc_ds_map(self),
+                terms : __catspeak_alloc_ds_list(self),
                 localCount : 0,
             });
         } else {
             ds_map_clear(block.locals);
+            ds_list_clear(block.terms);
             block.localCount = 0;
         }
     };
 
     /// Clears the most recent local scope and frees any allocated local
     /// variables.
-    static popLocalScope = function () {
-        nextLocalIdx -= blocks[| blocksTop].localCount;
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this block.
+    ///
+    /// @return {Struct}
+    static popBlock = function (location=undefined) {
+        var block = blocks[| blocksTop];
+        nextLocalIdx -= block.localCount;
         blocksTop -= 1;
+        var terms = block.terms;
+        var termCount = ds_list_size(terms);
+        var finalTerms = array_create(termCount);
+        var finalCount = 0;
+        var prevTermIsPure = false;
+        for (var i = 0; i < termCount; i += 1) {
+            var term = terms[| i];
+            if (prevTermIsPure) {
+                finalCount -= 1;
+            }
+            finalTerms[@ finalCount] = term;
+            finalCount += 1;
+            prevTermIsPure = __catspeak_term_is_pure(term.type);
+        }
+        if (finalCount == 0) {
+            return createValue(undefined, location);
+        } else if (finalCount == 1) {
+            return finalTerms[0];
+        } else {
+            var blockLocation = location ?? terms[| 0].dbg;
+            array_resize(finalTerms, finalCount);
+            return __createTerm(CatspeakTerm.BLOCK, blockLocation, {
+                terms : finalTerms,
+            });
+        }
     };
 
     /// @ignore
