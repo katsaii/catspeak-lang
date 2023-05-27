@@ -195,13 +195,14 @@ function CatspeakParser(lexer, builder) constructor {
 /// Handles the generation and optimisation of a syntax graph.
 function CatspeakASGBuilder() constructor {
     self.asg = {
-        localCount : 0,
-        root : undefined,
+        functions : [],
+        entryPoints : [],
     };
     self.currFunction = {
         blocks : __catspeak_alloc_ds_list(self),
         blocksTop : -1,
         nextLocalIdx : 0,
+        localCount : 0,
     };
 
     /// Returns the underlying syntax graph for this builder.
@@ -332,9 +333,8 @@ function CatspeakASGBuilder() constructor {
         var localIdx = currFunction.nextLocalIdx;
         var nextLocalIdx_ = localIdx + 1;
         currFunction.nextLocalIdx = nextLocalIdx_;
-        var asg_ = asg;
-        if (nextLocalIdx_ > asg_.localCount) {
-            asg_.localCount = nextLocalIdx_;
+        if (nextLocalIdx_ > currFunction.localCount) {
+            currFunction.localCount = nextLocalIdx_;
         }
         scope[? name] = localIdx;
         return __createTerm(CatspeakTerm.GET_LOCAL, location, {
@@ -432,11 +432,21 @@ function CatspeakASGBuilder() constructor {
     /// Finalises a Catspeak function and inserts it into the list of
     /// known functions and returns its term.
     ///
+    /// @param {Real} [location]
+    ///   The source location of this function definition.
+    ///
     /// @return {Struct}
-    static popFunction = function () {
+    static popFunction = function (location=undefined) {
         // TODO :: actually implement functions
-        asg.root = popBlock();
-        return asg.root;
+        var idx = array_length(asg.functions);
+        array_push(asg.entryPoints, idx);
+        array_push(asg.functions, {
+            localCount : currFunction.localCount,
+            root : popBlock()
+        });
+        return __createTerm(CatspeakTerm.FUNCTION, location, {
+            idx : idx,
+        });
     };
 
     /// @ignore
@@ -473,87 +483,6 @@ enum CatspeakTerm {
     SET_LOCAL,
     GET_GLOBAL,
     SET_GLOBAL,
+    FUNCTION,
     __SIZE__
-}
-
-/// A debug function which attempts to convert a syntax graph back into
-/// Catspeak code.
-///
-/// NOTE: May not always produce valid Catspeak code.
-///
-/// NOTE: May be very slow.
-///
-/// @param {Struct} asg
-///   The syntax graph to decompile.
-///
-/// @return {String}
-function catspeak_debug_decompile(asg) {
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_var_exists("asg", asg, "root");
-        __catspeak_check_var_exists("asg", asg, "localCount");
-        __catspeak_check_typeof_numeric("asg.localCount", asg.localCount);
-    }
-    return __catspeak_debug_decompile_func(asg.localCount, asg.root);
-}
-
-/// @ignore
-/// @param {Struct} term
-/// @return {String}
-function __catspeak_debug_decompile_func(localCount, term) {
-    var msg = "";
-    var i = 0;
-    repeat (localCount) {
-        msg += "let t" + string(i) + "\n";
-        i += 1;
-    }
-    return msg + __catspeak_debug_decompile_term(term);
-}
-
-/// @ignore
-/// @param {Struct} term
-/// @return {String}
-function __catspeak_debug_decompile_term(term) {
-    static indent = 0;
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_typeof("term", term, "struct");
-        __catspeak_check_var_exists("term", term, "type");
-        __catspeak_check_typeof_numeric("term.type", term.type);
-    }
-    switch (term.type) {
-    case CatspeakTerm.VALUE:
-        var value = term.value;
-        return is_string(value) ? "\"" + value + "\"" : string(value);
-    case CatspeakTerm.BLOCK:
-        var msg = "do {\n";
-        var terms = term.terms;
-        indent += 1;
-        var indentStr = "";
-        repeat (indent) {
-            indentStr += "  ";
-        }
-        for (var i = 0; i < array_length(terms); i += 1) {
-            var blockTerm = terms[i];
-            msg += indentStr + __catspeak_debug_decompile_term(blockTerm);
-            if (blockTerm.dbg != undefined) {
-                msg += "\n" + indentStr + "-- ^" + __catspeak_location_show(blockTerm.dbg);
-            }
-            msg += "\n";
-        }
-        indent -= 1;
-        indentStr = string_delete(indentStr, 1, 2);
-        msg += indentStr + "}";
-        return msg;
-    case CatspeakTerm.GET_LOCAL:
-        return "t" + string(term.idx);
-    case CatspeakTerm.SET_LOCAL:
-        return "t" + string(term.idx) + " = " + 
-                __catspeak_debug_decompile_term(term.value);
-    case CatspeakTerm.GET_GLOBAL:
-        return term.name;
-    case CatspeakTerm.SET_GLOBAL:
-        return term.name + " = " + 
-                __catspeak_debug_decompile_term(term.value);
-    default:
-        return "<decomp-failed>";
-    }
 }
