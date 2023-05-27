@@ -85,7 +85,7 @@ function CatspeakParser(lexer, builder) constructor {
                 valueTerm = asg.createValue(undefined, location);
             }
             var getter = asg.allocLocal(localName, location);
-            result = asg.assignTerms(getter, valueTerm);
+            result = asg.createAssign(getter, valueTerm);
         } else {
             result = __parseExpression();
         }
@@ -250,79 +250,6 @@ function CatspeakASGBuilder() constructor {
         }
     };
 
-    /// Adds an existing node to the current block's statement list.
-    ///
-    /// @param {Real} term
-    ///   The term to register to the current block.
-    static createStatement = function (term) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof("term", term, "struct");
-            __catspeak_check_var_exists("term", term, "type");
-            __catspeak_check_typeof_numeric("term.type", term.type);
-        }
-        var block = blocks[| blocksTop];
-        var result_ = block.result;
-        if (result_ != undefined) {
-            ds_list_add(block.inheritedTerms ?? block.terms, result_);
-        }
-        block.result = term;
-    };
-
-    /// Composes two terms together, producing a new term where term A
-    /// executes first, followed by term B.
-    ///
-    /// NOTE: Either terms A or B could be optimised or modified, therefore
-    ///       you should always treat both terms as being invalid after
-    ///       calling this method. Always use the result returned by this
-    ///       method as the new source of truth.
-    ///
-    /// @param {Real} termA
-    ///   The term to execute first.
-    ///
-    /// @param {Real} termB
-    ///   The term to execute second.
-    ///
-    /// @return {Real}
-    static mergeTerms = function (termA, termB) {
-        var aType = termA.type;
-        var bType = termB.type;
-        var aIsBlock = aType == CatspeakTerm.BLOCK;
-        var bIsBlock = bType == CatspeakTerm.BLOCK;
-        if (aIsBlock && !bIsBlock) {
-            if (!__catspeak_term_is_pure(termA.result.type)) {
-                array_push(termA.terms, termA.result);
-            }
-            termA.result = termB;
-            return termA;
-        } else if (aIsBlock && bIsBlock) {
-            var aTerms = termA.terms;
-            var bTerms = termB.terms;
-            var aResult = termA.result;
-            if (__catspeak_term_is_pure(aResult.type)) {
-                array_push(aTerms, aResult);
-            }
-            array_copy(
-                aTerms, array_length(aTerms),
-                bTerms, 0, array_length(bTerms)
-            );
-            termA.result = termB.result;
-            return termA;
-        } else if (__catspeak_term_is_pure(aType)) {
-            return termB;
-        } else if (!aIsBlock && bIsBlock) {
-            // hoping that this doesn't happen often
-            array_insert(termB.terms, 0, termA);
-            return termB;
-        } else {
-            var terms = array_create(32, termA);
-            array_resize(terms, 1);
-            return __createTerm(CatspeakTerm.BLOCK, termA.dbg, {
-                terms : terms,
-                result : termB,
-            });
-        }
-    };
-
     /// Attempts to assign a right-hand-side value to a left-hand-side target.
     ///
     /// NOTE: Either terms A or B could be optimised or modified, therefore
@@ -339,7 +266,7 @@ function CatspeakASGBuilder() constructor {
     ///   variable get expression.
     ///
     /// @return {Struct}
-    static assignTerms = function (lhs, rhs) {
+    static createAssign = function (lhs, rhs) {
         var lhsType = lhs.type;
         if (lhsType == CatspeakTerm.GET_LOCAL) {
             if (rhs.type == CatspeakTerm.GET_LOCAL && lhs.idx == rhs.idx) {
@@ -360,6 +287,24 @@ function CatspeakASGBuilder() constructor {
         }
         lhs.value = rhs;
         return lhs;
+    };
+
+    /// Adds an existing node to the current block's statement list.
+    ///
+    /// @param {Real} term
+    ///   The term to register to the current block.
+    static createStatement = function (term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_typeof("term", term, "struct");
+            __catspeak_check_var_exists("term", term, "type");
+            __catspeak_check_typeof_numeric("term.type", term.type);
+        }
+        var block = blocks[| blocksTop];
+        var result_ = block.result;
+        if (result_ != undefined) {
+            ds_list_add(block.inheritedTerms ?? block.terms, result_);
+        }
+        block.result = term;
     };
 
     /// Allocates a new local variable with the supplied name in the current
