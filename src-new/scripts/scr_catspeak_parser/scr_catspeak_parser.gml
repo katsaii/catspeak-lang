@@ -24,6 +24,8 @@ function CatspeakParser(lexer, builder) constructor {
     self.lexer = lexer;
     self.asg = builder;
 
+    self.asg.pushFunction();
+
     /// Enables or disables any additional features for this parser, according
     /// to the supplied feature flags.
     ///
@@ -61,6 +63,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Function}
     static update = function () {
         if (lexer.peek() == CatspeakToken.EOF) {
+            self.asg.popFunction();
             return false;
         }
         __parseStatement();
@@ -199,14 +202,10 @@ function CatspeakASGBuilder() constructor {
     self.blocksTop = -1;
     self.nextLocalIdx = 0;
 
-    // Feather disable once GM2043
-    pushBlock(); // TODO :: yuck!
-
     /// Returns the underlying syntax graph for this builder.
     ///
     /// @return {Struct}
     static get = function () {
-        asg.root = popBlock(); // TODO :: yuck!
         return asg;
     };
 
@@ -421,6 +420,21 @@ function CatspeakASGBuilder() constructor {
                 terms : finalTerms,
             });
         }
+    };
+
+    /// Begins a new Catspeak function scope.
+    static pushFunction = function () {
+        pushBlock();
+    };
+
+    /// Finalises a Catspeak function and inserts it into the list of
+    /// known functions and returns its term.
+    ///
+    /// @return {Struct}
+    static popFunction = function () {
+        // TODO :: actually implement functions
+        asg.root = popBlock();
+        return asg.root;
     };
 
     /// @ignore
