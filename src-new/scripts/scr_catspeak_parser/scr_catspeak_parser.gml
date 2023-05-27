@@ -261,7 +261,11 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_typeof_numeric("term.type", term.type);
         }
         var block = blocks[| blocksTop];
-        ds_list_add(block.terms, term);
+        var result_ = block.result;
+        if (result_ != undefined) {
+            ds_list_add(block.inheritedTerms ?? block.terms, result_);
+        }
+        block.result = term;
     };
 
     /// Composes two terms together, producing a new term where term A
@@ -396,25 +400,33 @@ function CatspeakASGBuilder() constructor {
     /// allocated in this scope will be cleared after [popBlock] is
     /// called.
     ///
-    /// @param {Bool} [implicit]
+    /// @param {Bool} [inherit]
     ///   Whether to write terms to the parent block or not. Defaults to
     ///   `false`, which will always create a new block term per local
     ///   scope.
-    static pushBlock = function (implicit=false) {
-        // TODO :: implement `implicit`
+    static pushBlock = function (inherit=false) {
         var blocks_ = blocks;
         var blocksTop_ = blocksTop + 1;
         blocksTop = blocksTop_;
         var block = blocks_[| blocksTop_];
+        var inheritedTerms = undefined;
+        if (inherit) {
+            var blockParent = blocks_[| blocksTop_];
+            inheritedTerms = blockParent.inheritedTerms ?? blockParent.terms;
+        }
         if (block == undefined) {
             ds_list_add(blocks_, {
                 locals : __catspeak_alloc_ds_map(self),
                 terms : __catspeak_alloc_ds_list(self),
+                inheritedTerms : inheritedTerms,
+                result : undefined,
                 localCount : 0,
             });
         } else {
             ds_map_clear(block.locals);
             ds_list_clear(block.terms);
+            block.inheritedTerms = inheritedTerms;
+            block.result = undefined;
             block.localCount = 0;
         }
     };
@@ -430,7 +442,16 @@ function CatspeakASGBuilder() constructor {
         var block = blocks[| blocksTop];
         nextLocalIdx -= block.localCount;
         blocksTop -= 1;
+        var result_ = block.result;
+        if (block.inheritedTerms != undefined) {
+            return result_ ?? createValue(undefined, location);
+        }
         var terms = block.terms;
+        if (result_!= undefined) {
+            // since the result is separate from the other statements,
+            // add it back
+            ds_list_add(terms, result_);
+        }
         var termCount = ds_list_size(terms);
         var finalTerms = array_create(termCount);
         var finalCount = 0;
