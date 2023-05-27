@@ -68,9 +68,13 @@ enum CatspeakToken {
     IMPL,
     /// The `self` keyword.
     SELF,
+    /// The `params` keyword.
+    PARAMS,
     /// Represents a variable name.
     IDENT,
-    /// Represents a GML string value.
+    /// Represents a GML string value. The could be one of:
+    ///  - string literal:   "hello world"
+    ///  - verbatim literal: @"\(0_0)/ no escapes!"
     STRING,
     /// Represents a GML numeric value. This could be one of:
     ///  - integer:   1, 2, 5
