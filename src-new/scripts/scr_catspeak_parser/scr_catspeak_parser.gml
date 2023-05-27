@@ -198,9 +198,11 @@ function CatspeakASGBuilder() constructor {
         localCount : 0,
         root : undefined,
     };
-    self.blocks = __catspeak_alloc_ds_list(self);
-    self.blocksTop = -1;
-    self.nextLocalIdx = 0;
+    self.currFunction = {
+        blocks : __catspeak_alloc_ds_list(self),
+        blocksTop : -1,
+        nextLocalIdx : 0,
+    };
 
     /// Returns the underlying syntax graph for this builder.
     ///
@@ -234,8 +236,8 @@ function CatspeakASGBuilder() constructor {
     ///   The source location of this term.
     static createGet = function (name, location=undefined) {
         var localIdx = undefined;
-        for (var i = blocksTop; localIdx == undefined && i >= 0; i -= 1) {
-            var scope = blocks[| i].locals;
+        for (var i = currFunction.blocksTop; localIdx == undefined && i >= 0; i -= 1) {
+            var scope = currFunction.blocks[| i].locals;
             localIdx = scope[? name];
         }
         if (localIdx == undefined) {
@@ -298,7 +300,7 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_var_exists("term", term, "type");
             __catspeak_check_typeof_numeric("term.type", term.type);
         }
-        var block = blocks[| blocksTop];
+        var block = currFunction.blocks[| currFunction.blocksTop];
         var result_ = block.result;
         if (result_ != undefined) {
             ds_list_add(block.inheritedTerms ?? block.terms, result_);
@@ -317,7 +319,7 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static allocLocal = function (name, location=undefined) {
-        var block = blocks[| blocksTop];
+        var block = currFunction.blocks[| currFunction.blocksTop];
         var scope = block.locals;
         if (ds_map_exists(scope, name)) {
             __catspeak_error(
@@ -327,9 +329,9 @@ function CatspeakASGBuilder() constructor {
             );
         }
         block.localCount += 1;
-        var localIdx = nextLocalIdx;
+        var localIdx = currFunction.nextLocalIdx;
         var nextLocalIdx_ = localIdx + 1;
-        nextLocalIdx = nextLocalIdx_;
+        currFunction.nextLocalIdx = nextLocalIdx_;
         var asg_ = asg;
         if (nextLocalIdx_ > asg_.localCount) {
             asg_.localCount = nextLocalIdx_;
@@ -349,9 +351,9 @@ function CatspeakASGBuilder() constructor {
     ///   `false`, which will always create a new block term per local
     ///   scope.
     static pushBlock = function (inherit=false) {
-        var blocks_ = blocks;
-        var blocksTop_ = blocksTop + 1;
-        blocksTop = blocksTop_;
+        var blocks_ = currFunction.blocks;
+        var blocksTop_ = currFunction.blocksTop + 1;
+        currFunction.blocksTop = blocksTop_;
         var block = blocks_[| blocksTop_];
         var inheritedTerms = undefined;
         if (inherit) {
@@ -383,9 +385,9 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static popBlock = function (location=undefined) {
-        var block = blocks[| blocksTop];
-        nextLocalIdx -= block.localCount;
-        blocksTop -= 1;
+        var block = currFunction.blocks[| currFunction.blocksTop];
+        currFunction.nextLocalIdx -= block.localCount;
+        currFunction.blocksTop -= 1;
         var result_ = block.result;
         if (block.inheritedTerms != undefined) {
             return result_ ?? createValue(undefined, location);
