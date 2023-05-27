@@ -129,7 +129,7 @@ function CatspeakParser(lexer, builder) constructor {
             return inner;
         } else if (peeked == CatspeakToken.DO) {
             lexer.next();
-            asg.pushBlock();
+            asg.pushBlock(true);
             if (lexer.next() != CatspeakToken.BRACE_LEFT) {
                 __ex("expected opening '{' after 'do' keyword");
             }
@@ -270,12 +270,12 @@ function CatspeakASGBuilder() constructor {
         var lhsType = lhs.type;
         if (lhsType == CatspeakTerm.GET_LOCAL) {
             if (rhs.type == CatspeakTerm.GET_LOCAL && lhs.idx == rhs.idx) {
-                return createValue(undefined, lhs.location);
+                return createValue(undefined, lhs.dbg);
             }
             lhs.type = CatspeakTerm.SET_LOCAL;
         } else if (lhsType == CatspeakTerm.GET_GLOBAL) {
             if (rhs.type == CatspeakTerm.GET_GLOBAL && lhs.name == rhs.name) {
-                return createValue(undefined, lhs.location);
+                return createValue(undefined, lhs.dbg);
             }
             lhs.type = CatspeakTerm.SET_GLOBAL;
         } else {
@@ -356,7 +356,7 @@ function CatspeakASGBuilder() constructor {
         var block = blocks_[| blocksTop_];
         var inheritedTerms = undefined;
         if (inherit) {
-            var blockParent = blocks_[| blocksTop_];
+            var blockParent = blocks_[| blocksTop_ - 1];
             inheritedTerms = blockParent.inheritedTerms ?? blockParent.terms;
         }
         if (block == undefined) {
