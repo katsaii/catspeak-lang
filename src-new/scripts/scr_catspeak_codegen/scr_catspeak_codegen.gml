@@ -32,12 +32,14 @@ function __catspeak_timeout_check(t) {
 ///   The syntax graph to compile.
 function CatspeakGMLCompiler(asg) constructor {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_var_exists("asg", asg, "root");
-        __catspeak_check_var_exists("asg", asg, "localCount");
-        __catspeak_check_typeof_numeric("asg.localCount", asg.localCount);
+        __catspeak_check_var_exists("asg", asg, "functions");
+        __catspeak_check_var_exists("asg", asg, "entryPoints");
+        __catspeak_check_typeof("asg.functions", asg.functions, "array");
+        __catspeak_check_typeof("asg.entryPoints", asg.entryPoints, "array");
     }
 
-    var localCount = asg.localCount;
+    var main = asg.functions[0]; // TODO :: assume one function for now
+    var localCount = main.localCount;
     self.funcBase = __catspeak_function__;
     self.context = {
         callTime : -1,
@@ -49,7 +51,7 @@ function CatspeakGMLCompiler(asg) constructor {
         globals : { },
     };
     //# feather disable once GM2043
-    self.context.program = __compileTerm(asg.root);
+    self.context.program = __compileTerm(main.root);
 
     /// Updates the compiler by generating the code for a single term from the
     /// supplied syntax graph. Returns the result of the compilation if there
