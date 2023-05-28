@@ -65,11 +65,11 @@ if (exampleIsValid(exampleCurrent)) {
 draw_text(width * 0.5, headerHeight + pad + lineHeight, 
         "example\n" + exampleName);
 if (exampleIsValid(exampleCurrent - 1)) {
-    draw_text(width * 0.25, headerHeight + pad + lineHeight, 
+    draw_text(width * 0.15, headerHeight + pad + lineHeight, 
             "previous example\n<left arrow key>");
 }
 if (exampleIsValid(exampleCurrent + 1)) {
-    draw_text(width * 0.75, headerHeight + pad + lineHeight, 
+    draw_text(width * 0.85, headerHeight + pad + lineHeight, 
             "next example\n<right arrow key>");
 }
 

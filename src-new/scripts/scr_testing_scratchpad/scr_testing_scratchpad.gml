@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "compiler-2";
+var runExperiment = "none";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
