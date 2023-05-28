@@ -5,7 +5,7 @@ if (gmlFunc == undefined) {
     exit;
 }
 
-if (frame < 120) {
+if (frame < runTime) {
     var countTotal_ = countTotal;
 
     var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
@@ -17,16 +17,16 @@ if (frame < 120) {
     countTotal = countTotal_;
     frame += 1;
 
-    if (frame >= 120) {
-        addLog("Catspeak avg. n = " + string(countTotal / 120));
+    if (frame >= runTime) {
+        addLog("Catspeak avg. n = " + string(countTotal / runTime));
         countTotal = 0;
 
         addLog("running GML...", "boring");
     }
-} else if (frame < 120 * 2) {
+} else if (frame < runTime * 2) {
     if (nativeFunc == undefined) {
         addLog("skipping GML test");
-        frame = 120 * 2;
+        frame = runTime * 2;
     } else {
         var countTotal_ = countTotal;
 
@@ -40,15 +40,15 @@ if (frame < 120) {
         frame += 1;
     }
 
-    if (frame >= 120 * 2) {
+    if (frame >= runTime * 2) {
         if (nativeFunc != undefined) {
-            addLog("GML avg. n = " + string(countTotal / 120));
+            addLog("GML avg. n = " + string(countTotal / runTime));
         }
         countTotal = 0;
 
         addLog("running compiler...", "boring");
     }
-} else if (frame < 120 * 3) {
+} else if (frame < runTime * 3) {
     var countTotal_ = countTotal;
 
     var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
@@ -61,11 +61,11 @@ if (frame < 120) {
     countTotal = countTotal_;
     frame += 1;
 
-    if (frame >= 120 * 3) {
-        addLog("Parse avg. n = " + string(countTotal / 120));
+    if (frame >= runTime * 3) {
+        addLog("Parse avg. n = " + string(countTotal / runTime));
         countTotal = 0;
     }
-} else if (frame < 120 * 4) {
+} else if (frame < runTime * 4) {
     var countTotal_ = countTotal;
 
     var asg = Catspeak.parseString(code);
@@ -79,8 +79,8 @@ if (frame < 120) {
     countTotal = countTotal_;
     frame += 1;
 
-    if (frame >= 120 * 4) {
-        addLog("Compile avg. n = " + string(countTotal / 120));
+    if (frame >= runTime * 4) {
+        addLog("Compile avg. n = " + string(countTotal / runTime));
         countTotal = 0;
         gmlFunc = undefined;
     }

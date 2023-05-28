@@ -83,14 +83,11 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @param {Struct} func
     static __compileFunction = function(func) {
-        var localCount = func.localCount;
         var ctx = {
             callTime : -1,
             program : undefined,
             self_ : undefined,
-            localCount : localCount,
-            localsOffset : 0,
-            locals : array_create(localCount),
+            locals : array_create(func.localCount),
             globals : globals,
         };
         ctx.program = __compileTerm(ctx, func.root);
@@ -105,9 +102,7 @@ function CatspeakGMLCompiler(asg) constructor {
             __catspeak_check_var_exists("term", term, "value");
         }
 
-        return method({ value : term.value }, function() {
-            return value;
-        });
+        return method({ value : term.value }, __catspeak_expr_value__);
     };
 
     /// @ignore
@@ -121,6 +116,13 @@ function CatspeakGMLCompiler(asg) constructor {
 
         var terms = term.terms;
         var termCount = array_length(terms);
+        if (termCount == 2) {
+            return method({
+                lhs : __compileTerm(ctx, terms[0]),
+                rhs : __compileTerm(ctx, terms[1]),
+            }, __catspeak_expr_seq__);
+        }
+        
         var exprs = array_create(termCount);
         for (var i = 0; i < termCount - 1; i += 1) {
             exprs[@ i] = __compileTerm(ctx, terms[i]);
@@ -130,17 +132,7 @@ function CatspeakGMLCompiler(asg) constructor {
             exprs : exprs,
             n : termCount,
             result : resultExpr,
-        }, function() {
-            var i = 0;
-            repeat (n) {
-                // not sure if this is even fast
-                // but people will cry if I don't do it
-                var expr = exprs[i];
-                expr();
-                i += 1;
-            }
-            return result();
-        });
+        }, __catspeak_expr_block__);
     };
 
     /// @ignore
@@ -155,9 +147,7 @@ function CatspeakGMLCompiler(asg) constructor {
         return method({
             name : term.name,
             globals : globals,
-        }, function() {
-            return globals[$ name];
-        });
+        }, __catspeak_expr_global_get__);
     };
 
     /// @ignore
@@ -174,9 +164,7 @@ function CatspeakGMLCompiler(asg) constructor {
             globals : globals,
             name : term.name,
             value : __compileTerm(ctx, term.value),
-        }, function() {
-            globals[$ name] = value();
-        });
+        }, __catspeak_expr_global_set__);
     };
 
     /// @ignore
@@ -189,12 +177,9 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         return method({
-            ctx : ctx,
+            locals : ctx.locals,
             idx : term.idx,
-        }, function() {
-            var ctx_ = ctx;
-            return ctx_.locals[ctx_.localsOffset + idx];
-        });
+        }, __catspeak_expr_local_get__);
     };
 
     /// @ignore
@@ -208,13 +193,10 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         return method({
-            ctx : ctx,
+            locals : ctx.locals,
             idx : term.idx,
             value : __compileTerm(ctx, term.value),
-        }, function() {
-            var ctx_ = ctx;
-            ctx_.locals[@ ctx_.localsOffset + idx] = value();
-        });
+        }, __catspeak_expr_local_set__);
     };
 
     /// @ignore
@@ -253,14 +235,17 @@ function __catspeak_function__() {
     if (isRecursing) {
         // catch unbound recursion
         __catspeak_timeout_check(callTime);
-        var localCount_ = localCount;
-        localsOffset += localCount_;
-        // allocate space for new function frame
-        locals[@ localsOffset + localCount_] = 0;
+        // store the previous local variable array
+        // this will make function recursion quite expensive, but
+        // hopefully that's uncommon enough for it to not matter
+        var localCount = array_length(locals);
+        var oldLocals = array_create(localCount);
+        array_copy(oldLocals, 0, locals, 0, localCount);
+        // store previous self
+        var oldSelf = self_;
     } else {
         callTime = current_time;
     }
-    var oldSelf = self_;
     self_ = other;
     var value;
     try {
@@ -270,17 +255,59 @@ function __catspeak_function__() {
             // bad practice to use `localCount_` here, but it saves
             // a tiny bit of time so I'll be a bit evil
             //# feather disable once GM2043
-            localsOffset -= localCount_;
+            array_copy(locals, 0, oldLocals, 0, localCount);
+            //# feather disable once GM2043
+            self_ = oldSelf;
         } else {
             // reset the timer
             callTime = -1;
         }
     }
-    self_ = oldSelf;
     return value;
 }
 
 /// @ignore
-function __catspeak_function_simple__() {
-    return program();
+function __catspeak_expr_value__() {
+    return value;
+}
+
+/// @ignore
+function __catspeak_expr_block__() {
+    var i = 0;
+    var exprs_ = exprs;
+    var n_ = n;
+    repeat (n_) {
+        // not sure if this is even fast
+        // but people will cry if I don't do it
+        var expr = exprs_[i];
+        expr();
+        i += 1;
+    }
+    return result();
+}
+
+/// @ignore
+function __catspeak_expr_seq__() {
+    lhs();
+    return rhs();
+}
+
+/// @ignore
+function __catspeak_expr_global_get__() {
+    return globals[$ name];
+}
+
+/// @ignore
+function __catspeak_expr_global_set__() {
+    globals[$ name] = value();
+}
+
+/// @ignore
+function __catspeak_expr_local_get__() {
+    return locals[idx];
+}
+
+/// @ignore
+function __catspeak_expr_local_set__() {
+    locals[@ idx] = value();
 }

@@ -16,3 +16,5 @@ nativeFunc = function() {
     var hi = b;
     return hi;
 };
+
+runTime = 60 * 5;
