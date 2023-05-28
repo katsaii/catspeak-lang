@@ -5,15 +5,14 @@ event_inherited();
 
 resizeLog(10);
 
-code = @'do {
-  "hello world"
-  123
-  "yippee!"
-  do {
-    3.14_15
-  }
-}';
+code = @'let `hi` = do {
+  let b = 3;
+  b
+}
+hi';
 
 nativeFunc = function() {
-    return 3.1415;
+    var b = 3;
+    var hi = b;
+    return hi;
 };
