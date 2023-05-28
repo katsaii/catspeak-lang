@@ -18,6 +18,10 @@ examples = [
         title : "basic performance",
         obj : obj_testing_example_bench_basic,
     },
+    {
+        title : "basic variable performance",
+        obj : obj_testing_example_bench_basic_vars,
+    },
     /*
     {
         title : "factorial",

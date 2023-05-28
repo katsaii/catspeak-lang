@@ -38,20 +38,10 @@ function CatspeakGMLCompiler(asg) constructor {
         __catspeak_check_typeof("asg.entryPoints", asg.entryPoints, "array");
     }
 
-    var main = asg.functions[0]; // TODO :: assume one function for now
-    var localCount = main.localCount;
-    self.funcBase = __catspeak_function__;
-    self.context = {
-        callTime : -1,
-        program : undefined,
-        self_ : undefined,
-        localCount : localCount,
-        localsOffset : 0,
-        locals : array_create(localCount),
-        globals : { },
-    };
+    self.functions = asg.functions;
+    self.globals = { };
     //# feather disable once GM2043
-    self.context.program = __compileTerm(main.root);
+    self.program = __compileFunctions(asg.entryPoints);
 
     /// Updates the compiler by generating the code for a single term from the
     /// supplied syntax graph. Returns the result of the compilation if there
@@ -73,13 +63,44 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @return {Function}
     static update = function () {
-        return method(context, funcBase);
+        return program;
+    };
+
+
+    /// @ignore
+    ///
+    /// @param {Array} entryPoints
+    static __compileFunctions = function(entryPoints) {
+        var n = array_length(entryPoints);
+        if (n == 1) {
+            return __compileFunction(functions[0]);
+        } else {
+            __catspeak_error_unimplemented("multiple-entry-points");
+        }
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} func
+    static __compileFunction = function(func) {
+        var localCount = func.localCount;
+        var ctx = {
+            callTime : -1,
+            program : undefined,
+            self_ : undefined,
+            localCount : localCount,
+            localsOffset : 0,
+            locals : array_create(localCount),
+            globals : globals,
+        };
+        ctx.program = __compileTerm(ctx, func.root);
+        return method(ctx, __catspeak_function__);
     };
 
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileValue = function(term) {
+    static __compileValue = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "value");
         }
@@ -92,7 +113,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileBlock = function(term) {
+    static __compileBlock = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "terms");
             __catspeak_check_typeof("term.terms", term.terms, "array");
@@ -102,9 +123,9 @@ function CatspeakGMLCompiler(asg) constructor {
         var termCount = array_length(terms);
         var exprs = array_create(termCount);
         for (var i = 0; i < termCount - 1; i += 1) {
-            exprs[@ i] = __compileTerm(terms[i]);
+            exprs[@ i] = __compileTerm(ctx, terms[i]);
         }
-        var resultExpr = __compileTerm(terms[termCount - 1]);
+        var resultExpr = __compileTerm(ctx, terms[termCount - 1]);
         return method({
             exprs : exprs,
             n : termCount,
@@ -125,7 +146,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileGlobalGet = function(term) {
+    static __compileGlobalGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "name");
             __catspeak_check_typeof("term.name", term.name, "string");
@@ -133,7 +154,7 @@ function CatspeakGMLCompiler(asg) constructor {
 
         return method({
             name : term.name,
-            globals : context.globals,
+            globals : globals,
         }, function() {
             return globals[$ name];
         });
@@ -142,7 +163,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileGlobalSet = function(term) {
+    static __compileGlobalSet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "name");
             __catspeak_check_var_exists("term", term, "value");
@@ -150,9 +171,9 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         return method({
-            globals : context.globals,
+            globals : globals,
             name : term.name,
-            value : __compileTerm(term.value),
+            value : __compileTerm(ctx, term.value),
         }, function() {
             globals[$ name] = value();
         });
@@ -161,24 +182,25 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileLocalGet = function(term) {
+    static __compileLocalGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "idx");
             __catspeak_check_typeof_numeric("term.idx", term.idx);
         }
 
         return method({
-            context : context,
+            ctx : ctx,
             idx : term.idx,
         }, function() {
-            return context.locals[idx];
+            var ctx_ = ctx;
+            return ctx_.locals[ctx_.localsOffset + idx];
         });
     };
 
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileLocalSet = function(term) {
+    static __compileLocalSet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_var_exists("term", term, "idx");
             __catspeak_check_var_exists("term", term, "value");
@@ -186,18 +208,19 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         return method({
-            context : context,
+            ctx : ctx,
             idx : term.idx,
-            value : __compileTerm(term.value),
+            value : __compileTerm(ctx, term.value),
         }, function() {
-            context.locals[@ idx] = value();
+            var ctx_ = ctx;
+            ctx_.locals[@ ctx_.localsOffset + idx] = value();
         });
     };
 
     /// @ignore
     ///
     /// @param {Any} value
-    static __compileTerm = function(term) {
+    static __compileTerm = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_typeof("term", term, "struct");
             __catspeak_check_var_exists("term", term, "type");
@@ -208,7 +231,7 @@ function CatspeakGMLCompiler(asg) constructor {
         if (CATSPEAK_DEBUG_MODE && prod == undefined) {
             __catspeak_error_bug();
         }
-        return prod(term);
+        return prod(ctx, term);
     };
 
     /// @ignore
