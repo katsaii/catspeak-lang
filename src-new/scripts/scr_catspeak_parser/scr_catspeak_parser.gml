@@ -25,23 +25,8 @@ function CatspeakParser(lexer, builder) constructor {
 
     self.lexer = lexer;
     self.asg = builder;
-
-    self.asg.pushFunction();
-
-    /// Enables or disables any additional features for this parser, according
-    /// to the supplied feature flags.
-    ///
-    /// @param {Enum.CatspeakFeature} featureFlags
-    ///   An instance of [CatspeakFeature] specifying which features to enable.
-    ///
-    /// @return {Struct}
-    static withFeatures = function (featureFlags) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("featureFlags", featureFlags, is_numeric);
-        }
-
-        return self;
-    };
+    self.finalised = false;
+    builder.pushFunction();
 
     /// Updates the parser by parsing a simple Catspeak expression from the
     /// supplied lexer, adding any relevant parse information to the supplied
@@ -65,8 +50,16 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Function}
     static update = function () {
         if (lexer.peek() == CatspeakToken.EOF) {
-            asg.popFunction();
+            if (!finalised) {
+                asg.popFunction();
+                finalised = true;
+            }
             return false;
+        }
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_error(
+                "attempting to update parser after it has been finalised"
+            );
         }
         __parseStatement();
         return true;
@@ -211,19 +204,20 @@ function CatspeakParser(lexer, builder) constructor {
 ///
 /// @unstable
 function CatspeakASGBuilder() constructor {
-    self.asg = {
-        functions : [],
-        entryPoints : [],
-    };
-    self.functions = __catspeak_alloc_ds_list(self);
-    self.functionsTop = -1;
-    self.currFunction = undefined;
+    self.functions = [];
+    self.topLevelFunctions = [];
+    self.functionScopes = __catspeak_alloc_ds_list(self);
+    self.functionScopesTop = -1;
+    self.currFunctionScope = undefined;
 
     /// Returns the underlying syntax graph for this builder.
     ///
     /// @return {Struct}
     static get = function () {
-        return asg;
+        return {
+            functions : functions,
+            entryPoints : topLevelFunctions,
+        };
     };
 
     /// Builds a new value term and returns its handle.
@@ -251,8 +245,8 @@ function CatspeakASGBuilder() constructor {
     ///   The source location of this term.
     static createGet = function (name, location=undefined) {
         var localIdx = undefined;
-        for (var i = currFunction.blocksTop; localIdx == undefined && i >= 0; i -= 1) {
-            var scope = currFunction.blocks[| i].locals;
+        for (var i = currFunctionScope.blocksTop; localIdx == undefined && i >= 0; i -= 1) {
+            var scope = currFunctionScope.blocks[| i].locals;
             localIdx = scope[? name];
         }
         if (localIdx == undefined) {
@@ -316,7 +310,7 @@ function CatspeakASGBuilder() constructor {
             );
         }
 
-        var block = currFunction.blocks[| currFunction.blocksTop];
+        var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         var result_ = block.result;
         if (result_ != undefined) {
             ds_list_add(block.inheritedTerms ?? block.terms, result_);
@@ -335,7 +329,7 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static allocLocal = function (name, location=undefined) {
-        var block = currFunction.blocks[| currFunction.blocksTop];
+        var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         var scope = block.locals;
         if (ds_map_exists(scope, name)) {
             __catspeak_error(
@@ -345,11 +339,11 @@ function CatspeakASGBuilder() constructor {
             );
         }
         block.localCount += 1;
-        var localIdx = currFunction.nextLocalIdx;
+        var localIdx = currFunctionScope.nextLocalIdx;
         var nextLocalIdx_ = localIdx + 1;
-        currFunction.nextLocalIdx = nextLocalIdx_;
-        if (nextLocalIdx_ > currFunction.localCount) {
-            currFunction.localCount = nextLocalIdx_;
+        currFunctionScope.nextLocalIdx = nextLocalIdx_;
+        if (nextLocalIdx_ > currFunctionScope.localCount) {
+            currFunctionScope.localCount = nextLocalIdx_;
         }
         scope[? name] = localIdx;
         return __createTerm(CatspeakTerm.GET_LOCAL, location, {
@@ -366,9 +360,9 @@ function CatspeakASGBuilder() constructor {
     ///   `false`, which will always create a new block term per local
     ///   scope.
     static pushBlock = function (inherit=false) {
-        var blocks_ = currFunction.blocks;
-        var blocksTop_ = currFunction.blocksTop + 1;
-        currFunction.blocksTop = blocksTop_;
+        var blocks_ = currFunctionScope.blocks;
+        var blocksTop_ = currFunctionScope.blocksTop + 1;
+        currFunctionScope.blocksTop = blocksTop_;
         var block = blocks_[| blocksTop_];
         var inheritedTerms = undefined;
         if (inherit) {
@@ -400,9 +394,9 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static popBlock = function (location=undefined) {
-        var block = currFunction.blocks[| currFunction.blocksTop];
-        currFunction.nextLocalIdx -= block.localCount;
-        currFunction.blocksTop -= 1;
+        var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
+        currFunctionScope.nextLocalIdx -= block.localCount;
+        currFunctionScope.blocksTop -= 1;
         var result_ = block.result;
         if (block.inheritedTerms != undefined) {
             return result_ ?? createValue(undefined, location);
@@ -441,10 +435,10 @@ function CatspeakASGBuilder() constructor {
 
     /// Begins a new Catspeak function scope.
     static pushFunction = function () {
-        var functions_ = functions;
-        var functionsTop_ = functionsTop + 1;
-        functionsTop = functionsTop_;
-        var function_ = functions_[| functionsTop_];
+        var functionScopes_ = functionScopes;
+        var functionScopesTop_ = functionScopesTop + 1;
+        functionScopesTop = functionScopesTop_;
+        var function_ = functionScopes_[| functionScopesTop_];
         if (function_ == undefined) {
             function_ = {
                 blocks : __catspeak_alloc_ds_list(self),
@@ -452,36 +446,36 @@ function CatspeakASGBuilder() constructor {
                 nextLocalIdx : 0,
                 localCount : 0,
             };
-            ds_list_add(functions_, function_);
+            ds_list_add(functionScopes_, function_);
         } else {
             ds_list_clear(function_.blocks);
             function_.blocksTop = -1;
             function_.nextLocalIdx = 0;
             function_.localCount = 0;
         }
-        currFunction = function_;
+        currFunctionScope = function_;
         pushBlock();
     };
 
     /// Finalises a Catspeak function and inserts it into the list of
-    /// known functions and returns its term.
+    /// known functionScopes and returns its term.
     ///
     /// @param {Real} [location]
     ///   The source location of this function definition.
     ///
     /// @return {Struct}
     static popFunction = function (location=undefined) {
-        var idx = array_length(asg.functions);
-        asg.functions[@ idx] = {
-            localCount : currFunction.localCount,
+        var idx = array_length(functions);
+        functions[@ idx] = {
+            localCount : currFunctionScope.localCount,
             root : popBlock()
         };
-        functionsTop -= 1;
-        if (functionsTop < 0) {
-            array_push(asg.entryPoints, idx);
-            currFunction = undefined;
+        functionScopesTop -= 1;
+        if (functionScopesTop < 0) {
+            array_push(topLevelFunctions, idx);
+            currFunctionScope = undefined;
         } else {
-            currFunction = functions[| functionsTop];
+            currFunctionScope = functionScopes[| functionScopesTop];
         }
         return __createTerm(CatspeakTerm.GET_FUNCTION, location, {
             idx : idx,
