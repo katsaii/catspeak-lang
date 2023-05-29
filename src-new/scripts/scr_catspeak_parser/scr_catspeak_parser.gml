@@ -70,7 +70,11 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     static __parseStatement = function() {
         var result;
-        if (lexer.peek() == CatspeakToken.LET) {
+        var peeked = lexer.peek();
+        if (peeked == CatspeakToken.BREAK_LINE) {
+            lexer.next();
+            return;
+        } else if (peeked == CatspeakToken.LET) {
             lexer.next();
             if (lexer.next() != CatspeakToken.IDENT) {
                 __ex("expected identifier after 'let' keyword");
@@ -88,9 +92,6 @@ function CatspeakParser(lexer, builder) constructor {
             result = asg.createAssign(getter, valueTerm);
         } else {
             result = __parseExpression();
-        }
-        if (lexer.peek() == CatspeakToken.BREAK_LINE) {
-            lexer.next();
         }
         asg.createStatement(result);
     };
