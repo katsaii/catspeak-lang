@@ -117,33 +117,33 @@ function CatspeakGMLCompiler(asg) constructor {
         var terms = term.terms;
         var termCount = array_length(terms);
         // hard-code some common block sizes
-        //if (termCount == 2) {
-        //    return method({
-        //        _1st : __compileTerm(ctx, terms[0]),
-        //        _2nd : __compileTerm(ctx, terms[1]),
-        //    }, __catspeak_expr_block_2__);
-        //} else if (termCount == 3) {
-        //    return method({
-        //        _1st : __compileTerm(ctx, terms[0]),
-        //        _2nd : __compileTerm(ctx, terms[1]),
-        //        _3rd : __compileTerm(ctx, terms[2]),
-        //    }, __catspeak_expr_block_3__);
-        //} else if (termCount == 4) {
-        //    return method({
-        //        _1st : __compileTerm(ctx, terms[0]),
-        //        _2nd : __compileTerm(ctx, terms[1]),
-        //        _3rd : __compileTerm(ctx, terms[2]),
-        //        _4th : __compileTerm(ctx, terms[3]),
-        //    }, __catspeak_expr_block_4__);
-        //} else if (termCount == 5) {
-        //    return method({
-        //        _1st : __compileTerm(ctx, terms[0]),
-        //        _2nd : __compileTerm(ctx, terms[1]),
-        //        _3rd : __compileTerm(ctx, terms[2]),
-        //        _4th : __compileTerm(ctx, terms[3]),
-        //        _5th : __compileTerm(ctx, terms[4]),
-        //    }, __catspeak_expr_block_5__);
-        //}
+        if (termCount == 2) {
+            return method({
+                _1st : __compileTerm(ctx, terms[0]),
+                _2nd : __compileTerm(ctx, terms[1]),
+            }, __catspeak_expr_block_2__);
+        } else if (termCount == 3) {
+            return method({
+                _1st : __compileTerm(ctx, terms[0]),
+                _2nd : __compileTerm(ctx, terms[1]),
+                _3rd : __compileTerm(ctx, terms[2]),
+            }, __catspeak_expr_block_3__);
+        } else if (termCount == 4) {
+            return method({
+                _1st : __compileTerm(ctx, terms[0]),
+                _2nd : __compileTerm(ctx, terms[1]),
+                _3rd : __compileTerm(ctx, terms[2]),
+                _4th : __compileTerm(ctx, terms[3]),
+            }, __catspeak_expr_block_4__);
+        } else if (termCount == 5) {
+            return method({
+                _1st : __compileTerm(ctx, terms[0]),
+                _2nd : __compileTerm(ctx, terms[1]),
+                _3rd : __compileTerm(ctx, terms[2]),
+                _4th : __compileTerm(ctx, terms[3]),
+                _5th : __compileTerm(ctx, terms[4]),
+            }, __catspeak_expr_block_5__);
+        }
         // arbitrary size block
         var stmtCount = termCount - 1;
         var stmts = array_create(stmtCount);
