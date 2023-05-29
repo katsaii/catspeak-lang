@@ -17,8 +17,10 @@
 ///   The syntax graph builder to write data to.
 function CatspeakParser(lexer, builder) constructor {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_instanceof("lexer", lexer, "CatspeakLexer");
-        __catspeak_check_instanceof("builder", builder, "CatspeakASGBuilder");
+        __catspeak_check_arg_struct_instanceof(
+                "lexer", lexer, "CatspeakLexer");
+        __catspeak_check_arg_struct_instanceof(
+                "builder", builder, "CatspeakASGBuilder");
     }
 
     self.lexer = lexer;
@@ -35,7 +37,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static withFeatures = function (featureFlags) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof_numeric("featureFlags", featureFlags);
+            __catspeak_check_arg("featureFlags", featureFlags, is_numeric);
         }
 
         return self;
@@ -206,6 +208,8 @@ function CatspeakParser(lexer, builder) constructor {
 }
 
 /// Handles the generation and optimisation of a syntax graph.
+///
+/// @unstable
 function CatspeakASGBuilder() constructor {
     self.asg = {
         functions : [],
@@ -293,7 +297,7 @@ function CatspeakASGBuilder() constructor {
         } else {
             __catspeak_error(
                 __catspeak_location_show(lexer.getLocation()),
-                " -- unable to assignment target, ",
+                " -- invalid assignment target, ",
                 "must be an identifier or accessor expression"
             );
         }
@@ -307,10 +311,11 @@ function CatspeakASGBuilder() constructor {
     ///   The term to register to the current block.
     static createStatement = function (term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof("term", term, "struct");
-            __catspeak_check_var_exists("term", term, "type");
-            __catspeak_check_typeof_numeric("term.type", term.type);
+            __catspeak_check_arg_struct("term", term,
+                "type", is_numeric
+            );
         }
+
         var block = currFunction.blocks[| currFunction.blocksTop];
         var result_ = block.result;
         if (result_ != undefined) {
@@ -491,7 +496,7 @@ function CatspeakASGBuilder() constructor {
     /// @return {Struct}
     static __createTerm = function (kind, location, container) {
         if (CATSPEAK_DEBUG_MODE && location != undefined) {
-            __catspeak_check_size_bits("location", location, 32);
+            __catspeak_check_arg_size_bits("location", location, 32);
         }
 
         container.type = kind;
