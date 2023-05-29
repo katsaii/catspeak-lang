@@ -44,6 +44,7 @@ function CatspeakGMLCompiler(asg) constructor {
     self.globals = { };
     //# feather disable once GM2043
     self.program = __compileFunctions(asg.entryPoints);
+    self.finalised = false;
 
     /// Updates the compiler by generating the code for a single term from the
     /// supplied syntax graph. Returns the result of the compilation if there
@@ -65,6 +66,13 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @return {Function}
     static update = function () {
+        if (CATSPEAK_DEBUG_MODE && finalised) {
+            __catspeak_error(
+                "attempting to update gml compiler after it has been finalised"
+            );
+        }
+
+        finalised = true;
         return program;
     };
 
@@ -76,7 +84,13 @@ function CatspeakGMLCompiler(asg) constructor {
         var entryCount = array_length(entryPoints);
         var exprs = array_create(entryCount);
         for (var i = 0; i < entryCount; i += 1) {
-            exprs[@ i] = __compileFunction(functions_[entryPoints[i]]);
+            var entry = entryPoints[i];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("entry", entry, is_numeric);
+            }
+
+            exprs[@ i] = __compileFunction(functions_[entry]);
         }
         return __emitBlock(exprs);
     };
@@ -85,6 +99,16 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @param {Struct} func
     static __compileFunction = function(func) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("func", func,
+                "localCount", is_numeric,
+                "root", undefined
+            );
+            __catspeak_check_arg_struct("func.root", func.root,
+                "type", is_numeric
+            );
+        }
+
         var ctx = {
             callTime : -1,
             program : undefined,
@@ -270,9 +294,11 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         var prod = __productionLookup[term.type];
+
         if (CATSPEAK_DEBUG_MODE && prod == undefined) {
             __catspeak_error_bug();
         }
+
         return prod(ctx, term);
     };
 
