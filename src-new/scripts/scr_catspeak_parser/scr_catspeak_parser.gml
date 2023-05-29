@@ -143,6 +143,19 @@ function CatspeakParser(lexer, builder) constructor {
                 __ex("expected closing '}' after 'do' block");
             }
             return asg.popBlock();
+        } else if (peeked == CatspeakToken.FUN) {
+            lexer.next();
+            asg.pushFunction();
+            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+                __ex("expected opening '{' after 'fun' keyword");
+            }
+            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+                __parseStatement();
+            }
+            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+                __ex("expected closing '}' after 'fun' block");
+            }
+            return asg.popFunction();
         } else {
             __ex("malformed expression");
         }
@@ -198,12 +211,9 @@ function CatspeakASGBuilder() constructor {
         functions : [],
         entryPoints : [],
     };
-    self.currFunction = {
-        blocks : __catspeak_alloc_ds_list(self),
-        blocksTop : -1,
-        nextLocalIdx : 0,
-        localCount : 0,
-    };
+    self.functions = __catspeak_alloc_ds_list(self);
+    self.functionsTop = -1;
+    self.currFunction = undefined;
 
     /// Returns the underlying syntax graph for this builder.
     ///
@@ -426,6 +436,25 @@ function CatspeakASGBuilder() constructor {
 
     /// Begins a new Catspeak function scope.
     static pushFunction = function () {
+        var functions_ = functions;
+        var functionsTop_ = functionsTop + 1;
+        functionsTop = functionsTop_;
+        var function_ = functions_[| functionsTop_];
+        if (function_ == undefined) {
+            function_ = {
+                blocks : __catspeak_alloc_ds_list(self),
+                blocksTop : -1,
+                nextLocalIdx : 0,
+                localCount : 0,
+            };
+            ds_list_add(functions_, function_);
+        } else {
+            ds_list_clear(function_.blocks);
+            function_.blocksTop = -1;
+            function_.nextLocalIdx = 0;
+            function_.localCount = 0;
+        }
+        currFunction = function_;
         pushBlock();
     };
 
@@ -437,14 +466,19 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static popFunction = function (location=undefined) {
-        // TODO :: actually implement functions
         var idx = array_length(asg.functions);
-        array_push(asg.entryPoints, idx);
-        array_push(asg.functions, {
+        asg.functions[@ idx] = {
             localCount : currFunction.localCount,
             root : popBlock()
-        });
-        return __createTerm(CatspeakTerm.FUNCTION, location, {
+        };
+        functionsTop -= 1;
+        if (functionsTop < 0) {
+            array_push(asg.entryPoints, idx);
+            currFunction = undefined;
+        } else {
+            currFunction = functions[| functionsTop];
+        }
+        return __createTerm(CatspeakTerm.GET_FUNCTION, location, {
             idx : idx,
         });
     };
@@ -472,7 +506,8 @@ function CatspeakASGBuilder() constructor {
 function __catspeak_term_is_pure(kind) {
     return kind == CatspeakTerm.VALUE ||
             kind == CatspeakTerm.GET_LOCAL ||
-            kind == CatspeakTerm.GET_GLOBAL;
+            kind == CatspeakTerm.GET_GLOBAL ||
+            kind == CatspeakTerm.GET_FUNCTION;
 }
 
 /// Indicates the type of term within a Catspeak syntax graph.
@@ -483,6 +518,6 @@ enum CatspeakTerm {
     SET_LOCAL,
     GET_GLOBAL,
     SET_GLOBAL,
-    FUNCTION,
+    GET_FUNCTION,
     __SIZE__
 }
