@@ -116,21 +116,44 @@ function CatspeakGMLCompiler(asg) constructor {
 
         var terms = term.terms;
         var termCount = array_length(terms);
-        if (termCount == 2) {
-            return method({
-                lhs : __compileTerm(ctx, terms[0]),
-                rhs : __compileTerm(ctx, terms[1]),
-            }, __catspeak_expr_seq__);
-        }
-        
-        var exprs = array_create(termCount);
+        // hard-code some common block sizes
+        //if (termCount == 2) {
+        //    return method({
+        //        _1st : __compileTerm(ctx, terms[0]),
+        //        _2nd : __compileTerm(ctx, terms[1]),
+        //    }, __catspeak_expr_block_2__);
+        //} else if (termCount == 3) {
+        //    return method({
+        //        _1st : __compileTerm(ctx, terms[0]),
+        //        _2nd : __compileTerm(ctx, terms[1]),
+        //        _3rd : __compileTerm(ctx, terms[2]),
+        //    }, __catspeak_expr_block_3__);
+        //} else if (termCount == 4) {
+        //    return method({
+        //        _1st : __compileTerm(ctx, terms[0]),
+        //        _2nd : __compileTerm(ctx, terms[1]),
+        //        _3rd : __compileTerm(ctx, terms[2]),
+        //        _4th : __compileTerm(ctx, terms[3]),
+        //    }, __catspeak_expr_block_4__);
+        //} else if (termCount == 5) {
+        //    return method({
+        //        _1st : __compileTerm(ctx, terms[0]),
+        //        _2nd : __compileTerm(ctx, terms[1]),
+        //        _3rd : __compileTerm(ctx, terms[2]),
+        //        _4th : __compileTerm(ctx, terms[3]),
+        //        _5th : __compileTerm(ctx, terms[4]),
+        //    }, __catspeak_expr_block_5__);
+        //}
+        // arbitrary size block
+        var stmtCount = termCount - 1;
+        var stmts = array_create(stmtCount);
         for (var i = 0; i < termCount - 1; i += 1) {
-            exprs[@ i] = __compileTerm(ctx, terms[i]);
+            stmts[@ i] = __compileTerm(ctx, terms[i]);
         }
         var resultExpr = __compileTerm(ctx, terms[termCount - 1]);
         return method({
-            exprs : exprs,
-            n : termCount,
+            stmts : stmts,
+            n : stmtCount,
             result : resultExpr,
         }, __catspeak_expr_block__);
     };
@@ -273,13 +296,14 @@ function __catspeak_expr_value__() {
 
 /// @ignore
 function __catspeak_expr_block__() {
+    //array_foreach(stmts, function(stmt) { stmt() });
     var i = 0;
-    var exprs_ = exprs;
+    var stmts_ = stmts;
     var n_ = n;
     repeat (n_) {
         // not sure if this is even fast
         // but people will cry if I don't do it
-        var expr = exprs_[i];
+        var expr = stmts[i];
         expr();
         i += 1;
     }
@@ -287,9 +311,33 @@ function __catspeak_expr_block__() {
 }
 
 /// @ignore
-function __catspeak_expr_seq__() {
-    lhs();
-    return rhs();
+function __catspeak_expr_block_2__() {
+    _1st();
+    return _2nd();
+}
+
+/// @ignore
+function __catspeak_expr_block_3__() {
+    _1st();
+    _2nd();
+    return _3rd();
+}
+
+/// @ignore
+function __catspeak_expr_block_4__() {
+    _1st();
+    _2nd();
+    _3rd();
+    return _4th();
+}
+
+/// @ignore
+function __catspeak_expr_block_5__() {
+    _1st();
+    _2nd();
+    _3rd();
+    _4th();
+    return _5th();
 }
 
 /// @ignore

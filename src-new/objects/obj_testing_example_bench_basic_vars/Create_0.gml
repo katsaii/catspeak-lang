@@ -13,6 +13,9 @@ hi';
 
 nativeFunc = function() {
     var b = 3;
+    var c = 3;
+    var d = 3;
+    var e = 3;
     var hi = b;
     return hi;
 };
