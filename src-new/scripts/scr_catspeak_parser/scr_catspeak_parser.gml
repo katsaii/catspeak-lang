@@ -98,6 +98,92 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     /// @return {Struct}
     static __parseExpression = function() {
+        var peeked = lexer.peek();
+        if (peeked == CatspeakToken.RETURN) {
+            lexer.next();
+            __catspeak_error_unimplemented("return");
+        } else if (peeked == CatspeakToken.CONTINUE) {
+            lexer.next();
+            __catspeak_error_unimplemented("continue");
+        } else if (peeked == CatspeakToken.BREAK) {
+            lexer.next();
+            __catspeak_error_unimplemented("break");
+        } else if (peeked == CatspeakToken.DO) {
+            lexer.next();
+            asg.pushBlock(true);
+            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+                __ex("expected opening '{' after 'do' keyword");
+            }
+            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+                __parseStatement();
+            }
+            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+                __ex("expected closing '}' after 'do' block");
+            }
+            return asg.popBlock();
+        } else if (peeked == CatspeakToken.IF) {
+            lexer.next();
+            __catspeak_error_unimplemented("if");
+        } else if (peeked == CatspeakToken.WHILE) {
+            lexer.next();
+            __catspeak_error_unimplemented("while");
+        } else if (peeked == CatspeakToken.FUN) {
+            lexer.next();
+            asg.pushFunction();
+            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+                __ex("expected opening '{' after 'fun' keyword");
+            }
+            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+                __parseStatement();
+            }
+            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+                __ex("expected closing '}' after 'fun' block");
+            }
+            return asg.popFunction();
+        } else {
+            return __parseAssign();
+        }
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseAssign = function() {
+        // TODO
+        return __parseOpBuiltin();
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseOpBuiltin = function() {
+        // TODO
+        return __parseOpBinary();
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseOpBinary = function() {
+        // TODO
+        return __parseOpUnary();
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseOpUnary = function() {
+        // TODO
+        return __parseCall();
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseCall = function() {
+        // TODO
+        return __parseIndex();
+    };
+
+    /// @ignore
+    /// @return {Struct}
+    static __parseIndex = function() {
+        // TODO
         return __parseTerminal();
     };
 
@@ -111,6 +197,12 @@ function CatspeakParser(lexer, builder) constructor {
         } else if (peeked == CatspeakToken.IDENT) {
             lexer.next();
             return asg.createGet(lexer.getValue(), lexer.getLocation());
+        } else if (peeked == CatspeakToken.IT) {
+            lexer.next();
+            __catspeak_error_unimplemented("it");
+        } else if (peeked == CatspeakToken.SELF) {
+            lexer.next();
+            __catspeak_error_unimplemented("self");
         } else {
             return __parseGrouping();
         }
@@ -127,32 +219,12 @@ function CatspeakParser(lexer, builder) constructor {
                 __ex("expected closing ')' after group expression");
             }
             return inner;
-        } else if (peeked == CatspeakToken.DO) {
+        } else if (peeked == CatspeakToken.BOX_LEFT) {
             lexer.next();
-            asg.pushBlock(true);
-            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
-                __ex("expected opening '{' after 'do' keyword");
-            }
-            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                __parseStatement();
-            }
-            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-                __ex("expected closing '}' after 'do' block");
-            }
-            return asg.popBlock();
-        } else if (peeked == CatspeakToken.FUN) {
+            __catspeak_error_unimplemented("array-literal");
+        } else if (peeked == CatspeakToken.BRACE_LEFT) {
             lexer.next();
-            asg.pushFunction();
-            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
-                __ex("expected opening '{' after 'fun' keyword");
-            }
-            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                __parseStatement();
-            }
-            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-                __ex("expected closing '}' after 'fun' block");
-            }
-            return asg.popFunction();
+            __catspeak_error_unimplemented("struct-literal");
         } else {
             __ex("malformed expression");
         }
