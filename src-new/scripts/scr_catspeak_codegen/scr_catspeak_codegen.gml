@@ -285,6 +285,13 @@ function CatspeakGMLCompiler(asg) constructor {
 
     /// @ignore
     ///
+    /// @param {Struct} term
+    static __compileSelfGet = function(ctx, term) {
+        return method(ctx, __catspeak_expr_self_get__);
+    };
+
+    /// @ignore
+    ///
     /// @param {Any} value
     static __compileTerm = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
@@ -312,6 +319,7 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
         db[@ CatspeakTerm.SET_LOCAL] = __compileLocalSet;
         db[@ CatspeakTerm.GET_FUNCTION] = __compileFunctionGet;
+        db[@ CatspeakTerm.GET_SELF] = __compileSelfGet;
         return db;
     })();
 }
@@ -422,4 +430,9 @@ function __catspeak_expr_local_get__() {
 /// @ignore
 function __catspeak_expr_local_set__() {
     locals[@ idx] = value();
+}
+
+/// @ignore
+function __catspeak_expr_self_get__() {
+    return self_;
 }

@@ -45,3 +45,11 @@ test_add(function() : TestCodegenGMLResult("codegen-gml-value-block-2",
     ',
     undefined
 ) constructor { });
+
+test_add(function() : TestCodegenGML("codegen-gml-value-self",
+    @'let a = self; a'
+) constructor {
+    show_debug_message(self);
+    show_debug_message(self.gmlFunc());
+    assertEq(self, self.gmlFunc());
+}, true);
