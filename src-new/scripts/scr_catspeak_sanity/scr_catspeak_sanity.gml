@@ -61,22 +61,34 @@ function __catspeak_check_init() {
 ///
 /// @param {Any} name
 /// @param {Any} val
-/// @param {Any} ...
-function __catspeak_check_typeof(name, val) {
-    var actual = typeof(val);
-    var expect = "";
-    for (var i = 2; i < argument_count; i += 1) {
-        if (actual == argument[i]) {
-            return;
+/// @param {Function} func
+/// @param {Any} [typeName]
+function __catspeak_check_arg(name, val, func, typeName=undefined) {
+    if (func(val)) {
+        return;
+    }
+    if (typeName == undefined) {
+        switch (func) {
+            case is_string: typeName = "string"; break;
+            case is_real: typeName = "real"; break;
+            case is_numeric: typeName = "numeric"; break;
+            case is_bool: typeName = "bool"; break;
+            case is_array: typeName = "array"; break;
+            case is_struct: typeName = "struct"; break;
+            case is_method: typeName = "method"; break;
+            case is_callable: typeName = "callable"; break;
+            case is_ptr: typeName = "pointer"; break;
+            case is_int32: typeName = "int32"; break;
+            case is_int64: typeName = "int64"; break;
+            case is_undefined: typeName = "undefined"; break;
+            case is_nan: typeName = "NaN"; break;
+            case is_infinity: typeName = "infinity"; break;
+            case buffer_exists: typeName = "buffer"; break;
         }
-        if (expect != "") {
-            expect += " | ";
-        }
-        expect += "'" + __catspeak_string(argument[i]) + "'";
     }
     __catspeak_error(
-        "expected arg '", name, "' to be one of ", expect,
-        ", but got '", actual, "'"
+        "expected argument '", name, "' to be of type '", typeName, "'",
+        ", but got '", typeof(val), "' instead"
     );
 }
 
@@ -84,48 +96,39 @@ function __catspeak_check_typeof(name, val) {
 ///
 /// @param {Any} name
 /// @param {Any} val
-function __catspeak_check_typeof_numeric(name, val) {
-    gml_pragma("forceinline");
-    __catspeak_check_typeof(name, val, "number", "bool", "int32", "int64");
+/// @param {Any} ...
+function __catspeak_check_arg_struct(name, val) {
+    __catspeak_check_arg(name, val, is_struct);
+    for (var i = 2; i < argument_count; i += 2) {
+        var varName = argument[i];
+        var varFunc = argument[i + 1];
+        if (!variable_struct_exists(val, varName)) {
+            __catspeak_error(
+                "expected struct argument '", name,
+                "' to contain a variable '", varName, "'"
+            );
+        }
+        if (varFunc != undefined) {
+            __catspeak_check_arg(
+                    name + "." + varName, val[$ varName], varFunc);
+        }
+    }
 }
 
 /// @ignore
 ///
 /// @param {Any} name
 /// @param {Any} val
-/// @param {Function} p
-/// @param {Any} handleType
-function __catspeak_check_typeof_handle(name, val, p, handleType) {
-    gml_pragma("forceinline");
-    __catspeak_check_typeof_numeric(name, val);
-    if (!p(val)) {
+/// @param {Any} expect
+function __catspeak_check_arg_struct_instanceof(name, val, expect) {
+    __catspeak_check_arg(name, val, is_struct);
+    var actual = instanceof(val);
+    if (actual != expect) {
         __catspeak_error(
-            "expected arg '", name, "' to be a valid ", handleType
+            "expected struct argument '", name, "' to be an instance of '",
+            expect, "', but got '", actual, "'"
         );
     }
-}
-
-/// @ignore
-///
-/// @param {Any} name
-/// @param {Any} val
-/// @param {Any} ...
-function __catspeak_check_instanceof(name, val) {
-    var actual = instanceof(val);
-    var expect = "";
-    for (var i = 2; i < argument_count; i += 1) {
-        if (actual == argument[i]) {
-            return;
-        }
-        if (expect != "") {
-            expect += " | ";
-        }
-        expect += "'" + __catspeak_string(argument[i]) + "'";
-    }
-    __catspeak_error(
-        "expected arg '", name, "' to be one of ", expect,
-        ", but got '", actual, "'"
-    );
 }
 
 /// @ignore
@@ -133,29 +136,15 @@ function __catspeak_check_instanceof(name, val) {
 /// @param {Any} name
 /// @param {Any} val
 /// @param {Real} size
-function __catspeak_check_size_bits(name, val, size) {
+function __catspeak_check_arg_size_bits(name, val, size) {
     gml_pragma("forceinline");
-    __catspeak_check_typeof_numeric(name, val);
+    __catspeak_check_arg(name, val, is_numeric);
     if (val < 0) {
-        __catspeak_error("arg '", name, "' must not be negative, got", val);
+        __catspeak_error("argument '", name, "' must not be negative, got", val);
     }
     if (val >= power(2, size)) {
         __catspeak_error(
-            "arg '", name, "' is too large, it must fit within ", size, " bits"
-        );
-    }
-}
-
-/// @ignore
-///
-/// @param {Any} name
-/// @param {Any} struct
-/// @param {Any} key
-function __catspeak_check_var_exists(name, struct, key) {
-    gml_pragma("forceinline");
-    if (!variable_struct_exists(struct, key)) {
-        __catspeak_error(
-            "arg '", name, "' struct variable '", key, "' does not exist"
+            "argument '", name, "' is too large, it must fit within ", size, " bits"
         );
     }
 }

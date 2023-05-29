@@ -118,22 +118,15 @@ enum CatspeakToken {
 /// @ignore
 ///
 /// @param {Any} keyword
-function __catspeak_check_token(name, keyword) {
+function __catspeak_is_token(val) {
     // the user can modify what keywords are, so just check
     // that they've used one of the enum types instead of a
     // random ass value
-    __catspeak_check_typeof_numeric(name, keyword);
-    if (
-        keyword < 0 || keyword >= CatspeakToken.__SIZE__ ||
-        keyword == CatspeakToken.__OPERATORS_BEGIN__ ||
-        keyword == CatspeakToken.__OPERATORS_END__
-    ) {
-        __catspeak_error(
-            "custom keyword aliases must map to a numeric ",
-            "type corresponding to a `CatspeakToken`, e.g. ",
-            "`keywords[$ \"func\"] = CatspeakToken.FUN;`"
-        );
-    }
+    return is_numeric(val) && (
+        val < 0 || val >= CatspeakToken.__SIZE__ ||
+        val == CatspeakToken.__OPERATORS_BEGIN__ ||
+        val == CatspeakToken.__OPERATORS_END__
+    );
 }
 
 /// Returns whether a Catspeak token is a valid operator.
@@ -145,7 +138,7 @@ function __catspeak_check_token(name, keyword) {
 function catspeak_token_is_operator(token) {
     gml_pragma("forceinline");
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_typeof_numeric("token", token);
+        __catspeak_check_arg("token", token, is_numeric);
     }
 
     return token > CatspeakToken.__OPERATORS_BEGIN__
@@ -184,9 +177,9 @@ function __catspeak_create_buffer_from_string(src) {
 function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
-        __catspeak_check_typeof_handle("buff", buff, buffer_exists, "buffer");
-        __catspeak_check_typeof_numeric("offset", offset);
-        __catspeak_check_typeof_numeric("size", size);
+        __catspeak_check_arg("buff", buff, buffer_exists);
+        __catspeak_check_arg("offset", offset, is_numeric);
+        __catspeak_check_arg("size", size, is_numeric);
     }
 
     self.buff = buff;
@@ -217,7 +210,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     /// @return {Struct.CatspeakLexer}
     static withKeywords = function (database) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof("database", database, "struct");
+            __catspeak_check_arg("database", database, is_struct);
         }
 
         keywords = database;
@@ -354,7 +347,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     static __getKeyword = function (str) {
         var keyword = keywords[$ str];
         if (CATSPEAK_DEBUG_MODE && keyword != undefined) {
-            __catspeak_check_token("keyword", keyword);
+            __catspeak_check_arg(
+                    "keyword", keyword, __catspeak_is_token, "CatspeakToken");
         }
         return keyword;
     };
@@ -800,8 +794,9 @@ function catspeak_keywords_create() {
 /// @return {String}
 function catspeak_keywords_find_name(keywords, token) {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_typeof("keywords", keywords, "struct");
-        __catspeak_check_token("token", token);
+        __catspeak_check_arg("keywords", keywords, is_struct);
+        __catspeak_check_arg(
+                "token", token, __catspeak_is_token, "CatspeakToken");
     }
 
     var variables = variable_struct_get_names(keywords);
@@ -827,9 +822,9 @@ function catspeak_keywords_find_name(keywords, token) {
 ///   The new string representation of the keyword.
 function catspeak_keywords_rename(keywords, currentName, newName) {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_typeof("keywords", keywords, "struct");
-        __catspeak_check_typeof("currentName", currentName, "string");
-        __catspeak_check_typeof("newName", newName, "string");
+        __catspeak_check_arg("keywords", keywords, is_struct);
+        __catspeak_check_arg("currentName", currentName, is_string);
+        __catspeak_check_arg("newName", newName, is_string);
     }
 
     if (!variable_struct_exists(keywords, currentName)) {
@@ -852,7 +847,7 @@ function catspeak_keywords_rename(keywords, currentName, newName) {
 ///   The keyword database to modify.
 function catspeak_keywords_rename_gml(keywords) {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_typeof("keywords", keywords, "struct");
+        __catspeak_check_arg("keywords", keywords, is_struct);
     }
 
     catspeak_keywords_rename(keywords, "--", "//");

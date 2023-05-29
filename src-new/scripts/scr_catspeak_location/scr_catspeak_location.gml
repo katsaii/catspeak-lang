@@ -36,8 +36,8 @@
 function catspeak_location_create(row, column) {
     gml_pragma("forceinline");
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_size_bits("row", row, 20);
-        __catspeak_check_size_bits("column", column, 12);
+        __catspeak_check_arg_size_bits("row", row, 20);
+        __catspeak_check_arg_size_bits("column", column, 12);
     }
     var bitsRow = row & __CATSPEAK_LOCATION_ROW_MASK;
     var bitsCol = (column << 20) & __CATSPEAK_LOCATION_COLUMN_MASK;
@@ -56,7 +56,7 @@ function catspeak_location_create(row, column) {
 function catspeak_location_get_row(location) {
     gml_pragma("forceinline");
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_size_bits("location", location, 32);
+        __catspeak_check_arg_size_bits("location", location, 32);
     }
     return location & __CATSPEAK_LOCATION_ROW_MASK;
 }
@@ -73,7 +73,7 @@ function catspeak_location_get_row(location) {
 function catspeak_location_get_column(location) {
     gml_pragma("forceinline");
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_size_bits("location", location, 32);
+        __catspeak_check_arg_size_bits("location", location, 32);
     }
     return (location & __CATSPEAK_LOCATION_COLUMN_MASK) >> 20;
 }

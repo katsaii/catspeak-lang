@@ -24,6 +24,8 @@ function __catspeak_timeout_check(t) {
 /// Consumes an abstract syntax graph and converts it into a callable GML
 /// function.
 ///
+/// @unstable
+///
 /// NOTE: Do not modify the the syntax graph whilst compilation is taking
 ///       place. This will cause undefined behaviour, potentially resulting
 ///       in hard to discover bugs!
@@ -32,10 +34,10 @@ function __catspeak_timeout_check(t) {
 ///   The syntax graph to compile.
 function CatspeakGMLCompiler(asg) constructor {
     if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_var_exists("asg", asg, "functions");
-        __catspeak_check_var_exists("asg", asg, "entryPoints");
-        __catspeak_check_typeof("asg.functions", asg.functions, "array");
-        __catspeak_check_typeof("asg.entryPoints", asg.entryPoints, "array");
+        __catspeak_check_arg_struct("asg", asg,
+            "functions", is_array,
+            "entryPoints", is_array
+        );
     }
 
     self.functions = asg.functions;
@@ -104,7 +106,9 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileValue = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "value");
+            __catspeak_check_arg_struct("term", term,
+                "value", undefined
+            );
         }
 
         return method({ value : term.value }, __catspeak_expr_value__);
@@ -115,8 +119,9 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileBlock = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "terms");
-            __catspeak_check_typeof("term.terms", term.terms, "array");
+            __catspeak_check_arg_struct("term", term,
+                "terms", is_array
+            );
         }
 
         var terms = term.terms;
@@ -176,8 +181,9 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileGlobalGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "name");
-            __catspeak_check_typeof("term.name", term.name, "string");
+            __catspeak_check_arg_struct("term", term,
+                "name", is_string
+            );
         }
 
         return method({
@@ -191,9 +197,10 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileGlobalSet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "name");
-            __catspeak_check_var_exists("term", term, "value");
-            __catspeak_check_typeof("term.name", term.name, "string");
+            __catspeak_check_arg_struct("term", term,
+                "name", is_string,
+                "value", undefined
+            );
         }
 
         return method({
@@ -208,8 +215,9 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileLocalGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "idx");
-            __catspeak_check_typeof_numeric("term.idx", term.idx);
+            __catspeak_check_arg_struct("term", term,
+                "idx", is_numeric
+            );
         }
 
         return method({
@@ -223,9 +231,10 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileLocalSet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "idx");
-            __catspeak_check_var_exists("term", term, "value");
-            __catspeak_check_typeof_numeric("term.idx", term.idx);
+            __catspeak_check_arg_struct("term", term,
+                "idx", is_numeric,
+                "value", undefined
+            );
         }
 
         return method({
@@ -240,8 +249,9 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Struct} term
     static __compileFunctionGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_var_exists("term", term, "idx");
-            __catspeak_check_typeof_numeric("term.idx", term.idx);
+            __catspeak_check_arg_struct("term", term,
+                "idx", is_numeric
+            );
         }
 
         return method({
@@ -254,9 +264,9 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @param {Any} value
     static __compileTerm = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_typeof("term", term, "struct");
-            __catspeak_check_var_exists("term", term, "type");
-            __catspeak_check_typeof_numeric("term.type", term.type);
+            __catspeak_check_arg_struct("term", term,
+                "type", is_numeric
+            );
         }
 
         var prod = __productionLookup[term.type];
