@@ -63,7 +63,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Function}
     static update = function () {
         if (lexer.peek() == CatspeakToken.EOF) {
-            self.asg.popFunction();
+            asg.popFunction();
             return false;
         }
         __parseStatement();

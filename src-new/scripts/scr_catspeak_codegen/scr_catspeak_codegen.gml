@@ -66,17 +66,17 @@ function CatspeakGMLCompiler(asg) constructor {
         return program;
     };
 
-
     /// @ignore
     ///
     /// @param {Array} entryPoints
     static __compileFunctions = function(entryPoints) {
-        var n = array_length(entryPoints);
-        if (n == 1) {
-            return __compileFunction(functions[0]);
-        } else {
-            __catspeak_error_unimplemented("multiple-entry-points");
+        var functions_ = functions;
+        var entryCount = array_length(entryPoints);
+        var exprs = array_create(entryCount);
+        for (var i = 0; i < entryCount; i += 1) {
+            exprs[@ i] = __compileFunction(functions_[i]);
         }
+        return __emitBlock(exprs);
     };
 
     /// @ignore
@@ -116,45 +116,53 @@ function CatspeakGMLCompiler(asg) constructor {
 
         var terms = term.terms;
         var termCount = array_length(terms);
+        var exprs = array_create(termCount);
+        for (var i = 0; i < termCount; i += 1) {
+            exprs[@ i] = __compileTerm(ctx, terms[i]);
+        }
+        return __emitBlock(exprs);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Array} exprs
+    static __emitBlock = function(exprs) {
+        var exprCount = array_length(exprs);
         // hard-code some common block sizes
-        if (termCount == 2) {
+        if (exprCount == 1) {
+            return exprs[0];
+        } else if (exprCount == 2) {
             return method({
-                _1st : __compileTerm(ctx, terms[0]),
-                _2nd : __compileTerm(ctx, terms[1]),
+                _1st : exprs[0],
+                _2nd : exprs[1],
             }, __catspeak_expr_block_2__);
-        } else if (termCount == 3) {
+        } else if (exprCount == 3) {
             return method({
-                _1st : __compileTerm(ctx, terms[0]),
-                _2nd : __compileTerm(ctx, terms[1]),
-                _3rd : __compileTerm(ctx, terms[2]),
+                _1st : exprs[0],
+                _2nd : exprs[1],
+                _3rd : exprs[2],
             }, __catspeak_expr_block_3__);
-        } else if (termCount == 4) {
+        } else if (exprCount == 4) {
             return method({
-                _1st : __compileTerm(ctx, terms[0]),
-                _2nd : __compileTerm(ctx, terms[1]),
-                _3rd : __compileTerm(ctx, terms[2]),
-                _4th : __compileTerm(ctx, terms[3]),
+                _1st : exprs[0],
+                _2nd : exprs[1],
+                _3rd : exprs[2],
+                _4th : exprs[3],
             }, __catspeak_expr_block_4__);
-        } else if (termCount == 5) {
+        } else if (exprCount == 5) {
             return method({
-                _1st : __compileTerm(ctx, terms[0]),
-                _2nd : __compileTerm(ctx, terms[1]),
-                _3rd : __compileTerm(ctx, terms[2]),
-                _4th : __compileTerm(ctx, terms[3]),
-                _5th : __compileTerm(ctx, terms[4]),
+                _1st : exprs[0],
+                _2nd : exprs[1],
+                _3rd : exprs[2],
+                _4th : exprs[3],
+                _5th : exprs[4],
             }, __catspeak_expr_block_5__);
         }
         // arbitrary size block
-        var stmtCount = termCount - 1;
-        var stmts = array_create(stmtCount);
-        for (var i = 0; i < termCount - 1; i += 1) {
-            stmts[@ i] = __compileTerm(ctx, terms[i]);
-        }
-        var resultExpr = __compileTerm(ctx, terms[termCount - 1]);
         return method({
-            stmts : stmts,
-            n : stmtCount,
-            result : resultExpr,
+            stmts : exprs,
+            n : exprCount - 1,
+            result : exprs[exprCount - 1],
         }, __catspeak_expr_block__);
     };
 
@@ -250,6 +258,11 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.SET_LOCAL] = __compileLocalSet;
         return db;
     })();
+}
+
+/// @ignore
+function __catspeak_multi_function__() {
+    
 }
 
 /// @ignore
