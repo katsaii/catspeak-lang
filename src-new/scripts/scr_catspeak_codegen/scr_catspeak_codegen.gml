@@ -74,7 +74,7 @@ function CatspeakGMLCompiler(asg) constructor {
         var entryCount = array_length(entryPoints);
         var exprs = array_create(entryCount);
         for (var i = 0; i < entryCount; i += 1) {
-            exprs[@ i] = __compileFunction(functions_[i]);
+            exprs[@ i] = __compileFunction(functions_[entryPoints[i]]);
         }
         return __emitBlock(exprs);
     };
@@ -91,6 +91,11 @@ function CatspeakGMLCompiler(asg) constructor {
             globals : globals,
         };
         ctx.program = __compileTerm(ctx, func.root);
+        if (__catspeak_term_is_pure(func.root.type)) {
+            // if there's absolutely no way this function could misbehave,
+            // use the fast path
+            return ctx.program;
+        }
         return method(ctx, __catspeak_function__);
     };
 
@@ -232,6 +237,20 @@ function CatspeakGMLCompiler(asg) constructor {
 
     /// @ignore
     ///
+    /// @param {Struct} term
+    static __compileFunctionGet = function(ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_var_exists("term", term, "idx");
+            __catspeak_check_typeof_numeric("term.idx", term.idx);
+        }
+
+        return method({
+            value : __compileFunction(functions[term.idx]),
+        }, __catspeak_expr_value__);
+    };
+
+    /// @ignore
+    ///
     /// @param {Any} value
     static __compileTerm = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
@@ -256,13 +275,9 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
         db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
         db[@ CatspeakTerm.SET_LOCAL] = __compileLocalSet;
+        db[@ CatspeakTerm.GET_FUNCTION] = __compileFunctionGet;
         return db;
     })();
-}
-
-/// @ignore
-function __catspeak_multi_function__() {
-    
 }
 
 /// @ignore
