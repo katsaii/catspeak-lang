@@ -207,7 +207,7 @@ function CatspeakParser(lexer, builder) constructor {
             __catspeak_error_unimplemented("it");
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
-            __catspeak_error_unimplemented("self");
+            return asg.createGetSelf(lexer.getLocation());
         } else {
             return __parseGrouping();
         }
@@ -307,7 +307,7 @@ function CatspeakASGBuilder() constructor {
     /// @param {Real} [location]
     ///   The source location of this value term.
     ///
-    /// @return {Real}
+    /// @return {Struct}
     static createValue = function (value, location=undefined) {
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.VALUE, location, {
@@ -323,6 +323,8 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @param {Real} [location]
     ///   The source location of this term.
+    ///
+    /// @return {Struct}
     static createGet = function (name, location=undefined) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
@@ -343,6 +345,17 @@ function CatspeakASGBuilder() constructor {
                 idx : localIdx
             });
         }
+    };
+
+    /// Creates an instruction for accessing the caller `self`.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createGetSelf = function (location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.GET_SELF, location, { });
     };
 
     /// Attempts to assign a right-hand-side value to a left-hand-side target.
@@ -621,7 +634,8 @@ function __catspeak_term_is_pure(kind) {
     return kind == CatspeakTerm.VALUE ||
             kind == CatspeakTerm.GET_LOCAL ||
             kind == CatspeakTerm.GET_GLOBAL ||
-            kind == CatspeakTerm.GET_FUNCTION;
+            kind == CatspeakTerm.GET_FUNCTION ||
+            kind == CatspeakTerm.GET_SELF;
 }
 
 /// Indicates the type of term within a Catspeak syntax graph.
@@ -633,5 +647,6 @@ enum CatspeakTerm {
     GET_GLOBAL,
     SET_GLOBAL,
     GET_FUNCTION,
+    GET_SELF,
     __SIZE__
 }
