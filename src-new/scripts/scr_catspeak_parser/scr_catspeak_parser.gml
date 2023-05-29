@@ -56,11 +56,13 @@ function CatspeakParser(lexer, builder) constructor {
             }
             return false;
         }
-        if (CATSPEAK_DEBUG_MODE) {
+
+        if (CATSPEAK_DEBUG_MODE && finalised) {
             __catspeak_error(
                 "attempting to update parser after it has been finalised"
             );
         }
+
         __parseStatement();
         return true;
     };
@@ -230,6 +232,7 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Real}
     static createValue = function (value, location=undefined) {
+        // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.VALUE, location, {
             value : value
         });
@@ -244,6 +247,11 @@ function CatspeakASGBuilder() constructor {
     /// @param {Real} [location]
     ///   The source location of this term.
     static createGet = function (name, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+
+        // __createTerm() will do argument validation
         var localIdx = undefined;
         for (var i = currFunctionScope.blocksTop; localIdx == undefined && i >= 0; i -= 1) {
             var scope = currFunctionScope.blocks[| i].locals;
@@ -277,20 +285,45 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static createAssign = function (lhs, rhs) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("lhs", lhs,
+                "type", is_numeric,
+                "dbg", undefined
+            );
+            __catspeak_check_arg_struct("rhs", rhs,
+                "type", is_numeric,
+                "dbg", undefined
+            );
+        }
+
         var lhsType = lhs.type;
         if (lhsType == CatspeakTerm.GET_LOCAL) {
-            if (rhs.type == CatspeakTerm.GET_LOCAL && lhs.idx == rhs.idx) {
-                return createValue(undefined, lhs.dbg);
+            if (rhs.type == CatspeakTerm.GET_LOCAL) {
+                if (CATSPEAK_DEBUG_MODE) {
+                    __catspeak_check_arg_struct("lhs", lhs, "idx", is_numeric);
+                    __catspeak_check_arg_struct("rhs", rhs, "idx", is_numeric);
+                }
+
+                if (lhs.idx == rhs.idx) {
+                    return createValue(undefined, lhs.dbg);
+                }
             }
             lhs.type = CatspeakTerm.SET_LOCAL;
         } else if (lhsType == CatspeakTerm.GET_GLOBAL) {
-            if (rhs.type == CatspeakTerm.GET_GLOBAL && lhs.name == rhs.name) {
-                return createValue(undefined, lhs.dbg);
+            if (rhs.type == CatspeakTerm.GET_GLOBAL) {
+                if (CATSPEAK_DEBUG_MODE) {
+                    __catspeak_check_arg_struct("lhs", lhs, "name", is_string);
+                    __catspeak_check_arg_struct("rhs", rhs, "name", is_string);
+                }
+
+                if (lhs.name == rhs.name) {
+                    return createValue(undefined, lhs.dbg);
+                }
             }
             lhs.type = CatspeakTerm.SET_GLOBAL;
         } else {
             __catspeak_error(
-                __catspeak_location_show(lexer.getLocation()),
+                __catspeak_location_show(lhs.dbg),
                 " -- invalid assignment target, ",
                 "must be an identifier or accessor expression"
             );
@@ -301,15 +334,9 @@ function CatspeakASGBuilder() constructor {
 
     /// Adds an existing node to the current block's statement list.
     ///
-    /// @param {Real} term
+    /// @param {Struct} term
     ///   The term to register to the current block.
     static createStatement = function (term) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("term", term,
-                "type", is_numeric
-            );
-        }
-
         var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         var result_ = block.result;
         if (result_ != undefined) {
@@ -329,11 +356,16 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static allocLocal = function (name, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+
+        // __createTerm() will do argument validation
         var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         var scope = block.locals;
         if (ds_map_exists(scope, name)) {
             __catspeak_error(
-                __catspeak_location_show(lexer.getLocation()),
+                __catspeak_location_show(location),
                 " -- a local variable with the name '", name, "' is already ",
                 "defined in this scope"
             );
@@ -360,6 +392,10 @@ function CatspeakASGBuilder() constructor {
     ///   `false`, which will always create a new block term per local
     ///   scope.
     static pushBlock = function (inherit=false) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("inherit", inherit, is_numeric);
+        }
+
         var blocks_ = currFunctionScope.blocks;
         var blocksTop_ = currFunctionScope.blocksTop + 1;
         currFunctionScope.blocksTop = blocksTop_;
@@ -394,6 +430,7 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static popBlock = function (location=undefined) {
+        // __createTerm() will do argument validation
         var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         currFunctionScope.nextLocalIdx -= block.localCount;
         currFunctionScope.blocksTop -= 1;
@@ -465,6 +502,7 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static popFunction = function (location=undefined) {
+        // __createTerm() will do argument validation
         var idx = array_length(functions);
         functions[@ idx] = {
             localCount : currFunctionScope.localCount,

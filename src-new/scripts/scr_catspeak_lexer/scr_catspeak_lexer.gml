@@ -122,7 +122,7 @@ function __catspeak_is_token(val) {
     // the user can modify what keywords are, so just check
     // that they've used one of the enum types instead of a
     // random ass value
-    return is_numeric(val) &&
+    return is_numeric(val) && (
         val >= 0 && val < CatspeakToken.__SIZE__ &&
         val != CatspeakToken.__OPERATORS_BEGIN__ &&
         val != CatspeakToken.__OPERATORS_END__
