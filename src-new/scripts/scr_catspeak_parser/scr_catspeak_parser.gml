@@ -148,8 +148,12 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     /// @return {Struct}
     static __parseAssign = function() {
-        // TODO
-        return __parseOpBuiltin();
+        var lhs = __parseOpBuiltin();
+        if (lexer.peek() == CatspeakToken.ASSIGN) {
+            lexer.next();
+            lhs = asg.createAssign(lhs, __parseExpression());
+        }
+        return lhs;
     };
 
     /// @ignore
