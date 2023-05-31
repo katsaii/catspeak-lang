@@ -248,6 +248,24 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
+    static __compileWhile = function(ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "condition", undefined,
+                "body", undefined
+            );
+        }
+
+        return method({
+            ctx : ctx,
+            condition : __compileTerm(ctx, term.condition),
+            body : __compileTerm(ctx, term.body),
+        }, __catspeak_expr_while__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
     static __compileGlobalGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -361,6 +379,7 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.IF_ELSE] = __compileIfElse;
+        db[@ CatspeakTerm.WHILE] = __compileWhile;
         db[@ CatspeakTerm.GET_GLOBAL] = __compileGlobalGet;
         db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
         db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
@@ -462,6 +481,17 @@ function __catspeak_expr_if__() {
 /// @ignore
 function __catspeak_expr_if_else__() {
     return condition() ? ifTrue() : ifFalse();
+}
+
+/// @ignore
+function __catspeak_expr_while__() {
+    var callTime = ctx.callTime;
+    var condition_ = condition;
+    var body_ = body;
+    while (condition_()) {
+        __catspeak_timeout_check(callTime);
+        body_();
+    }
 }
 
 /// @ignore

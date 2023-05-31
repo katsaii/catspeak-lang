@@ -63,10 +63,12 @@ TEST_EXPERIMENT "compiler-2" {
 TEST_EXPERIMENT "compiler-3" {
     var buff = __catspeak_create_buffer_from_string(@'
         let a = 0;
-        if (a) {
-          "hi"
-        } else {
-           "thoust";
+        -- if (a) {
+        --   "hi"
+        -- } else {
+        --    "thoust";
+        -- }
+        while (a) {
         }
     ');
     var asg = Catspeak.parse(buff);
