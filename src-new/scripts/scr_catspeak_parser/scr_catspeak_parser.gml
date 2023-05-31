@@ -97,6 +97,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseExpression = function() {
         var peeked = lexer.peek();
@@ -112,34 +113,37 @@ function CatspeakParser(lexer, builder) constructor {
         } else if (peeked == CatspeakToken.DO) {
             lexer.next();
             asg.pushBlock(true);
-            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
-                __ex("expected opening '{' after 'do' keyword");
-            }
-            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                __parseStatement();
-            }
-            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-                __ex("expected closing '}' after 'do' block");
-            }
+            __parseStatements("do");
             return asg.popBlock();
         } else if (peeked == CatspeakToken.IF) {
             lexer.next();
-            __catspeak_error_unimplemented("if");
+            if (lexer.next() != CatspeakToken.PAREN_LEFT) {
+                __ex("expected opening '(' after 'if' keyword");
+            }
+            var condition = __parseExpression();
+            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                __ex("expected closing ')' after 'if' statement condition");
+            }
+            asg.pushBlock();
+            __parseStatements("if")
+            var ifTrue = asg.popBlock();
+            var ifFalse;
+            if (lexer.peek() == CatspeakToken.ELSE) {
+                lexer.next();
+                asg.pushBlock();
+                __parseStatements("else");
+                ifFalse = asg.popBlock();
+            } else {
+                ifFalse = asg.createValue(undefined, lexer.getLocation());
+            }
+            return asg.createIf(condition, ifTrue, ifFalse);
         } else if (peeked == CatspeakToken.WHILE) {
             lexer.next();
             __catspeak_error_unimplemented("while");
         } else if (peeked == CatspeakToken.FUN) {
             lexer.next();
             asg.pushFunction();
-            if (lexer.next() != CatspeakToken.BRACE_LEFT) {
-                __ex("expected opening '{' after 'fun' keyword");
-            }
-            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                __parseStatement();
-            }
-            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-                __ex("expected closing '}' after 'fun' block");
-            }
+            __parseStatements("fun");
             return asg.popFunction();
         } else {
             return __parseAssign();
@@ -147,6 +151,23 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
+    /// @param {String} keyword
+    /// @return {Struct}
+    static __parseStatements = function(keyword) {
+        if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+            __ex("expected opening '{' at the start of '", keyword, "' block");
+        }
+        while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+            __parseStatement();
+        }
+        if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+            __ex("expected closing '}' after '", keyword, "' block");
+        }
+    };
+
+    /// @ignore
+    ///
     /// @return {Struct}
     static __parseAssign = function() {
         var lhs = __parseOpBuiltin();
@@ -158,6 +179,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseOpBuiltin = function() {
         // TODO
@@ -165,6 +187,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseOpBinary = function() {
         // TODO
@@ -172,6 +195,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseOpUnary = function() {
         // TODO
@@ -179,6 +203,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseCall = function() {
         // TODO
@@ -186,6 +211,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseIndex = function() {
         // TODO
@@ -193,6 +219,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseTerminal = function () {
         var peeked = lexer.peek();
@@ -214,6 +241,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {Struct}
     static __parseGrouping = function () {
         var peeked = lexer.peek();
@@ -236,6 +264,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @param {String} ...
     static __ex = function () {
         var dbg = __catspeak_location_show(lexer.getLocation()) + " when parsing";
@@ -251,6 +280,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @return {String}
     static __tokenDebug = function () {
         var peeked = lexer.peek();
@@ -263,6 +293,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @param {Enum.CatspeakToken} expect
     /// @return {Bool}
     static __isNot = function (expect) {
@@ -271,6 +302,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
+    ///
     /// @param {Enum.CatspeakToken} expect
     /// @return {Bool}
     static __is = function (expect) {
@@ -299,7 +331,7 @@ function CatspeakASGBuilder() constructor {
         };
     };
 
-    /// Builds a new value term and returns its handle.
+    /// Emits the instruction to return a new constant value.
     ///
     /// @param {Any} value
     ///   The value this term should resolve to.
@@ -313,6 +345,67 @@ function CatspeakASGBuilder() constructor {
         return __createTerm(CatspeakTerm.VALUE, location, {
             value : value
         });
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    /// @return {Any}
+    static __getValue = function (term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "value", undefined
+            );
+        }
+
+        return term.value;
+    }
+
+    /// Emits the instruction for an if statement.
+    ///
+    /// @param {Struct} condition
+    ///   The term which evaluates to the condition of the if statement.
+    ///
+    /// @param {Struct} ifTrue
+    ///   The term which evaluates if the condition of the if statement is
+    ///   true.
+    ///
+    /// @param {Struct} ifFalse
+    ///   The term which evaluates if the condition of the if statement is
+    ///   false.
+    ///
+    /// @return {Struct}
+    static createIf = function (condition, ifTrue, ifFalse) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("condition", condition,
+                "type", is_numeric,
+                "dbg", undefined
+            );
+            __catspeak_check_arg_struct("ifFalse", ifFalse,
+                "type", is_numeric,
+            );
+        }
+
+        if (condition.type == CatspeakTerm.VALUE) {
+            if (__getValue(condition)) {
+                return ifTrue;
+            } else {
+                return ifFalse;
+            }
+        }
+        // __createTerm() will do argument validation
+        if (ifFalse.type == CatspeakTerm.VALUE && __getValue(ifFalse) == undefined) {
+            return __createTerm(CatspeakTerm.IF, condition.dbg, {
+                condition : condition,
+                ifTrue : ifTrue,
+            });
+        } else {
+            return __createTerm(CatspeakTerm.IF_ELSE, condition.dbg, {
+                condition : condition,
+                ifTrue : ifTrue,
+                ifFalse : ifFalse,
+            });
+        }
     };
 
     /// Searches a for a variable with the supplied name and emits a get
@@ -642,6 +735,8 @@ function __catspeak_term_is_pure(kind) {
 enum CatspeakTerm {
     VALUE,
     BLOCK,
+    IF,
+    IF_ELSE,
     GET_LOCAL,
     SET_LOCAL,
     GET_GLOBAL,

@@ -41,7 +41,10 @@ function CatspeakGMLCompiler(asg) constructor {
     }
 
     self.functions = asg.functions;
-    self.globals = { };
+    self.sharedData = {
+        globals : { },
+        self_ : undefined,
+    };
     //# feather disable once GM2043
     self.program = __compileFunctions(asg.entryPoints);
     self.finalised = false;
@@ -92,7 +95,15 @@ function CatspeakGMLCompiler(asg) constructor {
 
             exprs[@ i] = __compileFunction(functions_[entry]);
         }
-        return __emitBlock(exprs);
+        var rootCall = __emitBlock(exprs);
+        rootCall.setSelf = method(sharedData, function(selfInst) {
+            if (CATSPEAK_DEBUG_MODE && selfInst != undefined) {
+                __catspeak_check_arg("selfInst", selfInst, is_struct);
+            }
+
+            self_ = selfInst;
+        });
+        return rootCall;
     };
 
     /// @ignore
@@ -112,9 +123,7 @@ function CatspeakGMLCompiler(asg) constructor {
         var ctx = {
             callTime : -1,
             program : undefined,
-            self_ : undefined,
             locals : array_create(func.localCount),
-            globals : globals,
         };
         ctx.program = __compileTerm(ctx, func.root);
         if (__catspeak_term_is_pure(func.root.type)) {
@@ -203,6 +212,42 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
+    static __compileIf = function(ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "condition", undefined,
+                "ifTrue", undefined
+            );
+        }
+
+        return method({
+            condition : __compileTerm(ctx, term.condition),
+            ifTrue : __compileTerm(ctx, term.ifTrue),
+        }, __catspeak_expr_if__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileIfElse = function(ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "condition", undefined,
+                "ifTrue", undefined,
+                "ifFalse", undefined
+            );
+        }
+
+        return method({
+            condition : __compileTerm(ctx, term.condition),
+            ifTrue : __compileTerm(ctx, term.ifTrue),
+            ifFalse : __compileTerm(ctx, term.ifFalse),
+        }, __catspeak_expr_if_else__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
     static __compileGlobalGet = function(ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -212,7 +257,7 @@ function CatspeakGMLCompiler(asg) constructor {
 
         return method({
             name : term.name,
-            globals : globals,
+            globals : sharedData.globals,
         }, __catspeak_expr_global_get__);
     };
 
@@ -228,7 +273,7 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         return method({
-            globals : globals,
+            globals : sharedData.globals,
             name : term.name,
             value : __compileTerm(ctx, term.value),
         }, __catspeak_expr_global_set__);
@@ -287,7 +332,7 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @param {Struct} term
     static __compileSelfGet = function(ctx, term) {
-        return method(ctx, __catspeak_expr_self_get__);
+        return method(sharedData, __catspeak_expr_self_get__);
     };
 
     /// @ignore
@@ -314,6 +359,8 @@ function CatspeakGMLCompiler(asg) constructor {
         var db = array_create(CatspeakTerm.__SIZE__, undefined);
         db[@ CatspeakTerm.VALUE] = __compileValue;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
+        db[@ CatspeakTerm.IF] = __compileIf;
+        db[@ CatspeakTerm.IF_ELSE] = __compileIfElse;
         db[@ CatspeakTerm.GET_GLOBAL] = __compileGlobalGet;
         db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
         db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
@@ -336,12 +383,9 @@ function __catspeak_function__() {
         var localCount = array_length(locals);
         var oldLocals = array_create(localCount);
         array_copy(oldLocals, 0, locals, 0, localCount);
-        // store previous self
-        var oldSelf = self_;
     } else {
         callTime = current_time;
     }
-    self_ = other;
     var value;
     try {
         value = program();
@@ -351,8 +395,6 @@ function __catspeak_function__() {
             // a tiny bit of time so I'll be a bit evil
             //# feather disable once GM2043
             array_copy(locals, 0, oldLocals, 0, localCount);
-            //# feather disable once GM2043
-            self_ = oldSelf;
         } else {
             // reset the timer
             callTime = -1;
@@ -413,6 +455,16 @@ function __catspeak_expr_block_5__() {
 }
 
 /// @ignore
+function __catspeak_expr_if__() {
+    return condition() ? ifTrue() : undefined;
+}
+
+/// @ignore
+function __catspeak_expr_if_else__() {
+    return condition() ? ifTrue() : ifFalse();
+}
+
+/// @ignore
 function __catspeak_expr_global_get__() {
     return globals[$ name];
 }
@@ -434,5 +486,7 @@ function __catspeak_expr_local_set__() {
 
 /// @ignore
 function __catspeak_expr_self_get__() {
-    return self_;
+    // will either access a user-defined self instance, or the internal
+    // global struct
+    return self_ ?? globals;
 }

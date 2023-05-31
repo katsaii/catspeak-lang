@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "none";
+var runExperiment = "compiler-3";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -58,4 +58,19 @@ TEST_EXPERIMENT "compiler-2" {
     var f = Catspeak.compileGML(asg);
     show_message(json_stringify(asg, true));
     show_message([f(), f()()]);
+}
+
+TEST_EXPERIMENT "compiler-3" {
+    var buff = __catspeak_create_buffer_from_string(@'
+        let a = 0;
+        if (a) {
+          "hi"
+        } else {
+           "thoust";
+        }
+    ');
+    var asg = Catspeak.parse(buff);
+    var f = Catspeak.compileGML(asg);
+    show_message(json_stringify(asg, true));
+    show_message(f());
 }
