@@ -139,7 +139,17 @@ function CatspeakParser(lexer, builder) constructor {
             return asg.createIf(condition, ifTrue, ifFalse);
         } else if (peeked == CatspeakToken.WHILE) {
             lexer.next();
-            __catspeak_error_unimplemented("while");
+            if (lexer.next() != CatspeakToken.PAREN_LEFT) {
+                __ex("expected opening '(' after 'while' keyword");
+            }
+            var condition = __parseExpression();
+            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                __ex("expected closing ')' after 'while' loop condition");
+            }
+            asg.pushBlock();
+            __parseStatements("while")
+            var body = asg.popBlock();
+            return asg.createWhile(condition, body);
         } else if (peeked == CatspeakToken.FUN) {
             lexer.next();
             asg.pushFunction();
@@ -406,6 +416,33 @@ function CatspeakASGBuilder() constructor {
                 ifFalse : ifFalse,
             });
         }
+    };
+
+    /// Emits the instruction for a while loop.
+    ///
+    /// @param {Struct} condition
+    ///   The term which evaluates to the condition of the while loop.
+    ///
+    /// @param {Struct} body
+    ///   The body of the while loop.
+    ///
+    /// @return {Struct}
+    static createWhile = function (condition, body) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("condition", condition,
+                "type", is_numeric,
+                "dbg", undefined
+            );
+        }
+
+        if (condition.type == CatspeakTerm.VALUE && !__getValue(condition)) {
+            return createValue(undefined, condition.dbg);
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.WHILE, condition.dbg, {
+            condition : condition,
+            body : body,
+        });
     };
 
     /// Searches a for a variable with the supplied name and emits a get
@@ -737,6 +774,7 @@ enum CatspeakTerm {
     BLOCK,
     IF,
     IF_ELSE,
+    WHILE,
     GET_LOCAL,
     SET_LOCAL,
     GET_GLOBAL,
