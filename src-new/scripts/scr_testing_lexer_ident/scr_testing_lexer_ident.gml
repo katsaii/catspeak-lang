@@ -38,9 +38,9 @@ test_add(function() : TestLexerToken("lexer-tokens-ident-literal-malformed-3",
 ) constructor { });
 
 test_add(function() : TestLexerToken("lexer-tokens-ident-op",
-    CatspeakToken.OP_ADD, "++", "++"
+    CatspeakToken.PLUS, "+", "+"
 ) constructor { });
 
 test_add(function() : TestLexerToken("lexer-tokens-ident-op-2",
-    CatspeakToken.OP_COMP, "<=>", "<=>"
+    CatspeakToken.LESS_EQUAL, "<=", "<="
 ) constructor { });

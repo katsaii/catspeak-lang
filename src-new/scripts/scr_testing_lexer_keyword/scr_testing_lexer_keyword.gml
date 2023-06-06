@@ -29,10 +29,6 @@ test_add(function() : TestLexerToken("lexer-keyword-do",
     CatspeakToken.DO, "do", "do"
 ) constructor { });
 
-test_add(function() : TestLexerToken("lexer-keyword-it",
-    CatspeakToken.IT, "it", "it"
-) constructor { });
-
 test_add(function() : TestLexerToken("lexer-keyword-if",
     CatspeakToken.IF, "if", "if"
 ) constructor { });
