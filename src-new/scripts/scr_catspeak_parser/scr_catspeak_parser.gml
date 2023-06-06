@@ -103,13 +103,33 @@ function CatspeakParser(lexer, builder) constructor {
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.RETURN) {
             lexer.next();
-            __catspeak_error_unimplemented("return");
+            peeked = lexer.peek();
+            var value;
+            if (
+                peeked == CatspeakToken.BREAK_LINE ||
+                peeked == CatspeakToken.BRACE_RIGHT
+            ) {
+                value = asg.createValue(undefined, lexer.getLocation());
+            } else {
+                value = __parseExpression();
+            }
+            return asg.createReturn(value, lexer.getLocation());
         } else if (peeked == CatspeakToken.CONTINUE) {
             lexer.next();
-            return asg.createContinue();
+            return asg.createContinue(lexer.getLocation());
         } else if (peeked == CatspeakToken.BREAK) {
             lexer.next();
-            __catspeak_error_unimplemented("break");
+            peeked = lexer.peek();
+            var value;
+            if (
+                peeked == CatspeakToken.BREAK_LINE ||
+                peeked == CatspeakToken.BRACE_RIGHT
+            ) {
+                value = asg.createValue(undefined, lexer.getLocation());
+            } else {
+                value = __parseExpression();
+            }
+            return asg.createBreak(value, lexer.getLocation());
         } else if (peeked == CatspeakToken.DO) {
             lexer.next();
             asg.pushBlock(true);
@@ -233,7 +253,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseTerminal = function () {
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.STRING || peeked == CatspeakToken.NUMBER) {
+        if (peeked == CatspeakToken.VALUE) {
             lexer.next();
             return asg.createValue(lexer.getValue(), lexer.getLocation());
         } else if (peeked == CatspeakToken.IDENT) {
@@ -444,14 +464,18 @@ function CatspeakASGBuilder() constructor {
 
     /// Emits the instruction to return a value from the current function.
     ///
-    /// @param {Any} value
-    ///   The value to return.
+    /// @param {Struct} value
+    ///   The instruction for the value to return.
     ///
     /// @param {Real} [location]
     ///   The source location of this value term.
     ///
     /// @return {Struct}
     static createReturn = function (value, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("value", value);
+        }
+
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.RETURN, location, {
             value : value
@@ -461,14 +485,18 @@ function CatspeakASGBuilder() constructor {
     /// Emits the instruction to break from the current loop with a specified
     /// value.
     ///
-    /// @param {Any} value
-    ///   The value to return.
+    /// @param {Struct} value
+    ///   The instruction for the value to break with.
     ///
     /// @param {Real} [location]
     ///   The source location of this value term.
     ///
     /// @return {Struct}
     static createBreak = function (value, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("value", value);
+        }
+
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.BREAK, location, {
             value : value
@@ -817,9 +845,9 @@ enum CatspeakTerm {
     IF,
     IF_ELSE,
     WHILE,
+    RETURN,
     BREAK,
     CONTINUE,
-    RETURN,
     GET_LOCAL,
     SET_LOCAL,
     GET_GLOBAL,

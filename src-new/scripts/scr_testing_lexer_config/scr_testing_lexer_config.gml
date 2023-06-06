@@ -14,7 +14,7 @@ test_add(function() : Test("lexer-config-offset") constructor {
     assertEq(CatspeakToken.COLON, lexer.nextWithWhitespace());
     assertEq(":", lexer.getLexeme());
     // number
-    assertEq(CatspeakToken.NUMBER, lexer.nextWithWhitespace());
+    assertEq(CatspeakToken.VALUE, lexer.nextWithWhitespace());
     assertEq("3", lexer.getLexeme());
     // eof
     assertEq(CatspeakToken.EOF, lexer.nextWithWhitespace());
