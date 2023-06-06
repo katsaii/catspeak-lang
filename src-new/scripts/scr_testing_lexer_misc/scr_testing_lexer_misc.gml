@@ -39,7 +39,7 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example",
         CatspeakToken.PAREN_RIGHT,
         CatspeakToken.BRACE_LEFT,
         CatspeakToken.IDENT,
-        CatspeakToken.OP_ADD,
+        CatspeakToken.PLUS,
         CatspeakToken.IDENT,
         CatspeakToken.BRACE_RIGHT,
         CatspeakToken.PAREN_RIGHT
@@ -70,7 +70,7 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example-2",
         CatspeakToken.WHILE,
         CatspeakToken.PAREN_LEFT,
         CatspeakToken.IDENT,
-        CatspeakToken.OP_COMP,
+        CatspeakToken.LESS,
         CatspeakToken.IDENT,
         CatspeakToken.PAREN_RIGHT,
         CatspeakToken.BRACE_LEFT,
@@ -81,7 +81,7 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example-2",
         CatspeakToken.IDENT,
         CatspeakToken.ASSIGN,
         CatspeakToken.IDENT,
-        CatspeakToken.OP_ADD,
+        CatspeakToken.PLUS,
         CatspeakToken.NUMBER,
         CatspeakToken.BREAK_LINE,
         CatspeakToken.BRACE_RIGHT,
@@ -102,7 +102,7 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example-3",
         ;
         
  ; hi ; 
- ; ;; ;
+ ; ; ; ;
  
                                                         ...
     '
@@ -111,6 +111,5 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example-3",
         CatspeakToken.BREAK_LINE,
         CatspeakToken.IDENT,
         CatspeakToken.BREAK_LINE,
-        CatspeakToken.OP_LOW // ;;
     )
 });

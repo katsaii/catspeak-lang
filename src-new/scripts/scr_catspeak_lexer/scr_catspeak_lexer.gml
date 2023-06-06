@@ -9,7 +9,7 @@
 ///   - `if`   (is a `CatspeakToken.IF`)
 ///   - `else` (is a `CatspeakToken.ELSE`)
 ///   - `12.3` (is a `CatspeakToken.NUMBER`)
-///   - `+`    (is a `CatspeakToken.OP_ADD`)
+///   - `+`    (is a `CatspeakToken.PLUS`)
 ///
 /// The following enum represents all possible token types understood by the
 /// Catspeak language.
@@ -26,18 +26,58 @@ enum CatspeakToken {
     BRACE_LEFT,
     /// The `}` character.
     BRACE_RIGHT,
-    /// The `.` character.
-    DOT,
     /// The `:` character.
     COLON,
     /// The `,` character.
     COMMA,
-    /// The `=` character.
+    /// The `.` operator.
+    DOT,
+    /// The `=` operator.
     ASSIGN,
+    /// The remainder `%` operator.
+    REMAINDER,
+    /// The `*` operator.
+    MULTIPLY,
+    /// The `/` operator.
+    DIVIDE,
+    /// The integer division `//` operator.
+    DIVIDE_INT,
+    /// The `-` operator.
+    SUBTRACT,
+    /// The `+` operator.
+    PLUS,
+    /// The `==` operator.
+    EQUAL,
+    /// The `!=` operator.
+    NOT_EQUAL,
+    /// The `>` operator.
+    GREATER,
+    /// The `>=` operator.
+    GREATER_EQUAL,
+    /// The `<` operator.
+    LESS,
+    /// The `<=` operator.
+    LESS_EQUAL,
+    /// The logical negation `!` operator.
+    NOT,
+    /// The bitwise negation `~` operator.
+    BITWISE_NOT,
+    /// The bitwise right shift `>>` operator.
+    SHIFT_RIGHT,
+    /// The bitwise left shift `<<` operator.
+    SHIFT_LEFT,
+    /// The bitwise and `&` operator.
+    BITWISE_AND,
+    /// The bitwise xor `^` operator.
+    BITWISE_XOR,
+    /// The bitwise or `|` operator.
+    BITWISE_OR,
+    /// The logical `and` operator.
+    AND,
+    /// The logical `or` operator.
+    OR,
     /// The `do` keyword.
     DO,
-    /// The `it` keyword.
-    IT,
     /// The `if` keyword.
     IF,
     /// The `else` keyword.
@@ -58,10 +98,6 @@ enum CatspeakToken {
     CONTINUE,
     /// The `return` keyword.
     RETURN,
-    /// The `and` keyword.
-    AND,
-    /// The `or` keyword.
-    OR,
     /// The `new` keyword.
     NEW,
     /// The `impl` keyword.
@@ -93,25 +129,6 @@ enum CatspeakToken {
     EOF,
     /// Represents any other unrecognised character.
     OTHER,
-    __OPERATORS_BEGIN__,
-    /// Represents any operator identifier starting with `$`, `:`, or `;`.
-    OP_LOW,
-    /// Represents any operator identifier starting with `^` or `|`.
-    OP_OR,
-    /// Represents any operator identifier starting with `&`.
-    OP_AND,
-    /// Represents any operator identifier starting with
-    ///   `!`, `<`, `=`, `>`, `?` or `~`.
-    OP_COMP,
-    /// Represents any operator identifier starting with `+` or `-`.
-    OP_ADD,
-    /// Represents any operator identifier starting with `*` or `/`.
-    OP_MUL,
-    /// Represents any operator identifier starting with `%` or `\`.
-    OP_DIV,
-    /// Represents any operator identifier starting with `#`, `.` or `@`.
-    OP_HIGH,
-    __OPERATORS_END__,
     __SIZE__
 }
 
@@ -123,26 +140,8 @@ function __catspeak_is_token(val) {
     // that they've used one of the enum types instead of a
     // random ass value
     return is_numeric(val) && (
-        val >= 0 && val < CatspeakToken.__SIZE__ &&
-        val != CatspeakToken.__OPERATORS_BEGIN__ &&
-        val != CatspeakToken.__OPERATORS_END__
+        val >= 0 && val < CatspeakToken.__SIZE__
     );
-}
-
-/// Returns whether a Catspeak token is a valid operator.
-///
-/// @param {Enum.CatspeakToken} token
-///   The ID of the token to check.
-///
-/// @return {Bool}
-function catspeak_token_is_operator(token) {
-    gml_pragma("forceinline");
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_arg("token", token, is_numeric);
-    }
-
-    return token > CatspeakToken.__OPERATORS_BEGIN__
-            && token < CatspeakToken.__OPERATORS_END__;
 }
 
 /// @ignore
@@ -453,8 +452,8 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 value_ = string_replace_all(value_, "\\\\", "\\");
             }
             value = value_;
-        } else if (catspeak_token_is_operator(token)) {
-            // operator identifiers
+        } else if (__catspeak_char_is_operator(charCurr_)) {
+            // operators
             while (__catspeak_char_is_operator(charNext)) {
                 __advance();
             }
@@ -708,22 +707,6 @@ function __catspeak_init_lexer_codepage() {
             __catspeak_codepage_set(code, "'") // character literals
         ) {
             tokenType = CatspeakToken.NUMBER;
-        } else if (__catspeak_codepage_set(code, "$", ":", ";")) {
-            tokenType = CatspeakToken.OP_LOW;
-        } else if (__catspeak_codepage_set(code, "^", "|")) {
-            tokenType = CatspeakToken.OP_OR;
-        } else if (__catspeak_codepage_set(code, "&")) {
-            tokenType = CatspeakToken.OP_AND;
-        } else if (__catspeak_codepage_set(code, "!", "<", "=", ">", "?", "~")) {
-            tokenType = CatspeakToken.OP_COMP;
-        } else if (__catspeak_codepage_set(code, "+", "-")) {
-            tokenType = CatspeakToken.OP_ADD;
-        } else if (__catspeak_codepage_set(code, "*", "/")) {
-            tokenType = CatspeakToken.OP_MUL;
-        } else if (__catspeak_codepage_set(code, "%", "\\")) {
-            tokenType = CatspeakToken.OP_DIV;
-        } else if (__catspeak_codepage_set(code, "#", ".", "@")) {
-            tokenType = CatspeakToken.OP_HIGH;
         } else if (__catspeak_codepage_set(code, "\"")) {
             tokenType = CatspeakToken.STRING;
         } else if (__catspeak_codepage_set(code, "(")) {
@@ -754,13 +737,34 @@ function __catspeak_init_lexer_codepage() {
 function catspeak_keywords_create() {
     var keywords = { };
     keywords[$ "--"] = CatspeakToken.COMMENT;
-    keywords[$ "="] = CatspeakToken.ASSIGN;
-    keywords[$ ":"] = CatspeakToken.COLON;
     keywords[$ ";"] = CatspeakToken.BREAK_LINE;
+    keywords[$ "..."] = CatspeakToken.CONTINUE_LINE;   
+    keywords[$ ":"] = CatspeakToken.COLON;
+    keywords[$ ","] = CatspeakToken.COMMA;
     keywords[$ "."] = CatspeakToken.DOT;
-    keywords[$ "..."] = CatspeakToken.CONTINUE_LINE;
+    keywords[$ "="] = CatspeakToken.ASSIGN;
+    keywords[$ "%"] = CatspeakToken.REMAINDER;
+    keywords[$ "*"] = CatspeakToken.MULTIPLY;
+    keywords[$ "/"] = CatspeakToken.DIVIDE;
+    keywords[$ "//"] = CatspeakToken.DIVIDE_INT;
+    keywords[$ "-"] = CatspeakToken.SUBTRACT;
+    keywords[$ "+"] = CatspeakToken.PLUS;
+    keywords[$ "=="] = CatspeakToken.EQUAL;
+    keywords[$ "!="] = CatspeakToken.NOT_EQUAL;
+    keywords[$ ">"] = CatspeakToken.GREATER;
+    keywords[$ ">="] = CatspeakToken.GREATER_EQUAL;
+    keywords[$ "<"] = CatspeakToken.LESS;
+    keywords[$ "<="] = CatspeakToken.LESS_EQUAL;
+    keywords[$ "!"] = CatspeakToken.NOT;
+    keywords[$ "~"] = CatspeakToken.BITWISE_NOT;
+    keywords[$ ">>"] = CatspeakToken.SHIFT_RIGHT;
+    keywords[$ "<<"] = CatspeakToken.SHIFT_LEFT;
+    keywords[$ "&"] = CatspeakToken.BITWISE_AND;
+    keywords[$ "^"] = CatspeakToken.BITWISE_XOR;
+    keywords[$ "|"] = CatspeakToken.BITWISE_OR;
+    keywords[$ "and"] = CatspeakToken.AND;
+    keywords[$ "or"] = CatspeakToken.OR;
     keywords[$ "do"] = CatspeakToken.DO;
-    keywords[$ "it"] = CatspeakToken.IT;
     keywords[$ "if"] = CatspeakToken.IF;
     keywords[$ "else"] = CatspeakToken.ELSE;
     keywords[$ "while"] = CatspeakToken.WHILE;
@@ -768,11 +772,10 @@ function catspeak_keywords_create() {
     keywords[$ "loop"] = CatspeakToken.LOOP;
     keywords[$ "let"] = CatspeakToken.LET;
     keywords[$ "fun"] = CatspeakToken.FUN;
+    keywords[$ "params"] = CatspeakToken.PARAMS;
     keywords[$ "break"] = CatspeakToken.BREAK;
     keywords[$ "continue"] = CatspeakToken.CONTINUE;
     keywords[$ "return"] = CatspeakToken.RETURN;
-    keywords[$ "and"] = CatspeakToken.AND;
-    keywords[$ "or"] = CatspeakToken.OR;
     keywords[$ "new"] = CatspeakToken.NEW;
     keywords[$ "impl"] = CatspeakToken.IMPL;
     keywords[$ "self"] = CatspeakToken.SELF;
@@ -874,10 +877,31 @@ function __catspeak_init_lexer_newlines() {
         CatspeakToken.PAREN_LEFT,
         CatspeakToken.BOX_LEFT,
         CatspeakToken.BRACE_LEFT,
-        CatspeakToken.DOT,
         CatspeakToken.COLON,
         CatspeakToken.COMMA,
+        CatspeakToken.DOT,
         CatspeakToken.ASSIGN,
+        CatspeakToken.REMAINDER,
+        CatspeakToken.MULTIPLY,
+        CatspeakToken.DIVIDE,
+        CatspeakToken.DIVIDE_INT,
+        CatspeakToken.SUBTRACT,
+        CatspeakToken.PLUS,
+        CatspeakToken.EQUAL,
+        CatspeakToken.NOT_EQUAL,
+        CatspeakToken.GREATER,
+        CatspeakToken.GREATER_EQUAL,
+        CatspeakToken.LESS,
+        CatspeakToken.LESS_EQUAL,
+        CatspeakToken.NOT,
+        CatspeakToken.BITWISE_NOT,
+        CatspeakToken.SHIFT_RIGHT,
+        CatspeakToken.SHIFT_LEFT,
+        CatspeakToken.BITWISE_AND,
+        CatspeakToken.BITWISE_XOR,
+        CatspeakToken.BITWISE_OR,
+        CatspeakToken.AND,
+        CatspeakToken.OR,
         // this token technically does, but it's handled in a different
         // way to the others, so it's only here honorarily
         //CatspeakToken.CONTINUE_LINE,
@@ -887,15 +911,7 @@ function __catspeak_init_lexer_newlines() {
         CatspeakToken.WHILE,
         CatspeakToken.FOR,
         CatspeakToken.LET,
-        CatspeakToken.FUN,
-        CatspeakToken.OP_LOW,
-        CatspeakToken.OP_OR,
-        CatspeakToken.OP_AND,
-        CatspeakToken.OP_COMP,
-        CatspeakToken.OP_ADD,
-        CatspeakToken.OP_MUL,
-        CatspeakToken.OP_DIV,
-        CatspeakToken.OP_HIGH,
+        CatspeakToken.FUN
     ];
     var count = array_length(tokens);
     for (var i = 0; i < count; i += 1) {
