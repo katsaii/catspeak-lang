@@ -106,7 +106,7 @@ function CatspeakParser(lexer, builder) constructor {
             __catspeak_error_unimplemented("return");
         } else if (peeked == CatspeakToken.CONTINUE) {
             lexer.next();
-            __catspeak_error_unimplemented("continue");
+            return asg.createContinue();
         } else if (peeked == CatspeakToken.BREAK) {
             lexer.next();
             __catspeak_error_unimplemented("break");
@@ -445,6 +445,51 @@ function CatspeakASGBuilder() constructor {
         });
     };
 
+    /// Emits the instruction to return a value from the current function.
+    ///
+    /// @param {Any} value
+    ///   The value to return.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createReturn = function (value, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.RETURN, location, {
+            value : value
+        });
+    };
+
+    /// Emits the instruction to break from the current loop with a specified
+    /// value.
+    ///
+    /// @param {Any} value
+    ///   The value to return.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createBreak = function (value, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.BREAK, location, {
+            value : value
+        });
+    };
+
+    /// Emits the instruction to continue to the next iteration of the current
+    /// loop.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createContinue = function (location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.CONTINUE, location, { });
+    };
+
     /// Searches a for a variable with the supplied name and emits a get
     /// instruction for it.
     ///
@@ -775,6 +820,9 @@ enum CatspeakTerm {
     IF,
     IF_ELSE,
     WHILE,
+    BREAK,
+    CONTINUE,
+    RETURN,
     GET_LOCAL,
     SET_LOCAL,
     GET_GLOBAL,
