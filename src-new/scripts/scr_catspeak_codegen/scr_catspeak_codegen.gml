@@ -569,9 +569,7 @@ function __catspeak_expr_break__() {
 
 /// @ignore
 function __catspeak_expr_continue__() {
-    var box = global.__catspeakGmlContinueRef;
-    box[@ 0] = value();
-    throw box;
+    throw global.__catspeakGmlContinueRef;
 }
 
 /// @ignore
