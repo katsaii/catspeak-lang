@@ -274,7 +274,7 @@ function CatspeakGMLCompiler(asg) constructor {
         }
 
         return method({
-            value : __compileTerm(term.value),
+            value : __compileTerm(ctx, term.value),
         }, __catspeak_expr_return__);
     };
 
@@ -448,6 +448,12 @@ function __catspeak_function__() {
     var value;
     try {
         value = program();
+    } catch (e) {
+        if (e == global.__catspeakGmlReturnRef) {
+            value = e[0];
+        } else {
+            throw e;
+        }
     } finally {
         if (isRecursing) {
             // bad practice to use `localCount_` here, but it saves
