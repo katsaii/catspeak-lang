@@ -79,7 +79,8 @@ TEST_EXPERIMENT "compiler-3" {
 
 TEST_EXPERIMENT "compiler-4" {
     var buff = __catspeak_create_buffer_from_string(@'
-        while (1) {
+        while (true) {
+        continue
             break "hello"
         }
     ');
