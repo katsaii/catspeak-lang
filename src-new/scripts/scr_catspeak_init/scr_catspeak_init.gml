@@ -51,6 +51,7 @@ function catspeak_force_init() {
     // call initialisers
     __catspeak_init_alloc();
     __catspeak_init_lexer();
+    __catspeak_init_codegen();
     __catspeak_init_engine();
     // display the initialisation message
     var motd = "you are now using Catspeak v" + CATSPEAK_VERSION +

@@ -8,7 +8,7 @@
 /// For example, these are all valid tokens:
 ///   - `if`   (is a `CatspeakToken.IF`)
 ///   - `else` (is a `CatspeakToken.ELSE`)
-///   - `12.3` (is a `CatspeakToken.NUMBER`)
+///   - `12.3` (is a `CatspeakToken.VALUE`)
 ///   - `+`    (is a `CatspeakToken.PLUS`)
 ///
 /// The following enum represents all possible token types understood by the
@@ -108,15 +108,15 @@ enum CatspeakToken {
     PARAMS,
     /// Represents a variable name.
     IDENT,
-    /// Represents a GML string value. The could be one of:
-    ///  - string literal:   "hello world"
-    ///  - verbatim literal: @"\(0_0)/ no escapes!"
-    STRING,
-    /// Represents a GML numeric value. This could be one of:
-    ///  - integer:   1, 2, 5
-    ///  - float:     1.25, 0.5
-    ///  - character: 'A', '0', '\n'
-    NUMBER,
+    /// Represents a GML value. This could be one of:
+    ///  - string literal:    "hello world"
+    ///  - verbatim literal:  @"\(0_0)/ no escapes!"
+    ///  - integer:           1, 2, 5
+    ///  - float:             1.25, 0.5
+    ///  - character:         'A', '0', '\n'
+    ///  - boolean:           true or false
+    ///  - undefined
+    VALUE,
     /// Represents a sequence of non-breaking whitespace characters.
     WHITESPACE,
     /// Represents a comment.
@@ -414,7 +414,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             // strings
             var isRaw = charCurr_ == ord("@");
             if (isRaw) {
-                token = CatspeakToken.STRING; // since `@` is an operator
+                token = CatspeakToken.VALUE; // since `@` is an operator
                 __advance();
             }
             var skipNextChar = false;
@@ -498,9 +498,19 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             while (__catspeak_char_is_alphanumeric(charNext)) {
                 __advance();
             }
-            var keyword = __getKeyword(getLexeme());
+            var lexeme_ = getLexeme();
+            var keyword = __getKeyword(lexeme_);
             if (keyword != undefined) {
                 token = keyword;
+            } else if (lexeme_ == "true") {
+                token = CatspeakToken.VALUE;
+                value = true;
+            } else if (lexeme_ == "false") {
+                token = CatspeakToken.VALUE;
+                value = false;
+            } else if (lexeme_ == "undefined") {
+                token = CatspeakToken.VALUE;
+                value = undefined;
             }
         } else if (charCurr_ == ord("'")) {
             // character literals
@@ -509,7 +519,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             if (charNext == ord("'")) {
                 __advance();
             }
-        } else if (token == CatspeakToken.NUMBER) {
+        } else if (token == CatspeakToken.VALUE) {
             // numeric literals
             var hasUnderscores = false;
             var hasDecimal = false;
@@ -615,8 +625,11 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
 /// @ignore
 function __catspeak_init_lexer() {
     // initialise map from character to token type
+    /// @ignore
     global.__catspeakChar2Token = __catspeak_init_lexer_codepage();
+    /// @ignore
     global.__catspeakString2Token = __catspeak_init_lexer_keywords();
+    /// @ignore
     global.__catspeakTokenSkipsNewline = __catspeak_init_lexer_newlines();
 }
 
@@ -706,9 +719,9 @@ function __catspeak_init_lexer_codepage() {
             __catspeak_codepage_range(code, "0", "9") ||
             __catspeak_codepage_set(code, "'") // character literals
         ) {
-            tokenType = CatspeakToken.NUMBER;
+            tokenType = CatspeakToken.VALUE;
         } else if (__catspeak_codepage_set(code, "\"")) {
-            tokenType = CatspeakToken.STRING;
+            tokenType = CatspeakToken.VALUE;
         } else if (__catspeak_codepage_set(code, "(")) {
             tokenType = CatspeakToken.PAREN_LEFT;
         } else if (__catspeak_codepage_set(code, ")")) {

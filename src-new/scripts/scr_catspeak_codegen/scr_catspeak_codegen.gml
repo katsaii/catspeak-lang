@@ -82,7 +82,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Array} entryPoints
-    static __compileFunctions = function(entryPoints) {
+    static __compileFunctions = function (entryPoints) {
         var functions_ = functions;
         var entryCount = array_length(entryPoints);
         var exprs = array_create(entryCount);
@@ -96,7 +96,7 @@ function CatspeakGMLCompiler(asg) constructor {
             exprs[@ i] = __compileFunction(functions_[entry]);
         }
         var rootCall = __emitBlock(exprs);
-        rootCall.setSelf = method(sharedData, function(selfInst) {
+        rootCall.setSelf = method(sharedData, function (selfInst) {
             if (CATSPEAK_DEBUG_MODE && selfInst != undefined) {
                 __catspeak_check_arg("selfInst", selfInst, is_struct);
             }
@@ -109,7 +109,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} func
-    static __compileFunction = function(func) {
+    static __compileFunction = function (func) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("func", func,
                 "localCount", is_numeric,
@@ -137,7 +137,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileValue = function(ctx, term) {
+    static __compileValue = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "value", undefined
@@ -150,7 +150,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileBlock = function(ctx, term) {
+    static __compileBlock = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "terms", is_array
@@ -169,7 +169,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Array} exprs
-    static __emitBlock = function(exprs) {
+    static __emitBlock = function (exprs) {
         var exprCount = array_length(exprs);
         // hard-code some common block sizes
         if (exprCount == 1) {
@@ -212,7 +212,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileIf = function(ctx, term) {
+    static __compileIf = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "condition", undefined,
@@ -229,7 +229,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileIfElse = function(ctx, term) {
+    static __compileIfElse = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "condition", undefined,
@@ -248,7 +248,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileWhile = function(ctx, term) {
+    static __compileWhile = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "condition", undefined,
@@ -266,7 +266,44 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileGlobalGet = function(ctx, term) {
+    static __compileReturn = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "value", undefined
+            );
+        }
+
+        return method({
+            value : __compileTerm(term.value),
+        }, __catspeak_expr_return__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileBreak = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "value", undefined
+            );
+        }
+
+        return method({
+            value : __compileTerm(ctx, term.value),
+        }, __catspeak_expr_break__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileContinue = function (ctx, term) {
+        return method(undefined, __catspeak_expr_continue__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileGlobalGet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "name", is_string
@@ -282,7 +319,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileGlobalSet = function(ctx, term) {
+    static __compileGlobalSet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "name", is_string,
@@ -300,7 +337,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileLocalGet = function(ctx, term) {
+    static __compileLocalGet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "idx", is_numeric
@@ -316,7 +353,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileLocalSet = function(ctx, term) {
+    static __compileLocalSet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "idx", is_numeric,
@@ -334,7 +371,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileFunctionGet = function(ctx, term) {
+    static __compileFunctionGet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "idx", is_numeric
@@ -349,14 +386,14 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileSelfGet = function(ctx, term) {
+    static __compileSelfGet = function (ctx, term) {
         return method(sharedData, __catspeak_expr_self_get__);
     };
 
     /// @ignore
     ///
     /// @param {Any} value
-    static __compileTerm = function(ctx, term) {
+    static __compileTerm = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "type", is_numeric
@@ -380,6 +417,9 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.IF_ELSE] = __compileIfElse;
         db[@ CatspeakTerm.WHILE] = __compileWhile;
+        db[@ CatspeakTerm.RETURN] = __compileReturn;
+        db[@ CatspeakTerm.BREAK] = __compileBreak;
+        db[@ CatspeakTerm.CONTINUE] = __compileContinue;
         db[@ CatspeakTerm.GET_GLOBAL] = __compileGlobalGet;
         db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
         db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
@@ -429,7 +469,7 @@ function __catspeak_expr_value__() {
 
 /// @ignore
 function __catspeak_expr_block__() {
-    //array_foreach(stmts, function(stmt) { stmt() });
+    //array_foreach(stmts, function (stmt) { stmt() });
     var i = 0;
     var stmts_ = stmts;
     var n_ = n;
@@ -490,8 +530,48 @@ function __catspeak_expr_while__() {
     var body_ = body;
     while (condition_()) {
         __catspeak_timeout_check(callTime);
+        try {
+            body_();
+        } catch (e) {
+            if (e == global.__catspeakGmlBreakRef) {
+                return e[0];
+            } else if (e != global.__catspeakGmlContinueRef) {
+                throw e;
+            }
+        }
+    }
+}
+
+/// @ignore
+function __catspeak_expr_while_simple__() {
+    var callTime = ctx.callTime;
+    var condition_ = condition;
+    var body_ = body;
+    while (condition_()) {
+        __catspeak_timeout_check(callTime);
         body_();
     }
+}
+
+/// @ignore
+function __catspeak_expr_return__() {
+    var box = global.__catspeakGmlReturnRef;
+    box[@ 0] = value();
+    throw box;
+}
+
+/// @ignore
+function __catspeak_expr_break__() {
+    var box = global.__catspeakGmlBreakRef;
+    box[@ 0] = value();
+    throw box;
+}
+
+/// @ignore
+function __catspeak_expr_continue__() {
+    var box = global.__catspeakGmlContinueRef;
+    box[@ 0] = value();
+    throw box;
 }
 
 /// @ignore
@@ -519,4 +599,14 @@ function __catspeak_expr_self_get__() {
     // will either access a user-defined self instance, or the internal
     // global struct
     return self_ ?? globals;
+}
+
+/// @ignore
+function __catspeak_init_codegen() {
+    /// @ignore
+    global.__catspeakGmlReturnRef = [undefined];
+    /// @ignore
+    global.__catspeakGmlBreakRef = [undefined];
+    /// @ignore
+    global.__catspeakGmlContinueRef = [];
 }
