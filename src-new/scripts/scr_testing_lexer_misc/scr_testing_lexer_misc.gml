@@ -1,7 +1,7 @@
 
 //# feather use syntax-errors
 
-test_add(function() : Test("lexer-misc-unicode") constructor {
+test_add(function () : Test("lexer-misc-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
     var lexer = new CatspeakLexer(buff);
     // other
@@ -25,7 +25,7 @@ test_add(function() : Test("lexer-misc-unicode") constructor {
     buffer_delete(buff);
 });
 
-test_add(function() : TestLexerTokenStream("lexer-misc-example",
+test_add(function () : TestLexerTokenStream("lexer-misc-example",
     "return (fun (a, b) { a + b })"
 ) constructor {
     checkTokens(
@@ -46,7 +46,7 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example",
     )
 });
 
-test_add(function() : TestLexerTokenStream("lexer-misc-example-2",
+test_add(function () : TestLexerTokenStream("lexer-misc-example-2",
     @'
         count = 0
         limit = 10
@@ -92,7 +92,7 @@ test_add(function() : TestLexerTokenStream("lexer-misc-example-2",
     )
 });
 
-test_add(function() : TestLexerTokenStream("lexer-misc-example-3",
+test_add(function () : TestLexerTokenStream("lexer-misc-example-3",
     @'
         
         

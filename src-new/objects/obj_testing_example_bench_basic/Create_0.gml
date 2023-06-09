@@ -14,6 +14,6 @@ code = @'do {
   }
 }';
 
-nativeFunc = function() {
+nativeFunc = function () {
     return 3.1415;
 };

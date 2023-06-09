@@ -25,7 +25,7 @@ function Future() constructor {
     ///
     /// @param {Any} [value]
     ///   The value to reject.
-    static accept = function(value) {
+    static accept = function (value) {
         __resolve(FutureState.ACCEPTED, value);
         var thenCount = array_length(thenFuncs);
         for (var i = 0; i < thenCount; i += 2) {
@@ -37,7 +37,7 @@ function Future() constructor {
                 // if the result returned from the callback is another future,
                 // delay the next future until the result future has been
                 // resolved
-                result.andFinally(method(nextFuture, function(future) {
+                result.andFinally(method(nextFuture, function (future) {
                     if (future.state == FutureState.ACCEPTED) {
                         accept(future.result);
                     } else {
@@ -68,7 +68,7 @@ function Future() constructor {
     ///
     /// @param {Any} [value]
     ///   The value to reject.
-    static reject = function(value) {
+    static reject = function (value) {
         __resolve(FutureState.REJECTED, value);
         var thenCount = array_length(thenFuncs);
         for (var i = 0; i < thenCount; i += 2) {
@@ -86,7 +86,7 @@ function Future() constructor {
                 // if the result returned from the callback is another future,
                 // delay the next future until the result future has been
                 // resolved
-                result.andFinally(method(nextFuture, function(future) {
+                result.andFinally(method(nextFuture, function (future) {
                     if (future.state == FutureState.ACCEPTED) {
                         accept(future.result);
                     } else {
@@ -111,7 +111,7 @@ function Future() constructor {
     /// may be the result of being accepted OR rejected.
     ///
     /// @return {Bool}
-    static resolved = function() {
+    static resolved = function () {
         return state != FutureState.UNRESOLVED;
     };
 
@@ -121,7 +121,7 @@ function Future() constructor {
     ///   The function to invoke.
     ///
     /// @return {Struct.Future}
-    static andThen = function(callback) {
+    static andThen = function (callback) {
         var future;
         if (state == FutureState.UNRESOLVED) {
             future = new Future();
@@ -139,7 +139,7 @@ function Future() constructor {
     ///   The function to invoke.
     ///
     /// @return {Struct.Future}
-    static andCatch = function(callback) {
+    static andCatch = function (callback) {
         var future;
         if (state == FutureState.UNRESOLVED) {
             future = new Future();
@@ -156,7 +156,7 @@ function Future() constructor {
     ///   The function to invoke.
     ///
     /// @return {Struct.Future}
-    static andFinally = function(callback) {
+    static andFinally = function (callback) {
         var future;
         if (state == FutureState.UNRESOLVED) {
             future = new Future();
@@ -168,7 +168,7 @@ function Future() constructor {
     };
 
     /// @ignore
-    static __resolve = function(newState, value) {
+    static __resolve = function (newState, value) {
         if (state != FutureState.UNRESOLVED) {
             show_error(
                     "future has already been resolved with a value of " +
@@ -205,7 +205,7 @@ function future_all(futures) {
             future.andThen(method({
                 pos : i,
                 joinData : joinData,
-            }, function(result) {
+            }, function (result) {
                 var future = joinData.future;
                 if (future.resolved()) {
                     return;
@@ -217,7 +217,7 @@ function future_all(futures) {
                     future.accept(results);
                 }
             }));
-            future.andCatch(method(joinData, function(result) {
+            future.andCatch(method(joinData, function (result) {
                 if (future.resolved()) {
                     return;
                 }
@@ -249,7 +249,7 @@ function future_any(futures) {
         };
         for (var i = 0; i < count; i += 1) {
             var future = futures[i];
-            future.andThen(method(joinData, function(result) {
+            future.andThen(method(joinData, function (result) {
                 if (future.resolved()) {
                     return;
                 }
@@ -258,7 +258,7 @@ function future_any(futures) {
             future.andCatch(method({
                 pos : i,
                 joinData : joinData,
-            }, function(result) {
+            }, function (result) {
                 var future = joinData.future;
                 if (future.resolved()) {
                     return;
@@ -298,7 +298,7 @@ function future_settled(futures) {
             future.andFinally(method({
                 pos : i,
                 joinData : joinData,
-            }, function(thisFuture) {
+            }, function (thisFuture) {
                 var future = joinData.future;
                 if (future.resolved()) {
                     return;

@@ -14,7 +14,7 @@ code = @'let `hi` = do {
 }
 hi';
 
-nativeFunc = function() {
+nativeFunc = function () {
     var b = 3;
     var c = 4;
     var d = 5;

@@ -1,32 +1,32 @@
 
 //# feather use syntax-errors
 
-test_add(function() : TestCodegenGMLResult("codegen-gml-value-int",
+test_add(function () : TestCodegenGMLResult("codegen-gml-value-int",
     "1 ; 2 ; 3 ; 4", 4
 ) constructor { });
 
-test_add(function() : TestCodegenGMLResult("codegen-gml-value-string",
+test_add(function () : TestCodegenGMLResult("codegen-gml-value-string",
     @'"hello world"', "hello world"
 ) constructor { });
 
-test_add(function() : TestCodegenGMLResult("codegen-gml-value-string-2",
+test_add(function () : TestCodegenGMLResult("codegen-gml-value-string-2",
     @'"hello" "( •̀ ω •́ )✧(⊙x⊙;)(⊙_⊙;)(⊙_⊙;)◉_◉ΒβΘ ΡάᾱὺΏὠ⨊⩓⩓↪◶"',
     "( •̀ ω •́ )✧(⊙x⊙;)(⊙_⊙;)(⊙_⊙;)◉_◉ΒβΘ ΡάᾱὺΏὠ⨊⩓⩓↪◶"
 ) constructor { });
 
-test_add(function() : TestCodegenGMLResult("codegen-gml-value-string-3",
+test_add(function () : TestCodegenGMLResult("codegen-gml-value-string-3",
     @'"( •̀ ω •́ )✧(⊙x⊙;)(⊙_⊙;)(⊙_⊙;)◉_◉ΒβΘ ΡάᾱὺΏὠ⨊⩓⩓↪◶" "hello"',
     "hello"
 ) constructor { });
 
-test_add(function() : TestCodegenGML("codegen-gml-value-fun",
+test_add(function () : TestCodegenGML("codegen-gml-value-fun",
     @'let a = fun { let b = "hiiiii"; b } ; a'
 ) constructor {
     var a = self.gmlFunc();
     assertEq("hiiiii", a());
 });
 
-test_add(function() : TestCodegenGMLResult("codegen-gml-value-block",
+test_add(function () : TestCodegenGMLResult("codegen-gml-value-block",
     @'
         let a = do{
           let b;
@@ -38,7 +38,7 @@ test_add(function() : TestCodegenGMLResult("codegen-gml-value-block",
     54
 ) constructor { });
 
-test_add(function() : TestCodegenGMLResult("codegen-gml-value-block-2",
+test_add(function () : TestCodegenGMLResult("codegen-gml-value-block-2",
     @'
         let a = do{ }
         a
@@ -46,7 +46,7 @@ test_add(function() : TestCodegenGMLResult("codegen-gml-value-block-2",
     undefined
 ) constructor { });
 
-test_add(function() : TestCodegenGML("codegen-gml-value-self",
+test_add(function () : TestCodegenGML("codegen-gml-value-self",
     @'let a = self; a'
 ) constructor {
     self.gmlFunc.setSelf(self);

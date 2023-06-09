@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "compiler-4";
+var runExperiment = "none";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -79,9 +79,8 @@ TEST_EXPERIMENT "compiler-3" {
 
 TEST_EXPERIMENT "compiler-4" {
     var buff = __catspeak_create_buffer_from_string(@'
-    return "yup"
-        while (true) {
-        continue
+    
+        while true {
             break "hello"
         }
     ');

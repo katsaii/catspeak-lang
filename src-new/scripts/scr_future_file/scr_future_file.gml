@@ -61,7 +61,7 @@ function future_file_read(group, path, title=FUTURE_FILE_TITLE) {
 /// @return {Struct.Future}
 function future_file_read_string(group, path, title) {
     var future = future_file_read(group, path, title);
-    return future.andThen(function(buffer) {
+    return future.andThen(function (buffer) {
         var content = buffer_read(buffer, buffer_string);
         buffer_delete(buffer);
         return content;
