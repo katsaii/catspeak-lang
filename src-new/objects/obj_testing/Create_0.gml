@@ -22,16 +22,19 @@ examples = [
         title : "basic variable performance",
         obj : obj_testing_example_bench_basic_vars,
     },
-    /*
     {
-        title : "factorial",
-        obj : obj_testing_example_factorial,
+        title : "while loop performance",
+        obj : obj_testing_example_bench_while,
     },
-    {
-        title : "count down",
-        obj : obj_testing_example_countdown,
-    }
-    */
+    
+    //{
+    //    title : "factorial",
+    //    obj : obj_testing_example_factorial,
+    //},
+    //{
+    //    title : "count down",
+    //    obj : obj_testing_example_countdown,
+    //}
 ];
 exampleIsValid = function (idx) {
     return idx >= 0 && idx < array_length(examples);
@@ -52,7 +55,7 @@ exampleChange(0);
 
 // so that the output of fps_real in the GUI is somewhat readable
 fpsRealCache = 0;
-alarm[0] = 30;
+fpsRealTimer = 0;
 
 // example region
 exampleLeft = 0;

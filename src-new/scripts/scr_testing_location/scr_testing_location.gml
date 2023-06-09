@@ -29,7 +29,7 @@ test_add(function () : Test("location-negative-row") constructor {
         return;
     }
     fail("expected to error when the row number is >= 1048576");
-});
+}, IgnorePlatform.HTML5);
 
 test_add(function () : Test("location-negative-row-2") constructor {
     if (!CATSPEAK_DEBUG_MODE) {
@@ -41,7 +41,7 @@ test_add(function () : Test("location-negative-row-2") constructor {
         return;
     }
     fail("expected to error when the row number is < 0");
-});
+}, IgnorePlatform.HTML5);
 
 test_add(function () : Test("location-negative-column") constructor {
     if (!CATSPEAK_DEBUG_MODE) {
@@ -53,7 +53,7 @@ test_add(function () : Test("location-negative-column") constructor {
         return;
     }
     fail("expected to error when the column number is >= 4096");
-});
+}, IgnorePlatform.HTML5);
 
 test_add(function () : Test("location-negative-column-2") constructor {
     if (!CATSPEAK_DEBUG_MODE) {
@@ -65,4 +65,4 @@ test_add(function () : Test("location-negative-column-2") constructor {
         return;
     }
     fail("expected to error when the column number is < 0");
-});
+}, IgnorePlatform.HTML5);

@@ -144,7 +144,8 @@ function __catspeak_check_arg_size_bits(name, val, size) {
     }
     if (val >= power(2, size)) {
         __catspeak_error(
-            "argument '", name, "' is too large, it must fit within ", size, " bits"
+            "argument '", name, "' is too large (", val,
+            ") it must fit within ", size, " bits"
         );
     }
 }
