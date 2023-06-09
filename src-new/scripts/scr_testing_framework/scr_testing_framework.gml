@@ -5,6 +5,14 @@
 #macro TEST_RUN_ENABLED true
 #macro NoTest:TEST_RUN_ENABLED false
 
+enum IgnorePlatform {
+    NONE = 0,
+    WIN_VM = 0x01,
+    WIN_YYC = 0x02,
+    HTML5 = 0x04,
+    ALL = -1,
+}
+
 function test_stats() {
     static stats = {
         total : 0,
@@ -185,10 +193,28 @@ function AsyncTest(name) : Test(name) constructor {
     automatic = false;
 }
 
-function test_add(f, forceRun=false) {
-    if (!forceRun && !TEST_RUN_ENABLED) {
+function test_add(f, ignorePlatforms=IgnorePlatform.NONE) {
+    if (!TEST_RUN_ENABLED) {
         return;
     }
+    var detectedPlatform = IgnorePlatform.NONE;
+    if (os_browser == browser_not_a_browser) {
+        if (os_type == os_windows) {
+            detectedPlatform |= code_is_compiled()
+                    ? IgnorePlatform.WIN_YYC
+                    : IgnorePlatform.WIN_VM;
+        }
+    } else {
+        if (os_type != os_gxgames) {
+            detectedPlatform |= IgnorePlatform.HTML5;
+        }
+    }
+    if ((ignorePlatforms & detectedPlatform) == 0) {
+        test_add_force(f);
+    }
+}
+
+function test_add_force(f) {
     var stats = test_stats();
     stats.total += 1;
     stats.totalActive += 1;
