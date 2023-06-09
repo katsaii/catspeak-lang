@@ -68,7 +68,7 @@ function CatspeakParser(lexer, builder) constructor {
     };
 
     /// @ignore
-    static __parseStatement = function() {
+    static __parseStatement = function () {
         var result;
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.BREAK_LINE) {
@@ -99,7 +99,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseExpression = function() {
+    static __parseExpression = function () {
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.RETURN) {
             lexer.next();
@@ -137,13 +137,7 @@ function CatspeakParser(lexer, builder) constructor {
             return asg.popBlock();
         } else if (peeked == CatspeakToken.IF) {
             lexer.next();
-            if (lexer.next() != CatspeakToken.PAREN_LEFT) {
-                __ex("expected opening '(' after 'if' keyword");
-            }
-            var condition = __parseExpression();
-            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
-                __ex("expected closing ')' after 'if' statement condition");
-            }
+            var condition = __parseCondition();
             asg.pushBlock();
             __parseStatements("if")
             var ifTrue = asg.popBlock();
@@ -159,13 +153,7 @@ function CatspeakParser(lexer, builder) constructor {
             return asg.createIf(condition, ifTrue, ifFalse);
         } else if (peeked == CatspeakToken.WHILE) {
             lexer.next();
-            if (lexer.next() != CatspeakToken.PAREN_LEFT) {
-                __ex("expected opening '(' after 'while' keyword");
-            }
-            var condition = __parseExpression();
-            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
-                __ex("expected closing ')' after 'while' loop condition");
-            }
+            var condition = __parseCondition();
             asg.pushBlock();
             __parseStatements("while")
             var body = asg.popBlock();
@@ -184,7 +172,7 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @param {String} keyword
     /// @return {Struct}
-    static __parseStatements = function(keyword) {
+    static __parseStatements = function (keyword) {
         if (lexer.next() != CatspeakToken.BRACE_LEFT) {
             __ex("expected opening '{' at the start of '", keyword, "' block");
         }
@@ -196,10 +184,14 @@ function CatspeakParser(lexer, builder) constructor {
         }
     };
 
+    static __parseCondition = function () {
+        return __parseAssign();
+    };
+
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseAssign = function() {
+    static __parseAssign = function () {
         var lhs = __parseOpBuiltin();
         if (lexer.peek() == CatspeakToken.ASSIGN) {
             lexer.next();
@@ -211,7 +203,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseOpBuiltin = function() {
+    static __parseOpBuiltin = function () {
         // TODO
         return __parseOpBinary();
     };
@@ -219,7 +211,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseOpBinary = function() {
+    static __parseOpBinary = function () {
         // TODO
         return __parseOpUnary();
     };
@@ -227,7 +219,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseOpUnary = function() {
+    static __parseOpUnary = function () {
         // TODO
         return __parseCall();
     };
@@ -235,7 +227,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseCall = function() {
+    static __parseCall = function () {
         // TODO
         return __parseIndex();
     };
@@ -243,7 +235,7 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseIndex = function() {
+    static __parseIndex = function () {
         // TODO
         return __parseTerminal();
     };

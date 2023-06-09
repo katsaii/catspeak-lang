@@ -4,7 +4,7 @@
 code = "-- no code";
 desc = "No further description...\n/(.Ö x Ö.)\\ !!";
 
-addLog = function(msg, severity="ok") {
+addLog = function (msg, severity="ok") {
     var msg_ = msg;
     if (is_struct(msg_) && variable_struct_exists(msg_, "message")) {
         msg_ = msg_.message;
@@ -17,7 +17,7 @@ addLog = function(msg, severity="ok") {
     return undefined;
 };
 
-resizeLog = function(length) {
+resizeLog = function (length) {
     logLength = length;
     log = array_create(logLength, "");
     logSeverity = array_create(logLength, "ok");

@@ -1,7 +1,7 @@
 
 //# feather use syntax-errors
 
-test_add(function() : Test("engine-tokenise") constructor {
+test_add(function () : Test("engine-tokenise") constructor {
     var engine = new CatspeakEnvironment();
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = engine.tokenise(buff);
@@ -15,7 +15,7 @@ test_add(function() : Test("engine-tokenise") constructor {
     buffer_delete(buff);
 });
 
-test_add(function() : Test("engine-tokenise-2") constructor {
+test_add(function () : Test("engine-tokenise-2") constructor {
     var engine = new CatspeakEnvironment();
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = engine.tokenise(buff, 3, 5);
@@ -29,7 +29,7 @@ test_add(function() : Test("engine-tokenise-2") constructor {
     buffer_delete(buff);
 });
 
-test_add(function() : Test("engine-tokenise-keywords") constructor {
+test_add(function () : Test("engine-tokenise-keywords") constructor {
     var engine = new CatspeakEnvironment();
     catspeak_keywords_rename(
         engine.getKeywords(),

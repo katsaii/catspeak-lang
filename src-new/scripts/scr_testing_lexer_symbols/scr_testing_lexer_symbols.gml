@@ -4,7 +4,7 @@
 // some of the following tests sample symbols from this resource:
 // https://threwthelookingglass.com/list-of-unicode-and-emoji-symbols/
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-arrow",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-arrow",
     @"
         ← ↑ → ↓ ↔ ↕ ↖ ↗ ↘ ↙ ↚ ↛ ↜ ↝ ↞ ↟ ↠ ↡ ↢ ↣ ↤ ↥ ↦ ↧ ↨ ↩ ↪
         ↫ ↬ ↭ ↮ ↯ ↰ ↱ ↲ ↳ ↴ ↵ ↶ ↷ ↸ ↹ ↺ ↻ ↼ ↽ ↾ ↿ ⇀ ⇁ ⇂ ⇃ ⇄ ⇅ ⇆ ⇇
@@ -13,7 +13,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-arrow",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-emoji",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-emoji",
     @"
         😀 😁 😂 😃 😄 😅 😆 😇 😈 😉 😊 😋 😌 😍 😎 😏
         😐 😑 😒 😓 😔 😕 😖 😗 😘 😙 😚 😛 😜 😝 😞 😟
@@ -23,7 +23,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-emoji",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-misc",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-misc",
     @"
         👍 👎 ☀ ☁ ☂ ☃ ☄ ★ ☆ ☇ ☈ ☉ ☊ ☋ ☌ ☍ ☎ ☏
         ☐ ☑ ☒ ☓ ☔ ☕ ☖ ☗ ☘ ☙ ☚ ☛ ☜ ☝ ☞ ☟
@@ -44,7 +44,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-misc",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-lines",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-lines",
     @"
         ─ ━ │ ┃ ┄ ┅ ┆ ┇ ┈ ┉ ┊ ┋ ┌ ┍ ┎ ┏
         ┐ ┑ ┒ ┓ └ ┕ ┖ ┗ ┘ ┙ ┚ ┛ ├ ┝ ┞ ┟
@@ -57,7 +57,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-lines",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-numbers",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-numbers",
     @"
         ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨ ⑩ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯
         ⑰ ⑱ ⑲ ⑳ ⑴ ⑵ ⑶ ⑷ ⑸ ⑹ ⑺ ⑻ ⑼ ⑽ ⑾ ⑿
@@ -75,7 +75,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-numbers",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-maths",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-maths",
     @"
         ∀ ∁ ∂ ∃ ∄ ∅ ∆ ∇ ∈ ∉ ∊ ∋ ∌ ∍ ∎ ∏
         ∐ ∑ − ∓ ∔ ∕ ∖ ∗ ∘ ∙ √ ∛ ∜ ∝ ∞ ∟
@@ -96,7 +96,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-maths",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-currency",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-currency",
     @"
         ₠ ₡ ₢ ₣ ₤ ₥ ₦ ₧ ₨ ₩ ₪ ₫ € ₭ ₮ ₯ ₰ ₱ ₲ ₳
         ₴ ₵ ₶ ₷ ₸ ₹ ₺ ₻ ₼ ₽ ₾ ₿ ＄$ ௹ ৲ ₹ ৳ 원
@@ -104,7 +104,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-currency",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-script",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-script",
     @"
         ⁰ ⁱ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ⁿ
         ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎
@@ -112,7 +112,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-script",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-greek",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-greek",
     @"
         ἀ ἁ ἂ ἃ ἄ ἅ ἆ ἇ Ἀ Ἁ Ἂ Ἃ Ἄ Ἅ Ἆ Ἇ
         ἐ ἑ ἒ ἓ ἔ ἕ Ἐ Ἑ Ἒ Ἓ Ἔ Ἕ
@@ -133,7 +133,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-greek",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-kaomoji",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-kaomoji",
     @"
         ヾ(≧▽≦*)o
         ( •̀ ω •́ )✧ 
@@ -148,7 +148,7 @@ test_add(function() : TestLexerUTF8("lexer-locale-symbols-kaomoji",
     "
 ) constructor { });
 
-test_add(function() : TestLexerUTF8("lexer-locale-symbols-kaomoji-2",
+test_add(function () : TestLexerUTF8("lexer-locale-symbols-kaomoji-2",
     @"
  ⠀            (\ __/)
               ( UwU )

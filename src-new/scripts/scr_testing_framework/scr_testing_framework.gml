@@ -27,7 +27,7 @@ function Test(name) constructor {
 
     catspeak_force_init();
 
-    complete = function() {
+    complete = function () {
         var stats = test_stats();
         stats.totalActive -= 1;
         var passed = array_length(fails) < 1;
@@ -50,13 +50,13 @@ function Test(name) constructor {
         show_debug_message(msg);
     };
 
-    fail = function(msg="failed test") {
+    fail = function (msg="failed test") {
         var testCase = __makeTestCaseStruct();
         testCase.fail(msg);
         return testCase;
     };
 
-    assert = function(condition) {
+    assert = function (condition) {
         var testCase = __makeTestCaseStruct();
         if (!condition) {
             testCase.fail(__cat("condition must be true"));
@@ -64,7 +64,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertFalse = function(condition) {
+    assertFalse = function (condition) {
         var testCase = __makeTestCaseStruct();
         if (condition) {
             testCase.fail(__cat("condition must be false"));
@@ -72,7 +72,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertEq = function(a, b, exact=true) {
+    assertEq = function (a, b, exact=true) {
         var testCase = __makeTestCaseStruct();
         if (!__structuralEq(a, b, exact)) {
             testCase.fail(__cat(
@@ -82,7 +82,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertNeq = function(a, b, exact=true) {
+    assertNeq = function (a, b, exact=true) {
         var testCase = __makeTestCaseStruct();
         if (__structuralEq(a, b, exact)) {
             testCase.fail(__cat(
@@ -92,7 +92,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertStrictEq = function(a, b) {
+    assertStrictEq = function (a, b) {
         var testCase = __makeTestCaseStruct();
         if (!__strictEq(a, b)) {
             testCase.fail(__cat(
@@ -102,7 +102,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertStrictNeq = function(a, b) {
+    assertStrictNeq = function (a, b) {
         var testCase = __makeTestCaseStruct();
         if (__strictEq(a, b)) {
             testCase.fail(__cat(
@@ -112,7 +112,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertTypeof = function(value, expectedType) {
+    assertTypeof = function (value, expectedType) {
         var testCase = __makeTestCaseStruct();
         var type = typeof(value);
         if (type != expectedType) {
@@ -125,7 +125,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertInstanceof = function(value, expectedType) {
+    assertInstanceof = function (value, expectedType) {
         var testCase = __makeTestCaseStruct();
         var type = instanceof(value);
         if (type != expectedType) {
@@ -138,7 +138,7 @@ function Test(name) constructor {
         return testCase;
     };
 
-    assertAsset = function(name, expectedType) {
+    assertAsset = function (name, expectedType) {
         var testCase = __makeTestCaseStruct();
         if (asset_get_index(name) == -1) {
             testCase.fail(__cat(
@@ -157,12 +157,12 @@ function Test(name) constructor {
         return testCase;
     };
 
-    __makeTestCaseStruct = function() {
+    __makeTestCaseStruct = function () {
         return {
             idx : -1,
             fails : fails,
             failed : false,
-            fail : function(msg="no message") {
+            fail : function (msg="no message") {
                 failed = true;
                 if (idx < 0) {
                     idx = array_length(fails);
@@ -171,7 +171,7 @@ function Test(name) constructor {
                     fails[@ idx] = __cat(fails[idx], " + ", msg);
                 }
             },
-            withMessage : function(msg) {
+            withMessage : function (msg) {
                 if (idx < 0) {
                     return;
                 }

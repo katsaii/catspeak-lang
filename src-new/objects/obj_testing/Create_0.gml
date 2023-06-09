@@ -33,10 +33,10 @@ examples = [
     }
     */
 ];
-exampleIsValid = function(idx) {
+exampleIsValid = function (idx) {
     return idx >= 0 && idx < array_length(examples);
 };
-exampleChange = function(idx) {
+exampleChange = function (idx) {
     if (exampleIsValid(exampleCurrent)) {
         instance_destroy(examples[exampleCurrent].obj);
     }

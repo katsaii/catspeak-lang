@@ -1,14 +1,14 @@
 
 //# feather use syntax-errors
 
-test_add(function() : Test("lexer-internals-empty") constructor {
+test_add(function () : Test("lexer-internals-empty") constructor {
     var buff = __catspeak_create_buffer_from_string(@'');
     var lexer = new CatspeakLexer(buff);
     assertEq("", lexer.getLexeme());
     buffer_delete(buff);
 });
 
-test_add(function() : Test("lexer-internals-ascii") constructor {
+test_add(function () : Test("lexer-internals-ascii") constructor {
     var buff = __catspeak_create_buffer_from_string(@'let a = 1;');
     var lexer = new CatspeakLexer(buff);
     lexer.__advance(); // l
@@ -31,7 +31,7 @@ test_add(function() : Test("lexer-internals-ascii") constructor {
     buffer_delete(buff);
 });
 
-test_add(function() : Test("lexer-internals-unicode") constructor {
+test_add(function () : Test("lexer-internals-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字');
     var lexer = new CatspeakLexer(buff);
     lexer.__advance(); // 🙀
