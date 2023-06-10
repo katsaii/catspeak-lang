@@ -528,16 +528,15 @@ function __catspeak_expr_array__() {
 
 /// @ignore
 function __catspeak_expr_struct__() {
-    var values_ = values;
     var obj = { };
     var i = 0;
-    var exprs_ = stmts;
+    var values_ = values;
     var n_ = n;
     repeat (n_) {
         // not sure if this is even fast
         // but people will cry if I don't do it
-        var key = exprs_[i + 0];
-        var value = exprs_[i + 1];
+        var key = values_[i + 0];
+        var value = values_[i + 1];
         obj[$ key()] = value();
         i += 2;
     }

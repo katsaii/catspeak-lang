@@ -288,10 +288,26 @@ function CatspeakParser(lexer, builder) constructor {
             lexer.next();
             var values = [];
             while (__isNot(CatspeakToken.BRACE_RIGHT)) {
-                var key = __parseExpression(); // actually implement correct key behaviour
+                var key;
+                var keyToken = lexer.next();
+                if (keyToken == CatspeakToken.BOX_LEFT) {
+                    key = __parseExpression();
+                    if (lexer.next() != CatspeakToken.BOX_RIGHT) {
+                        __ex(
+                            "expected closing ']' after computed struct key"
+                        );
+                    }
+                } else if (
+                    keyToken == CatspeakToken.IDENT ||
+                    keyToken == CatspeakToken.VALUE
+                ) {
+                    key = asg.createValue(lexer.getValue());
+                } else {
+                    __ex("expected identifier or value as struct key");
+                }
                 if (lexer.next() != CatspeakToken.COLON) {
                     __ex(
-                        "expected closing ':' between key and value ",
+                        "expected ':' between key and value ",
                         "of struct literal"
                     );
                 }
@@ -304,7 +320,7 @@ function CatspeakParser(lexer, builder) constructor {
             if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
                 __ex("expected closing '}' after struct literal");
             }
-            return asg.createArray(values, lexer.getLocation());
+            return asg.createStruct(values, lexer.getLocation());
         } else {
             __ex("malformed expression, expected: '(', '[' or '{'");
         }
