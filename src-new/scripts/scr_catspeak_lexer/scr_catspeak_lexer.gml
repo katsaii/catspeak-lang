@@ -193,6 +193,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     self.lexemePos = catspeak_location_create(self.row, self.column);
     self.lexeme = undefined;
     self.value = undefined;
+    self.hasValue = false;
     self.peeked = undefined;
     self.charCurr = 0;
     //# feather disable once GM2043
@@ -290,7 +291,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
         lexemeStart = lexemeEnd;
         lexemePos = catspeak_location_create(self.row, self.column);
         lexeme = undefined;
-        value = undefined;
+        hasValue = false;
     };
 
     /// @ignore
@@ -360,7 +361,11 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     ///
     /// @return {Any}
     static getValue = function () {
-        value ??= getLexeme();
+        if (hasValue) {
+            return value;
+        }
+        value = getLexeme();
+        hasValue = true;
         return value;
     };
 
@@ -452,6 +457,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 value_ = string_replace_all(value_, "\\\\", "\\");
             }
             value = value_;
+            hasValue = true;
         } else if (__catspeak_char_is_operator(charCurr_)) {
             // operators
             while (__catspeak_char_is_operator(charNext)) {
@@ -490,6 +496,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 __advance();
             }
             value = __slice(lexemeStart + 1, lexemeEnd);
+            hasValue = true;
             if (charNext == ord("`")) {
                 __advance();
             }
@@ -505,18 +512,21 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
             } else if (lexeme_ == "true") {
                 token = CatspeakToken.VALUE;
                 value = true;
+                hasValue = true;
             } else if (lexeme_ == "false") {
                 token = CatspeakToken.VALUE;
                 value = false;
+                hasValue = true;
             } else if (lexeme_ == "undefined") {
                 token = CatspeakToken.VALUE;
-                // TODO :: fix this because otherwise the value is considered invalid
                 value = undefined;
+                hasValue = true;
             }
         } else if (charCurr_ == ord("'")) {
             // character literals
             __advance();
             value = charCurr;
+            hasValue = true;
             if (charNext == ord("'")) {
                 __advance();
             }
@@ -543,6 +553,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 digits = string_replace_all(digits, "_", "");
             }
             value = real(digits);
+            hasValue = true;
         }
         return token;
     };
