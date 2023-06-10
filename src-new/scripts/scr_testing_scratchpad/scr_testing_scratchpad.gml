@@ -93,7 +93,7 @@ TEST_EXPERIMENT "compiler-4" {
 
 TEST_EXPERIMENT "compiler-5" {
     var buff = __catspeak_create_buffer_from_string(@'
-        [1, 2, 3, "five", false undefined,]
+        [1, 2, 3, "five", false undefined, { "a" : 1, ["be"] : 5, cee : 89}]
     ');
     var asg = Catspeak.parse(buff);
     show_message(json_stringify(asg, true));
