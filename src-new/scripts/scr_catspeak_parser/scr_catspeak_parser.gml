@@ -295,7 +295,7 @@ function CatspeakParser(lexer, builder) constructor {
                         "of struct literal"
                     );
                 }
-                var value = __parseExpression());
+                var value = __parseExpression();
                 if (lexer.peek() == CatspeakToken.COMMA) {
                     lexer.next();
                 }

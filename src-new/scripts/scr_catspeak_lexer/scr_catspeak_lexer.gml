@@ -510,6 +510,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
                 value = false;
             } else if (lexeme_ == "undefined") {
                 token = CatspeakToken.VALUE;
+                // TODO :: fix this because otherwise the value is considered invalid
                 value = undefined;
             }
         } else if (charCurr_ == ord("'")) {
