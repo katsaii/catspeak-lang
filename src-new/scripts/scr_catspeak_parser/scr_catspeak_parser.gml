@@ -273,12 +273,40 @@ function CatspeakParser(lexer, builder) constructor {
             return inner;
         } else if (peeked == CatspeakToken.BOX_LEFT) {
             lexer.next();
-            __catspeak_error_unimplemented("array-literal");
+            var values = [];
+            while (__isNot(CatspeakToken.BOX_RIGHT)) {
+                array_push(values, __parseExpression());
+                if (lexer.peek() == CatspeakToken.COMMA) {
+                    lexer.next();
+                }
+            }
+            if (lexer.next() != CatspeakToken.BOX_RIGHT) {
+                __ex("expected closing ']' after array literal");
+            }
+            return asg.createArray(values, lexer.getLocation());
         } else if (peeked == CatspeakToken.BRACE_LEFT) {
             lexer.next();
-            __catspeak_error_unimplemented("struct-literal");
+            var values = [];
+            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+                var key = __parseExpression(); // actually implement correct key behaviour
+                if (lexer.next() != CatspeakToken.COLON) {
+                    __ex(
+                        "expected closing ':' between key and value ",
+                        "of struct literal"
+                    );
+                }
+                var value = __parseExpression());
+                if (lexer.peek() == CatspeakToken.COMMA) {
+                    lexer.next();
+                }
+                array_push(values, key, value);
+            }
+            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+                __ex("expected closing '}' after struct literal");
+            }
+            return asg.createArray(values, lexer.getLocation());
         } else {
-            __ex("malformed expression");
+            __ex("malformed expression, expected: '(', '[' or '{'");
         }
     };
 
@@ -363,6 +391,52 @@ function CatspeakASGBuilder() constructor {
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.VALUE, location, {
             value : value
+        });
+    };
+
+    /// Emits the instruction to create a new array literal.
+    ///
+    /// @param {Array} values
+    ///   The values to populate the array with.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createArray = function (values, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("values", values, is_array);
+        }
+
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.ARRAY, location, {
+            values : values
+        });
+    };
+
+    /// Emits the instruction to create a new struct literal.
+    ///
+    /// @param {Array} values
+    ///   The key-value pairs to populate the struct with.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createStruct = function (values, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("values", values, is_array);
+            if (array_length(values) % 2 == 1) {
+                __catspeak_error(
+                    "expected arg 'values' to be an array with an even ",
+                    "number of elements, got ", array_length(values)
+                );
+            }
+        }
+
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.STRUCT, location, {
+            values : values
         });
     };
 
@@ -833,6 +907,8 @@ function __catspeak_term_is_pure(kind) {
 /// Indicates the type of term within a Catspeak syntax graph.
 enum CatspeakTerm {
     VALUE,
+    ARRAY,
+    STRUCT,
     BLOCK,
     IF,
     IF_ELSE,

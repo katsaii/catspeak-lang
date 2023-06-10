@@ -63,7 +63,8 @@ if (exampleIsValid(exampleCurrent)) {
     exampleName = examples[exampleCurrent].title;
 }
 draw_text(width * 0.5, headerHeight + pad + lineHeight, 
-        "example\n" + exampleName);
+        "example " + string(exampleCurrent + 1) + " of " + 
+        string(array_length(examples)) + "\n" + exampleName);
 if (exampleIsValid(exampleCurrent - 1)) {
     draw_text(width * 0.15, headerHeight + pad + lineHeight, 
             "previous example\n<left arrow key>");
