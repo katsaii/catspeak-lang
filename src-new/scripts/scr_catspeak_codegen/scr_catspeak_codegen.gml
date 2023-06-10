@@ -150,6 +150,52 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
+    static __compileArray = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "values", is_array
+            );
+        }
+
+        var values = term.values;
+        var valueCount = array_length(values);
+        var exprs = array_create(valueCount);
+        for (var i = 0; i < valueCount; i += 1) {
+            exprs[@ i] = __compileTerm(ctx, values[i]);
+        }
+
+        return method({
+            values : exprs,
+            n : array_length(exprs),
+        }, __catspeak_expr_array__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileStruct = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "values", is_array
+            );
+        }
+
+        var values = term.values;
+        var valueCount = array_length(values);
+        var exprs = array_create(valueCount);
+        for (var i = 0; i < valueCount; i += 1) {
+            exprs[@ i] = __compileTerm(ctx, values[i]);
+        }
+
+        return method({
+            values : exprs,
+            n : array_length(exprs) div 2,
+        }, __catspeak_expr_struct__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
     static __compileBlock = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -413,6 +459,8 @@ function CatspeakGMLCompiler(asg) constructor {
     static __productionLookup = (function () {
         var db = array_create(CatspeakTerm.__SIZE__, undefined);
         db[@ CatspeakTerm.VALUE] = __compileValue;
+        db[@ CatspeakTerm.ARRAY] = __compileArray;
+        db[@ CatspeakTerm.STRUCT] = __compileStruct;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.IF_ELSE] = __compileIfElse;
@@ -474,6 +522,29 @@ function __catspeak_expr_value__() {
 }
 
 /// @ignore
+function __catspeak_expr_array__() {
+    return array_map(values, function(f) { return f() });
+}
+
+/// @ignore
+function __catspeak_expr_struct__() {
+    var values_ = values;
+    var obj = { };
+    var i = 0;
+    var exprs_ = stmts;
+    var n_ = n;
+    repeat (n_) {
+        // not sure if this is even fast
+        // but people will cry if I don't do it
+        var key = exprs_[i + 0];
+        var value = exprs_[i + 1];
+        obj[$ key()] = value();
+        i += 2;
+    }
+    return obj;
+}
+
+/// @ignore
 function __catspeak_expr_block__() {
     //array_foreach(stmts, function (stmt) { stmt() });
     var i = 0;
@@ -482,7 +553,7 @@ function __catspeak_expr_block__() {
     repeat (n_) {
         // not sure if this is even fast
         // but people will cry if I don't do it
-        var expr = stmts[i];
+        var expr = stmts_[i];
         expr();
         i += 1;
     }

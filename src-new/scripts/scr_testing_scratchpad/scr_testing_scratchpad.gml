@@ -4,7 +4,7 @@
 
 catspeak_force_init();
 
-var runExperiment = "none";
+var runExperiment = "compiler-5";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -83,6 +83,17 @@ TEST_EXPERIMENT "compiler-4" {
         while true {
             break "hello"
         }
+    ');
+    var asg = Catspeak.parse(buff);
+    show_message(json_stringify(asg, true));
+    var f = Catspeak.compileGML(asg);
+    show_message(f());
+    
+}
+
+TEST_EXPERIMENT "compiler-5" {
+    var buff = __catspeak_create_buffer_from_string(@'
+        [1, 2, 3, "five", false undefined,]
     ');
     var asg = Catspeak.parse(buff);
     show_message(json_stringify(asg, true));
