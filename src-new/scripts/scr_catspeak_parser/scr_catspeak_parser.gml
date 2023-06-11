@@ -647,11 +647,11 @@ function CatspeakASGBuilder() constructor {
             localIdx = scope[? name];
         }
         if (localIdx == undefined) {
-            return __createTerm(CatspeakTerm.GET_GLOBAL, location, {
+            return __createTerm(CatspeakTerm.GLOBAL, location, {
                 name : name
             });
         } else {
-            return __createTerm(CatspeakTerm.GET_LOCAL, location, {
+            return __createTerm(CatspeakTerm.LOCAL, location, {
                 idx : localIdx
             });
         }
@@ -665,7 +665,7 @@ function CatspeakASGBuilder() constructor {
     /// @return {Struct}
     static createGetSelf = function (location=undefined) {
         // __createTerm() will do argument validation
-        return __createTerm(CatspeakTerm.GET_SELF, location, { });
+        return __createTerm(CatspeakTerm.SELF, location, { });
     };
 
     /// Attempts to assign a right-hand-side value to a left-hand-side target.
@@ -697,8 +697,8 @@ function CatspeakASGBuilder() constructor {
         }
 
         var lhsType = lhs.type;
-        if (lhsType == CatspeakTerm.GET_LOCAL) {
-            if (rhs.type == CatspeakTerm.GET_LOCAL) {
+        if (lhsType == CatspeakTerm.LOCAL) {
+            if (rhs.type == CatspeakTerm.LOCAL) {
                 if (CATSPEAK_DEBUG_MODE) {
                     __catspeak_check_arg_struct("lhs", lhs, "idx", is_numeric);
                     __catspeak_check_arg_struct("rhs", rhs, "idx", is_numeric);
@@ -708,9 +708,8 @@ function CatspeakASGBuilder() constructor {
                     return createValue(undefined, lhs.dbg);
                 }
             }
-            lhs.type = CatspeakTerm.SET_LOCAL;
-        } else if (lhsType == CatspeakTerm.GET_GLOBAL) {
-            if (rhs.type == CatspeakTerm.GET_GLOBAL) {
+        } else if (lhsType == CatspeakTerm.GLOBAL) {
+            if (rhs.type == CatspeakTerm.GLOBAL) {
                 if (CATSPEAK_DEBUG_MODE) {
                     __catspeak_check_arg_struct("lhs", lhs, "name", is_string);
                     __catspeak_check_arg_struct("rhs", rhs, "name", is_string);
@@ -720,16 +719,11 @@ function CatspeakASGBuilder() constructor {
                     return createValue(undefined, lhs.dbg);
                 }
             }
-            lhs.type = CatspeakTerm.SET_GLOBAL;
-        } else {
-            __catspeak_error(
-                __catspeak_location_show(lhs.dbg),
-                " -- invalid assignment target, ",
-                "must be an identifier or accessor expression"
-            );
         }
-        lhs.value = rhs;
-        return lhs;
+        return __createTerm(CatspeakTerm.SET, lhs.dbg, {
+            target : lhs,
+            value : rhs,
+        });
     };
 
     /// Adds an existing node to the current block's statement list.
@@ -778,7 +772,7 @@ function CatspeakASGBuilder() constructor {
             currFunctionScope.localCount = nextLocalIdx_;
         }
         scope[? name] = localIdx;
-        return __createTerm(CatspeakTerm.GET_LOCAL, location, {
+        return __createTerm(CatspeakTerm.LOCAL, location, {
             idx : localIdx
         });
     };
@@ -915,7 +909,7 @@ function CatspeakASGBuilder() constructor {
         } else {
             currFunctionScope = functionScopes[| functionScopesTop];
         }
-        return __createTerm(CatspeakTerm.GET_FUNCTION, location, {
+        return __createTerm(CatspeakTerm.FUNCTION, location, {
             idx : idx,
         });
     };
@@ -942,10 +936,10 @@ function CatspeakASGBuilder() constructor {
 /// @param {Enum.CatspeakTerm} kind
 function __catspeak_term_is_pure(kind) {
     return kind == CatspeakTerm.VALUE ||
-            kind == CatspeakTerm.GET_LOCAL ||
-            kind == CatspeakTerm.GET_GLOBAL ||
-            kind == CatspeakTerm.GET_FUNCTION ||
-            kind == CatspeakTerm.GET_SELF;
+            kind == CatspeakTerm.LOCAL ||
+            kind == CatspeakTerm.GLOBAL ||
+            kind == CatspeakTerm.FUNCTION ||
+            kind == CatspeakTerm.SELF;
 }
 
 /// Indicates the type of term within a Catspeak syntax graph.
@@ -961,11 +955,10 @@ enum CatspeakTerm {
     BREAK,
     CONTINUE,
     CALL,
-    GET_LOCAL,
-    SET_LOCAL,
-    GET_GLOBAL,
-    SET_GLOBAL,
-    GET_FUNCTION,
-    GET_SELF,
+    SET,
+    LOCAL,
+    GLOBAL,
+    FUNCTION,
+    SELF,
     __SIZE__
 }

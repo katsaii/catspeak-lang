@@ -375,7 +375,63 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileGlobalGet = function (ctx, term) {
+    static __compileSet = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "target", undefined,
+                "value", undefined
+            );
+            __catspeak_check_arg_struct("term.target", term.target,
+                "type", is_numeric
+            );
+        }
+
+        var target = term.target;
+        var targetType = target.type;
+        var value = __compileTerm(ctx, term.value);
+        if (targetType == CatspeakTerm.LOCAL) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.target", target,
+                    "idx", is_numeric
+                );
+            }
+
+            return method({
+                locals : ctx.locals,
+                idx : target.idx,
+                value : value,
+            }, __catspeak_expr_local_set__);
+        } else if (targetType == CatspeakTerm.GLOBAL) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.target", target,
+                    "name", is_string
+                );
+            }
+
+            return method({
+                globals : sharedData.globals,
+                name : target.name,
+                value : value,
+            }, __catspeak_expr_global_set__);
+        } else {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.target", target,
+                    "dbg", undefined
+                );
+            }
+
+            __catspeak_error(
+                __catspeak_location_show(target.dbg),
+                " -- invalid assignment target, ",
+                "must be an identifier or accessor expression"
+            );
+        }
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileGlobal = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "name", is_string
@@ -391,25 +447,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileGlobalSet = function (ctx, term) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("term", term,
-                "name", is_string,
-                "value", undefined
-            );
-        }
-
-        return method({
-            globals : sharedData.globals,
-            name : term.name,
-            value : __compileTerm(ctx, term.value),
-        }, __catspeak_expr_global_set__);
-    };
-
-    /// @ignore
-    ///
-    /// @param {Struct} term
-    static __compileLocalGet = function (ctx, term) {
+    static __compileLocal = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "idx", is_numeric
@@ -425,25 +463,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileLocalSet = function (ctx, term) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("term", term,
-                "idx", is_numeric,
-                "value", undefined
-            );
-        }
-
-        return method({
-            locals : ctx.locals,
-            idx : term.idx,
-            value : __compileTerm(ctx, term.value),
-        }, __catspeak_expr_local_set__);
-    };
-
-    /// @ignore
-    ///
-    /// @param {Struct} term
-    static __compileFunctionGet = function (ctx, term) {
+    static __compileFunctionExpr = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "idx", is_numeric
@@ -458,7 +478,7 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
-    static __compileSelfGet = function (ctx, term) {
+    static __compileSelf = function (ctx, term) {
         return method(sharedData, __catspeak_expr_self_get__);
     };
 
@@ -495,12 +515,11 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.BREAK] = __compileBreak;
         db[@ CatspeakTerm.CONTINUE] = __compileContinue;
         db[@ CatspeakTerm.CALL] = __compileCall;
-        db[@ CatspeakTerm.GET_GLOBAL] = __compileGlobalGet;
-        db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
-        db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
-        db[@ CatspeakTerm.SET_LOCAL] = __compileLocalSet;
-        db[@ CatspeakTerm.GET_FUNCTION] = __compileFunctionGet;
-        db[@ CatspeakTerm.GET_SELF] = __compileSelfGet;
+        db[@ CatspeakTerm.SET] = __compileSet;
+        db[@ CatspeakTerm.GLOBAL] = __compileGlobal;
+        db[@ CatspeakTerm.LOCAL] = __compileLocal;
+        db[@ CatspeakTerm.FUNCTION] = __compileFunctionExpr;
+        db[@ CatspeakTerm.SELF] = __compileSelf;
         return db;
     })();
 }
