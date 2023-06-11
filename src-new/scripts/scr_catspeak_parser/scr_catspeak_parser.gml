@@ -192,20 +192,12 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseAssign = function () {
-        var lhs = __parseOpBuiltin();
+        var lhs = __parseOpBinary();
         if (lexer.peek() == CatspeakToken.ASSIGN) {
             lexer.next();
             lhs = asg.createAssign(lhs, __parseExpression());
         }
         return lhs;
-    };
-
-    /// @ignore
-    ///
-    /// @return {Struct}
-    static __parseOpBuiltin = function () {
-        // TODO
-        return __parseOpBinary();
     };
 
     /// @ignore
@@ -221,14 +213,6 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseOpUnary = function () {
         // TODO
-        return __parseCall();
-    };
-
-    /// @ignore
-    ///
-    /// @return {Struct}
-    static __parseCall = function () {
-        // TODO
         return __parseIndex();
     };
 
@@ -236,8 +220,20 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseIndex = function () {
-        // TODO
-        return __parseTerminal();
+        var result = __parseTerminal();
+        while (true) {
+            var peeked = lexer.peek();
+            if (peeked == CatspeakToken.PAREN_LEFT) {
+                // function call syntax
+            } else if (peeked == CatspeakToken.BOX_LEFT) {
+                // accessor syntax
+            } else if (peeked == CatspeakToken.DOT) {
+                // dot accessor syntax
+            } else {
+                break;
+            }
+        }
+        return result;
     };
 
     /// @ignore
@@ -301,17 +297,22 @@ function CatspeakParser(lexer, builder) constructor {
                     keyToken == CatspeakToken.IDENT ||
                     keyToken == CatspeakToken.VALUE
                 ) {
-                    key = asg.createValue(lexer.getValue());
+                    key = asg.createValue(lexer.getValue(), lexer.getLocation());
                 } else {
                     __ex("expected identifier or value as struct key");
                 }
-                if (lexer.next() != CatspeakToken.COLON) {
+                var value;
+                if (lexer.peek() == CatspeakToken.COLON) {
+                    lexer.next();
+                    value = __parseExpression();
+                } else if (keyToken == CatspeakToken.IDENT) {
+                    value = asg.createGet(key.value, lexer.getLocation());
+                } else {
                     __ex(
                         "expected ':' between key and value ",
                         "of struct literal"
                     );
                 }
-                var value = __parseExpression();
                 if (lexer.peek() == CatspeakToken.COMMA) {
                     lexer.next();
                 }
