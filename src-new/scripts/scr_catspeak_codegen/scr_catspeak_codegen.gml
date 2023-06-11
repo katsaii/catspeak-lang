@@ -349,6 +349,32 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
+    static __compileCall = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "callee", undefined,
+                "args", undefined
+            );
+        }
+
+        var callee = __compileTerm(ctx, term.callee);
+        var args = term.args;
+        var argCount = array_length(args);
+        var exprs = array_create(argCount);
+        for (var i = 0; i < argCount; i += 1) {
+            exprs[@ i] = __compileTerm(ctx, args[i]);
+        }
+
+        return method({
+            callee : callee,
+            args : exprs,
+            shared : sharedData,
+        }, __catspeak_expr_call__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
     static __compileGlobalGet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -468,6 +494,7 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
         db[@ CatspeakTerm.CONTINUE] = __compileContinue;
+        db[@ CatspeakTerm.CALL] = __compileCall;
         db[@ CatspeakTerm.GET_GLOBAL] = __compileGlobalGet;
         db[@ CatspeakTerm.SET_GLOBAL] = __compileGlobalSet;
         db[@ CatspeakTerm.GET_LOCAL] = __compileLocalGet;
@@ -646,6 +673,16 @@ function __catspeak_expr_break__() {
 /// @ignore
 function __catspeak_expr_continue__() {
     throw global.__catspeakGmlContinueRef;
+}
+
+/// @ignore
+function __catspeak_expr_call__() {
+    var callee_ = callee();
+    var args_ = array_map(args, function(f) { return f() });
+    with (method_get_self(callee_) ?? shared.self_) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(calleeIdx, args_);
+    }
 }
 
 /// @ignore
