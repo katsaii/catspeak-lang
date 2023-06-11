@@ -192,19 +192,68 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseAssign = function () {
-        var lhs = __parseOpBinary();
+        var lhs = __parseOpLogical();
         if (lexer.peek() == CatspeakToken.ASSIGN) {
             lexer.next();
             lhs = asg.createAssign(lhs, __parseExpression());
         }
+        // TODO :: *= /= += -=
         return lhs;
     };
 
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseOpBinary = function () {
-        // TODO
+    static __parseOpLogical = function () {
+        // TODO :: and or
+        return __parseOpUnary();
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpBitwise = function () {
+        // TODO :: | ^ &
+        return __parseOpBitwiseShift();
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpBitwiseShift = function () {
+        // TODO :: << >>
+        return __parseOpEquality();
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpEquality = function () {
+        // TODO :: == !=
+        return __parseOpRelational();
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpRelational = function () {
+        // TODO :: == !=
+        return __parseOpAdd();
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpAdd = function () {
+        // TODO :: + -
+        return __parseOpMultiply();
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpMultiply = function () {
+        // TODO :: * / // %
         return __parseOpUnary();
     };
 
