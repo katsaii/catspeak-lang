@@ -50,6 +50,7 @@ function catspeak_force_init() {
     global.__catspeakConfig = { };
     // call initialisers
     __catspeak_init_alloc();
+    __catspeak_init_operators();
     __catspeak_init_lexer();
     __catspeak_init_codegen();
     __catspeak_init_engine();

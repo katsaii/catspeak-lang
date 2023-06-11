@@ -349,6 +349,42 @@ function CatspeakGMLCompiler(asg) constructor {
     /// @ignore
     ///
     /// @param {Struct} term
+    static __compileOpUnary = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "operator", is_numeric, // TODO :: add proper bounds check here
+                "value", undefined
+            );
+        }
+
+        return method({
+            op : __catspeak_operator_get_unary(term.operator),
+            value : __compileTerm(ctx, term.value),
+        }, __catspeak_expr_op_1__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileOpBinary = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "operator", is_numeric, // TODO :: add proper bounds check here
+                "lhs", undefined,
+                "rhs", undefined
+            );
+        }
+
+        return method({
+            op : __catspeak_operator_get_binary(term.operator),
+            lhs : __compileTerm(ctx, term.lhs),
+            rhs : __compileTerm(ctx, term.rhs),
+        }, __catspeak_expr_op_2__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
     static __compileCall = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -544,6 +580,8 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
         db[@ CatspeakTerm.CONTINUE] = __compileContinue;
+        db[@ CatspeakTerm.OP_BINARY] = __compileOpBinary;
+        db[@ CatspeakTerm.OP_UNARY] = __compileOpUnary;
         db[@ CatspeakTerm.CALL] = __compileCall;
         db[@ CatspeakTerm.SET] = __compileSet;
         db[@ CatspeakTerm.INDEX] = __compileIndex;
@@ -723,6 +761,19 @@ function __catspeak_expr_break__() {
 /// @ignore
 function __catspeak_expr_continue__() {
     throw global.__catspeakGmlContinueRef;
+}
+
+/// @ignore
+function __catspeak_expr_op_1__() {
+    var value_ = value();
+    return op(value_);
+}
+
+/// @ignore
+function __catspeak_expr_op_2__() {
+    var lhs_ = lhs();
+    var rhs_ = rhs();
+    return op(lhs_, rhs_);
 }
 
 /// @ignore

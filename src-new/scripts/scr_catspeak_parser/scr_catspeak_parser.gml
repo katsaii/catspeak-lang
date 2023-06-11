@@ -212,8 +212,19 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseOpUnary = function () {
-        // TODO
-        return __parseIndex();
+        var peeked = lexer.peek();
+        if (
+            peeked == CatspeakToken.NOT ||
+            peeked == CatspeakToken.SUBTRACT ||
+            peeked == CatspeakToken.PLUS
+        ) {
+            lexer.next();
+            var op = __catspeak_operator_from_token(peeked);
+            var value = __parseIndex();
+            return asg.createUnary(op, value, lexer.getLocation());
+        } else {
+            return __parseIndex();
+        }
     };
 
     /// @ignore
@@ -673,10 +684,10 @@ function CatspeakASGBuilder() constructor {
 
     /// Creates an accessor expression.
     ///
-    /// @param {String} collection
+    /// @param {Struct} collection
     ///   The term containing the collection to access.
     ///
-    /// @param {String} key
+    /// @param {Struct} key
     ///   The term containing the key to access the collection with.
     ///
     /// @param {Real} [location]
@@ -688,6 +699,52 @@ function CatspeakASGBuilder() constructor {
         return __createTerm(CatspeakTerm.INDEX, location, {
             collection : collection,
             key : key,
+        });
+    };
+
+    /// Creates a binary operator.
+    ///
+    /// @param {Enum.CatspeakOperator} operator
+    ///   The operator type to use.
+    ///
+    /// @param {String} lhs
+    ///   The left-hand side operand.
+    ///
+    /// @param {String} rhs
+    ///   The right-hand side operand.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createBinary = function (operator, lhs, rhs, location=undefined) {
+        // TODO :: constant folding
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.OP_BINARY, location, {
+            operator : operator,
+            lhs : lhs,
+            rhs : rhs,
+        });
+    };
+
+    /// Creates a binary operator.
+    ///
+    /// @param {Enum.CatspeakOperator} operator
+    ///   The operator type to use.
+    ///
+    /// @param {String} value
+    ///   The value to apply the operator to.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createUnary = function (operator, value, location=undefined) {
+        // TODO :: constant folding
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.OP_UNARY, location, {
+            operator : operator,
+            value : value,
         });
     };
 
@@ -988,6 +1045,8 @@ enum CatspeakTerm {
     RETURN,
     BREAK,
     CONTINUE,
+    OP_BINARY,
+    OP_UNARY,
     CALL,
     SET,
     INDEX,
