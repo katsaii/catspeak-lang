@@ -389,7 +389,20 @@ function CatspeakGMLCompiler(asg) constructor {
         var target = term.target;
         var targetType = target.type;
         var value = __compileTerm(ctx, term.value);
-        if (targetType == CatspeakTerm.LOCAL) {
+        if (targetType == CatspeakTerm.INDEX) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.target", target,
+                    "collection", undefined,
+                    "key", undefined
+                );
+            }
+
+            return method({
+                collection : __compileTerm(ctx, target.collection),
+                key : __compileTerm(ctx, target.key),
+                value : value,
+            }, __catspeak_expr_index_set__);
+        } else if (targetType == CatspeakTerm.LOCAL) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("term.target", target,
                     "idx", is_numeric
@@ -426,6 +439,23 @@ function CatspeakGMLCompiler(asg) constructor {
                 "must be an identifier or accessor expression"
             );
         }
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} term
+    static __compileIndex = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "collection", undefined,
+                "key", undefined
+            );
+        }
+
+        return method({
+            collection : __compileTerm(ctx, term.collection),
+            key : __compileTerm(ctx, term.key),
+        }, __catspeak_expr_index_get__);
     };
 
     /// @ignore
@@ -479,7 +509,7 @@ function CatspeakGMLCompiler(asg) constructor {
     ///
     /// @param {Struct} term
     static __compileSelf = function (ctx, term) {
-        return method(sharedData, __catspeak_expr_self_get__);
+        return method(sharedData, __catspeak_expr_self__);
     };
 
     /// @ignore
@@ -516,6 +546,7 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.CONTINUE] = __compileContinue;
         db[@ CatspeakTerm.CALL] = __compileCall;
         db[@ CatspeakTerm.SET] = __compileSet;
+        db[@ CatspeakTerm.INDEX] = __compileIndex;
         db[@ CatspeakTerm.GLOBAL] = __compileGlobal;
         db[@ CatspeakTerm.LOCAL] = __compileLocal;
         db[@ CatspeakTerm.FUNCTION] = __compileFunctionExpr;
@@ -705,6 +736,29 @@ function __catspeak_expr_call__() {
 }
 
 /// @ignore
+function __catspeak_expr_index_get__() {
+    var collection_ = collection();
+    var key_ = key();
+    if (is_array(collection_)) {
+        return collection_[key_];
+    } else {
+        return collection_[$ key_];
+    }
+}
+
+/// @ignore
+function __catspeak_expr_index_set__() {
+    var collection_ = collection();
+    var key_ = key();
+    var value_ = value();
+    if (is_array(collection_)) {
+        collection_[@ key_] = value_;
+    } else {
+        collection_[$ key_] = value_;
+    }
+}
+
+/// @ignore
 function __catspeak_expr_global_get__() {
     return globals[$ name];
 }
@@ -725,7 +779,7 @@ function __catspeak_expr_local_set__() {
 }
 
 /// @ignore
-function __catspeak_expr_self_get__() {
+function __catspeak_expr_self__() {
     // will either access a user-defined self instance, or the internal
     // global struct
     return self_ ?? globals;
