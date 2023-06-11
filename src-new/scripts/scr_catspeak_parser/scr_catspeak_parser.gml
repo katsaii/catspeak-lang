@@ -225,6 +225,12 @@ function CatspeakParser(lexer, builder) constructor {
             var peeked = lexer.peek();
             if (peeked == CatspeakToken.PAREN_LEFT) {
                 // function call syntax
+                lexer.next();
+                var args = [];
+                if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                    __ex("expected closing ')' after function arguments");
+                }
+                result = asg.createCall(result, args, lexer.getLocation());
             } else if (peeked == CatspeakToken.BOX_LEFT) {
                 // accessor syntax
             } else if (peeked == CatspeakToken.DOT) {
@@ -598,6 +604,27 @@ function CatspeakASGBuilder() constructor {
         return __createTerm(CatspeakTerm.CONTINUE, location, { });
     };
 
+    /// Emits the instruction to continue to the next iteration of the current
+    /// loop.
+    ///
+    /// @param {Struct} callee
+    ///   The instruction containing the function to call.
+    ///
+    /// @param {Struct} args
+    ///   The the arguments to pass into the function call.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createCall = function (callee, args, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.CALL, location, {
+            callee : callee,
+            args : args,
+        });
+    };
+
     /// Searches a for a variable with the supplied name and emits a get
     /// instruction for it.
     ///
@@ -933,6 +960,7 @@ enum CatspeakTerm {
     RETURN,
     BREAK,
     CONTINUE,
+    CALL,
     GET_LOCAL,
     SET_LOCAL,
     GET_GLOBAL,
