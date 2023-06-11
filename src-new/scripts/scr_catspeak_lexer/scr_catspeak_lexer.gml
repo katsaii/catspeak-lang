@@ -888,12 +888,15 @@ function catspeak_keywords_rename_gml(keywords) {
         __catspeak_check_arg("keywords", keywords, is_struct);
     }
 
+    catspeak_keywords_rename(keywords, "//", "div");
     catspeak_keywords_rename(keywords, "--", "//");
     catspeak_keywords_rename(keywords, "let", "var");
     catspeak_keywords_rename(keywords, "fun", "function");
     catspeak_keywords_rename(keywords, "impl", "constructor");
     keywords[$ "&&"] = CatspeakToken.AND;
     keywords[$ "||"] = CatspeakToken.OR;
+    keywords[$ "mod"] = CatspeakToken.REMAINDER;
+    keywords[$ "not"] = CatspeakToken.NOT;
 }
 
 /// @ignore
