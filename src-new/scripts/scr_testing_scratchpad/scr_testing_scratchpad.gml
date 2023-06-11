@@ -99,7 +99,7 @@ TEST_EXPERIMENT "compiler-5" {
             return 123;
         }
         
-        a[6].be = 3
+        a[6].be = -3
         a
     ');
     var asg = Catspeak.parse(buff);
