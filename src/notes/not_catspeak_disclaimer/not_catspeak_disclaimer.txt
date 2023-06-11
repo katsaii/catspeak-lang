@@ -1,3 +1,0 @@
-Catspeak is currently a solo project (by [katsaii](https://www.katsaii.com/)), and is being maintained in
-my free-time. However, if you want to make a suggestion or report a bug, please
-do report it on [GitHub](https://github.com/NuxiiGit/catspeak-lang/issues) and I will try to review it as soon as possible!

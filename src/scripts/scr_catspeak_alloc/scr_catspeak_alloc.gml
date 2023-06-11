@@ -5,6 +5,9 @@
 
 /// Forces the Catspeak engine to collect any discarded resources.
 function catspeak_collect() {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_init();
+    }
     var pool = global.__catspeakAllocPool;
     var poolSize = array_length(pool);
     for (var i = 0; i < poolSize; i += 1) {
@@ -17,8 +20,20 @@ function catspeak_collect() {
     }
 }
 
+/// "adapter" here is a struct with two fields: "create" and "destroy" which
+/// indicates how to construct and destruct the resource once the owner gets
+/// collected.
+///
+/// "owner" is a struct whose lifetime determines whether the resource needs
+/// to be collected as well. Once "owner" gets collected by the garbage
+/// collector, any resources it owns will eventually get collected as well.
+///
 /// @ignore
-function __catspeak_alloc(struct, adapter) {
+///
+/// @param {Struct} owner
+/// @param {Struct} adapter
+/// @return {Any}
+function __catspeak_alloc(owner, adapter) {
     var pool = global.__catspeakAllocPool;
     var poolMax = array_length(pool) - 1;
     if (poolMax >= 0) {
@@ -29,7 +44,7 @@ function __catspeak_alloc(struct, adapter) {
                 continue;
             }
             weakRef.adapter.destroy(weakRef.ds);
-            var newWeakRef = weak_ref_create(struct);
+            var newWeakRef = weak_ref_create(owner);
             var resource = adapter.create();
             newWeakRef.adapter = adapter;
             newWeakRef.ds = resource;
@@ -37,7 +52,7 @@ function __catspeak_alloc(struct, adapter) {
             return resource;
         }
     }
-    var weakRef = weak_ref_create(struct);
+    var weakRef = weak_ref_create(owner);
     var resource = adapter.create();
     weakRef.adapter = adapter;
     weakRef.ds = resource;
@@ -46,27 +61,35 @@ function __catspeak_alloc(struct, adapter) {
 }
 
 /// @ignore
-function __catspeak_alloc_ds_map(struct) {
+///
+/// @param {Struct} owner
+function __catspeak_alloc_ds_map(owner) {
     gml_pragma("forceinline");
-    return __catspeak_alloc(struct, global.__catspeakAllocDSMapAdapter);
+    return __catspeak_alloc(owner, global.__catspeakAllocDSMapAdapter);
 }
 
 /// @ignore
-function __catspeak_alloc_ds_list(struct) {
+///
+/// @param {Struct} owner
+function __catspeak_alloc_ds_list(owner) {
     gml_pragma("forceinline");
-    return __catspeak_alloc(struct, global.__catspeakAllocDSListAdapter);
+    return __catspeak_alloc(owner, global.__catspeakAllocDSListAdapter);
 }
 
 /// @ignore
-function __catspeak_alloc_ds_stack(struct) {
+///
+/// @param {Struct} owner
+function __catspeak_alloc_ds_stack(owner) {
     gml_pragma("forceinline");
-    return __catspeak_alloc(struct, global.__catspeakAllocDSStackAdapter);
+    return __catspeak_alloc(owner, global.__catspeakAllocDSStackAdapter);
 }
 
 /// @ignore
-function __catspeak_alloc_ds_priority(struct) {
+///
+/// @param {Struct} owner
+function __catspeak_alloc_ds_priority(owner) {
     gml_pragma("forceinline");
-    return __catspeak_alloc(struct, global.__catspeakAllocDSPriorityAdapter);
+    return __catspeak_alloc(owner, global.__catspeakAllocDSPriorityAdapter);
 }
 
 /// @ignore

@@ -5,7 +5,7 @@
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "framework",
-    "path": "folders/Testing/framework.yy",
+    "name": "Testing",
+    "path": "folders/Testing.yy",
   },
 }

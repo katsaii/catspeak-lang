@@ -1,3 +1,6 @@
+
+//# feather use syntax-errors
+
 var left = obj_testing.exampleLeft;
 var top = obj_testing.exampleTop;
 var right = obj_testing.exampleRight;
@@ -34,7 +37,7 @@ var finalOffset = offset + logLength * lineHeight;
 for (var i = 0; i < logLength; i += 1) {
     var idx = (logTail + i) % logLength;
     draw_set_colour(severities[$ logSeverity[idx]]);
-    draw_text(midX + pad, offset, log[idx]);
+    draw_text_ext(midX + pad, offset, log[idx], lineHeight, right - midX - pad);
     offset += lineHeight;
 }
 offset = finalOffset;

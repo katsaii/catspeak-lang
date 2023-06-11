@@ -1,3 +1,6 @@
+
+//# feather use syntax-errors
+
 var width = display_get_gui_width();
 var height = display_get_gui_height();
 var stats = test_stats();
@@ -30,14 +33,17 @@ draw_text(pad, height - pad - lineHeight, @'
 
 // draw test results
 draw_set_halign(fa_right);
-if (stats.totalActive > 0) {
-    draw_set_colour(TESTING_COL_WORKING);
+if (stats.totalFatal > 0) {
+    draw_set_colour(TESTING_COL_FATAL);
 } else if (stats.totalFailed > 0) {
     draw_set_colour(TESTING_COL_FAIL);
+} else if (stats.totalActive > 0) {
+    draw_set_colour(TESTING_COL_WORKING);
 } else {
     draw_set_colour(TESTING_COL_PASS);
 }
 draw_text(width - pad, height - pad,
+        (stats.totalFatal > 0 ? "FATAL! " : "") +
         string(stats.total - stats.totalFailed - stats.totalActive) + " of " +
         string(stats.total) + " tests passed");
 var goodFPS = 60;
@@ -57,13 +63,14 @@ if (exampleIsValid(exampleCurrent)) {
     exampleName = examples[exampleCurrent].title;
 }
 draw_text(width * 0.5, headerHeight + pad + lineHeight, 
-        "example\n" + exampleName);
+        "example " + string(exampleCurrent + 1) + " of " + 
+        string(array_length(examples)) + "\n" + exampleName);
 if (exampleIsValid(exampleCurrent - 1)) {
-    draw_text(width * 0.25, headerHeight + pad + lineHeight, 
+    draw_text(width * 0.15, headerHeight + pad + lineHeight, 
             "previous example\n<left arrow key>");
 }
 if (exampleIsValid(exampleCurrent + 1)) {
-    draw_text(width * 0.75, headerHeight + pad + lineHeight, 
+    draw_text(width * 0.85, headerHeight + pad + lineHeight, 
             "next example\n<right arrow key>");
 }
 

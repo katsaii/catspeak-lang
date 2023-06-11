@@ -1,14 +1,23 @@
+
+//# feather use syntax-errors
+
 code = "-- no code";
 desc = "No further description...\n/(.Ö x Ö.)\\ !!";
 
-addLog = function(msg, severity="ok") {
-    log[@ logTail] = is_string(msg) ? msg : string(msg);
+addLog = function (msg, severity="ok") {
+    var msg_ = msg;
+    if (is_struct(msg_) && variable_struct_exists(msg_, "message")) {
+        msg_ = msg_.message;
+    } else if (!is_string(msg_)) {
+        msg_ = string(msg_);
+    }
+    log[@ logTail] = msg_;
     logSeverity[@ logTail] = severity;
     logTail = (logTail + 1) % logLength;
     return undefined;
 };
 
-resizeLog = function(length) {
+resizeLog = function (length) {
     logLength = length;
     log = array_create(logLength, "");
     logSeverity = array_create(logLength, "ok");
