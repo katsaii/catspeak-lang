@@ -75,12 +75,10 @@ factorial = fun(n) {
 }
 
 let a = [1, 2, 3, 4]
-let size = len(a)
 let i = 0
-while (i < size) {
-  let num = a.[i]
-  i = i + 1
-  print factorial(num)
+while (i < 4) {
+  print(factorial(a[i]))
+  i += 1
 }
 
 -- output:
