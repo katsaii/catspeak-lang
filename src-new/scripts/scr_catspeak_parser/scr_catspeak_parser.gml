@@ -718,7 +718,23 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static createBinary = function (operator, lhs, rhs, location=undefined) {
-        // TODO :: constant folding
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("operator", operator, is_numeric); // TODO :: proper bounds check
+            __catspeak_check_arg_struct("lhs", lhs, "type", is_numeric);
+            __catspeak_check_arg_struct("rhs", rhs, "type", is_numeric);
+        }
+
+        if (lhs.type == CatspeakTerm.VALUE && rhs.type == CatspeakTerm.VALUE) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("lhs", lhs, "value", undefined);
+                __catspeak_check_arg_struct("rhs", rhs, "value", undefined);
+            }
+
+            // constant folding
+            var opFunc = __catspeak_operator_get_binary(operator);
+            lhs.value = opFunc(lhs.value, rhs.value);
+            return lhs;
+        }
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.OP_BINARY, location, {
             operator : operator,
@@ -740,7 +756,21 @@ function CatspeakASGBuilder() constructor {
     ///
     /// @return {Struct}
     static createUnary = function (operator, value, location=undefined) {
-        // TODO :: constant folding
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("operator", operator, is_numeric); // TODO :: proper bounds check
+            __catspeak_check_arg_struct("value", value, "type", is_numeric);
+        }
+
+        if (value.type == CatspeakTerm.VALUE) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("value", value, "value", undefined);
+            }
+
+            // constant folding
+            var opFunc = __catspeak_operator_get_unary(operator);
+            value.value = opFunc(value.value);
+            return value;
+        }
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.OP_UNARY, location, {
             operator : operator,
