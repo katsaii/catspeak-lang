@@ -233,8 +233,22 @@ function CatspeakParser(lexer, builder) constructor {
                 result = asg.createCall(result, args, lexer.getLocation());
             } else if (peeked == CatspeakToken.BOX_LEFT) {
                 // accessor syntax
+                lexer.next();
+                var collection = result;
+                var key = __parseExpression();
+                if (lexer.next() != CatspeakToken.BOX_RIGHT) {
+                    __ex("expected closing ']' after accessor expression");
+                }
+                result = asg.createAccessor(collection, key, lexer.getLocation());
             } else if (peeked == CatspeakToken.DOT) {
                 // dot accessor syntax
+                lexer.next();
+                var collection = result;
+                if (lexer.next() != CatspeakToken.IDENT) {
+                    __ex("expected identifier after '.' operator");
+                }
+                var key = asg.createValue(lexer.getValue(), lexer.getLocation());
+                result = asg.createAccessor(collection, key, lexer.getLocation());
             } else {
                 break;
             }
@@ -255,7 +269,7 @@ function CatspeakParser(lexer, builder) constructor {
             return asg.createGet(lexer.getValue(), lexer.getLocation());
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
-            return asg.createGetSelf(lexer.getLocation());
+            return asg.createSelf(lexer.getLocation());
         } else {
             return __parseGrouping();
         }
@@ -657,13 +671,33 @@ function CatspeakASGBuilder() constructor {
         }
     };
 
+    /// Creates an accessor expression.
+    ///
+    /// @param {String} collection
+    ///   The term containing the collection to access.
+    ///
+    /// @param {String} key
+    ///   The term containing the key to access the collection with.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createAccessor = function (collection, key, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.INDEX, location, {
+            collection : collection,
+            key : key,
+        });
+    };
+
     /// Creates an instruction for accessing the caller `self`.
     ///
     /// @param {Real} [location]
     ///   The source location of this term.
     ///
     /// @return {Struct}
-    static createGetSelf = function (location=undefined) {
+    static createSelf = function (location=undefined) {
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.SELF, location, { });
     };
@@ -956,6 +990,7 @@ enum CatspeakTerm {
     CONTINUE,
     CALL,
     SET,
+    INDEX,
     LOCAL,
     GLOBAL,
     FUNCTION,

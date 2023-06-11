@@ -93,16 +93,17 @@ TEST_EXPERIMENT "compiler-4" {
 
 TEST_EXPERIMENT "compiler-5" {
     var buff = __catspeak_create_buffer_from_string(@'
-        -- [1, 2, 3, "five", false undefined, { "a" : 1, ["be"] : 5, cee : 89  hi }]
+        let a = [1, 2, 3, "five", false undefined, { "a" : 1, ["be"] : 5, cee : 89  hi }]
         
         let f = fun {
             return 123;
         }
         
-        f()
+        a[6].be = 3
+        a
     ');
     var asg = Catspeak.parse(buff);
-    show_message(json_stringify(asg, true));
+    //show_message(json_stringify(asg, true));
     var f = Catspeak.compileGML(asg);
     show_message(f());
     
