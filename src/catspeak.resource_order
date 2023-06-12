@@ -15,6 +15,7 @@
   "ResourceOrderSettings": [
     {"name":"obj_testing_example_bench_basic_vars","order":6,"path":"objects/obj_testing_example_bench_basic_vars/obj_testing_example_bench_basic_vars.yy",},
     {"name":"fnt_testing","order":3,"path":"fonts/fnt_testing/fnt_testing.yy",},
+    {"name":"scr_catspeak_ir","order":6,"path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},
     {"name":"scr_testing_lexer_whitespace","order":7,"path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},
     {"name":"scr_testing_lexer_internals","order":1,"path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},
     {"name":"scr_future_file","order":2,"path":"scripts/scr_future_file/scr_future_file.yy",},

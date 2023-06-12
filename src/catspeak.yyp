@@ -37,6 +37,7 @@
     {"id":{"name":"obj_testing_example_bench_basic_vars","path":"objects/obj_testing_example_bench_basic_vars/obj_testing_example_bench_basic_vars.yy",},},
     {"id":{"name":"scr_testing_location","path":"scripts/scr_testing_location/scr_testing_location.yy",},},
     {"id":{"name":"fnt_testing","path":"fonts/fnt_testing/fnt_testing.yy",},},
+    {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},},
     {"id":{"name":"scr_testing_lexer_whitespace","path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},},
     {"id":{"name":"scr_testing_lexer_internals","path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},},
