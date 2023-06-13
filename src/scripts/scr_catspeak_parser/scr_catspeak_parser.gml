@@ -89,7 +89,12 @@ function CatspeakParser(lexer, builder) constructor {
                 valueTerm = asg.createValue(undefined, location);
             }
             var getter = asg.allocLocal(localName, location);
-            result = asg.createAssign(getter, valueTerm);
+            result = asg.createAssign(
+                CatspeakAssign.VANILLA,
+                getter,
+                valueTerm,
+                lexer.getLocation()
+            );
         } else {
             result = __parseExpression();
         }
@@ -193,11 +198,23 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseAssign = function () {
         var lhs = __parseOpLogical();
-        if (lexer.peek() == CatspeakToken.ASSIGN) {
+        var peeked = lexer.peek();
+        if (
+            peeked == CatspeakToken.ASSIGN ||
+            peeked == CatspeakToken.ASSIGN_MULTIPLY ||
+            peeked == CatspeakToken.ASSIGN_DIVIDE ||
+            peeked == CatspeakToken.ASSIGN_SUBTRACT ||
+            peeked == CatspeakToken.ASSIGN_PLUS
+        ) {
             lexer.next();
-            lhs = asg.createAssign(lhs, __parseExpression());
+            var assignType = __catspeak_operator_assign_from_token(peeked);
+            lhs = asg.createAssign(
+                assignType,
+                lhs,
+                __parseExpression(),
+                lexer.getLocation()
+            );
         }
-        // TODO :: *= /= += -=
         return lhs;
     };
 

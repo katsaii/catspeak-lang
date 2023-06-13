@@ -32,6 +32,7 @@ enum CatspeakToken {
     COMMA,
     /// The `.` operator.
     DOT,
+    __OP_ASSIGN_BEGIN__,
     /// The `=` operator.
     ASSIGN,
     /// The `*=` operator.
@@ -81,7 +82,6 @@ enum CatspeakToken {
     BITWISE_XOR,
     /// The bitwise or `|` operator.
     BITWISE_OR,
-    __OP_END__,
     /// The logical `and` operator.
     AND,
     /// The logical `or` operator.

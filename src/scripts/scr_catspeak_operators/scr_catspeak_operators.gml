@@ -46,12 +46,35 @@ enum CatspeakOperator {
     __SIZE__,
 }
 
+/// Represents the set of assignment operators understood by Catspeak.
+enum CatspeakAssign {
+    /// The typical `=` assignment.
+    VANILLA,
+    /// Multiply assign `*=`.
+    MULTIPLY,
+    /// Division assign `/=`.
+    DIVIDE,
+    /// Subtract assign `-=`.
+    SUBTRACT,
+    /// Plus assign `+=`.
+    PLUS,
+    __SIZE__,
+}
+
 /// @ignore
 ///
 /// @param {Enum.CatspeakToken} token
 /// @return {Enum.CatspeakOperator}
 function __catspeak_operator_from_token(token) {
     return token - CatspeakToken.__OP_BEGIN__ - 1;
+}
+
+/// @ignore
+///
+/// @param {Enum.CatspeakToken} token
+/// @return {Enum.CatspeakAssign}
+function __catspeak_operator_assign_from_token(token) {
+    return token - CatspeakToken.__OP_ASSIGN_BEGIN__ - 1;
 }
 
 /// @ignore

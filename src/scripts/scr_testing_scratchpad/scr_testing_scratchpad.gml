@@ -2,6 +2,11 @@
 
 //# feather use syntax-errors
 
+if (os_browser != browser_not_a_browser) {
+    // ignore HTML5
+    exit;
+}
+
 catspeak_force_init();
 
 var runExperiment = "compiler-5";
