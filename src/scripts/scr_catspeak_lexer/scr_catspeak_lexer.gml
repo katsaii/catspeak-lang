@@ -778,6 +778,10 @@ function catspeak_keywords_create() {
     keywords[$ ","] = CatspeakToken.COMMA;
     keywords[$ "."] = CatspeakToken.DOT;
     keywords[$ "="] = CatspeakToken.ASSIGN;
+    keywords[$ "*="] = CatspeakToken.ASSIGN_MULTIPLY;
+    keywords[$ "/="] = CatspeakToken.ASSIGN_DIVIDE;
+    keywords[$ "-="] = CatspeakToken.ASSIGN_SUBTRACT;
+    keywords[$ "+="] = CatspeakToken.ASSIGN_PLUS;
     keywords[$ "%"] = CatspeakToken.REMAINDER;
     keywords[$ "*"] = CatspeakToken.MULTIPLY;
     keywords[$ "/"] = CatspeakToken.DIVIDE;
