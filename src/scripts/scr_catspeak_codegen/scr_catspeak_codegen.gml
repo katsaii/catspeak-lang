@@ -262,33 +262,23 @@ function CatspeakGMLCompiler(asg) constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "condition", undefined,
-                "ifTrue", undefined
-            );
-        }
-
-        return method({
-            condition : __compileTerm(ctx, term.condition),
-            ifTrue : __compileTerm(ctx, term.ifTrue),
-        }, __catspeak_expr_if__);
-    };
-
-    /// @ignore
-    ///
-    /// @param {Struct} term
-    static __compileIfElse = function (ctx, term) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("term", term,
-                "condition", undefined,
                 "ifTrue", undefined,
                 "ifFalse", undefined
             );
         }
 
-        return method({
-            condition : __compileTerm(ctx, term.condition),
-            ifTrue : __compileTerm(ctx, term.ifTrue),
-            ifFalse : __compileTerm(ctx, term.ifFalse),
-        }, __catspeak_expr_if_else__);
+        if (term.ifFalse == undefined) {
+            return method({
+                condition : __compileTerm(ctx, term.condition),
+                ifTrue : __compileTerm(ctx, term.ifTrue),
+            }, __catspeak_expr_if__);
+        } else {
+            return method({
+                condition : __compileTerm(ctx, term.condition),
+                ifTrue : __compileTerm(ctx, term.ifTrue),
+                ifFalse : __compileTerm(ctx, term.ifFalse),
+            }, __catspeak_expr_if_else__);
+        }
     };
 
     /// @ignore
@@ -575,7 +565,6 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.STRUCT] = __compileStruct;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
-        db[@ CatspeakTerm.IF_ELSE] = __compileIfElse;
         db[@ CatspeakTerm.WHILE] = __compileWhile;
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;

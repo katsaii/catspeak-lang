@@ -140,9 +140,10 @@ function CatspeakASGBuilder() constructor {
             return __createTerm(CatspeakTerm.IF, location, {
                 condition : condition,
                 ifTrue : ifTrue,
+                ifFalse : undefined,
             });
         } else {
-            return __createTerm(CatspeakTerm.IF_ELSE, location, {
+            return __createTerm(CatspeakTerm.IF, location, {
                 condition : condition,
                 ifTrue : ifTrue,
                 ifFalse : ifFalse,
@@ -739,7 +740,6 @@ enum CatspeakTerm {
     STRUCT,
     BLOCK,
     IF,
-    IF_ELSE,
     AND,
     OR,
     WHILE,
