@@ -150,14 +150,14 @@ function CatspeakParser(lexer, builder) constructor {
             } else {
                 ifFalse = asg.createValue(undefined, lexer.getLocation());
             }
-            return asg.createIf(condition, ifTrue, ifFalse);
+            return asg.createIf(condition, ifTrue, ifFalse, lexer.getLocation());
         } else if (peeked == CatspeakToken.WHILE) {
             lexer.next();
             var condition = __parseCondition();
             asg.pushBlock();
             __parseStatements("while")
             var body = asg.popBlock();
-            return asg.createWhile(condition, body);
+            return asg.createWhile(condition, body, lexer.getLocation());
         } else if (peeked == CatspeakToken.FUN) {
             lexer.next();
             asg.pushFunction();
@@ -205,8 +205,23 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseOpLogical = function () {
-        // TODO :: and or
-        return __parseOpBitwise();
+        var result = __parseOpBitwise();
+        while (true) {
+            var peeked = lexer.peek();
+            if (peeked == CatspeakToken.AND) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpBitwise();
+                result = asg.createAnd(op, lhs, rhs, lexer.getLocation());
+            } else if (peeked == CatspeakToken.OR) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpBitwise();
+                result = asg.createOr(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore

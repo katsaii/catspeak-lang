@@ -114,12 +114,14 @@ function CatspeakASGBuilder() constructor {
     ///   The term which evaluates if the condition of the if statement is
     ///   false.
     ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
     /// @return {Struct}
-    static createIf = function (condition, ifTrue, ifFalse) {
+    static createIf = function (condition, ifTrue, ifFalse, location=undefined) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("condition", condition,
-                "type", is_numeric,
-                "dbg", undefined
+                "type", is_numeric
             );
             __catspeak_check_arg_struct("ifFalse", ifFalse,
                 "type", is_numeric,
@@ -135,17 +137,83 @@ function CatspeakASGBuilder() constructor {
         }
         // __createTerm() will do argument validation
         if (ifFalse.type == CatspeakTerm.VALUE && __getValue(ifFalse) == undefined) {
-            return __createTerm(CatspeakTerm.IF, condition.dbg, {
+            return __createTerm(CatspeakTerm.IF, location, {
                 condition : condition,
                 ifTrue : ifTrue,
             });
         } else {
-            return __createTerm(CatspeakTerm.IF_ELSE, condition.dbg, {
+            return __createTerm(CatspeakTerm.IF_ELSE, location, {
                 condition : condition,
                 ifTrue : ifTrue,
                 ifFalse : ifFalse,
             });
         }
+    };
+
+    /// Emits the instruction for a short-circuiting logical AND expression.
+    ///
+    /// @param {Struct} eager
+    ///   The term which evaluates immediately.
+    ///
+    /// @param {Struct} lazy
+    ///   The term which evaluates if the first term is true.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createAnd = function (eager, lazy, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("eager", eager,
+                "type", is_numeric
+            );
+        }
+
+        if (eager.type == CatspeakTerm.VALUE) {
+            if (__getValue(condition)) {
+                return lazy;
+            } else {
+                return eager;
+            }
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.AND, location, {
+            eager : eager,
+            lazy : lazy,
+        });
+    };
+
+    /// Emits the instruction for a short-circuiting logical OR expression.
+    ///
+    /// @param {Struct} eager
+    ///   The term which evaluates immediately.
+    ///
+    /// @param {Struct} lazy
+    ///   The term which evaluates if the first term is false.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createOr = function (eager, lazy, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("eager", eager,
+                "type", is_numeric
+            );
+        }
+
+        if (eager.type == CatspeakTerm.VALUE) {
+            if (__getValue(condition)) {
+                return eager;
+            } else {
+                return lazy;
+            }
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.OR, location, {
+            eager : eager,
+            lazy : lazy,
+        });
     };
 
     /// Emits the instruction for a while loop.
@@ -156,12 +224,14 @@ function CatspeakASGBuilder() constructor {
     /// @param {Struct} body
     ///   The body of the while loop.
     ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
     /// @return {Struct}
-    static createWhile = function (condition, body) {
+    static createWhile = function (condition, body, location=undefined) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("condition", condition,
-                "type", is_numeric,
-                "dbg", undefined
+                "type", is_numeric
             );
         }
 
@@ -169,7 +239,7 @@ function CatspeakASGBuilder() constructor {
             return createValue(undefined, condition.dbg);
         }
         // __createTerm() will do argument validation
-        return __createTerm(CatspeakTerm.WHILE, condition.dbg, {
+        return __createTerm(CatspeakTerm.WHILE, location, {
             condition : condition,
             body : body,
         });
@@ -670,6 +740,8 @@ enum CatspeakTerm {
     BLOCK,
     IF,
     IF_ELSE,
+    AND,
+    OR,
     WHILE,
     RETURN,
     BREAK,
