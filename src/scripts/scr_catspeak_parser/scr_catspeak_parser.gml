@@ -206,55 +206,144 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseOpLogical = function () {
         // TODO :: and or
-        return __parseOpUnary();
+        return __parseOpBitwise();
     };
 
     /// @ignore
     ///
     /// @return {Struct}
     static __parseOpBitwise = function () {
-        // TODO :: | ^ &
-        return __parseOpBitwiseShift();
+        var result = __parseOpBitwiseShift();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.BITWISE_AND ||
+                peeked == CatspeakToken.BITWISE_XOR ||
+                peeked == CatspeakToken.BITWISE_OR
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpBitwiseShift();
+                result = asg.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore
     ///
     /// @return {Struct}
     static __parseOpBitwiseShift = function () {
-        // TODO :: << >>
-        return __parseOpEquality();
+        var result = __parseOpEquality();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.SHIFT_LEFT ||
+                peeked == CatspeakToken.SHIFT_RIGHT
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpEquality();
+                result = asg.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore
     ///
     /// @return {Struct}
     static __parseOpEquality = function () {
-        // TODO :: == !=
-        return __parseOpRelational();
+        var result = __parseOpRelational();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.EQUAL ||
+                peeked == CatspeakToken.NOT_EQUAL
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpRelational();
+                result = asg.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore
     ///
     /// @return {Struct}
     static __parseOpRelational = function () {
-        // TODO :: == !=
-        return __parseOpAdd();
+        var result = __parseOpAdd();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.LESS ||
+                peeked == CatspeakToken.LESS_EQUAL ||
+                peeked == CatspeakToken.GREATER ||
+                peeked == CatspeakToken.GREATER_EQUAL
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpAdd();
+                result = asg.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore
     ///
     /// @return {Struct}
     static __parseOpAdd = function () {
-        // TODO :: + -
-        return __parseOpMultiply();
+        var result = __parseOpMultiply();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.PLUS ||
+                peeked == CatspeakToken.SUBTRACT
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpMultiply();
+                result = asg.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore
     ///
     /// @return {Struct}
     static __parseOpMultiply = function () {
-        // TODO :: * / // %
-        return __parseOpUnary();
+        var result = __parseOpUnary();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.MULTIPLY ||
+                peeked == CatspeakToken.DIVIDE ||
+                peeked == CatspeakToken.DIVIDE_INT ||
+                peeked == CatspeakToken.REMAINDER
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpUnary();
+                result = asg.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
     };
 
     /// @ignore
