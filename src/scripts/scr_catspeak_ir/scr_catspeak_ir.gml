@@ -466,6 +466,9 @@ function CatspeakASGBuilder() constructor {
     ///       calling this method. Always use the result returned by this
     ///       method as the new source of truth.
     ///
+    /// @param {Enum.CatspeakAssign} type
+    ///   The assignment type to use.
+    ///
     /// @param {Struct} lhs
     ///   The assignment target to use. Typically this is a local/global
     ///   variable get expression.
@@ -474,44 +477,52 @@ function CatspeakASGBuilder() constructor {
     ///   The assignment target to use. Typically this is a local/global
     ///   variable get expression.
     ///
+    /// @param {Real} [location]
+    ///   The source location of this assignment.
+    ///
     /// @return {Struct}
-    static createAssign = function (lhs, rhs) {
+    static createAssign = function (type, lhs, rhs, location=undefined) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("lhs", lhs,
-                "type", is_numeric,
-                "dbg", undefined
-            );
-            __catspeak_check_arg_struct("rhs", rhs,
-                "type", is_numeric,
-                "dbg", undefined
-            );
+            __catspeak_check_arg("type", type, is_numeric);
         }
 
-        var lhsType = lhs.type;
-        if (lhsType == CatspeakTerm.LOCAL) {
-            if (rhs.type == CatspeakTerm.LOCAL) {
-                if (CATSPEAK_DEBUG_MODE) {
-                    __catspeak_check_arg_struct("lhs", lhs, "idx", is_numeric);
-                    __catspeak_check_arg_struct("rhs", rhs, "idx", is_numeric);
-                }
-
-                if (lhs.idx == rhs.idx) {
-                    return createValue(undefined, lhs.dbg);
-                }
+        if (type == CatspeakAssign.VANILLA) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("lhs", lhs,
+                    "type", is_numeric
+                );
+                __catspeak_check_arg_struct("rhs", rhs,
+                    "type", is_numeric
+                );
             }
-        } else if (lhsType == CatspeakTerm.GLOBAL) {
-            if (rhs.type == CatspeakTerm.GLOBAL) {
-                if (CATSPEAK_DEBUG_MODE) {
-                    __catspeak_check_arg_struct("lhs", lhs, "name", is_string);
-                    __catspeak_check_arg_struct("rhs", rhs, "name", is_string);
-                }
 
-                if (lhs.name == rhs.name) {
-                    return createValue(undefined, lhs.dbg);
+            var lhsType = lhs.type;
+            if (lhsType == CatspeakTerm.LOCAL) {
+                if (rhs.type == CatspeakTerm.LOCAL) {
+                    if (CATSPEAK_DEBUG_MODE) {
+                        __catspeak_check_arg_struct("lhs", lhs, "idx", is_numeric);
+                        __catspeak_check_arg_struct("rhs", rhs, "idx", is_numeric);
+                    }
+
+                    if (lhs.idx == rhs.idx) {
+                        return createValue(undefined, location);
+                    }
+                }
+            } else if (lhsType == CatspeakTerm.GLOBAL) {
+                if (rhs.type == CatspeakTerm.GLOBAL) {
+                    if (CATSPEAK_DEBUG_MODE) {
+                        __catspeak_check_arg_struct("lhs", lhs, "name", is_string);
+                        __catspeak_check_arg_struct("rhs", rhs, "name", is_string);
+                    }
+
+                    if (lhs.name == rhs.name) {
+                        return createValue(undefined, location);
+                    }
                 }
             }
         }
-        return __createTerm(CatspeakTerm.SET, lhs.dbg, {
+        return __createTerm(CatspeakTerm.SET, location, {
+            assignType : type,
             target : lhs,
             value : rhs,
         });

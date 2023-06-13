@@ -7,7 +7,7 @@ resizeLog(10);
 
 code = @'let n = 1000
 while n {
-    n = n - 1
+    n -= 1
 }';
 
 nativeFunc = function () {

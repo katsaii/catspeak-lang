@@ -404,8 +404,9 @@ function CatspeakGMLCompiler(asg) constructor {
     static __compileSet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
+                "assignType", is_numeric,
                 "target", undefined,
-                "value", undefined
+                "value", undefined,
             );
             __catspeak_check_arg_struct("term.target", term.target,
                 "type", is_numeric
@@ -423,11 +424,12 @@ function CatspeakGMLCompiler(asg) constructor {
                 );
             }
 
+            var func = __assignLookupIndex[term.assignType];
             return method({
                 collection : __compileTerm(ctx, target.collection),
                 key : __compileTerm(ctx, target.key),
                 value : value,
-            }, __catspeak_expr_index_set__);
+            }, func);
         } else if (targetType == CatspeakTerm.LOCAL) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("term.target", target,
@@ -435,11 +437,12 @@ function CatspeakGMLCompiler(asg) constructor {
                 );
             }
 
+            var func = __assignLookupLocal[term.assignType];
             return method({
                 locals : ctx.locals,
                 idx : target.idx,
                 value : value,
-            }, __catspeak_expr_local_set__);
+            }, func);
         } else if (targetType == CatspeakTerm.GLOBAL) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("term.target", target,
@@ -447,11 +450,12 @@ function CatspeakGMLCompiler(asg) constructor {
                 );
             }
 
+            var func = __assignLookupGlobal[term.assignType];
             return method({
                 globals : sharedData.globals,
                 name : target.name,
                 value : value,
-            }, __catspeak_expr_global_set__);
+            }, func);
         } else {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("term.target", target,
@@ -578,6 +582,39 @@ function CatspeakGMLCompiler(asg) constructor {
         db[@ CatspeakTerm.LOCAL] = __compileLocal;
         db[@ CatspeakTerm.FUNCTION] = __compileFunctionExpr;
         db[@ CatspeakTerm.SELF] = __compileSelf;
+        return db;
+    })();
+
+    /// @ignore
+    static __assignLookupIndex = (function () {
+        var db = array_create(CatspeakAssign.__SIZE__, undefined);
+        db[@ CatspeakAssign.VANILLA] = __catspeak_expr_index_set__;
+        db[@ CatspeakAssign.MULTIPLY] = __catspeak_expr_index_set_mult__;
+        db[@ CatspeakAssign.DIVIDE] = __catspeak_expr_index_set_div__;
+        db[@ CatspeakAssign.SUBTRACT] = __catspeak_expr_index_set_sub__;
+        db[@ CatspeakAssign.PLUS] = __catspeak_expr_index_set_plus__;
+        return db;
+    })();
+
+    /// @ignore
+    static __assignLookupLocal = (function () {
+        var db = array_create(CatspeakAssign.__SIZE__, undefined);
+        db[@ CatspeakAssign.VANILLA] = __catspeak_expr_local_set__;
+        db[@ CatspeakAssign.MULTIPLY] = __catspeak_expr_local_set_mult__;
+        db[@ CatspeakAssign.DIVIDE] = __catspeak_expr_local_set_div__;
+        db[@ CatspeakAssign.SUBTRACT] = __catspeak_expr_local_set_sub__;
+        db[@ CatspeakAssign.PLUS] = __catspeak_expr_local_set_plus__;
+        return db;
+    })();
+
+    /// @ignore
+    static __assignLookupGlobal = (function () {
+        var db = array_create(CatspeakAssign.__SIZE__, undefined);
+        db[@ CatspeakAssign.VANILLA] = __catspeak_expr_global_set__;
+        db[@ CatspeakAssign.MULTIPLY] = __catspeak_expr_global_set_mult__;
+        db[@ CatspeakAssign.DIVIDE] = __catspeak_expr_global_set_div__;
+        db[@ CatspeakAssign.SUBTRACT] = __catspeak_expr_global_set_sub__;
+        db[@ CatspeakAssign.PLUS] = __catspeak_expr_global_set_plus__;
         return db;
     })();
 }
@@ -799,6 +836,54 @@ function __catspeak_expr_index_set__() {
 }
 
 /// @ignore
+function __catspeak_expr_index_set_mult__() {
+    var collection_ = collection();
+    var key_ = key();
+    var value_ = value();
+    if (is_array(collection_)) {
+        collection_[@ key_] *= value_;
+    } else {
+        collection_[$ key_] *= value_;
+    }
+}
+
+/// @ignore
+function __catspeak_expr_index_set_div__() {
+    var collection_ = collection();
+    var key_ = key();
+    var value_ = value();
+    if (is_array(collection_)) {
+        collection_[@ key_] /= value_;
+    } else {
+        collection_[$ key_] /= value_;
+    }
+}
+
+/// @ignore
+function __catspeak_expr_index_set_sub__() {
+    var collection_ = collection();
+    var key_ = key();
+    var value_ = value();
+    if (is_array(collection_)) {
+        collection_[@ key_] -= value_;
+    } else {
+        collection_[$ key_] -= value_;
+    }
+}
+
+/// @ignore
+function __catspeak_expr_index_set_plus__() {
+    var collection_ = collection();
+    var key_ = key();
+    var value_ = value();
+    if (is_array(collection_)) {
+        collection_[@ key_] += value_;
+    } else {
+        collection_[$ key_] += value_;
+    }
+}
+
+/// @ignore
 function __catspeak_expr_global_get__() {
     return globals[$ name];
 }
@@ -809,6 +894,26 @@ function __catspeak_expr_global_set__() {
 }
 
 /// @ignore
+function __catspeak_expr_global_set_mult__() {
+    globals[$ name] *= value();
+}
+
+/// @ignore
+function __catspeak_expr_global_set_div__() {
+    globals[$ name] /= value();
+}
+
+/// @ignore
+function __catspeak_expr_global_set_sub__() {
+    globals[$ name] -= value();
+}
+
+/// @ignore
+function __catspeak_expr_global_set_plus__() {
+    globals[$ name] += value();
+}
+
+/// @ignore
 function __catspeak_expr_local_get__() {
     return locals[idx];
 }
@@ -816,6 +921,26 @@ function __catspeak_expr_local_get__() {
 /// @ignore
 function __catspeak_expr_local_set__() {
     locals[@ idx] = value();
+}
+
+/// @ignore
+function __catspeak_expr_local_set_mult__() {
+    locals[@ idx] *= value();
+}
+
+/// @ignore
+function __catspeak_expr_local_set_div__() {
+    locals[@ idx] /= value();
+}
+
+/// @ignore
+function __catspeak_expr_local_set_sub__() {
+    locals[@ idx] -= value();
+}
+
+/// @ignore
+function __catspeak_expr_local_set_plus__() {
+    locals[@ idx] += value();
 }
 
 /// @ignore
