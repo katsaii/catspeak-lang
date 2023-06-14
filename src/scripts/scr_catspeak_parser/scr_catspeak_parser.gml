@@ -408,6 +408,12 @@ function CatspeakParser(lexer, builder) constructor {
                 // function call syntax
                 lexer.next();
                 var args = [];
+                while (__isNot(CatspeakToken.PAREN_RIGHT)) {
+                    array_push(args, __parseExpression());
+                    if (lexer.peek() == CatspeakToken.COMMA) {
+                        lexer.next();
+                    }
+                }
                 if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
                     __ex("expected closing ')' after function arguments");
                 }
