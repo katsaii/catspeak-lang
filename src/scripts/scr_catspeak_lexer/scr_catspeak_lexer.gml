@@ -183,12 +183,21 @@ function __catspeak_create_buffer_from_string(src) {
 /// @param {Real} [size]
 ///   The length of the buffer input. Any characters beyond this limit
 ///   will be treated as the end of the file. Defaults to `infinity`.
-function CatspeakLexer(buff, offset=0, size=infinity) constructor {
+///
+/// @param {Struct} [keywords]
+///   A struct whose keys map to the corresponding Catspeak tokens they
+///   represent. Defaults to the vanilla set of Catspeak keywords.
+function CatspeakLexer(
+    buff, offset=0, size=infinity, keywords=undefined
+) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
         __catspeak_check_arg("buff", buff, buffer_exists);
         __catspeak_check_arg("offset", offset, is_numeric);
         __catspeak_check_arg("size", size, is_numeric);
+        if (keywords != undefined) {
+            __catspeak_check_arg("keywords", keywords, is_struct);
+        }
     }
 
     self.buff = buff;
@@ -209,23 +218,7 @@ function CatspeakLexer(buff, offset=0, size=infinity) constructor {
     //# feather disable once GM2043
     self.charNext = __nextUTF8Char();
     self.skipNextSemicolon = false;
-    self.keywords = global.__catspeakString2Token;
-
-    /// Sets the keyword database for the lexer to use.
-    ///
-    /// @param {Struct} database
-    ///   A struct whose keys map to the corresponding Catspeak tokens they
-    ///   represent.
-    ///
-    /// @return {Struct.CatspeakLexer}
-    static withKeywords = function (database) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("database", database, is_struct);
-        }
-
-        keywords = database;
-        return self;
-    };
+    self.keywords = keywords ?? global.__catspeakString2Token;
 
     /// @ignore
     ///

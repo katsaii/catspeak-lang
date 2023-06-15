@@ -35,11 +35,7 @@ function CatspeakEnvironment() constructor {
     /// @return {Struct.CatspeakLexer}
     static tokenise = function (buff, offset=undefined, size=undefined) {
         // CatspeakLexer() will do argument validation
-        var lexer = new CatspeakLexer(buff, offset, size);
-        if (keywords != undefined) {
-            lexer.withKeywords(keywords);
-        }
-        return lexer;
+        return new CatspeakLexer(buff, offset, size, keywords);
     };
 
     /// Parses a buffer containing a Catspeak program into a bespoke format
