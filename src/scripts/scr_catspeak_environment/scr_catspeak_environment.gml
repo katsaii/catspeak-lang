@@ -24,9 +24,46 @@ function CatspeakEnvironment() constructor {
         __catspeak_keywords_rename(keywords, currentName, newName);
     };
 
+    /// Used to add a new function to this environment.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    static addFunction = function (name, func) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+
+        interface ??= { };
+        var func_ = is_method(func) ? func : method(undefined, func);
+        interface[$ name] = func_;
+    };
+
+    /// Used to add a new constant to this environment.
+    ///
+    /// NOTE: ALthough you can use this to add functions, it's recommended
+    ///       to use [addFunction] for that purpose instead.
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Any} value
+    ///   The constant value to add.
+    static addConstant = function (name, value) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+
+        interface ??= { };
+        interface[$ name] = value;
+    };
+
     /// Erases the identity of Catspeak programs by replacing all keywords with
     /// GML-adjacent alternatives.
     static presetGMLStyle = function () {
+        // set keywords
         keywords ??= __catspeak_keywords_create();
         __catspeak_keywords_rename(keywords, "//", "div");
         __catspeak_keywords_rename(keywords, "--", "//");
