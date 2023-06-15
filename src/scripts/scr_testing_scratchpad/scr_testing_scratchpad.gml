@@ -58,7 +58,7 @@ TEST_EXPERIMENT "compiler" {
 }
 
 TEST_EXPERIMENT "compiler-2" {
-    var buff = __catspeak_create_buffer_from_string(@'let a = fun { let b = "hiiiii"; b } ; a ');
+    var buff = __catspeak_create_buffer_from_string(@'let a = fun () { let b = "hiiiii"; b } ; a ');
     var asg = Catspeak.parse(buff);
     var f = Catspeak.compileGML(asg);
     show_message(json_stringify(asg, true));
@@ -100,12 +100,12 @@ TEST_EXPERIMENT "compiler-5" {
     var buff = __catspeak_create_buffer_from_string(@'
         let a = [1, 2, 3, "five", false undefined, { "a" : 1, ["be"] : 5, cee : 89  hi }]
         
-        let f = fun {
-            return 123;
+        let f = fun (yippee) {
+            return yippee;
         }
         
         a[6].be = -3
-        a
+        f("aa" wtf)
     ');
     var asg = Catspeak.parse(buff);
     //show_message(json_stringify(asg, true));

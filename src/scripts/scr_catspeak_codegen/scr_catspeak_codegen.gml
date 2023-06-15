@@ -113,6 +113,7 @@ function CatspeakGMLCompiler(asg) constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("func", func,
                 "localCount", is_numeric,
+                "argCount", is_numeric,
                 "root", undefined
             );
             __catspeak_check_arg_struct("func.root", func.root,
@@ -124,6 +125,7 @@ function CatspeakGMLCompiler(asg) constructor {
             callTime : -1,
             program : undefined,
             locals : array_create(func.localCount),
+            argCount : func.argCount,
         };
         ctx.program = __compileTerm(ctx, func.root);
         if (__catspeak_term_is_pure(func.root.type)) {
@@ -633,6 +635,9 @@ function __catspeak_function__() {
         array_copy(oldLocals, 0, locals, 0, localCount);
     } else {
         callTime = current_time;
+    }
+    for (var argI = argCount - 1; argI >= 0; argI -= 1) {
+        locals[@ argI] = argument[argI];
     }
     var value;
     try {
