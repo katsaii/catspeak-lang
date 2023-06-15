@@ -5,14 +5,56 @@
 /// Packages all common Catspeak features into a neat, configurable box.
 function CatspeakEnvironment() constructor {
     self.keywords = undefined;
+    self.interface = undefined;
 
     /// Returns the keyword store for this Catspeak engine, allowing you to
     /// modify how the Catspeak lexer interprets keywords.
     ///
     /// @return {Struct}
     static getKeywords = function () {
-        keywords ??= catspeak_keywords_create();
+        keywords ??= __catspeak_keywords_create();
         return keywords;
+    };
+
+    /// Used to change the string representation of a Catspeak keyword.
+    ///
+    /// @param {String} currentName
+    ///   The current string representation of the keyword to change.
+    ///
+    /// @param {String} newName
+    ///   The new string representation of the keyword.
+    static renameKeyword = function (currentName, newName) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("currentName", currentName, is_string);
+            __catspeak_check_arg("newName", newName, is_string);
+        }
+
+        __catspeak_keywords_rename(getKeywords(), currentName, newName);
+    };
+
+    /// Erases the identity of Catspeak programs by replacing all keywords with
+    /// GML-adjacent alternatives.
+    static presetGMLStyle = function () {
+        var keywords_ = getKeywords();
+        __catspeak_keywords_rename(keywords_, "//", "div");
+        __catspeak_keywords_rename(keywords_, "--", "//");
+        __catspeak_keywords_rename(keywords_, "let", "var");
+        __catspeak_keywords_rename(keywords_, "fun", "function");
+        __catspeak_keywords_rename(keywords_, "impl", "constructor");
+        keywords_[$ "&&"] = CatspeakToken.AND;
+        keywords_[$ "||"] = CatspeakToken.OR;
+        keywords_[$ "mod"] = CatspeakToken.REMAINDER;
+        keywords_[$ "not"] = CatspeakToken.NOT;
+    };
+
+    /// Returns the external function/constant store for this Catspeak engine,
+    /// allowing you to modify what functions are exposed to the Catspeak
+    /// runtime.
+    ///
+    /// @return {Struct}
+    static getInterface = function () {
+        interface ??= __catspeak_interface_create();
+        return interface;
     };
 
     /// Creates a new [CatspeakLexer] from the supplied buffer, overriding

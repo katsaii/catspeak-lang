@@ -759,10 +759,10 @@ function __catspeak_init_lexer_codepage() {
     return page;
 }
 
-/// Creates a new struct containing all of the default Catspeak keywords.
+/// @ignore
 ///
 /// @return {Struct}
-function catspeak_keywords_create() {
+function __catspeak_keywords_create() {
     var keywords = { };
     keywords[$ "--"] = CatspeakToken.COMMENT;
     keywords[$ ";"] = CatspeakToken.BREAK_LINE;
@@ -814,20 +814,35 @@ function catspeak_keywords_create() {
     return keywords;
 }
 
-/// Find the string representation of a [CatspeakToken]. If the token does
-/// not appear in the database, then `undefined` is returned instead.
+/// @ignore
+///
+/// @param {Struct} keywords
+/// @param {String} currentName
+/// @param {String} newName
+function __catspeak_keywords_rename(keywords, currentName, newName) {
+    if (!variable_struct_exists(keywords, currentName)) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_error(
+                "no keyword with the name '", currentName, "' exists"
+            );
+        }
+        return;
+    }
+    var token = keywords[$ currentName];
+    variable_struct_remove(keywords, currentName);
+    keywords[$ newName] = token;
+}
+
+/// @ignore
 ///
 /// NOTE: This is an O(n) operation. This means that it's slow, and should
 ///       only be used for debugging purposes.
 ///
 /// @param {Struct} keywords
-///   The keyword database to search.
-///
 /// @param {Enum.CatspeakToken} token
-///   The token type to search for.
 ///
 /// @return {String}
-function catspeak_keywords_find_name(keywords, token) {
+function __catspeak_keywords_find_name(keywords, token) {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_arg("keywords", keywords, is_struct);
         __catspeak_check_arg(
@@ -845,60 +860,9 @@ function catspeak_keywords_find_name(keywords, token) {
     return undefined;
 }
 
-/// Used to change the string representation of a Catspeak keyword.
-///
-/// @param {Struct} keywords
-///   The keyword database to modify.
-///
-/// @param {String} currentName
-///   The current string representation of the keyword to change.
-///
-/// @param {String} newName
-///   The new string representation of the keyword.
-function catspeak_keywords_rename(keywords, currentName, newName) {
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_arg("keywords", keywords, is_struct);
-        __catspeak_check_arg("currentName", currentName, is_string);
-        __catspeak_check_arg("newName", newName, is_string);
-    }
-
-    if (!variable_struct_exists(keywords, currentName)) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_error(
-                "no keyword with the name '", currentName, "' exists"
-            );
-        }
-        return;
-    }
-    var token = keywords[$ currentName];
-    variable_struct_remove(keywords, currentName);
-    keywords[$ newName] = token;
-}
-
-/// Erases the identity of Catspeak programs by replacing all keywords with
-/// GML-adjacent alternatives.
-///
-/// @param {Struct} keywords
-///   The keyword database to modify.
-function catspeak_keywords_rename_gml(keywords) {
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_arg("keywords", keywords, is_struct);
-    }
-
-    catspeak_keywords_rename(keywords, "//", "div");
-    catspeak_keywords_rename(keywords, "--", "//");
-    catspeak_keywords_rename(keywords, "let", "var");
-    catspeak_keywords_rename(keywords, "fun", "function");
-    catspeak_keywords_rename(keywords, "impl", "constructor");
-    keywords[$ "&&"] = CatspeakToken.AND;
-    keywords[$ "||"] = CatspeakToken.OR;
-    keywords[$ "mod"] = CatspeakToken.REMAINDER;
-    keywords[$ "not"] = CatspeakToken.NOT;
-}
-
 /// @ignore
 function __catspeak_init_lexer_keywords() {
-    var keywords = catspeak_keywords_create();
+    var keywords = __catspeak_keywords_create();
     global.__catspeakConfig.keywords = keywords;
     return keywords;
 }

@@ -31,10 +31,7 @@ test_add(function () : Test("engine-tokenise-2") constructor {
 
 test_add(function () : Test("engine-tokenise-keywords") constructor {
     var engine = new CatspeakEnvironment();
-    catspeak_keywords_rename(
-        engine.getKeywords(),
-        "while", "world"
-    );
+    engine.renameKeyword("while", "world");
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = engine.tokenise(buff);
     assertEq(CatspeakToken.IDENT, lexer.next());
