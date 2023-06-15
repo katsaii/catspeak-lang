@@ -26,11 +26,10 @@ examples = [
         title : "while loop performance",
         obj : obj_testing_example_bench_while,
     },
-    
-    //{
-    //    title : "factorial",
-    //    obj : obj_testing_example_factorial,
-    //},
+    {
+        title : "factorial",
+        obj : obj_testing_example_bench_factorial,
+    },
     //{
     //    title : "count down",
     //    obj : obj_testing_example_countdown,

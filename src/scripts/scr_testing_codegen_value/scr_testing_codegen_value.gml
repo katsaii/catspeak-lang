@@ -20,7 +20,7 @@ test_add(function () : TestCodegenGMLResult("codegen-gml-value-string-3",
 ) constructor { }, IgnorePlatform.WIN_YYC);
 
 test_add(function () : TestCodegenGML("codegen-gml-value-fun",
-    @'let a = fun { let b = "hiiiii"; b } ; a'
+    @'let a = fun () { let b = "hiiiii"; b } ; a'
 ) constructor {
     var a = self.gmlFunc();
     assertEq("hiiiii", a());

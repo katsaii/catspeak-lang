@@ -27,6 +27,7 @@
     {"name":"scr_testing_parser_value","order":1,"path":"scripts/scr_testing_parser_value/scr_testing_parser_value.yy",},
     {"name":"obj_testing_example_bench_while","order":7,"path":"objects/obj_testing_example_bench_while/obj_testing_example_bench_while.yy",},
     {"name":"scr_testing_lexer_symbols","order":8,"path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},
+    {"name":"obj_testing_example_bench_factorial","order":8,"path":"objects/obj_testing_example_bench_factorial/obj_testing_example_bench_factorial.yy",},
     {"name":"scr_catspeak_parser","order":2,"path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},
     {"name":"scr_testing_environment","order":3,"path":"scripts/scr_testing_environment/scr_testing_environment.yy",},
     {"name":"scr_testing_codegen_value","order":1,"path":"scripts/scr_testing_codegen_value/scr_testing_codegen_value.yy",},

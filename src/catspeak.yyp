@@ -50,6 +50,7 @@
     {"id":{"name":"scr_testing_parser_value","path":"scripts/scr_testing_parser_value/scr_testing_parser_value.yy",},},
     {"id":{"name":"obj_testing_example_bench_while","path":"objects/obj_testing_example_bench_while/obj_testing_example_bench_while.yy",},},
     {"id":{"name":"scr_testing_lexer_symbols","path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},},
+    {"id":{"name":"obj_testing_example_bench_factorial","path":"objects/obj_testing_example_bench_factorial/obj_testing_example_bench_factorial.yy",},},
     {"id":{"name":"scr_catspeak_parser","path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},},
     {"id":{"name":"scr_catspeak_location","path":"scripts/scr_catspeak_location/scr_catspeak_location.yy",},},
     {"id":{"name":"scr_testing_environment","path":"scripts/scr_testing_environment/scr_testing_environment.yy",},},

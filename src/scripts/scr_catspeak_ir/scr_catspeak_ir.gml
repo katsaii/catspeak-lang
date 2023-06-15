@@ -579,6 +579,33 @@ function CatspeakASGBuilder() constructor {
         });
     };
 
+    /// Allocates a new named function argument with the supplied name.
+    /// Returns a term to get or set the value of this argument.
+    ///
+    /// @param {String} name
+    ///   The name of the local variable to allocate.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this local variable.
+    ///
+    /// @return {Struct}
+    static allocArg = function (name, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+
+        // __createTerm() will do argument validation
+        var local = allocLocal(name, location);
+        if (currFunctionScope.argCount != local.idx) {
+            __catspeak_error(
+                "must allocate all function arguments before ",
+                "allocating any local variables"
+            );
+        }
+        currFunctionScope.argCount += 1;
+        return local;
+    };
+
     /// Starts a new local variable block scope. Any local variables
     /// allocated in this scope will be cleared after [popBlock] is
     /// called.
@@ -678,6 +705,7 @@ function CatspeakASGBuilder() constructor {
                 blocksTop : -1,
                 nextLocalIdx : 0,
                 localCount : 0,
+                argCount : 0,
             };
             ds_list_add(functionScopes_, function_);
         } else {
@@ -685,6 +713,7 @@ function CatspeakASGBuilder() constructor {
             function_.blocksTop = -1;
             function_.nextLocalIdx = 0;
             function_.localCount = 0;
+            function_.argCount = 0;
         }
         currFunctionScope = function_;
         pushBlock();
@@ -702,7 +731,8 @@ function CatspeakASGBuilder() constructor {
         var idx = array_length(functions);
         functions[@ idx] = {
             localCount : currFunctionScope.localCount,
-            root : popBlock()
+            argCount : currFunctionScope.argCount,
+            root : popBlock(),
         };
         functionScopesTop -= 1;
         if (functionScopesTop < 0) {
