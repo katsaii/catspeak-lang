@@ -510,6 +510,7 @@ function CatspeakLexer(
             }
             var lexeme_ = getLexeme();
             var keyword = __getKeyword(lexeme_);
+            // TODO :: optimise this into a lookup table?
             if (keyword != undefined) {
                 token = keyword;
             } else if (lexeme_ == "true") {
@@ -523,6 +524,14 @@ function CatspeakLexer(
             } else if (lexeme_ == "undefined") {
                 token = CatspeakToken.VALUE;
                 value = undefined;
+                hasValue = true;
+            } else if (lexeme_ == "NaN") {
+                token = CatspeakToken.VALUE;
+                value = NaN;
+                hasValue = true;
+            } else if (lexeme_ == "infinity") {
+                token = CatspeakToken.VALUE;
+                value = infinity;
                 hasValue = true;
             }
         } else if (charCurr_ == ord("'")) {
