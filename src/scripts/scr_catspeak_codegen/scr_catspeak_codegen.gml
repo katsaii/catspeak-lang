@@ -35,7 +35,7 @@ function __catspeak_timeout_check(t) {
 ///
 /// @param {Struct} [interface]
 ///   The native interface to use.
-function CatspeakGMLCompiler(asg) constructor {
+function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
         __catspeak_check_arg_struct("asg", asg,
@@ -44,6 +44,8 @@ function CatspeakGMLCompiler(asg) constructor {
         );
     }
 
+    self.interface = interface;
+    self.interfaceBuiltins = global.__catspeakDefaultInterface;
     self.functions = asg.functions;
     self.sharedData = {
         globals : { },
@@ -456,10 +458,24 @@ function CatspeakGMLCompiler(asg) constructor {
                 );
             }
 
+            var name = target.name;
+            if (
+                interface != undefined &&
+                variable_struct_exists(interface, name) ||
+                variable_struct_exists(interfaceBuiltins, name)
+            ) {
+                // cannot assign to interface values
+                __catspeak_error(
+                    __catspeak_location_show(target.dbg),
+                    " -- invalid assignment target, ",
+                    "cannot assign to built-in function or constant"
+                );
+            }
+
             var func = __assignLookupGlobal[term.assignType];
             return method({
                 globals : sharedData.globals,
-                name : target.name,
+                name : name,
                 value : value,
             }, func);
         } else {
@@ -504,10 +520,27 @@ function CatspeakGMLCompiler(asg) constructor {
             );
         }
 
-        return method({
-            name : term.name,
-            globals : sharedData.globals,
-        }, __catspeak_expr_global_get__);
+        var name = term.name;
+        if (
+            interface != undefined &&
+            variable_struct_exists(interface, name)
+        ) {
+            // user-defined interface
+            return method({
+                value : interface[$ name],
+            }, __catspeak_expr_value__);
+        } else if (variable_struct_exists(interfaceBuiltins, name)) {
+            // default interface
+            return method({
+                value : interfaceBuiltins[$ name],
+            }, __catspeak_expr_value__);
+        } else {
+            // global var
+            return method({
+                name : name,
+                globals : sharedData.globals,
+            }, __catspeak_expr_global_get__);
+        }
     };
 
     /// @ignore
@@ -815,7 +848,8 @@ function __catspeak_expr_op_2__() {
 function __catspeak_expr_call__() {
     var callee_ = callee();
     var args_ = array_map(args, function(f) { return f() });
-    with (method_get_self(callee_) ?? shared.self_) {
+    var shared_ = shared;
+    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return script_execute_ext(calleeIdx, args_);
     }
@@ -967,4 +1001,41 @@ function __catspeak_init_codegen() {
     global.__catspeakGmlBreakRef = [undefined];
     /// @ignore
     global.__catspeakGmlContinueRef = [];
+    /// @ignore
+    global.__catspeakDefaultInterface = __catspeak_init_default_interface();
+}
+
+/// @ignore
+///
+/// @return {Struct}
+function __catspeak_init_default_interface() {
+    var interface = { };
+    // GML type checking and conversion functions
+    var funcs = [
+        "bool", bool,
+        "string", string,
+        "real", real,
+        "int64", int64,
+        "typeof", typeof,
+        "instanceof", instanceof,
+        "is_array", is_array,
+        "is_bool", is_bool,
+        "is_infinity", is_infinity,
+        "is_int32", is_int32,
+        "is_int64", is_int64,
+        "is_method", is_method,
+        "is_nan", is_nan,
+        "is_numeric", is_numeric,
+        "is_ptr", is_ptr,
+        "is_real", is_real,
+        "is_string", is_string,
+        "is_struct", is_struct,
+        "is_undefined", is_undefined,
+        "array_length", array_length,
+        "array_create", array_create,
+    ];
+    for (var i = array_length(funcs) - 1; i > 0; i -= 2) {
+        interface[$ funcs[i - 1]] = method(undefined, funcs[i]);
+    }
+    return interface;
 }

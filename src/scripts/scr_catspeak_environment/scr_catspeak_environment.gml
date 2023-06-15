@@ -7,15 +7,6 @@ function CatspeakEnvironment() constructor {
     self.keywords = undefined;
     self.interface = undefined;
 
-    /// Returns the keyword store for this Catspeak engine, allowing you to
-    /// modify how the Catspeak lexer interprets keywords.
-    ///
-    /// @return {Struct}
-    static getKeywords = function () {
-        keywords ??= __catspeak_keywords_create();
-        return keywords;
-    };
-
     /// Used to change the string representation of a Catspeak keyword.
     ///
     /// @param {String} currentName
@@ -29,32 +20,23 @@ function CatspeakEnvironment() constructor {
             __catspeak_check_arg("newName", newName, is_string);
         }
 
-        __catspeak_keywords_rename(getKeywords(), currentName, newName);
+        keywords ??= __catspeak_keywords_create();
+        __catspeak_keywords_rename(keywords, currentName, newName);
     };
 
     /// Erases the identity of Catspeak programs by replacing all keywords with
     /// GML-adjacent alternatives.
     static presetGMLStyle = function () {
-        var keywords_ = getKeywords();
-        __catspeak_keywords_rename(keywords_, "//", "div");
-        __catspeak_keywords_rename(keywords_, "--", "//");
-        __catspeak_keywords_rename(keywords_, "let", "var");
-        __catspeak_keywords_rename(keywords_, "fun", "function");
-        __catspeak_keywords_rename(keywords_, "impl", "constructor");
-        keywords_[$ "&&"] = CatspeakToken.AND;
-        keywords_[$ "||"] = CatspeakToken.OR;
-        keywords_[$ "mod"] = CatspeakToken.REMAINDER;
-        keywords_[$ "not"] = CatspeakToken.NOT;
-    };
-
-    /// Returns the external function/constant store for this Catspeak engine,
-    /// allowing you to modify what functions are exposed to the Catspeak
-    /// runtime.
-    ///
-    /// @return {Struct}
-    static getInterface = function () {
-        interface ??= __catspeak_interface_create();
-        return interface;
+        keywords ??= __catspeak_keywords_create();
+        __catspeak_keywords_rename(keywords, "//", "div");
+        __catspeak_keywords_rename(keywords, "--", "//");
+        __catspeak_keywords_rename(keywords, "let", "var");
+        __catspeak_keywords_rename(keywords, "fun", "function");
+        __catspeak_keywords_rename(keywords, "impl", "constructor");
+        keywords[$ "&&"] = CatspeakToken.AND;
+        keywords[$ "||"] = CatspeakToken.OR;
+        keywords[$ "mod"] = CatspeakToken.REMAINDER;
+        keywords[$ "not"] = CatspeakToken.NOT;
     };
 
     /// Creates a new [CatspeakLexer] from the supplied buffer, overriding
