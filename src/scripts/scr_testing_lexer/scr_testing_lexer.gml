@@ -50,9 +50,9 @@ function TestLexerKeyword(name, token, src) : Test(name) constructor {
     assertEq(token, lexer.next());
     assertEq(src, lexer.getLexeme());
     // part 2
-    var customKeywords2 = catspeak_keywords_create();
-    var tokenName = catspeak_keywords_find_name(customKeywords2, token);
-    catspeak_keywords_rename(customKeywords2, tokenName, src);
+    var customKeywords2 = __catspeak_keywords_create();
+    var tokenName = __catspeak_keywords_find_name(customKeywords2, token);
+    __catspeak_keywords_rename(customKeywords2, tokenName, src);
     var lexer2 = new CatspeakLexer(buff, , , customKeywords2);
     assertEq(token, lexer2.next());
     assertEq(src, lexer2.getLexeme());

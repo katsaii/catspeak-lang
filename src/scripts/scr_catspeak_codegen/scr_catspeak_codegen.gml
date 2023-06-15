@@ -24,16 +24,20 @@ function __catspeak_timeout_check(t) {
 /// Consumes an abstract syntax graph and converts it into a callable GML
 /// function.
 ///
-/// @unstable
-///
 /// NOTE: Do not modify the the syntax graph whilst compilation is taking
 ///       place. This will cause undefined behaviour, potentially resulting
 ///       in hard to discover bugs!
 ///
+/// @unstable
+///
 /// @param {Struct} asg
 ///   The syntax graph to compile.
+///
+/// @param {Struct} [interface]
+///   The native interface to use.
 function CatspeakGMLCompiler(asg) constructor {
     if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_init();
         __catspeak_check_arg_struct("asg", asg,
             "functions", is_array,
             "entryPoints", is_array
