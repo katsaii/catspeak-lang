@@ -1005,34 +1005,62 @@ function __catspeak_init_codegen() {
     global.__catspeakDefaultInterface = __catspeak_init_default_interface();
 }
 
+/// A set of generally useful functions exposed in every Catspeak program.
+///
 /// @ignore
 ///
 /// @return {Struct}
 function __catspeak_init_default_interface() {
     var interface = { };
-    // GML type checking and conversion functions
     var funcs = [
+        // type checking
         "bool", bool,
         "string", string,
-        "real", real,
-        "int64", int64,
-        "typeof", typeof,
-        "instanceof", instanceof,
-        "is_array", is_array,
+        "number", real,
+        "array", array_create,
         "is_bool", is_bool,
-        "is_infinity", is_infinity,
-        "is_int32", is_int32,
-        "is_int64", is_int64,
-        "is_method", is_method,
-        "is_nan", is_nan,
-        "is_numeric", is_numeric,
-        "is_ptr", is_ptr,
-        "is_real", is_real,
         "is_string", is_string,
+        "is_number", is_numeric,
+        "is_array", is_array,
         "is_struct", is_struct,
-        "is_undefined", is_undefined,
+        "is_infinity", is_infinity,
+        "is_function", is_method,
+        "is_nan", is_nan,
         "array_length", array_length,
-        "array_create", array_create,
+        "string_length", string_length,
+        "string_byte_length", string_byte_length,
+        "string_get", string_char_at,
+        "string_byte_get", string_byte_at,
+        // randomisation
+        "choose", choose,
+        "random", random,
+        "random_range", random_range,
+        "irandom", irandom,
+        "irandom_range", irandom_range,
+        // maths
+        "exp", exp,
+        "power", power,
+        "sqr", sqr,
+        "sqrt", sqrt,
+        "logn", logn,
+        "round", round,
+        "frac", frac,
+        "abs", abs,
+        "sign", sign,
+        "floor", floor,
+        "ceil", ceil,
+        "min", min,
+        "max", max,
+        "mean", mean,
+        "median", median,
+        "clamp", clamp,
+        "lerp", lerp,
+        // colour
+        "lerp_colour", merge_colour,
+        "rgb", make_colour_rgb,
+        "hsv", make_colour_hsv,
+        // debug
+        "print", show_debug_message,
     ];
     for (var i = array_length(funcs) - 1; i > 0; i -= 2) {
         interface[$ funcs[i - 1]] = method(undefined, funcs[i]);
