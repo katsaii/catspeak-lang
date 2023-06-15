@@ -26,6 +26,7 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"codegen","folderPath":"folders/Testing/unit-tests/codegen.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"lexer","folderPath":"folders/Testing/unit-tests/lexer.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"parser","folderPath":"folders/Testing/unit-tests/parser.yy",},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"runtime","folderPath":"folders/Catspeak/runtime.yy",},
   ],
   "IncludedFiles": [],
   "isEcma": false,

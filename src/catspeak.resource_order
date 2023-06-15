@@ -11,6 +11,7 @@
     {"name":"codegen","order":5,"path":"folders/Testing/unit-tests/codegen.yy",},
     {"name":"lexer","order":1,"path":"folders/Testing/unit-tests/lexer.yy",},
     {"name":"parser","order":4,"path":"folders/Testing/unit-tests/parser.yy",},
+    {"name":"runtime","order":3,"path":"folders/Catspeak/runtime.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"obj_testing_example_bench_basic_vars","order":6,"path":"objects/obj_testing_example_bench_basic_vars/obj_testing_example_bench_basic_vars.yy",},
