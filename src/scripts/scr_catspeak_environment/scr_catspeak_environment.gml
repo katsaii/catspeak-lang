@@ -231,7 +231,7 @@ function CatspeakEnvironment() constructor {
     /// @return {Function}
     static compileGML = function (asg) {
         // CatspeakGMLCompiler() will do argument validation
-        var compiler = new CatspeakGMLCompiler(asg);
+        var compiler = new CatspeakGMLCompiler(asg, interface);
         var result;
         do {
             result = compiler.update();

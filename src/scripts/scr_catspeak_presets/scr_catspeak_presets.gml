@@ -12,6 +12,8 @@ enum CatspeakPreset {
     TYPE,
     /// Exposes safe array functions.
     ARRAY,
+    /// Exposes safe struct functions.
+    STRUCT,
     /// Exposes safe string functions.
     STRING,
     /// Exposes safe mathematical and statistical functions.
@@ -92,12 +94,116 @@ function __catspeak_preset_type(env) {
 /// @ignore
 ///
 /// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_array(env) { }
+function __catspeak_preset_array(env) {
+    env.addFunction(
+        "array_create", array_create,
+        "array_copy", array_copy,
+        "array_equals", array_equals,
+        "array_get", array_get,
+        "array_set", array_set,
+        "array_push", array_push,
+        "array_pop", array_pop,
+        "array_shift", array_shift,
+        "array_insert", array_insert,
+        "array_delete", array_delete,
+        "array_get_index", array_get_index,
+        "array_contains", array_contains,
+        "array_contains_ext", array_contains_ext,
+        "array_sort", array_sort,
+        "array_reverse", array_reverse,
+        "array_shuffle", array_shuffle,
+        "array_length", array_length,
+        "array_resize", array_resize,
+        "array_first", array_first,
+        "array_last", array_last,
+        "array_find_index", array_find_index,
+        "array_any", array_any,
+        "array_all", array_all,
+        "array_foreach", array_foreach,
+        "array_reduce", array_reduce,
+        "array_concat", array_concat,
+        "array_union", array_union,
+        "array_intersection", array_intersection,
+        "array_filter", array_filter,
+        "array_map", array_map,
+        "array_unique", array_unique,
+        "array_copy_while", array_copy_while,
+        "array_create_ext", array_create_ext,
+        "array_filter_ext", array_filter_ext,
+        "array_map_ext", array_map_ext,
+        "array_unique_ext", array_unique_ext,
+        "array_reverse_ext", array_reverse_ext,
+        "array_shuffle_ext", array_shuffle_ext
+    );
+}
 
 /// @ignore
 ///
 /// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_string(env) { }
+function __catspeak_preset_struct(env) {
+    env.addFunction(
+        "struct_exists", struct_exists,
+        "struct_get", struct_get,
+        "struct_set", struct_set,
+        "struct_remove", struct_remove,
+        "struct_get_names", struct_get_names,
+        "struct_names_count", struct_names_count,
+        "is_instanceof", is_instanceof,
+        "instanceof", instanceof,
+        "struct_foreach", struct_foreach,
+    );
+}
+
+/// @ignore
+///
+/// @param {Struct.CatspeakEnvironment} env
+function __catspeak_preset_string(env) {
+    env.addFunction(
+        "ansi_char", ansi_char,
+        "chr", chr,
+        "ord", ord,
+        "string_byte_at", string_byte_at,
+        "string_byte_length", string_byte_length,
+        "string_set_byte_at", string_set_byte_at,
+        "string_char_at", string_char_at,
+        "string_ord_at", string_ord_at,
+        "string_length", string_length,
+        "string_pos", string_pos,
+        "string_pos_ext", string_pos_ext,
+        "string_last_pos", string_last_pos,
+        "string_last_pos_ext", string_last_pos_ext,
+        "string_starts_with", string_starts_with,
+        "string_ends_with", string_ends_with,
+        "string_count", string_count,
+        "string_copy", string_copy,
+        "string_delete", string_delete,
+        "string_digits", string_digits,
+        "string_format", string_format,
+        "string_insert", string_insert,
+        "string_letters", string_letters,
+        "string_lettersdigits", string_lettersdigits,
+        "string_lower", string_lower,
+        "string_repeat", string_repeat,
+        "string_replace", string_replace,
+        "string_replace_all", string_replace_all,
+        "string_upper", string_upper,
+        "string_hash_to_newline", string_hash_to_newline,
+        "string_trim", string_trim,
+        "string_trim_start", string_trim_start,
+        "string_trim_end", string_trim_end,
+        "string_split", string_split,
+        "string_split_ext", string_split_ext,
+        "string_join", string_join,
+        "string_join_ext", string_join_ext,
+        "string_concat", string_concat,
+        "string_concat_ext", string_concat_ext,
+        "string_width", string_width,
+        "string_width_ext", string_width_ext,
+        "string_height", string_height,
+        "string_height_ext", string_height_ext,
+        "string_foreach", string_foreach
+    );
+}
 
 /// @ignore
 ///
@@ -227,7 +333,20 @@ function __catspeak_preset_random(env) {
 /// @ignore
 ///
 /// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_unsafe(env) { }
+function __catspeak_preset_unsafe(env) {
+    env.addFunction(
+        "asset_get_index", asset_get_index,
+        "asset_get_type", asset_get_type,
+        "tag_get_asset_ids", tag_get_asset_ids,
+        "tag_get_assets", tag_get_assets,
+        "asset_get_tags", asset_get_tags,
+        "asset_add_tags", asset_add_tags,
+        "asset_remove_tags", asset_remove_tags,
+        "asset_has_tags", asset_has_tags,
+        "asset_has_any_tag", asset_has_any_tag,
+        "asset_clear_tags", asset_clear_tags
+    );
+}
 
 /// @ignore
 function __catspeak_init_presets() {
@@ -235,6 +354,7 @@ function __catspeak_init_presets() {
     presets[@ CatspeakPreset.GML] = __catspeak_preset_gml;
     presets[@ CatspeakPreset.TYPE] = __catspeak_preset_type;
     presets[@ CatspeakPreset.ARRAY] = __catspeak_preset_array;
+    presets[@ CatspeakPreset.STRUCT] = __catspeak_preset_struct;
     presets[@ CatspeakPreset.STRING] = __catspeak_preset_string;
     presets[@ CatspeakPreset.MATH] = __catspeak_preset_math;
     presets[@ CatspeakPreset.MATH_3D] = __catspeak_preset_math_3d;
