@@ -105,7 +105,7 @@ TEST_EXPERIMENT "compiler-5" {
         }
         
         a[6].be = -3
-        typeof(f("aa" wtf))
+        f("aa" wtf)
     ');
     var asg = Catspeak.parse(buff);
     //show_message(json_stringify(asg, true));

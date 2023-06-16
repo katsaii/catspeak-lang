@@ -14,14 +14,50 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {String} newName
     ///   The new string representation of the keyword.
-    static renameKeyword = function (currentName, newName) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("currentName", currentName, is_string);
-            __catspeak_check_arg("newName", newName, is_string);
-        }
-
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static renameKeyword = function () {
         keywords ??= __catspeak_keywords_create();
-        __catspeak_keywords_rename(keywords, currentName, newName);
+        var keywords_ = keywords;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var currentName = argument[i];
+            var newName = argument[i + 1];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("currentName", currentName, is_string);
+                __catspeak_check_arg("newName", newName, is_string);
+            }
+
+            __catspeak_keywords_rename(keywords, currentName, newName);
+        }
+    };
+
+    /// adds a new keyword alias.
+    ///
+    /// @param {String} name
+    ///   The name of the keyword to add.
+    ///
+    /// @param {Enum.CatspeakToken} token
+    ///   The token this keyword should represent.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var token = argument[i + 1];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+
+            keywords_[$ name] = token;
+        }
     };
 
     /// Used to add a new function to this environment.
@@ -31,14 +67,24 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Function} func
     ///   The script or function to add.
-    static addFunction = function (name, func) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("name", name, is_string);
-        }
-
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addFunction = function () {
         interface ??= { };
-        var func_ = is_method(func) ? func : method(undefined, func);
-        interface[$ name] = func_;
+        var interface_ = interface;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var func = argument[i + 1];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+
+            func = is_method(func) ? func : method(undefined, func);
+            interface_[$ name] = func;
+        }
     };
 
     /// Used to add a new constant to this environment.
@@ -51,29 +97,38 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Any} value
     ///   The constant value to add.
-    static addConstant = function (name, value) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("name", name, is_string);
-        }
-
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addConstant = function () {
         interface ??= { };
-        interface[$ name] = value;
+        var interface_ = interface;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var value = argument[i + 1];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+
+            interface_[$ name] = value;
+        }
     };
 
-    /// Erases the identity of Catspeak programs by replacing all keywords with
-    /// GML-adjacent alternatives.
-    static presetGMLStyle = function () {
-        // set keywords
-        keywords ??= __catspeak_keywords_create();
-        __catspeak_keywords_rename(keywords, "//", "div");
-        __catspeak_keywords_rename(keywords, "--", "//");
-        __catspeak_keywords_rename(keywords, "let", "var");
-        __catspeak_keywords_rename(keywords, "fun", "function");
-        __catspeak_keywords_rename(keywords, "impl", "constructor");
-        keywords[$ "&&"] = CatspeakToken.AND;
-        keywords[$ "||"] = CatspeakToken.OR;
-        keywords[$ "mod"] = CatspeakToken.REMAINDER;
-        keywords[$ "not"] = CatspeakToken.NOT;
+    /// Applies list of presets to this Catspeak environment. These changes
+    /// cannot be undone, so only choose presets you really need.
+    ///
+    /// @param {Enum.CatspeakPreset} preset
+    ///   The preset type to apply.
+    ///
+    /// @param {Enum.CatspeakPreset} ...
+    ///   Additional preset arguments.
+    static applyPreset = function() {
+        for (var i = 0; i < argument_count; i += 1) {
+            var presetFunc = __catspeak_preset_get(argument[i]);
+            presetFunc(self);
+        }
     };
 
     /// Creates a new [CatspeakLexer] from the supplied buffer, overriding

@@ -40,6 +40,7 @@
     {"id":{"name":"fnt_testing","path":"fonts/fnt_testing/fnt_testing.yy",},},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},},
     {"id":{"name":"scr_testing_lexer_whitespace","path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},},
+    {"id":{"name":"scr_catspeak_presets","path":"scripts/scr_catspeak_presets/scr_catspeak_presets.yy",},},
     {"id":{"name":"scr_testing_lexer_internals","path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},},
     {"id":{"name":"scr_future_file","path":"scripts/scr_future_file/scr_future_file.yy",},},
     {"id":{"name":"scr_catspeak_environment","path":"scripts/scr_catspeak_environment/scr_catspeak_environment.yy",},},

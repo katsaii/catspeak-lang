@@ -5,7 +5,7 @@
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "compiler",
-    "path": "folders/Catspeak/compiler.yy",
+    "name": "Catspeak",
+    "path": "folders/Catspeak.yy",
   },
 }
