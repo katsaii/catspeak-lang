@@ -44,8 +44,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         );
     }
 
-    self.interface = interface;
-    self.interfaceBuiltins = global.__catspeakDefaultInterface;
+    self.interface = interface ?? { };
     self.functions = asg.functions;
     self.sharedData = {
         globals : { },
@@ -459,11 +458,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             }
 
             var name = target.name;
-            if (
-                interface != undefined &&
-                variable_struct_exists(interface, name) ||
-                variable_struct_exists(interfaceBuiltins, name)
-            ) {
+            if (variable_struct_exists(interface, name)) {
                 // cannot assign to interface values
                 __catspeak_error(
                     __catspeak_location_show(target.dbg),
@@ -521,18 +516,10 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         }
 
         var name = term.name;
-        if (
-            interface != undefined &&
-            variable_struct_exists(interface, name)
-        ) {
+        if (variable_struct_exists(interface, name)) {
             // user-defined interface
             return method({
                 value : interface[$ name],
-            }, __catspeak_expr_value__);
-        } else if (variable_struct_exists(interfaceBuiltins, name)) {
-            // default interface
-            return method({
-                value : interfaceBuiltins[$ name],
             }, __catspeak_expr_value__);
         } else {
             // global var
@@ -1001,12 +988,10 @@ function __catspeak_init_codegen() {
     global.__catspeakGmlBreakRef = [undefined];
     /// @ignore
     global.__catspeakGmlContinueRef = [];
-    /// @ignore
-    global.__catspeakDefaultInterface = __catspeak_init_default_interface();
 }
 
 /// A set of generally useful functions exposed in every Catspeak program.
-///
+///TODO REMOVE
 /// @ignore
 ///
 /// @return {Struct}
