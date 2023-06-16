@@ -105,11 +105,14 @@ TEST_EXPERIMENT "compiler-5" {
         }
         
         a[6].be = -3
-        f("aa" wtf)
+        let b = max(1.3, f(2));
+        return [b, typeof(b)]
     ');
-    var asg = Catspeak.parse(buff);
+    var env = new CatspeakEnvironment();
+    env.applyPreset(CatspeakPreset.TYPE, CatspeakPreset.MATH);
+    var asg = env.parse(buff);
     //show_message(json_stringify(asg, true));
-    var f = Catspeak.compileGML(asg);
+    var f = env.compileGML(asg);
     show_message(f());
     
 }
