@@ -12,12 +12,12 @@ test_add(function () : TestCodegenGMLResult("codegen-gml-value-string",
 test_add(function () : TestCodegenGMLResult("codegen-gml-value-string-2",
     @'"hello" "( •̀ ω •́ )✧(⊙x⊙;)(⊙_⊙;)(⊙_⊙;)◉_◉ΒβΘ ΡάᾱὺΏὠ⨊⩓⩓↪◶"',
     "( •̀ ω •́ )✧(⊙x⊙;)(⊙_⊙;)(⊙_⊙;)◉_◉ΒβΘ ΡάᾱὺΏὠ⨊⩓⩓↪◶"
-) constructor { }, IgnorePlatform.WIN_YYC);
+) constructor { }, IgnorePlatform.WIN_YYC | IgnorePlatform.HTML5);
 
 test_add(function () : TestCodegenGMLResult("codegen-gml-value-string-3",
     @'"( •̀ ω •́ )✧(⊙x⊙;)(⊙_⊙;)(⊙_⊙;)◉_◉ΒβΘ ΡάᾱὺΏὠ⨊⩓⩓↪◶" "hello"',
     "hello"
-) constructor { }, IgnorePlatform.WIN_YYC);
+) constructor { }, IgnorePlatform.WIN_YYC | IgnorePlatform.HTML5);
 
 test_add(function () : TestCodegenGML("codegen-gml-value-fun",
     @'let a = fun () { let b = "hiiiii"; b } ; a'

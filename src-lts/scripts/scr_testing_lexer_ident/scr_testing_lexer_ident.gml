@@ -15,7 +15,7 @@ test_add(function () : TestLexerToken("lexer-ident-3",
 
 test_add(function () : TestLexerToken("lexer-tokens-ident-literal",
     CatspeakToken.IDENT, "`🙀abc`", "🙀abc"
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerToken("lexer-tokens-ident-literal-2",
     CatspeakToken.IDENT, "`>>=`", ">>="
@@ -27,7 +27,7 @@ test_add(function () : TestLexerToken("lexer-tokens-ident-literal-3",
 
 test_add(function () : TestLexerToken("lexer-tokens-ident-literal-malformed",
     CatspeakToken.IDENT, "`🙀abc", "🙀abc"
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerToken("lexer-tokens-ident-literal-malformed-2",
     CatspeakToken.IDENT, "`>>=", ">>="

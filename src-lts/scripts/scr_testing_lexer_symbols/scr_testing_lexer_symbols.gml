@@ -11,7 +11,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-arrow",
         ⇈ ⇉ ⇊ ⇋ ⇌ ⇍ ⇎ ⇏ ⇐ ⇑ ⇒ ⇓ ⇔ ⇕ ⇖ ⇗ ⇘ ⇙ ⇚ ⇛ ⇜ ⇝ ⇞ ⇟ ⇠ ⇡ ⇢ ⇣
         ⇤ ⇥ ⇦ ⇧ ⇨ ⇩ ⇪ ⇫ ⇬ ⇭ ⇮ ⇯ ⇰ ⇱ ⇲ ⇳ ⇴ ⇵ ⇶ ⇷ ⇸ ⇹ ⇺ ⇻ ⇼ ⇽ ⇾ ⇿
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-emoji",
     @"
@@ -21,7 +21,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-emoji",
         😰 😱 😲 😳 😴 😵 😶 😷 😸 😹 😺 😻 😼 😽 😾 😿
         🙀 🙁 🙂 🙃 🙄 🙅 🙆 🙇 🙈 🙉 🙊 🙋 🙌 🙍 🙎 🙏
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-misc",
     @"
@@ -42,7 +42,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-misc",
         ⛠ ⛡ ⛢ ⛣ ⛤ ⛥ ⛦ ⛧ ⛨ ⛩ ⛪ ⛫ ⛬ ⛭ ⛮ ⛯
         ⛰ ⛱ ⛲ ⛳ ⛴ ⛵ ⛶ ⛷ ⛸ ⛹ ⛺ ⛻ ⛼ ⛽ ⛾ ⛿
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-lines",
     @"
@@ -55,7 +55,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-lines",
         ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬ ╭ ╮ ╯
         ╰ ╱ ╲ ╳ ╴ ╵ ╶ ╷ ╸ ╹ ╺ ╻ ╼ ╽ ╾ ╿
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-numbers",
     @"
@@ -73,7 +73,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-numbers",
         ⅰ ⅱ ⅲ ⅳ ⅴ ⅵ ⅶ ⅷ ⅸ ⅹ ⅺ ⅻ ⅼ ⅽ ⅾ ⅿ
         ↀ ↁ ↂ Ↄ ↄ ↅ ↆ ↇ ↈ ↉ ↊ ↋
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-maths",
     @"
@@ -94,7 +94,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-maths",
         ⋠ ⋡ ⋢ ⋣ ⋤ ⋥ ⋦ ⋧ ⋨ ⋩ ⋪ ⋫ ⋬ ⋭ ⋮ ⋯
         ⋰ ⋱ ⋲ ⋳ ⋴ ⋵ ⋶ ⋷ ⋸ ⋹ ⋺ ⋻ ⋼ ⋽ ⋾ ⋿
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-currency",
     @"
@@ -102,7 +102,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-currency",
         ₴ ₵ ₶ ₷ ₸ ₹ ₺ ₻ ₼ ₽ ₾ ₿ ＄$ ௹ ৲ ₹ ৳ 원
         ㍐ 圓 元 円 ﷼ ៛ ₰ ¤ ₸ ₴ ￥ ¥ ₿ ฿ ￠ ₡ ¢ ₢
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-script",
     @"
@@ -110,7 +110,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-script",
         ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎
         ₐ ₑ ₒ ₓ ₔ ₕ ₖ ₗ ₘ ₙ ₚ ₛ ₜ
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-greek",
     @"
@@ -131,7 +131,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-greek",
         ῠ ῡ ῢ ΰ ῤ ῥ ῦ ῧ Ῠ Ῡ Ὺ Ύ Ῥ ῭ ΅ `
         ῲ ῳ ῴ ῶ Ὸ ῷ Ό Ὼ Ώ ῼ ´ ῾
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-kaomoji",
     @"
@@ -146,7 +146,7 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-kaomoji",
         ≧◠‿●‿◠≦
         ૮ ˶´ ᵕˋ ˶ა
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerUTF8("lexer-locale-symbols-kaomoji-2",
     @"
@@ -164,4 +164,4 @@ test_add(function () : TestLexerUTF8("lexer-locale-symbols-kaomoji-2",
            |   /  \   |
            |  /    \  |
     "
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);

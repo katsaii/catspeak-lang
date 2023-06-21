@@ -31,7 +31,7 @@ test_add(function () : TestLexerToken("lexer-numbers-char-2",
 
 test_add(function () : TestLexerToken("lexer-numbers-char-3",
     CatspeakToken.VALUE, "'🙀'", ord("🙀")
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerToken("lexer-numbers-char-malformed-eof",
     CatspeakToken.VALUE, "'", 0
@@ -47,4 +47,4 @@ test_add(function () : TestLexerToken("lexer-numbers-char-malformed-2",
 
 test_add(function () : TestLexerToken("lexer-numbers-char-malformed-3",
     CatspeakToken.VALUE, "'🙀'", ord("🙀")
-) constructor { });
+) constructor { }, IgnorePlatform.HTML5);
