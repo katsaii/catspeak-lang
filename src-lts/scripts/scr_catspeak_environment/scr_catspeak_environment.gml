@@ -247,9 +247,4 @@ globalvar Catspeak;
 function __catspeak_init_engine() {
     // initialise the default Catspeak engine
     Catspeak = new CatspeakEnvironment();
-    
-    show_debug_message("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHH")
-    show_debug_message(static_get(static_get(method_get_index(Catspeak.compileGML))));
-    show_debug_message(static_get(static_get(Catspeak.compileGML)));
-    show_debug_message(static_get(CatspeakEnvironment));
 }
