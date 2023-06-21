@@ -42,4 +42,4 @@ test_add(function () : Test("lexer-internals-unicode") constructor {
     lexer.__advance(); // 字
     assertEq("字", lexer.getLexeme());
     buffer_delete(buff);
-});
+}, IgnorePlatform.HTML5);

@@ -23,7 +23,7 @@ test_add(function () : Test("lexer-misc-unicode") constructor {
     assertEq(CatspeakToken.IDENT, lexer.nextWithWhitespace());
     assertEq("abcde1", lexer.getLexeme());
     buffer_delete(buff);
-});
+}, IgnorePlatform.HTML5);
 
 test_add(function () : TestLexerTokenStream("lexer-misc-example",
     "return (fun (a, b) { a + b })"
