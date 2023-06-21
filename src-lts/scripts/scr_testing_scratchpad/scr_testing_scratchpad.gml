@@ -46,7 +46,7 @@ TEST_EXPERIMENT "parser-2" {
 TEST_EXPERIMENT "parser-3" {
     var buff = __catspeak_create_buffer_from_string(@'1 a 2');
     var asg = Catspeak.parse(buff);
-    show_message(json_stringify(asg, true));
+    show_message(json_stringify(asg)); //, true));
 }
 
 TEST_EXPERIMENT "compiler" {
@@ -61,7 +61,7 @@ TEST_EXPERIMENT "compiler-2" {
     var buff = __catspeak_create_buffer_from_string(@'let a = fun () { let b = "hiiiii"; b } ; a ');
     var asg = Catspeak.parse(buff);
     var f = Catspeak.compileGML(asg);
-    show_message(json_stringify(asg, true));
+    show_message(json_stringify(asg)); //, true));
     show_message([f(), f()()]);
 }
 
@@ -78,7 +78,7 @@ TEST_EXPERIMENT "compiler-3" {
     ');
     var asg = Catspeak.parse(buff);
     var f = Catspeak.compileGML(asg);
-    show_message(json_stringify(asg, true));
+    show_message(json_stringify(asg)); //, true));
     show_message(f());
 }
 
@@ -90,7 +90,7 @@ TEST_EXPERIMENT "compiler-4" {
         }
     ');
     var asg = Catspeak.parse(buff);
-    show_message(json_stringify(asg, true));
+    show_message(json_stringify(asg)); //, true));
     var f = Catspeak.compileGML(asg);
     show_message(f());
     

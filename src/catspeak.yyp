@@ -16,6 +16,7 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak","folderPath":"folders/Catspeak.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"common","folderPath":"folders/Catspeak/common.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"compiler","folderPath":"folders/Catspeak/compiler.yy",},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"runtime","folderPath":"folders/Catspeak/runtime.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Future","folderPath":"folders/Future.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"file","folderPath":"folders/Future/file.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Testing","folderPath":"folders/Testing.yy",},
@@ -26,13 +27,12 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"codegen","folderPath":"folders/Testing/unit-tests/codegen.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"lexer","folderPath":"folders/Testing/unit-tests/lexer.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"parser","folderPath":"folders/Testing/unit-tests/parser.yy",},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"runtime","folderPath":"folders/Catspeak/runtime.yy",},
   ],
   "IncludedFiles": [],
   "isEcma": false,
   "LibraryEmitters": [],
   "MetaData": {
-    "IDEVersion": "2023.4.0.84",
+    "IDEVersion": "2022.0.1.31",
   },
   "resources": [
     {"id":{"name":"obj_testing_example_bench_basic_vars","path":"objects/obj_testing_example_bench_basic_vars/obj_testing_example_bench_basic_vars.yy",},},
