@@ -50,6 +50,17 @@ test_add(function () : Test("engine-self-inst") constructor {
     var gmlFunc = engine.compileGML(asg);
     var inst = instance_create_depth(0, 0, 0, obj_unit_test_inst);
     gmlFunc.setSelf(inst);
-    assertEq(gmlFunc(), inst);
+    assertEq(inst, gmlFunc());
     instance_destroy(inst);
+});
+
+test_add(function () : Test("engine-global-shared") constructor {
+    var engine = new CatspeakEnvironment();
+    var fA = engine.compileGML(engine.parseString(@'globalvar = 1;'));
+    var fB = engine.compileGML(engine.parseString(@'globalvar'));
+    var s = { };
+    fA.setGlobals(s);
+    fB.setGlobals(s);
+    fA();
+    assertEq(1, fB());
 });

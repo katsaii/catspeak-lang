@@ -115,7 +115,12 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             exprs[@ i] = __compileFunction(functions_[entry]);
         }
         var rootCall = __emitBlock(exprs);
-        rootCall.setSelf = method(sharedData, function (selfInst) {
+        __setupRootCall(rootCall);
+        return rootCall;
+    };
+
+    static __setupRootCall = function (f) {
+        f.setSelf = method(sharedData, function (selfInst) {
             if (CATSPEAK_DEBUG_MODE && selfInst != undefined) {
                 __catspeak_check_arg("selfInst", selfInst,
                         __catspeak_is_withable, "struct");
@@ -123,7 +128,16 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
 
             self_ = selfInst;
         });
-        return rootCall;
+        f.setGlobals = method(sharedData, function (globalInst) {
+            if (CATSPEAK_DEBUG_MODE && globalInst != undefined) {
+                __catspeak_check_arg("globalInst", globalInst,
+                        __catspeak_is_withable, "struct");
+            }
+
+            globals = globalInst;
+        });
+        f.getSelf = method(sharedData, function () { return self_ });
+        f.getGlobals = method(sharedData, function () { return globals });
     };
 
     /// @ignore
@@ -484,7 +498,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
 
             var func = __assignLookupGlobal[term.assignType];
             return method({
-                globals : sharedData.globals,
+                shared : sharedData,
                 name : name,
                 value : value,
             }, func);
@@ -540,7 +554,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             // global var
             return method({
                 name : name,
-                globals : sharedData.globals,
+                shared : sharedData,
             }, __catspeak_expr_global_get__);
         }
     };
@@ -861,20 +875,20 @@ function __catspeak_expr_op_2__() {
 /// @ignore
 function __catspeak_expr_call__() {
     var callee_ = callee();
-	{ //var args_ = array_map(args, function(f) { return f() });
-		var i = 0;
-	    var values_ = args;
-	    var n_ = array_length(values_);
-		var args_ = array_create(n_);
-	    repeat (n_) {
-	        // not sure if this is even fast
-	        // but people will cry if I don't do it
-	        var value = values_[i];
-	        args_[@ i] = value();
-	        i += 1;
-	    }
-	}
-	var shared_ = shared;
+    { //var args_ = array_map(args, function(f) { return f() });
+        var i = 0;
+        var values_ = args;
+        var n_ = array_length(values_);
+        var args_ = array_create(n_);
+        repeat (n_) {
+            // not sure if this is even fast
+            // but people will cry if I don't do it
+            var value = values_[i];
+            args_[@ i] = value();
+            i += 1;
+        }
+    }
+    var shared_ = shared;
     with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return script_execute_ext(calleeIdx, args_);
@@ -954,32 +968,32 @@ function __catspeak_expr_index_set_plus__() {
 
 /// @ignore
 function __catspeak_expr_global_get__() {
-    return globals[$ name];
+    return shared.globals[$ name];
 }
 
 /// @ignore
 function __catspeak_expr_global_set__() {
-    globals[$ name] = value();
+    shared.globals[$ name] = value();
 }
 
 /// @ignore
 function __catspeak_expr_global_set_mult__() {
-    globals[$ name] *= value();
+    shared.globals[$ name] *= value();
 }
 
 /// @ignore
 function __catspeak_expr_global_set_div__() {
-    globals[$ name] /= value();
+    shared.globals[$ name] /= value();
 }
 
 /// @ignore
 function __catspeak_expr_global_set_sub__() {
-    globals[$ name] -= value();
+    shared.globals[$ name] -= value();
 }
 
 /// @ignore
 function __catspeak_expr_global_set_plus__() {
-    globals[$ name] += value();
+    shared.globals[$ name] += value();
 }
 
 /// @ignore
