@@ -21,6 +21,20 @@ function __catspeak_timeout_check(t) {
     }
 }
 
+/// @ignore
+///
+/// @param {Any} val
+function __catspeak_is_withable(val) {
+	if (is_struct(val)) {
+		return true;
+	}
+	var isInst = false;
+	try {
+		isInst = !object_exists(val) && instance_exists(val);
+	} catch (_) { }
+	return isInst;
+}
+
 /// Consumes an abstract syntax graph and converts it into a callable GML
 /// function.
 ///
@@ -103,7 +117,8 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         var rootCall = __emitBlock(exprs);
         rootCall.setSelf = method(sharedData, function (selfInst) {
             if (CATSPEAK_DEBUG_MODE && selfInst != undefined) {
-                __catspeak_check_arg("selfInst", selfInst, is_struct);
+                __catspeak_check_arg("selfInst", selfInst,
+                        __catspeak_is_withable, "struct");
             }
 
             self_ = selfInst;

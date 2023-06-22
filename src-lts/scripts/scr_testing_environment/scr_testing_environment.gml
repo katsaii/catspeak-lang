@@ -43,3 +43,13 @@ test_add(function () : Test("engine-tokenise-keywords") constructor {
     assertEq(CatspeakToken.EOF, lexer.next());
     buffer_delete(buff);
 });
+
+test_add(function () : Test("engine-self-inst") constructor {
+    var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'self');
+    var gmlFunc = engine.compileGML(asg);
+    var inst = instance_create_depth(0, 0, 0, obj_unit_test_inst);
+    gmlFunc.setSelf(inst);
+    assertEq(gmlFunc(), inst);
+    instance_destroy(inst);
+});
