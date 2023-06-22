@@ -34,7 +34,7 @@ function CatspeakEnvironment() constructor {
         }
     };
 
-    /// adds a new keyword alias.
+    /// Used to add a new Catspeak keyword alias.
     ///
     /// @param {String} name
     ///   The name of the keyword to add.
@@ -57,6 +57,30 @@ function CatspeakEnvironment() constructor {
             }
 
             keywords_[$ name] = token;
+        }
+    };
+
+    /// Used to remove an existing Catspeak keyword from this environment.
+    ///
+    /// @param {String} name
+    ///   The name of the keyword to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional keywords to remove.
+    static removeKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+
+            if (variable_struct_exists(keywords_, name)) {
+                variable_struct_remove(keywords_, name);
+            }
         }
     };
 
@@ -87,6 +111,36 @@ function CatspeakEnvironment() constructor {
         }
     };
 
+    /// Used to remove an existing function from this environment.
+    ///
+    /// NOTE: Unlike [removeConstant], this function will only remove the
+    ///       definition if it is a method (checked using `is_method`).
+    ///
+    /// @param {String} name
+    ///   The name of the function to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional functions to remove.
+    static removeFunction = function () {
+        interface ??= { };
+        var interface_ = interface;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+
+            if (
+                variable_struct_exists(interface_, name) &&
+                is_method(interface_[$ name])
+            ) {
+                variable_struct_remove(interface_, name);
+            }
+        }
+    };
+
     /// Used to add a new constant to this environment.
     ///
     /// NOTE: ALthough you can use this to add functions, it's recommended
@@ -113,6 +167,33 @@ function CatspeakEnvironment() constructor {
             }
 
             interface_[$ name] = value;
+        }
+    };
+
+    /// Used to remove an existing constant from this environment.
+    ///
+    /// NOTE: ALthough you can use this to remove functions, it's
+    ///       recommended to use [removeFunction] for that purpose instead.
+    ///
+    /// @param {String} name
+    ///   The name of the constant to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional constants to remove.
+    static removeConstant = function () {
+        interface ??= { };
+        var interface_ = interface;
+
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+
+            if (variable_struct_exists(interface_, name)) {
+                variable_struct_remove(interface_, name);
+            }
         }
     };
 
