@@ -831,7 +831,7 @@ function __catspeak_keywords_create() {
 function __catspeak_keywords_rename(keywords, currentName, newName) {
     if (!variable_struct_exists(keywords, currentName)) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_error(
+            __catspeak_error_silent(
                 "no keyword with the name '", currentName, "' exists"
             );
         }
