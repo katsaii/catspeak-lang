@@ -129,14 +129,14 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             self_ = selfInst;
         });
         f.setGlobals = method(sharedData, function (globalInst) {
-            if (CATSPEAK_DEBUG_MODE && globalInst != undefined) {
+            if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("globalInst", globalInst,
                         __catspeak_is_withable, "struct");
             }
 
             globals = globalInst;
         });
-        f.getSelf = method(sharedData, function () { return self_ });
+        f.getSelf = method(sharedData, function () { return self_ ?? globals });
         f.getGlobals = method(sharedData, function () { return globals });
     };
 
