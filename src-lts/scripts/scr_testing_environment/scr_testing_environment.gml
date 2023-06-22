@@ -64,3 +64,14 @@ test_add(function () : Test("engine-global-shared") constructor {
     fA();
     assertEq(1, fB());
 });
+
+test_add(function () : Test("engine-delete-keyword") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.removeKeyword("fun");
+    var buff = __catspeak_create_buffer_from_string("fun");
+    var lexer = engine.tokenise(buff);
+    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq("fun", lexer.getLexeme());
+    assertEq("fun", lexer.getValue());
+    buffer_delete(buff);
+});
