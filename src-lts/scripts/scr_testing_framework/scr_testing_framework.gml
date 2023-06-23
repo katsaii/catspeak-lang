@@ -19,6 +19,7 @@ function test_stats() {
         totalFailed : 0,
         totalActive : 0,
         totalFatal : 0,
+        n : 1,
         testQueue : ds_queue_create(),
     };
     return stats;
@@ -28,7 +29,7 @@ function Test(name) constructor {
     show_debug_message("RUNNING TEST " + string(name));
 
     var stats = test_stats();
-    self.number = stats.total;
+    self.number = stats.n; stats.n += 1;
     self.name = __cat(name);
     self.fails = [];
     self.automatic = true;
