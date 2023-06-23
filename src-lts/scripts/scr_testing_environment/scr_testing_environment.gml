@@ -75,3 +75,17 @@ test_add(function () : Test("engine-delete-keyword") constructor {
     assertEq("fun", lexer.getValue());
     buffer_delete(buff);
 });
+
+test_add(function () : Test("engine-struct-not-terminated") constructor {
+    var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        return {
+            foo: "bar",
+            a_number: 0,
+            a_string: "Hello World!"
+        }
+    ');
+    var func = engine.compileGML(asg);
+    var result = func();
+    show_message(json_stringify(result));
+});
