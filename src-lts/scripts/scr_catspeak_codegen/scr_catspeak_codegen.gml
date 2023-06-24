@@ -25,7 +25,7 @@ function __catspeak_timeout_check(t) {
 ///
 /// @param {Any} val
 function __catspeak_is_withable(val) {
-    if (is_struct(val)) {
+    if (is_struct(val) || val == self || val == other) {
         return true;
     }
     var isInst = false;
@@ -118,18 +118,10 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
 
     static __setupRootCall = function (f) {
         f.setSelf = method(sharedData, function (selfInst) {
-            if (CATSPEAK_DEBUG_MODE && selfInst != undefined) {
-                __catspeak_check_arg("selfInst", selfInst,
-                        __catspeak_is_withable, "struct");
-            }
-            self_ = selfInst;
+            self_ = catspeak_special_to_struct(selfInst);
         });
         f.setGlobals = method(sharedData, function (globalInst) {
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("globalInst", globalInst,
-                        __catspeak_is_withable, "struct");
-            }
-            globals = globalInst;
+            globals = catspeak_special_to_struct(globalInst);
         });
         f.getSelf = method(sharedData, function () { return self_ ?? globals });
         f.getGlobals = method(sharedData, function () { return globals });
@@ -470,6 +462,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             }
             var func = __assignLookupIndex[term.assignType];
             return method({
+                dbgError : __dbgTerm(target.collection, "is not indexable"),
                 collection : __compileTerm(ctx, target.collection),
                 key : __compileTerm(ctx, target.key),
                 value : value,
@@ -535,6 +528,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             );
         }
         return method({
+            dbgError : __dbgTerm(term.collection, "is not indexable"),
             collection : __compileTerm(ctx, term.collection),
             key : __compileTerm(ctx, term.key),
         }, __catspeak_expr_index_get__);
@@ -920,7 +914,7 @@ function __catspeak_expr_op_2__() {
 /// @return {Any}
 function __catspeak_expr_call__() {
     var callee_ = callee();
-    if (CATSPEAK_DEBUG_MODE && !is_method(callee_)) {
+    if (!is_method(callee_)) {
         __catspeak_error_got(dbgError, callee_);
     }
     var args_;
@@ -951,8 +945,10 @@ function __catspeak_expr_index_get__() {
     var key_ = key();
     if (is_array(collection_)) {
         return collection_[key_];
-    } else {
+    } else if (is_struct(collection_)) {
         return collection_[$ key_];
+    } else {
+        __catspeak_error_got(dbgError, collection_);
     }
 }
 
@@ -964,8 +960,10 @@ function __catspeak_expr_index_set__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] = value_;
-    } else {
+    } else if (is_struct(collection_)) {
         collection_[$ key_] = value_;
+    } else {
+        __catspeak_error_got(dbgError, collection_);
     }
 }
 
@@ -977,8 +975,10 @@ function __catspeak_expr_index_set_mult__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] *= value_;
-    } else {
+    } else if (is_struct(collection_)) {
         collection_[$ key_] *= value_;
+    } else {
+        __catspeak_error_got(dbgError, collection_);
     }
 }
 
@@ -990,8 +990,10 @@ function __catspeak_expr_index_set_div__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] /= value_;
-    } else {
+    } else if (is_struct(collection_)) {
         collection_[$ key_] /= value_;
+    } else {
+        __catspeak_error_got(dbgError, collection_);
     }
 }
 
@@ -1003,8 +1005,10 @@ function __catspeak_expr_index_set_sub__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] -= value_;
-    } else {
+    } else if (is_struct(collection_)) {
         collection_[$ key_] -= value_;
+    } else {
+        __catspeak_error_got(dbgError, collection_);
     }
 }
 
@@ -1016,8 +1020,10 @@ function __catspeak_expr_index_set_plus__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] += value_;
-    } else {
+    } else if (is_struct(collection_)) {
         collection_[$ key_] += value_;
+    } else {
+        __catspeak_error_got(dbgError, collection_);
     }
 }
 
