@@ -65,6 +65,15 @@ test_add(function () : Test("engine-global-shared") constructor {
     assertEq(1, fB());
 });
 
+test_add(function () : Test("engine-global-shared-2") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.enableSharedGlobal(true);
+    var fA = engine.compileGML(engine.parseString(@'globalvar = 1;'));
+    var fB = engine.compileGML(engine.parseString(@'globalvar'));
+    fA();
+    assertEq(1, fB());
+});
+
 test_add(function () : Test("engine-delete-keyword") constructor {
     var engine = new CatspeakEnvironment();
     engine.removeKeyword("fun");

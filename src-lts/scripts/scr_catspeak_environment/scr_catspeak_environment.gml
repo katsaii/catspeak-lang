@@ -6,6 +6,30 @@
 function CatspeakEnvironment() constructor {
     self.keywords = undefined;
     self.interface = undefined;
+    self.sharedGlobal = undefined;
+
+    /// Enables the shared global feature on this Catspeak environment. This
+    /// forces all compiled programs to share the same global variable scope.
+    ///
+    /// Typically this should not be enabled, but it can be useful for REPL
+    /// (Read-Eval-Print-Loop) style command consoles, where variables persist
+    /// between commands.
+    ///
+    /// Returns the shared global struct if this feature is enabled, or
+    /// `undefined` if the feature is disabled.
+    ///
+    /// @param {Bool} [enabled]
+    ///   Whether to enable this feature. Defaults to `true`.
+    ///
+    /// @return {Struct}
+    static enableSharedGlobal = function (enabled=true) {
+         if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("enabled", enabled, is_numeric);
+        }
+
+        sharedGlobal = enabled ? { } : undefined;
+        return sharedGlobal;
+    };
 
     /// Applies list of presets to this Catspeak environment. These changes
     /// cannot be undone, so only choose presets you really need.
@@ -15,7 +39,7 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Enum.CatspeakPreset} ...
     ///   Additional preset arguments.
-    static applyPreset = function() {
+    static applyPreset = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var presetFunc = __catspeak_preset_get(argument[i]);
             presetFunc(self);
@@ -127,6 +151,10 @@ function CatspeakEnvironment() constructor {
         do {
             result = compiler.update();
         } until (result != undefined);
+        if (sharedGlobal != undefined) {
+            // patch global
+            result.setGlobals(sharedGlobal);
+        }
         return result;
     };
 
