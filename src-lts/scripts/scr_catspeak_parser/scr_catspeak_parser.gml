@@ -71,7 +71,7 @@ function CatspeakParser(lexer, builder) constructor {
     static __parseStatement = function () {
         var result;
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.BREAK_LINE) {
+        if (peeked == CatspeakToken.SEMICOLON) {
             lexer.next();
             return;
         } else if (peeked == CatspeakToken.LET) {
@@ -111,7 +111,7 @@ function CatspeakParser(lexer, builder) constructor {
             peeked = lexer.peek();
             var value;
             if (
-                peeked == CatspeakToken.BREAK_LINE ||
+                peeked == CatspeakToken.SEMICOLON ||
                 peeked == CatspeakToken.BRACE_RIGHT
             ) {
                 value = asg.createValue(undefined, lexer.getLocation());
@@ -127,7 +127,7 @@ function CatspeakParser(lexer, builder) constructor {
             peeked = lexer.peek();
             var value;
             if (
-                peeked == CatspeakToken.BREAK_LINE ||
+                peeked == CatspeakToken.SEMICOLON ||
                 peeked == CatspeakToken.BRACE_RIGHT
             ) {
                 value = asg.createValue(undefined, lexer.getLocation());
@@ -572,7 +572,7 @@ function CatspeakParser(lexer, builder) constructor {
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.EOF) {
             return "end of file";
-        } else if (peeked == CatspeakToken.BREAK_LINE) {
+        } else if (peeked == CatspeakToken.SEMICOLON) {
             return "line break ';'";
         }
         return "token '" + lexer.getLexeme() + "' (" + string() + ")";
