@@ -83,11 +83,9 @@ function __catspeak_operator_assign_from_token(token) {
 /// @return {Function}
 function __catspeak_operator_get_binary(op) {
     var opFunc = global.__catspeakBinOps[op];
-
     if (CATSPEAK_DEBUG_MODE && opFunc == undefined) {
         __catspeak_error_bug();
     }
-
     return opFunc;
 }
 
@@ -97,11 +95,9 @@ function __catspeak_operator_get_binary(op) {
 /// @return {Function}
 function __catspeak_operator_get_unary(op) {
     var opFunc = global.__catspeakUnaryOps[op];
-
     if (CATSPEAK_DEBUG_MODE && opFunc == undefined) {
         __catspeak_error_bug();
     }
-
     return opFunc;
 }
 

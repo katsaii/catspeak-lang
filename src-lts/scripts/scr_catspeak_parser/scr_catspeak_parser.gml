@@ -22,7 +22,6 @@ function CatspeakParser(lexer, builder) constructor {
         __catspeak_check_arg_struct_instanceof(
                 "builder", builder, "CatspeakASGBuilder");
     }
-
     self.lexer = lexer;
     self.asg = builder;
     self.finalised = false;
@@ -56,13 +55,11 @@ function CatspeakParser(lexer, builder) constructor {
             }
             return false;
         }
-
         if (CATSPEAK_DEBUG_MODE && finalised) {
             __catspeak_error(
                 "attempting to update parser after it has been finalised"
             );
         }
-
         __parseStatement();
         return true;
     };

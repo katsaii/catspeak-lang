@@ -54,7 +54,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("values", values, is_array);
         }
-
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.ARRAY, location, {
             values : values
@@ -80,7 +79,6 @@ function CatspeakASGBuilder() constructor {
                 );
             }
         }
-
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.STRUCT, location, {
             values : values
@@ -97,7 +95,6 @@ function CatspeakASGBuilder() constructor {
                 "value", undefined
             );
         }
-
         return term.value;
     }
 
@@ -127,7 +124,6 @@ function CatspeakASGBuilder() constructor {
                 "type", is_numeric,
             );
         }
-
         if (condition.type == CatspeakTerm.VALUE) {
             if (__getValue(condition)) {
                 return ifTrue;
@@ -169,7 +165,6 @@ function CatspeakASGBuilder() constructor {
                 "type", is_numeric
             );
         }
-
         if (eager.type == CatspeakTerm.VALUE) {
             if (__getValue(condition)) {
                 return lazy;
@@ -202,7 +197,6 @@ function CatspeakASGBuilder() constructor {
                 "type", is_numeric
             );
         }
-
         if (eager.type == CatspeakTerm.VALUE) {
             if (__getValue(condition)) {
                 return eager;
@@ -235,7 +229,6 @@ function CatspeakASGBuilder() constructor {
                 "type", is_numeric
             );
         }
-
         if (condition.type == CatspeakTerm.VALUE && !__getValue(condition)) {
             return createValue(undefined, condition.dbg);
         }
@@ -259,7 +252,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("value", value);
         }
-
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.RETURN, location, {
             value : value
@@ -280,7 +272,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("value", value);
         }
-
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.BREAK, location, {
             value : value
@@ -334,7 +325,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
         }
-
         // __createTerm() will do argument validation
         var localIdx = undefined;
         for (var i = currFunctionScope.blocksTop; localIdx == undefined && i >= 0; i -= 1) {
@@ -393,13 +383,11 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_arg_struct("lhs", lhs, "type", is_numeric);
             __catspeak_check_arg_struct("rhs", rhs, "type", is_numeric);
         }
-
         if (lhs.type == CatspeakTerm.VALUE && rhs.type == CatspeakTerm.VALUE) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("lhs", lhs, "value", undefined);
                 __catspeak_check_arg_struct("rhs", rhs, "value", undefined);
             }
-
             // constant folding
             var opFunc = __catspeak_operator_get_binary(operator);
             lhs.value = opFunc(lhs.value, rhs.value);
@@ -430,12 +418,10 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_arg("operator", operator, is_numeric); // TODO :: proper bounds check
             __catspeak_check_arg_struct("value", value, "type", is_numeric);
         }
-
         if (value.type == CatspeakTerm.VALUE) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("value", value, "value", undefined);
             }
-
             // constant folding
             var opFunc = __catspeak_operator_get_unary(operator);
             value.value = opFunc(value.value);
@@ -485,7 +471,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("type", type, is_numeric);
         }
-
         if (type == CatspeakAssign.VANILLA) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("lhs", lhs,
@@ -495,7 +480,6 @@ function CatspeakASGBuilder() constructor {
                     "type", is_numeric
                 );
             }
-
             var lhsType = lhs.type;
             if (lhsType == CatspeakTerm.LOCAL) {
                 if (rhs.type == CatspeakTerm.LOCAL) {
@@ -503,7 +487,6 @@ function CatspeakASGBuilder() constructor {
                         __catspeak_check_arg_struct("lhs", lhs, "idx", is_numeric);
                         __catspeak_check_arg_struct("rhs", rhs, "idx", is_numeric);
                     }
-
                     if (lhs.idx == rhs.idx) {
                         return createValue(undefined, location);
                     }
@@ -514,7 +497,6 @@ function CatspeakASGBuilder() constructor {
                         __catspeak_check_arg_struct("lhs", lhs, "name", is_string);
                         __catspeak_check_arg_struct("rhs", rhs, "name", is_string);
                     }
-
                     if (lhs.name == rhs.name) {
                         return createValue(undefined, location);
                     }
@@ -555,7 +537,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
         }
-
         // __createTerm() will do argument validation
         var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         var scope = block.locals;
@@ -593,7 +574,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
         }
-
         // __createTerm() will do argument validation
         var local = allocLocal(name, location);
         if (currFunctionScope.argCount != local.idx) {
@@ -618,7 +598,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("inherit", inherit, is_numeric);
         }
-
         var blocks_ = currFunctionScope.blocks;
         var blocksTop_ = currFunctionScope.blocksTop + 1;
         currFunctionScope.blocksTop = blocksTop_;
@@ -756,7 +735,6 @@ function CatspeakASGBuilder() constructor {
         if (CATSPEAK_DEBUG_MODE && location != undefined) {
             __catspeak_check_arg_size_bits("location", location, 32);
         }
-
         container.type = kind;
         container.dbg = location;
         return container;

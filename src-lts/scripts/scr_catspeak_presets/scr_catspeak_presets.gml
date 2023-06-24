@@ -36,11 +36,9 @@ enum CatspeakPreset {
 /// @return {Function}
 function __catspeak_preset_get(preset) {
     var presetFunc = global.__catspeakPresets[preset];
-
     if (CATSPEAK_DEBUG_MODE && presetFunc == undefined) {
         __catspeak_error_bug();
     }
-
     return presetFunc;
 }
 
