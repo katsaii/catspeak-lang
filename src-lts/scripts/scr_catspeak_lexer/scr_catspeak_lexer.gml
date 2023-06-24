@@ -197,7 +197,6 @@ function CatspeakLexer(
             __catspeak_check_arg("keywords", keywords, is_struct);
         }
     }
-
     self.buff = buff;
     self.buffAlignment = buffer_get_alignment(buff);
     self.buffCapacity = buffer_get_size(buff);
@@ -830,7 +829,6 @@ function __catspeak_keywords_find_name(keywords, token) {
         __catspeak_check_arg(
                 "token", token, __catspeak_is_token, "CatspeakToken");
     }
-
     var variables = variable_struct_get_names(keywords);
     var variableCount = array_length(variables);
     for (var i = 0; i < variableCount; i += 1) {

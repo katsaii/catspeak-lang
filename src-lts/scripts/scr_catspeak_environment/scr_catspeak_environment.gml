@@ -26,7 +26,6 @@ function CatspeakEnvironment() constructor {
          if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("enabled", enabled, is_numeric);
         }
-
         sharedGlobal = enabled ? { } : undefined;
         return sharedGlobal;
     };
@@ -171,16 +170,13 @@ function CatspeakEnvironment() constructor {
     static renameKeyword = function () {
         keywords ??= __catspeak_keywords_create();
         var keywords_ = keywords;
-
         for (var i = 0; i < argument_count; i += 2) {
             var currentName = argument[i];
             var newName = argument[i + 1];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("currentName", currentName, is_string);
                 __catspeak_check_arg("newName", newName, is_string);
             }
-
             __catspeak_keywords_rename(keywords, currentName, newName);
         }
     };
@@ -198,15 +194,12 @@ function CatspeakEnvironment() constructor {
     static addKeyword = function () {
         keywords ??= __catspeak_keywords_create();
         var keywords_ = keywords;
-
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
             var token = argument[i + 1];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
             }
-
             keywords_[$ name] = token;
         }
     };
@@ -221,14 +214,11 @@ function CatspeakEnvironment() constructor {
     static removeKeyword = function () {
         keywords ??= __catspeak_keywords_create();
         var keywords_ = keywords;
-
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
             }
-
             if (variable_struct_exists(keywords_, name)) {
                 variable_struct_remove(keywords_, name);
             }
@@ -248,15 +238,12 @@ function CatspeakEnvironment() constructor {
     static addFunction = function () {
         interface ??= { };
         var interface_ = interface;
-
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
             var func = argument[i + 1];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
             }
-
             func = is_method(func) ? func : method(undefined, func);
             interface_[$ name] = func;
         }
@@ -275,14 +262,11 @@ function CatspeakEnvironment() constructor {
     static removeFunction = function () {
         interface ??= { };
         var interface_ = interface;
-
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
             }
-
             if (
                 variable_struct_exists(interface_, name) &&
                 is_method(interface_[$ name])
@@ -312,11 +296,9 @@ function CatspeakEnvironment() constructor {
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
             var value = argument[i + 1];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
             }
-
             interface_[$ name] = value;
         }
     };
@@ -334,14 +316,11 @@ function CatspeakEnvironment() constructor {
     static removeConstant = function () {
         interface ??= { };
         var interface_ = interface;
-
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
             }
-
             if (variable_struct_exists(interface_, name)) {
                 variable_struct_remove(interface_, name);
             }

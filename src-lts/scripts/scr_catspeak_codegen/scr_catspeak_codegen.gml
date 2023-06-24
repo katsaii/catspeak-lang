@@ -57,7 +57,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             "entryPoints", is_array
         );
     }
-
     self.interface = interface ?? { };
     self.functions = asg.functions;
     self.sharedData = {
@@ -93,7 +92,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "attempting to update gml compiler after it has been finalised"
             );
         }
-
         finalised = true;
         return program;
     };
@@ -108,11 +106,9 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         var exprs = array_create(entryCount);
         for (var i = 0; i < entryCount; i += 1) {
             var entry = entryPoints[i];
-
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("entry", entry, is_numeric);
             }
-
             exprs[@ i] = __compileFunction(functions_[entry]);
         }
         var rootCall = __emitBlock(exprs);
@@ -126,7 +122,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 __catspeak_check_arg("selfInst", selfInst,
                         __catspeak_is_withable, "struct");
             }
-
             self_ = selfInst;
         });
         f.setGlobals = method(sharedData, function (globalInst) {
@@ -134,7 +129,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 __catspeak_check_arg("globalInst", globalInst,
                         __catspeak_is_withable, "struct");
             }
-
             globals = globalInst;
         });
         f.getSelf = method(sharedData, function () { return self_ ?? globals });
@@ -156,7 +150,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "type", is_numeric
             );
         }
-
         var ctx = {
             callTime : -1,
             program : undefined,
@@ -183,7 +176,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "value", undefined
             );
         }
-
         return method({ value : term.value }, __catspeak_expr_value__);
     };
 
@@ -198,14 +190,12 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "values", is_array
             );
         }
-
         var values = term.values;
         var valueCount = array_length(values);
         var exprs = array_create(valueCount);
         for (var i = 0; i < valueCount; i += 1) {
             exprs[@ i] = __compileTerm(ctx, values[i]);
         }
-
         return method({
             values : exprs,
             n : array_length(exprs),
@@ -223,14 +213,12 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "values", is_array
             );
         }
-
         var values = term.values;
         var valueCount = array_length(values);
         var exprs = array_create(valueCount);
         for (var i = 0; i < valueCount; i += 1) {
             exprs[@ i] = __compileTerm(ctx, values[i]);
         }
-
         return method({
             values : exprs,
             n : array_length(exprs) div 2,
@@ -248,7 +236,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "terms", is_array
             );
         }
-
         var terms = term.terms;
         var termCount = array_length(terms);
         var exprs = array_create(termCount);
@@ -315,7 +302,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "ifFalse", undefined
             );
         }
-
         if (term.ifFalse == undefined) {
             return method({
                 condition : __compileTerm(ctx, term.condition),
@@ -342,7 +328,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "body", undefined
             );
         }
-
         return method({
             ctx : ctx,
             condition : __compileTerm(ctx, term.condition),
@@ -361,7 +346,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "value", undefined
             );
         }
-
         return method({
             value : __compileTerm(ctx, term.value),
         }, __catspeak_expr_return__);
@@ -378,7 +362,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "value", undefined
             );
         }
-
         return method({
             value : __compileTerm(ctx, term.value),
         }, __catspeak_expr_break__);
@@ -405,7 +388,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "value", undefined
             );
         }
-
         return method({
             op : __catspeak_operator_get_unary(term.operator),
             value : __compileTerm(ctx, term.value),
@@ -425,7 +407,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "rhs", undefined
             );
         }
-
         return method({
             op : __catspeak_operator_get_binary(term.operator),
             lhs : __compileTerm(ctx, term.lhs),
@@ -445,7 +426,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "args", undefined
             );
         }
-
         var callee = __compileTerm(ctx, term.callee);
         var args = term.args;
         var argCount = array_length(args);
@@ -453,7 +433,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         for (var i = 0; i < argCount; i += 1) {
             exprs[@ i] = __compileTerm(ctx, args[i]);
         }
-
         return method({
             callee : callee,
             args : exprs,
@@ -477,7 +456,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "type", is_numeric
             );
         }
-
         var target = term.target;
         var targetType = target.type;
         var value = __compileTerm(ctx, term.value);
@@ -488,7 +466,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                     "key", undefined
                 );
             }
-
             var func = __assignLookupIndex[term.assignType];
             return method({
                 collection : __compileTerm(ctx, target.collection),
@@ -501,7 +478,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                     "idx", is_numeric
                 );
             }
-
             var func = __assignLookupLocal[term.assignType];
             return method({
                 locals : ctx.locals,
@@ -514,7 +490,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                     "name", is_string
                 );
             }
-
             var name = target.name;
             if (variable_struct_exists(interface, name)) {
                 // cannot assign to interface values
@@ -537,7 +512,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                     "dbg", undefined
                 );
             }
-
             __catspeak_error(
                 __catspeak_location_show(target.dbg),
                 " -- invalid assignment target, ",
@@ -558,7 +532,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "key", undefined
             );
         }
-
         return method({
             collection : __compileTerm(ctx, term.collection),
             key : __compileTerm(ctx, term.key),
@@ -576,7 +549,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "name", is_string
             );
         }
-
         var name = term.name;
         if (variable_struct_exists(interface, name)) {
             // user-defined interface
@@ -603,7 +575,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "idx", is_numeric
             );
         }
-
         return method({
             locals : ctx.locals,
             idx : term.idx,
@@ -621,7 +592,6 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "idx", is_numeric
             );
         }
-
         return method({
             value : __compileFunction(functions[term.idx]),
         }, __catspeak_expr_value__);
@@ -647,13 +617,10 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "type", is_numeric
             );
         }
-
         var prod = __productionLookup[term.type];
-
         if (CATSPEAK_DEBUG_MODE && prod == undefined) {
             __catspeak_error_bug();
         }
-
         return prod(ctx, term);
     };
 
