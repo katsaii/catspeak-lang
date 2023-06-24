@@ -28,6 +28,8 @@ enum CatspeakToken {
     BRACE_RIGHT,
     /// The `:` character.
     COLON,
+    /// Represents a sequence of `;` characters.
+    SEMICOLON,
     /// The `,` character.
     COMMA,
     /// The `.` operator.
@@ -131,10 +133,6 @@ enum CatspeakToken {
     WHITESPACE,
     /// Represents a comment.
     COMMENT,
-    /// Represents a sequence of newline or `;` characters.
-    BREAK_LINE,
-    /// The `...` operator.
-    CONTINUE_LINE,
     /// Represents the end of the file.
     EOF,
     /// Represents any other unrecognised character.
@@ -217,7 +215,6 @@ function CatspeakLexer(
     self.charCurr = 0;
     //# feather disable once GM2043
     self.charNext = __nextUTF8Char();
-    self.skipNextSemicolon = false;
     self.keywords = keywords ?? global.__catspeakString2Token;
 
     /// @ignore
@@ -382,8 +379,6 @@ function CatspeakLexer(
 
     /// Advances the lexer and returns the next type of [CatspeakToken]. This
     /// includes additional whitespace and control tokens, like:
-    ///  - line breaks `;`          (`CatspeakToken.BREAK_LINE`)
-    ///  - line continuations `...` (`CatspeakToken.CONTINUE_LINE`)
     ///  - comments `--`            (`CatspeakToken.COMMENT`)
     ///
     /// To get the string content of the token, you should use the [getLexeme]
@@ -595,28 +590,11 @@ function CatspeakLexer(
             peeked = undefined;
             return token;
         }
-        var skipSemicolon = skipNextSemicolon;
-        skipNextSemicolon = false;
-        var tokenSkipsNewlinePage = global.__catspeakTokenSkipsNewline;
         while (true) {
             var token = nextWithWhitespace();
             if (token == CatspeakToken.WHITESPACE
                     || token == CatspeakToken.COMMENT) {
                 continue;
-            }
-            if (token == CatspeakToken.CONTINUE_LINE) {
-                skipSemicolon = true;
-                continue;
-            } else if (tokenSkipsNewlinePage[token]) {
-                skipNextSemicolon = true;
-            }
-            if (token == CatspeakToken.BREAK_LINE) {
-                if (skipSemicolon) {
-                    continue;
-                }
-                // doing this makes it so that multiple new line characters
-                // only count as a single line break token
-                skipNextSemicolon = true;
             }
             return token;
         }
@@ -653,8 +631,6 @@ function __catspeak_init_lexer() {
     global.__catspeakChar2Token = __catspeak_init_lexer_codepage();
     /// @ignore
     global.__catspeakString2Token = __catspeak_init_lexer_keywords();
-    /// @ignore
-    global.__catspeakTokenSkipsNewline = __catspeak_init_lexer_newlines();
 }
 
 /// @ignore
@@ -722,17 +698,14 @@ function __catspeak_init_lexer_codepage() {
         var tokenType;
         if (__catspeak_codepage_set(code,
             0x09, // CHARACTER TABULATION ('\t')
+            0x0A, // LINE FEED            ('\n')
             0x0B, // LINE TABULATION      ('\v')
             0x0C, // FORM FEED            ('\f')
+            0x0D, // CARRIAGE RETURN      ('\r')
             0x20, // SPACE                (' ')
             0x85  // NEXT LINE
         )) {
             tokenType = CatspeakToken.WHITESPACE;
-        } else if (__catspeak_codepage_set(code,
-            0x0A, // LINE FEED            ('\n')
-            0x0D  // CARRIAGE RETURN      ('\r')
-        )) {
-            tokenType = CatspeakToken.BREAK_LINE;
         } else if (
             __catspeak_codepage_range(code, "a", "z") ||
             __catspeak_codepage_range(code, "A", "Z") ||
@@ -774,8 +747,8 @@ function __catspeak_init_lexer_codepage() {
 function __catspeak_keywords_create() {
     var keywords = { };
     keywords[$ "--"] = CatspeakToken.COMMENT;
-    keywords[$ ";"] = CatspeakToken.BREAK_LINE;
-    keywords[$ "..."] = CatspeakToken.CONTINUE_LINE;   
+    keywords[$ ";"] = CatspeakToken.SEMICOLON;
+    keywords[$ "..."] = CatspeakToken.WHITESPACE; // legacy
     keywords[$ ":"] = CatspeakToken.COLON;
     keywords[$ ","] = CatspeakToken.COMMA;
     keywords[$ "."] = CatspeakToken.DOT;
@@ -874,56 +847,4 @@ function __catspeak_init_lexer_keywords() {
     var keywords = __catspeak_keywords_create();
     global.__catspeakConfig.keywords = keywords;
     return keywords;
-}
-
-/// @ignore
-function __catspeak_init_lexer_newlines() {
-    var page = array_create(CatspeakToken.__SIZE__, false);
-    var tokens = [
-        // !! DO NOT ADD `BREAK_LINE` HERE, IT WILL RUIN EVERYTHING !!
-        //              you have been warned... (*^_^*) b
-        CatspeakToken.PAREN_LEFT,
-        CatspeakToken.BOX_LEFT,
-        CatspeakToken.BRACE_LEFT,
-        CatspeakToken.COLON,
-        CatspeakToken.COMMA,
-        CatspeakToken.DOT,
-        CatspeakToken.ASSIGN,
-        CatspeakToken.REMAINDER,
-        CatspeakToken.MULTIPLY,
-        CatspeakToken.DIVIDE,
-        CatspeakToken.DIVIDE_INT,
-        CatspeakToken.SUBTRACT,
-        CatspeakToken.PLUS,
-        CatspeakToken.EQUAL,
-        CatspeakToken.NOT_EQUAL,
-        CatspeakToken.GREATER,
-        CatspeakToken.GREATER_EQUAL,
-        CatspeakToken.LESS,
-        CatspeakToken.LESS_EQUAL,
-        CatspeakToken.NOT,
-        CatspeakToken.BITWISE_NOT,
-        CatspeakToken.SHIFT_RIGHT,
-        CatspeakToken.SHIFT_LEFT,
-        CatspeakToken.BITWISE_AND,
-        CatspeakToken.BITWISE_XOR,
-        CatspeakToken.BITWISE_OR,
-        CatspeakToken.AND,
-        CatspeakToken.OR,
-        // this token technically does, but it's handled in a different
-        // way to the others, so it's only here honorarily
-        //CatspeakToken.CONTINUE_LINE,
-        CatspeakToken.DO,
-        CatspeakToken.IF,
-        CatspeakToken.ELSE,
-        CatspeakToken.WHILE,
-        CatspeakToken.FOR,
-        CatspeakToken.LET,
-        CatspeakToken.FUN
-    ];
-    var count = array_length(tokens);
-    for (var i = 0; i < count; i += 1) {
-        page[@ tokens[i]] = true;
-    }
-    return page;
 }

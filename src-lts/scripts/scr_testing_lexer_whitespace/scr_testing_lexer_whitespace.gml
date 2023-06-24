@@ -26,7 +26,7 @@ test_add(function () : TestLexerToken("lexer-whitespace-tab",
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-line-feed",
-    CatspeakToken.BREAK_LINE, "\n", "\n"
+    CatspeakToken.WHITESPACE, "\n", "\n"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-vtab",
@@ -38,7 +38,7 @@ test_add(function () : TestLexerToken("lexer-whitespace-form-feed",
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-carriage-return",
-    CatspeakToken.BREAK_LINE, "\r", "\r"
+    CatspeakToken.WHITESPACE, "\r", "\r"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-next-line",
@@ -46,22 +46,22 @@ test_add(function () : TestLexerToken("lexer-whitespace-next-line",
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-break-line",
-    CatspeakToken.BREAK_LINE, ";", ";"
+    CatspeakToken.SEMICOLON, ";", ";"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-continue-line",
-    CatspeakToken.CONTINUE_LINE, "...", "..."
+    CatspeakToken.WHITESPACE, "...", "..."
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-whitespace-comment",
     CatspeakToken.COMMENT, "-- hello world", "-- hello world"
 ) constructor { });
 
-test_add(function () : Test("lexer-whitespace-semicolon-insertion") constructor {
+test_add(function () : Test("lexer-whitespace-legacy-line-continue") constructor {
     var buff = __catspeak_create_buffer_from_string(@'...
         let a = (
             1,
-            2, ... ;
+            2, ...
             3,
         )...
 ... ...
@@ -70,7 +70,7 @@ test_add(function () : Test("lexer-whitespace-semicolon-insertion") constructor 
     var token;
     do {
         token = lexer.next();
-        assertNeq(CatspeakToken.BREAK_LINE, token);
+        assertNeq(CatspeakToken.SEMICOLON, token);
     } until (token == CatspeakToken.EOF);
     buffer_delete(buff);
 });

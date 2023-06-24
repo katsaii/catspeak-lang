@@ -58,15 +58,12 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example-2",
     '
 ) constructor {
     checkTokens(
-        CatspeakToken.BREAK_LINE,
         CatspeakToken.IDENT,
         CatspeakToken.ASSIGN,
         CatspeakToken.VALUE,
-        CatspeakToken.BREAK_LINE,
         CatspeakToken.IDENT,
         CatspeakToken.ASSIGN,
         CatspeakToken.VALUE,
-        CatspeakToken.BREAK_LINE,
         CatspeakToken.WHILE,
         CatspeakToken.PAREN_LEFT,
         CatspeakToken.IDENT,
@@ -77,18 +74,14 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example-2",
         CatspeakToken.IDENT,
         CatspeakToken.PAREN_LEFT,
         CatspeakToken.PAREN_RIGHT,
-        CatspeakToken.BREAK_LINE,
         CatspeakToken.IDENT,
         CatspeakToken.ASSIGN,
         CatspeakToken.IDENT,
         CatspeakToken.PLUS,
         CatspeakToken.VALUE,
-        CatspeakToken.BREAK_LINE,
         CatspeakToken.BRACE_RIGHT,
-        CatspeakToken.BREAK_LINE,
         CatspeakToken.RETURN,
         CatspeakToken.IDENT,
-        CatspeakToken.BREAK_LINE
     )
 });
 
@@ -108,8 +101,17 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example-3",
     '
 ) constructor {
     checkTokens(
-        CatspeakToken.BREAK_LINE,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
         CatspeakToken.IDENT,
-        CatspeakToken.BREAK_LINE,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON,
+        CatspeakToken.SEMICOLON
     )
 });

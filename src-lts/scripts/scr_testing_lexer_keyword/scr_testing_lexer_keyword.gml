@@ -14,7 +14,7 @@ test_add(function () : TestLexerToken("lexer-keyword-colon",
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-break-line",
-    CatspeakToken.BREAK_LINE, ";", ";"
+    CatspeakToken.SEMICOLON, ";", ";"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-dot",
@@ -22,7 +22,7 @@ test_add(function () : TestLexerToken("lexer-keyword-dot",
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-continue-line",
-    CatspeakToken.CONTINUE_LINE, "...", "..."
+    CatspeakToken.WHITESPACE, "...", "..."
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-do",

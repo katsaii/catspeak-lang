@@ -87,5 +87,25 @@ test_add(function () : Test("engine-struct-not-terminated") constructor {
     ');
     var func = engine.compileGML(asg);
     var result = func();
-    show_message(json_stringify(result));
+    assertEq(result, { foo : "bar", a_number : 0, a_string : "Hello World!" });
+});
+
+test_add(function () : Test("engine-function-brace-style") constructor {
+    var engine = new CatspeakEnvironment();
+    var fA = engine.compileGML(engine.parseString(@'
+        main = fun()
+        {
+            return "hi"
+        }
+    '));
+    var fB = engine.compileGML(engine.parseString(@'
+        main = fun() {
+            return "hi"
+        }
+    '));
+    fA();
+    fB();
+    assertEq(fA.getGlobals().main(), fB.getGlobals().main());
+    assertEq("hi", fA.getGlobals().main());
+    assertEq("hi", fB.getGlobals().main());
 });
