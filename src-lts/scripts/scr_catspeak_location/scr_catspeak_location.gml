@@ -92,3 +92,17 @@ function __catspeak_location_show(location) {
     }
     return msg;
 }
+
+/// @ignore
+///
+/// @param {Real} pos
+function __catspeak_location_show_ext(location) {
+    var msg = __catspeak_location_show(location);
+    if (argument_count > 1) {
+        msg += " -- ";
+        for (var i = 1; i < argument_count; i += 1) {
+            msg += __catspeak_string(argument[i]);
+        }
+    }
+    return msg;
+}
