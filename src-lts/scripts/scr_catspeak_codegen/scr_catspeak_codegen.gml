@@ -25,14 +25,14 @@ function __catspeak_timeout_check(t) {
 ///
 /// @param {Any} val
 function __catspeak_is_withable(val) {
-	if (is_struct(val)) {
-		return true;
-	}
-	var isInst = false;
-	try {
-		isInst = !object_exists(val) && instance_exists(val);
-	} catch (_) { }
-	return isInst;
+    if (is_struct(val)) {
+        return true;
+    }
+    var isInst = false;
+    try {
+        isInst = !object_exists(val) && instance_exists(val);
+    } catch (_) { }
+    return isInst;
 }
 
 /// Consumes an abstract syntax graph and converts it into a callable GML
