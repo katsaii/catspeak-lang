@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "none";
+var runExperiment = "compiler-6";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -121,6 +121,7 @@ TEST_EXPERIMENT "compiler-6" {
     var buff = __catspeak_create_buffer_from_string(@'
         global.hello = "hi";
         global.n += 1;
+        ({ })(1203)
     ');
     var env = new CatspeakEnvironment();
     env.addConstant("global", global);

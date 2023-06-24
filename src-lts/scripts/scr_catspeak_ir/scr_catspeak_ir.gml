@@ -744,12 +744,43 @@ function CatspeakASGBuilder() constructor {
 /// @ignore
 ///
 /// @param {Enum.CatspeakTerm} kind
+/// @return {Bool}
 function __catspeak_term_is_pure(kind) {
     return kind == CatspeakTerm.VALUE ||
             kind == CatspeakTerm.LOCAL ||
             kind == CatspeakTerm.GLOBAL ||
             kind == CatspeakTerm.FUNCTION ||
             kind == CatspeakTerm.SELF;
+}
+
+/// @ignore
+///
+/// @param {Struct} term
+/// @return {Any}
+function __catspeak_term_get_terminal(term) {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_arg_struct("term", term,
+            "type", is_numeric
+        );
+    }
+    if (term.type == CatspeakTerm.GLOBAL) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "name", undefined
+            );
+        }
+        return term.name;
+    } else if (term.type == CatspeakTerm.SELF) {
+        return "self";
+    } else if (term.type == CatspeakTerm.VALUE) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "value", undefined
+            );
+        }
+        return string(term.value);
+    }
+    return undefined;
 }
 
 /// Indicates the type of term within a Catspeak syntax graph.

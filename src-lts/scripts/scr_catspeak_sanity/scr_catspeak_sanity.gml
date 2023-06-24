@@ -40,6 +40,22 @@ function __catspeak_error_silent() {
 }
 
 /// @ignore
+///
+/// @param {Any} msg
+/// @param {Any} got
+function __catspeak_error_got(msg, got) {
+    var gotStr;
+    if (is_numeric(got)) {
+        gotStr = string(got);
+    } else if (is_string(got) && string_length(got) < 16) {
+        gotStr = got;
+    } else {
+        gotStr = typeof(got);
+    }
+    __catspeak_error(msg, ", got '", gotStr, "'");
+}
+
+/// @ignore
 function __catspeak_error_bug() {
     gml_pragma("forceinline");
     __catspeak_error(

@@ -423,7 +423,8 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "callee", undefined,
-                "args", undefined
+                "args", undefined,
+                "dbg", undefined
             );
         }
         var callee = __compileTerm(ctx, term.callee);
@@ -434,6 +435,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             exprs[@ i] = __compileTerm(ctx, args[i]);
         }
         return method({
+            dbgError : __dbgTerm(term.callee, "is not a function"),
             callee : callee,
             args : exprs,
             shared : sharedData,
@@ -680,6 +682,22 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakAssign.PLUS] = __catspeak_expr_global_set_plus__;
         return db;
     })();
+
+    /// @ignore
+    static __dbgTerm = function (term, msg="is invalid in this context") {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "dbg", undefined
+            );
+        }
+        var terminalName = __catspeak_term_get_terminal(term);
+        return "runtime error " + __catspeak_location_show_ext(term.dbg,
+            terminalName == undefined
+                    ? "value"
+                    : "variable '" + terminalName + "'",
+            " ", msg
+        );
+    };
 }
 
 /// @ignore
@@ -902,11 +920,15 @@ function __catspeak_expr_op_2__() {
 /// @return {Any}
 function __catspeak_expr_call__() {
     var callee_ = callee();
+    if (CATSPEAK_DEBUG_MODE && !is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var args_;
     { //var args_ = array_map(args, function(f) { return f() });
         var i = 0;
         var values_ = args;
         var n_ = array_length(values_);
-        var args_ = array_create(n_);
+        args_ = array_create(n_);
         repeat (n_) {
             // not sure if this is even fast
             // but people will cry if I don't do it
