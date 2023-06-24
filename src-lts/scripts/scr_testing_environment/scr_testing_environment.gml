@@ -50,7 +50,7 @@ test_add(function () : Test("engine-self-inst") constructor {
     var gmlFunc = engine.compileGML(asg);
     var inst = instance_create_depth(0, 0, 0, obj_unit_test_inst);
     gmlFunc.setSelf(inst);
-    assertEq(inst, gmlFunc());
+    assertEq(catspeak_special_to_struct(inst), gmlFunc());
     instance_destroy(inst);
 });
 
