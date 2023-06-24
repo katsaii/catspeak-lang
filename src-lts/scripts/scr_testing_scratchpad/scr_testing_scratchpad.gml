@@ -121,10 +121,9 @@ TEST_EXPERIMENT "compiler-6" {
     var buff = __catspeak_create_buffer_from_string(@'
         global.hello = "hi";
         global.n += 1;
-        ({ })(1203)
     ');
     var env = new CatspeakEnvironment();
-    env.addConstant("global", global);
+    env.addConstant("global", catspeak_special_to_struct(global));
     var asg = env.parse(buff);
     var f = env.compileGML(asg);
     global.n = 10;

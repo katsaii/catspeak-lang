@@ -328,6 +328,36 @@ function CatspeakEnvironment() constructor {
     };
 }
 
+/// A usability function for converting special GML constants, such as
+/// `self` or `global` into structs.
+///
+/// Will return `undefined` if there does not exist a valid conversion.
+///
+/// @param {Any} gmlSpecial
+///   Any special value to convert into a struct.
+///
+/// @return {Struct}
+function catspeak_special_to_struct(gmlSpecial) {
+    if (is_struct(gmlSpecial)) {
+        return gmlSpecial;
+    }
+    if (gmlSpecial == global) {
+        var getGlobal = method(global, function () { return self });
+        return getGlobal();
+    }
+    if (__catspeak_is_withable(gmlSpecial)) {
+        with (gmlSpecial) {
+            // magic to convert an id into its struct version
+            return self;
+        }
+    }
+    __catspeak_error_silent(
+        "could not convert special GML value '", gmlSpecial, "' ",
+        "into a valid Catspeak representation"
+    );
+    return undefined;
+}
+
 /// The default Catspeak environment. Mainly exists for UX reasons.
 globalvar Catspeak;
 
