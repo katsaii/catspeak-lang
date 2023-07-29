@@ -100,6 +100,8 @@ enum CatspeakToken {
     FOR,
     /// The `loop` keyword.
     LOOP,
+    /// The `use` keyword.
+    USE,
     /// The `let` keyword.
     LET,
     /// The `fun` keyword.
@@ -783,6 +785,7 @@ function __catspeak_keywords_create() {
     keywords[$ "while"] = CatspeakToken.WHILE;
     keywords[$ "for"] = CatspeakToken.FOR;
     keywords[$ "loop"] = CatspeakToken.LOOP;
+    keywords[$ "use"] = CatspeakToken.USE;
     keywords[$ "let"] = CatspeakToken.LET;
     keywords[$ "fun"] = CatspeakToken.FUN;
     keywords[$ "params"] = CatspeakToken.PARAMS;
