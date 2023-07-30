@@ -228,12 +228,37 @@ function CatspeakASGBuilder() constructor {
             __catspeak_check_arg_struct("condition", condition,
                 "type", is_numeric
             );
+            __catspeak_check_arg_struct("body", body);
         }
         if (condition.type == CatspeakTerm.VALUE && !__getValue(condition)) {
             return createValue(undefined, condition.dbg);
         }
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.WHILE, location, {
+            condition : condition,
+            body : body,
+        });
+    };
+
+    /// Emits the instruction for a context managed `use` block.
+    ///
+    /// @param {Struct} condition
+    ///   The term which evaluates to the condition of the context block.
+    ///
+    /// @param {Struct} body
+    ///   The body of the block.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createUse = function (condition, body, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("condition", condition);
+            __catspeak_check_arg_struct("body", body);
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.USE, location, {
             condition : condition,
             body : body,
         });
@@ -793,6 +818,7 @@ enum CatspeakTerm {
     AND,
     OR,
     WHILE,
+    USE,
     RETURN,
     BREAK,
     CONTINUE,

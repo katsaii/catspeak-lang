@@ -118,3 +118,25 @@ test_add(function () : Test("engine-function-brace-style") constructor {
     assertEq("hi", fA.getGlobals().main());
     assertEq("hi", fB.getGlobals().main());
 });
+
+test_add(function () : Test("engine-function-brace-style") constructor {
+    msg = "start";
+    var engine = new CatspeakEnvironment();
+    engine.addFunction("thing", function () {
+        msg = "inside";
+        return function () { msg = "end" };
+    });
+    engine.addFunction("get_msg", function () {
+        return msg;
+    });
+    var fA = engine.compileGML(engine.parseString(@'
+        let a = get_msg();
+        let b;
+        use thing {
+            b = get_msg();
+        }
+        let c = get_msg();
+        [a, b, c]
+    '));
+    assertEq(["start", "inside", "end"], fA());
+});

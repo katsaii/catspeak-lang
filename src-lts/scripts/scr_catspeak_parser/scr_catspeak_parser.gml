@@ -157,9 +157,16 @@ function CatspeakParser(lexer, builder) constructor {
             lexer.next();
             var condition = __parseCondition();
             asg.pushBlock();
-            __parseStatements("while")
+            __parseStatements("while");
             var body = asg.popBlock();
             return asg.createWhile(condition, body, lexer.getLocation());
+        } else if (peeked == CatspeakToken.USE) {
+            lexer.next();
+            var condition = __parseCondition();
+            asg.pushBlock();
+            __parseStatements("use");
+            var body = asg.popBlock();
+            return asg.createUse(condition, body, lexer.getLocation());
         } else if (peeked == CatspeakToken.FUN) {
             lexer.next();
             asg.pushFunction();
