@@ -170,20 +170,22 @@ function CatspeakParser(lexer, builder) constructor {
         } else if (peeked == CatspeakToken.FUN) {
             lexer.next();
             asg.pushFunction();
-            if (lexer.next() != CatspeakToken.PAREN_LEFT) {
-                __ex("expected opening '(' after 'fun' keyword");
-            }
-            while (__isNot(CatspeakToken.PAREN_RIGHT)) {
-                if (lexer.next() != CatspeakToken.IDENT) {
-                    __ex("expected identifier in function arguments");
+            if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
+                if (lexer.next() != CatspeakToken.PAREN_LEFT) {
+                    __ex("expected opening '(' after 'fun' keyword");
                 }
-                asg.allocArg(lexer.getValue(), lexer.getLocation());
-                if (lexer.peek() == CatspeakToken.COMMA) {
-                    lexer.next();
+                while (__isNot(CatspeakToken.PAREN_RIGHT)) {
+                    if (lexer.next() != CatspeakToken.IDENT) {
+                        __ex("expected identifier in function arguments");
+                    }
+                    asg.allocArg(lexer.getValue(), lexer.getLocation());
+                    if (lexer.peek() == CatspeakToken.COMMA) {
+                        lexer.next();
+                    }
                 }
-            }
-            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
-                __ex("expected closing ')' after function arguments");
+                if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                    __ex("expected closing ')' after function arguments");
+                }
             }
             __parseStatements("fun");
             return asg.popFunction();
