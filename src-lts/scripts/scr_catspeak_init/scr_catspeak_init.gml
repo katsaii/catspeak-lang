@@ -62,25 +62,4 @@ function catspeak_force_init() {
     return true;
 }
 
-/// Returns the global configuration struct you can use to modify the
-/// behaviour of select Catspeak components.
-///
-/// @return {Struct}
-function catspeak_config() {
-    catspeak_force_init();
-    var config = global.__catspeakConfig;
-    if (argument_count > 0 && is_struct(argument[0])) {
-        // for compatibility
-        var newConfig = argument[0];
-        var keys = variable_struct_get_names(newConfig);
-        for (var i = array_length(keys) - 1; i > 0; i -= 1) {
-            var key = keys[i];
-            if (variable_struct_exists(config, key)) {
-                config[$ key] = newConfig[$ key];
-            }
-        }
-    }
-    return config;
-}
-
 catspeak_force_init();

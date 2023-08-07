@@ -23,6 +23,7 @@
     {"id":{"name":"scr_testing_lexer_number","path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},"order":7,},
     {"id":{"name":"obj_unit_test_inst","path":"objects/obj_unit_test_inst/obj_unit_test_inst.yy",},"order":6,},
     {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":4,},
+    {"id":{"name":"scr_catspeak_compatibility","path":"scripts/scr_catspeak_compatibility/scr_catspeak_compatibility.yy",},"order":6,},
     {"id":{"name":"scr_testing_parser","path":"scripts/scr_testing_parser/scr_testing_parser.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_symbols","path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},"order":9,},
     {"id":{"name":"obj_testing_example_base_gml_bench","path":"objects/obj_testing_example_base_gml_bench/obj_testing_example_base_gml_bench.yy",},"order":0,},
@@ -53,7 +54,7 @@
     {"name":"Windows","path":"options/windows/options_windows.yy",},
     {"name":"operagx","path":"options/operagx/options_operagx.yy",},
   ],
-  "defaultScriptType": 0,
+  "defaultScriptType": 1,
   "isEcma": false,
   "configs": {
     "name": "Default",
