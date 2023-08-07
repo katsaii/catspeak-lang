@@ -506,6 +506,18 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 key : __compileTerm(ctx, target.key),
                 value : value,
             }, func);
+        } else if (targetType == CatspeakTerm.PROPERTY) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.target", target,
+                    "property", undefined
+                );
+            }
+            var func = __assignLookupProperty[term.assignType];
+            return method({
+                dbgError : __dbgTerm(target.property, "is not a function"),
+                property : __compileTerm(ctx, target.property),
+                value : value,
+            }, func);
         } else if (targetType == CatspeakTerm.LOCAL) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("term.target", target,
@@ -571,6 +583,23 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             collection : __compileTerm(ctx, term.collection),
             key : __compileTerm(ctx, term.key),
         }, __catspeak_expr_index_get__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
+    static __compileProperty = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "property", undefined
+            );
+        }
+        return method({
+            dbgError : __dbgTerm(term.property, "is not a function"),
+            property : __compileTerm(ctx, term.property),
+        }, __catspeak_expr_property_get__);
     };
 
     /// @ignore
@@ -679,6 +708,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakTerm.CALL] = __compileCall;
         db[@ CatspeakTerm.SET] = __compileSet;
         db[@ CatspeakTerm.INDEX] = __compileIndex;
+        db[@ CatspeakTerm.PROPERTY] = __compileProperty;
         db[@ CatspeakTerm.GLOBAL] = __compileGlobal;
         db[@ CatspeakTerm.LOCAL] = __compileLocal;
         db[@ CatspeakTerm.FUNCTION] = __compileFunctionExpr;
@@ -694,6 +724,17 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakAssign.DIVIDE] = __catspeak_expr_index_set_div__;
         db[@ CatspeakAssign.SUBTRACT] = __catspeak_expr_index_set_sub__;
         db[@ CatspeakAssign.PLUS] = __catspeak_expr_index_set_plus__;
+        return db;
+    })();
+
+    /// @ignore
+    static __assignLookupProperty = (function () {
+        var db = array_create(CatspeakAssign.__SIZE__, undefined);
+        db[@ CatspeakAssign.VANILLA] = __catspeak_expr_property_set__;
+        db[@ CatspeakAssign.MULTIPLY] = __catspeak_expr_property_set_mult__;
+        db[@ CatspeakAssign.DIVIDE] = __catspeak_expr_property_set_div__;
+        db[@ CatspeakAssign.SUBTRACT] = __catspeak_expr_property_set_sub__;
+        db[@ CatspeakAssign.PLUS] = __catspeak_expr_property_set_plus__;
         return db;
     })();
 
@@ -1127,6 +1168,71 @@ function __catspeak_expr_index_set_plus__() {
     } else {
         __catspeak_error_got(dbgError, collection_);
     }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_property_get__() {
+    var property_ = property();
+    if (!is_method(property_)) {
+        __catspeak_error_got(dbgError, property_);
+    }
+    return property_();
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_property_set__() {
+    var property_ = property();
+    var value_ = value();
+    if (!is_method(property_)) {
+        __catspeak_error_got(dbgError, property_);
+    }
+    return property_(value_);
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_property_set_mult__() {
+    var property_ = property();
+    var value_ = value();
+    if (!is_method(property_)) {
+        __catspeak_error_got(dbgError, property_);
+    }
+    return property_(property_() * value_);
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_property_set_div__() {
+    var property_ = property();
+    var value_ = value();
+    if (!is_method(property_)) {
+        __catspeak_error_got(dbgError, property_);
+    }
+    return property_(property_() / value_);
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_property_set_sub__() {
+    var property_ = property();
+    var value_ = value();
+    if (!is_method(property_)) {
+        __catspeak_error_got(dbgError, property_);
+    }
+    return property_(property_() - value_);
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_property_set_plus__() {
+    var property_ = property();
+    var value_ = value();
+    if (!is_method(property_)) {
+        __catspeak_error_got(dbgError, property_);
+    }
+    return property_(property_() + value_);
 }
 
 /// @ignore

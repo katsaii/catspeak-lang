@@ -186,3 +186,34 @@ test_add(function () : Test("global-custom-presets") constructor {
     '));
     assertEq(2 * 103, f());
 });
+
+test_add(function () : Test("engine-properties") constructor {
+    var engine = new CatspeakEnvironment();
+    var f = engine.compileGML(engine.parseString(@'
+        let some_property = fun { 620 }
+
+        return :some_property + 2 * :some_property
+    '));
+    assertEq(620 + 2 * 620, f());
+});
+
+test_add(function () : Test("engine-properties-2") constructor {
+    var engine = new CatspeakEnvironment();
+    var f = engine.compileGML(engine.parseString(@'
+        count = 1
+        let counter = fun {
+            let res = count
+            count *= 2
+            return res
+        }
+
+        let a = :counter
+        let b = :counter
+        let c = :counter
+        return { a, b, c }
+    '));
+    var result = f();
+    assertEq(1, result.a);
+    assertEq(2, result.b);
+    assertEq(4, result.c);
+});
