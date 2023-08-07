@@ -436,20 +436,41 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "callee", undefined,
                 "args", undefined
             );
+            __catspeak_check_arg_struct("term.callee", term.callee,
+                "type", is_numeric
+            );
         }
-        var callee = __compileTerm(ctx, term.callee);
         var args = term.args;
         var argCount = array_length(args);
         var exprs = array_create(argCount);
         for (var i = 0; i < argCount; i += 1) {
             exprs[@ i] = __compileTerm(ctx, args[i]);
         }
-        return method({
-            dbgError : __dbgTerm(term.callee, "is not a function"),
-            callee : callee,
-            args : exprs,
-            shared : sharedData,
-        }, __catspeak_expr_call__);
+        if (term.callee.type == CatspeakTerm.INDEX) {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.callee", term.callee,
+                    "collection", undefined,
+                    "key", undefined
+                );
+            }
+            var collection = __compileTerm(ctx, term.callee.collection);
+            var key = __compileTerm(ctx, term.callee.key);
+            return method({
+                dbgError : __dbgTerm(term.callee, "is not a function"),
+                collection : collection,
+                key : key,
+                args : exprs,
+                shared : sharedData,
+            }, __catspeak_expr_call_method__);
+        } else {
+            var callee = __compileTerm(ctx, term.callee);
+            return method({
+                dbgError : __dbgTerm(term.callee, "is not a function"),
+                callee : callee,
+                args : exprs,
+                shared : sharedData,
+            }, __catspeak_expr_call__);
+        }
     };
 
     /// @ignore
@@ -950,6 +971,45 @@ function __catspeak_expr_op_2__() {
     var lhs_ = lhs();
     var rhs_ = rhs();
     return op(lhs_, rhs_);
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_method__() {
+    // TODO :: this method call stuff is crap, please figure out a better way
+    var collection_ = collection();
+    var key_ = key();
+    var callee_;
+    if (is_array(collection_)) {
+        callee_ = collection_[key_];
+    } else if (is_struct(collection_)) {
+        callee_ = collection_[$ key_];
+    } else {
+        // TODO :: bad error message
+        __catspeak_error_got(dbgError, collection_);
+    }
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var args_;
+    { //var args_ = array_map(args, function(f) { return f() });
+        var i = 0;
+        var values_ = args;
+        var n_ = array_length(values_);
+        args_ = array_create(n_);
+        repeat (n_) {
+            // not sure if this is even fast
+            // but people will cry if I don't do it
+            var value = values_[i];
+            args_[@ i] = value();
+            i += 1;
+        }
+    }
+    var shared_ = shared;
+    with (method_get_self(callee_) ?? collection_) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(calleeIdx, args_);
+    }
 }
 
 /// @ignore
