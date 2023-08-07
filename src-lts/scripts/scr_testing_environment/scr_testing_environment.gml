@@ -217,3 +217,24 @@ test_add(function () : Test("engine-properties-2") constructor {
     assertEq(2, result.b);
     assertEq(4, result.c);
 });
+
+test_add(function () : Test("engine-properties-get-set") constructor {
+    var engine = new CatspeakEnvironment();
+    var f = engine.compileGML(engine.parseString(@'
+        value = 0
+        let double = fun (x) {
+            if x == undefined { value } else { value = 2 * x }
+        }
+
+        :double = 8
+        let a = :double
+
+        :double += 6
+        let b = :double + :double
+
+        return [a, b]
+    '));
+    var result = f();
+    assertEq(2 * 8, result[0]);
+    assertEq(2 * (2 * 8 + 6) + 2 * (2 * 8 + 6), result[1]);
+});
