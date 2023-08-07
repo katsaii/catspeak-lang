@@ -140,3 +140,13 @@ test_add(function () : Test("engine-use-test") constructor {
     '));
     assertEq(["start", "inside", "end"], fA());
 });
+
+test_add(function () : Test("engine-function-set-self") constructor {
+    var engine = new CatspeakEnvironment();
+    var f = engine.compileGML(engine.parseString(@'
+        return fun { self };
+    '));
+    var fun = f();
+    fun.setSelf({ hi : "hi" });
+    assertEq("hi", fun().hi);
+});
