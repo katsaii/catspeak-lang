@@ -112,11 +112,11 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             exprs[@ i] = __compileFunction(functions_[entry]);
         }
         var rootCall = __emitBlock(exprs);
-        __setupRootCall(rootCall);
+        __setupCatspeakFunctionMethods(rootCall);
         return rootCall;
     };
 
-    static __setupRootCall = function (f) {
+    static __setupCatspeakFunctionMethods = function (f) {
         f.setSelf = method(sharedData, function (selfInst) {
             self_ = catspeak_special_to_struct(selfInst);
         });
@@ -606,8 +606,10 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 "idx", is_numeric
             );
         }
+        var funcExpr = __compileFunction(functions[term.idx]);
+        __setupCatspeakFunctionMethods(funcExpr);
         return method({
-            value : __compileFunction(functions[term.idx]),
+            value : funcExpr,
         }, __catspeak_expr_value__);
     };
 
