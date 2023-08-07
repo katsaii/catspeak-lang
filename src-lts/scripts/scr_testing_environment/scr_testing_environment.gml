@@ -150,3 +150,27 @@ test_add(function () : Test("engine-function-set-self") constructor {
     fun.setSelf({ hi : "hi" });
     assertEq("hi", fun().hi);
 });
+
+function EngineFunctionMethodCallTest__Construct() constructor {
+    // this is part of the below test, but needs to live in global scope
+    // otherwise the name will be mangled
+    str = "";
+    static add = function(_str) {
+        str += string(_str);
+    }
+}
+test_add(function () : Test("engine-function-method-call") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.addFunction("Construct", function() {
+        return new EngineFunctionMethodCallTest__Construct();
+    });
+    var f = engine.compileGML(engine.parseString(@'
+        let _inst = Construct();
+        _inst.add("Woo!");
+        _inst.add("Yeehaw!");
+        _inst
+    '));
+    var inst = f();
+    assertEq("EngineFunctionMethodCallTest__Construct", instanceof(inst));
+    assertEq("Woo!Yeehaw!", inst.str);
+});
