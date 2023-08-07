@@ -3,10 +3,8 @@
 event_inherited();
 
 environment = new CatspeakEnvironment();
-environment.applyPreset(CatspeakPreset.MATH);
+environment.applyPreset(CatspeakPreset.MATH, CatspeakPreset.DRAW);
 environment.addFunction(
-    "draw_circle", draw_circle,
-    "draw_line_width", draw_line_width,
     "get_timer", get_timer,
     "get_room_width", function () { return room_width },
     "get_room_height", function () { return room_height },
