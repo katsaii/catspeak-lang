@@ -119,7 +119,7 @@ test_add(function () : Test("engine-function-brace-style") constructor {
     assertEq("hi", fB.getGlobals().main());
 });
 
-test_add(function () : Test("engine-function-brace-style") constructor {
+test_add(function () : Test("engine-use-test") constructor {
     msg = "start";
     var engine = new CatspeakEnvironment();
     engine.addFunction("thing", function () {
