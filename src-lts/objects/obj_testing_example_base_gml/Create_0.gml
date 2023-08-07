@@ -4,3 +4,4 @@
 event_inherited();
 
 gmlFunc = undefined;
+environment = Catspeak;

@@ -40,6 +40,7 @@
     {"id":{"name":"obj_testing_example_base_gml","path":"objects/obj_testing_example_base_gml/obj_testing_example_base_gml.yy",},"order":1,},
     {"id":{"name":"scr_testing_location","path":"scripts/scr_testing_location/scr_testing_location.yy",},"order":4,},
     {"id":{"name":"obj_testing_example_bench_factorial","path":"objects/obj_testing_example_bench_factorial/obj_testing_example_bench_factorial.yy",},"order":3,},
+    {"id":{"name":"obj_testing_example_draw_pendulum","path":"objects/obj_testing_example_draw_pendulum/obj_testing_example_draw_pendulum.yy",},"order":5,},
     {"id":{"name":"scr_testing_lexer_misc","path":"scripts/scr_testing_lexer_misc/scr_testing_lexer_misc.yy",},"order":6,},
     {"id":{"name":"obj_testing_example_bench_while","path":"objects/obj_testing_example_bench_while/obj_testing_example_bench_while.yy",},"order":4,},
     {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":3,},
