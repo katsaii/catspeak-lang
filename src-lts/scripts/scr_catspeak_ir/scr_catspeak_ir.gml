@@ -392,6 +392,22 @@ function CatspeakIRBuilder() constructor {
         });
     };
 
+    /// Creates a property expression.
+    ///
+    /// @param {Struct} property
+    ///   The term containing the property to access.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createProperty = function (property, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.PROPERTY, location, {
+            property : property,
+        });
+    };
+
     /// Creates a binary operator.
     ///
     /// @param {Enum.CatspeakOperator} operator
@@ -832,6 +848,7 @@ enum CatspeakTerm {
     CALL,
     SET,
     INDEX,
+    PROPERTY,
     LOCAL,
     GLOBAL,
     FUNCTION,
