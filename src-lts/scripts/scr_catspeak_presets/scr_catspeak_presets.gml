@@ -35,7 +35,7 @@ enum CatspeakPreset {
 /// @param {Enum.CatspeakPreset} preset
 /// @return {Function}
 function __catspeak_preset_get(preset) {
-    var presetFunc = global.__catspeakPresets[preset];
+    var presetFunc = global.__catspeakPresets[? preset];
     if (CATSPEAK_DEBUG_MODE && presetFunc == undefined) {
         __catspeak_error_bug();
     }
@@ -346,19 +346,48 @@ function __catspeak_preset_unsafe(env) {
     );
 }
 
+/// Adds a new global preset function which can be used to initialise any new
+/// catspeak environments.
+///
+/// @param {Any} key
+///   The key to use for the preset. Preferably a string, but it can be any
+///   value type.
+///
+/// @param {Function} callback
+///   The function to call to initialise the environment.
+///
+/// @example
+///   Adds a new preset called "my-custom" which, when applied, will
+///   add an `rgb` function to the given [CatspeakEnvironment].
+///
+/// ```gml
+/// catspeak_preset_add("my-custom", function (env) {
+///   env.addFunction("rgb", make_colour_rgb);
+/// });
+/// ```
+function catspeak_preset_add(key, callback) {
+    if (CATSPEAK_DEBUG_MODE) {
+        __catspeak_check_init();
+    }
+    var presets = global.__catspeakPresets;
+    if (ds_map_exists(presets, key)) {
+       __catspeak_error("a preset with the key '", key, "' already exists");
+    }
+    presets[? key] = callback;
+}
+
 /// @ignore
 function __catspeak_init_presets() {
-    var presets = array_create(CatspeakPreset.__SIZE__, undefined);
-    presets[@ CatspeakPreset.GML] = __catspeak_preset_gml;
-    presets[@ CatspeakPreset.TYPE] = __catspeak_preset_type;
-    presets[@ CatspeakPreset.ARRAY] = __catspeak_preset_array;
-    presets[@ CatspeakPreset.STRUCT] = __catspeak_preset_struct;
-    presets[@ CatspeakPreset.STRING] = __catspeak_preset_string;
-    presets[@ CatspeakPreset.MATH] = __catspeak_preset_math;
-    presets[@ CatspeakPreset.MATH_3D] = __catspeak_preset_math_3d;
-    presets[@ CatspeakPreset.COLOUR] = __catspeak_preset_colour;
-    presets[@ CatspeakPreset.RANDOM] = __catspeak_preset_random;
-    presets[@ CatspeakPreset.UNSAFE] = __catspeak_preset_unsafe;
     /// @ignore
-    global.__catspeakPresets = presets;
+    global.__catspeakPresets = ds_map_create();
+    catspeak_preset_add(CatspeakPreset.GML, __catspeak_preset_gml);
+    catspeak_preset_add(CatspeakPreset.TYPE, __catspeak_preset_type);
+    catspeak_preset_add(CatspeakPreset.ARRAY, __catspeak_preset_array);
+    catspeak_preset_add(CatspeakPreset.STRUCT, __catspeak_preset_struct);
+    catspeak_preset_add(CatspeakPreset.STRING, __catspeak_preset_string);
+    catspeak_preset_add(CatspeakPreset.MATH, __catspeak_preset_math);
+    catspeak_preset_add(CatspeakPreset.MATH_3D, __catspeak_preset_math_3d);
+    catspeak_preset_add(CatspeakPreset.COLOUR, __catspeak_preset_colour);
+    catspeak_preset_add(CatspeakPreset.RANDOM, __catspeak_preset_random);
+    catspeak_preset_add(CatspeakPreset.UNSAFE, __catspeak_preset_unsafe);
 }

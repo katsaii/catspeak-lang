@@ -174,3 +174,15 @@ test_add(function () : Test("engine-function-method-call") constructor {
     assertEq("EngineFunctionMethodCallTest__Construct", instanceof(inst));
     assertEq("Woo!Yeehaw!", inst.str);
 });
+
+test_add(function () : Test("global-custom-presets") constructor {
+    catspeak_preset_add("test-preset", function (env) {
+        env.addFunction("double", function (n) { return 2 * n });
+    });
+    var engine = new CatspeakEnvironment();
+    engine.applyPreset("test-preset");
+    var f = engine.compileGML(engine.parseString(@'
+        return double(103);
+    '));
+    assertEq(2 * 103, f());
+});
