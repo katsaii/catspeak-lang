@@ -13,14 +13,14 @@
 /// @param {Struct.CatspeakLexer} lexer
 ///   The lexer to consume tokens from.
 ///
-/// @param {Struct.CatspeakASGBuilder} builder
+/// @param {Struct.CatspeakIRBuilder} builder
 ///   The syntax graph builder to write data to.
 function CatspeakParser(lexer, builder) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_arg_struct_instanceof(
                 "lexer", lexer, "CatspeakLexer");
         __catspeak_check_arg_struct_instanceof(
-                "builder", builder, "CatspeakASGBuilder");
+                "builder", builder, "CatspeakIRBuilder");
     }
     self.lexer = lexer;
     self.asg = builder;

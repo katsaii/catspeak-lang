@@ -7,7 +7,7 @@ function TestParserASG(name, src) : Test(name) constructor {
     static checkASG = function (asg) {
         var buff = __catspeak_create_buffer_from_string(src);
         var lexer = new CatspeakLexer(buff);
-        var builder = new CatspeakASGBuilder();
+        var builder = new CatspeakIRBuilder();
         var parser = new CatspeakParser(lexer, builder);
         var moreToParse;
         do {

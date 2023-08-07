@@ -5,10 +5,15 @@
 
 //# feather use syntax-errors
 
+/// Old builder.
+///
+/// @deprecated
+function CatspeakASGBuilder() : CatspeakIRBuilder() constructor { }
+
 /// Handles the generation and optimisation of a syntax graph.
 ///
 /// @unstable
-function CatspeakASGBuilder() constructor {
+function CatspeakIRBuilder() constructor {
     self.functions = [];
     self.topLevelFunctions = [];
     self.functionScopes = __catspeak_alloc_ds_list(self);
