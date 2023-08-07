@@ -90,7 +90,7 @@ function CatspeakEnvironment() constructor {
     static parse = function (buff, offset=undefined, size=undefined) {
         // tokenise() will do argument validation
         var lexer = tokenise(buff, offset, size);
-        var builder = new CatspeakASGBuilder();
+        var builder = new CatspeakIRBuilder();
         var parser = new CatspeakParser(lexer, builder);
         var moreToParse;
         do {

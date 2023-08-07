@@ -31,7 +31,7 @@ TEST_EXPERIMENT "lexer" {
 TEST_EXPERIMENT "parser" {
     var buff = __catspeak_create_buffer_from_string(@'123_4.5');
     var lexer = new CatspeakLexer(buff);
-    var builder = new CatspeakASGBuilder();
+    var builder = new CatspeakIRBuilder();
     var parser = new CatspeakParser(lexer, builder);
     parser.parseExpression();
     show_message(builder.get());
