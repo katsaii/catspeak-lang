@@ -30,10 +30,10 @@ examples = [
         title : "factorial",
         obj : obj_testing_example_bench_factorial,
     },
-    //{
-    //    title : "count down",
-    //    obj : obj_testing_example_countdown,
-    //}
+    {
+        title : "draw pendulum",
+        obj : obj_testing_example_draw_pendulum,
+    }
 ];
 exampleIsValid = function (idx) {
     return idx >= 0 && idx < array_length(examples);
