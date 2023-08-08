@@ -243,19 +243,42 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseOpLogical = function () {
-        var result = __parseOpBitwise();
+        var result = __parseOpPipe();
         while (true) {
             var peeked = lexer.peek();
             if (peeked == CatspeakToken.AND) {
                 lexer.next();
                 var lhs = result;
-                var rhs = __parseOpBitwise();
+                var rhs = __parseOpPipe();
                 result = asg.createAnd(op, lhs, rhs, lexer.getLocation());
             } else if (peeked == CatspeakToken.OR) {
                 lexer.next();
                 var lhs = result;
-                var rhs = __parseOpBitwise();
+                var rhs = __parseOpPipe();
                 result = asg.createOr(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpPipe = function () {
+        var result = __parseOpBitwise();
+        while (true) {
+            var peeked = lexer.peek();
+            if (peeked == CatspeakToken.PIPE_RIGHT) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpBitwise();
+                result = asg.createCall(rhs, [lhs], lexer.getLocation());
+            } else if (peeked == CatspeakToken.PIPE_LEFT) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpBitwise();
+                result = asg.createCall(lhs, [rhs], lexer.getLocation());
             } else {
                 return result;
             }

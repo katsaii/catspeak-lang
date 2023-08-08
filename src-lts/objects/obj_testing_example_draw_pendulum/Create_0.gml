@@ -6,8 +6,8 @@ environment = new CatspeakEnvironment();
 environment.applyPreset(CatspeakPreset.MATH, CatspeakPreset.DRAW);
 environment.addFunction(
     "get_timer", get_timer,
-    "get_room_width", function () { return room_width },
-    "get_room_height", function () { return room_height },
+    "room_width", function () { return room_width },
+    "room_height", function () { return room_height },
 );
 
 code = @'
@@ -16,8 +16,8 @@ code = @'
 let t = get_timer() / 5000;
 let angle = 270 + 30 * dsin(t);
 
-let w = get_room_width();
-let h = get_room_height();
+let w = :room_width;
+let h = :room_height;
 
 let ox = w / 2;
 let oy = 0;

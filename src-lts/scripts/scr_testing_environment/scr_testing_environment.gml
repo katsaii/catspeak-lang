@@ -238,3 +238,21 @@ test_add(function () : Test("engine-properties-get-set") constructor {
     assertEq(2 * 8, result[0]);
     assertEq(2 * (2 * 8 + 6) + 2 * (2 * 8 + 6), result[1]);
 });
+
+test_add(function () : Test("engine-pipe-left") constructor {
+    var engine = new CatspeakEnvironment();
+    var f = engine.compileGML(engine.parseString(@'
+        let f = fun (x) { return x * 2 }
+        f <| 7
+    '));
+    assertEq(7 * 2, f());
+});
+
+test_add(function () : Test("engine-pipe-right") constructor {
+    var engine = new CatspeakEnvironment();
+    var f = engine.compileGML(engine.parseString(@'
+        let f = fun (x) { return x + "world" }
+        "hello" |> f
+    '));
+    assertEq("helloworld", f());
+});
