@@ -1,0 +1,27 @@
+name: Feature Request
+description: Request a new feature for Catspeak
+labels: ["enhancement"]
+assignees:
+  - katsaii
+body:
+  - type: textarea
+    id: what-problem
+    attributes:
+      label: Is your feature request related to a problem? Please specify.
+      placeholder: Yes. No. Maybe. I don't know.
+    validations:
+      required: false
+  - type: textarea
+    id: what-feature
+    attributes:
+      label: What is your feature request?
+      placeholder: Implement `create_mod()` function.
+    validations:
+      required: true
+  - type: textarea
+    id: what-alternatives
+    attributes:
+      label: Have you found an alternative solution? What have you been doing?
+      placeholder: There is no alternative...
+    validations:
+      required: false
