@@ -1,20 +1,23 @@
-name: Question
-description: Ask a question about Catspeak
-labels: ["question"]
+name: Bug Report
+description: Report a bug with Catspeak
+labels: ["bug"]
 assignees:
   - katsaii
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to create this issue. If you need more immediate response times, get in contact on [Discord](https://discord.com/channels/724320164371497020/1007968808926982184).
   - type: textarea
-    id: question
+    id: what-happened
     attributes:
-      label: What's your question?
-      placeholder: Would the people who write mods in Catspeak be considered Nekomancers?
+      label: What is the bug? How did it happen?
+      placeholder: A bug happened!! I don't know! Fix it!
     validations:
       required: true
+  - type: textarea
+    id: what-expected
+    attributes:
+      label: What was the expected behaviour?
+      placeholder: I expected Catspeak to do it for me.
+    validations:
+      required: false
   - type: dropdown
     id: version
     attributes:
@@ -44,4 +47,4 @@ body:
         - 3.0.0-beta2
         - 3.0.0-beta3
     validations:
-      required: false
+      required: true
