@@ -1,0 +1,48 @@
+name: Question
+description: Ask a question about Catspeak
+title: ""
+labels: ["question"]
+assignees:
+  - katsaii
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create this issue. If you need more immediate response times, get in contact on [Discord](https://discord.com/channels/724320164371497020/1007968808926982184).
+  - type: textarea
+    id: question
+    attributes:
+      label: What's your question?
+      placeholder: Would the people who write mods in Catspeak be considered Nekomancers?
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of Catspeak are you using?
+      multiple: false
+      options:
+        - 0.1.0
+        - 0.2.0
+        - 0.3.0
+        - 1.0.0
+        - 1.0.1
+        - 1.1.0
+        - 1.2.0
+        - 1.2.1
+        - 1.2.2
+        - 1.2.3
+        - 2.0.0
+        - 2.1.0
+        - 2.1.1
+        - 2.2.0
+        - 2.3.0
+        - 2.3.1
+        - 2.3.2
+        - 2.3.3
+        - 3.0.0-beta
+        - 3.0.0-beta2
+        - 3.0.0-beta3
+    validations:
+      required: false
