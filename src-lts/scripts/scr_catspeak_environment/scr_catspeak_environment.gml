@@ -383,6 +383,40 @@ function CatspeakEnvironment() constructor {
             interface_[$ name] = func;
         }
     }
+    
+    /// Used to add a bunch of GML functions to this environment by substring matching. 
+    /// So "scribble" would add "scribble*", "scribble_*" and "scribble_scribble_*" but not "__scribble*"
+    ///
+    /// @param {String} substr
+    ///   The function that you want to add to Catspeak as is.
+    ///
+    /// @param {Function} ...
+    ///   Additional arguments in the same function format.
+    static addGMLFunctionBySubstring = function () {
+        interface ??= { };
+        var interface_ = interface;    
+        for(var i = 0; i < argument_count; i++) {
+            var subStr = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("substr", subStr, is_string);
+            }
+            var strLen = string_length(subStr);
+            // Asset scanning for functions can be a lil weird.
+            // In my experience, I've came across a few variations.
+            // Their positions aren't always 100% known, except for anon (which is always at the front)
+            var j = 100001;
+            while(script_exists(j)) {
+                var name = script_get_name(j);
+                if ((string_copy(name, 1, 4) != "anon") && (string_count("gml_GlobalScript", name) == 0) && (string_count("__struct__", name) == 0)) {
+                    if (string_copy(name, 1, strLen) == subStr) {
+                        var func = method(undefined, j);
+                        interface_[$ name] = func; 
+                    }
+                }
+                ++j;
+            }
+        }
+    }
 }
 
 /// A usability function for converting special GML constants, such as
