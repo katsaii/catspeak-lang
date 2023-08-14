@@ -279,3 +279,15 @@ test_add(function () : Test("engine-gml-function") constructor {
     var result = func();
     assertEq(result, true);
 }); 
+
+test_add(function () : Test("engine-gml-function-by-substring") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.addGMLFunctionBySubstring("array");
+    var asg = engine.parseString(@'
+        let array = [2, 2, 4];
+        return array_sum(array);
+    ');
+    var func = engine.compileGML(asg);
+    var result = func();
+    assertEq(result, 8);
+}); 
