@@ -326,6 +326,63 @@ function CatspeakEnvironment() constructor {
             }
         }
     };
+
+    /// Used to add a GM Asset as a constant value to this enviornment.
+    ///
+    /// NOTE: Although you can use this to add functions, it's recommended
+    ///       to use [addFunction] for that purpose instead. 
+    ///       And to remove the GM asset, you'll need to use .removeConstant
+    ///
+    /// @param {String} name
+    ///   The name of the GM asset that you wish to expose to Catspeak.
+    ///
+    /// @param {String} ...
+    ///   Additional GM assets to add.
+    static addGMAsset = function () {
+        interface ??= { };
+        var interface_ = interface;
+
+        for (var i = 0; i < argument_count; i++) {
+            var name = argument[i];
+            var value = asset_get_index(argument[i]);
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+            
+            // Validate that it's an actual GM Asset
+            if (value == -1) {
+                __catspeak_error("Invalid GMAsset! Got " + string(value) + " from " + string(name));	
+            }
+            
+            interface_[$ name] = value;
+        }
+    }
+
+    /// Used to add a new GML function to this environment as is. 
+    ///
+    /// @param {Function} function
+    ///   The function that you want to add to Catspeak as is.
+    ///
+    /// @param {Function} ...
+    ///   Additional arguments in the same function format.
+    static addGMLFunction = function () {
+        interface ??= { };
+        var interface_ = interface;
+        for(var i = 0; i < argument_count; i++) {
+            // Seems silly to check that a GML function is a method
+            // even though we are going to be adding it in as a method anyway.
+            // But we don't want to mix in actual methods in here before proceeding.
+            if (CATSPEAK_DEBUG_MODE) {
+                if (is_method(argument[i])) {
+                    __catspeak_error("Cannot add method as a GML function!");
+                }
+            }
+            
+            var name = script_get_name(argument[i]);
+            var func = method(undefined, argument[i]);
+            interface_[$ name] = func;
+        }
+    }
 }
 
 /// A usability function for converting special GML constants, such as

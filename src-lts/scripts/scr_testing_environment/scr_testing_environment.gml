@@ -256,3 +256,26 @@ test_add(function () : Test("engine-pipe-right") constructor {
     '));
     assertEq("helloworld", f());
 });
+
+test_add(function () : Test("engine-gm-asset") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.addFunction("font_exists", font_exists);
+    engine.addGMAsset("fnt_testing");
+    var asg = engine.parseString(@'
+        return font_exists(fnt_testing);
+    ');
+    var func = engine.compileGML(asg);
+    var result = func();
+    assertEq(result, true);
+}); 
+
+test_add(function () : Test("engine-gml-function") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.addGMLFunction(is_string);
+    var asg = engine.parseString(@'
+        return is_string("Hello World!");
+    ');
+    var func = engine.compileGML(asg);
+    var result = func();
+    assertEq(result, true);
+}); 
