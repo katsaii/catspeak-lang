@@ -1088,7 +1088,7 @@ function __catspeak_expr_index_get__() {
     var key_ = key();
     if (is_array(collection_)) {
         return collection_[key_];
-    } else if (is_struct(collection_)) || (__catspeak_is_withable(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         return collection_[$ key_];
     } else {
         __catspeak_error_got(dbgError, collection_);
@@ -1103,7 +1103,7 @@ function __catspeak_expr_index_set__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] = value_;
-    } else if (is_struct(collection_)) || (__catspeak_is_withable(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         collection_[$ key_] = value_;
     } else {
         __catspeak_error_got(dbgError, collection_);
@@ -1118,7 +1118,7 @@ function __catspeak_expr_index_set_mult__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] *= value_;
-    } else if (is_struct(collection_)) || (__catspeak_is_withable(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         collection_[$ key_] *= value_;
     } else {
         __catspeak_error_got(dbgError, collection_);
@@ -1133,7 +1133,7 @@ function __catspeak_expr_index_set_div__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] /= value_;
-    } else if (is_struct(collection_)) || (__catspeak_is_withable(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         collection_[$ key_] /= value_;
     } else {
         __catspeak_error_got(dbgError, collection_);
@@ -1148,7 +1148,7 @@ function __catspeak_expr_index_set_sub__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] -= value_;
-    } else if (is_struct(collection_)) || (__catspeak_is_withable(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         collection_[$ key_] -= value_;
     } else {
         __catspeak_error_got(dbgError, collection_);
@@ -1163,7 +1163,7 @@ function __catspeak_expr_index_set_plus__() {
     var value_ = value();
     if (is_array(collection_)) {
         collection_[@ key_] += value_;
-    } else if (is_struct(collection_)) || (__catspeak_is_withable(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         collection_[$ key_] += value_;
     } else {
         __catspeak_error_got(dbgError, collection_);
