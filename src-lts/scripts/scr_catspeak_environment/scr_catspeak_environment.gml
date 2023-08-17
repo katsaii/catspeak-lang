@@ -269,6 +269,8 @@ function CatspeakEnvironment() constructor {
     ///   Additional arguments in the same name-value format.
     static addConstant = exposeConstant;
 
+    // TODO :: refactor `exposeFunction` etc. related functions to be `exposeFunctions` and make it take a struct or array instead of variadic functions
+
     /// Used to add a new unbound function to this environment.
     ///
     /// @param {String} name
@@ -292,6 +294,66 @@ function CatspeakEnvironment() constructor {
             interface_[$ name] = method(undefined, func);
         }
     };
+
+    /// Used to add a new GML function to this environment as is. 
+    ///
+    /// @param {Function} function
+    ///   The function that you want to add to Catspeak as is.
+    ///
+    /// @param {Function} ...
+    ///   Additional arguments in the same function format.
+    static exposeFunctionByName = function () {
+        interface ??= { };
+        var interface_ = interface;
+        for(var i = 0; i < argument_count; i++) {
+            // Seems silly to check that a GML function is a method
+            // even though we are going to be adding it in as a method anyway.
+            // But we don't want to mix in actual methods in here before proceeding.
+            if (CATSPEAK_DEBUG_MODE) {
+                if (is_method(argument[i])) {
+                    __catspeak_error("Cannot add method as a GML function!");
+                }
+            }
+            
+            var name = script_get_name(argument[i]);
+            var func = method(undefined, argument[i]);
+            interface_[$ name] = func;
+        }
+    }
+
+    /// Used to add a bunch of GML functions to this environment by substring matching. 
+    /// So "scribble" would add "scribble*", "scribble_*" and "scribble_scribble_*" but not "__scribble*"
+    ///
+    /// @param {String} substr
+    ///   The function that you want to add to Catspeak as is.
+    ///
+    /// @param {Function} ...
+    ///   Additional arguments in the same function format.
+    static exposeFunctionByPrefix = function () {
+        interface ??= { };
+        var interface_ = interface;    
+        for(var i = 0; i < argument_count; i++) {
+            var subStr = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("substr", subStr, is_string);
+            }
+            var strLen = string_length(subStr);
+            // Asset scanning for functions can be a lil weird.
+            // In my experience, I've came across a few variations.
+            // Their positions aren't always 100% known, except for anon (which is always at the front)
+            var j = 100001;
+            while(script_exists(j)) {
+                var name = script_get_name(j);
+                if ((string_copy(name, 1, 4) != "anon") && (string_count("gml_GlobalScript", name) == 0) && (string_count("__struct__", name) == 0)) {
+                    if (string_copy(name, 1, strLen) == subStr) {
+                        var func = method(undefined, j);
+                        interface_[$ name] = func; 
+                    }
+                }
+                ++j;
+            }
+        }
+    }
 
     /// Used to add a new method to this environment.
     ///
@@ -411,40 +473,6 @@ function CatspeakEnvironment() constructor {
     /// @param {String} ...
     ///   Additional functions to remove.
     static removeFunction = removeInterface;
-
-    /// Used to add a bunch of GML functions to this environment by substring matching. 
-    /// So "scribble" would add "scribble*", "scribble_*" and "scribble_scribble_*" but not "__scribble*"
-    ///
-    /// @param {String} substr
-    ///   The function that you want to add to Catspeak as is.
-    ///
-    /// @param {Function} ...
-    ///   Additional arguments in the same function format.
-    static addGMLFunctionBySubstring = function () {
-        interface ??= { };
-        var interface_ = interface;    
-        for(var i = 0; i < argument_count; i++) {
-            var subStr = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("substr", subStr, is_string);
-            }
-            var strLen = string_length(subStr);
-            // Asset scanning for functions can be a lil weird.
-            // In my experience, I've came across a few variations.
-            // Their positions aren't always 100% known, except for anon (which is always at the front)
-            var j = 100001;
-            while(script_exists(j)) {
-                var name = script_get_name(j);
-                if ((string_copy(name, 1, 4) != "anon") && (string_count("gml_GlobalScript", name) == 0) && (string_count("__struct__", name) == 0)) {
-                    if (string_copy(name, 1, strLen) == subStr) {
-                        var func = method(undefined, j);
-                        interface_[$ name] = func; 
-                    }
-                }
-                ++j;
-            }
-        }
-    }
 }
 
 /// A usability function for converting special GML constants, such as
