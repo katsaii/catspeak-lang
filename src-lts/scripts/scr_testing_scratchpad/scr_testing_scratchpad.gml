@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "none";
+var runExperiment = "unf";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -129,4 +129,16 @@ TEST_EXPERIMENT "compiler-6" {
     global.n = 10;
     f();
     show_message([global.hello, global.n]);
+}
+
+TEST_EXPERIMENT "env" {
+    var env = new CatspeakEnvironment();
+    env.addFunction("print", show_message);
+    var f = env.compileGML(env.parseString(@'
+        print(self.id);
+    '));
+    with ({ something : 1 }) {
+        f.setSelf(self);
+        f();
+    }
 }

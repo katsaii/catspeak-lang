@@ -266,8 +266,8 @@ test_add(function () : Test("engine-gm-asset") constructor {
     ');
     var func = engine.compileGML(asg);
     var result = func();
-    assertEq(result, true);
-}); 
+    assertEq(true, result);
+});
 
 test_add(function () : Test("engine-gml-function") constructor {
     var engine = new CatspeakEnvironment();
@@ -277,17 +277,63 @@ test_add(function () : Test("engine-gml-function") constructor {
     ');
     var func = engine.compileGML(asg);
     var result = func();
-    assertEq(result, true);
-}); 
+    assertEq(true, result);
+});
 
 test_add(function () : Test("engine-gml-function-by-substring") constructor {
     var engine = new CatspeakEnvironment();
-    engine.addGMLFunctionBySubstring("array");
+    engine.addGMLFunctionBySubstring("test_array");
     var asg = engine.parseString(@'
         let array = [2, 2, 4];
-        return array_sum(array);
+        return test_array_sum(array);
     ');
     var func = engine.compileGML(asg);
     var result = func();
-    assertEq(result, 8);
-}); 
+    assertEq(8, result);
+});
+
+test_add(function () : Test("engine-gml-function-by-substring-exist") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.addGMLFunctionBySubstring("test_array");
+    var asg = engine.parseString(@'
+        return [
+            test_array_sum,
+            test_array_min,
+            test_array_max,
+            test_array_mean,
+            test_array_median,
+        ];
+    ');
+    var func = engine.compileGML(asg);
+    var result = func();
+    assertNeq(undefined, result[0]);
+    assertNeq(undefined, result[1]);
+    assertNeq(undefined, result[2]);
+    assertNeq(undefined, result[3]);
+    assertNeq(undefined, result[4]);
+    assert(is_method(result[0]));
+    assert(is_method(result[1]));
+    assert(is_method(result[2]));
+    assert(is_method(result[3]));
+    assert(is_method(result[4]));
+});
+
+test_add(function () : Test("engine-gml-function-by-substring-not-exist") constructor {
+    var engine = new CatspeakEnvironment();
+    engine.addGMLFunctionBySubstring("test_array");
+    var asg = engine.parseString(@'
+        return test_struct_create;
+    ');
+    var func = engine.compileGML(asg);
+    var result = func();
+    assertEq(undefined, result);
+    assert(!is_method(result));
+});
+
+test_add(function () : Test("engine-object-index") constructor {
+    try {
+        instance_create_depth(0, 0, 0, obj_unit_test_obj);
+    } catch (e) {
+        fail(e.message);
+    }
+});
