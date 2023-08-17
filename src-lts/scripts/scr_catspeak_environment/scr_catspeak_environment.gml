@@ -225,57 +225,6 @@ function CatspeakEnvironment() constructor {
         }
     };
 
-    /// Used to add a new function to this environment.
-    ///
-    /// @param {String} name
-    ///   The name of the function as it will appear in Catspeak.
-    ///
-    /// @param {Function} func
-    ///   The script or function to add.
-    ///
-    /// @param {Any} ...
-    ///   Additional arguments in the same name-value format.
-    static addFunction = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for (var i = 0; i < argument_count; i += 2) {
-            var name = argument[i];
-            var func = argument[i + 1];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            func = is_method(func) ? func : method(undefined, func);
-            interface_[$ name] = func;
-        }
-    };
-
-    /// Used to remove an existing function from this environment.
-    ///
-    /// NOTE: Unlike [removeConstant], this function will only remove the
-    ///       definition if it is a method (checked using `is_method`).
-    ///
-    /// @param {String} name
-    ///   The name of the function to remove.
-    ///
-    /// @param {String} ...
-    ///   Additional functions to remove.
-    static removeFunction = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for (var i = 0; i < argument_count; i += 2) {
-            var name = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            if (
-                variable_struct_exists(interface_, name) &&
-                is_method(interface_[$ name])
-            ) {
-                variable_struct_remove(interface_, name);
-            }
-        }
-    };
-
     /// Used to add a new constant to this environment.
     ///
     /// NOTE: ALthough you can use this to add functions, it's recommended
@@ -289,10 +238,9 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
-    static addConstant = function () {
+    static exposeConstant = function () {
         interface ??= { };
         var interface_ = interface;
-
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
             var value = argument[i + 1];
@@ -303,17 +251,127 @@ function CatspeakEnvironment() constructor {
         }
     };
 
-    /// Used to remove an existing constant from this environment.
+    /// Used to add a new constant to this environment.
     ///
-    /// NOTE: ALthough you can use this to remove functions, it's
-    ///       recommended to use [removeFunction] for that purpose instead.
+    /// @deprecated
+    ///   Use `exposeConstant` instead.
+    ///
+    /// NOTE: ALthough you can use this to add functions, it's recommended
+    ///       to use [addFunction] for that purpose instead.
     ///
     /// @param {String} name
-    ///   The name of the constant to remove.
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Any} value
+    ///   The constant value to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addConstant = exposeConstant;
+
+    /// Used to add a new unbound function to this environment.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static exposeFunction = function () {
+        interface ??= { };
+        var interface_ = interface;
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var func = argument[i + 1];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+            func = is_method(func) ? method_get_index(func) : func;
+            interface_[$ name] = method(undefined, func);
+        }
+    };
+
+    /// Used to add a new method to this environment.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static exposeMethod = function () {
+        interface ??= { };
+        var interface_ = interface;
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var func = argument[i + 1];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+            func = is_method(func) ? func : method(undefined, func);
+            interface_[$ name] = func;
+        }
+    };
+
+    /// Used to add a new unbound function to this environment.
+    ///
+    /// @deprecated
+    ///   Use `exposeMethod` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addFunction = exposeMethod;
+
+    /// Used to add a GameMaker asset from the resource tree to this
+    /// environment.
+    ///
+    /// @param {String} name
+    ///   The name of the GM asset that you wish to expose to Catspeak.
     ///
     /// @param {String} ...
-    ///   Additional constants to remove.
-    static removeConstant = function () {
+    ///   Additional GM assets to add.
+    static exposeAsset = function () {
+        interface ??= { };
+        var interface_ = interface;
+        for (var i = 0; i < argument_count; i++) {
+            var name = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+            var value = asset_get_index(name);
+            var type = asset_get_type(name);
+            // validate that it's an actual GM Asset
+            if (value == -1) {
+                __catspeak_error(
+                    "invalid GMAsset: got '", value, "' from '", name, "'"
+                );
+            }
+            if (type == asset_script) {
+                // scripts must be coerced into methods
+                value = method(undefined, value);
+            }
+            interface_[$ name] = value;
+        }
+    };
+
+    /// Used to remove an existing value from this environments interface.
+    ///
+    /// @param {String} name
+    ///   The name of the interface element to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional elements to remove.
+    static removeInterface = function () {
         interface ??= { };
         var interface_ = interface;
         for (var i = 0; i < argument_count; i += 2) {
@@ -327,63 +385,33 @@ function CatspeakEnvironment() constructor {
         }
     };
 
-    /// Used to add a GM Asset as a constant value to this enviornment.
+    /// Used to remove an existing constant from this environment.
     ///
-    /// NOTE: Although you can use this to add functions, it's recommended
-    ///       to use [addFunction] for that purpose instead. 
-    ///       And to remove the GM asset, you'll need to use .removeConstant
+    /// @deprecated
+    ///   Use `removeInterface` instead.
+    ///
+    /// NOTE: ALthough you can use this to remove functions, it's
+    ///       recommended to use [removeFunction] for that purpose instead.
     ///
     /// @param {String} name
-    ///   The name of the GM asset that you wish to expose to Catspeak.
+    ///   The name of the constant to remove.
     ///
     /// @param {String} ...
-    ///   Additional GM assets to add.
-    static addGMAsset = function () {
-        interface ??= { };
-        var interface_ = interface;
+    ///   Additional constants to remove.
+    static removeConstant = removeInterface;
 
-        for (var i = 0; i < argument_count; i++) {
-            var name = argument[i];
-            var value = asset_get_index(argument[i]);
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            
-            // Validate that it's an actual GM Asset
-            if (value == -1) {
-                __catspeak_error("Invalid GMAsset! Got " + string(value) + " from " + string(name));	
-            }
-            
-            interface_[$ name] = value;
-        }
-    }
+    /// Used to remove an existing function from this environment.
+    ///
+    /// @deprecated
+    ///   Use `removeInterface` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional functions to remove.
+    static removeFunction = removeInterface;
 
-    /// Used to add a new GML function to this environment as is. 
-    ///
-    /// @param {Function} function
-    ///   The function that you want to add to Catspeak as is.
-    ///
-    /// @param {Function} ...
-    ///   Additional arguments in the same function format.
-    static addGMLFunction = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for(var i = 0; i < argument_count; i++) {
-            // Seems silly to check that a GML function is a method
-            // even though we are going to be adding it in as a method anyway.
-            // But we don't want to mix in actual methods in here before proceeding.
-            if (CATSPEAK_DEBUG_MODE) {
-                if (is_method(argument[i])) {
-                    __catspeak_error("Cannot add method as a GML function!");
-                }
-            }
-            
-            var name = script_get_name(argument[i]);
-            var func = method(undefined, argument[i]);
-            interface_[$ name] = func;
-        }
-    }
-    
     /// Used to add a bunch of GML functions to this environment by substring matching. 
     /// So "scribble" would add "scribble*", "scribble_*" and "scribble_scribble_*" but not "__scribble*"
     ///
