@@ -424,8 +424,8 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             rhs : __compileTerm(ctx, term.rhs),
         }, __catspeak_expr_op_2__);
     };
-	
-	/// @ignore
+
+    /// @ignore
     ///
     /// @param {Struct} ctx
     /// @param {Struct} term
@@ -442,8 +442,8 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             lazy : __compileTerm(ctx, term.lazy),
         }, __catspeak_expr_and__);
     };
-	
-	/// @ignore
+
+    /// @ignore
     ///
     /// @param {Struct} ctx
     /// @param {Struct} term
@@ -749,8 +749,8 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakTerm.LOCAL] = __compileLocal;
         db[@ CatspeakTerm.FUNCTION] = __compileFunctionExpr;
         db[@ CatspeakTerm.SELF] = __compileSelf;
-		db[@ CatspeakTerm.AND] = __compileAnd;
-		db[@ CatspeakTerm.OR] = __compileOr;
+        db[@ CatspeakTerm.AND] = __compileAnd;
+        db[@ CatspeakTerm.OR] = __compileOr;
         return db;
     })();
 
@@ -965,13 +965,13 @@ function __catspeak_expr_if_else__() {
 /// @ignore
 /// @return {Any}
 function __catspeak_expr_and__() {
-    return eager() and lazy();
+    return eager() && lazy();
 }
 
 /// @ignore
 /// @return {Any}
 function __catspeak_expr_or__() {
-    return eager() or lazy();
+    return eager() || lazy();
 }
 
 /// @ignore
