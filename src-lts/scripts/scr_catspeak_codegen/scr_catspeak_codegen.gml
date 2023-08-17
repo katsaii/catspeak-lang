@@ -424,6 +424,42 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             rhs : __compileTerm(ctx, term.rhs),
         }, __catspeak_expr_op_2__);
     };
+	
+	/// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
+    static __compileAnd = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "eager", undefined,
+                "lazy", undefined
+            );
+        }
+        return method({
+            eager : __compileTerm(ctx, term.eager),
+            lazy : __compileTerm(ctx, term.lazy),
+        }, __catspeak_expr_and__);
+    };
+	
+	/// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
+    static __compileOr = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "eager", undefined,
+                "lazy", undefined
+            );
+        }
+        return method({
+            eager : __compileTerm(ctx, term.eager),
+            lazy : __compileTerm(ctx, term.lazy),
+        }, __catspeak_expr_or__);
+    };
 
     /// @ignore
     ///
@@ -713,6 +749,8 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakTerm.LOCAL] = __compileLocal;
         db[@ CatspeakTerm.FUNCTION] = __compileFunctionExpr;
         db[@ CatspeakTerm.SELF] = __compileSelf;
+		db[@ CatspeakTerm.AND] = __compileAnd;
+		db[@ CatspeakTerm.OR] = __compileOr;
         return db;
     })();
 
@@ -922,6 +960,18 @@ function __catspeak_expr_if__() {
 /// @return {Any}
 function __catspeak_expr_if_else__() {
     return condition() ? ifTrue() : ifFalse();
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_and__() {
+    return eager() and lazy();
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_or__() {
+    return eager() or lazy();
 }
 
 /// @ignore
