@@ -250,12 +250,12 @@ function CatspeakParser(lexer, builder) constructor {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpPipe();
-                result = asg.createAnd(op, lhs, rhs, lexer.getLocation());
+                result = asg.createAnd(lhs, rhs, lexer.getLocation());
             } else if (peeked == CatspeakToken.OR) {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpPipe();
-                result = asg.createOr(op, lhs, rhs, lexer.getLocation());
+                result = asg.createOr(lhs, rhs, lexer.getLocation());
             } else {
                 return result;
             }
