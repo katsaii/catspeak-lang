@@ -1073,7 +1073,7 @@ function __catspeak_expr_call_method__() {
     var callee_;
     if (is_array(collection_)) {
         callee_ = collection_[key_];
-    } else if (is_struct(collection_)) {
+    } else if (__catspeak_is_withable(collection_)) {
         callee_ = collection_[$ key_];
     } else {
         // TODO :: bad error message
