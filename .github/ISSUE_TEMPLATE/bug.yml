@@ -4,6 +4,10 @@ labels: ["bug", "high priority"]
 assignees:
   - katsaii
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create this issue. If you need more immediate response times, get in contact on [Discord](https://discord.com/channels/724320164371497020/1007968808926982184).
   - type: dropdown
     id: version
     attributes:
