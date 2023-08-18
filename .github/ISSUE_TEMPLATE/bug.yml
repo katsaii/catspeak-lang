@@ -4,20 +4,6 @@ labels: ["bug"]
 assignees:
   - katsaii
 body:
-  - type: textarea
-    id: what-happened
-    attributes:
-      label: What is the bug? How did it happen?
-      placeholder: A bug happened!! I don't know! Fix it!
-    validations:
-      required: true
-  - type: textarea
-    id: what-expected
-    attributes:
-      label: What was the expected behaviour?
-      placeholder: I expected Catspeak to do it for me.
-    validations:
-      required: false
   - type: dropdown
     id: version
     attributes:
@@ -25,6 +11,7 @@ body:
       description: What version of Catspeak are you using?
       multiple: false
       options:
+        - (none specified)
         - 3.0.0-beta3
         - 3.0.0-beta2
         - 3.0.0-beta
@@ -48,3 +35,13 @@ body:
         - 0.1.0
     validations:
       required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: What happened? What did you expect to happen? What are the steps to reproduce the bug?
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "**`(.@ w @.) b  <(Thanks!)`**"
