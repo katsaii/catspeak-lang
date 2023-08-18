@@ -15,3 +15,6 @@ body:
       placeholder: Would the people who write mods in Catspeak be considered Nekomancers?
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: "**`(.@ w @.) b  <(Thanks!)`**"
