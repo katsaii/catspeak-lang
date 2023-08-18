@@ -61,7 +61,9 @@
   "isEcma": false,
   "configs": {
     "name": "Default",
-    "children": [],
+    "children": [
+      {"name":"NoTest","children":[],},
+    ],
   },
   "RoomOrderNodes": [
     {"roomId":{"name":"rm_testing","path":"rooms/rm_testing/rm_testing.yy",},},

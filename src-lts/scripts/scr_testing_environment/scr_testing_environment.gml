@@ -337,3 +337,20 @@ test_add(function () : Test("engine-object-index") constructor {
         fail(e.message);
     }
 });
+
+test_add_force(function () : Test("engine-else-if") constructor {
+    var engine = new CatspeakEnvironment();
+    try {
+        var asg = engine.parseString(@'
+            a = 1
+            if (a == 1) {
+
+            } else if (a == 2) {
+
+            }
+        ');
+        engine.compileGML(asg);
+    } catch (e) {
+        fail(e.message);
+    }
+});
