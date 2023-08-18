@@ -147,7 +147,12 @@ function CatspeakParser(lexer, builder) constructor {
             if (lexer.peek() == CatspeakToken.ELSE) {
                 lexer.next();
                 asg.pushBlock();
-                __parseStatements("else");
+                if (lexer.peek() == CatspeakToken.IF) {
+                    // for `else if` support
+                    __parseExpression();
+                } else {
+                    __parseStatements("else");
+                }
                 ifFalse = asg.popBlock();
             } else {
                 ifFalse = asg.createValue(undefined, lexer.getLocation());
