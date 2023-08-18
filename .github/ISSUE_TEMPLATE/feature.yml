@@ -4,24 +4,24 @@ labels: ["enhancement"]
 assignees:
   - katsaii
 body:
-  - type: textarea
-    id: what-problem
+  - type: markdown
     attributes:
-      label: Is your feature request related to a problem? Please specify.
-      placeholder: Yes. No. Maybe. I don't know.
-    validations:
-      required: false
+      value: |
+        Thanks for taking the time to create this issue. If you need more immediate response times, get in contact on [Discord](https://discord.com/channels/724320164371497020/1007968808926982184).
   - type: textarea
     id: what-feature
     attributes:
-      label: What is your feature request?
-      placeholder: Implement `create_mod()` function.
+      label: What is your feature request? 
+      placeholder: What is your feature request? Is your feature request related to a problem? Have you managed to find a work around?
     validations:
       required: true
   - type: textarea
-    id: what-alternatives
+    id: what-detail
     attributes:
-      label: Have you found an alternative solution? What have you been doing?
-      placeholder: There is no alternative...
+      label: Please describe in detail how you expect this new feature to behave.
+      placeholder: The stage is all yours! Make a convincing argument.
     validations:
       required: false
+  - type: markdown
+    attributes:
+      value: "**`(.@ w @.) b  <(Thanks!)`**"
