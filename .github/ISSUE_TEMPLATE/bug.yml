@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug with Catspeak
-labels: ["bug"]
+labels: ["bug", "high priority"]
 assignees:
   - katsaii
 body:
