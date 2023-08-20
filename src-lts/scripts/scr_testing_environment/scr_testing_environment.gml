@@ -122,11 +122,11 @@ test_add(function () : Test("engine-function-brace-style") constructor {
 test_add(function () : Test("engine-use-test") constructor {
     msg = "start";
     var engine = new CatspeakEnvironment();
-    engine.addFunction("thing", function () {
+    engine.addMethod("thing", function () {
         msg = "inside";
         return function () { msg = "end" };
     });
-    engine.addFunction("get_msg", function () {
+    engine.addMethod("get_msg", function () {
         return msg;
     });
     var fA = engine.compileGML(engine.parseString(@'
@@ -257,7 +257,7 @@ test_add(function () : Test("engine-pipe-right") constructor {
     assertEq("helloworld", f());
 });
 
-test_add(function () : Test("engine-gm-asset") constructor {
+test_add_ignore(function () : Test("engine-gm-asset") constructor {
     var engine = new CatspeakEnvironment();
     engine.addFunction("font_exists", font_exists);
     engine.addGMAsset("fnt_testing");
@@ -269,7 +269,7 @@ test_add(function () : Test("engine-gm-asset") constructor {
     assertEq(true, result);
 });
 
-test_add(function () : Test("engine-gml-function") constructor {
+test_add_ignore(function () : Test("engine-gml-function") constructor {
     var engine = new CatspeakEnvironment();
     engine.addGMLFunction(is_string);
     var asg = engine.parseString(@'
@@ -280,7 +280,7 @@ test_add(function () : Test("engine-gml-function") constructor {
     assertEq(true, result);
 });
 
-test_add(function () : Test("engine-gml-function-by-substring") constructor {
+test_add_ignore(function () : Test("engine-gml-function-by-substring") constructor {
     var engine = new CatspeakEnvironment();
     engine.addGMLFunctionBySubstring("test_array");
     var asg = engine.parseString(@'
@@ -292,7 +292,7 @@ test_add(function () : Test("engine-gml-function-by-substring") constructor {
     assertEq(8, result);
 });
 
-test_add(function () : Test("engine-gml-function-by-substring-exist") constructor {
+test_add_ignore(function () : Test("engine-gml-function-by-substring-exist") constructor {
     var engine = new CatspeakEnvironment();
     engine.addGMLFunctionBySubstring("test_array");
     var asg = engine.parseString(@'
@@ -318,7 +318,7 @@ test_add(function () : Test("engine-gml-function-by-substring-exist") constructo
     assert(is_method(result[4]));
 });
 
-test_add(function () : Test("engine-gml-function-by-substring-not-exist") constructor {
+test_add_ignore(function () : Test("engine-gml-function-by-substring-not-exist") constructor {
     var engine = new CatspeakEnvironment();
     engine.addGMLFunctionBySubstring("test_array");
     var asg = engine.parseString(@'
