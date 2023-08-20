@@ -269,8 +269,6 @@ function CatspeakEnvironment() constructor {
     ///   Additional arguments in the same name-value format.
     static addConstant = exposeConstant;
 
-    // TODO :: refactor `exposeFunction` etc. related functions to be `exposeFunctions` and make it take a struct or array instead of variadic functions
-
     /// Used to add a new unbound function to this environment.
     ///
     /// @param {String} name
@@ -295,7 +293,7 @@ function CatspeakEnvironment() constructor {
         }
     };
 
-    /// Used to add a new GML function to this environment as is. 
+    /// Used to add a new GML function to this environment as is.
     ///
     /// @param {Function} function
     ///   The function that you want to add to Catspeak as is.
@@ -306,9 +304,11 @@ function CatspeakEnvironment() constructor {
         interface ??= { };
         var interface_ = interface;
         for(var i = 0; i < argument_count; i++) {
-            // Seems silly to check that a GML function is a method
-            // even though we are going to be adding it in as a method anyway.
-            // But we don't want to mix in actual methods in here before proceeding.
+            // seems silly to check that a GML function is a method
+            // even though we are going to be adding it in as a method anyway
+            //
+            // but we don't want to mix in actual methods in here before
+            // proceeding
             if (CATSPEAK_DEBUG_MODE) {
                 if (is_method(argument[i])) {
                     __catspeak_error("Cannot add method as a GML function!");
