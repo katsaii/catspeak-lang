@@ -7,11 +7,244 @@
 
 //# feather use syntax-errors
 
+/// @ignore
+///
+/// @param {Function} func
+/// @return {String}
+function __catspeak_infer_function_name(func) {
+    if (is_method(func)) {
+        var name = func[$ "name"];
+        if (is_string(name)) {
+            return name;
+        }
+        func = method_get_index(func);
+    }
+    return script_get_name(func);
+}
+
+/// Represents a foreign function/constant interface for exposing Catspeak
+function CatspeakForeignInterface() constructor {
+    self.database = { };
+    self.banList = { };
+
+    /// Returns the value of a foreign symbol exposed by this interface.
+    ///
+    /// @param {String} name
+    ///   The name of the symbol as it appears in Catspeak.
+    ///
+    /// @return {Any}
+    static get = function (name) {
+        if (variable_struct_exists(banList, name)) {
+            // this function has been banned!
+            return undefined;
+        }
+        return database[$ name];
+    };
+
+    /// Bans an array of symbols from being used by this interface. Any
+    /// symbols in this list will be treated as though they do not exist. To
+    /// unban a set of symbols, you should use the [addPardonList].
+    ///
+    /// If a symbol was previously banned, this function will have no effect.
+    ///
+    /// @param {Array} bans
+    ///   An array of symbols to ban the usage of from within Catspeak.
+    static addBanList = function (bans) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("bans", bans, is_array);
+        }
+        var banList_ = banlist;
+        for (var i = array_length(bans) - 1; i >= 0; i -= 1) {
+            var banned = bans[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("bans[i]", banned, is_string);
+            }
+            banList_[$ banned] = true;
+        }
+    };
+
+    /// Pardons an array of symbols within this interface.
+    ///
+    /// If a symbol was not previously banned by [addBanList], there will be
+    /// no effect.
+    ///
+    /// @param {Array} pardons
+    ///   An array of symbols to pardon the usage of from within Catspeak.
+    static addPardonList = function (pardons) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("pardons", pardons, is_array);
+        }
+        var banList_ = banlist;
+        for (var i = array_length(bans) - 1; i >= 0; i -= 1) {
+            var pardoned = pardons[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("pardons[i]", pardoned, is_string);
+            }
+            if (variable_struct_exists(banList_, pardoned)) {
+                variable_struct_remove(banList_, pardoned);
+            }
+        }
+    };
+
+    /// Exposes a constant value to this interface.
+    ///
+    /// NOTE: You cannot expose functions using this function. Instead you
+    ///       should use one of [exposeFunction] or [exposeMethod].
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Any} value
+    ///   The constant value to add.
+    static exposeConstant = function (name, value) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+            __catspeak_check_arg_not("value", value, __catspeak_is_callable);
+        }
+        database[$ name] = value;
+    };
+
+    /// Exposes a new unbound function to this interface. When passed a bound
+    /// method (i.e. a non-global function), it will be unbound before it's
+    /// added to the interface.
+    ///
+    /// If you would prefer to keep the bound `self` of a method, you should
+    /// use the [exposeMethod] function instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script ID or function to add.
+    static exposeFunction = function (name, func) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+            __catspeak_check_arg("func", func, __catspeak_is_callable);
+        }
+        func = is_method(func) ? method_get_index(func) : func;
+        database[$ name] = method(undefined, func);
+    };
+
+    /// Behaves similarly to [exposeFunction], except the name of definition
+    /// is inferred. There are three ways a name will be inferred:
+    ///
+    ///  1) If the value is a script resource, `script_get_name` is used.
+    ///  2) If the value is a method and a `name` field exists, then the value
+    ///     of this `name` field will be used as the name.
+    ///  3) If the value is a method and a `name` field does not exist, then
+    ///     `script_get_name` will be called on the underlying bound script
+    ///     resource.
+    ///
+    /// @param {Function} func
+    ///   The script ID or function to add.
+    static exposeFunctionByName = function (func) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("func", func, __catspeak_is_callable);
+        }
+        var name = __catspeak_infer_function_name(func);
+        func = is_method(func) ? method_get_index(func) : func;
+        database[$ name] = method(undefined, func);
+    }
+
+    /// Exposes a new bound function to this interface.
+    ///
+    /// @param {String} name
+    ///   The name of the method as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script ID or method to add.
+    static exposeMethod = function (name, func) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+            __catspeak_check_arg("func", func, __catspeak_is_callable);
+        }
+        func = is_method(func) ? func : method(undefined, func);
+        database[$ name] = func;
+    };
+
+    /// Behaves similarly to [exposeMethod], except the name of definition
+    /// is inferred. There are three ways a name will be inferred:
+    ///
+    ///  1) If the value is a script resource, `script_get_name` is used.
+    ///  2) If the value is a method and a `name` field exists, then the value
+    ///     of this `name` field will be used as the name.
+    ///  3) If the value is a method and a `name` field does not exist, then
+    ///     `script_get_name` will be called on the underlying bound script
+    ///     resource.
+    ///
+    /// @param {Function} func
+    ///   The script ID or method to add.
+    static exposeMethodByName = function (func) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("func", func, __catspeak_is_callable);
+        }
+        var name = __catspeak_infer_function_name(func);
+        func = is_method(func) ? func : method(undefined, func);
+        database[$ name] = func;
+    };
+
+    /// Exposes a GameMaker asset from the resource tree to this interface.
+    ///
+    /// @param {String} name
+    ///   The name of the GM asset that you wish to expose to Catspeak.
+    static exposeAsset = function (name) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+        var value = asset_get_index(name);
+        var type = asset_get_type(name);
+        // validate that it's an actual GM Asset
+        if (value == -1) {
+            __catspeak_error(
+                "invalid GMAsset: got '", value, "' from '", name, "'"
+            );
+        }
+        if (type == asset_script) {
+            // scripts must be coerced into methods
+            value = method(undefined, value);
+        }
+        database[$ name] = value;
+    };
+
+    /// Exposes many user-defined global GML functions to this interface which
+    /// share a common prefix.
+    ///
+    /// @param {String} namespace
+    ///   The common prefix for the set of functions you want to expose to
+    ///   Catspeak.
+    static exposeFunctionByPrefix = function (namespace) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("namespace", namespace, is_string);
+        }
+        // asset scanning for functions can be a lil weird, in my experience
+        // i've came across a few variations
+        //
+        // their positions aren't always 100% known, except for anon
+        // (which is always at the front)
+        var database_ = database;
+        for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+            var name = script_get_name(scriptID);
+            if (
+                string_starts_with(name, "anon") ||
+                string_count("gml_GlobalScript", name) > 0 ||
+                string_count("__struct__", name) > 0
+            ) {
+                continue;
+            }
+            if (string_starts_with(name, namespace)) {
+                database_[$ name] = method(undefined, scriptID); 
+            }
+        }
+    };
+}
+
 /// The number of microseconds before a Catspeak program times out. The
 /// default is 1 second.
 #macro CATSPEAK_TIMEOUT 1000
 
 /// @ignore
+///
+/// @param {Real} t
 function __catspeak_timeout_check(t) {
     gml_pragma("forceinline");
     if (current_time - t > CATSPEAK_TIMEOUT) {
@@ -19,20 +252,6 @@ function __catspeak_timeout_check(t) {
             "process exceeded allowed time of ", CATSPEAK_TIMEOUT, " ms"
         );
     }
-}
-
-/// @ignore
-///
-/// @param {Any} val
-function __catspeak_is_withable(val) {
-    if (is_struct(val) || val == self || val == other) {
-        return true;
-    }
-    var isInst = false;
-    try {
-        isInst = !object_exists(val) && instance_exists(val);
-    } catch (_) { }
-    return isInst;
 }
 
 /// Consumes an abstract syntax graph and converts it into a callable GML

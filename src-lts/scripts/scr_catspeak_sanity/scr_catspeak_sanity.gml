@@ -5,6 +5,27 @@
 /// @ignore
 ///
 /// @param {Any} val
+function __catspeak_is_withable(val) {
+    if (is_struct(val) || val == self || val == other) {
+        return true;
+    }
+    var isInst = false;
+    try {
+        isInst = !object_exists(val) && instance_exists(val);
+    } catch (_) { }
+    return isInst;
+}
+
+/// @ignore
+///
+/// @param {Any} val
+function __catspeak_is_callable(val) {
+    return is_method(val) || is_numeric(val) && script_exists(val);
+}
+
+/// @ignore
+///
+/// @param {Any} val
 /// @return {String}
 function __catspeak_string(val) {
     gml_pragma("forceinline");
@@ -89,6 +110,30 @@ function __catspeak_check_init() {
 
 /// @ignore
 ///
+/// @param {Function} func
+/// @return {String}
+function __catspeak_infer_type_from_predicate(p) {
+    switch (func) {
+        case is_string: return "string"; break;
+        case is_real: return "real"; break;
+        case is_numeric: return "numeric"; break;
+        case is_bool: return "bool"; break;
+        case is_array: return "array"; break;
+        case is_struct: return "struct"; break;
+        case is_method: return "method"; break;
+        case __catspeak_is_callable: return "callable"; break;
+        case is_ptr: return "pointer"; break;
+        case is_int32: return "int32"; break;
+        case is_int64: return "int64"; break;
+        case is_undefined: return "undefined"; break;
+        case is_nan: return "NaN"; break;
+        case is_infinity: return "infinity"; break;
+        case buffer_exists: return "buffer"; break;
+    }
+}
+
+/// @ignore
+///
 /// @param {Any} name
 /// @param {Any} val
 /// @param {Function} func
@@ -98,27 +143,30 @@ function __catspeak_check_arg(name, val, func, typeName=undefined) {
         return;
     }
     if (typeName == undefined) {
-        switch (func) {
-            case is_string: typeName = "string"; break;
-            case is_real: typeName = "real"; break;
-            case is_numeric: typeName = "numeric"; break;
-            case is_bool: typeName = "bool"; break;
-            case is_array: typeName = "array"; break;
-            case is_struct: typeName = "struct"; break;
-            case is_method: typeName = "method"; break;
-            case is_callable: typeName = "callable"; break;
-            case is_ptr: typeName = "pointer"; break;
-            case is_int32: typeName = "int32"; break;
-            case is_int64: typeName = "int64"; break;
-            case is_undefined: typeName = "undefined"; break;
-            case is_nan: typeName = "NaN"; break;
-            case is_infinity: typeName = "infinity"; break;
-            case buffer_exists: typeName = "buffer"; break;
-        }
+        typeName = __catspeak_infer_type_from_predicate(func);
     }
     __catspeak_error(
         "expected argument '", name, "' to be of type '", typeName, "'",
         ", but got '", typeof(val), "' instead"
+    );
+}
+
+/// @ignore
+///
+/// @param {Any} name
+/// @param {Any} val
+/// @param {Function} func
+/// @param {Any} [typeName]
+function __catspeak_check_arg_not(name, val, func, typeName=undefined) {
+    if (!func(val)) {
+        return;
+    }
+    if (typeName == undefined) {
+        typeName = __catspeak_infer_type_from_predicate(func);
+    }
+    __catspeak_error(
+        "expected argument '", name,
+        "' to be any type EXCEPT of type '", typeName, "'"
     );
 }
 
