@@ -215,6 +215,8 @@ function test_add(f, ignorePlatforms=IgnorePlatform.NONE) {
     }
 }
 
+function test_add_ignore() { }
+
 function test_add_force(f) {
     var stats = test_stats();
     stats.total += 1;

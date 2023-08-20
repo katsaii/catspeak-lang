@@ -113,7 +113,7 @@ function __catspeak_check_init() {
 /// @param {Function} func
 /// @return {String}
 function __catspeak_infer_type_from_predicate(p) {
-    switch (func) {
+    switch (p) {
         case is_string: return "string"; break;
         case is_real: return "real"; break;
         case is_numeric: return "numeric"; break;
@@ -130,6 +130,7 @@ function __catspeak_infer_type_from_predicate(p) {
         case is_infinity: return "infinity"; break;
         case buffer_exists: return "buffer"; break;
     }
+    return undefined;
 }
 
 /// @ignore

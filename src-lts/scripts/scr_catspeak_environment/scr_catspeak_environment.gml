@@ -247,8 +247,9 @@ function CatspeakEnvironment() constructor {
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
     static addConstant = function () {
+        var interface_ = getInterface();
         for (var i = 0; i < argument_count; i += 2) {
-            interface.exposeConstant(argument[i + 0], argument[i + 1]);
+            interface_.exposeConstant(argument[i + 0], argument[i + 1]);
         }
     };
 
@@ -266,8 +267,9 @@ function CatspeakEnvironment() constructor {
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
     static addMethod = function () {
+        var interface_ = getInterface();
         for (var i = 0; i < argument_count; i += 2) {
-            interface.exposeMethod(argument[i + 0], argument[i + 1]);
+            interface_.exposeMethod(argument[i + 0], argument[i + 1]);
         }
     };
 
@@ -285,15 +287,17 @@ function CatspeakEnvironment() constructor {
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
     static addFunction = function () {
+        var interface_ = getInterface();
         for (var i = 0; i < argument_count; i += 2) {
-            interface.exposeFunction(argument[i + 0], argument[i + 1]);
+            interface_.exposeFunction(argument[i + 0], argument[i + 1]);
         }
     };
 
     /// @ignore
     static __removeInterface = function () {
+        var interface_ = getInterface();
         for (var i = 0; i < argument_count; i += 1) {
-            interface.addBanList([argument[i]]);
+            interface_.addBanList([argument[i]]);
         }
     };
 

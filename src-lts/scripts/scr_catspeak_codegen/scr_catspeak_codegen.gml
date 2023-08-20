@@ -41,6 +41,20 @@ function CatspeakForeignInterface() constructor {
         return database[$ name];
     };
 
+    /// Returns whether a foreign symbol is exposed to this interface.
+    ///
+    /// @param {String} name
+    ///   The name of the symbol as it appears in Catspeak.
+    ///
+    /// @return {Bool}
+    static exists = function (name) {
+        if (variable_struct_exists(banList, name)) {
+            // this function has been banned!
+            return false;
+        }
+        return variable_struct_exists(database, name);
+    };
+
     /// Bans an array of symbols from being used by this interface. Any
     /// symbols in this list will be treated as though they do not exist. To
     /// unban a set of symbols, you should use the [addPardonList].
@@ -99,7 +113,7 @@ function CatspeakForeignInterface() constructor {
     static exposeConstant = function (name, value) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
-            __catspeak_check_arg_not("value", value, __catspeak_is_callable);
+            //__catspeak_check_arg_not("value", value, __catspeak_is_callable);
         }
         database[$ name] = value;
     };
@@ -119,7 +133,7 @@ function CatspeakForeignInterface() constructor {
     static exposeFunction = function (name, func) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
-            __catspeak_check_arg("func", func, __catspeak_is_callable);
+            //__catspeak_check_arg("func", func, __catspeak_is_callable);
         }
         func = is_method(func) ? method_get_index(func) : func;
         database[$ name] = method(undefined, func);
@@ -139,7 +153,7 @@ function CatspeakForeignInterface() constructor {
     ///   The script ID or function to add.
     static exposeFunctionByName = function (func) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("func", func, __catspeak_is_callable);
+            //__catspeak_check_arg("func", func, __catspeak_is_callable);
         }
         var name = __catspeak_infer_function_name(func);
         func = is_method(func) ? method_get_index(func) : func;
@@ -156,7 +170,7 @@ function CatspeakForeignInterface() constructor {
     static exposeMethod = function (name, func) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("name", name, is_string);
-            __catspeak_check_arg("func", func, __catspeak_is_callable);
+            //__catspeak_check_arg("func", func, __catspeak_is_callable);
         }
         func = is_method(func) ? func : method(undefined, func);
         database[$ name] = func;
@@ -176,7 +190,7 @@ function CatspeakForeignInterface() constructor {
     ///   The script ID or method to add.
     static exposeMethodByName = function (func) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("func", func, __catspeak_is_callable);
+            //__catspeak_check_arg("func", func, __catspeak_is_callable);
         }
         var name = __catspeak_infer_function_name(func);
         func = is_method(func) ? func : method(undefined, func);
@@ -276,7 +290,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             "entryPoints", is_array
         );
     }
-    self.interface = interface ?? { };
+    self.interface = interface;
     self.functions = asg.functions;
     self.sharedData = {
         globals : { },
@@ -285,6 +299,26 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     //# feather disable once GM2043
     self.program = __compileFunctions(asg.entryPoints);
     self.finalised = false;
+
+    /// @ignore
+    ///
+    /// @param {String} name
+    static __get = function (name) {
+        if (interface == undefined) {
+            return undefined;
+        }
+        return interface.get(name);
+    }
+
+    /// @ignore
+    ///
+    /// @param {String} name
+    static __exists = function (name) {
+        if (interface == undefined) {
+            return undefined;
+        }
+        return interface.exists(name);
+    }
 
     /// Updates the compiler by generating the code for a single term from the
     /// supplied syntax graph. Returns the result of the compilation if there
@@ -792,7 +826,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
                 );
             }
             var name = target.name;
-            if (variable_struct_exists(interface, name)) {
+            if (__exists(name)) {
                 // cannot assign to interface values
                 __catspeak_error(
                     __catspeak_location_show(target.dbg),
@@ -869,10 +903,10 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             );
         }
         var name = term.name;
-        if (variable_struct_exists(interface, name)) {
+        if (__exists(name)) {
             // user-defined interface
             return method({
-                value : interface[$ name],
+                value : __get(name),
             }, __catspeak_expr_value__);
         } else {
             // global var
