@@ -27,7 +27,7 @@ function CatspeakForeignInterface() constructor {
     self.database = { };
     self.banList = { };
 
-    /// Returns the value of a foreign symbol exposed by this interface.
+    /// Returns the value of a foreign symbol exposed to this interface.
     ///
     /// @param {String} name
     ///   The name of the symbol as it appears in Catspeak.

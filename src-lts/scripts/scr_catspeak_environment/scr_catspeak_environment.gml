@@ -45,6 +45,14 @@ function CatspeakEnvironment() constructor {
         }
     };
 
+    /// Returns the foreign interface used by this Catspeak environment. This
+    /// is where all external GML functions and constants are exposed to the
+    /// Catspeak runtime environment.
+    static getInterface = function () {
+        interface ??= new CatspeakForeignInterface();
+        return interface;
+    };
+
     /// Creates a new [CatspeakLexer] from the supplied buffer, overriding
     /// the keyword database if one exists for this [CatspeakEngine].
     ///
@@ -227,37 +235,8 @@ function CatspeakEnvironment() constructor {
 
     /// Used to add a new constant to this environment.
     ///
-    /// NOTE: ALthough you can use this to add functions, it's recommended
-    ///       to use [addFunction] for that purpose instead.
-    ///
-    /// @param {String} name
-    ///   The name of the constant as it will appear in Catspeak.
-    ///
-    /// @param {Any} value
-    ///   The constant value to add.
-    ///
-    /// @param {Any} ...
-    ///   Additional arguments in the same name-value format.
-    static exposeConstant = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for (var i = 0; i < argument_count; i += 2) {
-            var name = argument[i];
-            var value = argument[i + 1];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            interface_[$ name] = value;
-        }
-    };
-
-    /// Used to add a new constant to this environment.
-    ///
     /// @deprecated
-    ///   Use `exposeConstant` instead.
-    ///
-    /// NOTE: ALthough you can use this to add functions, it's recommended
-    ///       to use [addFunction] for that purpose instead.
+    ///   Use `interface.exposeConstant` instead.
     ///
     /// @param {String} name
     ///   The name of the constant as it will appear in Catspeak.
@@ -267,96 +246,17 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
-    static addConstant = exposeConstant;
-
-    /// Used to add a new unbound function to this environment.
-    ///
-    /// @param {String} name
-    ///   The name of the function as it will appear in Catspeak.
-    ///
-    /// @param {Function} func
-    ///   The script or function to add.
-    ///
-    /// @param {Any} ...
-    ///   Additional arguments in the same name-value format.
-    static exposeFunction = function () {
-        interface ??= { };
-        var interface_ = interface;
+    static addConstant = function () {
         for (var i = 0; i < argument_count; i += 2) {
-            var name = argument[i];
-            var func = argument[i + 1];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            func = is_method(func) ? method_get_index(func) : func;
-            interface_[$ name] = method(undefined, func);
+            interface.exposeConstant(argument[i + 0], argument[i + 1]);
         }
     };
-
-    /// Used to add a new GML function to this environment as is.
-    ///
-    /// @param {Function} function
-    ///   The function that you want to add to Catspeak as is.
-    ///
-    /// @param {Function} ...
-    ///   Additional arguments in the same function format.
-    static exposeFunctionByName = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for(var i = 0; i < argument_count; i++) {
-            // seems silly to check that a GML function is a method
-            // even though we are going to be adding it in as a method anyway
-            //
-            // but we don't want to mix in actual methods in here before
-            // proceeding
-            if (CATSPEAK_DEBUG_MODE) {
-                if (is_method(argument[i])) {
-                    __catspeak_error("Cannot add method as a GML function!");
-                }
-            }
-            
-            var name = script_get_name(argument[i]);
-            var func = method(undefined, argument[i]);
-            interface_[$ name] = func;
-        }
-    }
-
-    /// Used to add a bunch of GML functions to this environment by substring matching. 
-    /// So "scribble" would add "scribble*", "scribble_*" and "scribble_scribble_*" but not "__scribble*"
-    ///
-    /// @param {String} substr
-    ///   The function that you want to add to Catspeak as is.
-    ///
-    /// @param {Function} ...
-    ///   Additional arguments in the same function format.
-    static exposeFunctionByPrefix = function () {
-        interface ??= { };
-        var interface_ = interface;    
-        for(var i = 0; i < argument_count; i++) {
-            var subStr = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("substr", subStr, is_string);
-            }
-            var strLen = string_length(subStr);
-            // Asset scanning for functions can be a lil weird.
-            // In my experience, I've came across a few variations.
-            // Their positions aren't always 100% known, except for anon (which is always at the front)
-            var j = 100001;
-            while(script_exists(j)) {
-                var name = script_get_name(j);
-                if ((string_copy(name, 1, 4) != "anon") && (string_count("gml_GlobalScript", name) == 0) && (string_count("__struct__", name) == 0)) {
-                    if (string_copy(name, 1, strLen) == subStr) {
-                        var func = method(undefined, j);
-                        interface_[$ name] = func; 
-                    }
-                }
-                ++j;
-            }
-        }
-    }
 
     /// Used to add a new method to this environment.
     ///
+    /// @deprecated
+    ///   Use `interface.exposeMethod` instead.
+    ///
     /// @param {String} name
     ///   The name of the function as it will appear in Catspeak.
     ///
@@ -365,24 +265,16 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
-    static exposeMethod = function () {
-        interface ??= { };
-        var interface_ = interface;
+    static addMethod = function () {
         for (var i = 0; i < argument_count; i += 2) {
-            var name = argument[i];
-            var func = argument[i + 1];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            func = is_method(func) ? func : method(undefined, func);
-            interface_[$ name] = func;
+            interface.exposeMethod(argument[i + 0], argument[i + 1]);
         }
     };
 
     /// Used to add a new unbound function to this environment.
     ///
     /// @deprecated
-    ///   Use `exposeMethod` instead.
+    ///   Use `interface.exposeFunction` instead.
     ///
     /// @param {String} name
     ///   The name of the function as it will appear in Catspeak.
@@ -392,65 +284,23 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
-    static addFunction = exposeMethod;
-
-    /// Used to add a GameMaker asset from the resource tree to this
-    /// environment.
-    ///
-    /// @param {String} name
-    ///   The name of the GM asset that you wish to expose to Catspeak.
-    ///
-    /// @param {String} ...
-    ///   Additional GM assets to add.
-    static exposeAsset = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for (var i = 0; i < argument_count; i++) {
-            var name = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            var value = asset_get_index(name);
-            var type = asset_get_type(name);
-            // validate that it's an actual GM Asset
-            if (value == -1) {
-                __catspeak_error(
-                    "invalid GMAsset: got '", value, "' from '", name, "'"
-                );
-            }
-            if (type == asset_script) {
-                // scripts must be coerced into methods
-                value = method(undefined, value);
-            }
-            interface_[$ name] = value;
+    static addFunction = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            interface.exposeFunction(argument[i + 0], argument[i + 1]);
         }
     };
 
-    /// Used to remove an existing value from this environments interface.
-    ///
-    /// @param {String} name
-    ///   The name of the interface element to remove.
-    ///
-    /// @param {String} ...
-    ///   Additional elements to remove.
-    static removeInterface = function () {
-        interface ??= { };
-        var interface_ = interface;
-        for (var i = 0; i < argument_count; i += 2) {
-            var name = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
-            if (variable_struct_exists(interface_, name)) {
-                variable_struct_remove(interface_, name);
-            }
+    /// @ignore
+    static __removeInterface = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            interface.addBanList([argument[i]]);
         }
     };
 
     /// Used to remove an existing constant from this environment.
     ///
     /// @deprecated
-    ///   Use `removeInterface` instead.
+    ///   Use `interface.addBanList` instead.
     ///
     /// NOTE: ALthough you can use this to remove functions, it's
     ///       recommended to use [removeFunction] for that purpose instead.
@@ -460,19 +310,19 @@ function CatspeakEnvironment() constructor {
     ///
     /// @param {String} ...
     ///   Additional constants to remove.
-    static removeConstant = removeInterface;
+    static removeConstant = __removeInterface;
 
     /// Used to remove an existing function from this environment.
     ///
     /// @deprecated
-    ///   Use `removeInterface` instead.
+    ///   Use `interface.addBanList` instead.
     ///
     /// @param {String} name
     ///   The name of the function to remove.
     ///
     /// @param {String} ...
     ///   Additional functions to remove.
-    static removeFunction = removeInterface;
+    static removeFunction = __removeInterface;
 }
 
 /// A usability function for converting special GML constants, such as
