@@ -1,9 +1,9 @@
-//! The Catspeak engine creates a lot of garbage sometimes, this module is
+//! The Catspeak env creates a lot of garbage sometimes, this module is
 //! responsible for the allocation and collection of that garbage.
 
 //# feather use syntax-errors
 
-/// Forces the Catspeak engine to collect any discarded resources.
+/// Forces the Catspeak env to collect any discarded resources.
 function catspeak_collect() {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();

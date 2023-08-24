@@ -172,7 +172,7 @@ function __catspeak_create_buffer_from_string(src) {
 
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses the Catspeak
-/// engine.
+/// env.
 ///
 /// NOTE: The lexer does not take ownership of this buffer, but it may mutate
 ///       it so beware. Therefore you should make sure to delete the buffer

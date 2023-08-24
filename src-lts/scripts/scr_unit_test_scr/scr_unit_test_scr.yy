@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "scr_testing",
+  "name": "scr_unit_test_scr",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "demo",
-    "path": "folders/Testing/demo.yy",
+    "name": "unit-tests",
+    "path": "folders/Testing/unit-tests.yy",
   },
 }

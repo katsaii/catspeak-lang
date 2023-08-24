@@ -158,7 +158,38 @@ function CatspeakForeignInterface() constructor {
         var name = __catspeak_infer_function_name(func);
         func = is_method(func) ? method_get_index(func) : func;
         database[$ name] = method(undefined, func);
-    }
+    };
+
+    /// Exposes many user-defined global GML functions to this interface which
+    /// share a common prefix.
+    ///
+    /// @param {String} namespace
+    ///   The common prefix for the set of functions you want to expose to
+    ///   Catspeak.
+    static exposeFunctionByPrefix = function (namespace) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("namespace", namespace, is_string);
+        }
+        // asset scanning for functions can be a lil weird, in my experience
+        // i've came across a few variations
+        //
+        // their positions aren't always 100% known, except for anon
+        // (which is always at the front)
+        var database_ = database;
+        for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+            var name = script_get_name(scriptID);
+            if (
+                string_starts_with(name, "anon") ||
+                string_count("gml_GlobalScript", name) > 0 ||
+                string_count("__struct__", name) > 0
+            ) {
+                continue;
+            }
+            if (string_starts_with(name, namespace)) {
+                database_[$ name] = method(undefined, scriptID); 
+            }
+        }
+    };
 
     /// Exposes a new bound function to this interface.
     ///
@@ -218,37 +249,6 @@ function CatspeakForeignInterface() constructor {
             value = method(undefined, value);
         }
         database[$ name] = value;
-    };
-
-    /// Exposes many user-defined global GML functions to this interface which
-    /// share a common prefix.
-    ///
-    /// @param {String} namespace
-    ///   The common prefix for the set of functions you want to expose to
-    ///   Catspeak.
-    static exposeFunctionByPrefix = function (namespace) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("namespace", namespace, is_string);
-        }
-        // asset scanning for functions can be a lil weird, in my experience
-        // i've came across a few variations
-        //
-        // their positions aren't always 100% known, except for anon
-        // (which is always at the front)
-        var database_ = database;
-        for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
-            var name = script_get_name(scriptID);
-            if (
-                string_starts_with(name, "anon") ||
-                string_count("gml_GlobalScript", name) > 0 ||
-                string_count("__struct__", name) > 0
-            ) {
-                continue;
-            }
-            if (string_starts_with(name, namespace)) {
-                database_[$ name] = method(undefined, scriptID); 
-            }
-        }
     };
 }
 

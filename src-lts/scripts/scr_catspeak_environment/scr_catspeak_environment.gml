@@ -364,6 +364,6 @@ globalvar Catspeak;
 
 /// @ignore
 function __catspeak_init_engine() {
-    // initialise the default Catspeak engine
+    // initialise the default Catspeak env
     Catspeak = new CatspeakEnvironment();
 }

@@ -1,9 +1,9 @@
-//! Example functions for the test case "engine-gml-function-by-substring".
+//! Example functions for the test case `env-gml-function-by-substring`.
 
 //# feather use syntax-errors
 
 // everything that starts with "test_array" should be exposed in the
-// `engine-gml-function-by-substring` test
+// `env-gml-function-by-substring` test
 
 function test_array_sum(array) {
     var len = array_length(array);
