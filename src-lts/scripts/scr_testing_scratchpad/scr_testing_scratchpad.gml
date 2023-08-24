@@ -123,7 +123,9 @@ TEST_EXPERIMENT "compiler-6" {
         global.n += 1;
     ');
     var env = new CatspeakEnvironment();
-    env.addConstant("global", catspeak_special_to_struct(global));
+    env.getInterface().exposeConstant(
+        "global", catspeak_special_to_struct(global)
+    );
     var asg = env.parse(buff);
     var f = env.compileGML(asg);
     global.n = 10;
@@ -133,7 +135,7 @@ TEST_EXPERIMENT "compiler-6" {
 
 TEST_EXPERIMENT "env" {
     var env = new CatspeakEnvironment();
-    env.addFunction("print", show_message);
+    env.getInterface().exposeFunction("print", show_message);
     var f = env.compileGML(env.parseString(@'
         print(self.id);
     '));
