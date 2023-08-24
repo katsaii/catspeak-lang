@@ -61,19 +61,16 @@ function CatspeakForeignInterface() constructor {
     ///
     /// If a symbol was previously banned, this function will have no effect.
     ///
-    /// @param {Array} bans
-    ///   An array of symbols to ban the usage of from within Catspeak.
-    static addBanList = function (bans) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("bans", bans, is_array);
-        }
-        var banList_ = banlist;
-        for (var i = array_length(bans) - 1; i >= 0; i -= 1) {
-            var banned = bans[i];
+    /// @param {String} ban
+    ///   The symbol to ban the usage of from within Catspeak.
+    static addBanList = function () {
+        var banList_ = banList;
+        for (var i = 0; i < argument_count; i += 1) {
+            var ban = argument[i];
             if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("bans[i]", banned, is_string);
+                __catspeak_check_arg("ban", ban, is_string);
             }
-            banList_[$ banned] = true;
+            banList_[$ ban] = true;
         }
     };
 
@@ -82,20 +79,17 @@ function CatspeakForeignInterface() constructor {
     /// If a symbol was not previously banned by [addBanList], there will be
     /// no effect.
     ///
-    /// @param {Array} pardons
-    ///   An array of symbols to pardon the usage of from within Catspeak.
-    static addPardonList = function (pardons) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("pardons", pardons, is_array);
-        }
-        var banList_ = banlist;
-        for (var i = array_length(bans) - 1; i >= 0; i -= 1) {
-            var pardoned = pardons[i];
+    /// @param {String} pardon
+    ///   The symbol to pardon the usage of from within Catspeak.
+    static addPardonList = function () {
+        var banList_ = banList;
+        for (var i = 0; i < argument_count; i += 1) {
+            var pardon = argument[i];
             if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("pardons[i]", pardoned, is_string);
+                __catspeak_check_arg("pardon", pardon, is_string);
             }
-            if (variable_struct_exists(banList_, pardoned)) {
-                variable_struct_remove(banList_, pardoned);
+            if (variable_struct_exists(banList_, pardon)) {
+                variable_struct_remove(banList_, pardon);
             }
         }
     };
@@ -110,12 +104,16 @@ function CatspeakForeignInterface() constructor {
     ///
     /// @param {Any} value
     ///   The constant value to add.
-    static exposeConstant = function (name, value) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("name", name, is_string);
-            //__catspeak_check_arg_not("value", value, __catspeak_is_callable);
+    static exposeConstant = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+                //__catspeak_check_arg_not("value", value, __catspeak_is_callable);
+            }
+            database[$ name] = value;
         }
-        database[$ name] = value;
     };
 
     /// Exposes a new unbound function to this interface. When passed a bound
@@ -130,13 +128,17 @@ function CatspeakForeignInterface() constructor {
     ///
     /// @param {Function} func
     ///   The script ID or function to add.
-    static exposeFunction = function (name, func) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("name", name, is_string);
-            //__catspeak_check_arg("func", func, __catspeak_is_callable);
+    static exposeFunction = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+                //__catspeak_check_arg("func", func, __catspeak_is_callable);
+            }
+            func = is_method(func) ? method_get_index(func) : func;
+            database[$ name] = method(undefined, func);
         }
-        func = is_method(func) ? method_get_index(func) : func;
-        database[$ name] = method(undefined, func);
     };
 
     /// Behaves similarly to [exposeFunction], except the name of definition
@@ -151,13 +153,16 @@ function CatspeakForeignInterface() constructor {
     ///
     /// @param {Function} func
     ///   The script ID or function to add.
-    static exposeFunctionByName = function (func) {
-        if (CATSPEAK_DEBUG_MODE) {
-            //__catspeak_check_arg("func", func, __catspeak_is_callable);
+    static exposeFunctionByName = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var func = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                //__catspeak_check_arg("func", func, __catspeak_is_callable);
+            }
+            var name = __catspeak_infer_function_name(func);
+            func = is_method(func) ? method_get_index(func) : func;
+            database[$ name] = method(undefined, func);
         }
-        var name = __catspeak_infer_function_name(func);
-        func = is_method(func) ? method_get_index(func) : func;
-        database[$ name] = method(undefined, func);
     };
 
     /// Exposes many user-defined global GML functions to this interface which
@@ -166,27 +171,30 @@ function CatspeakForeignInterface() constructor {
     /// @param {String} namespace
     ///   The common prefix for the set of functions you want to expose to
     ///   Catspeak.
-    static exposeFunctionByPrefix = function (namespace) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("namespace", namespace, is_string);
-        }
-        // asset scanning for functions can be a lil weird, in my experience
-        // i've came across a few variations
-        //
-        // their positions aren't always 100% known, except for anon
-        // (which is always at the front)
-        var database_ = database;
-        for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
-            var name = script_get_name(scriptID);
-            if (
-                string_starts_with(name, "anon") ||
-                string_count("gml_GlobalScript", name) > 0 ||
-                string_count("__struct__", name) > 0
-            ) {
-                continue;
+    static exposeFunctionByPrefix = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var namespace = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("namespace", namespace, is_string);
             }
-            if (string_starts_with(name, namespace)) {
-                database_[$ name] = method(undefined, scriptID); 
+            // asset scanning for functions can be a lil weird, in my experience
+            // i've came across a few variations
+            //
+            // their positions aren't always 100% known, except for anon
+            // (which is always at the front)
+            var database_ = database;
+            for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+                var name = script_get_name(scriptID);
+                if (
+                    string_starts_with(name, "anon") ||
+                    string_count("gml_GlobalScript", name) > 0 ||
+                    string_count("__struct__", name) > 0
+                ) {
+                    continue;
+                }
+                if (string_starts_with(name, namespace)) {
+                    database_[$ name] = method(undefined, scriptID); 
+                }
             }
         }
     };
@@ -198,13 +206,17 @@ function CatspeakForeignInterface() constructor {
     ///
     /// @param {Function} func
     ///   The script ID or method to add.
-    static exposeMethod = function (name, func) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("name", name, is_string);
-            //__catspeak_check_arg("func", func, __catspeak_is_callable);
+    static exposeMethod = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+                //__catspeak_check_arg("func", func, __catspeak_is_callable);
+            }
+            func = is_method(func) ? func : method(undefined, func);
+            database[$ name] = func;
         }
-        func = is_method(func) ? func : method(undefined, func);
-        database[$ name] = func;
     };
 
     /// Behaves similarly to [exposeMethod], except the name of definition
@@ -219,36 +231,42 @@ function CatspeakForeignInterface() constructor {
     ///
     /// @param {Function} func
     ///   The script ID or method to add.
-    static exposeMethodByName = function (func) {
-        if (CATSPEAK_DEBUG_MODE) {
-            //__catspeak_check_arg("func", func, __catspeak_is_callable);
+    static exposeMethodByName = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var func = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                //__catspeak_check_arg("func", func, __catspeak_is_callable);
+            }
+            var name = __catspeak_infer_function_name(func);
+            func = is_method(func) ? func : method(undefined, func);
+            database[$ name] = func;
         }
-        var name = __catspeak_infer_function_name(func);
-        func = is_method(func) ? func : method(undefined, func);
-        database[$ name] = func;
     };
 
     /// Exposes a GameMaker asset from the resource tree to this interface.
     ///
     /// @param {String} name
     ///   The name of the GM asset that you wish to expose to Catspeak.
-    static exposeAsset = function (name) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg("name", name, is_string);
+    static exposeAsset = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var name = argument[i];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+            }
+            var value = asset_get_index(name);
+            var type = asset_get_type(name);
+            // validate that it's an actual GM Asset
+            if (value == -1) {
+                __catspeak_error(
+                    "invalid GMAsset: got '", value, "' from '", name, "'"
+                );
+            }
+            if (type == asset_script) {
+                // scripts must be coerced into methods
+                value = method(undefined, value);
+            }
+            database[$ name] = value;
         }
-        var value = asset_get_index(name);
-        var type = asset_get_type(name);
-        // validate that it's an actual GM Asset
-        if (value == -1) {
-            __catspeak_error(
-                "invalid GMAsset: got '", value, "' from '", name, "'"
-            );
-        }
-        if (type == asset_script) {
-            // scripts must be coerced into methods
-            value = method(undefined, value);
-        }
-        database[$ name] = value;
     };
 }
 

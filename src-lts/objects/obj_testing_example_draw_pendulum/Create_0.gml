@@ -4,7 +4,7 @@ event_inherited();
 
 environment = new CatspeakEnvironment();
 environment.applyPreset(CatspeakPreset.MATH, CatspeakPreset.DRAW);
-environment.addFunction(
+environment.getInterface().exposeMethod(
     "get_timer", get_timer,
     "room_width", function () { return room_width },
     "room_height", function () { return room_height },

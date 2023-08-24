@@ -161,7 +161,7 @@ function EngineFunctionMethodCallTest__Construct() constructor {
 }
 test_add(function () : Test("env-function-method-call") constructor {
     var env = new CatspeakEnvironment();
-    env.addFunction("Construct", function() {
+    env.getInterface().exposeFunction("Construct", function() {
         return new EngineFunctionMethodCallTest__Construct();
     });
     var f = env.compileGML(env.parseString(@'
@@ -177,7 +177,7 @@ test_add(function () : Test("env-function-method-call") constructor {
 
 test_add(function () : Test("global-custom-presets") constructor {
     catspeak_preset_add("test-preset", function (env) {
-        env.addFunction("double", function (n) { return 2 * n });
+        env.getInterface().exposeFunction("double", function (n) { return 2 * n });
     });
     var env = new CatspeakEnvironment();
     env.applyPreset("test-preset");

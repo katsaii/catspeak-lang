@@ -67,7 +67,7 @@ function __catspeak_preset_gml(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_type(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "is_string", is_string,
         "is_real", is_real,
         "is_numeric", is_numeric,
@@ -95,7 +95,7 @@ function __catspeak_preset_type(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_array(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "array_create", array_create,
         "array_copy", array_copy,
         "array_equals", array_equals,
@@ -141,7 +141,7 @@ function __catspeak_preset_array(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_struct(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "struct_exists", variable_struct_exists,
         "struct_get", variable_struct_get,
         "struct_set", variable_struct_set,
@@ -158,7 +158,7 @@ function __catspeak_preset_struct(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_string(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "ansi_char", ansi_char,
         "chr", chr,
         "ord", ord,
@@ -209,7 +209,7 @@ function __catspeak_preset_string(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_math(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "round", round,
         "frac", frac,
         "abs", abs,
@@ -256,14 +256,14 @@ function __catspeak_preset_math(env) {
         "lengthdir_x", lengthdir_x,
         "lengthdir_y", lengthdir_y
     );
-    env.addConstant("pi", pi);
+    env.getInterface().exposeConstant("pi", pi);
 }
 
 /// @ignore
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_math_3d(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "point_distance_3d", point_distance_3d,
         "dot_product_3d", dot_product_3d,
         "dot_product_3d_normalised", dot_product_3d_normalised,
@@ -276,14 +276,13 @@ function __catspeak_preset_math_3d(env) {
         "matrix_build_projection_perspective_fov", matrix_build_projection_perspective_fov,
         "matrix_transform_vertex", matrix_transform_vertex
     );
-    env.addConstant("pi", pi);
 }
 
 /// @ignore
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_colour(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "colour_get_blue", colour_get_blue,
         "colour_get_green", colour_get_green,
         "colour_get_red", colour_get_red,
@@ -294,7 +293,7 @@ function __catspeak_preset_colour(env) {
         "make_colour_hsv", make_colour_hsv,
         "merge_colour", merge_colour
     );
-    env.addConstant(
+    env.getInterface().exposeConstant(
         "c_aqua", c_aqua,
         "c_black", c_black,
         "c_blue", c_blue,
@@ -321,7 +320,7 @@ function __catspeak_preset_colour(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_draw(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "draw_self", draw_self,
         "draw_sprite", draw_sprite,
         "draw_sprite_pos", draw_sprite_pos,
@@ -462,7 +461,7 @@ function __catspeak_preset_draw(env) {
         "vertex_get_number", vertex_get_number,
         "vertex_get_buffer_size", vertex_get_buffer_size,
     );
-    env.addConstant(
+    env.getInterface().exposeConstant(
         "vertex_usage_position", vertex_usage_position,
         "vertex_usage_colour", vertex_usage_colour,
         "vertex_usage_color", vertex_usage_color,
@@ -491,7 +490,7 @@ function __catspeak_preset_draw(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_random(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "choose", choose,
         "random", random,
         "random_range", random_range,
@@ -504,7 +503,7 @@ function __catspeak_preset_random(env) {
 ///
 /// @param {Struct.CatspeakEnvironment} env
 function __catspeak_preset_unsafe(env) {
-    env.addFunction(
+    env.getInterface().exposeFunction(
         "asset_get_index", asset_get_index,
         "asset_get_type", asset_get_type,
         "tag_get_asset_ids", tag_get_asset_ids,
@@ -533,8 +532,8 @@ function __catspeak_preset_unsafe(env) {
 ///   add an `rgb` function to the given [CatspeakEnvironment].
 ///
 /// ```gml
-/// catspeak_preset_add("my-custom", function (env) {
-///   env.addFunction("rgb", make_colour_rgb);
+/// catspeak_preset_add("my-custom", function (ffi, keywords) {
+///   ffi.exposeFunction("rgb", make_colour_rgb);
 /// });
 /// ```
 function catspeak_preset_add(key, callback) {
