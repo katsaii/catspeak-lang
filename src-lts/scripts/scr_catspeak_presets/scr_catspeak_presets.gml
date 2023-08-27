@@ -6,8 +6,6 @@
 /// When used with [setPreset], this enum determines what functions,
 /// constants, and keywords get exposed.
 enum CatspeakPreset {
-    /// Changes keywords to resemble GML code.
-    GML,
     /// Exposes safe type checking and type conversion functions.
     TYPE,
     /// Exposes safe array functions.
@@ -42,25 +40,6 @@ function __catspeak_preset_get(preset) {
         __catspeak_error_bug();
     }
     return presetFunc;
-}
-
-/// @ignore
-///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_gml(env) {
-    env.renameKeyword(
-        "//", "div",
-        "--", "//",
-        "let", "var",
-        "fun", "function",
-        "impl", "constructor",
-    );
-    env.addKeyword(
-        "&&", CatspeakToken.AND,
-        "||", CatspeakToken.OR,
-        "mod", CatspeakToken.REMAINDER,
-        "not", CatspeakToken.NOT
-    );
 }
 
 /// @ignore
@@ -551,7 +530,6 @@ function catspeak_preset_add(key, callback) {
 function __catspeak_init_presets() {
     /// @ignore
     global.__catspeakPresets = ds_map_create();
-    catspeak_preset_add(CatspeakPreset.GML, __catspeak_preset_gml);
     catspeak_preset_add(CatspeakPreset.TYPE, __catspeak_preset_type);
     catspeak_preset_add(CatspeakPreset.ARRAY, __catspeak_preset_array);
     catspeak_preset_add(CatspeakPreset.STRUCT, __catspeak_preset_struct);
