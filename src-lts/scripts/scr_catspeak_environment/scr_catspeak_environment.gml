@@ -41,7 +41,7 @@ function CatspeakEnvironment() constructor {
     static applyPreset = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var presetFunc = __catspeak_preset_get(argument[i]);
-            presetFunc(self);
+            presetFunc(getInterface());
         }
     };
 

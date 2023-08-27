@@ -176,8 +176,8 @@ test_add(function () : Test("env-function-method-call") constructor {
 });
 
 test_add(function () : Test("global-custom-presets") constructor {
-    catspeak_preset_add("test-preset", function (env) {
-        env.getInterface().exposeFunction("double", function (n) { return 2 * n });
+    catspeak_preset_add("test-preset", function (ffi) {
+        ffi.exposeFunction("double", function (n) { return 2 * n });
     });
     var env = new CatspeakEnvironment();
     env.applyPreset("test-preset");

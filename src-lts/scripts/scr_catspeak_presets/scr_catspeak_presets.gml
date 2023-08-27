@@ -44,9 +44,9 @@ function __catspeak_preset_get(preset) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_type(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_type(ffi) {
+    ffi.exposeFunction(
         "is_string", is_string,
         "is_real", is_real,
         "is_numeric", is_numeric,
@@ -72,9 +72,9 @@ function __catspeak_preset_type(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_array(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_array(ffi) {
+    ffi.exposeFunction(
         "array_create", array_create,
         "array_copy", array_copy,
         "array_equals", array_equals,
@@ -118,9 +118,9 @@ function __catspeak_preset_array(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_struct(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_struct(ffi) {
+    ffi.exposeFunction(
         "struct_exists", variable_struct_exists,
         "struct_get", variable_struct_get,
         "struct_set", variable_struct_set,
@@ -135,9 +135,9 @@ function __catspeak_preset_struct(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_string(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_string(ffi) {
+    ffi.exposeFunction(
         "ansi_char", ansi_char,
         "chr", chr,
         "ord", ord,
@@ -186,9 +186,9 @@ function __catspeak_preset_string(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_math(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_math(ffi) {
+    ffi.exposeFunction(
         "round", round,
         "frac", frac,
         "abs", abs,
@@ -235,14 +235,14 @@ function __catspeak_preset_math(env) {
         "lengthdir_x", lengthdir_x,
         "lengthdir_y", lengthdir_y
     );
-    env.getInterface().exposeConstant("pi", pi);
+    ffi.exposeConstant("pi", pi);
 }
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_math_3d(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_math_3d(ffi) {
+    ffi.exposeFunction(
         "point_distance_3d", point_distance_3d,
         "dot_product_3d", dot_product_3d,
         "dot_product_3d_normalised", dot_product_3d_normalised,
@@ -259,9 +259,9 @@ function __catspeak_preset_math_3d(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_colour(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_colour(ffi) {
+    ffi.exposeFunction(
         "colour_get_blue", colour_get_blue,
         "colour_get_green", colour_get_green,
         "colour_get_red", colour_get_red,
@@ -272,7 +272,7 @@ function __catspeak_preset_colour(env) {
         "make_colour_hsv", make_colour_hsv,
         "merge_colour", merge_colour
     );
-    env.getInterface().exposeConstant(
+    ffi.exposeConstant(
         "c_aqua", c_aqua,
         "c_black", c_black,
         "c_blue", c_blue,
@@ -297,9 +297,9 @@ function __catspeak_preset_colour(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_draw(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_draw(ffi) {
+    ffi.exposeFunction(
         "draw_self", draw_self,
         "draw_sprite", draw_sprite,
         "draw_sprite_pos", draw_sprite_pos,
@@ -440,7 +440,7 @@ function __catspeak_preset_draw(env) {
         "vertex_get_number", vertex_get_number,
         "vertex_get_buffer_size", vertex_get_buffer_size,
     );
-    env.getInterface().exposeConstant(
+    ffi.exposeConstant(
         "vertex_usage_position", vertex_usage_position,
         "vertex_usage_colour", vertex_usage_colour,
         "vertex_usage_color", vertex_usage_color,
@@ -467,9 +467,9 @@ function __catspeak_preset_draw(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_random(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_random(ffi) {
+    ffi.exposeFunction(
         "choose", choose,
         "random", random,
         "random_range", random_range,
@@ -480,9 +480,9 @@ function __catspeak_preset_random(env) {
 
 /// @ignore
 ///
-/// @param {Struct.CatspeakEnvironment} env
-function __catspeak_preset_unsafe(env) {
-    env.getInterface().exposeFunction(
+/// @param {Struct.CatspeakForeignInterface} ffi
+function __catspeak_preset_unsafe(ffi) {
+    ffi.exposeFunction(
         "asset_get_index", asset_get_index,
         "asset_get_type", asset_get_type,
         "tag_get_asset_ids", tag_get_asset_ids,

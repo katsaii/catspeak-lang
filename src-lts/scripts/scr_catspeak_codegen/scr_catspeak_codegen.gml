@@ -105,9 +105,9 @@ function CatspeakForeignInterface() constructor {
     /// @param {Any} value
     ///   The constant value to add.
     static exposeConstant = function () {
-        for (var i = 0; i < argument_count; i += 1) {
+        for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i + 0];
-            var func = argument[i + 1];
+            var value = argument[i + 1];
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
                 //__catspeak_check_arg_not("value", value, __catspeak_is_callable);
