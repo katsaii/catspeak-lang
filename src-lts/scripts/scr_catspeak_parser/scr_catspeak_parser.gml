@@ -149,7 +149,8 @@ function CatspeakParser(lexer, builder) constructor {
                 asg.pushBlock();
                 if (lexer.peek() == CatspeakToken.IF) {
                     // for `else if` support
-                    __parseExpression();
+                    var elseIf = __parseExpression();
+                    asg.createStatement(elseIf);
                 } else {
                     __parseStatements("else");
                 }
