@@ -359,3 +359,22 @@ test_add(function () : Test("env-else-if") constructor {
         fail(e.message);
     }
 });
+
+test_add_force(function () : Test(
+    "engine-else-if-multiple-statements"
+) constructor {
+    var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        a = 1
+        if (a == 4) or (a == 3) {
+            "bad"
+        } else if (a == 1) {
+            "good"
+        } else {
+            "also bad"
+        }
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq("good", result);
+});
