@@ -268,6 +268,19 @@ function CatspeakForeignInterface() constructor {
             database[$ name] = value;
         }
     };
+
+    /// Exposes a set of tagged GameMaker assets to this interface.
+    ///
+    /// @param {Any} tag
+    ///   The name of a tag, or array of tags, of assets to expose to Catspeak.
+    static exposeAssetByTag = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var assets = tag_get_assets(argument[i]);
+            for (var j = array_length(assets) - 1; j >= 0; j -= 1) {
+                exposeAsset(assets[j]);
+            }
+        }
+    };
 }
 
 /// The number of microseconds before a Catspeak program times out. The
