@@ -542,6 +542,64 @@ function CatspeakLexer(
             if (charNext == ord("'")) {
                 __advance();
             }
+        } else if (
+            charCurr_ == ord("0") &&
+            (charNext == ord("x") || charNext == ord("X"))
+        ) {
+            // hexadecimal literals
+            __advance();
+            var digitStack = ds_stack_create();
+            while (true) {
+                var charNext_ = charNext;
+                if (__catspeak_char_is_digit_hex(charNext_)) {
+                    ds_stack_push(digitStack,
+                            __catspeak_char_hex_to_dec(charNext_));
+                    __advance();
+                } else if (charNext_ == ord("_")) {
+                    __advance();
+                } else {
+                    break;
+                }
+            }
+            value = 0;
+            var pow = 0;
+            while (!ds_stack_empty(digitStack)) {
+                value += power(16, pow) * ds_stack_pop(digitStack);
+                pow += 1;
+            }
+            ds_stack_destroy(digitStack);
+            hasValue = true;
+        } else if (
+            charCurr_ == ord("0") &&
+            (charNext == ord("b") || charNext == ord("B"))
+        ) {
+            // TODO :: avoid code duplication here
+            // binary literals
+            __advance();
+            var digitStack = ds_stack_create();
+            while (true) {
+                var charNext_ = charNext;
+                if (__catspeak_char_is_digit_binary(charNext_)) {
+                    ds_stack_push(digitStack,
+                            __catspeak_char_binary_to_dec(charNext_));
+                    __advance();
+                } else if (charNext_ == ord("_")) {
+                    __advance();
+                } else {
+                    break;
+                }
+            }
+            value = 0;
+            var pow = 0;
+            while (!ds_stack_empty(digitStack)) {
+                value += power(2, pow) * ds_stack_pop(digitStack);
+                pow += 1;
+            }
+            ds_stack_destroy(digitStack);
+            hasValue = true;
+        } else if (charCurr_ == ord("#")) {
+            // colour literals
+            // TODO
         } else if (token == CatspeakToken.VALUE) {
             // numeric literals
             var hasUnderscores = false;
@@ -645,6 +703,37 @@ function __catspeak_char_is_digit(char) {
 }
 
 /// @ignore
+function __catspeak_char_is_digit_binary(char) {
+    gml_pragma("forceinline");
+    return char == ord("0") || char == ord("1");
+}
+
+/// @ignore
+function __catspeak_char_binary_to_dec(char) {
+    gml_pragma("forceinline");
+    return char == ord("0") ? 0 : 1;
+}
+
+/// @ignore
+function __catspeak_char_is_digit_hex(char) {
+    gml_pragma("forceinline");
+    return char >= ord("a") && char <= ord("f") ||
+            char >= ord("A") && char <= ord("F") ||
+            char >= ord("0") && char <= ord("9");
+}
+
+/// @ignore
+function __catspeak_char_hex_to_dec(char) {
+    if (char >= ord("0") && char <= ord("9")) {
+        return char - ord("0");
+    }
+    if (char >= ord("a") && char <= ord("f")) {
+        return char - ord("a") + 10;
+    }
+    return char - ord("A") + 10;
+}
+
+/// @ignore
 function __catspeak_char_is_alphanumeric(char) {
     gml_pragma("forceinline");
     return char >= ord("a") && char <= ord("z") ||
@@ -656,7 +745,7 @@ function __catspeak_char_is_alphanumeric(char) {
 /// @ignore
 function __catspeak_char_is_operator(char) {
     gml_pragma("forceinline");
-    return char >= ord("!") && char <= ord("&") && char != ord("\"") ||
+    return char >= ord("!") && char <= ord("&") && char != ord("\"") && char != ord("#") ||
             char >= ord("*") && char <= ord("/") && char != ord(",") ||
             char >= ord(":") && char <= ord("@") ||
             char == ord("\\") || char == ord("^") ||

@@ -48,3 +48,93 @@ test_add(function () : TestLexerToken("lexer-numbers-char-malformed-2",
 test_add(function () : TestLexerToken("lexer-numbers-char-malformed-3",
     CatspeakToken.VALUE, "'🙀'", ord("🙀")
 ) constructor { }, IgnorePlatform.HTML5);
+
+test_add(function () : TestLexerToken("lexer-numbers-binary",
+    CatspeakToken.VALUE, "0b0110", 6
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-underscore",
+    CatspeakToken.VALUE, "0b01_10", 6
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-underscores",
+    CatspeakToken.VALUE, "0b__0110", 6
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-underscores-2",
+    CatspeakToken.VALUE, "0b0110__", 6
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-underscores-3",
+    CatspeakToken.VALUE, "0b__01_1_0__", 6
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-32-1",
+    CatspeakToken.VALUE,
+    "0b01001001001010111101010111010100",
+    1227609556
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-32-2",
+    CatspeakToken.VALUE,
+    "0b01001001011010101010010010010101",
+    1231725717
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-64-none",
+    CatspeakToken.VALUE,
+    "0b0000000000000000000000000000000000000000000000000000000000000000",
+    0
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-64-some",
+    CatspeakToken.VALUE,
+    "0b0000000000000000000000000000000001001001011010101010010010010101",
+    1231725717
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-binary-128-none",
+    CatspeakToken.VALUE,
+    "0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    0
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex",
+    CatspeakToken.VALUE, "0xDEADBEEF", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-mixed-case",
+    CatspeakToken.VALUE, "0xdEaDbEeF", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-mixed-case",
+    CatspeakToken.VALUE, "0xDeAdBeEf", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-underscore",
+    CatspeakToken.VALUE, "0xDEAD_BEEF", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-underscores",
+    CatspeakToken.VALUE, "0x__DEADBEEF", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-underscores-2",
+    CatspeakToken.VALUE, "0xDEADBEEF__", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-underscores-3",
+    CatspeakToken.VALUE, "0x__DEAD_BEEF__", 3735928559
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-64-none",
+    CatspeakToken.VALUE, "0x0000000000000000", 0
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-64-some",
+    CatspeakToken.VALUE, "0x00000000EEEEAAAA", 4008618666
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-hex-128-none",
+    CatspeakToken.VALUE, "0x00000000000000000000000000000000", 0
+) constructor { });
