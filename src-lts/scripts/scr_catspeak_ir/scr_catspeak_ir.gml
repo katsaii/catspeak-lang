@@ -320,8 +320,7 @@ function CatspeakIRBuilder() constructor {
         return __createTerm(CatspeakTerm.CONTINUE, location, { });
     };
 
-    /// Emits the instruction to continue to the next iteration of the current
-    /// loop.
+    /// Emits the instruction to call a function with a set of arguments.
     ///
     /// @param {Struct} callee
     ///   The instruction containing the function to call.
@@ -336,6 +335,27 @@ function CatspeakIRBuilder() constructor {
     static createCall = function (callee, args, location=undefined) {
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.CALL, location, {
+            callee : callee,
+            args : args,
+        });
+    };
+
+    /// Emits the instruction to call a constructor function with a set of
+    /// arguments.
+    ///
+    /// @param {Struct} callee
+    ///   The instruction containing the function to call.
+    ///
+    /// @param {Struct} args
+    ///   The the arguments to pass into the function call.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createCallNew = function (callee, args, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.CALL_NEW, location, {
             callee : callee,
             args : args,
         });
@@ -846,6 +866,7 @@ enum CatspeakTerm {
     OP_BINARY,
     OP_UNARY,
     CALL,
+    CALL_NEW,
     SET,
     INDEX,
     PROPERTY,

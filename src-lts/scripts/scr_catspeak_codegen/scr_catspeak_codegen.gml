@@ -798,6 +798,36 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
+    static __compileCallNew = function (ctx, term) {
+        // NOTE :: blehhh ugly code pls pls refactor fr fr ong no cap
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "callee", undefined,
+                "args", undefined
+            );
+            __catspeak_check_arg_struct("term.callee", term.callee,
+                "type", is_numeric
+            );
+        }
+        var args = term.args;
+        var argCount = array_length(args);
+        var exprs = array_create(argCount);
+        for (var i = 0; i < argCount; i += 1) {
+            exprs[@ i] = __compileTerm(ctx, args[i]);
+        }
+        var callee = __compileTerm(ctx, term.callee);
+        return method({
+            dbgError : __dbgTerm(term.callee, "is not constructible"),
+            callee : callee,
+            args : exprs,
+        }, __catspeak_expr_call_new__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
     static __compileSet = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -1026,6 +1056,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakTerm.OP_BINARY] = __compileOpBinary;
         db[@ CatspeakTerm.OP_UNARY] = __compileOpUnary;
         db[@ CatspeakTerm.CALL] = __compileCall;
+        db[@ CatspeakTerm.CALL_NEW] = __compileCallNew;
         db[@ CatspeakTerm.SET] = __compileSet;
         db[@ CatspeakTerm.INDEX] = __compileIndex;
         db[@ CatspeakTerm.PROPERTY] = __compileProperty;
@@ -1412,6 +1443,42 @@ function __catspeak_expr_call__() {
     with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return script_execute_ext(calleeIdx, args_);
+    }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_new__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    // TODO :: optimise :: SUPER SLOW, DO THIS AT COMPILE TIME
+    var args_ = args;
+    switch (array_length(args_)) {
+        // triangle of doom gets a free pass on line length restrictions
+        // as a treat
+    case 0: return new callee_();
+    case 1: return new callee_(args_[0]());
+    case 2: return new callee_(args_[0](), args_[1]());
+    case 3: return new callee_(args_[0](), args_[1](), args_[2]());
+    case 4: return new callee_(args_[0](), args_[1](), args_[2](), args_[3]());
+    case 5: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4]());
+    case 6: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5]());
+    case 7: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6]());
+    case 8: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7]());
+    case 9: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8]());
+    case 10: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9]());
+    case 11: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10]());
+    case 12: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11]());
+    case 13: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11](), args_[12]());
+    case 14: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11](), args_[12](), args_[13]());
+    case 15: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11](), args_[12](), args_[13](), args_[14]());
+    case 16: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11](), args_[12](), args_[13](), args_[14](), args_[15]());
+    default:
+        __catspeak_error_got(
+            "cannot exceed 16 arguments in 'new' expression"
+        );
     }
 }
 
