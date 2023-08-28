@@ -37,7 +37,11 @@ enum CatspeakPreset {
 function __catspeak_preset_get(preset) {
     var presetFunc = global.__catspeakPresets[? preset];
     if (CATSPEAK_DEBUG_MODE && presetFunc == undefined) {
-        __catspeak_error_bug();
+        __catspeak_error(
+            "a Catspeak preset with the key '",
+            preset, "' does not exist, make sure the preset exists in the ",
+            "`CatspeakPreset` enum"
+        );
     }
     return presetFunc;
 }
