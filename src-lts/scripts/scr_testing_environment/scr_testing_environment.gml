@@ -159,6 +159,7 @@ function EngineFunctionMethodCallTest__Construct() constructor {
         str += string(_str);
     }
 }
+
 test_add(function () : Test("env-function-method-call") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction("Construct", function() {
@@ -166,6 +167,54 @@ test_add(function () : Test("env-function-method-call") constructor {
     });
     var f = env.compileGML(env.parseString(@'
         let _inst = Construct();
+        _inst.add("Woo!");
+        _inst.add("Yeehaw!");
+        _inst
+    '));
+    var inst = f();
+    assertEq("EngineFunctionMethodCallTest__Construct", instanceof(inst));
+    assertEq("Woo!Yeehaw!", inst.str);
+});
+
+test_add(function () : Test("env-function-constructor-call") constructor {
+    var env = new CatspeakEnvironment();
+    env.getInterface().exposeFunction(
+        "Construct", EngineFunctionMethodCallTest__Construct
+    );
+    var f = env.compileGML(env.parseString(@'
+        let _inst = new Construct();
+        _inst.add("Woo!");
+        _inst.add("Yeehaw!");
+        _inst
+    '));
+    var inst = f();
+    assertEq("EngineFunctionMethodCallTest__Construct", instanceof(inst));
+    assertEq("Woo!Yeehaw!", inst.str);
+});
+
+test_add(function () : Test("env-function-constructor-call-implicit") constructor {
+    var env = new CatspeakEnvironment();
+    env.getInterface().exposeFunction(
+        "Construct", EngineFunctionMethodCallTest__Construct
+    );
+    var f = env.compileGML(env.parseString(@'
+        let _inst = new Construct;
+        _inst.add("Woo!");
+        _inst.add("Yeehaw!");
+        _inst
+    '));
+    var inst = f();
+    assertEq("EngineFunctionMethodCallTest__Construct", instanceof(inst));
+    assertEq("Woo!Yeehaw!", inst.str);
+});
+
+test_add(function () : Test("env-function-constructor-call-implicit-index") constructor {
+    var env = new CatspeakEnvironment();
+    env.getInterface().exposeConstant(
+        "ctx", { C : method(undefined, EngineFunctionMethodCallTest__Construct) }
+    );
+    var f = env.compileGML(env.parseString(@'
+        let _inst = new ctx.C;
         _inst.add("Woo!");
         _inst.add("Yeehaw!");
         _inst
