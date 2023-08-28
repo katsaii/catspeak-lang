@@ -138,3 +138,35 @@ test_add(function () : TestLexerToken("lexer-numbers-hex-64-some",
 test_add(function () : TestLexerToken("lexer-numbers-hex-128-none",
     CatspeakToken.VALUE, "0x00000000000000000000000000000000", 0
 ) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-red",
+    CatspeakToken.VALUE, "#FF0000", #FF0000
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-green",
+    CatspeakToken.VALUE, "#00FF00", #00FF00
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-blue",
+    CatspeakToken.VALUE, "#0000FF", #0000FF
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-alpha",
+    CatspeakToken.VALUE, "#000000FF", 0xFF000000
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-red-short",
+    CatspeakToken.VALUE, "#F00", #FF0000
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-green-short",
+    CatspeakToken.VALUE, "#0F0", #00FF00
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-blue-short",
+    CatspeakToken.VALUE, "#00F", #0000FF
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-numbers-colour-alpha-short",
+    CatspeakToken.VALUE, "#000F", 0xFF000000
+) constructor { });

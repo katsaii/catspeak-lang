@@ -599,7 +599,68 @@ function CatspeakLexer(
             hasValue = true;
         } else if (charCurr_ == ord("#")) {
             // colour literals
-            // TODO
+            token = CatspeakToken.VALUE;
+            var digitStack = ds_stack_create();
+            while (true) {
+                var charNext_ = charNext;
+                if (__catspeak_char_is_digit_hex(charNext_)) {
+                    ds_stack_push(digitStack,
+                            __catspeak_char_hex_to_dec(charNext_));
+                    __advance();
+                } else if (charNext_ == ord("_")) {
+                    __advance();
+                } else {
+                    break;
+                }
+            }
+            var digitCount = ds_stack_size(digitStack);
+            var cR = 0;
+            var cG = 0;
+            var cB = 0;
+            var cA = 0;
+            if (digitCount == 3) {
+                // #RGB
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (cB << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (cG << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (cR << 4);
+            } else if (digitCount == 4) {
+                // #RGBA
+                cA = ds_stack_pop(digitStack);
+                cA = cA | (cA << 4);
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (cB << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (cG << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (cR << 4);
+            } else if (digitCount == 6) {
+                // #RRGGBB
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (ds_stack_pop(digitStack) << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (ds_stack_pop(digitStack) << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (ds_stack_pop(digitStack) << 4);
+            } else if (digitCount == 8) {
+                // #RRGGBBAA
+                cA = ds_stack_pop(digitStack);
+                cA = cA | (ds_stack_pop(digitStack) << 4);
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (ds_stack_pop(digitStack) << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (ds_stack_pop(digitStack) << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (ds_stack_pop(digitStack) << 4);
+            } else {
+                // invalid
+                token = CatspeakToken.OTHER;
+            }
+            ds_stack_destroy(digitStack);
+            value = cR | (cG << 8) | (cB << 16) | (cA << 24);
+            hasValue = true;
         } else if (token == CatspeakToken.VALUE) {
             // numeric literals
             var hasUnderscores = false;
