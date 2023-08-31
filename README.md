@@ -30,7 +30,7 @@ _Logo design by [Mashmerlow](https://mashmerlow.github.io/)._
 
 ## Overview
 
-The spiritual successor to the long dead `string_execute` function...
+The spiritual successor to the long dead `execute_string` function...
 
 ```js
 // parse Catspeak code
