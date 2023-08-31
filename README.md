@@ -97,13 +97,13 @@ or get in contact on Discord through the [GameMaker Kitchen](https://discord.com
  - Modders cannot gain access to parts of your game you don't want them to.
  - Expose only the functions and resources you feel comfortable with.
  - Impossible for modders to execute malicious code by default.
- - Detects infinite loops and recursion so the sly `while true { }` doesn't freeze your game. (Whether intentionally, or unintentionally.)
+ - Detects infinite loops and recursion so the sly `while true { }` doesn't freeze your game, whether intentionally or unintentionally.
 
 ### Built for Power Users
 
  - Full compiler back-end documented and available for experimentation.
  - Pre-compile your scripts to JSON, and cache them for later. Skip straight to code generation.
- - Parse your own domain-specific language into Catspeak IR, then let the code generator turn that into a callable GML function:
+ - Parse your own domain-specific language into Catspeak IR, then let the code generator turn that into a GML compatibile representation:
    - A custom UI language which supports running user-defined functions as button events.
    - A custom data-specification language where certain keywords act as calls to GML functions.
    - A simple shell-script language for a developer console.
