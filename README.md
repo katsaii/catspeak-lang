@@ -69,37 +69,37 @@ try {
 If you run into any issues using this project, please create a [GitHub issue](https://github.com/katsaii/catspeak-lang/issues/new/choose)
 or get in contact on Discord through the [GameMaker Kitchen](https://discord.com/channels/724320164371497020/1007968808926982184) server.
 
-### Minimal Setup Required
+### 📝 Minimal Setup Required
 
  - Self-contained and ready to use after installation.
  - No need to place a persistent God Object in the first room of your game!
 
-### Seamless GML-Catspeak Interoperability
+### 🙀 Seamless GML-Catspeak Interoperability
 
  - Call GML code from Catspeak.
  - Call Catspeak code from GML.
  - Familiar syntax inspired by GML and JavaScript.
 
-### Performant Runtime
+### 🏃‍♀️ Performant Runtime
 
  - Optimising compiler generates performant code capable of competing with pure GML implementations.
  - At best, Catspeak code will be just as fast as GML.
  - On average, Catspeak code will be 5x slower than GML.
 
-### Cross-platform
+### 👽 Cross-platform
 
  - Implemented in pure GML.
  - No external dependencies or platform-specific DLLs.
  - Mods should work on any target platform. _(Tested on VM, YYC, HTML5, and others)_
 
-### Customisable, Sandboxed Runtime Environment
+### 🔨 Customisable, Sandboxed Runtime Environment
 
  - Modders cannot gain access to parts of your game you don't want them to.
  - Expose only the functions and resources you feel comfortable with.
  - Impossible for modders to execute malicious code by default.
  - Detects infinite loops and recursion so the sly `while true { }` doesn't freeze your game, whether intentionally or unintentionally.
 
-### Built for Power Users
+### 💪 Built for Power Users
 
  - Full compiler back-end documented and available for experimentation.
  - Pre-compile your scripts to JSON, and cache them for later. Skip straight to code generation.
@@ -109,7 +109,7 @@ or get in contact on Discord through the [GameMaker Kitchen](https://discord.com
    - A simple shell-script language for a developer console.
    - A custom scripting language for a programming game.
 
-### Cute Name and Mascot
+### 🐈 Cute Name and Mascot
 
 ## Acknowledgements
 
