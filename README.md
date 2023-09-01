@@ -74,7 +74,7 @@ or get in contact on Discord through the [GameMaker Kitchen](https://discord.com
  - Self-contained and ready to use after installation.
  - No need to place a persistent God Object in the first room of your game!
 
-### 🙀 Seamless GML-Catspeak Interoperability
+### ☯ Seamless GML-Catspeak Interoperability
 
  - Call GML code from Catspeak.
  - Call Catspeak code from GML.
@@ -109,7 +109,7 @@ or get in contact on Discord through the [GameMaker Kitchen](https://discord.com
    - A simple shell-script language for a developer console.
    - A custom scripting language for a programming game.
 
-### 🐈 Cute Name and Mascot
+### 🙀 Cute Name and Mascot
 
 ## Acknowledgements
 
