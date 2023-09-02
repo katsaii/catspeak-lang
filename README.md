@@ -67,7 +67,7 @@ try {
 ## Features
 
 If you run into any issues using this project, please create a [GitHub issue](https://github.com/katsaii/catspeak-lang/issues/new/choose)
-or get in contact on Discord through the [GameMaker Kitchen](https://discord.com/channels/724320164371497020/1007968808926982184) server.
+or get in contact on Discord through the [GameMaker Kitchen](https://discord.gg/8krYCqr) server.
 
 ### 📝 Minimal Setup Required
 
