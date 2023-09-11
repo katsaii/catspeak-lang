@@ -2,8 +2,6 @@ def write_nothing(): pass
 
 class WriterWithableAdaptor:
     def __init__(self, on_enter = None, on_exit = None):
-        print(on_enter)
-        print(on_exit)
         self.on_enter = on_enter or write_nothing
         self.on_exit = on_exit or write_nothing
 
@@ -18,5 +16,6 @@ def withable(f):
                 return next(gen)
             except StopIteration:
                 return None
-        return WriterWithableAdaptor(gen_event, gen_event)
+        gen_event()
+        return WriterWithableAdaptor(None, gen_event)
     return inner

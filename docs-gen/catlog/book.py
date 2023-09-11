@@ -37,12 +37,12 @@ class Metadata:
     links : ... = field(default_factory=list)
 
     def write_document(self, writer, book):
-        with writer.header():
-            writer.content += "hi"
-            pass
-        with writer.body():
-            writer.content += "bye"
-            pass
+        with writer.meta(
+            title = f"{self.title} - {book.title}",
+            author = self.author,
+            description = book.brief
+        ):
+            writer.content += "hai"
 
 def debug_document_create_example_metadata():
     return Metadata(
