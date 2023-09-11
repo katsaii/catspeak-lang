@@ -7,14 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Modding language for GameMaker">
     <title>Catspeak</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400&display=swap">
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap">
     <style>
       html { box-sizing : border-box }
       *, *:before, *:after { box-sizing : inherit }
@@ -27,8 +19,7 @@
         --c-fg-2 : #526666;
         --c-accent : #007ffd;
 
-        --f-mono : "Ubuntu Mono", "Courier New", Courier, monospace;
-        --f-mono-2 : "Courier Prime", var(--f-mono);
+        --f-mono : "Courier New", Courier, monospace;
         --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
 
         font-size : 0.8em;
@@ -53,7 +44,6 @@
       .t-pre { white-space : pre }
 
       .f-mono { font-family : var(--f-mono) }
-      .f-mono-2 { font-family : var(--f-mono-2) }
       .f-prop { font-family : var(--f-prop) }
       .f-thick { font-weight : bold; }
 
@@ -134,7 +124,7 @@
         background-color : rgb(249, 243, 241);
         outline : rgb(49, 49, 49, 27%) solid 1px;
         border-radius : 10px;
-        font-family : var(--f-mono-2) !important;
+        font-family : var(--f-mono) !important;
         white-space : pre;
         overflow : scroll;
       }
