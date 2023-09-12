@@ -44,10 +44,14 @@ class HTMLWriter(BasicWriter):
                 )
                 for key, val in metadata.items():
                     self.write_tag("meta", name=key, content=val)
-                #[c:author]<meta name="author" content="[v:author]">[/]
-                #[c:description]<meta name="description" content="[v:description]">[/]
-                #[c:title]<meta name="title" content="[v:title]">[/]
-                pass
+                self.write_tag("link",
+                    rel="stylesheet",
+                    href="./style.css"
+                )
             with self.write_tag("body"):
                 yield
                 pass
+
+    DEFAULT_STYLE = dedent("""
+        * { outline : solid red 1px }
+    """)
