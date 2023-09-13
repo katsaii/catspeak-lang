@@ -46,6 +46,8 @@ class BasicCodegen:
         return inner
 
 class HTMLCodegen(BasicCodegen):
+    EXT = "html"
+
     KEYWORDS = {
         "class_" : "class"
     }
@@ -63,7 +65,7 @@ class HTMLCodegen(BasicCodegen):
     # METADATA
 
     @BasicCodegen.block
-    def root(self):
+    def root(self, **attrs):
         self.write_heredoc("""
             <!DOCTYPE html>
             <!--
@@ -71,12 +73,12 @@ class HTMLCodegen(BasicCodegen):
                 https://github.com/katsaii/catspeak-lang
             -->
         """)
-        with self.tag("html", lang="en"):
+        with self.tag("html", **attrs):
             yield
 
     @BasicCodegen.block
-    def meta(self):
-        with self.tag("head"):
+    def meta(self, **attrs):
+        with self.tag("head", **attrs):
             self.tag("meta", charset="utf-8")
             self.tag("meta",
                 name="viewport",
@@ -89,6 +91,10 @@ class HTMLCodegen(BasicCodegen):
         for key, val in meta_tags.items():
             key = HTMLCodegen.KEYWORDS.get(key, key)
             self.tag("meta", name=key, content=val)
+
+    @BasicCodegen.block
+    def meta_title(self, **attrs):
+        with self.tag("title", **attrs): yield
 
     # LAYOUT
 
