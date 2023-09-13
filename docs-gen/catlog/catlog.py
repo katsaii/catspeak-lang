@@ -1,27 +1,14 @@
-from . import gml, book, writers
+from . import gml, doc, codegen
 
-def minify_css(css_in):
-    char_is_graphic = lambda x: x.isalnum() or x in { "_" }
-    css_out = ""
-    ended_in_graphic = False
-    for phrase in css_in.split():
-        if ended_in_graphic and char_is_graphic(phrase[0]):
-            css_out += " "
-        css_out += phrase
-        ended_in_graphic = char_is_graphic(phrase[-1])
-    return css_out
+def compile_book_pages(codegen, meta, book):
+    return []
 
-exBook = book.debug_document_create_example()
-exMeta = book.debug_document_create_example_metadata()
+def compile_example_book_pages(codegen):
+    meta = doc.debug_document_create_example_metadata()
+    book = doc.debug_document_create_example()
+    return compile_book_pages(codegen, meta, book)
 
-html = writers.HTMLWriter()
-exMeta.write_document(html, exBook)
-
-print(html.content or "whoops! nothing!")
-
-if html.content:
-    version = "3.0.0"
-    with open(f"docs/{version}/index.html", "w") as file:
-        file.write(html.content)
-    with open(f"docs/{version}/style.css", "w") as file:
-        file.write(minify_css(writers.HTMLWriter.DEFAULT_STYLE))
+def write_book_pages(dir, pages):
+    for (path, content) in pages:
+        with open(f"{dir}/{path}", "w") as file:
+            file.write(content or "whoops! nothing here! /(.0_0.)_b")

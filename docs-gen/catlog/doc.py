@@ -36,14 +36,6 @@ class Metadata:
     version : ... = (0, 0, 0)
     links : ... = field(default_factory=list)
 
-    def write_document(self, writer, book):
-        with writer.meta(
-            title = f"{self.title} - {book.title}",
-            author = self.author,
-            description = book.brief
-        ):
-            writer.content += "hai"
-
 def debug_document_create_example_metadata():
     return Metadata(
         title = "Test Book",
