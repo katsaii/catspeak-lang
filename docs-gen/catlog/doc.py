@@ -9,10 +9,6 @@ class Paragraph:
     content : ... = None
 
 @dataclass
-class RichText:
-    children : ... = field(default_factory=list)
-
-@dataclass
 class Section:
     title : str = "Section"
     content : ... = None
@@ -48,13 +44,11 @@ def debug_document_create_example():
     return Book(
         brief = "Something about stuff.",
         sections = [Section(
-            content = [RichText(
-                children = [
-                    "hi",
-                    Bold("this is bold"),
-                    "bye"
-                ]
-            )],
+            content = [
+                "hi, ",
+                Bold(" this is bold"),
+                ", bye"
+            ],
             subsections = [Section(
                 title = "Other",
                 content = "this is the other section"
