@@ -1,12 +1,9 @@
 from dataclasses import dataclass, field
 
 @dataclass
-class Bold:
-    content : ... = None
-
-@dataclass
-class Paragraph:
-    content : ... = None
+class RichText:
+    type : ... = "span"
+    inner : ... = None
 
 @dataclass
 class Section:
@@ -43,15 +40,27 @@ def debug_document_create_example_metadata():
 def debug_document_create_example():
     return Book(
         brief = "Something about stuff.",
-        sections = [Section(
-            content = [
-                "hi, ",
-                Bold(" this is bold"),
-                ", bye"
-            ],
-            subsections = [Section(
-                title = "Other",
-                content = "this is the other section"
-            )]
-        )]
+        sections = [
+            Section(
+                content = [
+                    "hi, ",
+                    RichText("bold", "this is bold"),
+                    ", bye"
+                ],
+                subsections = [Section(
+                    title = "Other",
+                    content = "this is the other section",
+                    subsections = [
+                        Section(
+                            title = "Another Other",
+                            content = RichText("emphasis", "this is another other section")
+                        )
+                    ]
+                )]
+            ),
+            Section(
+                title = "Other Page",
+                content="hi from the other page"
+            )
+        ]
     )

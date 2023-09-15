@@ -98,6 +98,9 @@ class HTMLCodegen(BasicCodegen):
 
     # LAYOUT
 
+    def hr(self, **attrs):
+        self.tag("hr", **attrs)
+
     @BasicCodegen.block
     def body(self, **attrs):
         with self.tag("body", **attrs): yield
@@ -171,11 +174,11 @@ class HTMLCodegen(BasicCodegen):
 
     # CSS
 
-    DEFAULT_STYLE = dedent(r"""
+    DEFAULT_STYLE = dedent("""
         html { box-sizing : border-box }
         *, *:before, *:after { box-sizing : inherit }
 
-        * { outline : red solid 1px }
+        * { /* outline : red solid 1px * / }
 
         :root {
             --c-bg : #f9f9f9;
@@ -186,19 +189,48 @@ class HTMLCodegen(BasicCodegen):
             --f-mono : "Courier New", Courier, monospace;
             --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
 
-            font-size : 0.8em;
+            --pad : 1rem;
+        }
+
+        body {
+            margin : 1rem 15%;
+            background-color : var(--c-bg);
+        }
+
+        @media screen and (max-width: 9in) {
+            body { margin : 1rem 2rem }
+        }
+
+        header { padding : var(--pad) }
+
+        header > h1 {
+            color : var(--c-fg-2);
+            font-family : var(--f-prop);
+            margin : 0;
+            font-weight : 500;
+            font-size : 1.5em;
+        }
+
+        nav { padding : 0 var(--pad) }
+
+        hr {
+            border : 0;
+            border-bottom : var(--c-fg-2) solid 1px;
         }
     """)
 
     def minify_css(css_in):
         char_is_graphic = lambda x: x.isalnum() or x in { "_" }
         css_out = ""
+        force_space = False
         ended_in_graphic = False
         for phrase in css_in.split():
-            if ended_in_graphic and char_is_graphic(phrase[0]):
+            if force_space or (ended_in_graphic and char_is_graphic(phrase[0])):
                 css_out += " "
             css_out += phrase
             ended_in_graphic = char_is_graphic(phrase[-1])
+            # `and` is a special keyword here because `screen and(...)` is not valid
+            force_space = phrase == "and"
         return css_out
 
     def additional_pages():

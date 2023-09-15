@@ -5,7 +5,8 @@ import re
 TITLE_ID_DATABASE = { }
 TITLE_ID_CLASHES = { }
 TITLE_ID_MAX_LENGTH = 30
-def title_to_file_id(title):
+def title_to_file_id(*title):
+    title = "/".join(title)
     if title in TITLE_ID_DATABASE:
         return TITLE_ID_DATABASE[title]
     title_words = [word.lower() for word in re.split("[^A-Za-z0-9_\.]+", title)]
@@ -21,7 +22,8 @@ def title_to_file_id(title):
 
 def compile_book_pages(codegen, meta, book):
     def build_header(sb):
-        sb.write("header")
+        with sb.heading(1):
+            sb.write(meta.title)
 
     def build_nav(sb):
         sb.write("nav")
@@ -38,22 +40,23 @@ def compile_book_pages(codegen, meta, book):
         elif type(content) is list:
             for child_content in content:
                 build_richtext(sb, child_content)
-        elif type(content) is doc.Paragraph:
-            with sb.paragraph():
-                build_richtext(sb, content.content)
-        elif type(content) is doc.Bold:
-            with sb.bold():
-                build_richtext(sb, content.content)
+        elif type(content) is doc.RichText:
+            style_writer = getattr(sb, content.type)
+            if style_writer:
+                with style_writer():
+                    build_richtext(sb, content.inner)
+            else:
+                build_richtext(sb, content.inner)
         else:
             sb.write(f"(unknown content {type(content)})".replace("<", "&lt;"))
 
-    def build_article(sb, section):
+    def build_section(sb, section):
         with sb.section():
             with sb.heading(1, id=title_to_file_id(section.title)):
                 sb.write(section.title)
             build_richtext(sb, section.content)
             for subsection in section.subsections:
-                build_article(sb, subsection)
+                build_section(sb, subsection)
 
     pages = [page for page in codegen.additional_pages()]
     for section in book.sections:
@@ -68,16 +71,17 @@ def compile_book_pages(codegen, meta, book):
                     build_header(sb)
                 with sb.nav():
                     build_nav(sb)
+                sb.hr()
                 with sb.aside(id="chapters"):
                     build_chapters(sb)
                 with sb.aside(id="contents"):
                     build_contents(sb)
                 with sb.main():
                     with sb.article():
-                        build_article(sb, section)
+                        build_section(sb, section)
                 with sb.footer():
                     sb.write("built using Catlog, the Catspeak book generator")
-        path = title_to_file_id(book.title)
+        path = title_to_file_id(book.title, section.title)
         if codegen.EXT:
             path = f"{path}.{codegen.EXT}"
         pages.append((path, sb.content))
@@ -90,4 +94,6 @@ def write_book_pages(dir, pages):
         if not os.path.exists(fulldir):
             os.makedirs(fulldir)
         with open(fullpath, "w", encoding="utf-8") as file:
+            print(f"...writing '{fullpath}'")
             file.write(content or "whoops! nothing here! /(.0_0.)_b")
+    print("done!")
