@@ -136,6 +136,16 @@ class HTMLCodegen(BasicCodegen):
     # ELEMENTS
 
     @BasicCodegen.block
+    def list(self, **attrs):
+        @BasicCodegen.block
+        def list_element(**attrs):
+            with self.tag("li", **attrs):
+                yield
+
+        with self.tag("ul", **attrs):
+            yield list_element
+
+    @BasicCodegen.block
     def heading(self, level, **attrs):
         if level < 1:
             level = 1

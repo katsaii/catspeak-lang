@@ -36,35 +36,44 @@ def write_header(sb, meta, books):
         with sb.heading(1):
             sb.write(meta.title)
         with sb.nav():
-            for book in books:
-                if len(book.chapters) < 1:
-                    continue
-                uid = title_to_uid(book.title, book.chapters[0].title)
-                with sb.link(uid_to_path(uid, sb.EXT)):
-                    sb.write(book.title)
+            with sb.list() as list_element:
+                for book in books:
+                    if len(book.chapters) < 1:
+                        continue
+                    with list_element():
+                        uid = title_to_uid(book.title, book.chapters[0].title)
+                        with sb.link(uid_to_path(uid, sb.EXT)):
+                            sb.write(book.title)
 
 def write_chapters(sb, book):
     with sb.aside(id="chapters"):
         with sb.heading(2):
             sb.write("Chapters")
-        for chapter in book.chapters:
-            uid = title_to_uid(book.title, chapter.title)
-            with sb.link(uid_to_path(uid, sb.EXT)):
-                sb.write(chapter.title)
+        with sb.list() as list_element:
+            for chapter in book.chapters:
+                with list_element():
+                    uid = title_to_uid(book.title, chapter.title)
+                    with sb.link(uid_to_path(uid, sb.EXT)):
+                        sb.write(chapter.title)
 
 def write_contents(sb, chapter):
     def write_contents_section(sb, section, depth):
         uid = title_to_uid(section.title)
         with sb.anchor(uid):
             sb.write(section.title)
-        for subsection in section.subsections:
-            write_contents_section(sb, subsection, depth + 1)
+        if section.subsections:
+            with sb.list() as list_element:
+                for subsection in section.subsections:
+                    with list_element():
+                        write_contents_section(sb, subsection, depth + 1)
 
     with sb.aside(id="contents"):
         with sb.heading(2):
             sb.write("Contents")
-        for section in chapter.sections:
-            write_contents_section(sb, section, 0)
+        with sb.list() as list_element:
+            for section in chapter.sections:
+                with list_element():
+                    write_contents_section(sb, section, 0)
 
 def write_main(sb, chapter):
     with sb.main():
@@ -126,9 +135,10 @@ def compile_books(codegen, meta, *books):
                 with sb.body():
                     write_header(sb, meta, books)
                     sb.hr()
-                    write_chapters(sb, book)
-                    write_contents(sb, chapter)
-                    write_main(sb, chapter)
+                    with sb.article(class_="chapter-content"):
+                        write_chapters(sb, book)
+                        write_contents(sb, chapter)
+                        write_main(sb, chapter)
                     sb.hr()
                     write_footer(sb, meta)
             pages.append((path, sb.content))
