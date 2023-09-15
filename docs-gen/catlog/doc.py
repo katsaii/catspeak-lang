@@ -12,10 +12,15 @@ class Section:
     subsections : ... = field(default_factory=list)
 
 @dataclass
+class Chapter:
+    title : str = "Chapter"
+    sections : ... = field(default_factory=list)
+
+@dataclass
 class Book:
     title : str = "Page"
     brief : str = None
-    sections : ... = field(default_factory=list)
+    chapters : ... = field(default_factory=list)
 
 @dataclass
 class Link:
@@ -27,6 +32,7 @@ class Metadata:
     title : str = "Manual"
     author : str = None
     version : ... = (0, 0, 0)
+    footer : ... = None
     links : ... = field(default_factory=list)
 
 def debug_document_create_example_metadata():
@@ -40,27 +46,38 @@ def debug_document_create_example_metadata():
 def debug_document_create_example():
     return Book(
         brief = "Something about stuff.",
-        sections = [
-            Section(
-                content = [
-                    "hi, ",
-                    RichText("bold", "this is bold"),
-                    ", bye"
-                ],
-                subsections = [Section(
-                    title = "Other",
-                    content = "this is the other section",
-                    subsections = [
-                        Section(
-                            title = "Another Other",
-                            content = RichText("emphasis", "this is another other section")
-                        )
-                    ]
-                )]
+        chapters = [
+            Chapter(
+                sections=[
+                    Section(
+                        content = [
+                            "hi, ",
+                            RichText("bold", "this is bold"),
+                            ", bye"
+                        ],
+                        subsections = [Section(
+                            title = "Other",
+                            content = "this is the other section",
+                            subsections = [
+                                Section(
+                                    title = "Another Other",
+                                    content = RichText(
+                                        "emphasis",
+                                        "this is another other section"
+                                    )
+                                )
+                            ]
+                        )]
+                    )
+                ]
             ),
-            Section(
+            Chapter(
                 title = "Other Page",
-                content="hi from the other page"
+                sections=[
+                    Section(
+                        content="hi from the other page"
+                    )
+                ]
             )
         ]
     )

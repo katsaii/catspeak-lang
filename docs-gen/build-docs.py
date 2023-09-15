@@ -1,9 +1,15 @@
 import catlog.catlog as cl
 
 meta = cl.doc.debug_document_create_example_metadata()
-book = cl.doc.debug_document_create_example()
+meta.footer = ">(OwO)<"
 
-pages = cl.compile_book_pages(cl.codegen.HTMLCodegen, meta, book)
+book = cl.doc.debug_document_create_example()
+book2 = cl.doc.debug_document_create_example()
+book2.title = "Other Page"
+book2.chapters.append(book2.chapters[0])
+book2.chapters[1].sections.pop()
+
+pages = cl.compile_books(cl.codegen.HTMLCodegen, meta, book, book2)
 for page in pages:
     #print(pages)
     pass

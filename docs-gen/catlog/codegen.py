@@ -46,7 +46,7 @@ class BasicCodegen:
         return inner
 
 class HTMLCodegen(BasicCodegen):
-    EXT = "html"
+    EXT = ".html"
 
     KEYWORDS = {
         "class_" : "class"
@@ -153,6 +153,10 @@ class HTMLCodegen(BasicCodegen):
         with self.tag("a", href=hyperlink, **attrs): yield
 
     @BasicCodegen.block
+    def anchor(self, id, **attrs):
+        with self.tag("a", href=f"#{id}", **attrs): yield
+
+    @BasicCodegen.block
     def bold(self, **attrs):
         with self.tag("strong", **attrs): yield
 
@@ -182,6 +186,7 @@ class HTMLCodegen(BasicCodegen):
 
         :root {
             --c-bg : #f9f9f9;
+            --c-fg-light : #cacecf;
             --c-fg : #202424;
             --c-fg-2 : #526666;
             --c-accent : #007ffd;
@@ -201,22 +206,30 @@ class HTMLCodegen(BasicCodegen):
             body { margin : 1rem 2rem }
         }
 
-        header { padding : var(--pad) }
+        header { padding : 0 var(--pad) }
 
         header > h1 {
             color : var(--c-fg-2);
             font-family : var(--f-prop);
             margin : 0;
-            font-weight : 500;
+            font-weight : 400;
             font-size : 1.5em;
         }
 
-        nav { padding : 0 var(--pad) }
+        nav { padding : var(--pad) 0 0 0 }
 
         hr {
             border : 0;
-            border-bottom : var(--c-fg-2) solid 1px;
+            border-bottom : var(--c-fg-light) solid 1px;
         }
+
+        a {
+            cursor : pointer;
+            color : var(--c-fg);
+            transition : color 0.25s;
+        }
+
+        a:hover { color : var(--c-accent) }
     """)
 
     def minify_css(css_in):
