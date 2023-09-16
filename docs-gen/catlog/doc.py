@@ -2,8 +2,30 @@ from dataclasses import dataclass, field
 
 @dataclass
 class RichText:
-    type : ... = "span"
     inner : ... = None
+
+@dataclass
+class Bold(RichText): pass
+
+@dataclass
+class Emphasis(RichText): pass
+
+@dataclass
+class InlineCode(RichText): pass
+
+@dataclass
+class Paragraph(RichText): pass
+
+@dataclass
+class CodeBlock:
+    code : str = None
+    caption : str = None
+
+@dataclass
+class Media:
+    type : str = "image"
+    url : str = None
+    caption : str = None
 
 @dataclass
 class Section:
@@ -52,7 +74,7 @@ def debug_document_create_example():
                     Section(
                         content = [
                             "hi, ",
-                            RichText("bold", "this is bold"),
+                            Bold("this is bold"),
                             ", bye"
                         ],
                         subsections = [Section(
@@ -61,8 +83,7 @@ def debug_document_create_example():
                             subsections = [
                                 Section(
                                     title = "Another Other",
-                                    content = RichText(
-                                        "emphasis",
+                                    content = Emphasis(
                                         "this is another other section"
                                     )
                                 )
@@ -75,7 +96,7 @@ def debug_document_create_example():
                 title = "Other Page",
                 sections=[
                     Section(
-                        content=RichText("paragraph", "hi from the other page")
+                        content=Paragraph("hi from the other page")
                     )
                 ]
             )

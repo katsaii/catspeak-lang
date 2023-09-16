@@ -107,8 +107,22 @@ def write_richtext(sb, content):
     elif type(content) is doc.Link:
         with sb.link(content.url):
             write_richtext(sb, content.name)
-    elif type(content) is doc.RichText:
-        style_writer = getattr(sb, content.type)
+    elif type(content) is doc.CodeBlock:
+        sb.write(content.code or "...")
+        if content.caption:
+            sb.write(content.caption)
+    elif type(content) is doc.Media:
+        sb.write(content.type)
+        sb.write(content.url)
+        if content.caption:
+            sb.write(content.caption)
+    elif isinstance(content, doc.RichText):
+        STYLE = {
+            doc.Bold : sb.bold,
+            doc.Emphasis : sb.emphasis,
+            doc.Paragraph : sb.paragraph,
+        }
+        style_writer = STYLE.get(type(content))
         if style_writer:
             with style_writer():
                 write_richtext(sb, content.inner)
