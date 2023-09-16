@@ -186,6 +186,10 @@ class HTMLCodegen(BasicCodegen):
     def caption(self, **attrs):
         with self.tag("figcaption", **attrs): yield
 
+    @BasicCodegen.block
+    def mark(self, **attrs):
+        with self.tag("mark", **attrs): yield
+
     # CSS
 
     DEFAULT_STYLE = dedent("""
@@ -212,21 +216,60 @@ class HTMLCodegen(BasicCodegen):
             background-color : var(--c-bg);
         }
 
-        @media screen and (max-width: 9in) {
-            body { margin : 1rem 2rem }
+        @media screen and (max-width: 16in) {
+            body {
+                margin : 1rem 2rem;
+            }
         }
 
-        header { padding : 0 var(--pad) }
+        header {
+            padding : 0;
+            background-color : var(--c-bg);
+        }
+
+        @media screen and (min-width: 3in) {
+            header {
+                position : sticky;
+                top : 0; /* required for sticky */
+            }
+        }
 
         header > h1 {
+            margin : 0;
             color : var(--c-fg-2);
             font-family : var(--f-prop);
-            margin : 0;
-            font-weight : 400;
+            font-weight : 500;
             font-size : 1.5em;
         }
 
+        footer { padding : 0 }
+
+        footer > article {
+            color : var(--c-fg-2);
+            font-family : var(--f-prop);
+            font-size : 0.8em;
+        }
+
         nav { padding : var(--pad) 0 0 0 }
+
+        nav > ul {
+            list-style-type : none;
+            margin-top : 0;
+            margin-bottom : 0;
+            padding : 0;
+        }
+
+        nav > ul > li {
+            padding : 0;
+            display : inline-block;
+            vertical-align : middle;
+            overflow : hidden;
+            font-family : var(--f-prop);
+        }
+
+        nav > ul > li + li {
+            padding-left : 1rem;
+        }
 
         hr {
             border : 0;
@@ -240,6 +283,120 @@ class HTMLCodegen(BasicCodegen):
         }
 
         a:hover { color : var(--c-accent) }
+
+        #chapter-content {
+            display : flex;
+            gap : 2em;
+            justify-content : flex-start;
+            align-items : flex-start;
+            flex-wrap : nowrap;
+            flex-direction : row;
+        }
+
+        #chapter-content > #chapters {
+            order : 0;
+            width : 200px;
+        }
+
+        #chapter-content > #contents {
+            order : 3;
+            width : 200px;
+        }
+
+        #chapter-content > main {
+            min-width : 60%;
+            order : 2;
+            flex-grow : 4;
+        }
+
+        @media screen and (max-width: 10in) {
+            #chapter-content > #contents { order : 1!important }
+            #chapter-content { flex-wrap : wrap }
+        }
+
+        #chapters > h2,
+        #contents > h2 {
+            margin : 0;
+            padding-bottom : 0.5rem;
+            color : var(--c-fg-2);
+            font-family : var(--f-prop);
+            font-weight : 500;
+            font-size : 1.1em;
+        }
+
+        #chapters ul,
+        #contents ul {
+            list-style-type : none;
+            margin-top : 0;
+            margin-bottom : 0;
+            padding : 0;
+        }
+
+        #chapters ul ul,
+        #contents ul ul {
+            padding-left : 0.75em;
+        }
+
+        #chapters ul > li,
+        #contents ul > li {
+            overflow : hidden;
+            font-family : var(--f-prop);
+        }
+
+        .heading {
+            margin : 0;
+            color : var(--c-fg-2);
+            font-family : var(--f-prop);
+            font-weight : 500;
+        }
+
+        h1.heading { font-size : 20pt }
+        h2.heading { font-size : 16pt }
+        h3.heading,
+        h4.heading,
+        h5.heading,
+        h6.heading { font-size : 12pt }
+
+        section > section {
+            padding-top : 1rem;
+        }
+
+        .heading > a {
+            color : var(--c-fg-light);
+            font-family : var(--f-mono);
+            font-weight : bold;
+            font-size : 1.25em;
+            text-decoration : none;
+        }
+
+        @keyframes keyframes-fade {
+            from {
+                background : var(--c-accent);
+            }
+        }
+
+        :target {
+            animation : keyframes-fade 0.5s;
+        }
+
+        mark {
+            font-weight : bold;
+            color : inherit;
+            background-color : transparent;
+        }
+
+        section > p {
+            color : var (--c-fg);
+            font-family : var(--f-prop);
+            text-align : justify;
+        }
+
+        @media screen and (max-width: 10in) {
+            section > p {
+                text-wrap : balance;
+                text-align : initial!important;
+            }
+        }
     """)
 
     def minify_css(css_in):

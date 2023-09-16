@@ -1,7 +1,19 @@
 import catlog.catlog as cl
+from datetime import datetime
+
+DATE_START = 2021
+DATE_END = datetime.now().year
 
 meta = cl.doc.debug_document_create_example_metadata()
-meta.footer = ">(OwO)<"
+meta.footer = [
+    cl.doc.RichText("emphasis", [
+        f"Catspeak (c) {DATE_START}-{DATE_END} ",
+        cl.doc.Link("https://www.katsaii.com/", "Katsaii"),
+        ", ",
+        cl.doc.Link("https://github.com/katsaii/catspeak-lang/blob/main/LICENSE", "LICENSE"),
+        "."
+    ])
+]
 
 book = cl.doc.debug_document_create_example()
 book2 = cl.doc.debug_document_create_example()

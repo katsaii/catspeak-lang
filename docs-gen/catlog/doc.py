@@ -75,7 +75,7 @@ def debug_document_create_example():
                 title = "Other Page",
                 sections=[
                     Section(
-                        content="hi from the other page"
+                        content=RichText("paragraph", "hi from the other page")
                     )
                 ]
             )
