@@ -6,7 +6,7 @@ DATE_END = datetime.now().year
 
 meta = cl.doc.debug_document_create_example_metadata()
 meta.footer = [
-    cl.doc.RichText("emphasis", [
+    cl.doc.Emphasis([
         f"Catspeak (c) {DATE_START}-{DATE_END} ",
         cl.doc.Link("https://www.katsaii.com/", "Katsaii"),
         ", ",
