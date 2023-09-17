@@ -25,6 +25,7 @@ function __catspeak_infer_function_name(func) {
 /// Represents a foreign function/constant interface for exposing Catspeak
 function CatspeakForeignInterface() constructor {
     self.database = { };
+    self.databaseDynConst = { }; //Contains keywords marked as "dynamic constants"
     self.banList = { };
 
     /// Returns the value of a foreign symbol exposed to this interface.
@@ -39,6 +40,17 @@ function CatspeakForeignInterface() constructor {
             return undefined;
         }
         return database[$ name];
+    };
+
+    /// Returns whether the foreign symbol is a "dynamic constant".
+    /// If the symbol hasn't been added then this function returns `false`.
+    ///
+    /// @param {String} name
+    ///   The name of the symbol as it appears in Catspeak.
+    ///
+    /// @return {Any}
+    static isDynamicConstant = function (name) {
+        return (databaseDynConst[$ name] ?? false);
     };
 
     /// Returns whether a foreign symbol is exposed to this interface.
@@ -97,7 +109,8 @@ function CatspeakForeignInterface() constructor {
     /// Exposes a constant value to this interface.
     ///
     /// NOTE: You cannot expose functions using this function. Instead you
-    ///       should use one of [exposeFunction] or [exposeMethod].
+    ///       should use one of [exposeDynamicConstant] or [exposeFunction]
+    ///       or [exposeMethod].
     ///
     /// @param {String} name
     ///   The name of the constant as it will appear in Catspeak.
@@ -113,6 +126,30 @@ function CatspeakForeignInterface() constructor {
                 //__catspeak_check_arg_not("value", value, __catspeak_is_callable);
             }
             database[$ name] = value;
+        }
+    };
+
+    /// Exposes a "dynamic constant" to this interface. The value provided
+    /// for the constant should be a script or method. When the dynamic
+    /// constant is evaluated at runtime, the method will be executed with
+    /// zero arguments and the return value used as the value of the constant.
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script ID or function to add.
+    static exposeDynamicConstant = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg("name", name, is_string);
+                __catspeak_check_arg("func", func, is_method);
+            }
+            func = is_method(func) ? func : method(undefined, func);
+            database[$ name] = func;
+            databaseDynConst[$ name] = true;
         }
     };
 
@@ -349,6 +386,16 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             return undefined;
         }
         return interface.exists(name);
+    }
+
+    /// @ignore
+    ///
+    /// @param {String} name
+    static __isDynamicConstant = function (name) {
+        if (interface == undefined) {
+            return false;
+        }
+        return interface.isDynamicConstant(name);
     }
 
     /// Updates the compiler by generating the code for a single term from the
@@ -965,10 +1012,21 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         }
         var name = term.name;
         if (__exists(name)) {
-            // user-defined interface
-            return method({
+            var _callee = method({
                 value : __get(name),
             }, __catspeak_expr_value__);
+            if (__isDynamicConstant(name)) {
+                // dynamic constant
+                return method({
+                    dbgError : __dbgTerm(term, "is not a function"),
+                    callee : _callee,
+                    args : [],
+                    shared : sharedData,
+                }, __catspeak_expr_call__);
+            } else {
+                // user-defined interface
+                return _callee;
+            }
         } else {
             // global var
             return method({
