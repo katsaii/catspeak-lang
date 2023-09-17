@@ -427,3 +427,17 @@ test_add_force(function () : Test(
     var result = _func();
     assertEq("good", result);
 });
+
+test_add_force(function () : Test(
+    "dynamic-constants"
+) constructor {
+    var engine = new CatspeakEnvironment();
+    engine.getInterface().exposeDynamicConstant("room_width", function() { return room_width; });
+    engine.getInterface().exposeFunction("room_width_function", function() { return room_width; });
+    var asg = engine.parseString(@'
+        return (room_width == room_width_function());
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq(true, result);
+});
