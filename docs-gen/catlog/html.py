@@ -340,14 +340,14 @@ class HTMLCodegen(BasicCodegen):
             background-color : transparent;
         }
 
-        section > p {
+        p {
             color : var (--c-fg);
             font-family : var(--f-prop);
             text-align : justify;
         }
 
         @media screen and (max-width: 10in) {
-            section > p {
+            p {
                 text-wrap : balance;
                 text-align : initial!important;
             }

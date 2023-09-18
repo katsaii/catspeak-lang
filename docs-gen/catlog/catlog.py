@@ -1,7 +1,11 @@
-from . import doc, gml, html, md, txt
+from . import doc, gml, html, md, txt, gml, lib
 from pathlib import Path
+from textwrap import dedent
 import os
 import re
+
+# TODO: don't depend on this external library
+import mistletoe
 
 TITLE_ID_DATABASE = { }
 TITLE_ID_CLASHES = { }
@@ -87,6 +91,8 @@ def write_contents(sb, chapter):
 def write_main(sb, chapter):
     with sb.main():
         with sb.article():
+            if chapter.overview:
+                write_richtext(sb, chapter.overview)
             for section in chapter.sections:
                 write_section(sb, section, 1)
 
@@ -99,45 +105,14 @@ def write_section(sb, section, depth):
             write_section(sb, subsection, depth + 1)
 
 def write_richtext(sb, content):
-    if type(content) is str:
-        sb.write(content)
-    elif type(content) is list:
-        for child_content in content:
-            write_richtext(sb, child_content)
-    elif type(content) is doc.Link:
-        with sb.link(content.url):
-            write_richtext(sb, content.name)
-    elif type(content) is doc.CodeBlock:
-        sb.write(content.code or "...")
-        if content.caption:
-            sb.write(content.caption)
-    elif type(content) is doc.Media:
-        sb.write(content.type)
-        sb.write(content.url)
-        if content.caption:
-            sb.write(content.caption)
-    elif isinstance(content, doc.RichText):
-        STYLE = {
-            doc.Bold : sb.bold,
-            doc.Emphasis : sb.emphasis,
-            doc.Paragraph : sb.paragraph,
-        }
-        style_writer = STYLE.get(type(content))
-        if style_writer:
-            with style_writer():
-                write_richtext(sb, content.inner)
-        else:
-            write_richtext(sb, content.inner)
-    else:
-        sb.write(f"(unknown content {type(content)})".replace("<", "&lt;"))
+    sb.write(mistletoe.markdown(dedent(content)))
 
 def write_footer(sb, meta):
     with sb.footer():
         sb.hr()
         with sb.article():
             write_brand(sb)
-        if meta.footer != None:
-            with sb.article():
+            if meta.footer != None:
                 write_richtext(sb, meta.footer)
 
 def write_brand(sb):
