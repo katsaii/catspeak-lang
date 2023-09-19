@@ -131,12 +131,12 @@ enum CatspeakToken {
     /// Represents a variable name.
     IDENT,
     /// Represents a GML value. This could be one of:
-    ///  - string literal:    "hello world"
-    ///  - verbatim literal:  @"\(0_0)/ no escapes!"
-    ///  - integer:           1, 2, 5
-    ///  - float:             1.25, 0.5
-    ///  - character:         'A', '0', '\n'
-    ///  - boolean:           true or false
+    ///  - string literal:    `"hello world"`
+    ///  - verbatim literal:  `@"\(0_0)/ no escapes!"`
+    ///  - integer:           `1`, `2`, `5`
+    ///  - float:             `1.25`, `0.5`
+    ///  - character:         `'A'`, `'0'`, `'\n'`
+    ///  - boolean:           `true` or `false`
     ///  - undefined
     VALUE,
     /// Represents a sequence of non-breaking whitespace characters.

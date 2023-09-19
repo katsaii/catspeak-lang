@@ -112,14 +112,13 @@ def write_section(sb, section, depth):
             write_section(sb, subsection, depth + 1)
 
 def write_richtext(sb, textdata):
-    if isinstance(textdata, doc.RawText):
-        writers = { }
-        writer = writers.get(type(textdata)) or sb.no_style
-        with writer():
-            sb.write(textdata.text)
+    if isinstance(textdata, str):
+        sb.write(textdata)
     elif isinstance(textdata, doc.RichText):
         writers = {
             doc.Paragraph : sb.paragraph,
+            doc.CodeBlock : sb.code_block,
+            doc.InlineCode : sb.code,
             doc.Bold : sb.bold,
             doc.Emphasis : sb.emphasis,
         }
@@ -133,6 +132,11 @@ def write_richtext(sb, textdata):
         with writer(textdata.url):
             for child in textdata.children:
                 write_richtext(sb, child)
+    elif isinstance(textdata, doc.List):
+        with sb.list() as list_element:
+            for element in textdata.elements:
+                with list_element():
+                    write_richtext(sb, element)
     else:
         sb.write(f"(unknown {repr(textdata)})")
 
