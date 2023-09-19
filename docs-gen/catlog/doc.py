@@ -5,19 +5,18 @@ from textwrap import dedent
 import mistletoe
 
 @dataclass
-class RawText():
-    text : str = None
-
-class Code(RawText): pass
-class CodeBlock(RawText): pass
-
-@dataclass
 class RichText():
     children : ... = field(default_factory=list)
 
 class Paragraph(RichText): pass
+class CodeBlock(RichText): pass
+class InlineCode(RichText): pass
 class Bold(RichText): pass
 class Emphasis(RichText): pass
+
+@dataclass
+class List():
+    elements : ... = None
 
 @dataclass
 class LinkText():
@@ -69,18 +68,28 @@ def parse_content(content):
         match type(term):
             case mistletoe.block_tokens.Paragraph:
                 return Paragraph(list(map(ast_to_doc, term.children)))
+            case mistletoe.block_tokens.CodeFence:
+                return CodeBlock(list(map(ast_to_doc, term.children)))
+            case mistletoe.block_tokens.List:
+                return List(list(map(ast_to_doc, term.children)))
+            case mistletoe.block_tokens.ListItem:
+                return RichText(list(map(ast_to_doc, term.children)))
             case mistletoe.span_tokens.Link:
                 return Link(list(map(ast_to_doc, term.children)), term.target)
             case mistletoe.span_tokens.RawText:
-                return RawText(term.content)
+                return term.content
+            case mistletoe.span_tokens.EscapeSequence:
+                return RichText(list(map(ast_to_doc, term.children)))
             case mistletoe.span_tokens.Strong:
                 return Bold(list(map(ast_to_doc, term.children)))
             case mistletoe.span_tokens.Emphasis:
                 return Emphasis(list(map(ast_to_doc, term.children)))
+            case mistletoe.span_tokens.InlineCode:
+                return InlineCode(list(map(ast_to_doc, term.children)))
             case mistletoe.span_tokens.LineBreak:
-                return RawText("")
+                return "\n"
             case other:
-                return RawText(f"(unknown content {other} {dir(other)})".replace("<", "&lt;"))
+                return f"(unknown content {other})".replace("<", "&lt;")
 
     a = RichText(children = list(map(ast_to_doc, doc.children)))
     return a

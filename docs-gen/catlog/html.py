@@ -122,6 +122,16 @@ class HTMLCodegen(BasicCodegen):
         with self.tag("a", href=f"#{id}", **attrs): yield
 
     @BasicCodegen.block
+    def code(self, **attrs):
+        with self.tag("code", **attrs): yield
+
+    @BasicCodegen.block
+    def code_block(self, **attrs):
+        with self.tag("pre", **attrs):
+            with self.tag("code", **attrs):
+                yield
+
+    @BasicCodegen.block
     def bold(self, **attrs):
         with self.tag("strong", **attrs): yield
 
@@ -171,7 +181,7 @@ class HTMLCodegen(BasicCodegen):
             background-color : var(--c-bg);
         }
 
-        @media screen and (max-width: 16in) {
+        @media screen and (max-width: 20in) {
             body {
                 margin : 1rem 2rem;
             }
@@ -259,13 +269,14 @@ class HTMLCodegen(BasicCodegen):
         }
 
         #chapter-content > main {
-            min-width : 60%;
+            width : 60%;
             order : 2;
             flex-grow : 4;
         }
 
-        @media screen and (max-width: 10in) {
+        @media screen and (max-width: 14in) {
             #chapter-content > #contents { order : 1!important }
+            #chapter-content > main { width : 100%!important }
             #chapter-content { flex-wrap : wrap }
         }
 
@@ -363,6 +374,8 @@ class HTMLCodegen(BasicCodegen):
                 text-align : initial!important;
             }
         }
+
+        li > p { margin : 0 }
     """
 
     def minify_css(css_in):
