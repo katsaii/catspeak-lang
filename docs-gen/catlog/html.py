@@ -305,12 +305,12 @@ class HTMLCodegen(BasicCodegen):
             font-weight : 500;
         }
 
-        h1.heading { font-size : 20pt }
-        h2.heading { font-size : 16pt }
+        h1.heading { font-size : 15.5pt }
+        h2.heading { font-size : 14pt }
         h3.heading,
         h4.heading,
         h5.heading,
-        h6.heading { font-size : 12pt }
+        h6.heading { font-size : 11pt }
 
         section > section {
             padding-top : 1rem;
@@ -322,6 +322,14 @@ class HTMLCodegen(BasicCodegen):
             font-weight : bold;
             font-size : 1.25em;
             text-decoration : none;
+        }
+
+        .chapter-title {
+            color : var(--c-fg-2);
+            font-family : var(--f-mono);
+            font-weight : bold;
+            font-size : 25pt;
+            margin : 0 0 20px 0;
         }
 
         @keyframes keyframes-fade {

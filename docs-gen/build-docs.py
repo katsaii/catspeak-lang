@@ -19,14 +19,14 @@ def debug_document_create_example():
             cl.doc.Chapter(
                 sections=[
                     cl.doc.Section(
-                        content = "hi, **this is bold**, bye",
+                        content = cl.doc.parse_content("hi, **this is bold**, bye"),
                         subsections = [cl.doc.Section(
                             title = "Other",
-                            content = "this is the other section",
+                            content = cl.doc.parse_content("this is the other section"),
                             subsections = [
                                 cl.doc.Section(
                                     title = "Another Other",
-                                    content = "_this is another other section_"
+                                    content = cl.doc.parse_content("_this is another other section_")
                                 )
                             ]
                         )]
@@ -37,7 +37,7 @@ def debug_document_create_example():
                 title = "Other Page",
                 sections=[
                     cl.doc.Section(
-                        content="hi from the other page"
+                        content = cl.doc.parse_content("hi from the other page")
                     )
                 ]
             )
@@ -45,10 +45,13 @@ def debug_document_create_example():
     )
 
 meta = debug_document_create_example_metadata()
-meta.footer = dedent(f"""
-    _Catspeak (C) {DATE_START}-{DATE_END} [Katsaii](https://www.katsaii.com/),
-    [LICENSE](https://github.com/katsaii/catspeak-lang/blob/main/LICENSE)_
-""")
+meta.copyrights.append(cl.doc.Copyright(
+    assets = [cl.doc.Link("Catspeak", "https://www.katsaii.com/catspeak-lang/")],
+    authors = [cl.doc.Link("Katsaii", "https://www.katsaii.com/")],
+    year_start = DATE_START,
+    year_end = DATE_END,
+    license = "https://github.com/katsaii/catspeak-lang/blob/main/LICENSE"
+))
 
 book = debug_document_create_example()
 book2 = debug_document_create_example()
