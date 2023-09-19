@@ -44,3 +44,7 @@ class BasicCodegen:
             return WithHandler(gen_event(), gen_event)
 
         return inner
+
+    @block
+    def no_style(self, **attrs):
+        yield

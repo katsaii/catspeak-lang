@@ -4,9 +4,6 @@ from textwrap import dedent
 import os
 import re
 
-# TODO: don't depend on this external library
-import mistletoe
-
 TITLE_ID_DATABASE = { }
 TITLE_ID_CLASHES = { }
 TITLE_ID_MAX_LENGTH = 30
@@ -55,19 +52,23 @@ def write_header(sb, meta, books, current_book):
         sb.hr()
 
 def write_chapters(sb, book, current_chapter):
+    def chapter_count(chapters):
+        return len(chapters)
+
     with sb.aside(id="chapters"):
-        with sb.heading(2):
-            sb.write("Chapters")
-        with sb.list() as list_element:
-            for chapter in book.chapters:
-                with list_element():
-                    uid = title_to_uid(book.title, chapter.title)
-                    with sb.link(uid_to_path(uid, sb.EXT)):
-                        if chapter == current_chapter:
-                            with sb.mark():
+        if chapter_count(book.chapters) > 1:
+            with sb.heading(2):
+                sb.write("Chapters")
+            with sb.list() as list_element:
+                for chapter in book.chapters:
+                    with list_element():
+                        uid = title_to_uid(book.title, chapter.title)
+                        with sb.link(uid_to_path(uid, sb.EXT)):
+                            if chapter == current_chapter:
+                                with sb.mark():
+                                    sb.write(chapter.title)
+                            else:
                                 sb.write(chapter.title)
-                        else:
-                            sb.write(chapter.title)
 
 def write_contents(sb, chapter):
     def write_contents_section(sb, section, depth):
@@ -80,17 +81,23 @@ def write_contents(sb, chapter):
                     with list_element():
                         write_contents_section(sb, subsection, depth + 1)
 
+    def section_count(sections):
+        return len(sections) + sum([section_count(section.subsections) for section in sections])
+
     with sb.aside(id="contents"):
-        with sb.heading(2):
-            sb.write("Contents")
-        with sb.list() as list_element:
-            for section in chapter.sections:
-                with list_element():
-                    write_contents_section(sb, section, 0)
+        if section_count(chapter.sections) > 1:
+            with sb.heading(2):
+                sb.write("Contents")
+            with sb.list() as list_element:
+                for section in chapter.sections:
+                    with list_element():
+                        write_contents_section(sb, section, 0)
 
 def write_main(sb, chapter):
     with sb.main():
         with sb.article():
+            with sb.heading(0, class_="chapter-title"):
+                sb.write(chapter.title)
             if chapter.overview:
                 write_richtext(sb, chapter.overview)
             for section in chapter.sections:
@@ -104,16 +111,48 @@ def write_section(sb, section, depth):
         for subsection in section.subsections:
             write_section(sb, subsection, depth + 1)
 
-def write_richtext(sb, content):
-    sb.write(mistletoe.markdown(dedent(content)))
+def write_richtext(sb, textdata):
+    if isinstance(textdata, doc.RawText):
+        writers = { }
+        writer = writers.get(type(textdata)) or sb.no_style
+        with writer():
+            sb.write(textdata.text)
+    elif isinstance(textdata, doc.RichText):
+        writers = {
+            doc.Paragraph : sb.paragraph,
+            doc.Bold : sb.bold,
+            doc.Emphasis : sb.emphasis,
+        }
+        writer = writers.get(type(textdata)) or sb.no_style
+        with writer():
+            for child in textdata.children:
+                write_richtext(sb, child)
+    elif isinstance(textdata, doc.LinkText):
+        writers = { }
+        writer = writers.get(type(textdata)) or sb.link
+        with writer(textdata.url):
+            for child in textdata.children:
+                write_richtext(sb, child)
+    else:
+        sb.write(f"(unknown {repr(textdata)})")
 
 def write_footer(sb, meta):
     with sb.footer():
         sb.hr()
         with sb.article():
             write_brand(sb)
-            if meta.footer != None:
-                write_richtext(sb, meta.footer)
+        with sb.article():
+            for copyright in meta.copyrights:
+                with sb.emphasis():
+                    write_links(sb, copyright.assets)
+                    sb.write(" (c) ")
+                    write_links(sb, copyright.authors)
+                    if copyright.license:
+                        sb.write(", ")
+                        with sb.link(copyright.license):
+                            sb.write("LICENSE")
+                        sb.write(".")
+
 
 def write_brand(sb):
     with sb.emphasis(id="brand"):
@@ -124,6 +163,15 @@ def write_brand(sb):
         with sb.link("https://github.com/katsaii/catspeak-lang"):
             sb.write("Catspeak")
         sb.write(" book generator.")
+
+def write_links(sb, links):
+    first = True
+    for link in links:
+        if not first:
+            sb.write(", ")
+        first = False
+        with sb.link(link.url):
+            sb.write(link.name)
 
 def compile_books(codegen, meta, *books):
     pages = [page for page in codegen.additional_pages()]

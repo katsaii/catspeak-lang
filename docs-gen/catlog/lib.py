@@ -9,5 +9,5 @@ class Module():
     def into_chapter(self):
         return doc.Chapter(
             title = self.name,
-            overview = self.overview
+            overview = doc.parse_content(self.overview)
         )
