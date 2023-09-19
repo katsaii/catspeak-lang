@@ -39,6 +39,7 @@ class DocComment:
     class Param(Tag):
         name : str = None
         type : str = None
+        optional : bool = False
 
     def __init__(self):
         self.tags = [DocComment.Description()]
@@ -46,10 +47,44 @@ class DocComment:
     def current(self):
         return self.tags[-1]
 
+    def add(self, tag):
+        self.tags.append(tag)
+
     def into_richtext(self):
         text = doc.RichText()
-        descs, other = partitian(self.tags, lambda x: isinstance(x, DocComment.Description))
-        text.children += [doc.parse_content(x.desc) for x in descs]
+
+        def add_section(tags, title=None):
+            if not tags:
+                return
+            if title:
+                p = doc.Paragraph()
+                p.children.append(doc.Bold(title))
+                text.children.append(p)
+            text.children += [doc.parse_content(tag.desc) for tag in tags]
+
+        tags = self.tags
+        tags_ignore, tags = partitian(tags, lambda x: isinstance(x, DocComment.Ignore))
+        tags_unstable, tags = partitian(tags, lambda x: isinstance(x, DocComment.Unstable))
+        tags_pure, tags = partitian(tags, lambda x: isinstance(x, DocComment.Pure))
+        tags_desc, tags = partitian(tags, lambda x: isinstance(x, DocComment.Description))
+        tags_deprecated, tags = partitian(tags, lambda x: isinstance(x, DocComment.Deprecated))
+        tags_throws, tags = partitian(tags, lambda x: isinstance(x, DocComment.Throws))
+        tags_returns, tags = partitian(tags, lambda x: isinstance(x, DocComment.Returns))
+        tags_remark, tags = partitian(tags, lambda x: isinstance(x, DocComment.Remark))
+        tags_warning, tags = partitian(tags, lambda x: isinstance(x, DocComment.Warning))
+        tags_example, tags = partitian(tags, lambda x: isinstance(x, DocComment.Example))
+        tags_param, tags = partitian(tags, lambda x: isinstance(x, DocComment.Param))
+        add_section(tags_desc)
+        #add_section(tags_ignore, "Ignore")
+        #add_section(tags_unstable, "Unstable")
+        #add_section(tags_pure, "Purity")
+        #add_section(tags_deprecated, "Deprecated")
+        #add_section(tags_throws, "Throws")
+        #add_section(tags_returns, "Returns")
+        #add_section(tags_remark, "Remark")
+        #add_section(tags_warning, "Warning")
+        #add_section(tags_example, "Example")
+        add_section(tags_param, "Param")
         return text
 
 @dataclass
