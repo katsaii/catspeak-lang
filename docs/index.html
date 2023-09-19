@@ -11,12 +11,13 @@
       html { box-sizing : border-box }
       *, *:before, *:after { box-sizing : inherit }
 
-      * { /* outline : red solid 1px */ }
+      /* * { outline : red solid 1px } */
 
       :root {
         --c-bg : #f9f9f9;
         --c-fg : #202424;
         --c-fg-2 : #526666;
+        --c-fg-light : #cacecf;
         --c-accent : #007ffd;
 
         --f-mono : "Courier New", Courier, monospace;
@@ -31,7 +32,7 @@
       }
 
       .separator {
-        border-bottom : var(--c-fg) solid 1px;
+        border-bottom : var(--c-fg-light) solid 1px;
       }
 
       .d-inline { display : inline }

@@ -45,13 +45,6 @@ def debug_document_create_example():
     )
 
 meta = debug_document_create_example_metadata()
-meta.copyrights.append(cl.doc.Copyright(
-    assets = [cl.doc.Link("Catspeak", "https://www.katsaii.com/catspeak-lang/")],
-    authors = [cl.doc.Link("Katsaii", "https://www.katsaii.com/")],
-    year_start = DATE_START,
-    year_end = DATE_END,
-    license = "https://github.com/katsaii/catspeak-lang/blob/main/LICENSE"
-))
 
 book = debug_document_create_example()
 book2 = debug_document_create_example()

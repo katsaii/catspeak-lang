@@ -160,7 +160,7 @@ def write_brand(sb):
         with sb.link("#"):
             sb.write("Catlog")
         sb.write(", the ")
-        with sb.link("https://github.com/katsaii/catspeak-lang"):
+        with sb.link("https://www.katsaii.com/catspeak-lang/"):
             sb.write("Catspeak")
         sb.write(" book generator.")
 
