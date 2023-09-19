@@ -193,14 +193,14 @@ class HTMLCodegen(BasicCodegen):
             margin : 0;
             color : var(--c-fg-2);
             font-family : var(--f-prop);
-            font-weight : 500;
-            font-size : 1.5em;
+            font-weight : 300;
+            font-size : 30pt;
         }
 
         footer { padding : 0 }
 
         footer > article {
-            color : var(--c-fg-2);
+            color : var(--c-fg);
             font-family : var(--f-prop);
             font-size : 0.8em;
         }
@@ -305,12 +305,15 @@ class HTMLCodegen(BasicCodegen):
             font-weight : 500;
         }
 
-        h1.heading { font-size : 15.5pt }
-        h2.heading { font-size : 14pt }
-        h3.heading,
+        h1.heading { font-size : 24pt }
+        h2.heading { font-size : 20pt }
+        h3.heading { font-size : 16pt }
         h4.heading,
         h5.heading,
-        h6.heading { font-size : 11pt }
+        h6.heading { font-size : 12pt }
+
+        h1.heading,
+        h2.heading { border-bottom : var(--c-fg-light) solid 1px }
 
         section > section {
             padding-top : 1rem;

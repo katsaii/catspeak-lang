@@ -9,14 +9,14 @@ def script_name_to_module_name(module):
 def parse_module(fullpath):
     name = script_name_to_module_name(Path(fullpath).with_suffix("").name)
     overview = ""
-    current_doc = ""
+    doc = lib.DocComment()
     with open(fullpath, "r", encoding="utf-8") as file:
         print(f"...parsing gml module '{name}'")
         for line in file.readlines():
             if match := re.search("^\s*//!(.*)", line):
                 overview += match.group(1)
-            if match := re.search("^\s*///(.*)", line):
-                current_doc += match.group(1)
+            elif match := re.search("^\s*///(.*)", line):
+                doc.current().desc += match.group(1)
     return lib.Module(
         name = name,
         overview = overview
