@@ -92,10 +92,15 @@ class Definition:
 class Macro(Definition):
     expands_to : str = None
 
+    def signature(self):
+        sig = f"#macro {self.name}"
+        if self.expands_to:
+            sig += " " + self.expands_to
+        return sig
+
     def into_section(self):
         section = super().into_section()
-        section.title = f"macro {section.title}"
-        # TODO: `expands_to`
+        section.title_content = doc.CodeBlock([self.signature()])
         return section
 
 @dataclass
