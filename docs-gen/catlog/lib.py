@@ -35,7 +35,7 @@ class DocParam(DocDescription):
         if self.optional:
             sig += "?"
         if self.type:
-            sig += f" :: {self.type}"
+            sig += f" : {self.type}"
         return sig
 
 class DocComment:
@@ -73,7 +73,7 @@ class DocComment:
             for i, param in enumerate(self.params):
                 if param.name and param.text.strip():
                     optional_text = "_(optional)_ " if param.optional else ""
-                    desc = f"**`{param.name}`**: {optional_text}{param.text}"
+                    desc = f"`{param.name}` {optional_text}\n\n{param.text}"
                     param_list.elements.append(doc.parse_content(desc))
         return text
 
@@ -100,19 +100,84 @@ class Macro(Definition):
 
     def into_section(self):
         section = super().into_section()
-        section.title_content = doc.CodeBlock([self.signature()])
+        section.content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            section.content
+        ])
         return section
 
 @dataclass
+class EnumField(Definition):
+    def signature(self):
+        return f"{self.name}"
+
+@dataclass
 class Enum(Definition):
-    # TODO: fields
+    fields : ... = field(default_factory=list)
+
+    def signature_inline(self):
+        sig = f"enum {self.name} {{ "
+        i = 0
+
+        def add_delimiter():
+            nonlocal i
+            nonlocal sig
+            if i > 0:
+                sig += ", "
+            i += 1
+
+        ignored = 0
+        for field in self.fields:
+            if field.doc.ignore:
+                ignored += 1
+                continue
+            add_delimiter()
+            sig += field.signature()
+        if ignored > 0:
+            add_delimiter()
+            sig += f"/* +{ignored} fields omitted */"
+        sig += "}"
+        return sig
+
+    def signature_block(self):
+        sig = f"enum {self.name} {{ "
+        i = 0
+
+        def add_delimiter():
+            nonlocal i
+            nonlocal sig
+            if i > 0:
+                sig += ","
+            sig += "\n  "
+            i += 1
+
+        ignored = 0
+        if len(self.fields) > 0:
+            for field in self.fields:
+                if field.doc.ignore:
+                    ignored += 1
+                    continue
+                add_delimiter()
+                sig += field.signature()
+            if ignored > 0:
+                add_delimiter()
+                sig += f"// +{ignored} fields omitted"
+            sig += "\n"
+        sig += "}"
+        return sig
 
     def signature(self):
-        return f"enum {self.name} {{ ... }}"
+        sig = self.signature_inline()
+        if len(sig) > 30 and len(self.fields) > 0:
+            sig = self.signature_block()
+        return sig
 
     def into_section(self):
         section = super().into_section()
-        section.title_content = doc.CodeBlock([self.signature()])
+        section.content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            section.content
+        ])
         return section
 
 @dataclass
@@ -151,21 +216,18 @@ class Function(Definition):
 
     def into_section(self):
         section = super().into_section()
-        section.title_content = doc.CodeBlock([self.signature()])
-        return section
-
-@dataclass
-class StaticField(Definition):
-    def into_section(self):
-        section = super().into_section()
-        section.title = f"static field {section.title}"
+        section.content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            section.content
+        ])
         return section
 
 @dataclass
 class Field(Definition):
+    is_static : bool = False
+
     def into_section(self):
         section = super().into_section()
-        section.title = f"field {section.title}"
         return section
 
 @dataclass
@@ -175,12 +237,9 @@ class Module():
     definitions : ... = field(default_factory=list)
 
     def into_chapter(self):
+        public_defs = [defn for defn in self.definitions if not defn.doc.ignore]
         return doc.Chapter(
             title = self.name,
             overview = doc.parse_content(self.overview),
-            sections = [
-                defn.into_section()
-                for defn in self.definitions
-                if not defn.doc.ignore
-            ]
+            sections = [defn.into_section() for defn in public_defs]
         )

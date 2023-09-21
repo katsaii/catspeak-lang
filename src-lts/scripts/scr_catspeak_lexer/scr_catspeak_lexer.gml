@@ -36,6 +36,7 @@ enum CatspeakToken {
     DOT,
     /// The `=>` operator.
     ARROW,
+    /// @ignore
     __OP_ASSIGN_BEGIN__,
     /// The `=` operator.
     ASSIGN,
@@ -47,6 +48,7 @@ enum CatspeakToken {
     ASSIGN_SUBTRACT,
     /// The `+=` operator.
     ASSIGN_PLUS,
+    /// @ignore
     __OP_BEGIN__,
     /// The remainder `%` operator.
     REMAINDER,
@@ -147,6 +149,7 @@ enum CatspeakToken {
     EOF,
     /// Represents any other unrecognised character.
     OTHER,
+    /// @ignore
     __SIZE__
 }
 
