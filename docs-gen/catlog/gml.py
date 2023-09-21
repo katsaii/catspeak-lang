@@ -21,6 +21,7 @@ def parse_module(fullpath):
     module = lib.Module(name, "")
     doc = lib.DocComment()
     doc_target = None
+    current_enum = None
     with open(fullpath, "r", encoding="utf-8") as file:
         print(f"...parsing gml module '{name}'")
         for line in file.readlines():
@@ -88,12 +89,22 @@ def parse_module(fullpath):
                         name = match.group(1),
                         doc = doc
                     )
+                    current_enum = definition
                 elif match := re.search("^\s*function\s*([A-Za-z0-9_]+)", line):
                     # NAMED FUNCTION
                     definition = lib.Function(
                         name = match.group(1),
                         doc = doc
                     )
+                elif match := re.search("^\s*([A-Za-z0-9_]+)", line):
+                    # FREE VARIABLE
+                    if current_enum != None:
+                        current_enum.fields.append(lib.EnumField(
+                            name = match.group(1),
+                            doc = doc
+                        ))
+                else:
+                    current_enum = None
                 if definition:
                     module.definitions.append(definition)
                 doc = lib.DocComment()

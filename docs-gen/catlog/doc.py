@@ -65,6 +65,7 @@ class Metadata:
 def parse_content(content):
     doc = mistletoe.Document.read(dedent(content))
 
+    # from: https://mistletoe-ebp.readthedocs.io/en/latest/api/core_block_tokens.html
     def ast_to_doc(term):
         match type(term):
             case mistletoe.block_tokens.Paragraph:

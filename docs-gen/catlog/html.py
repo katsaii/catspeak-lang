@@ -236,6 +236,10 @@ class HTMLCodegen(BasicCodegen):
             padding-left : 1rem;
         }
 
+        :not(nav, aside) > ul > li + li {
+            padding-top : 0.5rem;
+        }
+
         hr {
             border : 0;
             border-bottom : var(--c-fg-light) solid 1px;
@@ -367,17 +371,27 @@ class HTMLCodegen(BasicCodegen):
         p {
             color : var (--c-fg);
             font-family : var(--f-prop);
-            text-align : justify;
-        }
-
-        @media screen and (max-width: 10in) {
-            p {
-                text-wrap : balance;
-                text-align : initial!important;
-            }
+            text-wrap : balance;
         }
 
         li > p { margin : 0 }
+
+        code {
+            font-family : var(--f-mono)!important;
+            font-size : 0.9em;
+            background-color : rgb(249, 243, 241);
+        }
+
+        pre > code {
+            display : block;
+            padding : 1rem;
+            white-space : pre;
+        }
+
+        code.inline-code {
+            padding : 0.025rem 0.15rem;
+            border-radius : 5px;
+        }
     """
 
     def minify_css(css_in):
