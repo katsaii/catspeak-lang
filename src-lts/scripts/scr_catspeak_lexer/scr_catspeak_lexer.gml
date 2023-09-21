@@ -13,12 +13,6 @@
 ///
 /// The following enum represents all possible token types understood by the
 /// Catspeak language.
-///
-/// @example hello youtube
-///     a
-///
-/// @throws {Something.Cool}
-///     For some reason.
 enum CatspeakToken {
     /// The `(` character.
     PAREN_LEFT,

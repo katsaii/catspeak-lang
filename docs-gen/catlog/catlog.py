@@ -106,7 +106,10 @@ def write_main(sb, chapter):
 def write_section(sb, section, depth):
     with sb.section():
         with sb.heading(depth, class_="heading", id=title_to_uid(section.title)):
-            sb.write(section.title)
+            if section.title_content:
+                write_richtext(sb, section.title_content)
+            else:
+                sb.write(section.title)
         write_richtext(sb, section.content)
         for subsection in section.subsections:
             write_section(sb, subsection, depth + 1)

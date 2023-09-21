@@ -16,7 +16,7 @@ class Emphasis(RichText): pass
 
 @dataclass
 class List():
-    elements : ... = None
+    elements : ... = field(default_factory=list)
 
 @dataclass
 class LinkText():
@@ -26,6 +26,7 @@ class LinkText():
 @dataclass
 class Section:
     title : str = "Section"
+    title_content : ... = None
     content : ... = None
     subsections : ... = field(default_factory=list)
 

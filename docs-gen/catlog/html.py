@@ -123,7 +123,7 @@ class HTMLCodegen(BasicCodegen):
 
     @BasicCodegen.block
     def code(self, **attrs):
-        with self.tag("code", **attrs): yield
+        with self.tag("code", class_="inline-code", **attrs): yield
 
     @BasicCodegen.block
     def code_block(self, **attrs):
@@ -181,7 +181,7 @@ class HTMLCodegen(BasicCodegen):
             background-color : var(--c-bg);
         }
 
-        @media screen and (max-width: 20in) {
+        @media screen and (max-width: 18in) {
             body {
                 margin : 1rem 2rem;
             }
@@ -314,20 +314,15 @@ class HTMLCodegen(BasicCodegen):
             color : var(--c-fg-2);
             font-family : var(--f-prop);
             font-weight : 500;
+            font-size : 16pt;
         }
-
-        h1.heading { font-size : 24pt }
-        h2.heading { font-size : 20pt }
-        h3.heading { font-size : 16pt }
-        h4.heading,
-        h5.heading,
-        h6.heading { font-size : 12pt }
 
         h1.heading,
         h2.heading { border-bottom : var(--c-fg-light) solid 1px }
 
         section > section {
             padding-top : 1rem;
+            padding-left : 1rem;
         }
 
         .heading > a {
@@ -336,6 +331,13 @@ class HTMLCodegen(BasicCodegen):
             font-weight : bold;
             font-size : 1.25em;
             text-decoration : none;
+        }
+
+        .heading > pre {
+            display : inline-block;
+            vertical-align : text-top;
+            margin : 5px;
+            font-size : x-large;
         }
 
         .chapter-title {

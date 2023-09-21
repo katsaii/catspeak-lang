@@ -6,10 +6,21 @@ def script_name_to_module_name(module):
     name = module.replace("scr_", "").replace("catspeak_", "")
     return name
 
+def feather_name_to_type_name(typename):
+    typenane = typename or "Any"
+    new_elements = []
+    for i, element in enumerate(typename.split(".")):
+        element = element.strip()
+        if i == 0:
+            element = element.lower()
+        new_elements.append(element)
+    return ".".join(new_elements)
+
 def parse_module(fullpath):
     name = script_name_to_module_name(Path(fullpath).with_suffix("").name)
     module = lib.Module(name, "")
     doc = lib.DocComment()
+    doc_target = None
     with open(fullpath, "r", encoding="utf-8") as file:
         print(f"...parsing gml module '{name}'")
         for line in file.readlines():
@@ -18,33 +29,48 @@ def parse_module(fullpath):
             elif match := re.search("^\s*///(.*)", line):
                 line = match.group(1)
                 if match := re.search("^\s*(?:@ignore)", line):
-                    doc.add(lib.DocComment.Ignore())
+                    doc.ignore = True
                 elif match := re.search("^\s*(?:@unstable)", line):
-                    doc.add(lib.DocComment.Unstable())
+                    doc_target = doc.unstable or lib.DocUnstable()
+                    doc.unstable = doc_target
                 elif match := re.search("^\s*(?:@pure)", line):
-                    doc.add(lib.DocComment.Pure())
+                    doc.pure = True
                 elif match := re.search("^\s*(?:@desc|@description)", line):
-                    doc.add(lib.DocComment.Description())
-                elif match := re.search("^\s*(?:@deprecated)\s*(since [0-9]+\.[0-9]+\.[0-9]+)?", line):
-                    doc.add(lib.DocComment.Deprecated(since = match.group(1)))
-                elif match := re.search("^\s*(?:@throws|@throw)\s*\{?([A-Za-z0-9_.]+)?\}?", line):
-                    doc.add(lib.DocComment.Throws(type = match.group(1)))
-                elif match := re.search("^\s*(?:@returns|@return)\s*\{?([^}]+)?\}?", line):
-                    doc.add(lib.DocComment.Returns(type = match.group(1)))
+                    doc_target = doc.desc
+                elif match := re.search("^\s*(?:@deprecated)", line):
+                    doc_target = doc.deprecated or lib.DocDeprecated()
+                    doc.deprecated = doc_target
+                elif match := re.search("^\s*(?:@throws|@throw)\s*\{?([A-Za-z0-9_.]+)\}?", line):
+                    doc_target = lib.DocThrow(
+                        type = feather_name_to_type_name(match.group(1))
+                    )
+                    doc.throws.append(doc_target)
+                elif match := re.search("^\s*(?:@returns|@return)\s*\{?([A-Za-z0-9_.]+)\}?", line):
+                    doc_target = doc.returns or lib.DocReturn(
+                        type = feather_name_to_type_name(match.group(1))
+                    )
+                    doc.returns = doc_target
                 elif match := re.search("^\s*(?:@remark|@rem)", line):
-                    doc.add(lib.DocComment.Remark())
+                    doc_target = lib.DocRemark()
+                    doc.remarks.append(doc_target)
                 elif match := re.search("^\s*(?:@warning|@warn)", line):
-                    doc.add(lib.DocComment.Warning())
-                elif match := re.search("^\s*(?:@example)\s*(.+)?", line):
-                    doc.add(lib.DocComment.Example(title = match.group(1)))
+                    doc_target = lib.DocWarning()
+                    doc.warnings.append(doc_target)
+                elif match := re.search("^\s*(?:@example)", line):
+                    doc_target = lib.DocExample()
+                    doc.examples.append(doc_target)
                 elif match := re.search("^\s*(?:@param|@parameter|@arg|@argument)\s*\{?([A-Za-z0-9_.]+)?\}? (\[)?([A-Za-z0-9_.]+)\]?", line):
-                    doc.add(lib.DocComment.Param(
-                        type = match.group(1),
+                    doc_target = lib.DocParam(
+                        type = feather_name_to_type_name(match.group(1)),
                         optional = match.group(2) != None,
                         name = match.group(3)
-                    ))
+                    )
+                    doc.params.append(doc_target)
                 else:
-                    doc.current().desc += f"{line}\n"
+                    if doc_target == None:
+                        doc_target = doc.desc or lib.DocDescription()
+                        doc.desc = doc_target
+                    doc_target.text += f"{line}\n"
             elif match := re.search("^//.*", line):
                 pass
             else:
@@ -53,22 +79,23 @@ def parse_module(fullpath):
                     # MACROS
                     definition = lib.Macro(
                         name = match.group(1),
-                        documentation = doc,
+                        doc = doc,
                         expands_to = match.group(2)
                     )
                 elif match := re.search("^\s*enum\s*([A-Za-z0-9_]+)", line):
                     # ENUMS
                     definition = lib.Enum(
                         name = match.group(1),
-                        documentation = doc
+                        doc = doc
                     )
                 elif match := re.search("^\s*function\s*([A-Za-z0-9_]+)", line):
                     # NAMED FUNCTION
                     definition = lib.Function(
                         name = match.group(1),
-                        documentation = doc
+                        doc = doc
                     )
                 if definition:
                     module.definitions.append(definition)
                 doc = lib.DocComment()
+                doc_target = None
     return module
