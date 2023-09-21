@@ -52,8 +52,13 @@ book2.title = "Other Page"
 book2.chapters.append(book2.chapters[0])
 book2.chapters[1].sections.pop()
 
-lexer_module = cl.gml.parse_module("./src-lts/scripts/scr_catspeak_lexer/scr_catspeak_lexer.gml")
-book2.chapters.append(lexer_module.into_chapter())
+def add_gml_module(name):
+    module = cl.gml.parse_module(f"./src-lts/scripts/{name}/{name}.gml")
+    book2.chapters.append(module.into_chapter())
+
+add_gml_module("scr_catspeak_lexer")
+add_gml_module("scr_catspeak_parser")
+add_gml_module("scr_catspeak_codegen")
 
 pages = cl.compile_books(cl.html.HTMLCodegen, meta, book, book2)
 for page in pages:
