@@ -1,4 +1,4 @@
-from . import doc, gml, html, md, txt, gml, lib
+from . import doc, gml, html, md, txt, gml
 from pathlib import Path
 from textwrap import dedent
 import os

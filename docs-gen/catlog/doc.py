@@ -35,6 +35,7 @@ class Chapter:
     title : str = "Chapter"
     overview : ... = None
     sections : ... = field(default_factory=list)
+    subchapters : ... = field(default_factory=list)
 
 @dataclass
 class Book:
