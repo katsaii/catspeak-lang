@@ -165,8 +165,9 @@ class HTMLCodegen(BasicCodegen):
 
         :root {
             --c-bg : #f9f9f9;
-            --c-fg-light : #cacecf;
+            --c-bg-dark : #ecebeb;
             --c-fg : #202424;
+            --c-fg-light : #cacecf;
             --c-fg-2 : #526666;
             --c-accent : #007ffd;
 
@@ -179,24 +180,16 @@ class HTMLCodegen(BasicCodegen):
         body {
             margin : 1rem 15%;
             background-color : var(--c-bg);
+            overflow-y : scroll;
         }
 
         @media screen and (max-width: 18in) {
-            body {
-                margin : 1rem 2rem;
-            }
+            body { margin : 1rem 2rem }
         }
 
         header {
             padding : 0;
             background-color : var(--c-bg);
-        }
-
-        @media screen and (min-width: 3in) {
-            header {
-                position : sticky;
-                top : 0; /* required for sticky */
-            }
         }
 
         header > h1 {
@@ -232,13 +225,9 @@ class HTMLCodegen(BasicCodegen):
             font-family : var(--f-prop);
         }
 
-        nav > ul > li + li {
-            padding-left : 1rem;
-        }
+        nav > ul > li + li { padding-left : 1rem }
 
-        :not(nav, aside) > ul > li + li {
-            padding-top : 0.5rem;
-        }
+        :not(nav, aside) > ul > li + li { padding-top : 0.5rem }
 
         hr {
             border : 0;
@@ -284,6 +273,14 @@ class HTMLCodegen(BasicCodegen):
             #chapter-content { flex-wrap : wrap }
         }
 
+        @media screen and (min-width: 14in) {
+            #contents,
+            #chapters {
+                position : sticky;
+                top : 25px; /* required for sticky */
+            }
+        }
+
         #chapters > h2,
         #contents > h2 {
             margin : 0;
@@ -303,9 +300,7 @@ class HTMLCodegen(BasicCodegen):
         }
 
         #chapters ul ul,
-        #contents ul ul {
-            padding-left : 0.75em;
-        }
+        #contents ul ul { padding-left : 0.75em }
 
         #chapters ul > li,
         #contents ul > li {
@@ -353,14 +348,10 @@ class HTMLCodegen(BasicCodegen):
         }
 
         @keyframes keyframes-fade {
-            from {
-                background : var(--c-accent);
-            }
+            from { background : var(--c-accent) }
         }
 
-        :target {
-            animation : keyframes-fade 0.5s;
-        }
+        :target { animation : keyframes-fade 0.5s }
 
         mark {
             font-weight : bold;
@@ -377,9 +368,9 @@ class HTMLCodegen(BasicCodegen):
         li > p { margin : 0 }
 
         code {
-            font-family : var(--f-mono)!important;
+            font-family : var(--f-mono) !important;
             font-size : 0.9em;
-            background-color : rgb(249, 243, 241);
+            background-color : var(--c-bg-dark);
         }
 
         pre > code {
