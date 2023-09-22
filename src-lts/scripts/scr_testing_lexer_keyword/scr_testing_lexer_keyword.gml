@@ -25,6 +25,10 @@ test_add(function () : TestLexerToken("lexer-keyword-continue-line",
     CatspeakToken.WHITESPACE, "...", "..."
 ) constructor { });
 
+test_add(function () : TestLexerToken("lexer-keyword-arrow",
+    CatspeakToken.ARROW, "=>", "=>"
+) constructor { });
+
 test_add(function () : TestLexerToken("lexer-keyword-do",
     CatspeakToken.DO, "do", "do"
 ) constructor { });
@@ -47,6 +51,10 @@ test_add(function () : TestLexerToken("lexer-keyword-for",
 
 test_add(function () : TestLexerToken("lexer-keyword-loop",
     CatspeakToken.LOOP, "loop", "loop"
+) constructor { });
+
+test_add(function () : TestLexerToken("lexer-keyword-match",
+    CatspeakToken.MATCH, "match", "match"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-let",

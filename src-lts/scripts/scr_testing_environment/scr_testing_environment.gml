@@ -441,3 +441,86 @@ test_add_force(function () : Test(
     var result = _func();
     assertEq(true, result);
 });
+
+test_add(function() : Test("match-1") constructor {
+	var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        let a = 2
+		
+		match a {
+			1 => 69,
+			2 => 42,
+			3 => 3.14,
+			else => 0,
+		}
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq(42, result);
+});
+
+test_add(function() : Test("match-2") constructor {
+	var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        let a = 2
+		
+		match a {
+			else => 0,
+			1 => 69,
+			2 => 42,
+			3 => 3.14,
+		}
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq(0, result);
+});
+
+test_add(function() : Test("match-3") constructor {
+	var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        let a = 4
+		
+		match a {
+			1 => 69,
+			2 => 42,
+			3 => 3.14,
+		}
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq(undefined, result);
+});
+
+test_add(function() : Test("match-4") constructor {
+	var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        let a = 0
+		match a {}
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq(undefined, result);
+});
+
+test_add(function() : Test("match-5") constructor {
+	var engine = new CatspeakEnvironment();
+    var asg = engine.parseString(@'
+        counter = 2;
+		
+		increment = fun {
+			counter += 1
+			counter
+		}
+		
+		match increment() {
+			1 => 0,
+			2 => 0,
+			3 => 1,
+			else => 2,
+		}
+    ');
+    var _func = engine.compileGML(asg);
+    var result = _func();
+    assertEq(1, result);
+});

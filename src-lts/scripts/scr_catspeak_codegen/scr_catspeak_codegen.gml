@@ -657,6 +657,32 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             body : __compileTerm(ctx, term.body),
         }, __catspeak_expr_while__);
     };
+	
+	/// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
+	static __compileMatch = function(ctx, term) {
+		var i = 0;
+		var n = array_length(term.arms);
+		
+		repeat n {
+			var pair = term.arms[i];
+			
+			term.arms[i] = {
+				condition: pair[0] == undefined ? undefined : __compileTerm(ctx, pair[0]),
+				result: __compileTerm(ctx, pair[1]),
+			};
+
+			i++;
+		}
+		
+		return method({
+			value: __compileTerm(ctx, term.value),
+			arms: term.arms,
+		}, __catspeak_expr_match__);
+	};
 
     /// @ignore
     ///
@@ -1107,6 +1133,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.WHILE] = __compileWhile;
+		db[@ CatspeakTerm.MATCH] = __compileMatch;
         db[@ CatspeakTerm.USE] = __compileUse;
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
@@ -1365,6 +1392,27 @@ function __catspeak_expr_while__() {
             }
         }
     }
+}
+
+/// @ignore
+///@return {Any}
+function __catspeak_expr_match__() {
+	var value_ = value();
+	
+	var i = 0;
+	var len = array_length(arms);
+	
+	repeat len {
+		var arm = arms[i];
+		
+		if arm.condition == undefined || value_ == arm.condition() {
+			return arm.result();
+		}
+		
+		i++;
+	}
+	
+	return undefined;
 }
 
 /// @ignore
