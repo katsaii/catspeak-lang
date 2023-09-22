@@ -34,6 +34,8 @@ enum CatspeakToken {
     COMMA,
     /// The `.` operator.
     DOT,
+	/// The `=>` operator.
+	ARROW,
     __OP_ASSIGN_BEGIN__,
     /// The `=` operator.
     ASSIGN,
@@ -104,6 +106,8 @@ enum CatspeakToken {
     FOR,
     /// The `loop` keyword.
     LOOP,
+	/// The `match` keyword.
+	MATCH,
     /// The `use` keyword.
     USE,
     /// The `let` keyword.
@@ -907,6 +911,7 @@ function __catspeak_keywords_create() {
     keywords[$ ":"] = CatspeakToken.COLON;
     keywords[$ ","] = CatspeakToken.COMMA;
     keywords[$ "."] = CatspeakToken.DOT;
+	keywords[$ "=>"] = CatspeakToken.ARROW;
     keywords[$ "="] = CatspeakToken.ASSIGN;
     keywords[$ "*="] = CatspeakToken.ASSIGN_MULTIPLY;
     keywords[$ "/="] = CatspeakToken.ASSIGN_DIVIDE;
@@ -941,6 +946,7 @@ function __catspeak_keywords_create() {
     keywords[$ "while"] = CatspeakToken.WHILE;
     keywords[$ "for"] = CatspeakToken.FOR;
     keywords[$ "loop"] = CatspeakToken.LOOP;
+	keywords[$ "match"] = CatspeakToken.MATCH;
     keywords[$ "use"] = CatspeakToken.USE;
     keywords[$ "let"] = CatspeakToken.LET;
     keywords[$ "fun"] = CatspeakToken.FUN;

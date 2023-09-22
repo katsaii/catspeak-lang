@@ -166,7 +166,12 @@ function CatspeakParser(lexer, builder) constructor {
             __parseStatements("while");
             var body = asg.popBlock();
             return asg.createWhile(condition, body, lexer.getLocation());
-        } else if (peeked == CatspeakToken.USE) {
+        } else if (peeked == CatspeakToken.MATCH) {
+			lexer.next();
+			var value = __parseExpression();
+			var conditions = __parseMatchArms();
+			return asg.createMatch(value, conditions, lexer.getLocation());
+		} else if (peeked == CatspeakToken.USE) {
             lexer.next();
             var condition = __parseCondition();
             asg.pushBlock();
@@ -450,6 +455,46 @@ function CatspeakParser(lexer, builder) constructor {
             return __parseIndex();
         }
     };
+	
+	/// @ignore
+	///
+	/// @return {Array}
+	static __parseMatchArms = function () {
+		if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+            __ex("expected opening '{' before 'match' arms");
+        }
+		
+		var conditions = [];
+		
+        while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+			var value;
+			
+			if (lexer.peek() == CatspeakToken.ELSE) {
+				lexer.next();
+				value = undefined;
+			} else {
+				value = __parseExpression();
+			}
+				   
+			if (lexer.next() != CatspeakToken.ARROW) {
+				__ex("expected match condition to be followed with an arrow '=>'");
+			}
+		   
+			var result = __parseExpression();
+		   
+			if (lexer.next() != CatspeakToken.COMMA) {
+				__ex("expected match arm to be termined with a comma ','");
+			}
+		   
+			array_push(conditions, [value, result]);
+        }
+		
+        if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+            __ex("expected closing '}' after 'match' arms");
+        }
+		
+		return conditions;
+	}
 
     /// @ignore
     ///
