@@ -151,23 +151,23 @@ function CatspeakIRBuilder() constructor {
             });
         }
     };
-	
-	/// Emits the instruction for a match expression.
-	///
-	/// @param {Struct} value
-	///   The term to evaluate and compare against.
-	///
-	/// @param {Array} arms
-	///   A list of pairs where the first term is compared against `value` and the second term is returned if both match.
-	///
-	/// @param {Real} [location]
-	///   The source location of this match term.
-	static createMatch = function(value, arms, location = undefined) {
-		return __createTerm(CatspeakTerm.MATCH, location, {
-			value: value,
-			arms: arms,
-		});
-	}
+    
+    /// Emits the instruction for a match expression.
+    ///
+    /// @param {Struct} value
+    ///   The term to evaluate and compare against.
+    ///
+    /// @param {Array} arms
+    ///   A list of pairs where the first term is compared against `value` and the second term is returned if both match.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this match term.
+    static createMatch = function(value, arms, location = undefined) {
+        return __createTerm(CatspeakTerm.MATCH, location, {
+            value: value,
+            arms: arms,
+        });
+    }
 
     /// Emits the instruction for a short-circuiting logical AND expression.
     ///
@@ -876,7 +876,7 @@ enum CatspeakTerm {
     AND,
     OR,
     WHILE,
-	MATCH,
+    MATCH,
     USE,
     RETURN,
     BREAK,

@@ -657,32 +657,32 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             body : __compileTerm(ctx, term.body),
         }, __catspeak_expr_while__);
     };
-	
-	/// @ignore
+
+    /// @ignore
     ///
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
-	static __compileMatch = function(ctx, term) {
-		var i = 0;
-		var n = array_length(term.arms);
-		
-		repeat n {
-			var pair = term.arms[i];
-			
-			term.arms[i] = {
-				condition: pair[0] == undefined ? undefined : __compileTerm(ctx, pair[0]),
-				result: __compileTerm(ctx, pair[1]),
-			};
+    static __compileMatch = function(ctx, term) {
+        var i = 0;
+        var n = array_length(term.arms);
+        
+        repeat n {
+            var pair = term.arms[i];
+            
+            term.arms[i] = {
+                condition: pair[0] == undefined ? undefined : __compileTerm(ctx, pair[0]),
+                result: __compileTerm(ctx, pair[1]),
+            };
 
-			i++;
-		}
-		
-		return method({
-			value: __compileTerm(ctx, term.value),
-			arms: term.arms,
-		}, __catspeak_expr_match__);
-	};
+            i++;
+        }
+        
+        return method({
+            value: __compileTerm(ctx, term.value),
+            arms: term.arms,
+        }, __catspeak_expr_match__);
+    };
 
     /// @ignore
     ///
@@ -1133,7 +1133,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.WHILE] = __compileWhile;
-		db[@ CatspeakTerm.MATCH] = __compileMatch;
+        db[@ CatspeakTerm.MATCH] = __compileMatch;
         db[@ CatspeakTerm.USE] = __compileUse;
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
@@ -1266,11 +1266,11 @@ function __catspeak_expr_value__() {
 /// @ignore
 /// @return {Any}
 function __catspeak_expr_array__() {
-	//return array_map(values, function(f) { return f() });
-	var i = 0;
+    //return array_map(values, function(f) { return f() });
+    var i = 0;
     var values_ = values;
     var n_ = n;
-	var arr = array_create(n_);
+    var arr = array_create(n_);
     repeat (n_) {
         // not sure if this is even fast
         // but people will cry if I don't do it
@@ -1397,22 +1397,22 @@ function __catspeak_expr_while__() {
 /// @ignore
 ///@return {Any}
 function __catspeak_expr_match__() {
-	var value_ = value();
-	
-	var i = 0;
-	var len = array_length(arms);
-	
-	repeat len {
-		var arm = arms[i];
-		
-		if arm.condition == undefined || value_ == arm.condition() {
-			return arm.result();
-		}
-		
-		i++;
-	}
-	
-	return undefined;
+    var value_ = value();
+    
+    var i = 0;
+    var len = array_length(arms);
+    
+    repeat len {
+        var arm = arms[i];
+        
+        if arm.condition == undefined || value_ == arm.condition() {
+            return arm.result();
+        }
+        
+        i++;
+    }
+    
+    return undefined;
 }
 
 /// @ignore
