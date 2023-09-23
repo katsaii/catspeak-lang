@@ -447,6 +447,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         return rootCall;
     };
 
+    /// @ignore
     static __setupCatspeakFunctionMethods = function (f) {
         f.setSelf = method(sharedData, function (selfInst) {
             self_ = catspeak_special_to_struct(selfInst);

@@ -227,7 +227,8 @@ class HTMLCodegen(BasicCodegen):
 
         nav > ul > li + li { padding-left : 1rem }
 
-        :not(nav, aside) > ul > li + li { padding-top : 0.5rem }
+        article > ul > li + li,
+        section > ul > li + li { padding-top : 0.5rem }
 
         hr {
             border : 0;
@@ -313,6 +314,9 @@ class HTMLCodegen(BasicCodegen):
             overflow : hidden;
             font-family : var(--f-prop);
         }
+
+        #chapters li > a,
+        #contents li > a { text-decoration : none!important }
 
         .heading {
             margin : 0;
