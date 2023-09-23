@@ -7,8 +7,18 @@ import re
 TITLE_ID_DATABASE = { }
 TITLE_ID_CLASHES = { }
 TITLE_ID_MAX_LENGTH = 30
-def title_to_uid(*title):
-    title = "/".join(title)
+def title_to_uid(*titles):
+    titles_short = []
+    if titles:
+        # shorten every title, except for the final subtitle
+        for item in titles:
+            if titles[-1] == item:
+                titles_short.append(item)
+            else:
+                titles_short.append(item[:3])
+    else:
+        titles_short.append("empty")
+    title = "/".join(titles_short)
     if title in TITLE_ID_DATABASE:
         return TITLE_ID_DATABASE[title]
     title_words = [word.lower() for word in re.split("[^A-Za-z0-9_\.]+", title)]

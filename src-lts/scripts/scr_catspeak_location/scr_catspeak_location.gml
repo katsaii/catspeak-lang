@@ -18,9 +18,11 @@
 /// number, with the remaining 12 bits used for the (less important)
 /// column number.
 ///
-/// Mask layout:
+/// **Mask layout**
+/// ```
 /// | 00000000000011111111111111111111 |
 /// | <--column--><-------line-------> |
+/// ```
 ///
 /// @param {Real} row
 ///   The row number of the source location.
