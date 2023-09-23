@@ -221,6 +221,9 @@ function CatspeakParser(lexer, builder) constructor {
         }
     };
 
+    /// @ignore
+    ///
+    /// @return {Struct}
     static __parseCondition = function () {
         return __parseAssign();
     };
