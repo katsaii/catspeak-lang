@@ -56,6 +56,7 @@ def add_gml_module(name):
     module = cl.gml.parse_module(f"./src-lts/scripts/{name}/{name}.gml")
     book2.chapters.append(module.into_content())
 
+add_gml_module("scr_catspeak_environment")
 add_gml_module("scr_catspeak_lexer")
 add_gml_module("scr_catspeak_parser")
 add_gml_module("scr_catspeak_codegen")

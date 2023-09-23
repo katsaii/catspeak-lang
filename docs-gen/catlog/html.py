@@ -281,6 +281,12 @@ class HTMLCodegen(BasicCodegen):
             }
         }
 
+        #contents,
+        #chapters {
+            overflow-y : scroll;
+            max-height : 75vh;
+        }
+
         #chapters > h2,
         #contents > h2 {
             margin : 0;

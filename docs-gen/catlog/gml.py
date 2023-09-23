@@ -55,6 +55,15 @@ class DocComment:
     examples : ... = field(default_factory=list)
     current_tag : ... = None
 
+    def is_empty(self):
+        if self.ignore or self.pure or self.desc or self.deprecated \
+                or self.unstable or self.remarks or self.warnings \
+                or self.params or self.returns or self.throws \
+                or self.examples or self.current_tag:
+            return False
+        else:
+            return True
+
     def into_richtext(self):
         text = doc.RichText()
 
@@ -152,8 +161,6 @@ class Variable(Definition):
 
     def signature(self):
         sig = self.name
-        if self.prefix:
-            sig = f"{self.prefix} {sig}"
         if self.doc and self.doc.returns:
             sig = f"{sig} : {self.doc.returns.type}"
         return sig
@@ -167,6 +174,21 @@ class Variable(Definition):
             title = self.name,
             content = content
         )
+
+@dataclass
+class GlobalVariable(Variable):
+    def signature(self):
+        return f"globalvar {super().signature()}"
+
+@dataclass
+class InstanceVariable(Variable):
+    def signature(self):
+        return f"self.{super().signature()}"
+
+@dataclass
+class StaticVariable(Variable):
+    def signature(self):
+        return f"static {super().signature()}"
 
 @dataclass
 class Enum(Definition):
@@ -246,123 +268,61 @@ class Enum(Definition):
             ]
         )
 
-#
-#@dataclass
-#class EnumField(Definition):
-#    def signature(self):
-#        return f"{self.name}"
-#
-#@dataclass
-#class Enum(Definition):
-#    fields : ... = field(default_factory=list)
-#
-#    def signature_inline(self):
-#        sig = f"enum {self.name} {{ "
-#        i = 0
-#
-#        def add_delimiter():
-#            nonlocal i
-#            nonlocal sig
-#            if i > 0:
-#                sig += ", "
-#            i += 1
-#
-#        ignored = 0
-#        for field in self.fields:
-#            if field.doc.ignore:
-#                ignored += 1
-#                continue
-#            add_delimiter()
-#            sig += field.signature()
-#        if ignored > 0:
-#            add_delimiter()
-#            sig += f"/* +{ignored} fields omitted */"
-#        sig += "}"
-#        return sig
-#
-#    def signature_block(self):
-#        sig = f"enum {self.name} {{ "
-#        i = 0
-#
-#        def add_delimiter():
-#            nonlocal i
-#            nonlocal sig
-#            if i > 0:
-#                sig += ","
-#            sig += "\n  "
-#            i += 1
-#
-#        ignored = 0
-#        if len(self.fields) > 0:
-#            for field in self.fields:
-#                if field.doc.ignore:
-#                    ignored += 1
-#                    continue
-#                add_delimiter()
-#                sig += field.signature()
-#            if ignored > 0:
-#                add_delimiter()
-#                sig += f"// +{ignored} fields omitted"
-#            sig += "\n"
-#        sig += "}"
-#        return sig
-#
-#    def signature(self):
-#        sig = self.signature_inline()
-#        if len(sig) > 30 and len(self.fields) > 0:
-#            sig = self.signature_block()
-#        return sig
-#
-#    def into_section(self):
-#        section = super().into_section()
-#        section.content = doc.RichText([
-#            doc.CodeBlock([self.signature()]),
-#            section.content
-#        ])
-#        return section
-#
-#@dataclass
-#class Function(Definition):
-#    def signature_inline(self):
-#        sig = f"function {self.name}("
-#        for i, param in enumerate(self.doc.params):
-#            if i > 0:
-#                sig += ", "
-#            sig += param.signature()
-#        sig += ")"
-#        if self.doc.returns:
-#            sig += f" -> {self.doc.returns.type}"
-#        return sig
-#
-#    def signature_block(self):
-#        sig = f"function {self.name}("
-#        if len(self.doc.params) > 0:
-#            for i, param in enumerate(self.doc.params):
-#                sig += "\n  "
-#                sig += param.signature()
-#                sig += ","
-#            sig += "\n"
-#        sig += ")"
-#        if self.doc.returns:
-#            if len(self.doc.params) < 1:
-#                sig += "\n "
-#            sig += f" -> {self.doc.returns.type}"
-#        return sig
-#
-#    def signature(self):
-#        sig = self.signature_inline()
-#        if len(sig) > 30 and len(self.doc.params) > 0:
-#            sig = self.signature_block()
-#        return sig
-#
-#    def into_section(self):
-#        section = super().into_section()
-#        section.content = doc.RichText([
-#            doc.CodeBlock([self.signature()]),
-#            section.content
-#        ])
-#        return section
-#
+@dataclass
+class Function(Definition):
+    is_static : bool = False
+    is_expr : bool = False
+
+    def signature_inline(self):
+        sig = "static " if self.is_static else ""
+        if self.is_expr:
+            sig += f"{self.name} = function("
+        else:
+            sig += f"function {self.name}("
+        for i, param in enumerate(self.doc.params):
+            if i > 0:
+                sig += ", "
+            sig += param.signature()
+        sig += ")"
+        if self.doc.returns:
+            sig += f" -> {self.doc.returns.type}"
+        return sig
+
+    def signature_block(self):
+        sig = "static " if self.is_static else ""
+        if self.is_expr:
+            sig += f"{self.name} = function("
+        else:
+            sig += f"function {self.name}("
+        if len(self.doc.params) > 0:
+            for i, param in enumerate(self.doc.params):
+                sig += "\n  "
+                sig += param.signature()
+                sig += ","
+            sig += "\n"
+        sig += ")"
+        if self.doc.returns:
+            if len(self.doc.params) < 1:
+                sig += "\n "
+            sig += f" -> {self.doc.returns.type}"
+        return sig
+
+    def signature(self):
+        sig = self.signature_inline()
+        if len(sig) > 30 and len(self.doc.params) > 0:
+            sig = self.signature_block()
+        return sig
+
+    def into_content(self):
+        content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            self.get_doc_richtext()
+        ])
+        return doc.Section(
+            title = self.name,
+            content = content
+        )
+
 #@dataclass
 #class Constructor(Function):
 #    # TODO: inheritance
@@ -381,32 +341,6 @@ class Enum(Definition):
 #
 #        sig += "}"
 #        return sig
-#
-#@dataclass
-#class Field(Definition):
-#    is_static : bool = False
-#
-#    def into_section(self):
-#        section = super().into_section()
-#        return section
-#
-#@dataclass
-#class Module():
-#    name : str = None
-#    overview : str = None
-#    definitions : ... = field(default_factory=list)
-#
-#    def into_chapter(self):
-#        sections = [
-#            definition.into_section()
-#            for definition in self.definitions
-#            if not definition.doc.ignore
-#        ]
-#        return doc.Chapter(
-#            title = self.name,
-#            overview = doc.parse_content(self.overview),
-#            sections = sections
-#        )
 
 # PARSING
 
@@ -510,24 +444,45 @@ def parse_module(fullpath):
                     #)
                 elif match := re.search("^\s*function\s*([A-Za-z0-9_]+)", line):
                     # NAMED FUNCTION
-                    pass
-                    #definition = Function(
-                    #    name = match.group(1),
-                    #    doc = current_doc
-                    #)
-                elif match := re.search("^\s*([A-Za-z0-9_]+)", line):
-                    # FREE VARIABLE
-                    pass
-                    #if current_enum != None:
-                    #    current_enum.fields.append(EnumField(
-                    #        name = match.group(1),
-                    #        doc = current_doc
-                    #    ))
+                    new_definition = Function(
+                        name = match.group(1),
+                        doc = current_doc
+                    )
+                elif match := re.search("^\s*static\s*([A-Za-z0-9_]+)\s*=\s*function", line):
+                    # ANONYMOUS FUNCTION
+                    new_definition = Function(
+                        is_static = True,
+                        is_expr = True,
+                        name = match.group(1),
+                        doc = current_doc
+                    )
+                elif not current_doc.is_empty():
+                    # VARIABLES
+                    if match := re.search("^\s*globalvar\s*([A-Za-z0-9_]+)", line):
+                        new_definition = GlobalVariable(
+                            name = match.group(1),
+                            doc = current_doc
+                        )
+                    elif match := re.search("^\s*self\s*\.\s*([A-Za-z0-9_]+)", line):
+                        new_definition = InstanceVariable(
+                            name = match.group(1),
+                            doc = current_doc
+                        )
+                    elif match := re.search("^\s*static\s*([A-Za-z0-9_]+)", line):
+                        new_definition = StaticVariable(
+                            name = match.group(1),
+                            doc = current_doc
+                        )
+                    elif match := re.search("^\s*([A-Za-z0-9_]+)", line):
+                        new_definition = Variable(
+                            name = match.group(1),
+                            doc = current_doc
+                        )
                 current_doc = DocComment()
-                brace_balance += line.count("{") - line.count("}")
                 if new_definition:
-                    definition_stack.append((brace_balance, new_definition))
+                    definition_stack.append((brace_balance + 1, new_definition))
                     top_definition.add_subdefinition(new_definition)
+                brace_balance += line.count("{") - line.count("}")
                 while brace_balance < definition_stack[-1][0]:
                     definition_stack.pop()[1]
     return module
