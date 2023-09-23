@@ -2,69 +2,58 @@ from datetime import datetime
 from textwrap import dedent
 import catlog.catlog as cl
 
-DATE_START = 2021
-DATE_END = datetime.now().year
+meta = cl.doc.Metadata(
+    title = "Catspeak Reference",
+    author = "Katsaii",
+    version = (3, 0, 0),
+)
 
-def debug_document_create_example_metadata():
-    return cl.doc.Metadata(
-        title = "Test Book",
-        author = "Test Author",
-        version = (9, 9, 9),
-    )
+book_home = cl.doc.Book(
+    title = "Home",
+    brief = "A brief overview of Catspeak.",
+    chapters = [cl.doc.Chapter(
+        title = "Welcome",
+        overview = cl.doc.parse_content("""
+            Welcome to the Catspeak documentation, this page is **extremely**
+            work-in-progress. See the "Library Reference" tab for the library
+            documentation.
+        """)
+    )]
+)
 
-def debug_document_create_example():
-    return cl.doc.Book(
-        brief = "Something about stuff.",
-        chapters = [
-            cl.doc.Chapter(
-                sections=[
-                    cl.doc.Section(
-                        content = cl.doc.parse_content("hi, **this is bold**, bye"),
-                        subsections = [cl.doc.Section(
-                            title = "Other",
-                            content = cl.doc.parse_content("this is the other section"),
-                            subsections = [
-                                cl.doc.Section(
-                                    title = "Another Other",
-                                    content = cl.doc.parse_content("_this is another other section_")
-                                )
-                            ]
-                        )]
-                    )
-                ]
-            ),
-            cl.doc.Chapter(
-                title = "Other Page",
-                sections=[
-                    cl.doc.Section(
-                        content = cl.doc.parse_content("hi from the other page")
-                    )
-                ]
-            )
-        ]
-    )
+def compile_gml_book(title, brief, pages):
+    book = cl.doc.Book(title, brief)
+    for page in pages:
+        module = cl.gml.parse_module(f"./src-lts/scripts/{page}/{page}.gml")
+        book.chapters.append(module.into_content())
+    return book
 
-meta = debug_document_create_example_metadata()
+book_api = compile_gml_book(
+    "Library Reference",
+    "The Catspeak library documentation.",
+    [
+        # basic
+        "scr_catspeak_init",
+        "scr_catspeak_environment",
+        "scr_catspeak_presets",
 
-book = debug_document_create_example()
-book2 = debug_document_create_example()
-book2.title = "Other Page"
-book2.chapters.append(book2.chapters[0])
-book2.chapters[1].sections.pop()
+        # intermediate
+        "scr_catspeak_location",
+        "scr_catspeak_lexer",
+        "scr_catspeak_parser",
+        "scr_catspeak_codegen",
+        "scr_catspeak_ir",
+        "scr_catspeak_operators",
 
-def add_gml_module(name):
-    module = cl.gml.parse_module(f"./src-lts/scripts/{name}/{name}.gml")
-    book2.chapters.append(module.into_content())
+        # advanced
+        "scr_catspeak_alloc",
+    ]
+)
 
-add_gml_module("scr_catspeak_environment")
-add_gml_module("scr_catspeak_lexer")
-add_gml_module("scr_catspeak_parser")
-add_gml_module("scr_catspeak_codegen")
+compiled_books = cl.compile_books(cl.html.HTMLCodegen, meta,
+    book_home,
+    book_api
+)
 
-pages = cl.compile_books(cl.html.HTMLCodegen, meta, book, book2)
-for page in pages:
-    #print(pages)
-    pass
-
-version = f"{meta.version[0]}.{meta.version[0]}.{meta.version[0]}"
-cl.write_book_pages(f"docs/{version}", pages)
+version = f"{meta.version[0]}.{meta.version[1]}.{meta.version[2]}"
+cl.write_book_pages(f"docs/{version}", compiled_books)
