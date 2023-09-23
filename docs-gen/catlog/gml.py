@@ -320,27 +320,44 @@ class Function(Definition):
         ])
         return doc.Section(
             title = self.name,
-            content = content
+            content = content,
+            subsections = [
+                definition.into_content()
+                for definition in self.subdefinitions
+            ]
         )
 
-#@dataclass
-#class Constructor(Function):
-#    # TODO: inheritance
-#    fields : ... = field(default_factory=list)
-#
-#    def signature_inline(self):
-#        sig = super().signature_inline()
-#        sig += " constructor { "
-#
-#        sig += "}"
-#        return sig
-#
-#    def signature_block(self):
-#        sig = super().signature_block()
-#        sig += " constructor { "
-#
-#        sig += "}"
-#        return sig
+@dataclass
+class Constructor(Function):
+    # TODO: inheritance
+
+    def signature_inline(self):
+        sig = super().signature_inline()
+        sig += " constructor { "
+
+        sig += "}"
+        return sig
+
+    def signature_block(self):
+        sig = super().signature_block()
+        sig += " constructor { "
+
+        sig += "}"
+        return sig
+
+    def into_content(self):
+        content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            self.get_doc_richtext()
+        ])
+        return doc.Chapter(
+            title = self.name,
+            overview = content,
+            sections = [
+                definition.into_content()
+                for definition in self.subdefinitions
+            ]
+        )
 
 # PARSING
 
@@ -437,11 +454,10 @@ def parse_module(fullpath):
                     )
                 elif match := re.search("^\s*function\s*([A-Za-z0-9_]+).*constructor", line):
                     # NAMED CONSTRUCTOR
-                    pass
-                    #definition = Constructor(
-                    #    name = match.group(1),
-                    #    doc = current_doc
-                    #)
+                    new_definition = Constructor(
+                        name = match.group(1),
+                        doc = current_doc
+                    )
                 elif match := re.search("^\s*function\s*([A-Za-z0-9_]+)", line):
                     # NAMED FUNCTION
                     new_definition = Function(
