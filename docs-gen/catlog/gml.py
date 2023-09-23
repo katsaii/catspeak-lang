@@ -40,21 +40,20 @@ class DocParam(DocDescription):
             sig += f" : {self.type}"
         return sig
 
+@dataclass
 class DocComment:
-    def __init__(self):
-        self.ignore = False
-        self.pure = False
-        self.desc = None
-        self.deprecated = None
-        self.unstable = None
-        self.remarks = []
-        self.warnings = []
-        self.params = []
-        self.returns = None
-        self.throws = []
-        self.examples = []
-
-        self.current_tag = None
+    ignore : bool = False
+    pure : bool = False
+    desc : ... = None
+    deprecated : ... = None
+    unstable : ... = None
+    remarks : ... = field(default_factory=list)
+    warnings : ... = field(default_factory=list)
+    params : ... = field(default_factory=list)
+    returns : ... = None
+    throws : ... = field(default_factory=list)
+    examples : ... = field(default_factory=list)
+    current_tag : ... = None
 
     def into_richtext(self):
         text = doc.RichText()
@@ -92,7 +91,7 @@ class Definition:
         return True
 
     def add_subdefinition(self, subdefinition):
-        if self.is_ignored() or not self.is_valid_subdefinition(subdefinition):
+        if subdefinition.is_ignored() or not self.is_valid_subdefinition(subdefinition):
             return
         self.subdefinitions.append(subdefinition)
 
@@ -125,6 +124,9 @@ class Module(Definition):
 class Macro(Definition):
     expands_to : str = None
 
+    def is_valid_subdefinition(self, subdefinition):
+        return False
+
     def signature(self):
         sig = f"#macro {self.name}"
         if self.expands_to:
@@ -138,8 +140,107 @@ class Macro(Definition):
         ])
         return doc.Section(
             title = self.name,
-            content = content,
-            subsections = [
+            content = content
+        )
+
+@dataclass
+class Variable(Definition):
+    prefix : str = None
+
+    def is_valid_subdefinition(self, subdefinition):
+        return False
+
+    def signature(self):
+        sig = self.name
+        if self.prefix:
+            sig = f"{self.prefix} {sig}"
+        if self.doc and self.doc.returns:
+            sig = f"{sig} : {self.doc.returns.type}"
+        return sig
+
+    def into_content(self):
+        content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            self.get_doc_richtext()
+        ])
+        return doc.Section(
+            title = self.name,
+            content = content
+        )
+
+@dataclass
+class Enum(Definition):
+    expands_to : str = None
+
+    def is_valid_subdefinition(self, subdefinition):
+        return isinstance(subdefinition, Variable)
+
+    def signature_inline(self):
+        sig = f"enum {self.name} {{ "
+        i = 0
+
+        def add_delimiter():
+            nonlocal i
+            nonlocal sig
+            if i > 0:
+                sig += ", "
+            i += 1
+
+        ignored = 0
+        for field in self.subdefinitions:
+            if field.doc.ignore:
+                ignored += 1
+                continue
+            add_delimiter()
+            sig += field.signature()
+        if ignored > 0:
+            add_delimiter()
+            sig += f"/* +{ignored} fields omitted */"
+        sig += "}"
+        return sig
+
+    def signature_block(self):
+        sig = f"enum {self.name} {{ "
+        i = 0
+
+        def add_delimiter():
+            nonlocal i
+            nonlocal sig
+            if i > 0:
+                sig += ","
+            sig += "\n  "
+            i += 1
+
+        ignored = 0
+        if len(self.subdefinitions) > 0:
+            for field in self.subdefinitions:
+                if field.doc.ignore:
+                    ignored += 1
+                    continue
+                add_delimiter()
+                sig += field.signature()
+            if ignored > 0:
+                add_delimiter()
+                sig += f"// +{ignored} fields omitted"
+            sig += "\n"
+        sig += "}"
+        return sig
+
+    def signature(self):
+        sig = self.signature_inline()
+        if len(sig) > 30 and len(self.subdefinitions) > 0:
+            sig = self.signature_block()
+        return sig
+
+    def into_content(self):
+        content = doc.RichText([
+            doc.CodeBlock([self.signature()]),
+            self.get_doc_richtext()
+        ])
+        return doc.Chapter(
+            title = self.name,
+            overview = content,
+            sections = [
                 definition.into_content()
                 for definition in self.subdefinitions
             ]
@@ -396,12 +497,10 @@ def parse_module(fullpath):
                     )
                 elif match := re.search("^\s*enum\s*([A-Za-z0-9_]+)", line):
                     # ENUMS
-                    pass
-                    #definition = Enum(
-                    #    name = match.group(1),
-                    #    doc = current_doc
-                    #)
-                    #current_enum = definition
+                    new_definition = Enum(
+                        name = match.group(1),
+                        doc = current_doc
+                    )
                 elif match := re.search("^\s*function\s*([A-Za-z0-9_]+).*constructor", line):
                     # NAMED CONSTRUCTOR
                     pass
@@ -428,7 +527,7 @@ def parse_module(fullpath):
                 brace_balance += line.count("{") - line.count("}")
                 if new_definition:
                     definition_stack.append((brace_balance, new_definition))
-                    top_definition.subdefinitions.append(new_definition)
+                    top_definition.add_subdefinition(new_definition)
                 while brace_balance < definition_stack[-1][0]:
                     definition_stack.pop()[1]
     return module

@@ -52,8 +52,24 @@ def write_header(sb, meta, books, current_book):
         sb.hr()
 
 def write_chapters(sb, book, current_chapter):
+    def write_contents_chapter(sb, chapter, depth):
+        uid = title_to_uid(book.title, chapter.title)
+        with sb.link(uid_to_path(uid, sb.EXT)):
+            if chapter == current_chapter:
+                with sb.mark():
+                    sb.write(chapter.title)
+            else:
+                sb.write(chapter.title)
+        if chapter.subchapters:
+            with sb.list() as list_element:
+                for subchapter in chapter.subchapters:
+                    with list_element():
+                        write_contents_chapter(sb, subchapter, depth + 1)
+
     def chapter_count(chapters):
-        return len(chapters)
+        return len(chapters) + sum([
+            chapter_count(chapter.subchapters) for chapter in chapters
+        ])
 
     with sb.aside(id="chapters"):
         if chapter_count(book.chapters) > 1:
@@ -62,13 +78,7 @@ def write_chapters(sb, book, current_chapter):
             with sb.list() as list_element:
                 for chapter in book.chapters:
                     with list_element():
-                        uid = title_to_uid(book.title, chapter.title)
-                        with sb.link(uid_to_path(uid, sb.EXT)):
-                            if chapter == current_chapter:
-                                with sb.mark():
-                                    sb.write(chapter.title)
-                            else:
-                                sb.write(chapter.title)
+                        write_contents_chapter(sb, chapter, 0)
 
 def write_contents(sb, chapter):
     def write_contents_section(sb, section, depth):
@@ -82,7 +92,9 @@ def write_contents(sb, chapter):
                         write_contents_section(sb, subsection, depth + 1)
 
     def section_count(sections):
-        return len(sections) + sum([section_count(section.subsections) for section in sections])
+        return len(sections) + sum([
+            section_count(section.subsections) for section in sections
+        ])
 
     with sb.aside(id="contents"):
         if section_count(chapter.sections) > 1:
@@ -182,8 +194,9 @@ def write_links(sb, links):
 
 def compile_books(codegen, meta, *books):
     pages = [page for page in codegen.additional_pages()]
-    for book in books:
-        for chapter in book.chapters:
+
+    def compile_chapter_pages(chapters):
+        for chapter in chapters:
             sb = codegen()
             uid = title_to_uid(book.title, chapter.title)
             path = uid_to_path(uid, codegen.EXT)
@@ -197,6 +210,11 @@ def compile_books(codegen, meta, *books):
                         write_main(sb, chapter)
                     write_footer(sb, meta)
             pages.append((path, sb.content))
+            if chapter.subchapters:
+                compile_chapter_pages(chapter.subchapters)
+
+    for book in books:
+        compile_chapter_pages(book.chapters)
     return pages
 
 def write_book_pages(dir, pages):
