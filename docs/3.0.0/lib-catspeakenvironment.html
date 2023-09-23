@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+-->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="The Catspeak library documentation."><title>Catspeak Reference :: CatspeakEnvironment of Library Reference</title><link rel="stylesheet" href="./style.css"></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lib-init.html"><mark>Library Reference</mark></a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lib-init.html">init</a></li><li><a href="lib-environment.html">environment</a><ul><li><a href="lib-catspeakenvironment.html"><mark>CatspeakEnvironment</mark></a></li></ul></li><li><a href="lib-presets.html">presets</a><ul><li><a href="lib-catspeakpreset.html">CatspeakPreset</a></li></ul></li><li><a href="lib-location.html">location</a></li><li><a href="lib-lexer.html">lexer</a><ul><li><a href="lib-catspeaktoken.html">CatspeakToken</a></li></ul></li><li><a href="lib-parser.html">parser</a><ul><li><a href="lib-catspeakparser.html">CatspeakParser</a></li></ul></li><li><a href="lib-codegen.html">codegen</a><ul><li><a href="lib-catspeakforeigninterface.html">CatspeakForeignInterface</a></li><li><a href="lib-catspeakgmlcompiler.html">CatspeakGMLCompiler</a></li></ul></li><li><a href="lib-ir.html">ir</a><ul><li><a href="lib-catspeakasgbuilder.html">CatspeakASGBuilder</a></li><li><a href="lib-catspeakirbuilder.html">CatspeakIRBuilder</a></li><li><a href="lib-catspeakterm.html">CatspeakTerm</a></li></ul></li><li><a href="lib-operators.html">operators</a><ul><li><a href="lib-catspeakoperator.html">CatspeakOperator</a></li><li><a href="lib-catspeakassign.html">CatspeakAssign</a></li></ul></li><li><a href="lib-alloc.html">alloc</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#enablesharedglobal">enableSharedGlobal</a></li><li><a href="#applypreset">applyPreset</a></li><li><a href="#getinterface">getInterface</a></li><li><a href="#tokenise">tokenise</a></li><li><a href="#parse">parse</a></li><li><a href="#parsestring">parseString</a></li><li><a href="#parseasync">parseAsync</a></li><li><a href="#compilegml">compileGML</a></li><li><a href="#renamekeyword">renameKeyword</a></li><li><a href="#addkeyword">addKeyword</a></li><li><a href="#removekeyword">removeKeyword</a></li><li><a href="#addconstant">addConstant</a></li><li><a href="#addmethod">addMethod</a></li><li><a href="#addfunction">addFunction</a></li><li><a href="#removeconstant">removeConstant</a></li><li><a href="#removefunction">removeFunction</a></li></ul></aside><main><article><h1 class="chapter-title">CatspeakEnvironment</h1><pre><code>function CatspeakEnvironment() constructor { }</code></pre><p>Packages all common Catspeak features into a neat, configurable box.</p><section><h1 class="heading" id="enablesharedglobal"><a href="#enablesharedglobal">§</a> enableSharedGlobal</h1><pre><code>static enableSharedGlobal = function(
+  enabled? : bool,
+) -> struct</code></pre><p>Enables the shared global feature on this Catspeak environment. This
+forces all compiled programs to share the same global variable scope.</p><p>Typically this should not be enabled, but it can be useful for REPL
+(Read-Eval-Print-Loop) style command consoles, where variables persist
+between commands.</p><p>Returns the shared global struct if this feature is enabled, or
+<code class="inline-code">undefined</code> if the feature is disabled.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">enabled</code> <em>(optional)</em></p><p>Whether to enable this feature. Defaults to <code class="inline-code">true</code>.</p></li></ul></section><section><h1 class="heading" id="applypreset"><a href="#applypreset">§</a> applyPreset</h1><pre><code>static applyPreset = function(
+  preset : enum.CatspeakPreset,
+  ... : enum.CatspeakPreset,
+)</code></pre><p>Applies list of presets to this Catspeak environment. These changes
+cannot be undone, so only choose presets you really need.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">preset</code></p><p>The preset type to apply.</p></li><li><p><code class="inline-code">...</code></p><p>Additional preset arguments.</p></li></ul></section><section><h1 class="heading" id="getinterface"><a href="#getinterface">§</a> getInterface</h1><pre><code>static getInterface = function()</code></pre><p>Returns the foreign interface used by this Catspeak environment. This
+is where all external GML functions and constants are exposed to the
+Catspeak runtime environment.</p></section><section><h1 class="heading" id="tokenise"><a href="#tokenise">§</a> tokenise</h1><pre><code>static tokenise = function(
+  buff : id.Buffer,
+  offset? : real,
+  size? : real,
+) -> struct.CatspeakLexer</code></pre><p>Creates a new [CatspeakLexer] from the supplied buffer, overriding
+the keyword database if one exists for this [CatspeakEngine].</p><p>NOTE: The lexer does not take ownership of this buffer, but it may
+mutate it so beware. Therefore you should make sure to delete
+the buffer once parsing is complete.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">buff</code></p><p>The ID of the GML buffer to use.</p></li><li><p><code class="inline-code">offset</code> <em>(optional)</em></p><p>The offset in the buffer to start parsing from. Defaults to 0.</p></li><li><p><code class="inline-code">size</code> <em>(optional)</em></p><p>The length of the buffer input. Any characters beyond this limit
+will be treated as the end of the file. Defaults to <code class="inline-code">infinity</code>.</p></li></ul></section><section><h1 class="heading" id="parse"><a href="#parse">§</a> parse</h1><pre><code>static parse = function(
+  buff : id.Buffer,
+  offset? : real,
+  size? : real,
+) -> struct.CatspeakLexer</code></pre><p>Parses a buffer containing a Catspeak program into a bespoke format
+understood by Catpskeak. Overrides the keyword database if one exists
+for this [CatspeakEngine].</p><p>NOTE: The parser does not take ownership of this buffer, but it may
+mutate it so beware. Therefore you should make sure to delete
+the buffer once parsing is complete.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">buff</code></p><p>The ID of the GML buffer to use.</p></li><li><p><code class="inline-code">offset</code> <em>(optional)</em></p><p>The offset in the buffer to start parsing from. Defaults to 0.</p></li><li><p><code class="inline-code">size</code> <em>(optional)</em></p><p>The length of the buffer input. Any characters beyond this limit
+will be treated as the end of the file. Defaults to <code class="inline-code">infinity</code>.</p></li></ul></section><section><h1 class="heading" id="parsestring"><a href="#parsestring">§</a> parseString</h1><pre><code>static parseString = function(
+  src : string,
+) -> struct.CatspeakLexer</code></pre><p>Similar to [parse], except a string is used instead of a buffer.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">src</code></p><p>The string containing Catspeak source code to parse.</p></li></ul></section><section><h1 class="heading" id="parseasync"><a href="#parseasync">§</a> parseAsync</h1><pre><code>static parseAsync = function(
+  buff : id.Buffer,
+  offset? : real,
+  size? : real,
+) -> struct.Future</code></pre><p>Similar to [parse], except it will pass the responsibility of
+parsing to this sessions async handler.</p><p>NOTE: The async handler can be customised, and therefore any
+third-party handlers are not guaranteed to finish within a
+reasonable time.</p><p>NOTE: The parser does not take ownership of this buffer, but it may
+mutate it so beware. Therefore you should make sure to delete
+the buffer once parsing is complete.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">buff</code></p><p>The ID of the GML buffer to use.</p></li><li><p><code class="inline-code">offset</code> <em>(optional)</em></p><p>The offset in the buffer to start parsing from. Defaults to 0.</p></li><li><p><code class="inline-code">size</code> <em>(optional)</em></p><p>The length of the buffer input. Any characters beyond this limit
+will be treated as the end of the file. Defaults to <code class="inline-code">infinity</code>.</p></li></ul></section><section><h1 class="heading" id="compilegml"><a href="#compilegml">§</a> compileGML</h1><pre><code>static compileGML = function(
+  asg : struct,
+) -> function</code></pre><p>Compiles a syntax graph into a GML function. See the [parse] function
+for how to generate a syntax graph from a Catspeak script.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">asg</code></p><p>The syntax graph to convert into a GML function.</p></li></ul></section><section><h1 class="heading" id="renamekeyword"><a href="#renamekeyword">§</a> renameKeyword</h1><pre><code>static renameKeyword = function(
+  currentName : string,
+  newName : string,
+  ... : any,
+)</code></pre><p>Used to change the string representation of a Catspeak keyword.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">currentName</code></p><p>The current string representation of the keyword to change.</p></li><li><p><code class="inline-code">newName</code></p><p>The new string representation of the keyword.</p></li><li><p><code class="inline-code">...</code></p><p>Additional arguments in the same name-value format.</p></li></ul></section><section><h1 class="heading" id="addkeyword"><a href="#addkeyword">§</a> addKeyword</h1><pre><code>static addKeyword = function(
+  name : string,
+  token : enum.CatspeakToken,
+  ... : any,
+)</code></pre><p>Used to add a new Catspeak keyword alias.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the keyword to add.</p></li><li><p><code class="inline-code">token</code></p><p>The token this keyword should represent.</p></li><li><p><code class="inline-code">...</code></p><p>Additional arguments in the same name-value format.</p></li></ul></section><section><h1 class="heading" id="removekeyword"><a href="#removekeyword">§</a> removeKeyword</h1><pre><code>static removeKeyword = function(
+  name : string,
+  ... : string,
+)</code></pre><p>Used to remove an existing Catspeak keyword from this environment.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the keyword to remove.</p></li><li><p><code class="inline-code">...</code></p><p>Additional keywords to remove.</p></li></ul></section><section><h1 class="heading" id="addconstant"><a href="#addconstant">§</a> addConstant</h1><pre><code>static addConstant = function(
+  name : string,
+  value : any,
+  ... : any,
+)</code></pre><p>Used to add a new constant to this environment.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the constant as it will appear in Catspeak.</p></li><li><p><code class="inline-code">value</code></p><p>The constant value to add.</p></li><li><p><code class="inline-code">...</code></p><p>Additional arguments in the same name-value format.</p></li></ul></section><section><h1 class="heading" id="addmethod"><a href="#addmethod">§</a> addMethod</h1><pre><code>static addMethod = function(
+  name : string,
+  func : function,
+  ... : any,
+)</code></pre><p>Used to add a new method to this environment.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the function as it will appear in Catspeak.</p></li><li><p><code class="inline-code">func</code></p><p>The script or function to add.</p></li><li><p><code class="inline-code">...</code></p><p>Additional arguments in the same name-value format.</p></li></ul></section><section><h1 class="heading" id="addfunction"><a href="#addfunction">§</a> addFunction</h1><pre><code>static addFunction = function(
+  name : string,
+  func : function,
+  ... : any,
+)</code></pre><p>Used to add a new unbound function to this environment.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the function as it will appear in Catspeak.</p></li><li><p><code class="inline-code">func</code></p><p>The script or function to add.</p></li><li><p><code class="inline-code">...</code></p><p>Additional arguments in the same name-value format.</p></li></ul></section><section><h1 class="heading" id="removeconstant"><a href="#removeconstant">§</a> removeConstant</h1><pre><code>static removeConstant</code></pre><p>Used to remove an existing constant from this environment.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the constant to remove.</p></li><li><p><code class="inline-code">...</code></p><p>Additional constants to remove.</p></li></ul></section><section><h1 class="heading" id="removefunction"><a href="#removefunction">§</a> removeFunction</h1><pre><code>static removeFunction</code></pre><p>Used to remove an existing function from this environment.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">name</code></p><p>The name of the function to remove.</p></li><li><p><code class="inline-code">...</code></p><p>Additional functions to remove.</p></li></ul></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>

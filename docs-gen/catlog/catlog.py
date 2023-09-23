@@ -185,10 +185,7 @@ def write_footer(sb, meta):
 
 def write_brand(sb):
     with sb.emphasis(id="brand"):
-        sb.write("Built using ")
-        with sb.link("#"):
-            sb.write("Catlog")
-        sb.write(", the ")
+        sb.write("Built using Catlog, the ")
         with sb.link("https://www.katsaii.com/catspeak-lang/"):
             sb.write("Catspeak")
         sb.write(" book generator.")
