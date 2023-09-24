@@ -325,6 +325,7 @@ class HTMLCodegen(BasicCodegen):
         #chapters ul > li,
         #contents ul > li {
             overflow : hidden;
+            text-wrap : nowrap;
             font-family : var(--f-prop);
         }
 
