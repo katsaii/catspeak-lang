@@ -273,6 +273,9 @@ class Function(Definition):
     is_static : bool = False
     is_expr : bool = False
 
+    def is_valid_subdefinition(self, subdefinition):
+        return False
+
     def signature_inline(self):
         sig = "static " if self.is_static else ""
         if self.is_expr:
@@ -330,6 +333,11 @@ class Function(Definition):
 @dataclass
 class Constructor(Function):
     # TODO: inheritance
+
+    def is_valid_subdefinition(self, subdefinition):
+        return isinstance(subdefinition, InstanceVariable) or \
+                isinstance(subdefinition, StaticVariable) or \
+                isinstance(subdefinition, Function)
 
     def signature_inline(self):
         sig = super().signature_inline()

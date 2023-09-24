@@ -177,6 +177,19 @@ class HTMLCodegen(BasicCodegen):
             --pad : 1rem;
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --c-bg : #1b1e1f;
+                --c-bg-dark : #232627;
+                --c-fg : #d3cfc9;
+                --c-fg-light : #3e4346;
+                --c-fg-2 : #a2947d;
+                --c-accent : #34a4ff;
+
+                color-scheme : dark;
+            }
+        }
+
         body {
             margin : 1rem 15%;
             background-color : var(--c-bg);
@@ -241,7 +254,7 @@ class HTMLCodegen(BasicCodegen):
             transition : color 0.25s;
         }
 
-        a:hover { color : var(--c-accent) }
+        a:hover { color : var(--c-accent)!important }
 
         #chapter-content {
             display : flex;
@@ -380,6 +393,7 @@ class HTMLCodegen(BasicCodegen):
         code {
             font-family : var(--f-mono) !important;
             font-size : 0.9em;
+            color : var(--c-fg);
             background-color : var(--c-bg-dark);
         }
 
