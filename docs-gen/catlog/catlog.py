@@ -62,6 +62,14 @@ def write_header(sb, meta, books, current_book):
         sb.hr()
 
 def write_chapters(sb, book, current_chapter):
+    def contains_chapter(got, expect):
+        if got == expect:
+            return True
+        for chapter in got.subchapters:
+            if contains_chapter(chapter, expect):
+                return True
+        return False
+
     def write_contents_chapter(sb, chapter, depth):
         uid = title_to_uid(book.title, chapter.title)
         with sb.link(uid_to_path(uid, sb.EXT)):
@@ -70,7 +78,7 @@ def write_chapters(sb, book, current_chapter):
                     sb.write(chapter.title)
             else:
                 sb.write(chapter.title)
-        if chapter.subchapters:
+        if contains_chapter(chapter, current_chapter) and chapter.subchapters:
             with sb.list() as list_element:
                 for subchapter in chapter.subchapters:
                     with list_element():
