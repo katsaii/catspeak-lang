@@ -53,30 +53,34 @@
 
 //# feather use syntax-errors
 
-/// The compiler version, should be updated before each release.
+/// The Catspeak runtime version, should be updated before each release.
+///
+/// @return {String}
 #macro CATSPEAK_VERSION "3.0.0"
 
-/// Whether sanity checks and unsafe developer features are enabled at runtime.
-/// You can override this using a configuration macro:
-///
+/// Determines whether sanity checks and unsafe developer features are enabled
+/// at runtime. You can override this using a configuration macro:
 /// ```gml
 /// #macro Release:CATSPEAK_DEBUG_MODE false
 /// ```
 ///
-/// NOTE: Disabling this will give a significant performance boost, but may
-///       result in undefined behaviour or cryptic error messages if an error
-///       occurs. If you are getting errors in your game, and you suspect
-///       Catspeak may be the cause, make sure to re-enable debug mode if you
-///       have it disabled.
+/// @warning
+///     Disabling this may give a significant performance boost, but may also
+///     result in undefined behaviour or cryptic error messages if an error
+///     occurs. If you are getting errors in your game, and you suspect
+///     Catspeak may be the cause, make sure to re-enable debug mode if you
+///     have it disabled.
+///
+/// @return {Bool}
 #macro CATSPEAK_DEBUG_MODE (GM_build_type == "run")
 
-/// Makes sure that all Catspeak global variables are initialised.
-/// Returns `true` if this is the first time this function was called, and
-/// `false` otherwise.
+/// Makes sure that the core Catspeak environment is properly set up. Returns
+/// `true` the first time this function is called, and `false` otherwise.
 ///
-/// NOTE: This only needs to be called if you are trying to use Catspeak from
-///       within a script, or through `gml_pragma`. Otherwise you can just
-///       forget this function exists.
+/// @remark
+///     This only needs to be called if you are trying to use Catspeak from
+///     within a script, or through `gml_pragma`. Otherwise you can just
+///     forget this function exists.
 ///
 /// @return {Bool}
 function catspeak_force_init() {

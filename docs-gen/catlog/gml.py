@@ -138,7 +138,7 @@ class Module(Definition):
             definition.into_content() for definition in self.subdefinitions
         ], lambda x: isinstance(x, doc.Section))
         return doc.Chapter(
-            title = self.name,
+            title = f"{self.name}",
             overview = overview,
             sections = sections,
             subchapters = subchapters
@@ -275,7 +275,7 @@ class Enum(Definition):
             self.get_doc_richtext()
         ])
         return doc.Chapter(
-            title = self.name,
+            title = f"enum {self.name}",
             overview = content,
             sections = [
                 definition.into_content()
@@ -376,7 +376,7 @@ class Constructor(Function):
             self.get_doc_richtext()
         ])
         return doc.Chapter(
-            title = self.name,
+            title = f"struct {self.name}",
             overview = content,
             sections = [
                 definition.into_content()
