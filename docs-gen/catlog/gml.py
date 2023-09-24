@@ -122,6 +122,14 @@ class Definition:
     def into_content(self):
         raise Exception(f"`into_content` not implemented for type `{type(self)}`")
 
+    def sort(self):
+        for subdefinition in self.subdefinitions:
+            subdefinition.sort()
+        self.subdefinitions = sorted(
+            self.subdefinitions,
+            key = lambda x: x.name.lower()
+        )
+
 @dataclass
 class Module(Definition):
     def into_content(self):
@@ -274,6 +282,8 @@ class Enum(Definition):
                 for definition in self.subdefinitions
             ]
         )
+
+    def sort(self): pass
 
 @dataclass
 class Function(Definition):

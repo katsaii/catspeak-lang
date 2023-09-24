@@ -25,6 +25,7 @@ def compile_gml_book(title, brief, pages):
     book = cl.doc.Book(title, brief)
     for page in pages:
         module = cl.gml.parse_module(f"./src-lts/scripts/{page}/{page}.gml")
+        module.sort()
         book.chapters.append(module.into_content())
     return book
 
