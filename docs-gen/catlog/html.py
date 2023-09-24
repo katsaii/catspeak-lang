@@ -401,6 +401,7 @@ class HTMLCodegen(BasicCodegen):
             display : block;
             padding : 1rem;
             white-space : pre;
+            overflow-x : scroll;
         }
 
         code.inline-code {

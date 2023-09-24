@@ -85,6 +85,13 @@ class DocComment:
                     optional_text = "_(optional)_ " if param.optional else ""
                     desc = f"`{param.name}` {optional_text}\n\n{param.text}"
                     param_list.elements.append(doc.parse_content(desc))
+        if self.examples:
+            for i, example  in enumerate(self.examples):
+                if len(self.examples) > 1:
+                    text.children.append(make_heading(f"Example #{i + 1}"))
+                else:
+                    text.children.append(make_heading(f"Example"))
+                text.children.append(doc.parse_content(example.text))
         return text
 
 @dataclass
