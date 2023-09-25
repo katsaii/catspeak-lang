@@ -147,6 +147,18 @@ def write_section(sb, section, depth):
 def write_richtext(sb, textdata):
     if isinstance(textdata, str):
         sb.write(textdata)
+    elif isinstance(textdata, doc.Remark):
+        with sb.quote(class_="remark"):
+            for child in textdata.children:
+                with sb.bold():
+                    sb.write("Note:")
+                write_richtext(sb, child)
+    elif isinstance(textdata, doc.Warning):
+        with sb.quote(class_="warning"):
+            for child in textdata.children:
+                with sb.bold():
+                    sb.write("⚠️ Warning!")
+                write_richtext(sb, child)
     elif isinstance(textdata, doc.RichText):
         writers = {
             doc.Paragraph : sb.paragraph,

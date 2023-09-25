@@ -1,4 +1,5 @@
 from .codegen import BasicCodegen
+from . import highlight
 
 class HTMLCodegen(BasicCodegen):
     EXT = ".html"
@@ -154,6 +155,10 @@ class HTMLCodegen(BasicCodegen):
     @BasicCodegen.block
     def mark(self, **attrs):
         with self.tag("mark", **attrs): yield
+
+    @BasicCodegen.block
+    def quote(self, **attrs):
+        with self.tag("blockquote", **attrs): yield
 
     # CSS
 
@@ -325,7 +330,9 @@ class HTMLCodegen(BasicCodegen):
         #chapters ul > li,
         #contents ul > li {
             overflow : hidden;
+            text-overflow : ellipsis;
             text-wrap : nowrap;
+            white-space : nowrap;
             font-family : var(--f-prop);
         }
 
@@ -408,6 +415,23 @@ class HTMLCodegen(BasicCodegen):
         code.inline-code {
             padding : 0.025rem 0.15rem;
             border-radius : 5px;
+        }
+
+        blockquote {
+            --colour : var(--c-fg);
+            border-left : var(--colour) solid 5px;
+            padding-left : 1rem;
+            margin-left : 1rem;
+        }
+
+        blockquote.remark { --colour : #7091c6 }
+        blockquote.warning { --colour : #d8b46b }
+
+        blockquote.remark > strong,
+        blockquote.warning > strong {
+            font-family : var(--f-mono) !important;
+            font-size : 1.25em;
+            color : var(--c-fg-2);
         }
     """
 
