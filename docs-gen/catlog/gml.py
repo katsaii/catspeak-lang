@@ -76,6 +76,10 @@ class DocComment:
             text.children.append(doc.parse_content(self.desc.text))
         else:
             text.children.append(doc.parse_content("Undocumented!"))
+        for remark  in self.remarks:
+            text.children.append(doc.Remark([doc.parse_content(remark.text)]))
+        for warning  in self.warnings:
+            text.children.append(doc.Warning([doc.parse_content(warning.text)]))
         if self.params and any(param.text.strip() for param in self.params):
             param_list = doc.List()
             text.children.append(make_heading("Arguments"))
@@ -85,13 +89,12 @@ class DocComment:
                     optional_text = "_(optional)_ " if param.optional else ""
                     desc = f"`{param.name}` {optional_text}\n\n{param.text}"
                     param_list.elements.append(doc.parse_content(desc))
-        if self.examples:
-            for i, example  in enumerate(self.examples):
-                if len(self.examples) > 1:
-                    text.children.append(make_heading(f"Example #{i + 1}"))
-                else:
-                    text.children.append(make_heading(f"Example"))
-                text.children.append(doc.parse_content(example.text))
+        for i, example  in enumerate(self.examples):
+            if len(self.examples) > 1:
+                text.children.append(make_heading(f"Example #{i + 1}"))
+            else:
+                text.children.append(make_heading(f"Example"))
+            text.children.append(doc.parse_content(example.text))
         return text
 
 @dataclass

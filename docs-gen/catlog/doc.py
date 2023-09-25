@@ -13,6 +13,8 @@ class CodeBlock(RichText): pass
 class InlineCode(RichText): pass
 class Bold(RichText): pass
 class Emphasis(RichText): pass
+class Remark(RichText): pass
+class Warning(RichText): pass
 
 @dataclass
 class List():
