@@ -109,8 +109,8 @@ function CatspeakForeignInterface() constructor {
     /// Exposes a constant value to this interface.
     ///
     /// NOTE: You cannot expose functions using this function. Instead you
-    ///       should use one of [exposeDynamicConstant] or [exposeFunction]
-    ///       or [exposeMethod].
+    ///       should use one of `exposeDynamicConstant` or `exposeFunction`
+    ///       or `exposeMethod`.
     ///
     /// @param {String} name
     ///   The name of the constant as it will appear in Catspeak.
@@ -158,7 +158,7 @@ function CatspeakForeignInterface() constructor {
     /// added to the interface.
     ///
     /// If you would prefer to keep the bound `self` of a method, you should
-    /// use the [exposeMethod] function instead.
+    /// use the `exposeMethod` function instead.
     ///
     /// @param {String} name
     ///   The name of the function as it will appear in Catspeak.
@@ -178,7 +178,7 @@ function CatspeakForeignInterface() constructor {
         }
     };
 
-    /// Behaves similarly to [exposeFunction], except the name of definition
+    /// Behaves similarly to `exposeFunction`, except the name of definition
     /// is inferred. There are three ways a name will be inferred:
     ///
     ///  1) If the value is a script resource, `script_get_name` is used.
@@ -256,7 +256,7 @@ function CatspeakForeignInterface() constructor {
         }
     };
 
-    /// Behaves similarly to [exposeMethod], except the name of definition
+    /// Behaves similarly to `exposeMethod`, except the name of definition
     /// is inferred. There are three ways a name will be inferred:
     ///
     ///  1) If the value is a script resource, `script_get_name` is used.
@@ -404,7 +404,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     /// terms left to compile.
     ///
     /// @example
-    ///   Creates a new [CatspeakGMLCompiler] from the variable `asg` and
+    ///   Creates a new `CatspeakGMLCompiler` from the variable `asg` and
     ///   loops until the compiler is finished compiling. The final result is
     ///   assigned to the `result` local variable.
     ///

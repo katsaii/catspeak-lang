@@ -20,7 +20,7 @@ function __catspeak_deprecated(name, alternative=undefined) {
 // CATSPEAK 2 //
 
 /// Configures various global settings of the Catspeak compiler and runtime.
-/// See the list in [scr_catspeak_config] for configuration values and their
+/// See the list in `scr_catspeak_config` for configuration values and their
 /// usages.
 ///
 /// @deprecated
@@ -66,7 +66,7 @@ function catspeak_add_function() {
 }
 
 /// Permanently adds a new Catspeak constant to the default standard library.
-/// If you want to add a function, use the [catspeak_add_function] function
+/// If you want to add a function, use the `catspeak_add_function` function
 /// instead because it makes sure your value will be callable from within
 /// Catspeak.
 ///
@@ -118,13 +118,13 @@ function catspeak_execute(scr, args) {
     }
 }
 
-/// The old name of [catspeak_into_gml_function] from the compatibility
+/// The old name of `catspeak_into_gml_function` from the compatibility
 /// runtime for Catspeak.
 ///
 /// @deprecated
 ///
 /// @deprecated
-///  Use [catspeak_into_gml_function] instead.
+///  Use `catspeak_into_gml_function` instead.
 ///
 /// @param {Struct.CatspeakFunction} scr
 ///   The Catspeak function to execute.
@@ -189,7 +189,7 @@ function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) 
 /// Creates a new Catspeak compiler process for a string containing Catspeak
 /// code. This will allocate a new buffer to store the string, if that isn't
 /// ideal then you will have to create and write to your own buffer, then
-/// pass it into the [catspeak_compile_buffer] function instead.
+/// pass it into the `catspeak_compile_buffer` function instead.
 ///
 /// @deprecated
 ///
@@ -226,7 +226,7 @@ function catspeak_create_buffer_from_string(src) {
 
 // FUTURE //
 
-/// The different progress states of a [Future].
+/// The different progress states of a `Future`.
 enum FutureState {
     UNRESOLVED,
     ACCEPTED,
@@ -402,7 +402,7 @@ function Future() constructor {
     };
 }
 
-/// Creates a new [Future] which is accepted only when all other futures in an
+/// Creates a new `Future` which is accepted only when all other futures in an
 /// array are accepted. If any future in the array is rejected, then the
 /// resulting future is rejected with its value. If all futures are accepted,
 /// then the resulting future is accepted with an array of their values.
@@ -450,7 +450,7 @@ function future_all(futures) {
     return newFuture;
 }
 
-/// Creates a new [Future] which is accepted if any of the futures in an
+/// Creates a new `Future` which is accepted if any of the futures in an
 /// array are accepted. If all futures in the array are rejected, then the
 /// resulting future is rejected with an array of their values.
 ///
@@ -497,7 +497,7 @@ function future_any(futures) {
     return newFuture;
 }
 
-/// Creates a new [Future] which is accepted when all of the futures in an
+/// Creates a new `Future` which is accepted when all of the futures in an
 /// array are either accepted or rejected.
 ///
 /// @param {Array<Struct.Future>} futures
@@ -537,8 +537,8 @@ function future_settled(futures) {
     return newFuture;
 }
 
-/// Creates a new [Future] which is immediately accepted with a value.
-/// If the value itself it an instance of [Future], then it is returned
+/// Creates a new `Future` which is immediately accepted with a value.
+/// If the value itself it an instance of `Future`, then it is returned
 /// instead.
 ///
 /// @param {Any} value
@@ -554,8 +554,8 @@ function future_ok(value) {
     return future;
 }
 
-/// Creates a new [Future] which is immediately rejected with a value.
-/// If the value itself it an instance of [Future], then it is returned
+/// Creates a new `Future` which is immediately rejected with a value.
+/// If the value itself it an instance of `Future`, then it is returned
 /// instead.
 ///
 /// @param {Any} value

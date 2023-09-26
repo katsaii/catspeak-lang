@@ -7,7 +7,7 @@
 
 //# feather use syntax-errors
 
-/// Consumes tokens produced by a [CatspeakLexer] and transforms them into an
+/// Consumes tokens produced by a `CatspeakLexer` and transforms them into an
 /// abstract syntax graph representing a Catspeak program.
 ///
 /// @param {Struct.CatspeakLexer} lexer
