@@ -2,10 +2,18 @@ from datetime import datetime
 from textwrap import dedent
 import catlog.catlog as cl
 
+def parse_gml_module(name):
+    return cl.gml.parse_module(f"./src-lts/scripts/{name}/{name}.gml")
+
+init_module = parse_gml_module("scr_catspeak_init")
+version_def = init_module.find("CATSPEAK_VERSION")
+version = version_def.expands_to.strip("\"").split(".") if version_def else (9, 9, 9)
+print(f"COMPILING VERSION {version}")
+
 meta = cl.doc.Metadata(
     title = "Catspeak Reference",
     author = "Katsaii",
-    version = (3, 0, 0),
+    version = version,
 )
 
 book_home = cl.doc.Book(
@@ -24,7 +32,7 @@ book_home = cl.doc.Book(
 def compile_gml_book(title, brief, pages):
     book = cl.doc.Book(title, brief)
     for page in pages:
-        module = cl.gml.parse_module(f"./src-lts/scripts/{page}/{page}.gml")
+        module = parse_gml_module(page)
         module.sort()
         book.chapters.append(module.into_content())
     return book
@@ -51,9 +59,18 @@ book_api = compile_gml_book(
     ]
 )
 
+book_api_dubious = compile_gml_book(
+    "Dubiously Undocumented",
+    "Dubiously undocumented behaviour and quirks.",
+    [
+        "scr_catspeak_compatibility",
+    ]
+)
+
 compiled_books = cl.compile_books(cl.html.HTMLCodegen, meta,
     book_home,
-    book_api
+    book_api,
+    book_api_dubious
 )
 
 version = f"{meta.version[0]}.{meta.version[1]}.{meta.version[2]}"

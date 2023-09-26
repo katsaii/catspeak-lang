@@ -190,6 +190,11 @@ class HTMLCodegen(BasicCodegen):
     def quote(self, **attrs):
         with self.tag("blockquote", **attrs): yield
 
+    @BasicCodegen.block
+    def stab(self, **attrs):
+        attrs["class_"] = "stab " + attrs.get("class_", "")
+        with self.tag("blockquote", **attrs): yield
+
     # CSS
 
     DEFAULT_STYLE = """
@@ -200,7 +205,7 @@ class HTMLCodegen(BasicCodegen):
 
         :root {
             --c-bg : #f9f9f9;
-            --c-bg-dark : #ecebeb;
+            --c-bg-dark : #2024240f; /* #ecebeb; */
             --c-fg : #202424;
             --c-fg-light : #cacecf;
             --c-fg-2 : #526666;
@@ -215,7 +220,7 @@ class HTMLCodegen(BasicCodegen):
         @media (prefers-color-scheme: dark) {
             :root {
                 --c-bg : #1b1e1f;
-                --c-bg-dark : #232627;
+                --c-bg-dark : #d3cfc90f; /* #232627; */
                 --c-fg : #d3cfc9;
                 --c-fg-light : #3e4346;
                 --c-fg-2 : #a2947d;
@@ -447,21 +452,41 @@ class HTMLCodegen(BasicCodegen):
             border-radius : 5px;
         }
 
-        blockquote {
-            --colour : var(--c-fg);
-            border-left : var(--colour) solid 5px;
-            padding-left : 1rem;
+        blockquote:not(.stab) {
+            --colour : 0, 0, 0;
+            border-left : rgb(var(--colour)) solid 5px;
+            background-color : rgba(var(--colour), 0.1);
+            padding : 0.5rem;
             margin-left : 1rem;
         }
 
-        blockquote.remark { --colour : #7091c6 }
-        blockquote.warning { --colour : #d8b46b }
+        blockquote.remark { --colour : 112, 145, 198 }
+        blockquote.warning { --colour : 216, 180, 107 }
 
-        blockquote.remark > strong,
-        blockquote.warning > strong {
+        .remark > strong,
+        .warning > strong {
             font-family : var(--f-mono) !important;
             font-size : 1.25em;
             color : var(--c-fg-2);
+        }
+
+        blockquote.stab {
+            width : fit-content;
+            padding : 0.5rem;
+            margin-left : 0.5rem;
+            background-color : #fff2dc;
+        }
+
+        .stab {
+            font-family : var(--f-prop) !important;
+            font-size : 0.9em;
+            color : var(--c-fg);
+        }
+
+        .stab p {
+            display : inline-block;
+            padding : 0 0.5rem;
+            margin : 0;
         }
 
         .code * { color : var(--c-fg) }

@@ -15,6 +15,11 @@ class Bold(RichText): pass
 class Emphasis(RichText): pass
 class Remark(RichText): pass
 class Warning(RichText): pass
+class Experimental(RichText): pass
+
+@dataclass
+class Deprecated(RichText):
+    since : str = None
 
 @dataclass
 class List():
@@ -80,7 +85,7 @@ def parse_content(content):
             case mistletoe.block_tokens.ListItem:
                 return RichText(list(map(ast_to_doc, term.children)))
             case mistletoe.span_tokens.Link:
-                return Link(list(map(ast_to_doc, term.children)), term.target)
+                return LinkText(list(map(ast_to_doc, term.children)), term.target)
             case mistletoe.span_tokens.RawText:
                 return term.content
             case mistletoe.span_tokens.EscapeSequence:
