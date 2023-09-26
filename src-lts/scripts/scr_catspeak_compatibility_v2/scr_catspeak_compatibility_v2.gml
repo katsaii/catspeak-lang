@@ -1,9 +1,11 @@
-//! Contains compatibility library for help with converting from Catspeak 2 to
-//! Catspeak 3.
+//! Contains a simple compatibility layer for help with converting projects
+//! from Catspeak 2 to Catspeak 3. There are many breaking changes between
+//! these versions, so sorry!
 
 //# feather use syntax-errors
 
 /// @ignore
+///
 /// @param {Any} name
 /// @param {Any} [alternative]
 function __catspeak_deprecated(name, alternative=undefined) {
@@ -23,7 +25,7 @@ function __catspeak_deprecated(name, alternative=undefined) {
 /// See the list in `scr_catspeak_config` for configuration values and their
 /// usages.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
 ///
 /// @return {Struct}
 function catspeak_config() {
@@ -45,7 +47,8 @@ function catspeak_config() {
 
 /// Permanently adds a new Catspeak function to the default standard library.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
+///   Use `Catspeak.interface.exposeFunction` instead.
 ///
 /// @param {String} name
 ///   The name of the function to add.
@@ -70,6 +73,9 @@ function catspeak_add_function() {
 /// instead because it makes sure your value will be callable from within
 /// Catspeak.
 ///
+/// @deprecated {3.0.0}
+///   Use `Catspeak.interface.exposeConstant` instead.
+///
 /// @param {String} name
 ///   The name of the constant to add.
 ///
@@ -90,16 +96,17 @@ function catspeak_add_constant() {
 /// Creates a new Catspeak runtime process for this Catspeak function. This
 /// function is also compatible with GML functions.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
+///   Just invoke your script directly instead: `scr(args)`
 ///
-/// @param {Function|Struct.CatspeakFunction} scr
+/// @param {Function} scr
 ///   The GML or Catspeak function to execute.
 ///
 /// @param {Array<Any>} [args]
 ///   The array of arguments to pass to the function call. Defaults to the
 ///   empty array.
 ///
-/// @return {Struct.CatspeakProcess}
+/// @return {Struct.Future}
 function catspeak_execute(scr, args) {
     __catspeak_deprecated("catspeak_execute");
     static noArgs = [];
@@ -121,10 +128,8 @@ function catspeak_execute(scr, args) {
 /// The old name of `catspeak_into_gml_function` from the compatibility
 /// runtime for Catspeak.
 ///
-/// @deprecated
-///
-/// @deprecated
-///  Use `catspeak_into_gml_function` instead.
+/// @deprecated {2.3.3}
+///   Use `Catspeak.compileGML` instead.
 ///
 /// @param {Struct.CatspeakFunction} scr
 ///   The Catspeak function to execute.
@@ -138,7 +143,8 @@ function catspeak_session_extern(scr) {
 /// Converts a Catspeak function into a GML function which is executed
 /// immediately.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
+///   Use `Catspeak.compileGML` instead.
 ///
 /// @param {Function} scr
 ///   The Catspeak function to execute.
@@ -152,7 +158,8 @@ function catspeak_into_gml_function(scr) {
 /// Creates a new Catspeak compiler process for a buffer containing Catspeak
 /// code.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
+///   Use `Catspeak.parse` instead.
 ///
 /// @param {ID.Buffer} buff
 ///   A reference to the buffer containing the source code to compile.
@@ -191,7 +198,8 @@ function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) 
 /// ideal then you will have to create and write to your own buffer, then
 /// pass it into the `catspeak_compile_buffer` function instead.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
+///   Use `Catspeak.parseString` instead.
 ///
 /// @param {Any} src
 ///   The value containing the source code to compile.
@@ -209,7 +217,7 @@ function catspeak_compile_string(src) {
 
 /// A helper function for creating a buffer from a string.
 ///
-/// @deprecated
+/// @deprecated {3.0.0}
 ///
 /// @param {String} src
 ///   The source code to convert into a buffer.
@@ -227,6 +235,8 @@ function catspeak_create_buffer_from_string(src) {
 // FUTURE //
 
 /// The different progress states of a `Future`.
+///
+/// @deprecated {3.0.0}
 enum FutureState {
     UNRESOLVED,
     ACCEPTED,
@@ -235,6 +245,8 @@ enum FutureState {
 
 /// Constructs a new future, allowing for deferred execution of code depending
 /// on whether it was accepted or rejected.
+///
+/// @deprecated {3.0.0}
 function Future() constructor {
     self.state = FutureState.UNRESOLVED;
     self.result = undefined;
@@ -407,6 +419,8 @@ function Future() constructor {
 /// resulting future is rejected with its value. If all futures are accepted,
 /// then the resulting future is accepted with an array of their values.
 ///
+/// @deprecated {3.0.0}
+///
 /// @param {Array<Struct.Future>} futures
 ///   The array of futures to await.
 ///
@@ -454,6 +468,8 @@ function future_all(futures) {
 /// array are accepted. If all futures in the array are rejected, then the
 /// resulting future is rejected with an array of their values.
 ///
+/// @deprecated {3.0.0}
+///
 /// @param {Array<Struct.Future>} futures
 ///   The array of futures to await.
 ///
@@ -500,6 +516,8 @@ function future_any(futures) {
 /// Creates a new `Future` which is accepted when all of the futures in an
 /// array are either accepted or rejected.
 ///
+/// @deprecated {3.0.0}
+///
 /// @param {Array<Struct.Future>} futures
 ///   The array of futures to await.
 ///
@@ -541,6 +559,8 @@ function future_settled(futures) {
 /// If the value itself it an instance of `Future`, then it is returned
 /// instead.
 ///
+/// @deprecated {3.0.0}
+///
 /// @param {Any} value
 ///   The value to create a future from.
 ///
@@ -558,6 +578,8 @@ function future_ok(value) {
 /// If the value itself it an instance of `Future`, then it is returned
 /// instead.
 ///
+/// @deprecated {3.0.0}
+///
 /// @param {Any} value
 ///   The value to create a future from.
 ///
@@ -572,6 +594,8 @@ function future_error(value) {
 }
 
 /// Returns whether this value represents a future instance.
+///
+/// @deprecated {3.0.0}
 ///
 /// @param {Any} value
 ///   The value to check.

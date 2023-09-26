@@ -23,7 +23,7 @@
     {"id":{"name":"scr_testing_lexer_number","path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},"order":7,},
     {"id":{"name":"obj_unit_test_inst","path":"objects/obj_unit_test_inst/obj_unit_test_inst.yy",},"order":5,},
     {"id":{"name":"obj_testing","path":"objects/obj_testing/obj_testing.yy",},"order":4,},
-    {"id":{"name":"scr_catspeak_compatibility","path":"scripts/scr_catspeak_compatibility/scr_catspeak_compatibility.yy",},"order":6,},
+    {"id":{"name":"scr_catspeak_compatibility_v2","path":"scripts/scr_catspeak_compatibility_v2/scr_catspeak_compatibility_v2.yy",},"order":6,},
     {"id":{"name":"scr_unit_test_scr","path":"scripts/scr_unit_test_scr/scr_unit_test_scr.yy",},"order":7,},
     {"id":{"name":"scr_testing_parser","path":"scripts/scr_testing_parser/scr_testing_parser.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_symbols","path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},"order":9,},

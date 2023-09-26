@@ -12,7 +12,7 @@ function CatspeakASGBuilder() : CatspeakIRBuilder() constructor { }
 
 /// Handles the generation and optimisation of a syntax graph.
 ///
-/// @unstable
+/// @experimental
 function CatspeakIRBuilder() constructor {
     self.functions = [];
     self.topLevelFunctions = [];
