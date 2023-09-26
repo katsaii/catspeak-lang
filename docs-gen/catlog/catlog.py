@@ -149,15 +149,29 @@ def write_richtext(sb, textdata):
         sb.write(textdata)
     elif isinstance(textdata, doc.Remark):
         with sb.quote(class_="remark"):
+            with sb.bold():
+                sb.write("📝 Note")
             for child in textdata.children:
-                with sb.bold():
-                    sb.write("Note:")
                 write_richtext(sb, child)
     elif isinstance(textdata, doc.Warning):
         with sb.quote(class_="warning"):
+            with sb.bold():
+                sb.write("⚠️ Warning")
             for child in textdata.children:
-                with sb.bold():
-                    sb.write("⚠️ Warning!")
+                write_richtext(sb, child)
+    elif isinstance(textdata, doc.Deprecated):
+        with sb.stab(class_="deprecated"):
+            with sb.bold():
+                sb.write("👎 Deprecated")
+                if textdata.since:
+                    sb.write(f" since {textdata.since}")
+            for child in textdata.children:
+                write_richtext(sb, child)
+    elif isinstance(textdata, doc.Experimental):
+        with sb.stab(class_="experimental"):
+            with sb.bold():
+                sb.write("🔬 This is an experimental feature. It may change at any moment.")
+            for child in textdata.children:
                 write_richtext(sb, child)
     elif isinstance(textdata, doc.RichText):
         writers = {

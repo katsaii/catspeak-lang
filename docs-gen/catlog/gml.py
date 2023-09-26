@@ -12,8 +12,11 @@ def partitian(xs, p):
 class DocDescription:
     text : str = ""
 
-class DocDeprecated(DocDescription): pass
-class DocUnstable(DocDescription): pass
+@dataclass
+class DocDeprecated(DocDescription):
+    since : str = None
+
+class DocExperimental(DocDescription): pass
 class DocRemark(DocDescription): pass
 class DocWarning(DocDescription): pass
 class DocExample(DocDescription): pass
@@ -66,7 +69,13 @@ class DocComment:
 
     def into_richtext(self):
         text = doc.RichText()
-
+        if self.deprecated:
+            text.children.append(doc.Deprecated(
+                children = [doc.parse_content(self.deprecated.text)],
+                since = self.deprecated.since
+            ))
+        if self.unstable:
+            text.children.append(doc.Experimental([doc.parse_content(self.unstable.text)]))
         if self.desc and self.desc.text.strip():
             text.children.append(doc.parse_content(self.desc.text))
         else:
@@ -135,6 +144,15 @@ class Definition:
             self.subdefinitions,
             key = lambda x: x.name.lower()
         )
+
+    def find(self, name):
+        if name == self.name:
+            return self
+        for subdefinition in self.subdefinitions:
+            found = subdefinition.find(name)
+            if found:
+                return found
+        return None
 
 @dataclass
 class Module(Definition):
@@ -408,16 +426,18 @@ def feather_name_to_type_name(typename):
 def parse_jsdoc_line(doc, line):
     if match := re.search("^\s*(?:@ignore)", line):
         doc.ignore = True
-    elif match := re.search("^\s*(?:@unstable)", line):
-        doc.current_tag = doc.unstable or DocUnstable()
+    elif match := re.search("^\s*(?:@experimental)", line):
+        doc.current_tag = doc.unstable or DocExperimental()
         doc.unstable = doc.current_tag
     elif match := re.search("^\s*(?:@pure)", line):
         doc.pure = True
     elif match := re.search("^\s*(?:@desc|@description)", line):
         doc.current_tag = doc.desc
-    elif match := re.search("^\s*(?:@deprecated)", line):
+    elif match := re.search("^\s*(?:@deprecated)\s*\{?([^}]+)?\}?", line):
         doc.current_tag = doc.deprecated or DocDeprecated()
         doc.deprecated = doc.current_tag
+        if match.group(1):
+            doc.deprecated.since = match.group(1)
     elif match := re.search("^\s*(?:@throws|@throw)\s*\{?([A-Za-z0-9_.]+)\}?", line):
         doc.current_tag = DocThrow(
             type = feather_name_to_type_name(match.group(1))
