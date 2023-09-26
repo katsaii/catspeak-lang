@@ -150,9 +150,9 @@ class HTMLCodegen(BasicCodegen):
     @BasicCodegen.block
     def code(self, **attrs):
         with self.tag("code", class_="inline-code", **attrs):
-            self.enable_highlighter = True
+            #self.enable_highlighter = True
             yield
-            self.enable_highlighter = False
+            #self.enable_highlighter = False
 
     @BasicCodegen.block
     def code_block(self, **attrs):
