@@ -67,11 +67,6 @@ class DocComment:
     def into_richtext(self):
         text = doc.RichText()
 
-        def make_heading(title):
-            p = doc.Paragraph()
-            p.children.append(doc.Bold(title))
-            return p
-
         if self.desc and self.desc.text.strip():
             text.children.append(doc.parse_content(self.desc.text))
         else:
@@ -82,18 +77,26 @@ class DocComment:
             text.children.append(doc.Warning([doc.parse_content(warning.text)]))
         if self.params and any(param.text.strip() for param in self.params):
             param_list = doc.List()
-            text.children.append(make_heading("Arguments"))
+            text.children.append(doc.parse_content("**Arguments**"))
             text.children.append(param_list)
             for i, param in enumerate(self.params):
                 if param.name and param.text.strip():
                     optional_text = "_(optional)_ " if param.optional else ""
                     desc = f"`{param.name}` {optional_text}\n\n{param.text}"
                     param_list.elements.append(doc.parse_content(desc))
-        for i, example  in enumerate(self.examples):
+        if self.returns:
+            text.children.append(doc.parse_content(f"**Returns** `{self.returns.type}`"))
+            if self.returns.text:
+                text.children.append(doc.parse_content(self.returns.text))
+        for throw in self.throws:
+            text.children.append(doc.parse_content(f"**Throws** `{throw.type}`"))
+            if throw.text:
+                text.children.append(doc.parse_content(throw.text))
+        for i, example in enumerate(self.examples):
             if len(self.examples) > 1:
-                text.children.append(make_heading(f"Example #{i + 1}"))
+                text.children.append(doc.parse_content(f"**Example #{i + 1}**"))
             else:
-                text.children.append(make_heading(f"Example"))
+                text.children.append(doc.parse_content(f"**Example**"))
             text.children.append(doc.parse_content(example.text))
         return text
 
