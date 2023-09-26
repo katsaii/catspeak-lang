@@ -46,12 +46,27 @@ class Tokeniser():
     def peek(self, n=1):
         return self.src[:n]
 
+def is_digit(x):
+    return x in { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "_" }
+
+def is_hexnum(x):
+    return is_digit(x) or x.lower() in { "a", "b", "c", "d", "e", "f" }
+
+def is_binnum(x):
+    return x in { "0", "1" }
+
+def has_digits(lexeme):
+    return any(not (ch in { "_", "." }) for ch in lexeme)
+
 def tokenise_gml(input_):
     keyword_database = set("""
         begin end if then else while do for break continue
         with until repeat exit and or xor not return mod
         div switch case default var globalvar enum function
         try catch finally throw static new delete constructor
+    """.split())
+    value_database = set("""
+        true false NaN infinity undefined self other global
     """.split())
     lex = Tokeniser(input_)
     while not lex.is_empty():
@@ -73,20 +88,54 @@ def tokenise_gml(input_):
                     found = True
                     break
             if not found:
-                # TODO: colour literals
-                yield Other(), lex.advance()
+                lexeme = lex.advance_while(is_hexnum)
+                yield (Other() if lexeme == "#" else Value()), lexeme
         elif lex.peek().isalpha():
             # keywords and identifiers
             ident = lex.advance_while(lambda x: x.isalnum() or x == "_")
             kind = Variable()
             if ident in keyword_database:
                 kind = Keyword()
-            elif all(x.isupper() or x == "_" for x in ident):
+            elif ident in value_database:
+                kind = Value()
+            elif ident == ident.upper():
                 kind = MacroName()
             elif ident[:1].isupper():
                 kind = TypeName()
             elif lex.peek() == "(":
                 kind = FunctionName()
             yield kind, ident
+        elif lex.peek() == "\"":
+            lexeme = lex.advance()
+            skip = False
+            while not lex.is_empty():
+                if lex.peek() in { "\n", "\r" }:
+                    break
+                ch = lex.advance()
+                lexeme += ch
+                if skip:
+                    skip = False
+                    continue
+                elif ch == "\\":
+                    skip = True
+                elif ch == "\"":
+                    break
+            yield Value(), lexeme
+        elif lex.peek(2) in { "@\"", "@'" }:
+            lex.advance()
+            terminator = lex.advance()
+            yield Value(), f"@{terminator}" + lex.advance_until_terminated_by(terminator)
+        elif lex.peek(2) in { "0x", "0X" }:
+            prefix = lex.advance(2)
+            yield Value(), prefix + lex.advance_while(is_hexnum)
+        elif lex.peek(2) in { "0b", "0B" }:
+            prefix = lex.advance(2)
+            yield Value(), prefix + lex.advance_while(is_binnum)
+        elif is_digit(lex.peek()) or lex.peek() == ".":
+            lexeme = lex.advance_while(is_digit)
+            if lex.peek() == ".":
+                lexeme += lex.advance()
+                lexeme += lex.advance_while(is_digit)
+            yield (Value() if has_digits(lexeme) else Other()), lexeme
         else:
             yield Other(), lex.advance()
