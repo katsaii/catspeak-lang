@@ -6,7 +6,6 @@ class TokenKind: pass
 class Whitespace(TokenKind): pass
 class Comment(TokenKind): pass
 class Keyword(TokenKind): pass
-class Comment(TokenKind): pass
 class Value(TokenKind): pass
 class Variable(TokenKind): pass
 class FunctionName(TokenKind): pass
@@ -22,7 +21,7 @@ class Tokeniser():
         return self.src == ""
 
     def advance(self, n=1):
-        ret = self.peek()
+        ret = self.peek(n)
         self.src = self.src[n:]
         return ret
 
@@ -82,12 +81,12 @@ def tokenise_gml(input_):
             kind = Variable()
             if ident in keyword_database:
                 kind = Keyword()
-            elif lex.peek() == "(":
-                kind = FunctionName()
-            elif all(x.isupper() for x in ident):
+            elif all(x.isupper() or x == "_" for x in ident):
                 kind = MacroName()
             elif ident[:1].isupper():
                 kind = TypeName()
+            elif lex.peek() == "(":
+                kind = FunctionName()
             yield kind, ident
         else:
             yield Other(), lex.advance()
