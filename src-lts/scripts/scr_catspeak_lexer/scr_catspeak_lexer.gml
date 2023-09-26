@@ -1,18 +1,19 @@
 //! Responsible for the lexical analysis stage of the Catspeak compiler.
+//! This stage converts UTF8 encoded text from individual characters into
+//! discrete clusters of characters called [tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization).
 
 //# feather use syntax-errors
 
 /// A token in Catspeak is a series of characters with meaning, usually
-/// separated by whitespace.
+/// separated by whitespace. These meanings are represented by unique
+/// elements of the `CatspeakToken` enum.
 ///
-/// For example, these are all valid tokens:
+/// @example
+///   Some examples of tokens in Catspeak, and their meanings:
 ///   - `if`   (is a `CatspeakToken.IF`)
 ///   - `else` (is a `CatspeakToken.ELSE`)
 ///   - `12.3` (is a `CatspeakToken.VALUE`)
 ///   - `+`    (is a `CatspeakToken.PLUS`)
-///
-/// The following enum represents all possible token types understood by the
-/// Catspeak language.
 enum CatspeakToken {
     /// The `(` character.
     PAREN_LEFT,
@@ -28,7 +29,7 @@ enum CatspeakToken {
     BRACE_RIGHT,
     /// The `:` character.
     COLON,
-    /// Represents a sequence of `;` characters.
+    /// The `;` character.
     SEMICOLON,
     /// The `,` character.
     COMMA,
@@ -62,17 +63,17 @@ enum CatspeakToken {
     SUBTRACT,
     /// The `+` operator.
     PLUS,
-    /// The `==` operator.
+    /// The relational `==` operator.
     EQUAL,
-    /// The `!=` operator.
+    /// The relational `!=` operator.
     NOT_EQUAL,
-    /// The `>` operator.
+    /// The relational `>` operator.
     GREATER,
-    /// The `>=` operator.
+    /// The relational `>=` operator.
     GREATER_EQUAL,
-    /// The `<` operator.
+    /// The relational `<` operator.
     LESS,
-    /// The `<=` operator.
+    /// The relational `<=` operator.
     LESS_EQUAL,
     /// The logical negation `!` operator.
     NOT,
@@ -105,12 +106,20 @@ enum CatspeakToken {
     /// The `while` keyword.
     WHILE,
     /// The `for` keyword.
+    ///
+    /// @experimental
     FOR,
     /// The `loop` keyword.
+    ///
+    /// @experimental
     LOOP,
     /// The `match` keyword.
+    ///
+    /// @experimental
     MATCH,
     /// The `use` keyword.
+    ///
+    /// @experimental
     USE,
     /// The `let` keyword.
     LET,
@@ -125,10 +134,16 @@ enum CatspeakToken {
     /// The `new` keyword.
     NEW,
     /// The `impl` keyword.
+    ///
+    /// @experimental
     IMPL,
     /// The `self` keyword.
+    ///
+    /// @experimental
     SELF,
     /// The `params` keyword.
+    ///
+    /// @experimental
     PARAMS,
     /// Represents a variable name.
     IDENT,
@@ -139,7 +154,7 @@ enum CatspeakToken {
     ///  - float:             `1.25`, `0.5`
     ///  - character:         `'A'`, `'0'`, `'\n'`
     ///  - boolean:           `true` or `false`
-    ///  - undefined
+    ///  - `undefined`
     VALUE,
     /// Represents a sequence of non-breaking whitespace characters.
     WHITESPACE,
@@ -148,6 +163,11 @@ enum CatspeakToken {
     /// Represents the end of the file.
     EOF,
     /// Represents any other unrecognised character.
+    ///
+    /// @remark
+    ///   If the compiler encounters a token of this type, it will typical
+    ///   raise an exception. This likely indicates that a Catspeak script has
+    ///   a syntax error somewhere.
     OTHER,
     /// @ignore
     __SIZE__
@@ -178,12 +198,12 @@ function __catspeak_create_buffer_from_string(src) {
 }
 
 /// Responsible for tokenising the contents of a GML buffer. This can be used
-/// for syntax highlighting in a programming game which uses the Catspeak
-/// env.
+/// for syntax highlighting in a programming game which uses Catspeak.
 ///
-/// NOTE: The lexer does not take ownership of this buffer, but it may mutate
-///       it so beware. Therefore you should make sure to delete the buffer
-///       once parsing is complete.
+/// @warning
+///   The lexer does not take ownership of its buffer, so you must make sure
+///   to delete the buffer once the lexer is complete. Failure to do this will
+///   result in leaking memory.
 ///
 /// @param {Id.Buffer} buff
 ///   The ID of the GML buffer to use.
@@ -210,23 +230,40 @@ function CatspeakLexer(
             __catspeak_check_arg("keywords", keywords, is_struct);
         }
     }
+    /// @ignore
     self.buff = buff;
+    /// @ignore
     self.buffAlignment = buffer_get_alignment(buff);
+    /// @ignore
     self.buffCapacity = buffer_get_size(buff);
+    /// @ignore
     self.buffOffset = clamp(offset, 0, self.buffCapacity);
+    /// @ignore
     self.buffSize = clamp(offset + size, 0, self.buffCapacity);
+    /// @ignore
     self.row = 1;
+    /// @ignore
     self.column = 1;
+    /// @ignore
     self.lexemeStart = self.buffOffset;
+    /// @ignore
     self.lexemeEnd = self.lexemeStart;
+    /// @ignore
     self.lexemePos = catspeak_location_create(self.row, self.column);
+    /// @ignore
     self.lexeme = undefined;
+    /// @ignore
     self.value = undefined;
+    /// @ignore
     self.hasValue = false;
+    /// @ignore
     self.peeked = undefined;
+    /// @ignore
     self.charCurr = 0;
+    /// @ignore
     //# feather disable once GM2043
     self.charNext = __nextUTF8Char();
+    /// @ignore
     self.keywords = keywords ?? global.__catspeakString2Token;
 
     /// @ignore
@@ -336,16 +373,16 @@ function CatspeakLexer(
     };
 
     /// Returns the string representation of the most recent token emitted by
-    /// the [next] or [nextWithWhitespace] methods.
+    /// the `next` or `nextWithWhitespace` methods.
     ///
     /// @example
-    ///   Prints the string content of the first [CatspeakToken] emitted by a
+    ///   Prints the string content of the first `CatspeakToken` emitted by a
     ///   lexer.
     ///
-    /// ```gml
-    /// lexer.next();
-    /// show_debug_message(lexer.getLexeme());
-    /// ```
+    ///   ```gml
+    ///   lexer.next();
+    ///   show_debug_message(lexer.getLexeme());
+    ///   ```
     ///
     /// @return {String}
     static getLexeme = function () {
@@ -366,10 +403,11 @@ function CatspeakLexer(
     };
 
     /// Returns the actual value representation of the most recent token
-    /// emitted by the [next] or [nextWithWhitespace] methods.
+    /// emitted by the `next` or `nextWithWhitespace` methods.
     ///
-    /// NOTE: Unlike [getLexeme] this value is not always a string. For numeric
-    ///       literals, the value will be converted into an integer or real.
+    /// @remark
+    ///   Unlike [getLexeme] this value is not always a string. For numeric
+    ///   literals, the value will be converted into an integer or real.
     ///
     /// @return {Any}
     static getValue = function () {
@@ -382,33 +420,33 @@ function CatspeakLexer(
     };
 
     /// Returns the location information for the most recent token emitted by
-    /// the [next] or [nextWithWhitespace] methods.
+    /// the `next` or `nextWithWhitespace` methods.
     ///
     /// @return {Real}
     static getLocation = function () {
         return catspeak_location_create(row, column);
     };
 
-    /// Advances the lexer and returns the next type of [CatspeakToken]. This
-    /// includes additional whitespace and control tokens, like:
-    ///  - comments `--`            (`CatspeakToken.COMMENT`)
+    /// Advances the lexer and returns the next type of `CatspeakToken`. This
+    /// includes additional whitespace and comment tokens.
     ///
-    /// To get the string content of the token, you should use the [getLexeme]
-    /// method.
+    /// @remark
+    ///   To get the string content of the token, you should use the
+    ///   `getLexeme` method.
     ///
     /// @example
     ///   Iterates through all tokens of a buffer containing Catspeak code,
     ///   printing each non-whitespace token out as a debug message.
     ///
-    /// ```gml
-    /// var lexer = new CatspeakLexer(buff);
-    /// do {
-    ///   var token = lexer.nextWithWhitespace();
-    ///   if (token != CatspeakToken.WHITESPACE) {
-    ///     show_debug_message(lexer.getLexeme());
-    ///   }
-    /// } until (token == CatspeakToken.EOF);
-    /// ```
+    ///   ```gml
+    ///   var lexer = new CatspeakLexer(buff);
+    ///   do {
+    ///     var token = lexer.nextWithWhitespace();
+    ///     if (token != CatspeakToken.WHITESPACE) {
+    ///       show_debug_message(lexer.getLexeme());
+    ///     }
+    ///   } until (token == CatspeakToken.EOF);
+    ///   ```
     ///
     /// @return {Enum.CatspeakToken}
     static nextWithWhitespace = function () {
@@ -696,23 +734,24 @@ function CatspeakLexer(
         return token;
     };
 
-    /// Advances the lexer and returns the next [CatspeakToken], ingoring
-    /// any comments, whitespace, and line continuations.
+    /// Advances the lexer and returns the next `CatspeakToken`, ignoring any
+    /// comments, whitespace, and line continuations.
     ///
-    /// To get the string content of the token, you should use the [getLexeme]
-    /// method.
+    /// @remark
+    ///   To get the string content of the token, you should use the
+    ///   `getLexeme` method.
     ///
     /// @example
     ///   Iterates through all tokens of a buffer containing Catspeak code,
     ///   printing each token out as a debug message.
     ///
-    /// ```gml
-    /// var lexer = new CatspeakLexer(buff);
-    /// do {
-    ///   var token = lexer.next();
-    ///   show_debug_message(lexer.getLexeme());
-    /// } until (token == CatspeakToken.EOF);
-    /// ```
+    ///   ```gml
+    ///   var lexer = new CatspeakLexer(buff);
+    ///   do {
+    ///     var token = lexer.next();
+    ///     show_debug_message(lexer.getLexeme());
+    ///   } until (token == CatspeakToken.EOF);
+    ///   ```
     ///
     /// @return {Enum.CatspeakToken}
     static next = function () {
@@ -737,13 +776,13 @@ function CatspeakLexer(
     ///   Iterates through all tokens of a buffer containing Catspeak code,
     ///   printing each token out as a debug message.
     ///
-    /// ```gml
-    /// var lexer = new CatspeakLexer(buff);
-    /// while (lexer.peek() != CatspeakToken.EOF) {
-    ///   lexer.next();
-    ///   show_debug_message(lexer.getLexeme());
-    /// }
-    /// ```
+    ///   ```gml
+    ///   var lexer = new CatspeakLexer(buff);
+    ///   while (lexer.peek() != CatspeakToken.EOF) {
+    ///     lexer.next();
+    ///     show_debug_message(lexer.getLexeme());
+    ///   }
+    ///   ```
     ///
     /// @return {Enum.CatspeakToken}
     static peek = function () {
@@ -984,8 +1023,9 @@ function __catspeak_keywords_rename(keywords, currentName, newName) {
 
 /// @ignore
 ///
-/// NOTE: This is an O(n) operation. This means that it's slow, and should
-///       only be used for debugging purposes.
+/// @remark
+///   This is an O(n) operation. This means that it's slow, and should only
+///   be used for debugging purposes.
 ///
 /// @param {Struct} keywords
 /// @param {Enum.CatspeakToken} token

@@ -25,13 +25,13 @@
 //!   // parse Catspeak code
 //!   var ir = Catspeak.parseString(@'
 //!     let catspeak = "Catspeak"
-//!   
+//!
 //!     return "hello! from within " + catspeak
 //!   ');
-//!   
+//!
 //!   // compile Catspeak code into a callable GML function
 //!   var getMessage = Catspeak.compileGML(ir);
-//!   
+//!
 //!   // call the Catspeak code just like you would any other GML function!
 //!   show_message(getMessage());
 //!   ```
@@ -41,8 +41,9 @@
 //!   var ir = Catspeak.parseString(@'
 //!     game_end(); -- heheheh, my mod will make your game close >:3
 //!   ');
-//!   
-//!   // calling `badMod` will throw an error instead of calling the `game_end` function
+//!
+//!   // calling `badMod` will throw an error instead
+//!   // of calling the `game_end` function
 //!   try {
 //!     var badMod = Catspeak.compileGML(ir);
 //!     badMod();
@@ -53,36 +54,53 @@
 
 //# feather use syntax-errors
 
-/// The Catspeak runtime version, should be updated before each release.
+/// The Catspeak runtime version, as a string, in the
+/// [MAJOR.MINOR.PATCH](https://semver.org/) format.
+///
+/// Updated before every new release.
 ///
 /// @return {String}
 #macro CATSPEAK_VERSION "3.0.0"
 
 /// Determines whether sanity checks and unsafe developer features are enabled
-/// at runtime. You can override this using a configuration macro:
+/// at runtime.
+///
+/// Debug mode is enabled by default, but you can disable these checks by
+/// defining a configuration macro, and setting it to `false`:
 /// ```gml
 /// #macro Release:CATSPEAK_DEBUG_MODE false
 /// ```
 ///
 /// @warning
-///   Disabling this may give a significant performance boost, but may also
-///   result in undefined behaviour or cryptic error messages if an error
-///   occurs. If you are getting errors in your game, and you suspect
-///   Catspeak may be the cause, make sure to re-enable debug mode if you
-///   have it disabled.
+///   Although disabling this macro may give a noticable performance boost, it
+///   will also result in **undefined behaviour** and **cryptic error messages**
+///   if an error occurs.
+///
+///   If you are getting errors in your game, and you suspect Catspeak may be
+///   the cause, make sure to re-enable debug mode if you have it disabled.
 ///
 /// @return {Bool}
-#macro CATSPEAK_DEBUG_MODE (GM_build_type == "run")
+#macro CATSPEAK_DEBUG_MODE true
 
-/// Makes sure that the core Catspeak environment is properly set up. Returns
-/// `true` the first time this function is called, and `false` otherwise.
+/// Usually the Catspeak environment tries to self-initialise at the start of
+/// the game, but at what time this happens relative to other scripts is not
+/// guaranteed by GameMaker.
+///
+/// Call this function to force the core Catspeak environment to be
+/// initialised immediately. If Catspeak was already initialised before
+/// calling this function, then nothing will happen.
 ///
 /// @remark
-///   This only needs to be called if you are trying to use Catspeak from
-///   within a script, or through `gml_pragma`. Otherwise you can just
-///   forget this function exists.
+///   You shouldn't need to call this function unless you are trying to use
+///   Catspeak from within a global script asset, or through
+///   `gml_pragma("global", ...)`.
+///
+///   If neither of these situations apply to you, feel free to forget this
+///   function even exists.
 ///
 /// @return {Bool}
+///   Returns `true` the first time this function is called, and `false`
+///   every other time.
 function catspeak_force_init() {
     static initialised = false;
     if (initialised) {

@@ -343,7 +343,7 @@ function __catspeak_timeout_check(t) {
 ///       place. This will cause undefined behaviour, potentially resulting
 ///       in hard to discover bugs!
 ///
-/// @unstable
+/// @experimental
 ///
 /// @param {Struct} asg
 ///   The syntax graph to compile.
