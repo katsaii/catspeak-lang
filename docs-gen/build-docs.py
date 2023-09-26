@@ -63,7 +63,7 @@ book_api_dubious = compile_gml_book(
     "Dubiously Undocumented",
     "Dubiously undocumented behaviour and quirks.",
     [
-        "scr_catspeak_compatibility",
+        "scr_catspeak_compatibility_v2",
     ]
 )
 

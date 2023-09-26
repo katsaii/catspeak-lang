@@ -491,13 +491,23 @@ class HTMLCodegen(BasicCodegen):
 
         .code * { color : var(--c-fg) }
 
-        .kw-com { color : #080!important }
+        .kw-com { color : #080!important; font-style : italic }
         .kw-key { color : #34347e!important; font-weight : bold }
         .kw-val { color : #fa3232!important }
         .kw-var { opacity : 0.9 }
         .kw-fun { color : #808!important }
         .kw-typ { color : #7b7c26!important; font-weight : bold }
         .kw-mac { color : #ff2558!important; font-weight : bold }
+
+        @media (prefers-color-scheme: dark) {
+            .kw-com { color : #416e41!important }
+            .kw-key { color : #5c5c9b!important; font-weight : bold }
+            .kw-val { color : #c78888!important }
+            .kw-var { opacity : 0.9 }
+            .kw-fun { color : #8f5c8f!important }
+            .kw-typ { color : #7b7c26!important; font-weight : bold }
+            .kw-mac { color : #a72555!important; font-weight : bold }
+        }
     """
 
     def minify_css(css_in):

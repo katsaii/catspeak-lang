@@ -438,12 +438,12 @@ def parse_jsdoc_line(doc, line):
         doc.deprecated = doc.current_tag
         if match.group(1):
             doc.deprecated.since = match.group(1)
-    elif match := re.search("^\s*(?:@throws|@throw)\s*\{?([A-Za-z0-9_.]+)\}?", line):
+    elif match := re.search("^\s*(?:@throws|@throw)\s*\{?([^}]+)\}?", line):
         doc.current_tag = DocThrow(
             type = feather_name_to_type_name(match.group(1))
         )
         doc.throws.append(doc.current_tag)
-    elif match := re.search("^\s*(?:@returns|@return)\s*\{?([A-Za-z0-9_.]+)\}?", line):
+    elif match := re.search("^\s*(?:@returns|@return)\s*\{?([^}]+)\}?", line):
         doc.current_tag = doc.returns or DocReturn(
             type = feather_name_to_type_name(match.group(1))
         )
@@ -457,7 +457,7 @@ def parse_jsdoc_line(doc, line):
     elif match := re.search("^\s*(?:@example)", line):
         doc.current_tag = DocExample()
         doc.examples.append(doc.current_tag)
-    elif match := re.search("^\s*(?:@param|@parameter|@arg|@argument)\s*\{?([A-Za-z0-9_.]+)?\}? (\[)?([A-Za-z0-9_.]+)\]?", line):
+    elif match := re.search("^\s*(?:@param|@parameter|@arg|@argument)\s*\{?([^}]+)?\}? (\[)?([A-Za-z0-9_.]+)\]?", line):
         doc.current_tag = DocParam(
             type = feather_name_to_type_name(match.group(1)),
             optional = match.group(2) != None,
@@ -476,6 +476,8 @@ def parse_module(fullpath):
     current_doc = DocComment()
     definition_stack = [(-999, module)]
     brace_balance = 0
+    # HACK: fix issue where definitions spanning multiple lines are incorrect
+    SPECIAL_CONSTRUCTORS = { "CatspeakLexer" }
     with open(fullpath, "r", encoding="utf-8") as file:
         print(f"...parsing gml module '{name}'")
         for line in file.readlines():
@@ -513,6 +515,13 @@ def parse_module(fullpath):
                         name = match.group(1),
                         doc = current_doc
                     )
+                    if new_definition.name in SPECIAL_CONSTRUCTORS:
+                        # HACK
+                        # actually... NAMED CONSTRUCTOR
+                        new_definition = Constructor(
+                            name = match.group(1),
+                            doc = current_doc
+                        )
                 elif match := re.search("^\s*static\s*([A-Za-z0-9_]+)\s*=\s*function", line):
                     # ANONYMOUS FUNCTION
                     new_definition = Function(
@@ -521,14 +530,14 @@ def parse_module(fullpath):
                         name = match.group(1),
                         doc = current_doc
                     )
-                elif not current_doc.is_empty():
+                elif match := re.search("^\s*globalvar\s*([A-Za-z0-9_]+)", line):
+                    new_definition = GlobalVariable(
+                        name = match.group(1),
+                        doc = current_doc
+                    )
+                elif not isinstance(top_definition, Module):
                     # VARIABLES
-                    if match := re.search("^\s*globalvar\s*([A-Za-z0-9_]+)", line):
-                        new_definition = GlobalVariable(
-                            name = match.group(1),
-                            doc = current_doc
-                        )
-                    elif match := re.search("^\s*self\s*\.\s*([A-Za-z0-9_]+)", line):
+                    if match := re.search("^\s*self\s*\.\s*([A-Za-z0-9_]+)", line):
                         new_definition = InstanceVariable(
                             name = match.group(1),
                             doc = current_doc
