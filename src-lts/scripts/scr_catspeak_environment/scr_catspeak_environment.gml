@@ -1,4 +1,5 @@
-//! Contains the primary user-facing API for consuming Catspeak.
+//! The primary user-facing API for compiling Catspeak programs and
+//! configuring the Catspeak runtime environment.
 
 //# feather use syntax-errors
 
@@ -53,8 +54,8 @@ function CatspeakEnvironment() constructor {
         return interface;
     };
 
-    /// Creates a new [CatspeakLexer] from the supplied buffer, overriding
-    /// the keyword database if one exists for this [CatspeakEngine].
+    /// Creates a new `CatspeakLexer` from the supplied buffer, overriding
+    /// the keyword database if one exists for this `CatspeakEngine`.
     ///
     /// NOTE: The lexer does not take ownership of this buffer, but it may
     ///       mutate it so beware. Therefore you should make sure to delete
@@ -78,7 +79,7 @@ function CatspeakEnvironment() constructor {
 
     /// Parses a buffer containing a Catspeak program into a bespoke format
     /// understood by Catpskeak. Overrides the keyword database if one exists
-    /// for this [CatspeakEngine].
+    /// for this `CatspeakEngine`.
     ///
     /// NOTE: The parser does not take ownership of this buffer, but it may
     ///       mutate it so beware. Therefore you should make sure to delete
@@ -107,7 +108,7 @@ function CatspeakEnvironment() constructor {
         return builder.get();
     };
 
-    /// Similar to [parse], except a string is used instead of a buffer.
+    /// Similar to `parse`, except a string is used instead of a buffer.
     ///
     /// @param {String} src
     ///   The string containing Catspeak source code to parse.
@@ -118,7 +119,7 @@ function CatspeakEnvironment() constructor {
         return Catspeak.parse(buff);
     };
 
-    /// Similar to [parse], except it will pass the responsibility of
+    /// Similar to `parse`, except it will pass the responsibility of
     /// parsing to this sessions async handler.
     ///
     /// NOTE: The async handler can be customised, and therefore any
@@ -144,7 +145,7 @@ function CatspeakEnvironment() constructor {
         __catspeak_error_unimplemented("async-parsing");
     };
 
-    /// Compiles a syntax graph into a GML function. See the [parse] function
+    /// Compiles a syntax graph into a GML function. See the `parse` function
     /// for how to generate a syntax graph from a Catspeak script.
     ///
     /// @param {Struct} asg

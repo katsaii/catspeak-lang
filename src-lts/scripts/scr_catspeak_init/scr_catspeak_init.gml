@@ -20,36 +20,36 @@
 //! generation tools offered by Catspeak.
 //!
 //! @example
-//!     Compile performant scripts from plain-text...
-//!     ```gml
-//!     // parse Catspeak code
-//!     var ir = Catspeak.parseString(@'
-//!       let catspeak = "Catspeak"
-//!     
-//!       return "hello! from within " + catspeak
-//!     ');
-//!     
-//!     // compile Catspeak code into a callable GML function
-//!     var getMessage = Catspeak.compileGML(ir);
-//!     
-//!     // call the Catspeak code just like you would any other GML function!
-//!     show_message(getMessage());
-//!     ```
-//!     ...**without** giving modders unrestricted access to your sensitive game
-//!     code:
-//!     ```gml
-//!     var ir = Catspeak.parseString(@'
-//!       game_end(); -- heheheh, my mod will make your game close >:3
-//!     ');
-//!     
-//!     // calling `badMod` will throw an error instead of calling the `game_end` function
-//!     try {
-//!       var badMod = Catspeak.compileGML(ir);
-//!       badMod();
-//!     } catch (e) {
-//!       show_message("a mod did something bad!");
-//!     }
-//!     ```
+//!   Compile performant scripts from plain-text...
+//!   ```gml
+//!   // parse Catspeak code
+//!   var ir = Catspeak.parseString(@'
+//!     let catspeak = "Catspeak"
+//!   
+//!     return "hello! from within " + catspeak
+//!   ');
+//!   
+//!   // compile Catspeak code into a callable GML function
+//!   var getMessage = Catspeak.compileGML(ir);
+//!   
+//!   // call the Catspeak code just like you would any other GML function!
+//!   show_message(getMessage());
+//!   ```
+//!   ...**without** giving modders unrestricted access to your sensitive game
+//!   code:
+//!   ```gml
+//!   var ir = Catspeak.parseString(@'
+//!     game_end(); -- heheheh, my mod will make your game close >:3
+//!   ');
+//!   
+//!   // calling `badMod` will throw an error instead of calling the `game_end` function
+//!   try {
+//!     var badMod = Catspeak.compileGML(ir);
+//!     badMod();
+//!   } catch (e) {
+//!     show_message("a mod did something bad!");
+//!   }
+//!   ```
 
 //# feather use syntax-errors
 
@@ -65,11 +65,11 @@
 /// ```
 ///
 /// @warning
-///     Disabling this may give a significant performance boost, but may also
-///     result in undefined behaviour or cryptic error messages if an error
-///     occurs. If you are getting errors in your game, and you suspect
-///     Catspeak may be the cause, make sure to re-enable debug mode if you
-///     have it disabled.
+///   Disabling this may give a significant performance boost, but may also
+///   result in undefined behaviour or cryptic error messages if an error
+///   occurs. If you are getting errors in your game, and you suspect
+///   Catspeak may be the cause, make sure to re-enable debug mode if you
+///   have it disabled.
 ///
 /// @return {Bool}
 #macro CATSPEAK_DEBUG_MODE (GM_build_type == "run")
@@ -78,9 +78,9 @@
 /// `true` the first time this function is called, and `false` otherwise.
 ///
 /// @remark
-///     This only needs to be called if you are trying to use Catspeak from
-///     within a script, or through `gml_pragma`. Otherwise you can just
-///     forget this function exists.
+///   This only needs to be called if you are trying to use Catspeak from
+///   within a script, or through `gml_pragma`. Otherwise you can just
+///   forget this function exists.
 ///
 /// @return {Bool}
 function catspeak_force_init() {
