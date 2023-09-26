@@ -399,8 +399,6 @@ def feather_name_to_type_name(typename):
     new_elements = []
     for i, element in enumerate(typename.split(".")):
         element = element.strip()
-        if i == 0:
-            element = element.lower()
         new_elements.append(element)
     return ".".join(new_elements)
 

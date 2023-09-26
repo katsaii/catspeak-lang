@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from .codegen import BasicCodegen
 from . import highlight
 
+@dataclass
 class HTMLCodegen(BasicCodegen):
     EXT = ".html"
 
@@ -8,15 +10,38 @@ class HTMLCodegen(BasicCodegen):
         "class_" : "class"
     }
 
+    enable_highlighter : bool = False
+
+    def write(self, x):
+        if not self.enable_highlighter:
+            super().write(x)
+            return
+        token_styles = {
+            highlight.Comment : "kw-com",
+            highlight.Keyword : "kw-key",
+            highlight.Value : "kw-val",
+            highlight.Variable : "kw-var",
+            highlight.FunctionName : "kw-fun",
+            highlight.TypeName : "kw-typ",
+            highlight.MacroName : "kw-mac",
+        }
+        for kind, content in highlight.tokenise_gml(x):
+            style = token_styles.get(type(kind))
+            if not style:
+                super().write(content)
+                continue
+            with self.tag("span", class_=style):
+                super().write(content)
+
     @BasicCodegen.block
     def tag(self, tag, **attrs):
-        self.write(f"<{tag}")
+        super().write(f"<{tag}")
         for key, val in attrs.items():
             key = HTMLCodegen.KEYWORDS.get(key, key)
-            self.write(f" {key}=\"{val}\"")
-        self.write(">")
+            super().write(f" {key}=\"{val}\"")
+        super().write(">")
         yield
-        self.write(f"</{tag}>")
+        super().write(f"</{tag}>")
 
     # METADATA
 
@@ -124,13 +149,18 @@ class HTMLCodegen(BasicCodegen):
 
     @BasicCodegen.block
     def code(self, **attrs):
-        with self.tag("code", class_="inline-code", **attrs): yield
+        with self.tag("code", class_="inline-code", **attrs):
+            self.enable_highlighter = True
+            yield
+            self.enable_highlighter = False
 
     @BasicCodegen.block
     def code_block(self, **attrs):
         with self.tag("pre", **attrs):
             with self.tag("code", **attrs):
+                self.enable_highlighter = True
                 yield
+                self.enable_highlighter = False
 
     @BasicCodegen.block
     def bold(self, **attrs):
@@ -433,6 +463,16 @@ class HTMLCodegen(BasicCodegen):
             font-size : 1.25em;
             color : var(--c-fg-2);
         }
+
+        .code * { color : var(--c-fg) }
+
+        .kw-com { color : #080!important }
+        .kw-key { color : #34347e!important; font-weight : bold }
+        .kw-val { color : #fa3232!important }
+        .kw-var { opacity : 0.9 }
+        .kw-fun { color : #808!important }
+        .kw-typ { color : #7b7c26!important; font-weight : bold }
+        .kw-mac { color : #ff2558!important; font-weight : bold }
     """
 
     def minify_css(css_in):

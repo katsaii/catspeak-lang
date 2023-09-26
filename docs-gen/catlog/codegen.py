@@ -18,9 +18,7 @@ class BasicCodegen:
             self.content += "\n"
 
     def write_heredoc(self, doc):
-        if self.disable:
-            return
-        self.content += dedent(doc).lstrip()
+        self.write(dedent(doc).strip())
 
     def block(f):
         class WithHandler:
