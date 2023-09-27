@@ -78,11 +78,9 @@ class DocComment:
             text.children.append(doc.Experimental([doc.parse_content(self.unstable.text)]))
         if self.desc and self.desc.text.strip():
             text.children.append(doc.parse_content(self.desc.text))
-        else:
-            text.children.append(doc.parse_content("Undocumented!"))
-        for remark  in self.remarks:
+        for remark in self.remarks:
             text.children.append(doc.Remark([doc.parse_content(remark.text)]))
-        for warning  in self.warnings:
+        for warning in self.warnings:
             text.children.append(doc.Warning([doc.parse_content(warning.text)]))
         if self.params and any(param.text.strip() for param in self.params):
             param_list = doc.List()
@@ -118,19 +116,34 @@ class Definition:
     def is_ignored(self):
         return self.doc.ignore if self.doc != None else False
 
+    def is_documented(self):
+        return (not self.doc.is_empty()) if self.doc != None else False
+
     def is_valid_subdefinition(self, subdefinition):
         return True
 
     def add_subdefinition(self, subdefinition):
-        if subdefinition.is_ignored() or not self.is_valid_subdefinition(subdefinition):
+        if not self.is_valid_subdefinition(subdefinition):
             return
         self.subdefinitions.append(subdefinition)
 
-    def get_subdefinitions(self):
-        return sorted(self.subdefinitions, key = lambda x: x.name)
+    def get_public_subdefinitions(self):
+        return [
+            defn
+            for defn in self.subdefinitions
+            if not defn.is_ignored()
+        ]
+
+    def get_documented_subdefinitions(self):
+        a = [
+            defn
+            for defn in self.subdefinitions
+            if (not defn.is_ignored()) and defn.is_documented()
+        ]
+        return a
 
     def get_doc_richtext(self):
-        if self.doc == None:
+        if not self.is_documented():
             return None
         return self.doc.into_richtext()
 
@@ -159,7 +172,7 @@ class Module(Definition):
     def into_content(self):
         overview = self.get_doc_richtext()
         sections, subchapters = partitian([
-            definition.into_content() for definition in self.subdefinitions
+            defn.into_content() for defn in self.get_documented_subdefinitions()
         ], lambda x: isinstance(x, doc.Section))
         return doc.Chapter(
             title = f"{self.name}",
@@ -249,14 +262,14 @@ class Enum(Definition):
 
         ignored = 0
         for field in self.subdefinitions:
-            if field.doc.ignore:
+            if field.is_ignored():
                 ignored += 1
                 continue
             add_delimiter()
             sig += field.signature()
         if ignored > 0:
             add_delimiter()
-            sig += f"/* +{ignored} fields omitted */"
+            sig += f"/* {ignored} fields omitted */"
         sig += "}"
         return sig
 
@@ -267,22 +280,20 @@ class Enum(Definition):
         def add_delimiter():
             nonlocal i
             nonlocal sig
-            if i > 0:
-                sig += ","
             sig += "\n  "
             i += 1
 
         ignored = 0
         if len(self.subdefinitions) > 0:
             for field in self.subdefinitions:
-                if field.doc.ignore:
+                if field.is_ignored():
                     ignored += 1
                     continue
                 add_delimiter()
-                sig += field.signature()
+                sig += field.signature() + ","
             if ignored > 0:
                 add_delimiter()
-                sig += f"// +{ignored} fields omitted"
+                sig += f"// {ignored} fields omitted"
             sig += "\n"
         sig += "}"
         return sig
@@ -303,7 +314,7 @@ class Enum(Definition):
             overview = content,
             sections = [
                 definition.into_content()
-                for definition in self.subdefinitions
+                for definition in self.get_documented_subdefinitions()
             ]
         )
 
@@ -353,7 +364,7 @@ class Function(Definition):
 
     def signature(self):
         sig = self.signature_inline()
-        if len(sig) > 30 and len(self.doc.params) > 0:
+        if len(sig) > 30:
             sig = self.signature_block()
         return sig
 
@@ -367,7 +378,7 @@ class Function(Definition):
             content = content,
             subsections = [
                 definition.into_content()
-                for definition in self.subdefinitions
+                for definition in self.get_documented_subdefinitions()
             ]
         )
 
@@ -383,14 +394,57 @@ class Constructor(Function):
     def signature_inline(self):
         sig = super().signature_inline()
         sig += " constructor { "
+        i = 0
 
+        def add_delimiter():
+            nonlocal i
+            nonlocal sig
+            if i > 0:
+                sig += "; "
+            i += 1
+
+        ignored = 0
+        for field in self.subdefinitions:
+            if isinstance(field, Function):
+                # only care about fields in the constructor signature
+                continue
+            if field.is_ignored():
+                ignored += 1
+                continue
+            add_delimiter()
+            sig += field.signature()
+        if ignored > 0:
+            add_delimiter()
+            sig += f"/* {ignored} fields omitted */"
         sig += "}"
         return sig
 
     def signature_block(self):
         sig = super().signature_block()
         sig += " constructor { "
+        i = 0
 
+        def add_delimiter():
+            nonlocal i
+            nonlocal sig
+            sig += "\n  "
+            i += 1
+
+        ignored = 0
+        if len(self.subdefinitions) > 0:
+            for field in self.subdefinitions:
+                if isinstance(field, Function):
+                    # only care about fields in the constructor signature
+                    continue
+                if field.is_ignored():
+                    ignored += 1
+                    continue
+                add_delimiter()
+                sig += field.signature() + ";"
+            if ignored > 0:
+                add_delimiter()
+                sig += f"// {ignored} fields omitted"
+            sig += "\n"
         sig += "}"
         return sig
 
@@ -404,7 +458,7 @@ class Constructor(Function):
             overview = content,
             sections = [
                 definition.into_content()
-                for definition in self.subdefinitions
+                for definition in self.get_documented_subdefinitions()
             ]
         )
 

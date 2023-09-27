@@ -210,6 +210,7 @@ class HTMLCodegen(BasicCodegen):
             --c-fg-light : #cacecf;
             --c-fg-2 : #526666;
             --c-accent : #007ffd;
+            --c-stab : #fff2dc;
 
             --f-mono : "Courier New", Courier, monospace;
             --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
@@ -225,6 +226,7 @@ class HTMLCodegen(BasicCodegen):
                 --c-fg-light : #3e4346;
                 --c-fg-2 : #a2947d;
                 --c-accent : #34a4ff;
+                --c-stab : #362c2c;
 
                 color-scheme : dark;
             }
@@ -474,7 +476,7 @@ class HTMLCodegen(BasicCodegen):
             width : fit-content;
             padding : 0.5rem;
             margin-left : 0.5rem;
-            background-color : #fff2dc;
+            background-color : var(--c-stab);
         }
 
         .stab {
