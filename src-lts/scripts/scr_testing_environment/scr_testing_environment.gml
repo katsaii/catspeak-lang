@@ -448,10 +448,10 @@ test_add(function() : Test("match-1") constructor {
         let a = 2
         
         match a {
-            1 => 69,
-            2 => 42,
-            3 => 3.14,
-            else => 0,
+            case 1 { 69 }
+            case 2 { 42 }
+            case 3 { 3.14 }
+            else { 0 }
         }
     ');
     var _func = engine.compileGML(ir);
@@ -465,10 +465,10 @@ test_add(function() : Test("match-2") constructor {
         let a = 2
         
         match a {
-            else => 0,
-            1 => 69,
-            2 => 42,
-            3 => 3.14,
+            else { 0 }
+            case 1 { 69 }
+            case 2 { 42 }
+            case 3 { 3.14 }
         }
     ');
     var _func = engine.compileGML(ir);
@@ -482,9 +482,9 @@ test_add(function() : Test("match-3") constructor {
         let a = 4
         
         match a {
-            1 => 69,
-            2 => 42,
-            3 => 3.14,
+            case 1 { 69 }
+            case 2 { 42 }
+            case 3 { 3.14 }
         }
     ');
     var _func = engine.compileGML(ir);
@@ -514,10 +514,10 @@ test_add(function() : Test("match-5") constructor {
         }
         
         match increment() {
-            1 => 0,
-            2 => 0,
-            3 => 1,
-            else => 2,
+            case 1 { 0}
+            case 2 {0 }
+            case 3 { 1 }
+            else { 2 }
         }
     ');
     var _func = engine.compileGML(ir);
