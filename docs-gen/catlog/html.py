@@ -459,7 +459,6 @@ class HTMLCodegen(BasicCodegen):
             border-left : rgb(var(--colour)) solid 5px;
             background-color : rgba(var(--colour), 0.1);
             padding : 0.5rem;
-            margin-left : 1rem;
         }
 
         blockquote.remark { --colour : 112, 145, 198 }
