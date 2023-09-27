@@ -46,8 +46,8 @@ test_add(function () : Test("env-tokenise-keywords") constructor {
 
 test_add(function () : Test("env-self-inst") constructor {
     var env = new CatspeakEnvironment();
-    var asg = env.parseString(@'self');
-    var gmlFunc = env.compileGML(asg);
+    var ir = env.parseString(@'self');
+    var gmlFunc = env.compileGML(ir);
     var inst = instance_create_depth(0, 0, 0, obj_unit_test_inst);
     gmlFunc.setSelf(inst);
     assertEq(catspeak_special_to_struct(inst), gmlFunc());
@@ -87,14 +87,14 @@ test_add(function () : Test("env-delete-keyword") constructor {
 
 test_add(function () : Test("env-struct-not-terminated") constructor {
     var env = new CatspeakEnvironment();
-    var asg = env.parseString(@'
+    var ir = env.parseString(@'
         return {
             foo: "bar",
             a_number: 0,
             a_string: "Hello World!"
         }
     ');
-    var func = env.compileGML(asg);
+    var func = env.compileGML(ir);
     var result = func();
     assertEq(result, { foo : "bar", a_number : 0, a_string : "Hello World!" });
 });
@@ -311,10 +311,10 @@ test_add(function () : Test("env-gm-asset") constructor {
     var ffi = env.getInterface();
     ffi.exposeFunction("font_exists", font_exists);
     ffi.exposeAsset("fnt_testing");
-    var asg = env.parseString(@'
+    var ir = env.parseString(@'
         return font_exists(fnt_testing);
     ');
-    var func = env.compileGML(asg);
+    var func = env.compileGML(ir);
     var result = func();
     assertEq(true, result);
 });
@@ -323,10 +323,10 @@ test_add(function () : Test("env-gml-function") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByName(is_string);
-    var asg = env.parseString(@'
+    var ir = env.parseString(@'
         return is_string("Hello World!");
     ');
-    var func = env.compileGML(asg);
+    var func = env.compileGML(ir);
     var result = func();
     assertEq(true, result);
 });
@@ -335,11 +335,11 @@ test_add(function () : Test("env-gml-function-by-substring") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("test_array");
-    var asg = env.parseString(@'
+    var ir = env.parseString(@'
         let array = [2, 2, 4];
         return test_array_sum(array);
     ');
-    var func = env.compileGML(asg);
+    var func = env.compileGML(ir);
     var result = func();
     assertEq(8, result);
 });
@@ -348,7 +348,7 @@ test_add(function () : Test("env-gml-function-by-substring-exist") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("test_array");
-    var asg = env.parseString(@'
+    var ir = env.parseString(@'
         return [
             test_array_sum,
             test_array_min,
@@ -357,7 +357,7 @@ test_add(function () : Test("env-gml-function-by-substring-exist") constructor {
             test_array_median,
         ];
     ');
-    var func = env.compileGML(asg);
+    var func = env.compileGML(ir);
     var result = func();
     assertNeq(undefined, result[0]);
     assertNeq(undefined, result[1]);
@@ -375,10 +375,10 @@ test_add(function () : Test("env-gml-function-by-substring-not-exist") construct
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("test_array");
-    var asg = env.parseString(@'
+    var ir = env.parseString(@'
         return test_struct_create;
     ');
-    var func = env.compileGML(asg);
+    var func = env.compileGML(ir);
     var result = func();
     assertEq(undefined, result);
     assert(!is_method(result));
@@ -395,7 +395,7 @@ test_add(function () : Test("env-object-index") constructor {
 test_add(function () : Test("env-else-if") constructor {
     var env = new CatspeakEnvironment();
     try {
-        var asg = env.parseString(@'
+        var ir = env.parseString(@'
             a = 1
             if (a == 1) {
 
@@ -403,7 +403,7 @@ test_add(function () : Test("env-else-if") constructor {
 
             }
         ');
-        env.compileGML(asg);
+        env.compileGML(ir);
     } catch (e) {
         fail(e.message);
     }
@@ -413,7 +413,7 @@ test_add_force(function () : Test(
     "engine-else-if-multiple-statements"
 ) constructor {
     var engine = new CatspeakEnvironment();
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         a = 1
         if (a == 4) or (a == 3) {
             "bad"
@@ -423,7 +423,7 @@ test_add_force(function () : Test(
             "also bad"
         }
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq("good", result);
 });
@@ -434,17 +434,17 @@ test_add_force(function () : Test(
     var engine = new CatspeakEnvironment();
     engine.getInterface().exposeDynamicConstant("room_width", function() { return room_width; });
     engine.getInterface().exposeFunction("room_width_function", function() { return room_width; });
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         return (room_width == room_width_function());
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq(true, result);
 });
 
 test_add(function() : Test("match-1") constructor {
     var engine = new CatspeakEnvironment();
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         let a = 2
         
         match a {
@@ -454,14 +454,14 @@ test_add(function() : Test("match-1") constructor {
             else => 0,
         }
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq(42, result);
 });
 
 test_add(function() : Test("match-2") constructor {
     var engine = new CatspeakEnvironment();
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         let a = 2
         
         match a {
@@ -471,14 +471,14 @@ test_add(function() : Test("match-2") constructor {
             3 => 3.14,
         }
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq(0, result);
 });
 
 test_add(function() : Test("match-3") constructor {
     var engine = new CatspeakEnvironment();
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         let a = 4
         
         match a {
@@ -487,25 +487,25 @@ test_add(function() : Test("match-3") constructor {
             3 => 3.14,
         }
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq(undefined, result);
 });
 
 test_add(function() : Test("match-4") constructor {
     var engine = new CatspeakEnvironment();
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         let a = 0
         match a {}
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq(undefined, result);
 });
 
 test_add(function() : Test("match-5") constructor {
     var engine = new CatspeakEnvironment();
-    var asg = engine.parseString(@'
+    var ir = engine.parseString(@'
         counter = 2;
         
         increment = fun {
@@ -520,7 +520,7 @@ test_add(function() : Test("match-5") constructor {
             else => 2,
         }
     ');
-    var _func = engine.compileGML(asg);
+    var _func = engine.compileGML(ir);
     var result = _func();
     assertEq(1, result);
 });

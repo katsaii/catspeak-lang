@@ -204,9 +204,9 @@ function CatspeakEnvironment() constructor {
     ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
     ///
     /// @return {Function}
-    static compileGML = function (asg) {
+    static compileGML = function (ir) {
         // CatspeakGMLCompiler() will do argument validation
-        var compiler = new CatspeakGMLCompiler(asg, interface);
+        var compiler = new CatspeakGMLCompiler(ir, interface);
         var result;
         do {
             result = compiler.update();

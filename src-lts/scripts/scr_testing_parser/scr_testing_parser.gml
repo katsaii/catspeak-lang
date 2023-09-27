@@ -4,7 +4,7 @@
 function TestParserASG(name, src) : Test(name) constructor {
     self.src = src;
 
-    static checkASG = function (asg) {
+    static checkASG = function (ir) {
         var buff = __catspeak_create_buffer_from_string(src);
         var lexer = new CatspeakLexer(buff);
         var builder = new CatspeakIRBuilder();
@@ -14,7 +14,7 @@ function TestParserASG(name, src) : Test(name) constructor {
             moreToParse = parser.update();
         } until (!moreToParse);
         buffer_delete(buff);
-        assertEq(builder.get(), asg, false);
+        assertEq(builder.get(), ir, false);
     };
 }
 
