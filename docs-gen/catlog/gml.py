@@ -49,7 +49,7 @@ class DocComment:
     pure : bool = False
     desc : ... = None
     deprecated : ... = None
-    unstable : ... = None
+    experimental : ... = None
     remarks : ... = field(default_factory=list)
     warnings : ... = field(default_factory=list)
     params : ... = field(default_factory=list)
@@ -60,7 +60,7 @@ class DocComment:
 
     def is_empty(self):
         if self.ignore or self.pure or self.desc or self.deprecated \
-                or self.unstable or self.remarks or self.warnings \
+                or self.experimental or self.remarks or self.warnings \
                 or self.params or self.returns or self.throws \
                 or self.examples or self.current_tag:
             return False
@@ -74,8 +74,8 @@ class DocComment:
                 children = [doc.parse_content(self.deprecated.text)],
                 since = self.deprecated.since
             ))
-        if self.unstable:
-            text.children.append(doc.Experimental([doc.parse_content(self.unstable.text)]))
+        if self.experimental:
+            text.children.append(doc.Experimental([doc.parse_content(self.experimental.text)]))
         if self.desc and self.desc.text.strip():
             text.children.append(doc.parse_content(self.desc.text))
         for remark in self.remarks:
@@ -116,6 +116,15 @@ class Definition:
     def is_ignored(self):
         return self.doc.ignore if self.doc != None else False
 
+    def is_pure(self):
+        return self.doc.pure if self.doc != None else False
+
+    def is_experimental(self):
+        return self.doc.experimental != None if self.doc != None else False
+
+    def is_deprecated(self):
+        return self.doc.deprecated != None if self.doc != None else False
+
     def is_documented(self):
         return (not self.doc.is_empty()) if self.doc != None else False
 
@@ -146,6 +155,18 @@ class Definition:
         if not self.is_documented():
             return None
         return self.doc.into_richtext()
+
+    def get_doc_attributes(self):
+        sig = ""
+        if self.is_ignored():
+            sig += "/// @ignore\n"
+        if self.is_pure():
+            sig += "/// @pure\n"
+        if self.is_experimental():
+            sig += "/// @experimental\n"
+        if self.is_deprecated():
+            sig += "/// @deprecated\n"
+        return sig
 
     def into_content(self):
         raise Exception(f"`into_content` not implemented for type `{type(self)}`")
@@ -481,8 +502,8 @@ def parse_jsdoc_line(doc, line):
     if match := re.search("^\s*(?:@ignore)", line):
         doc.ignore = True
     elif match := re.search("^\s*(?:@experimental)", line):
-        doc.current_tag = doc.unstable or DocExperimental()
-        doc.unstable = doc.current_tag
+        doc.current_tag = doc.experimental or DocExperimental()
+        doc.experimental = doc.current_tag
     elif match := re.search("^\s*(?:@pure)", line):
         doc.pure = True
     elif match := re.search("^\s*(?:@desc|@description)", line):
