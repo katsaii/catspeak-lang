@@ -5,6 +5,7 @@
 /// @ignore
 ///
 /// @param {Any} val
+/// @return {Bool}
 function __catspeak_is_withable(val) {
     if (is_struct(val) || val == self || val == other) {
         return true;
@@ -19,8 +20,19 @@ function __catspeak_is_withable(val) {
 /// @ignore
 ///
 /// @param {Any} val
+/// @return {Bool}
 function __catspeak_is_callable(val) {
+    gml_pragma("forceinline");
     return is_method(val) || is_numeric(val) && script_exists(val);
+}
+
+/// @ignore
+///
+/// @param {Any} val
+/// @return {Bool}
+function __catspeak_is_nullish(val) {
+    gml_pragma("forceinline");
+    return val == undefined || val == pointer_null;
 }
 
 /// @ignore
@@ -143,9 +155,7 @@ function __catspeak_check_arg(name, val, func, typeName=undefined) {
     if (func(val)) {
         return;
     }
-    if (typeName == undefined) {
-        typeName = __catspeak_infer_type_from_predicate(func);
-    }
+    typeName ??= __catspeak_infer_type_from_predicate(func);
     __catspeak_error(
         "expected argument '", name, "' to be of type '", typeName, "'",
         ", but got '", typeof(val), "' instead"
@@ -162,9 +172,7 @@ function __catspeak_check_arg_not(name, val, func, typeName=undefined) {
     if (!func(val)) {
         return;
     }
-    if (typeName == undefined) {
-        typeName = __catspeak_infer_type_from_predicate(func);
-    }
+    typeName ??= __catspeak_infer_type_from_predicate(func);
     __catspeak_error(
         "expected argument '", name,
         "' to be any type EXCEPT of type '", typeName, "'"
