@@ -1,20 +1,24 @@
 //! Responsible for the syntax analysis stage of the Catspeak compiler.
 //!
-//! This stage creates a hierarchical representation of your Catspeak programs,
-//! called an abstract syntax graph (or ASG for short). These graphs are
-//! encoded as a JSON object, making it possible for you to cache the result
-//! of parsing a mod to a file, instead of re-parsing each time the game loads.
+//! This stage uses `CatspeakIRBuilder` to create a hierarchical
+//! representation of your Catspeak programs, called an abstract syntax graph
+//! (or ASG for short). These graphs are encoded as a JSON object, making it
+//! possible for you to cache the result of parsing a mod to a file, instead
+//! of re-parsing each time the game loads.
 
 //# feather use syntax-errors
 
-/// Consumes tokens produced by a `CatspeakLexer` and transforms them into an
-/// abstract syntax graph representing a Catspeak program.
+/// Consumes tokens produced by a `CatspeakLexer`, transforming the program
+/// they represent into Catspeak IR. This Catspeak IR can be further compiled
+/// down into a callable GML function using `CatspeakGMLCompiler`.
+///
+/// @experimental
 ///
 /// @param {Struct.CatspeakLexer} lexer
 ///   The lexer to consume tokens from.
 ///
 /// @param {Struct.CatspeakIRBuilder} builder
-///   The syntax graph builder to write data to.
+///   The Catspeak IR builder to write the program to.
 function CatspeakParser(lexer, builder) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_arg_struct_instanceof(
@@ -22,31 +26,32 @@ function CatspeakParser(lexer, builder) constructor {
         __catspeak_check_arg_struct_instanceof(
                 "builder", builder, "CatspeakIRBuilder");
     }
+    /// @ignore
     self.lexer = lexer;
+    /// @ignore
     self.asg = builder;
+    /// @ignore
     self.finalised = false;
     builder.pushFunction();
 
-    /// Updates the parser by parsing a simple Catspeak expression from the
-    /// supplied lexer, adding any relevant parse information to the supplied
-    /// syntax graph.
-    ///
-    /// Returns `true` if there is still more data left to parse, and `false`
-    /// if the parser has reached the end of the file.
+    /// Parses a top-level Catspeak statement from the supplied lexer, adding
+    /// any relevant parse information to the supplied IR.
     ///
     /// @example
-    ///   Creates a new [CatspeakParser] from the variables `lexer` and
+    ///   Creates a new `CatspeakParser` from the variables `lexer` and
     ///   `builder`, then loops until there is nothing left to parse.
     ///
-    /// ```gml
-    /// var parser = new CatspeakParser(lexer, builder);
-    /// var moreToParse;
-    /// do {
-    ///     moreToParse = parser.update();
-    /// } until (!moreToParse);
-    /// ```
+    ///   ```gml
+    ///   var parser = new CatspeakParser(lexer, builder);
+    ///   var moreToParse;
+    ///   do {
+    ///       moreToParse = parser.update();
+    ///   } until (!moreToParse);
+    ///   ```
     ///
-    /// @return {Function}
+    /// @return {Bool}
+    ///   `true` if there is still more data left to parse, and `false`
+    ///   if the parser has reached the end of the file.
     static update = function () {
         if (lexer.peek() == CatspeakToken.EOF) {
             if (!finalised) {

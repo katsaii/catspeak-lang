@@ -1,9 +1,9 @@
 //! Responsible for the code generation stage of the Catspeak compiler.
 //!
-//! This stage converts the hierarchical representation of your Catspeak
-//! programs, produced by [CatspeakParser] and [CatspeakIRBuilder], into
-//! various lower-level formats. The most interesting of these formats is
-//! the conversion of Catspeak programs into runnable GML functions.
+//! This stage converts Catspeak IR, produced by `CatspeakParser` or
+//! `CatspeakIRBuilder`, into various lower-level formats. The most
+//! interesting of these formats is the conversion of Catspeak programs into
+//! native GML functions.
 
 //# feather use syntax-errors
 
@@ -22,10 +22,11 @@ function __catspeak_infer_function_name(func) {
     return script_get_name(func);
 }
 
-/// Represents a foreign function/constant interface for exposing Catspeak
+/// Used by Catspeak code generators to expose foreign GML functions,
+/// constants, and properties to the generated Catspeak programs.
 function CatspeakForeignInterface() constructor {
     self.database = { };
-    self.databaseDynConst = { }; //Contains keywords marked as "dynamic constants"
+    self.databaseDynConst = { }; // contains keywords marked as "dynamic constants"
     self.banList = { };
 
     /// Returns the value of a foreign symbol exposed to this interface.
@@ -45,12 +46,14 @@ function CatspeakForeignInterface() constructor {
     /// Returns whether the foreign symbol is a "dynamic constant".
     /// If the symbol hasn't been added then this function returns `false`.
     ///
+    /// @experimental
+    ///
     /// @param {String} name
     ///   The name of the symbol as it appears in Catspeak.
     ///
-    /// @return {Any}
+    /// @return {Bool}
     static isDynamicConstant = function (name) {
-        return (databaseDynConst[$ name] ?? false);
+        return databaseDynConst[$ name] ?? false;
     };
 
     /// Returns whether a foreign symbol is exposed to this interface.
@@ -69,7 +72,7 @@ function CatspeakForeignInterface() constructor {
 
     /// Bans an array of symbols from being used by this interface. Any
     /// symbols in this list will be treated as though they do not exist. To
-    /// unban a set of symbols, you should use the [addPardonList].
+    /// unban a set of symbols, you should use the `addPardonList` method.
     ///
     /// If a symbol was previously banned, this function will have no effect.
     ///
@@ -88,7 +91,7 @@ function CatspeakForeignInterface() constructor {
 
     /// Pardons an array of symbols within this interface.
     ///
-    /// If a symbol was not previously banned by [addBanList], there will be
+    /// If a symbol was not previously banned by `addBanList`, there will be
     /// no effect.
     ///
     /// @param {String} pardon
@@ -108,9 +111,10 @@ function CatspeakForeignInterface() constructor {
 
     /// Exposes a constant value to this interface.
     ///
-    /// NOTE: You cannot expose functions using this function. Instead you
-    ///       should use one of `exposeDynamicConstant` or `exposeFunction`
-    ///       or `exposeMethod`.
+    /// @remark
+    ///   You cannot expose GML functions using this method. Instead you
+    ///   should use one of `exposeDynamicConstant`, `exposeFunction`, or
+    ///   `exposeMethod`.
     ///
     /// @param {String} name
     ///   The name of the constant as it will appear in Catspeak.
@@ -129,10 +133,12 @@ function CatspeakForeignInterface() constructor {
         }
     };
 
-    /// Exposes a "dynamic constant" to this interface. The value provided
-    /// for the constant should be a script or method. When the dynamic
-    /// constant is evaluated at runtime, the method will be executed with
-    /// zero arguments and the return value used as the value of the constant.
+    /// Exposes a "dynamic constant" to this interface. The value provided for
+    /// the constant should be a script or method. When the dynamic constant
+    /// is evaluated at runtime, the method will be executed with zero
+    /// arguments and the return value used as the value of the constant.
+    ///
+    /// @experimental
     ///
     /// @param {String} name
     ///   The name of the constant as it will appear in Catspeak.
@@ -154,11 +160,12 @@ function CatspeakForeignInterface() constructor {
     };
 
     /// Exposes a new unbound function to this interface. When passed a bound
-    /// method (i.e. a non-global function), it will be unbound before it's
+    /// method (i.e. a non-global function), it will be unbound before it is
     /// added to the interface.
     ///
-    /// If you would prefer to keep the bound `self` of a method, you should
-    /// use the `exposeMethod` function instead.
+    /// @remark
+    ///   If you would prefer to keep the bound `self` of a method, you should
+    ///   use the `exposeMethod` method instead.
     ///
     /// @param {String} name
     ///   The name of the function as it will appear in Catspeak.
@@ -179,7 +186,7 @@ function CatspeakForeignInterface() constructor {
     };
 
     /// Behaves similarly to `exposeFunction`, except the name of definition
-    /// is inferred. There are three ways a name will be inferred:
+    /// is inferred. There are three ways this name will be inferred:
     ///
     ///  1) If the value is a script resource, `script_get_name` is used.
     ///  2) If the value is a method and a `name` field exists, then the value
@@ -187,6 +194,10 @@ function CatspeakForeignInterface() constructor {
     ///  3) If the value is a method and a `name` field does not exist, then
     ///     `script_get_name` will be called on the underlying bound script
     ///     resource.
+    ///
+    /// @remark
+    ///   If you would prefer to keep the bound `self` of a method, you should
+    ///   use the `exposeMethodByName` method instead.
     ///
     /// @param {Function} func
     ///   The script ID or function to add.
@@ -238,6 +249,11 @@ function CatspeakForeignInterface() constructor {
 
     /// Exposes a new bound function to this interface.
     ///
+    /// @remark
+    ///   If you would prefer to ignore the bound `self` value of the function,
+    ///   and treat it as a global script, you should use the `exposeFunction`
+    ///   method instead.
+    ///
     /// @param {String} name
     ///   The name of the method as it will appear in Catspeak.
     ///
@@ -265,6 +281,11 @@ function CatspeakForeignInterface() constructor {
     ///  3) If the value is a method and a `name` field does not exist, then
     ///     `script_get_name` will be called on the underlying bound script
     ///     resource.
+    ///
+    /// @remark
+    ///   If you would prefer to ignore the bound `self` value of the function,
+    ///   and treat it as a global script, you should use the
+    ///   `exposeFunctionByName` method instead.
     ///
     /// @param {Function} func
     ///   The script ID or method to add.
@@ -322,6 +343,8 @@ function CatspeakForeignInterface() constructor {
 
 /// The number of microseconds before a Catspeak program times out. The
 /// default is 1 second.
+///
+/// @return {Real}
 #macro CATSPEAK_TIMEOUT 1000
 
 /// @ignore
@@ -336,17 +359,18 @@ function __catspeak_timeout_check(t) {
     }
 }
 
-/// Consumes an abstract syntax graph and converts it into a callable GML
+/// Takes a reference to a Catspeak IR and converts it into a callable GML
 /// function.
-///
-/// NOTE: Do not modify the the syntax graph whilst compilation is taking
-///       place. This will cause undefined behaviour, potentially resulting
-///       in hard to discover bugs!
 ///
 /// @experimental
 ///
-/// @param {Struct} asg
-///   The syntax graph to compile.
+/// @warning
+///   Do not modify the the Catspeak IR whilst compilation is taking place.
+///   This will cause **undefined behaviour**, potentially resulting in hard
+///   to discover bugs!
+///
+/// @param {Struct} ir
+///   The Catspeak IR to compile.
 ///
 /// @param {Struct} [interface]
 ///   The native interface to use.
@@ -358,19 +382,25 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
             "entryPoints", is_array
         );
     }
+    /// @ignore
     self.interface = interface;
+    /// @ignore
     self.functions = asg.functions;
+    /// @ignore
     self.sharedData = {
         globals : { },
         self_ : undefined,
     };
+    /// @ignore
     //# feather disable once GM2043
     self.program = __compileFunctions(asg.entryPoints);
+    /// @ignore
     self.finalised = false;
 
     /// @ignore
     ///
     /// @param {String} name
+    /// @return {Any}
     static __get = function (name) {
         if (interface == undefined) {
             return undefined;
@@ -381,6 +411,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     /// @ignore
     ///
     /// @param {String} name
+    /// @return {Any}
     static __exists = function (name) {
         if (interface == undefined) {
             return undefined;
@@ -391,6 +422,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     /// @ignore
     ///
     /// @param {String} name
+    /// @return {Bool}
     static __isDynamicConstant = function (name) {
         if (interface == undefined) {
             return false;
@@ -398,25 +430,24 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
         return interface.isDynamicConstant(name);
     }
 
-    /// Updates the compiler by generating the code for a single term from the
-    /// supplied syntax graph. Returns the result of the compilation if there
-    /// are no more terms to compile, or `undefined` if there are still more
-    /// terms left to compile.
+    /// Generates the code for a single term from the supplied Catspeak IR.
     ///
     /// @example
     ///   Creates a new `CatspeakGMLCompiler` from the variable `asg` and
     ///   loops until the compiler is finished compiling. The final result is
     ///   assigned to the `result` local variable.
     ///
-    /// ```gml
-    /// var compiler = new CatspeakGMLCompiler(asg);
-    /// var result;
-    /// do {
-    ///     result = compiler.update();
-    /// } until (result != undefined);
-    /// ```
+    ///   ```gml
+    ///   var compiler = new CatspeakGMLCompiler(asg);
+    ///   var result;
+    ///   do {
+    ///       result = compiler.update();
+    ///   } until (result != undefined);
+    ///   ```
     ///
     /// @return {Function}
+    ///   The final compiled Catspeak function if there are no more terms left
+    ///   to compile, or `undefined` if there is still more left to compile.
     static update = function () {
         if (CATSPEAK_DEBUG_MODE && finalised) {
             __catspeak_error(
@@ -667,18 +698,17 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     static __compileMatch = function(ctx, term) {
         var i = 0;
         var n = array_length(term.arms);
-        
         repeat n {
             var pair = term.arms[i];
-            
+            var condition = pair[0] == undefined
+                    ? undefined
+                    : __compileTerm(ctx, pair[0]);
             term.arms[i] = {
-                condition: pair[0] == undefined ? undefined : __compileTerm(ctx, pair[0]),
-                result: __compileTerm(ctx, pair[1]),
+                condition : condition,
+                result : __compileTerm(ctx, pair[1]),
             };
-
-            i++;
+            i += 1;
         }
-        
         return method({
             value: __compileTerm(ctx, term.value),
             arms: term.arms,
@@ -1399,21 +1429,19 @@ function __catspeak_expr_while__() {
 ///@return {Any}
 function __catspeak_expr_match__() {
     var value_ = value();
-    
     var i = 0;
     var len = array_length(arms);
-    
-    repeat len {
+    repeat (len) {
         var arm = arms[i];
-        
-        if arm.condition == undefined || value_ == arm.condition() {
+        // TODO :: remove this `== undefined` check, try optimise it so
+        //         there's a fall-through at the end instead of returning
+        //         `undefined`
+        if (arm.condition == undefined || value_ == arm.condition()) {
             return arm.result();
         }
-        
-        i++;
+        i += 1;
     }
-    
-    return undefined;
+    return undefined; // <-- (see above)
 }
 
 /// @ignore

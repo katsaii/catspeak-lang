@@ -1,10 +1,20 @@
-//! Catspeak presets database.
+//! Presets are built-in collections of GML functions and constants which
+//! can be shared between different instances of `CatspeakEnvironment` in
+//! bulk.
+//!
+//! A limited set of safe, built-in GML standard library functions and
+//! constants are packaged with Catspeak by default. See `Catspeak.interface`
+//! if you need to expose individual functions instead of many.
+//!
+//! @experimental
 
 //# feather use syntax-errors
 
 /// Represents the set of environment presets understood by Catspeak.
-/// When used with [setPreset], this enum determines what functions,
-/// constants, and keywords get exposed.
+/// When used with `setPreset`, this enum determines what GML
+/// functions, constants, and keywords get exposed.
+///
+/// @experimental
 enum CatspeakPreset {
     /// Exposes safe type checking and type conversion functions.
     TYPE,
@@ -27,6 +37,7 @@ enum CatspeakPreset {
     /// Exposes unsafe reflection and debug functions.
     /// Use this preset with extreme caution, because all bets are off.
     UNSAFE,
+    /// @ignore
     __SIZE__,
 }
 
@@ -503,6 +514,8 @@ function __catspeak_preset_unsafe(ffi) {
 /// Adds a new global preset function which can be used to initialise any new
 /// catspeak environments.
 ///
+/// @experimental
+///
 /// @param {Any} key
 ///   The key to use for the preset. Preferably a string, but it can be any
 ///   value type.
@@ -512,13 +525,18 @@ function __catspeak_preset_unsafe(ffi) {
 ///
 /// @example
 ///   Adds a new preset called "my-custom" which, when applied, will
-///   add an `rgb` function to the given [CatspeakEnvironment].
+///   add an `rgb` function to the given `CatspeakEnvironment`.
 ///
-/// ```gml
-/// catspeak_preset_add("my-custom", function (ffi, keywords) {
-///   ffi.exposeFunction("rgb", make_colour_rgb);
-/// });
-/// ```
+///   ```gml
+///   catspeak_preset_add("my-custom", function (interface, keywords) {
+///     interface.exposeFunction("rgb", make_colour_rgb);
+///   });
+///   ```
+///
+///   This preset can then be applied using `Catspeak.applyPreset`:
+///   ```gml
+///   Catspeak.applyPreset("my-custom");
+///   ```
 function catspeak_preset_add(key, callback) {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();

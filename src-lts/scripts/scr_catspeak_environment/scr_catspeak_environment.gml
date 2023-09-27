@@ -1,16 +1,54 @@
 //! The primary user-facing API for compiling Catspeak programs and
 //! configuring the Catspeak runtime environment.
+//!
+//! @example
+//!   A high-level overview of Catspeak usage. The example walks through how
+//!   to compile, execute, and introspect the global variables of a Catspeak
+//!   script:
+//!   ```gml
+//!   // parse Catspeak code
+//!   var ir = Catspeak.parseString(@'
+//!     count = 0
+//!     counter = fun {
+//!       count += 1
+//!       return count
+//!     }
+//!   ');
+//!
+//!   // compile Catspeak code into a callable GML function
+//!   var main = Catspeak.compileGML(ir);
+//!
+//!   // initialise the Catspeak script by calling its main entry point
+//!   main();
+//!
+//!   // grab the counter function from the script
+//!   var counter = main.getGlobals().counter;
+//!
+//!   // call the Catspeak `counter` function from GML!
+//!   show_message(counter()); // prints 1
+//!   show_message(counter()); // prints 2
+//!   show_message(counter()); // prints 3
+//!   show_message(counter()); // prints 4
+//!   ```
 
 //# feather use syntax-errors
 
-/// Packages all common Catspeak features into a neat, configurable box.
+/// Encapsulates all common Catspeak features into a single, configurable box.
 function CatspeakEnvironment() constructor {
+    /// @ignore
     self.keywords = undefined;
-    self.interface = undefined;
+    /// The foreign interface used by this Catspeak environment. This is where
+    /// all external GML functions and constants are exposed to the Catspeak
+    /// runtime environment.
+    ///
+    /// @return {Struct.CatspeakForeignInterface}
+    self.interface = new CatspeakForeignInterface();
+    /// @ignore
     self.sharedGlobal = undefined;
 
-    /// Enables the shared global feature on this Catspeak environment. This
-    /// forces all compiled programs to share the same global variable scope.
+    /// Enables the shared global feature on this Catspeak environment,
+    /// forcing all Catspeak programs compiled after this point to share the
+    /// same global variable scope.
     ///
     /// Typically this should not be enabled, but it can be useful for REPL
     /// (Read-Eval-Print-Loop) style command consoles, where variables persist
@@ -34,11 +72,25 @@ function CatspeakEnvironment() constructor {
     /// Applies list of presets to this Catspeak environment. These changes
     /// cannot be undone, so only choose presets you really need.
     ///
+    /// You can add additional presets using the `catspeak_preset_add` function.
+    ///
+    /// @experimental
+    ///
+    /// @example
+    ///   Enabling the math and draw presets on the default Catspeak
+    ///   environment:
+    ///   ```gml
+    ///   Catspeak.applyPreset(
+    ///     CatspeakPreset.MATH,
+    ///     CatspeakPreset.DRAW
+    ///   );
+    ///   ```
+    ///
     /// @param {Enum.CatspeakPreset} preset
     ///   The preset type to apply.
     ///
     /// @param {Enum.CatspeakPreset} ...
-    ///   Additional preset arguments.
+    ///   Additional presets.
     static applyPreset = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var presetFunc = __catspeak_preset_get(argument[i]);
@@ -46,20 +98,23 @@ function CatspeakEnvironment() constructor {
         }
     };
 
-    /// Returns the foreign interface used by this Catspeak environment. This
-    /// is where all external GML functions and constants are exposed to the
-    /// Catspeak runtime environment.
+    /// @deprecated {3.0.0}
+    ///   Use `Catspeak.interface` instead.
+    ///
+    /// @return {Struct.CatspeakForeignInterface}
     static getInterface = function () {
         interface ??= new CatspeakForeignInterface();
         return interface;
     };
 
     /// Creates a new `CatspeakLexer` from the supplied buffer, overriding
-    /// the keyword database if one exists for this `CatspeakEngine`.
+    /// the keyword database if one exists for the current Catspeak
+    /// environment.
     ///
-    /// NOTE: The lexer does not take ownership of this buffer, but it may
-    ///       mutate it so beware. Therefore you should make sure to delete
-    ///       the buffer once parsing is complete.
+    /// @warning
+    ///   The lexer does not take ownership of this buffer, so you must make
+    ///   sure to delete it after calling this function. Failure to do this
+    ///   will result in leaking memory.
     ///
     /// @param {Id.Buffer} buff
     ///   The ID of the GML buffer to use.
@@ -78,12 +133,13 @@ function CatspeakEnvironment() constructor {
     };
 
     /// Parses a buffer containing a Catspeak program into a bespoke format
-    /// understood by Catpskeak. Overrides the keyword database if one exists
+    /// understood by Catspeak. Overrides the keyword database if one exists
     /// for this `CatspeakEngine`.
     ///
-    /// NOTE: The parser does not take ownership of this buffer, but it may
-    ///       mutate it so beware. Therefore you should make sure to delete
-    ///       the buffer once parsing is complete.
+    /// @warning
+    ///   The parser does not take ownership of this buffer, so you must make
+    ///   sure to delete it after calling this function. Failure to do this
+    ///   will result in leaking memory.
     ///
     /// @param {Id.Buffer} buff
     ///   The ID of the GML buffer to use.
@@ -108,7 +164,7 @@ function CatspeakEnvironment() constructor {
         return builder.get();
     };
 
-    /// Similar to `parse`, except a string is used instead of a buffer.
+    /// Similar to `Catspeak.parse`, except a string is used instead of a buffer.
     ///
     /// @param {String} src
     ///   The string containing Catspeak source code to parse.
@@ -120,15 +176,14 @@ function CatspeakEnvironment() constructor {
     };
 
     /// Similar to `parse`, except it will pass the responsibility of
-    /// parsing to this sessions async handler.
+    /// parsing to this environments async handler.
     ///
-    /// NOTE: The async handler can be customised, and therefore any
-    ///       third-party handlers are not guaranteed to finish within a
-    ///       reasonable time.
+    /// @experimental
     ///
-    /// NOTE: The parser does not take ownership of this buffer, but it may
-    ///       mutate it so beware. Therefore you should make sure to delete
-    ///       the buffer once parsing is complete.
+    /// @remark
+    ///   The async handler can be customised, and therefore any
+    ///   third-party handlers are not guaranteed to finish within a
+    ///   reasonable time.
     ///
     /// @param {Id.Buffer} buff
     ///   The ID of the GML buffer to use.
@@ -139,17 +194,14 @@ function CatspeakEnvironment() constructor {
     /// @param {Real} [size]
     ///   The length of the buffer input. Any characters beyond this limit
     ///   will be treated as the end of the file. Defaults to `infinity`.
-    ///
-    /// @return {Struct.Future}
     static parseAsync = function (buff, offset=undefined, size=undefined) {
         __catspeak_error_unimplemented("async-parsing");
     };
 
-    /// Compiles a syntax graph into a GML function. See the `parse` function
-    /// for how to generate a syntax graph from a Catspeak script.
+    /// Compiles Catspeak IR into a callable GML function.
     ///
-    /// @param {Struct} asg
-    ///   The syntax graph to convert into a GML function.
+    /// @param {Struct} ir
+    ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
     ///
     /// @return {Function}
     static compileGML = function (asg) {
@@ -168,11 +220,15 @@ function CatspeakEnvironment() constructor {
 
     /// Used to change the string representation of a Catspeak keyword.
     ///
+    /// @experimental
+    ///
     /// @param {String} currentName
     ///   The current string representation of the keyword to change.
+    ///   E.g. `"fun"`
     ///
     /// @param {String} newName
     ///   The new string representation of the keyword.
+    ///   E.g. `"function"`
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
@@ -192,11 +248,15 @@ function CatspeakEnvironment() constructor {
 
     /// Used to add a new Catspeak keyword alias.
     ///
+    /// @experimental
+    ///
     /// @param {String} name
     ///   The name of the keyword to add.
+    ///   E.g. `"otherwise"`
     ///
     /// @param {Enum.CatspeakToken} token
     ///   The token this keyword should represent.
+    ///   E.g. `CatspeakToken.ELSE`
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.
@@ -215,8 +275,11 @@ function CatspeakEnvironment() constructor {
 
     /// Used to remove an existing Catspeak keyword from this environment.
     ///
+    /// @experimental
+    ///
     /// @param {String} name
     ///   The name of the keyword to remove.
+    ///   E.g. `"do"`
     ///
     /// @param {String} ...
     ///   Additional keywords to remove.
@@ -237,7 +300,7 @@ function CatspeakEnvironment() constructor {
     /// Used to add a new constant to this environment.
     ///
     /// @deprecated
-    ///   Use `interface.exposeConstant` instead.
+    ///   Use `Catspeak.interface.exposeConstant` instead.
     ///
     /// @param {String} name
     ///   The name of the constant as it will appear in Catspeak.
@@ -257,7 +320,7 @@ function CatspeakEnvironment() constructor {
     /// Used to add a new method to this environment.
     ///
     /// @deprecated
-    ///   Use `interface.exposeMethod` instead.
+    ///   Use `Catspeak.interface.exposeMethod` instead.
     ///
     /// @param {String} name
     ///   The name of the function as it will appear in Catspeak.
@@ -277,7 +340,7 @@ function CatspeakEnvironment() constructor {
     /// Used to add a new unbound function to this environment.
     ///
     /// @deprecated
-    ///   Use `interface.exposeFunction` instead.
+    ///   Use `Catspeak.interface.exposeFunction` instead.
     ///
     /// @param {String} name
     ///   The name of the function as it will appear in Catspeak.
@@ -305,10 +368,11 @@ function CatspeakEnvironment() constructor {
     /// Used to remove an existing constant from this environment.
     ///
     /// @deprecated
-    ///   Use `interface.addBanList` instead.
+    ///   Use `Catspeak.interface.addBanList` instead.
     ///
-    /// NOTE: ALthough you can use this to remove functions, it's
-    ///       recommended to use [removeFunction] for that purpose instead.
+    /// @remark
+    ///   Although you can use this to remove functions, it's recommended to
+    ///   use `Catspeak.removeFunction` for that purpose instead.
     ///
     /// @param {String} name
     ///   The name of the constant to remove.
@@ -320,7 +384,7 @@ function CatspeakEnvironment() constructor {
     /// Used to remove an existing function from this environment.
     ///
     /// @deprecated
-    ///   Use `interface.addBanList` instead.
+    ///   Use `Catspeak.interface.addBanList` instead.
     ///
     /// @param {String} name
     ///   The name of the function to remove.
@@ -330,13 +394,26 @@ function CatspeakEnvironment() constructor {
     static removeFunction = __removeInterface;
 }
 
-/// A usability function for converting special GML constants, such as
-/// `self` or `global` into structs.
+/// Because Catspeak is sandboxed, care must be taken to not expose any
+/// unintentional exploits to modders with GML-specific knowledge. One
+/// exampe of an exploit is using the number `-5` to access all the
+/// internal global variables of a game:
+/// ```gml
+/// var globalBypass = -5;
+/// show_message(globalBypass.secret);
+/// ```
 ///
-/// Will return `undefined` if there does not exist a valid conversion.
+/// Catspeak avoids these exploits by requiring that all special values
+/// be converted to their struct counterpart; that is, Catspeak does not
+/// coerce numbers to these special types implicitly.
+///
+/// Use this function to convert special GML constants, such as `self`,
+/// `global`, or instances into their struct counterparts. Will return
+/// `undefined` if there does not exist a valid conversion.
 ///
 /// @param {Any} gmlSpecial
-///   Any special value to convert into a struct.
+///   Any special GML value to convert into a Catspeak-compatible struct.
+///   E.g. `global` or an instance ID.
 ///
 /// @return {Struct}
 function catspeak_special_to_struct(gmlSpecial) {
@@ -360,8 +437,14 @@ function catspeak_special_to_struct(gmlSpecial) {
     return undefined;
 }
 
-/// The default Catspeak environment. Mainly exists for UX reasons.
-globalvar Catspeak;
+/// The default global Catspeak environment. Mostly exists for UX reasons.
+///
+/// Unless you need to have multiple instances of Catspeak with different
+/// configurations, you should use this. Otherwise, you should create a new
+/// sandboxed Catspeak environment using `new CatspeakEnvironment()`.
+///
+/// @return {Struct.CatspeakEnvironment}
+#macro Catspeak global.__catspeak__
 
 /// @ignore
 function __catspeak_init_engine() {

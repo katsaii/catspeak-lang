@@ -792,6 +792,8 @@ function CatspeakLexer(
 }
 
 /// @ignore
+///
+/// @return {Real}
 #macro __CATSPEAK_CODEPAGE_SIZE 256
 
 /// @ignore
