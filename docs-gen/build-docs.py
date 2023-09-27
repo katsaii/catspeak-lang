@@ -52,7 +52,6 @@ book_api = compile_gml_book(
         "scr_catspeak_parser",
         "scr_catspeak_codegen",
         "scr_catspeak_ir",
-        "scr_catspeak_operators",
 
         # advanced
         "scr_catspeak_alloc",
