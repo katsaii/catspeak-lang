@@ -248,11 +248,17 @@ enum FutureState {
 ///
 /// @deprecated {3.0.0}
 function Future() constructor {
+    /// @ignore
     self.state = FutureState.UNRESOLVED;
+    /// @ignore
     self.result = undefined;
+    /// @ignore
     self.thenFuncs = [];
+    /// @ignore
     self.catchFuncs = [];
+    /// @ignore
     self.finallyFuncs = [];
+    /// @ignore
     self.__futureFlag__ = true;
 
     /// Accepts this future with the supplied argument.

@@ -1,16 +1,22 @@
-//! Responsible for the creation of diagnostic information used by failing
-//! Catspeak programs.
+//! When compiling programs, `CatspeakParser` will embed diagnostic
+//! information in the generated IR, such as the line and column numbers
+//! of an expression or statement. This information can be used by
+//! failing Catspeak programs to offer clearer error messages.
 
 //# feather use syntax-errors
 
 /// 0b00000000000011111111111111111111
 ///
 /// @ignore
+///
+/// @return {Real}
 #macro __CATSPEAK_LOCATION_ROW_MASK 0x000FFFFF
 
 /// 0b11111111111100000000000000000000
 ///
 /// @ignore
+///
+/// @return {Real}
 #macro __CATSPEAK_LOCATION_COLUMN_MASK 0xFFF00000
 
 /// Encodes the line and column numbers of a source location into a 32-bit
@@ -18,11 +24,22 @@
 /// number, with the remaining 12 bits used for the (less important)
 /// column number.
 ///
+/// Because a lot of diagnostic information may be created for any given
+/// Catspeak program, it is important that this information has zero memory
+/// impact; hence, the line and column numbers are encoded into a 32-bit
+/// integer--which can be created and discarded without allocating
+/// memory--instead of as a struct.
+///
 /// **Mask layout**
-/// ```
+/// ```txt
 /// | 00000000000011111111111111111111 |
 /// | <--column--><-------line-------> |
 /// ```
+///
+/// @remark
+///   Because of this, the maximum line number is 1,048,576 and the maximum
+///   column number is 4,096. Any line/column counts beyond this will raise
+///   an exception in debug mode, and just be garbage data in release mode.
 ///
 /// @param {Real} row
 ///   The row number of the source location.
@@ -46,13 +63,13 @@ function catspeak_location_create(row, column) {
     return bitsRow | bitsCol;
 }
 
-/// Gets the column row of a Catspeak source location. This is stored as a
-/// 20-bit unsigned integer within the least-significant bits of the
-/// supplied Catspeak location handle.
+/// Gets the line component of a Catspeak source location. This is stored as a
+/// 20-bit unsigned integer within the least-significant bits of the supplied
+/// Catspeak location handle.
 ///
 /// @param {Real} location
-///   A 32-bit integer representing the source location of a Catspeak source
-///   file.
+///   A 32-bit integer representing the diagnostic information of a Catspeak
+///   program.
 ///
 /// @returns {Real}
 function catspeak_location_get_row(location) {
@@ -68,8 +85,8 @@ function catspeak_location_get_row(location) {
 /// supplied Catspeak location handle.
 ///
 /// @param {Real} location
-///   A 32-bit integer representing the source location of a Catspeak source
-///   file.
+///   A 32-bit integer representing the diagnostic information of a Catspeak
+///   program.
 ///
 /// @returns {Real}
 function catspeak_location_get_column(location) {
