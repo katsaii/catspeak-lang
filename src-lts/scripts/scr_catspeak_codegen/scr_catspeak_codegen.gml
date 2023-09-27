@@ -402,7 +402,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {String} name
     /// @return {Any}
     static __get = function (name) {
-        if (interface == undefined) {
+        if (__catspeak_is_nullish(interface)) {
             return undefined;
         }
         return interface.get(name);
@@ -413,7 +413,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {String} name
     /// @return {Any}
     static __exists = function (name) {
-        if (interface == undefined) {
+        if (__catspeak_is_nullish(interface)) {
             return undefined;
         }
         return interface.exists(name);
@@ -424,7 +424,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {String} name
     /// @return {Bool}
     static __isDynamicConstant = function (name) {
-        if (interface == undefined) {
+        if (__catspeak_is_nullish(interface)) {
             return false;
         }
         return interface.isDynamicConstant(name);
@@ -657,7 +657,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
                 "ifFalse", undefined
             );
         }
-        if (term.ifFalse == undefined) {
+        if (__catspeak_is_nullish(term.ifFalse)) {
             return method({
                 condition : __compileTerm(ctx, term.condition),
                 ifTrue : __compileTerm(ctx, term.ifTrue),
@@ -700,7 +700,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         var n = array_length(term.arms);
         repeat n {
             var pair = term.arms[i];
-            var condition = pair[0] == undefined
+            var condition = __catspeak_is_nullish(pair[0])
                     ? undefined
                     : __compileTerm(ctx, pair[0]);
             term.arms[i] = {
@@ -1149,7 +1149,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             );
         }
         var prod = __productionLookup[term.type];
-        if (CATSPEAK_DEBUG_MODE && prod == undefined) {
+        if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(prod)) {
             __catspeak_error_bug();
         }
         return prod(ctx, term);
@@ -1238,7 +1238,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         }
         var terminalName = __catspeak_term_get_terminal(term);
         return "runtime error " + __catspeak_location_show_ext(term.dbg,
-            terminalName == undefined
+            __catspeak_is_nullish(terminalName)
                     ? "value"
                     : "variable '" + terminalName + "'",
             " ", msg
@@ -1433,10 +1433,11 @@ function __catspeak_expr_match__() {
     var len = array_length(arms);
     repeat (len) {
         var arm = arms[i];
-        // TODO :: remove this `== undefined` check, try optimise it so
+        // TODO :: remove this `__catspeak_is_nullish` check, try optimise it so
         //         there's a fall-through at the end instead of returning
         //         `undefined`
-        if (arm.condition == undefined || value_ == arm.condition()) {
+        if (__catspeak_is_nullish(arm.condition) ||
+                value_ == arm.condition()) {
             return arm.result();
         }
         i += 1;

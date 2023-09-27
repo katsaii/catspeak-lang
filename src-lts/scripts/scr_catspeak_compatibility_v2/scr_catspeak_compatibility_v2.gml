@@ -9,7 +9,7 @@
 /// @param {Any} name
 /// @param {Any} [alternative]
 function __catspeak_deprecated(name, alternative=undefined) {
-    if (alternative == undefined) {
+    if (__catspeak_is_nullish(alternative)) {
         __catspeak_error_silent("'", name, "' isn't supported anymore");
     } else {
         __catspeak_error_silent(

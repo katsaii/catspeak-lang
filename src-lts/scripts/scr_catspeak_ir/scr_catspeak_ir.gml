@@ -152,7 +152,8 @@ function CatspeakIRBuilder() constructor {
             }
         }
         // __createTerm() will do argument validation
-        if (ifFalse.type == CatspeakTerm.VALUE && __getValue(ifFalse) == undefined) {
+        if (ifFalse.type == CatspeakTerm.VALUE &&
+                __catspeak_is_nullish(__getValue(ifFalse))) {
             return __createTerm(CatspeakTerm.IF, location, {
                 condition : condition,
                 ifTrue : ifTrue,
@@ -409,11 +410,15 @@ function CatspeakIRBuilder() constructor {
         }
         // __createTerm() will do argument validation
         var localIdx = undefined;
-        for (var i = currFunctionScope.blocksTop; localIdx == undefined && i >= 0; i -= 1) {
+        for (
+            var i = currFunctionScope.blocksTop;
+            __catspeak_is_nullish(localIdx) && i >= 0;
+            i -= 1
+        ) {
             var scope = currFunctionScope.blocks[| i].locals;
             localIdx = scope[? name];
         }
-        if (localIdx == undefined) {
+        if (__catspeak_is_nullish(localIdx)) {
             return __createTerm(CatspeakTerm.GLOBAL, location, {
                 name : name
             });
@@ -706,7 +711,7 @@ function CatspeakIRBuilder() constructor {
             var blockParent = blocks_[| blocksTop_ - 1];
             inheritedTerms = blockParent.inheritedTerms ?? blockParent.terms;
         }
-        if (block == undefined) {
+        if (__catspeak_is_nullish(block)) {
             ds_list_add(blocks_, {
                 locals : __catspeak_alloc_ds_map(self),
                 terms : __catspeak_alloc_ds_list(self),
@@ -777,7 +782,7 @@ function CatspeakIRBuilder() constructor {
         var functionScopesTop_ = functionScopesTop + 1;
         functionScopesTop = functionScopesTop_;
         var function_ = functionScopes_[| functionScopesTop_];
-        if (function_ == undefined) {
+        if (__catspeak_is_nullish(function_)) {
             function_ = {
                 blocks : __catspeak_alloc_ds_list(self),
                 blocksTop : -1,
@@ -1001,7 +1006,7 @@ function __catspeak_operator_assign_from_token(token) {
 /// @return {Function}
 function __catspeak_operator_get_binary(op) {
     var opFunc = global.__catspeakBinOps[op];
-    if (CATSPEAK_DEBUG_MODE && opFunc == undefined) {
+    if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(opFunc)) {
         __catspeak_error_bug();
     }
     return opFunc;
@@ -1013,7 +1018,7 @@ function __catspeak_operator_get_binary(op) {
 /// @return {Function}
 function __catspeak_operator_get_unary(op) {
     var opFunc = global.__catspeakUnaryOps[op];
-    if (CATSPEAK_DEBUG_MODE && opFunc == undefined) {
+    if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(opFunc)) {
         __catspeak_error_bug();
     }
     return opFunc;
