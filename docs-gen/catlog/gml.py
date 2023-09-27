@@ -426,7 +426,7 @@ class Constructor(Function):
 
         ignored = 0
         for field in self.subdefinitions:
-            if isinstance(field, Function):
+            if not isinstance(field, InstanceVariable):
                 # only care about fields in the constructor signature
                 continue
             if field.is_ignored():
@@ -454,7 +454,7 @@ class Constructor(Function):
         ignored = 0
         if len(self.subdefinitions) > 0:
             for field in self.subdefinitions:
-                if isinstance(field, Function):
+                if not isinstance(field, InstanceVariable):
                     # only care about fields in the constructor signature
                     continue
                 if field.is_ignored():

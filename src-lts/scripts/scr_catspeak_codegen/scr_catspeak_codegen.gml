@@ -36,8 +36,11 @@ function is_catspeak(value) {
 /// Used by Catspeak code generators to expose foreign GML functions,
 /// constants, and properties to the generated Catspeak programs.
 function CatspeakForeignInterface() constructor {
+    /// @ignore
     self.database = { };
+    /// @ignore
     self.databaseDynConst = { }; // contains keywords marked as "dynamic constants"
+    /// @ignore
     self.banList = { };
 
     /// Returns the value of a foreign symbol exposed to this interface.
@@ -402,8 +405,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         globals : { },
         self_ : undefined,
     };
-    /// @ignore
     //# feather disable once GM2043
+    /// @ignore
     self.program = __compileFunctions(ir.entryPoints);
     /// @ignore
     self.finalised = false;
