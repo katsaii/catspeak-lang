@@ -471,36 +471,25 @@ function CatspeakParser(lexer, builder) constructor {
         if (lexer.next() != CatspeakToken.BRACE_LEFT) {
             __ex("expected opening '{' before 'match' arms");
         }
-        
         var conditions = [];
-        
         while (__isNot(CatspeakToken.BRACE_RIGHT)) {
             var value;
-            
-            if (lexer.peek() == CatspeakToken.ELSE) {
-                lexer.next();
+            var prefix = lexer.next();
+            if (prefix == CatspeakToken.ELSE) {
                 value = undefined;
+            } else if (lexer.getLexeme() != "case") {
+                __ex("expected 'case' keyword before non-default match arm");
             } else {
                 value = __parseExpression();
             }
-                   
-            if (lexer.next() != CatspeakToken.ARROW) {
-                __ex("expected match condition to be followed with an arrow '=>'");
-            }
-           
-            var result = __parseExpression();
-           
-            if (lexer.next() != CatspeakToken.COMMA) {
-                __ex("expected match arm to be termined with a comma ','");
-            }
-           
+            ir.pushBlock();
+            __parseStatements("case");
+            var result = ir.popBlock();
             array_push(conditions, [value, result]);
         }
-        
         if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-            __ex("expected closing '}' after 'match' arms");
+            __ex("expected closing '}' after 'match' arm");
         }
-        
         return conditions;
     }
 
@@ -678,7 +667,7 @@ function CatspeakParser(lexer, builder) constructor {
         } else if (peeked == CatspeakToken.SEMICOLON) {
             return "line break ';'";
         }
-        return "token '" + lexer.getLexeme() + "' (" + string() + ")";
+        return "token '" + lexer.getLexeme() + "' (" + string(peeked) + ")";
     };
 
     /// @ignore

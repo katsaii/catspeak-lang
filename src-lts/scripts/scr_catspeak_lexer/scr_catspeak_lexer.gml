@@ -406,7 +406,7 @@ function CatspeakLexer(
     /// emitted by the `next` or `nextWithWhitespace` methods.
     ///
     /// @remark
-    ///   Unlike [getLexeme] this value is not always a string. For numeric
+    ///   Unlike `getLexeme` this value is not always a string. For numeric
     ///   literals, the value will be converted into an integer or real.
     ///
     /// @return {Any}
@@ -955,7 +955,6 @@ function __catspeak_keywords_create() {
     keywords[$ ":"] = CatspeakToken.COLON;
     keywords[$ ","] = CatspeakToken.COMMA;
     keywords[$ "."] = CatspeakToken.DOT;
-    keywords[$ "=>"] = CatspeakToken.ARROW;
     keywords[$ "="] = CatspeakToken.ASSIGN;
     keywords[$ "*="] = CatspeakToken.ASSIGN_MULTIPLY;
     keywords[$ "/="] = CatspeakToken.ASSIGN_DIVIDE;
