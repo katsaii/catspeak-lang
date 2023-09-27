@@ -22,6 +22,17 @@ function __catspeak_infer_function_name(func) {
     return script_get_name(func);
 }
 
+/// Checks whether a value is a valid Catspeak function compiled through
+/// `CatspeakGMLCompiler`.
+///
+/// @param {Any} value
+///   The value to check is a Catspeak function.
+///
+/// @return {Bool}
+function is_catspeak(value) {
+    return is_method(value) && method_get_index(value) == __catspeak_function__;
+}
+
 /// Used by Catspeak code generators to expose foreign GML functions,
 /// constants, and properties to the generated Catspeak programs.
 function CatspeakForeignInterface() constructor {
