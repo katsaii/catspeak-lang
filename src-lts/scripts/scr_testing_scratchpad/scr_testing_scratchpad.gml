@@ -39,29 +39,29 @@ TEST_EXPERIMENT "parser" {
 
 TEST_EXPERIMENT "parser-2" {
     var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
-    var asg = Catspeak.parse(buff);
-    show_message(asg);
+    var ir = Catspeak.parse(buff);
+    show_message(ir);
 }
 
 TEST_EXPERIMENT "parser-3" {
     var buff = __catspeak_create_buffer_from_string(@'1 a 2');
-    var asg = Catspeak.parse(buff);
-    show_message(json_stringify(asg)); //, true));
+    var ir = Catspeak.parse(buff);
+    show_message(json_stringify(ir)); //, true));
 }
 
 TEST_EXPERIMENT "compiler" {
     var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
-    var asg = Catspeak.parse(buff);
-    var f = Catspeak.compileGML(asg);
+    var ir = Catspeak.parse(buff);
+    var f = Catspeak.compileGML(ir);
     show_message([f(), f]);
-    show_message([asg]);
+    show_message([ir]);
 }
 
 TEST_EXPERIMENT "compiler-2" {
     var buff = __catspeak_create_buffer_from_string(@'let a = fun () { let b = "hiiiii"; b } ; a ');
-    var asg = Catspeak.parse(buff);
-    var f = Catspeak.compileGML(asg);
-    show_message(json_stringify(asg)); //, true));
+    var ir = Catspeak.parse(buff);
+    var f = Catspeak.compileGML(ir);
+    show_message(json_stringify(ir)); //, true));
     show_message([f(), f()()]);
 }
 
@@ -76,9 +76,9 @@ TEST_EXPERIMENT "compiler-3" {
         while (a) {
         }
     ');
-    var asg = Catspeak.parse(buff);
-    var f = Catspeak.compileGML(asg);
-    show_message(json_stringify(asg)); //, true));
+    var ir = Catspeak.parse(buff);
+    var f = Catspeak.compileGML(ir);
+    show_message(json_stringify(ir)); //, true));
     show_message(f());
 }
 
@@ -89,9 +89,9 @@ TEST_EXPERIMENT "compiler-4" {
             break "hello"
         }
     ');
-    var asg = Catspeak.parse(buff);
-    show_message(json_stringify(asg)); //, true));
-    var f = Catspeak.compileGML(asg);
+    var ir = Catspeak.parse(buff);
+    show_message(json_stringify(ir)); //, true));
+    var f = Catspeak.compileGML(ir);
     show_message(f());
     
 }
@@ -110,9 +110,9 @@ TEST_EXPERIMENT "compiler-5" {
     ');
     var env = new CatspeakEnvironment();
     env.applyPreset(CatspeakPreset.TYPE, CatspeakPreset.MATH);
-    var asg = env.parse(buff);
-    //show_message(json_stringify(asg, true));
-    var f = env.compileGML(asg);
+    var ir = env.parse(buff);
+    //show_message(json_stringify(ir, true));
+    var f = env.compileGML(ir);
     show_message(f());
     
 }
@@ -126,8 +126,8 @@ TEST_EXPERIMENT "compiler-6" {
     env.getInterface().exposeConstant(
         "global", catspeak_special_to_struct(global)
     );
-    var asg = env.parse(buff);
-    var f = env.compileGML(asg);
+    var ir = env.parse(buff);
+    var f = env.compileGML(ir);
     global.n = 10;
     f();
     show_message([global.hello, global.n]);

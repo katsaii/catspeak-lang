@@ -374,10 +374,10 @@ function __catspeak_timeout_check(t) {
 ///
 /// @param {Struct} [interface]
 ///   The native interface to use.
-function CatspeakGMLCompiler(asg, interface=undefined) constructor {
+function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
-        __catspeak_check_arg_struct("asg", asg,
+        __catspeak_check_arg_struct("ir", ir,
             "functions", is_array,
             "entryPoints", is_array
         );
@@ -385,7 +385,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     /// @ignore
     self.interface = interface;
     /// @ignore
-    self.functions = asg.functions;
+    self.functions = ir.functions;
     /// @ignore
     self.sharedData = {
         globals : { },
@@ -393,7 +393,7 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     };
     /// @ignore
     //# feather disable once GM2043
-    self.program = __compileFunctions(asg.entryPoints);
+    self.program = __compileFunctions(ir.entryPoints);
     /// @ignore
     self.finalised = false;
 
@@ -433,12 +433,12 @@ function CatspeakGMLCompiler(asg, interface=undefined) constructor {
     /// Generates the code for a single term from the supplied Catspeak IR.
     ///
     /// @example
-    ///   Creates a new `CatspeakGMLCompiler` from the variable `asg` and
+    ///   Creates a new `CatspeakGMLCompiler` from the variable `ir` and
     ///   loops until the compiler is finished compiling. The final result is
     ///   assigned to the `result` local variable.
     ///
     ///   ```gml
-    ///   var compiler = new CatspeakGMLCompiler(asg);
+    ///   var compiler = new CatspeakGMLCompiler(ir);
     ///   var result;
     ///   do {
     ///       result = compiler.update();

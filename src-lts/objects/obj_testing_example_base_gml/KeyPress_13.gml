@@ -2,9 +2,9 @@
 //# feather use syntax-errors
 
 try {
-    var asg = environment.parseString(code);
-    gmlFunc = environment.compileGML(asg);
-    //show_message(json_stringify(asg, true));
+    var ir = environment.parseString(code);
+    gmlFunc = environment.compileGML(ir);
+    //show_message(json_stringify(ir, true));
 } catch (e) {
     addLog(e, "error");
 }

@@ -68,10 +68,10 @@ if (frame < runTime) {
 } else if (frame < runTime * 4) {
     var countTotal_ = countTotal;
 
-    var asg = Catspeak.parseString(code);
+    var ir = Catspeak.parseString(code);
     var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
     while (get_timer() < expectTime) {
-        Catspeak.compileGML(asg);
+        Catspeak.compileGML(ir);
 
         countTotal_ += 1;
     }
