@@ -524,3 +524,32 @@ test_add(function() : Test("match-5") constructor {
     var result = _func();
     assertEq(1, result);
 });
+
+test_add(function() : Test("match-local") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        let a = 1;
+        match a {
+            else {
+                let b = 2;
+                a + b
+            }
+        }
+    ');
+    var _func = engine.compileGML(ir);
+    assertEq(1 + 2, _func());
+});
+
+test_add(function() : Test("match-local-scope") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        match "anything" {
+            else {
+                let b = "hi";
+            }
+        }
+        b
+    ');
+    var _func = engine.compileGML(ir);
+    assertEq(undefined, _func());
+});
