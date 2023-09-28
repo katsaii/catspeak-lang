@@ -48,8 +48,6 @@
 ///   The column number of the source location. This is the number of
 ///   Unicode codepoints since the previous new-line character. As a result,
 ///   tabs are considered a single column, not 2, 4, 8, etc. columns.
-///   characters since the previous new-line character; therefore, tabs are
-///   considered a single column, not 2, 4, 8, etc. columns.
 ///
 /// @return {Real}
 function catspeak_location_create(row, column) {
