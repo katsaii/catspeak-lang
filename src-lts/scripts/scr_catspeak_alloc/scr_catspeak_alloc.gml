@@ -18,6 +18,8 @@ function catspeak_collect() {
         }
         weakRef.adapter.destroy(weakRef.ds);
         array_delete(pool, i, 1);
+		--i;
+		--poolSize;
     }
 }
 
