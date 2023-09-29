@@ -21,7 +21,7 @@ book_home = cl.doc.Book(
     brief = "A brief overview of Catspeak.",
     chapters = [cl.doc.Chapter(
         title = "Welcome",
-        overview = cl.doc.parse_content("""
+        overview = cl.md.parse_content("""
             Welcome to the Catspeak documentation, this page is **extremely**
             work-in-progress. See the "Library Reference" tab for the library
             documentation.

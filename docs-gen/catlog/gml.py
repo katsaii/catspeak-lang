@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from . import doc
+from . import doc, md
 import re
 
 def partitian(xs, p):
@@ -71,40 +71,40 @@ class DocComment:
         text = doc.RichText()
         if self.deprecated:
             text.children.append(doc.Deprecated(
-                children = [doc.parse_content(self.deprecated.text)],
+                children = [md.parse_content(self.deprecated.text)],
                 since = self.deprecated.since
             ))
         if self.experimental:
-            text.children.append(doc.Experimental([doc.parse_content(self.experimental.text)]))
+            text.children.append(doc.Experimental([md.parse_content(self.experimental.text)]))
         if self.desc and self.desc.text.strip():
-            text.children.append(doc.parse_content(self.desc.text))
+            text.children.append(md.parse_content(self.desc.text))
         for remark in self.remarks:
-            text.children.append(doc.Remark([doc.parse_content(remark.text)]))
+            text.children.append(doc.Remark([md.parse_content(remark.text)]))
         for warning in self.warnings:
-            text.children.append(doc.Warning([doc.parse_content(warning.text)]))
+            text.children.append(doc.Warning([md.parse_content(warning.text)]))
         if self.params and any(param.text.strip() for param in self.params):
             param_list = doc.List()
-            text.children.append(doc.parse_content("**Arguments**"))
+            text.children.append(md.parse_content("**Arguments**"))
             text.children.append(param_list)
             for i, param in enumerate(self.params):
                 if param.name and param.text.strip():
                     optional_text = "_(optional)_ " if param.optional else ""
                     desc = f"`{param.name}` {optional_text}\n\n{param.text}"
-                    param_list.elements.append(doc.parse_content(desc))
+                    param_list.elements.append(md.parse_content(desc))
         if self.returns:
-            text.children.append(doc.parse_content(f"**Returns** `{self.returns.type}`"))
+            text.children.append(md.parse_content(f"**Returns** `{self.returns.type}`"))
             if self.returns.text:
-                text.children.append(doc.parse_content(self.returns.text))
+                text.children.append(md.parse_content(self.returns.text))
         for throw in self.throws:
-            text.children.append(doc.parse_content(f"**Throws** `{throw.type}`"))
+            text.children.append(md.parse_content(f"**Throws** `{throw.type}`"))
             if throw.text:
-                text.children.append(doc.parse_content(throw.text))
+                text.children.append(md.parse_content(throw.text))
         for i, example in enumerate(self.examples):
             if len(self.examples) > 1:
-                text.children.append(doc.parse_content(f"**Example #{i + 1}**"))
+                text.children.append(md.parse_content(f"**Example #{i + 1}**"))
             else:
-                text.children.append(doc.parse_content(f"**Example**"))
-            text.children.append(doc.parse_content(example.text))
+                text.children.append(md.parse_content(f"**Example**"))
+            text.children.append(md.parse_content(example.text))
         return text
 
 @dataclass

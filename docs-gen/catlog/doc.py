@@ -1,8 +1,4 @@
 from dataclasses import dataclass, field
-from textwrap import dedent
-
-# TODO: don't depend on this external library
-import mistletoe
 
 @dataclass
 class RichText():
@@ -69,37 +65,3 @@ class Metadata:
     author : str = None
     version : ... = (0, 0, 0)
     copyrights : ... = field(default_factory=list)
-
-def parse_content(content):
-    doc = mistletoe.Document.read(dedent(content))
-
-    # from: https://mistletoe-ebp.readthedocs.io/en/latest/api/core_block_tokens.html
-    def ast_to_doc(term):
-        match type(term):
-            case mistletoe.block_tokens.Paragraph:
-                return Paragraph(list(map(ast_to_doc, term.children)))
-            case mistletoe.block_tokens.CodeFence:
-                return CodeBlock(list(map(ast_to_doc, term.children)))
-            case mistletoe.block_tokens.List:
-                return List(list(map(ast_to_doc, term.children)))
-            case mistletoe.block_tokens.ListItem:
-                return RichText(list(map(ast_to_doc, term.children)))
-            case mistletoe.span_tokens.Link:
-                return LinkText(list(map(ast_to_doc, term.children)), term.target)
-            case mistletoe.span_tokens.RawText:
-                return term.content
-            case mistletoe.span_tokens.EscapeSequence:
-                return RichText(list(map(ast_to_doc, term.children)))
-            case mistletoe.span_tokens.Strong:
-                return Bold(list(map(ast_to_doc, term.children)))
-            case mistletoe.span_tokens.Emphasis:
-                return Emphasis(list(map(ast_to_doc, term.children)))
-            case mistletoe.span_tokens.InlineCode:
-                return InlineCode(list(map(ast_to_doc, term.children)))
-            case mistletoe.span_tokens.LineBreak:
-                return "\n"
-            case other:
-                return f"(unknown content {other})".replace("<", "&lt;")
-
-    a = RichText(children = list(map(ast_to_doc, doc.children)))
-    return a

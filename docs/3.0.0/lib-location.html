@@ -21,9 +21,7 @@ memory--instead of as a struct.</p><p><strong>Mask layout</strong></p><pre><code
 column number is 4,096. Any line/column counts beyond this will raise
 an exception in debug mode, and just be garbage data in release mode.</p></blockquote><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">row</code></p><p>The row number of the source location.</p></li><li><p><code class="inline-code">column</code></p><p>The column number of the source location. This is the number of
 Unicode codepoints since the previous new-line character. As a result,
-tabs are considered a single column, not 2, 4, 8, etc. columns.
-characters since the previous new-line character; therefore, tabs are
-considered a single column, not 2, 4, 8, etc. columns.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Real</code></p></section><section><h1 class="heading" id="catspeak_location_get_column"><a href="#catspeak_location_get_column">§</a> catspeak_location_get_column</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_location_get_column</span>(
+tabs are considered a single column, not 2, 4, 8, etc. columns.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Real</code></p></section><section><h1 class="heading" id="catspeak_location_get_column"><a href="#catspeak_location_get_column">§</a> catspeak_location_get_column</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_location_get_column</span>(
   <span class="kw-var">location</span> : <span class="kw-typ">Real</span>,
 ) -> <span class="kw-typ">Real</span></code></pre><p>Gets the column component of a Catspeak source location. This is stored
 as a 12-bit unsigned integer within the most significant bits of the
