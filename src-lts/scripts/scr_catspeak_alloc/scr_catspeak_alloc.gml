@@ -10,16 +10,14 @@ function catspeak_collect() {
         __catspeak_check_init();
     }
     var pool = global.__catspeakAllocPool;
-    var poolSize = array_length(pool);
-    for (var i = 0; i < poolSize; i += 1) {
+    var poolSize = array_length(pool)-1;
+    for (var i = poolSize; i >= 0; i -= 1) {
         var weakRef = pool[i];
         if (weak_ref_alive(weakRef)) {
             continue;
         }
         weakRef.adapter.destroy(weakRef.ds);
         array_delete(pool, i, 1);
-		--i;
-		--poolSize;
     }
 }
 
