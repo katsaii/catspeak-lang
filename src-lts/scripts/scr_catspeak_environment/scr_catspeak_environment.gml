@@ -172,7 +172,9 @@ function CatspeakEnvironment() constructor {
     /// @return {Struct.CatspeakLexer}
     static parseString = function (src) {
         var buff = __catspeak_create_buffer_from_string(src);
-        return Catspeak.parse(buff);
+        var result = parse(buff);
+        buffer_delete(buff);
+        return result;
     };
 
     /// Similar to `parse`, except it will pass the responsibility of
