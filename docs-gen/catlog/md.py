@@ -20,7 +20,7 @@ def parse_content(content):
                 return doc.RichText(list(map(ast_to_doc, term.children)))
             case mistletoe.block_tokens.Heading:
                 # TODO: actual markdown headers
-                return oc.Bold(list(map(ast_to_doc, term.children)))
+                return doc.Bold(list(map(ast_to_doc, term.children)))
             case mistletoe.span_tokens.Link:
                 return doc.LinkText(list(map(ast_to_doc, term.children)), term.target)
             case mistletoe.span_tokens.RawText:

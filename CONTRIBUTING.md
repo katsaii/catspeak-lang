@@ -74,11 +74,13 @@ functions and methods:
 ///   A short description of what `arg1` is used for.
 ///
 /// @example
-/// ```
-/// // add a GML example of how to use `catspeak_example`
-/// ```
+///   Explain the following example:
+///   ```
+///   // add a GML example of how to use `catspeak_example`
+///   ```
 ///
 /// @return {TypeName}
+///   Optional description of return type.
 function catspeak_example(arg1) { ... }
 ```
 
@@ -87,6 +89,22 @@ return types. The only exception to this is if the return type is `undefined`,
 the `@return` tag does not need to be included.
 
 You don't need to write documentation for internal functions.
+
+There are also a handful of other JSDoc tags which can be used for better
+documentation. These are:
+ - `@ignore`: Does not include the documented definition in the documentation.
+ - `@experimental`: Includes a stab in the documentation definition warning that
+   the feature may change or be removed randomly. It is not stablised.
+ - `@deprecated {version}`: Includes a stab in the documentation definition
+   warning that the feature has been deprecated since `version`, and should not
+   be used anymore.
+ - `@throws {type}`: Indicates that the function could potentially throw an
+   exception of `type`.
+ - `@remark`: Includes a note under the documentation description containing
+   additional information.
+ - `@warning`: Includes a note under the documentation description containing
+   important information.
+ - `@example`: Includes an example at the end of the definition documentation.
 
 #### Building the Documentation
 
