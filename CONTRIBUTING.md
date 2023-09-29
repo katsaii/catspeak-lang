@@ -90,12 +90,18 @@ You don't need to write documentation for internal functions.
 
 #### Building the Documentation
 
+0. (prerequisite) Make sure Mistletoe EBP in installed:
+   ```sh
+   pip install mistletoe-ebp
+   ```
+   more info: https://mistletoe-ebp.readthedocs.io/en/latest/using/intro.html#installation
 1. Open a new terminal window.
-2. Navigate to the root directory of this repo, you should see `build-docs.py`.
+2. Navigate to the root directory of this repo, you should see a directory named
+   `docs-gen`.
 3. Run
    ```sh
-   python ./build-docs.py
+   python ./docs-gen/build-docs.py
    ```
 
 If you encounter no errors, then a new documentation page will be written to
-`docs/index.html`.
+`docs/<version>`.
