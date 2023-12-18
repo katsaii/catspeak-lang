@@ -956,12 +956,14 @@ enum CatspeakOperator {
     SHIFT_RIGHT,
     /// The bitwise left shift `<<` operator.
     SHIFT_LEFT,
-    /// The bitwise and `&` operator.
+    /// The bitwise AND `&` operator.
     BITWISE_AND,
-    /// The bitwise xor `^` operator.
+    /// The bitwise XOR `^` operator.
     BITWISE_XOR,
-    /// The bitwise or `|` operator.
+    /// The bitwise OR `|` operator.
     BITWISE_OR,
+    /// The logical XOR operator.
+    XOR,
     /// @ignore
     __SIZE__,
 }
@@ -1179,6 +1181,15 @@ function __catspeak_op_bitwise_or(lhs, rhs) {
 
 /// @ignore
 ///
+/// @param {Any} lhs
+/// @param {Any} rhs
+/// @return {Any}
+function __catspeak_op_xor(lhs, rhs) {
+    return lhs ^^ rhs;
+}
+
+/// @ignore
+///
 /// @param {Any} rhs
 /// @return {Any}
 function __catspeak_op_subtract_unary(rhs) {
@@ -1234,6 +1245,7 @@ function __catspeak_init_operators() {
     unaryOps[@ CatspeakOperator.PLUS] = __catspeak_op_plus_unary;
     unaryOps[@ CatspeakOperator.NOT] = __catspeak_op_not_unary;
     unaryOps[@ CatspeakOperator.BITWISE_NOT] = __catspeak_op_bitwise_not_unary;
+    binOps[@ CatspeakOperator.XOR] = __catspeak_op_xor;
     /// @ignore
     global.__catspeakBinOps = binOps;
     /// @ignore

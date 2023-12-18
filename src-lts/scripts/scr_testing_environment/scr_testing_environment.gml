@@ -553,3 +553,17 @@ test_add(function() : Test("match-local-scope") constructor {
     var _func = engine.compileGML(ir);
     assertEq(undefined, _func());
 });
+
+test_add(function() : Test("expr-xor-false") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'15 xor 12');
+    var _func = engine.compileGML(ir);
+    assertEq(false, _func());
+});
+
+test_add(function() : Test("expr-xor-true") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'-15 xor 12');
+    var _func = engine.compileGML(ir);
+    assertEq(true, _func());
+});
