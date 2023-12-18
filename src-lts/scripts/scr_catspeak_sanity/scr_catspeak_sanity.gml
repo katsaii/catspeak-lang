@@ -168,6 +168,19 @@ function __catspeak_check_arg(name, val, func, typeName=undefined) {
 /// @param {Any} val
 /// @param {Function} func
 /// @param {Any} [typeName]
+function __catspeak_check_arg_optional(name, val, func, typeName=undefined) {
+    if (val == undefined) {
+        return;
+    }
+    return __catspeak_check_arg(name, val, func, typeName);
+}
+
+/// @ignore
+///
+/// @param {Any} name
+/// @param {Any} val
+/// @param {Function} func
+/// @param {Any} [typeName]
 function __catspeak_check_arg_not(name, val, func, typeName=undefined) {
     if (!func(val)) {
         return;
