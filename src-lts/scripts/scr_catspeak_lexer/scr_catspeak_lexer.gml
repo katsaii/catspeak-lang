@@ -93,6 +93,8 @@ enum CatspeakToken {
     AND,
     /// The logical `or` operator.
     OR,
+    /// The logical `xor` operator.
+    XOR,
     /// The functional pipe right `|>` operator.
     PIPE_RIGHT,
     /// The functional pipe left `<|` operator.
@@ -981,6 +983,7 @@ function __catspeak_keywords_create() {
     keywords[$ "|"] = CatspeakToken.BITWISE_OR;
     keywords[$ "and"] = CatspeakToken.AND;
     keywords[$ "or"] = CatspeakToken.OR;
+    keywords[$ "xor"] = CatspeakToken.XOR;
     keywords[$ "|>"] = CatspeakToken.PIPE_RIGHT;
     keywords[$ "<|"] = CatspeakToken.PIPE_LEFT;
     keywords[$ "do"] = CatspeakToken.DO;

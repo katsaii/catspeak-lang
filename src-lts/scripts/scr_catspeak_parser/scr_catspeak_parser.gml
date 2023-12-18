@@ -275,6 +275,11 @@ function CatspeakParser(lexer, builder) constructor {
                 var lhs = result;
                 var rhs = __parseOpPipe();
                 result = ir.createOr(lhs, rhs, lexer.getLocation());
+            } else if (peeked == CatspeakToken.XOR) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpPipe();
+                result = ir.createBinary(CatspeakOperator.XOR, lhs, rhs, lexer.getLocation());
             } else {
                 return result;
             }

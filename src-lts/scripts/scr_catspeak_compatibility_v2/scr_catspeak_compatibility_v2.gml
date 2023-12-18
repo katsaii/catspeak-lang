@@ -29,6 +29,7 @@ function __catspeak_deprecated(name, alternative=undefined) {
 ///
 /// @return {Struct}
 function catspeak_config() {
+    __catspeak_deprecated("catspeak_config");
     catspeak_force_init();
     var config = global.__catspeakConfig;
     if (argument_count > 0 && is_struct(argument[0])) {

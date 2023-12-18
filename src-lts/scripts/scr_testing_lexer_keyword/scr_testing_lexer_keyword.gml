@@ -81,6 +81,10 @@ test_add(function () : TestLexerToken("lexer-keyword-or",
     CatspeakToken.OR, "or", "or"
 ) constructor { });
 
+test_add(function () : TestLexerToken("lexer-keyword-xor",
+    CatspeakToken.XOR, "xor", "xor"
+) constructor { });
+
 test_add(function () : TestLexerToken("lexer-keyword-new",
     CatspeakToken.NEW, "new", "new"
 ) constructor { });
