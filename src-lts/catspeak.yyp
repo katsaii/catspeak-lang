@@ -57,6 +57,7 @@
     {"name":"operagx","path":"options/operagx/options_operagx.yy",},
     {"name":"Android","path":"options/android/options_android.yy",},
     {"name":"iOS","path":"options/ios/options_ios.yy",},
+    {"name":"tvOS","path":"options/tvos/options_tvos.yy",},
   ],
   "defaultScriptType": 1,
   "isEcma": false,
