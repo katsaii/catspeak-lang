@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="The Catspeak library documentation."><title>Catspeak Reference :: struct CatspeakGMLCompiler of Library Reference</title><link rel="stylesheet" href="./style.css"></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lib-init.html"><mark>Library Reference</mark></a></li><li><a href="dub-compatibility_v2.html">Dubiously Undocumented</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lib-init.html">init</a></li><li><a href="lib-environment.html">environment</a></li><li><a href="lib-presets.html">presets</a></li><li><a href="lib-location.html">location</a></li><li><a href="lib-lexer.html">lexer</a></li><li><a href="lib-parser.html">parser</a></li><li><a href="lib-codegen.html">codegen</a><ul><li><a href="lib-struct-catspeakforeigninte+s.html">struct CatspeakForeignInterface</a></li><li><a href="lib-struct-catspeakgmlcompiler.html"><mark>struct CatspeakGMLCompiler</mark></a></li></ul></li><li><a href="lib-ir.html">ir</a></li><li><a href="lib-alloc.html">alloc</a></li></ul></aside><aside id="contents"></aside><main><article><h1 class="chapter-title">struct CatspeakGMLCompiler</h1><pre><code><span class="kw-key">function</span> <span class="kw-typ">CatspeakGMLCompiler</span>(
+  <span class="kw-var">ir</span> : <span class="kw-typ">Struct</span>,
+  <span class="kw-var">interface</span>? : <span class="kw-typ">Struct</span>,
+) <span class="kw-key">constructor</span> { 
+  <span class="kw-com">// 5 fields omitted</span>
+}</code></pre><blockquote class="stab experimental"><strong>🔬 This is an experimental feature. It may change at any moment.</strong></blockquote><p>Takes a reference to a Catspeak IR and converts it into a callable GML
+function.</p><blockquote class="warning"><strong>⚠️ Warning</strong><p>Do not modify the the Catspeak IR whilst compilation is taking place.
+This will cause <strong>undefined behaviour</strong>, potentially resulting in hard
+to discover bugs!</p></blockquote><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">ir</code></p><p>The Catspeak IR to compile.</p></li><li><p><code class="inline-code">interface</code> <em>(optional)</em></p><p>The native interface to use.</p></li></ul><section><h1 class="heading" id="update"><a href="#update">§</a> update</h1><pre><code><span class="kw-key">static</span> <span class="kw-var">update</span> = <span class="kw-key">function</span>()
+  -> <span class="kw-typ">Function</span></code></pre><p>Generates the code for a single term from the supplied Catspeak IR.</p><p><strong>Returns</strong> <code class="inline-code">Function</code></p><p>The final compiled Catspeak function if there are no more terms left
+to compile, or <code class="inline-code">undefined</code> if there is still more left to compile.</p><p><strong>Example</strong></p><p>Creates a new <code class="inline-code">CatspeakGMLCompiler</code> from the variable <code class="inline-code">ir</code> and
+loops until the compiler is finished compiling. The final result is
+assigned to the <code class="inline-code">result</code> local variable.</p><pre><code><span class="kw-key">var</span> <span class="kw-var">compiler</span> = <span class="kw-key">new</span> <span class="kw-typ">CatspeakGMLCompiler</span>(<span class="kw-var">ir</span>);
+<span class="kw-key">var</span> <span class="kw-var">result</span>;
+<span class="kw-key">do</span> {
+    <span class="kw-var">result</span> = <span class="kw-var">compiler</span>.<span class="kw-fun">update</span>();
+} <span class="kw-key">until</span> (<span class="kw-var">result</span> != <span class="kw-val">undefined</span>);
+</code></pre></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>
