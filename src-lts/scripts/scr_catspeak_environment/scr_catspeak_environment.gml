@@ -45,27 +45,24 @@ function CatspeakEnvironment() constructor {
     self.interface = new CatspeakForeignInterface();
     /// @ignore
     self.sharedGlobal = undefined;
-    /// The tokeniser to use for this Catspeak environment.
+    /// The tokeniser to use for this Catspeak environment. Defaults to
+    /// `CatspeakLexer`.
     ///
-    /// Defaults to `CatspeakLexer`.
-    ///
-    /// @unstable
+    /// @experimental
     ///
     /// @return {Function}
     self.lexerType = CatspeakLexer;
-    /// The parser to use for this Catspeak environment.
+    /// The parser to use for this Catspeak environment. Defaults to
+    /// `CatspeakParser`.
     ///
-    /// Defaults to `CatspeakParser`.
-    ///
-    /// @unstable
+    /// @experimental
     ///
     /// @return {Function}
     self.parserType = CatspeakParser;
-    /// The code generator to use for this Catspeak environment.
+    /// The code generator to use for this Catspeak environment. Defaults to
+    /// `CatspeakGMLCompiler`.
     ///
-    /// Defaults to `CatspeakGMLCompiler`.
-    ///
-    /// @unstable
+    /// @experimental
     ///
     /// @return {Function}
     self.codegenType = CatspeakGMLCompiler;
