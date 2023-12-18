@@ -45,6 +45,30 @@ function CatspeakEnvironment() constructor {
     self.interface = new CatspeakForeignInterface();
     /// @ignore
     self.sharedGlobal = undefined;
+    /// The tokeniser to use for this Catspeak environment.
+    ///
+    /// Defaults to `CatspeakLexer`.
+    ///
+    /// @unstable
+    ///
+    /// @return {Function}
+    self.lexerType = CatspeakLexer;
+    /// The parser to use for this Catspeak environment.
+    ///
+    /// Defaults to `CatspeakParser`.
+    ///
+    /// @unstable
+    ///
+    /// @return {Function}
+    self.parserType = CatspeakParser;
+    /// The code generator to use for this Catspeak environment.
+    ///
+    /// Defaults to `CatspeakGMLCompiler`.
+    ///
+    /// @unstable
+    ///
+    /// @return {Function}
+    self.codegenType = CatspeakGMLCompiler;
 
     /// Enables the shared global feature on this Catspeak environment,
     /// forcing all Catspeak programs compiled after this point to share the
@@ -107,7 +131,7 @@ function CatspeakEnvironment() constructor {
         return interface;
     };
 
-    /// Creates a new `CatspeakLexer` from the supplied buffer, overriding
+    /// Creates a new lazy tokeniser from the supplied buffer, overriding
     /// the keyword database if one exists for the current Catspeak
     /// environment.
     ///
@@ -126,10 +150,14 @@ function CatspeakEnvironment() constructor {
     ///   The length of the buffer input. Any characters beyond this limit
     ///   will be treated as the end of the file. Defaults to `infinity`.
     ///
-    /// @return {Struct.CatspeakLexer}
+    /// @return {Struct}
     static tokenise = function (buff, offset=undefined, size=undefined) {
-        // CatspeakLexer() will do argument validation
-        return new CatspeakLexer(buff, offset, size, keywords);
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("buff", buff, buffer_exists);
+            __catspeak_check_arg_optional("offset", offset, is_numeric);
+            __catspeak_check_arg_optional("size", size, is_numeric);
+        }
+        return new lexerType(buff, offset, size, keywords);
     };
 
     /// Parses a buffer containing a Catspeak program into a bespoke format
@@ -151,12 +179,16 @@ function CatspeakEnvironment() constructor {
     ///   The length of the buffer input. Any characters beyond this limit
     ///   will be treated as the end of the file. Defaults to `infinity`.
     ///
-    /// @return {Struct.CatspeakLexer}
+    /// @return {Struct}
     static parse = function (buff, offset=undefined, size=undefined) {
-        // tokenise() will do argument validation
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("buff", buff, buffer_exists);
+            __catspeak_check_arg_optional("offset", offset, is_numeric);
+            __catspeak_check_arg_optional("size", size, is_numeric);
+        }
         var lexer = tokenise(buff, offset, size);
         var builder = new CatspeakIRBuilder();
-        var parser = new CatspeakParser(lexer, builder);
+        var parser = new parserType(lexer, builder);
         var moreToParse;
         do {
             moreToParse = parser.update();
@@ -169,8 +201,11 @@ function CatspeakEnvironment() constructor {
     /// @param {String} src
     ///   The string containing Catspeak source code to parse.
     ///
-    /// @return {Struct.CatspeakLexer}
+    /// @return {Struct}
     static parseString = function (src) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("src", src, is_string);
+        }
         var buff = __catspeak_create_buffer_from_string(src);
         var result = parse(buff);
         buffer_delete(buff);
@@ -200,15 +235,22 @@ function CatspeakEnvironment() constructor {
         __catspeak_error_unimplemented("async-parsing");
     };
 
-    /// Compiles Catspeak IR into a callable GML function.
+    /// Compiles Catspeak IR into its final representation.
+    ///
+    /// @remark
+    ///   By default, the result is a function callable from GML. However,
+    ///   this may vary if you have customised the `codegen` field on this
+    ///   environment.
     ///
     /// @param {Struct} ir
     ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
     ///
     /// @return {Function}
-    static compileGML = function (ir) {
-        // CatspeakGMLCompiler() will do argument validation
-        var compiler = new CatspeakGMLCompiler(ir, interface);
+    static compile = function (ir) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("ir", ir, is_struct);
+        }
+        var compiler = new codegenType(ir, interface);
         var result;
         do {
             result = compiler.update();
@@ -219,6 +261,17 @@ function CatspeakEnvironment() constructor {
         }
         return result;
     };
+
+    /// Compiles Catspeak IR into a callable GML function.
+    ///
+    /// @deprecated {3.0.2}
+    ///   Use `Catspeak.compile` instead.
+    ///
+    /// @param {Struct} ir
+    ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
+    ///
+    /// @return {Function}
+    static compileGML = compile;
 
     /// Used to change the string representation of a Catspeak keyword.
     ///
@@ -301,7 +354,7 @@ function CatspeakEnvironment() constructor {
 
     /// Used to add a new constant to this environment.
     ///
-    /// @deprecated
+    /// @deprecated {3.0.1}
     ///   Use `Catspeak.interface.exposeConstant` instead.
     ///
     /// @param {String} name
@@ -321,7 +374,7 @@ function CatspeakEnvironment() constructor {
 
     /// Used to add a new method to this environment.
     ///
-    /// @deprecated
+    /// @deprecated {3.0.1}
     ///   Use `Catspeak.interface.exposeMethod` instead.
     ///
     /// @param {String} name
@@ -341,7 +394,7 @@ function CatspeakEnvironment() constructor {
 
     /// Used to add a new unbound function to this environment.
     ///
-    /// @deprecated
+    /// @deprecated {3.0.1}
     ///   Use `Catspeak.interface.exposeFunction` instead.
     ///
     /// @param {String} name
@@ -369,7 +422,7 @@ function CatspeakEnvironment() constructor {
 
     /// Used to remove an existing constant from this environment.
     ///
-    /// @deprecated
+    /// @deprecated {3.0.1}
     ///   Use `Catspeak.interface.addBanList` instead.
     ///
     /// @remark
@@ -385,7 +438,7 @@ function CatspeakEnvironment() constructor {
 
     /// Used to remove an existing function from this environment.
     ///
-    /// @deprecated
+    /// @deprecated {3.0.1}
     ///   Use `Catspeak.interface.addBanList` instead.
     ///
     /// @param {String} name
