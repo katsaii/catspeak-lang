@@ -119,27 +119,27 @@ test_add(function () : Test("env-function-brace-style") constructor {
     assertEq("hi", fB.getGlobals().main());
 });
 
-test_add(function () : Test("env-use-test") constructor {
-    msg = "start";
-    var env = new CatspeakEnvironment();
-    env.addMethod("thing", function () {
-        msg = "inside";
-        return function () { msg = "end" };
-    });
-    env.addMethod("get_msg", function () {
-        return msg;
-    });
-    var fA = env.compileGML(env.parseString(@'
-        let a = get_msg();
-        let b;
-        use thing {
-            b = get_msg();
-        }
-        let c = get_msg();
-        [a, b, c]
-    '));
-    assertEq(["start", "inside", "end"], fA());
-});
+//test_add(function () : Test("env-use-test") constructor {
+//    msg = "start";
+//    var env = new CatspeakEnvironment();
+//    env.addMethod("thing", function () {
+//        msg = "inside";
+//        return function () { msg = "end" };
+//    });
+//    env.addMethod("get_msg", function () {
+//        return msg;
+//    });
+//    var fA = env.compileGML(env.parseString(@'
+//        let a = get_msg();
+//        let b;
+//        use thing {
+//            b = get_msg();
+//        }
+//        let c = get_msg();
+//        [a, b, c]
+//    '));
+//    assertEq(["start", "inside", "end"], fA());
+//});
 
 test_add(function () : Test("env-function-set-self") constructor {
     var env = new CatspeakEnvironment();

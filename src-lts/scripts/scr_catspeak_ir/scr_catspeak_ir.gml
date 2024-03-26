@@ -278,30 +278,6 @@ function CatspeakIRBuilder() constructor {
         });
     };
 
-    /// Emits the instruction for a context managed `use` block.
-    ///
-    /// @param {Struct} condition
-    ///   The term which evaluates to the condition of the context block.
-    ///
-    /// @param {Struct} body
-    ///   The body of the block.
-    ///
-    /// @param {Real} [location]
-    ///   The source location of this value term.
-    ///
-    /// @return {Struct}
-    static createUse = function (condition, body, location=undefined) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("condition", condition);
-            __catspeak_check_arg_struct("body", body);
-        }
-        // __createTerm() will do argument validation
-        return __createTerm(CatspeakTerm.USE, location, {
-            condition : condition,
-            body : body,
-        });
-    };
-
     /// Emits the instruction to return a value from the current function.
     ///
     /// @param {Struct} value
