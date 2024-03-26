@@ -165,7 +165,7 @@ function CatspeakForeignInterface() constructor {
             var func = argument[i + 1];
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
-                __catspeak_check_arg("func", func, is_method);
+                //__catspeak_check_arg("func", func, is_method);
             }
             func = is_method(func) ? func : method(undefined, func);
             database[$ name] = func;
