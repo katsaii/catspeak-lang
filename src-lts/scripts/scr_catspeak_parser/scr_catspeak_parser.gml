@@ -176,13 +176,6 @@ function CatspeakParser(lexer, builder) constructor {
             var value = __parseExpression();
             var conditions = __parseMatchArms();
             return ir.createMatch(value, conditions, lexer.getLocation());
-        } else if (peeked == CatspeakToken.USE) {
-            lexer.next();
-            var condition = __parseCondition();
-            ir.pushBlock();
-            __parseStatements("use");
-            var body = ir.popBlock();
-            return ir.createUse(condition, body, lexer.getLocation());
         } else if (peeked == CatspeakToken.FUN) {
             lexer.next();
             ir.pushFunction();

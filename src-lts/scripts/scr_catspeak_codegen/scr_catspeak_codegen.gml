@@ -734,25 +734,6 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
-    static __compileUse = function (ctx, term) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("term", term,
-                "condition", undefined,
-                "body", undefined
-            );
-        }
-        return method({
-            dbgError : __dbgTerm(term.condition, "is not a function"),
-            condition : __compileTerm(ctx, term.condition),
-            body : __compileTerm(ctx, term.body),
-        }, __catspeak_expr_use__);
-    };
-
-    /// @ignore
-    ///
-    /// @param {Struct} ctx
-    /// @param {Struct} term
-    /// @return {Function}
     static __compileReturn = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -1179,7 +1160,6 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.WHILE] = __compileWhile;
         db[@ CatspeakTerm.MATCH] = __compileMatch;
-        db[@ CatspeakTerm.USE] = __compileUse;
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
         db[@ CatspeakTerm.CONTINUE] = __compileContinue;
@@ -1459,26 +1439,26 @@ function __catspeak_expr_match__() {
     return undefined; // <-- (see above)
 }
 
-/// @ignore
-/// @return {Any}
-function __catspeak_expr_use__() {
-    var body_ = body;
-    var open = condition();
-    if (!is_method(open)) {
-        __catspeak_error_got(dbgError, open);
-    }
-    var close = open();
-    if (!is_method(close)) {
-        __catspeak_error_got(dbgError, close);
-    }
-    var result;
-    try {
-        result = body_();
-    } finally {
-        close();
-    }
-    return result;
-}
+///// @ignore
+///// @return {Any}
+//function __catspeak_expr_use__() {
+//    var body_ = body;
+//    var open = condition();
+//    if (!is_method(open)) {
+//        __catspeak_error_got(dbgError, open);
+//    }
+//    var close = open();
+//    if (!is_method(close)) {
+//        __catspeak_error_got(dbgError, close);
+//    }
+//    var result;
+//    try {
+//        result = body_();
+//    } finally {
+//        close();
+//    }
+//    return result;
+//}
 
 /// @ignore
 /// @return {Any}

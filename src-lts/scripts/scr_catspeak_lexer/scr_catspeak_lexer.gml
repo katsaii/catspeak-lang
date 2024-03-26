@@ -119,10 +119,6 @@ enum CatspeakToken {
     ///
     /// @experimental
     MATCH,
-    /// The `use` keyword.
-    ///
-    /// @experimental
-    USE,
     /// The `let` keyword.
     LET,
     /// The `fun` keyword.
@@ -993,7 +989,6 @@ function __catspeak_keywords_create() {
     keywords[$ "for"] = CatspeakToken.FOR;
     keywords[$ "loop"] = CatspeakToken.LOOP;
     keywords[$ "match"] = CatspeakToken.MATCH;
-    keywords[$ "use"] = CatspeakToken.USE;
     keywords[$ "let"] = CatspeakToken.LET;
     keywords[$ "fun"] = CatspeakToken.FUN;
     keywords[$ "params"] = CatspeakToken.PARAMS;
