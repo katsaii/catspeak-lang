@@ -238,15 +238,14 @@ test_add(function () : Test("global-custom-presets") constructor {
 
 test_add(function () : Test("env-properties") constructor {
     var env = new CatspeakEnvironment();
+    env.interface.exposeDynamicConstant("some_property", function () { return 620 });
     var f = env.compileGML(env.parseString(@'
-        let some_property = fun { 620 }
-
-        return :some_property + 2 * :some_property
+        return some_property + 2 * some_property
     '));
     assertEq(620 + 2 * 620, f());
 });
 
-test_add(function () : Test("env-properties-2") constructor {
+test_add(function () : Test("env-misc-counter") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compileGML(env.parseString(@'
         count = 1
@@ -256,9 +255,9 @@ test_add(function () : Test("env-properties-2") constructor {
             return res
         }
 
-        let a = :counter
-        let b = :counter
-        let c = :counter
+        let a = counter()
+        let b = counter()
+        let c = counter()
         return { a, b, c }
     '));
     var result = f();
@@ -267,7 +266,7 @@ test_add(function () : Test("env-properties-2") constructor {
     assertEq(4, result.c);
 });
 
-test_add(function () : Test("env-properties-get-set") constructor {
+test_add(function () : Test("env-misc-get-set") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compileGML(env.parseString(@'
         value = 0
@@ -275,11 +274,11 @@ test_add(function () : Test("env-properties-get-set") constructor {
             if x == undefined { value } else { value = 2 * x }
         }
 
-        :double = 8
-        let a = :double
+        double(8)
+        let a = double()
 
-        :double += 6
-        let b = :double + :double
+        double(double() + 6)
+        let b = double() + double()
 
         return [a, b]
     '));

@@ -453,10 +453,10 @@ function CatspeakParser(lexer, builder) constructor {
             var op = __catspeak_operator_from_token(peeked);
             var value = __parseIndex();
             return ir.createUnary(op, value, lexer.getLocation());
-        } else if (peeked == CatspeakToken.COLON) {
-            // `:property` syntax
-            lexer.next();
-            return ir.createProperty(__parseTerminal(), lexer.getLocation());
+        //} else if (peeked == CatspeakToken.COLON) {
+        //    // `:property` syntax
+        //    lexer.next();
+        //    return ir.createProperty(__parseTerminal(), lexer.getLocation());
         } else {
             return __parseIndex();
         }
