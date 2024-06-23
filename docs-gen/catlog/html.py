@@ -407,12 +407,23 @@ class HTMLCodegen(BasicCodegen):
             font-size : x-large;
         }
 
+        .heading {
+            background-color : var(--c-bg);
+            position : sticky;
+            top : 38px;
+            z-index : 98;
+        }
+
         .chapter-title {
+            background-color : var(--c-bg);
             color : var(--c-fg-2);
             font-family : var(--f-mono);
             font-weight : bold;
             font-size : 25pt;
             margin : 0 0 20px 0;
+            position : sticky;
+            top : 0px;
+            z-index : 99;
         }
 
         @keyframes keyframes-fade {

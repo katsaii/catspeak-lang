@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "scr_catspeak_sanity",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "common",
-    "path": "folders/Catspeak/common.yy",
+  "$GMScript":"",
+  "%Name":"scr_catspeak_sanity",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_catspeak_sanity",
+  "parent":{
+    "name":"common",
+    "path":"folders/Catspeak/common.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

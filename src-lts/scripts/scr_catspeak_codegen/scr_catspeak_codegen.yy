@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "scr_catspeak_codegen",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "compiler",
-    "path": "folders/Catspeak/compiler.yy",
+  "$GMScript":"",
+  "%Name":"scr_catspeak_codegen",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_catspeak_codegen",
+  "parent":{
+    "name":"compiler",
+    "path":"folders/Catspeak/compiler.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

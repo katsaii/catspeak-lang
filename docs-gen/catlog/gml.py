@@ -174,9 +174,11 @@ class Definition:
     def sort(self):
         for subdefinition in self.subdefinitions:
             subdefinition.sort()
+        def get_sort_key(x):
+            return ("z" * 5 if x.is_deprecated() else "") + x.name.lower()
         self.subdefinitions = sorted(
             self.subdefinitions,
-            key = lambda x: x.name.lower()
+            key = get_sort_key
         )
 
     def find(self, name):
