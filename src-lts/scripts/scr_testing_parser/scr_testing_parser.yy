@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "scr_testing_parser",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "parser",
-    "path": "folders/Testing/unit-tests/parser.yy",
+  "$GMScript":"",
+  "%Name":"scr_testing_parser",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_testing_parser",
+  "parent":{
+    "name":"parser",
+    "path":"folders/Testing/unit-tests/parser.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

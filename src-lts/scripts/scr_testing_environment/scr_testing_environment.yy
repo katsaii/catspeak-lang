@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "scr_testing_environment",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "unit-tests",
-    "path": "folders/Testing/unit-tests.yy",
+  "$GMScript":"",
+  "%Name":"scr_testing_environment",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_testing_environment",
+  "parent":{
+    "name":"unit-tests",
+    "path":"folders/Testing/unit-tests.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }
