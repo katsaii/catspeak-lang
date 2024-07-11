@@ -8,6 +8,17 @@ For more information, read the guidelines supplied by [GitHub](https://docs.gith
 
 ## Contributing Guidelines
 
+### IMPORTANT
+
+**DO NOT OPEN THE PROJECT IN A NON-LTS VERSION OF GAMEMAKER. IF YOU MAKE A PR**
+**WHICH CHANGES THE IDE VERSION, IT WILL BE DECLINED.**
+
+If you want to test the project on another version, call either the
+`./copy-project.bat` or `./copy-project.sh` command. This will duplicate the
+`src-lts` directory onto the `./bin` folder, allowing you to make destructive
+changes to the source code without the GameMaker IDE freaking out and modifying
+all of the project `.yy` and `.yyp` files.
+
 ### Issues
 
 If you notice a problem with Catspeak, feel free to create an issue using the
