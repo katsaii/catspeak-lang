@@ -1,13 +1,11 @@
 {
-  "$GMScript":"",
-  "%Name":"scr_catspeak_presets",
-  "isCompatibility":false,
-  "isDnD":false,
-  "name":"scr_catspeak_presets",
-  "parent":{
-    "name":"runtime",
-    "path":"folders/Catspeak/runtime.yy",
+  "resourceType": "GMScript",
+  "resourceVersion": "1.0",
+  "name": "scr_catspeak_presets",
+  "isDnD": false,
+  "isCompatibility": false,
+  "parent": {
+    "name": "runtime",
+    "path": "folders/Catspeak/runtime.yy",
   },
-  "resourceType":"GMScript",
-  "resourceVersion":"2.0",
 }

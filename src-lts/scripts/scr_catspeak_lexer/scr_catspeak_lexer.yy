@@ -1,13 +1,11 @@
 {
-  "$GMScript":"",
-  "%Name":"scr_catspeak_lexer",
-  "isCompatibility":false,
-  "isDnD":false,
-  "name":"scr_catspeak_lexer",
-  "parent":{
-    "name":"compiler",
-    "path":"folders/Catspeak/compiler.yy",
+  "resourceType": "GMScript",
+  "resourceVersion": "1.0",
+  "name": "scr_catspeak_lexer",
+  "isDnD": false,
+  "isCompatibility": false,
+  "parent": {
+    "name": "compiler",
+    "path": "folders/Catspeak/compiler.yy",
   },
-  "resourceType":"GMScript",
-  "resourceVersion":"2.0",
 }

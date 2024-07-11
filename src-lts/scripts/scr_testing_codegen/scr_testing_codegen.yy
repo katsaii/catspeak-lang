@@ -1,13 +1,11 @@
 {
-  "$GMScript":"",
-  "%Name":"scr_testing_codegen",
-  "isCompatibility":false,
-  "isDnD":false,
-  "name":"scr_testing_codegen",
-  "parent":{
-    "name":"codegen",
-    "path":"folders/Testing/unit-tests/codegen.yy",
+  "resourceType": "GMScript",
+  "resourceVersion": "1.0",
+  "name": "scr_testing_codegen",
+  "isDnD": false,
+  "isCompatibility": false,
+  "parent": {
+    "name": "codegen",
+    "path": "folders/Testing/unit-tests/codegen.yy",
   },
-  "resourceType":"GMScript",
-  "resourceVersion":"2.0",
 }
