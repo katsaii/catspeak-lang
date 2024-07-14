@@ -4,21 +4,6 @@
 
 //# feather use syntax-errors
 
-/// @ignore
-///
-/// @param {Any} name
-/// @param {Any} [alternative]
-function __catspeak_deprecated(name, alternative=undefined) {
-    if (__catspeak_is_nullish(alternative)) {
-        __catspeak_error_silent("'", name, "' isn't supported anymore");
-    } else {
-        __catspeak_error_silent(
-            "'", name, "' isn't supported anymore",
-            ", use '", alternative, "' instead"
-        );
-    }
-}
-
 // CATSPEAK 2 //
 
 /// Configures various global settings of the Catspeak compiler and runtime.
@@ -29,7 +14,7 @@ function __catspeak_deprecated(name, alternative=undefined) {
 ///
 /// @return {Struct}
 function catspeak_config() {
-    __catspeak_deprecated("catspeak_config");
+    __catspeak_error_deprecated("catspeak_config");
     catspeak_force_init();
     var config = global.__catspeakConfig;
     if (argument_count > 0 && is_struct(argument[0])) {
@@ -62,7 +47,7 @@ function catspeak_config() {
 ///   The remaining key-value pairs to add, in the same pattern as the two
 ///   previous arguments.
 function catspeak_add_function() {
-    __catspeak_deprecated("catspeak_add_function", "Catspeak.addFunction");
+    __catspeak_error_deprecated("catspeak_add_function", "Catspeak.addFunction");
     catspeak_force_init();
     for (var i = 0; i < argument_count; i += 2) {
         Catspeak.addFunction(argument[i + 0], argument[i + 1]);
@@ -87,7 +72,7 @@ function catspeak_add_function() {
 ///   The remaining key-value pairs to add, in the same pattern as the two
 ///   previous arguments.
 function catspeak_add_constant() {
-    __catspeak_deprecated("catspeak_add_function", "Catspeak.addConstant");
+    __catspeak_error_deprecated("catspeak_add_function", "Catspeak.addConstant");
     catspeak_force_init();
     for (var i = 0; i < argument_count; i += 2) {
         Catspeak.addConstant(argument[i + 0], argument[i + 1]);
@@ -109,7 +94,7 @@ function catspeak_add_constant() {
 ///
 /// @return {Struct.Future}
 function catspeak_execute(scr, args) {
-    __catspeak_deprecated("catspeak_execute");
+    __catspeak_error_deprecated("catspeak_execute");
     static noArgs = [];
     var args_ = args ?? noArgs;
     var argo = 0;
@@ -137,7 +122,7 @@ function catspeak_execute(scr, args) {
 ///
 /// @return {Function}
 function catspeak_session_extern(scr) {
-    __catspeak_deprecated("catspeak_session_extern");
+    __catspeak_error_deprecated("catspeak_session_extern");
     return catspeak_into_gml_function(scr);
 }
 
@@ -152,7 +137,7 @@ function catspeak_session_extern(scr) {
 ///
 /// @return {Function}
 function catspeak_into_gml_function(scr) {
-    __catspeak_deprecated("catspeak_into_gml_function");
+    __catspeak_error_deprecated("catspeak_into_gml_function");
     return scr;
 }
 
@@ -179,7 +164,7 @@ function catspeak_into_gml_function(scr) {
 ///
 /// @return {Struct.CatspeakProcess}
 function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) {
-    __catspeak_deprecated("catspeak_compile_buffer", "Catspeak.parse");
+    __catspeak_error_deprecated("catspeak_compile_buffer", "Catspeak.parse");
     var ret;
     try {
         var f = Catspeak.compileGML(Catspeak.parse(buff, offset, size));
@@ -207,7 +192,7 @@ function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) 
 ///
 /// @return {Struct.CatspeakProcess}
 function catspeak_compile_string(src) {
-    __catspeak_deprecated("catspeak_compile_buffer", "Catspeak.parseString");
+    __catspeak_error_deprecated("catspeak_compile_buffer", "Catspeak.parseString");
     try {
         var f = Catspeak.compileGML(Catspeak.parseString(src));
         return future_ok(f);
@@ -225,7 +210,7 @@ function catspeak_compile_string(src) {
 ///
 /// @return {Id.Buffer}
 function catspeak_create_buffer_from_string(src) {
-    __catspeak_deprecated("catspeak_create_buffer_from_string");
+    __catspeak_error_deprecated("catspeak_create_buffer_from_string");
     var capacity = string_byte_length(src);
     var buff = buffer_create(capacity, buffer_fixed, 1);
     buffer_write(buff, buffer_text, src);
