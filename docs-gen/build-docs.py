@@ -1,9 +1,15 @@
 from datetime import datetime
 from textwrap import dedent
 import catlog.catlog as cl
+from pathlib import Path
 
 def parse_gml_module(name):
-    return cl.gml.parse_module(f"./src-lts/scripts/{name}/{name}.gml")
+    fullpath = name if Path(name).is_file() else f"./src-lts/scripts/{name}/{name}.gml"
+    return cl.gml.parse_module(fullpath)
+
+def parse_md_chapter(name):
+    fullpath = name if Path(name).is_file() else f"./src-lts/notes/{name}/{name}.txt"
+    return cl.md.parse_chapter(fullpath)
 
 init_module = parse_gml_module("scr_catspeak_init")
 version_def = init_module.find("CATSPEAK_VERSION")
@@ -19,14 +25,10 @@ meta = cl.doc.Metadata(
 book_home = cl.doc.Book(
     title = "Home",
     brief = "A brief overview of Catspeak.",
-    chapters = [cl.doc.Chapter(
-        title = "Welcome",
-        overview = cl.md.parse_content("""
-            Welcome to the Catspeak documentation, this page is **extremely**
-            work-in-progress. See the "Library Reference" tab for the library
-            documentation.
-        """)
-    )]
+    chapters = [
+        parse_md_chapter("not_catspeak_welcome"),
+        parse_md_chapter("./LICENSE"),
+    ]
 )
 
 def compile_gml_book(title, brief, pages):

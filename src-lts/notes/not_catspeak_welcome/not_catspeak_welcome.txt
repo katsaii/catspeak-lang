@@ -1,0 +1,20 @@
+Welcome to the Catspeak documentation, this page is **extremely**
+work-in-progress. See the "Library Reference" tab for the library
+documentation.
+
+# Navigating the Book
+
+ - [Home](./hom-welcome.html):
+    Basic information about how to use the Catspeak library.
+
+ - [Library Reference](./lib-init.html):
+    Documentation for the library functions.
+
+ - [Dubiously Undocumented](./dub-compatibility_v2.html):
+    Weird deprecated behaviour and compatibility documentation.
+
+# Disclaimer
+
+Catspeak is currently a solo project (by [katsaii](https://www.katsaii.com/)), and is being maintained in
+my free-time. However, if you want to make a suggestion or report a bug, please
+do report it on [GitHub](https://github.com/NuxiiGit/catspeak-lang/issues) and I will try to review it as soon as possible!
