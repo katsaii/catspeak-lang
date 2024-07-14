@@ -75,6 +75,7 @@
   ],
   "Folders": [
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Compatibility","folderPath":"folders/Catspeak Compatibility.yy","order":3,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Docs","folderPath":"folders/Catspeak Docs.yy","order":5,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Languages","folderPath":"folders/Catspeak Languages.yy","order":4,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak","folderPath":"folders/Catspeak.yy","order":1,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"compiler","folderPath":"folders/Catspeak/compiler.yy","order":2,},
@@ -87,7 +88,6 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"codegen","folderPath":"folders/Testing/unit-tests/codegen.yy","order":0,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"lexer","folderPath":"folders/Testing/unit-tests/lexer.yy","order":2,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"parser","folderPath":"folders/Testing/unit-tests/parser.yy","order":4,},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Docs","folderPath":"folders/Catspeak Docs.yy","order":5,},
   ],
   "AudioGroups": [
     {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},

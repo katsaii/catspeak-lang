@@ -702,18 +702,50 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
-    static __compileWhile = function (ctx, term) {
+    static __compileLoop = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
                 "condition", undefined,
                 "body", undefined
             );
         }
+        if (
+            term.preCondition != undefined &&
+            term.postCondition == undefined
+        ) {
+            if (term.step == undefined) {
+                return method({
+                    ctx : ctx,
+                    condition : __compileTerm(ctx, term.preCondition),
+                    body : __compileTerm(ctx, term.body),
+                }, __catspeak_expr_loop_while__);
+            } else {
+                return method({
+                    ctx : ctx,
+                    condition : __compileTerm(ctx, term.preCondition),
+                    body : __compileTerm(ctx, term.body),
+                    step : __compileTerm(ctx, term.step),
+                }, __catspeak_expr_loop_for__);
+            }
+        }
+        if (
+            term.preCondition == undefined &&
+            term.postCondition != undefined &&
+            term.step == undefined
+        ) {
+            return method({
+                ctx : ctx,
+                condition : __compileTerm(ctx, term.postCondition),
+                body : __compileTerm(ctx, term.body),
+            }, __catspeak_expr_loop_do__);
+        }
         return method({
             ctx : ctx,
-            condition : __compileTerm(ctx, term.condition),
+            preCondition : __compileTerm(ctx, term.preCondition),
+            postCondition : __compileTerm(ctx, term.postCondition),
+            step : __compileTerm(ctx, term.step),
             body : __compileTerm(ctx, term.body),
-        }, __catspeak_expr_while__);
+        }, __catspeak_expr_loop_general__);
     };
 
     /// @ignore
@@ -1170,7 +1202,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         db[@ CatspeakTerm.STRUCT] = __compileStruct;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
-        db[@ CatspeakTerm.WHILE] = __compileWhile;
+        db[@ CatspeakTerm.LOOP] = __compileLoop;
         db[@ CatspeakTerm.MATCH] = __compileMatch;
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
@@ -1417,7 +1449,7 @@ function __catspeak_expr_or__() {
 
 /// @ignore
 /// @return {Any}
-function __catspeak_expr_while__() {
+function __catspeak_expr_loop_while__() {
     var callTime = ctx.callTime;
     var condition_ = condition;
     var body_ = body;
@@ -1433,6 +1465,81 @@ function __catspeak_expr_while__() {
             }
         }
     }
+    return undefined;
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_loop_for__() {
+    var callTime = ctx.callTime;
+    var condition_ = condition;
+    var step_ = step;
+    var body_ = body;
+    while (condition_()) {
+        __catspeak_timeout_check(callTime);
+        try {
+            body_();
+        } catch (e) {
+            if (e == global.__catspeakGmlBreakRef) {
+                return e[0];
+            } else if (e != global.__catspeakGmlContinueRef) {
+                throw e;
+            }
+        }
+        step_();
+    }
+    return undefined;
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_loop_do__() {
+    var callTime = ctx.callTime;
+    var condition_ = condition;
+    var body_ = body;
+    do {
+        __catspeak_timeout_check(callTime);
+        try {
+            body_();
+        } catch (e) {
+            if (e == global.__catspeakGmlBreakRef) {
+                return e[0];
+            } else if (e != global.__catspeakGmlContinueRef) {
+                throw e;
+            }
+        }
+    } until (!condition_());
+    return undefined;
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_loop_general__() {
+    var callTime = ctx.callTime;
+    var preCondition_ = preCondition;
+    var postCondition_ = postCondition;
+    var step_ = step;
+    var body_ = body;
+    while (true) {
+        __catspeak_timeout_check(callTime);
+        if (!preCondition_()) {
+            break;
+        }
+        try {
+            body_();
+        } catch (e) {
+            if (e == global.__catspeakGmlBreakRef) {
+                return e[0];
+            } else if (e != global.__catspeakGmlContinueRef) {
+                throw e;
+            }
+        }
+        if (!postCondition_()) {
+            break;
+        }
+        step_();
+    }
+    return undefined;
 }
 
 /// @ignore
@@ -1455,27 +1562,6 @@ function __catspeak_expr_match__() {
     return undefined; // <-- (see above)
 }
 
-///// @ignore
-///// @return {Any}
-//function __catspeak_expr_use__() {
-//    var body_ = body;
-//    var open = condition();
-//    if (!is_method(open)) {
-//        __catspeak_error_got(dbgError, open);
-//    }
-//    var close = open();
-//    if (!is_method(close)) {
-//        __catspeak_error_got(dbgError, close);
-//    }
-//    var result;
-//    try {
-//        result = body_();
-//    } finally {
-//        close();
-//    }
-//    return result;
-//}
-
 /// @ignore
 /// @return {Any}
 function __catspeak_expr_while_simple__() {
@@ -1486,6 +1572,7 @@ function __catspeak_expr_while_simple__() {
         __catspeak_timeout_check(callTime);
         body_();
     }
+    return undefined;
 }
 
 /// @ignore
