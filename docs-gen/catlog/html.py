@@ -429,6 +429,13 @@ class HTMLCodegen(BasicCodegen):
             z-index : 99;
         }
 
+        .subchapter-title {
+            color : var(--c-fg-2);
+            font-family : var(--f-mono);
+            font-weight : bold;
+            font-size : 15pt;
+        }
+
         @keyframes keyframes-fade {
             from { background : var(--c-accent) }
         }

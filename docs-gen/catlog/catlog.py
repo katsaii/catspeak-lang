@@ -123,11 +123,17 @@ def write_contents(sb, chapter):
                     with list_element():
                         write_contents_section(sb, section, 0)
 
-def write_main(sb, chapter):
+def write_main(sb, book, chapter):
     with sb.main():
         with sb.article():
             with sb.heading(0, class_="chapter-title"):
                 sb.write(chapter.title)
+            for subchapter in chapter.subchapters:
+                with sb.tag("div", class_="subchapter-title"):
+                    sb.write("↳ ")
+                    uid = title_to_uid(book.title, subchapter.title)
+                    with sb.link(uid_to_path(uid, sb.EXT), class_="subchapter-title"):
+                        sb.write(subchapter.title)
             if chapter.overview:
                 write_richtext(sb, chapter.overview)
             for section in chapter.sections:
@@ -248,7 +254,7 @@ def compile_books(codegen, meta, *books):
                     with sb.article(id="chapter-content"):
                         write_chapters(sb, book, chapter)
                         write_contents(sb, chapter)
-                        write_main(sb, chapter)
+                        write_main(sb, book, chapter)
                     write_footer(sb, meta)
             pages.append((path, sb.content))
             if chapter.subchapters:

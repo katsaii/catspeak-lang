@@ -492,8 +492,7 @@ def script_name_to_module_name(module):
     return name
 
 def feather_name_to_type_name(typename):
-    if typename == None:
-        typenane = "Any"
+    typename = "Any" if typename == None else typename
     new_elements = []
     for i, element in enumerate(typename.split(".")):
         element = element.strip()
