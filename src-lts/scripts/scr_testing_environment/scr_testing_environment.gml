@@ -152,6 +152,28 @@ test_add(function () : Test("env-function-set-self") constructor {
     assertEq("hi", result.hi);
 });
 
+test_add(function () : Test("env-function-method") constructor {
+    var env = new CatspeakEnvironment();
+    var f = env.compile(env.parseString(@'
+        return fun { self };
+    '));
+    var fun = catspeak_method({ bye : "bye" }, f());
+    var result = catspeak_execute_ext(fun, { bye : "sike!" });
+    assertTypeof(result, "struct");
+    assertEq("bye", result.bye);
+});
+
+test_add(function () : Test("env-function-method-2") constructor {
+    var env = new CatspeakEnvironment();
+    var f = env.compile(env.parseString(@'
+        return fun { self };
+    '));
+    var fun = catspeak_method({ bye : "bye" }, f());
+    var result = fun();
+    assertTypeof(result, "struct");
+    assertEq("bye", result.bye);
+});
+
 function EngineFunctionMethodCallTest__Construct() constructor {
     // this is part of the below test, but needs to live in global scope
     // otherwise the name will be mangled

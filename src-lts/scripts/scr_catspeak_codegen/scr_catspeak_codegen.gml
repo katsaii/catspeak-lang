@@ -33,6 +33,17 @@ function is_catspeak(value) {
     return is_method(value) && method_get_index(value) == __catspeak_function__;
 }
 
+/// Checks whether a value is a valid Catspeak function bound using
+/// `catspeak_method`.
+///
+/// @param {Any} value
+///   The value to check is a Catspeak method.
+///
+/// @return {Bool}
+function is_catspeak_method(value) {
+    return is_method(value) && method_get_index(value) == __catspeak_function_method__;
+}
+
 /// Used by Catspeak code generators to expose foreign GML functions,
 /// constants, and properties to the generated Catspeak programs.
 function CatspeakForeignInterface() constructor {
