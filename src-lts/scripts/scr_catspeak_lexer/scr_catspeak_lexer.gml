@@ -228,6 +228,7 @@ function CatspeakLexer(
             __catspeak_check_arg("keywords", keywords, is_struct);
         }
     }
+
     /// @ignore
     self.buff = buff;
     /// @ignore

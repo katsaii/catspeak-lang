@@ -272,8 +272,10 @@ function CatspeakIRBuilder() constructor {
             return createValue(undefined, condition.dbg);
         }
         // __createTerm() will do argument validation
-        return __createTerm(CatspeakTerm.WHILE, location, {
-            condition : condition,
+        return __createTerm(CatspeakTerm.LOOP, location, {
+            preCondition : condition,
+            postCondition : undefined,
+            step : undefined,
             body : body,
         });
     };
@@ -874,7 +876,7 @@ enum CatspeakTerm {
     IF,
     AND,
     OR,
-    WHILE,
+    LOOP,
     MATCH,
     USE,
     RETURN,
