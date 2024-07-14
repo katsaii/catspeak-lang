@@ -518,10 +518,10 @@ function catspeak_special_to_struct(gmlSpecial) {
 ///   The result of evaluating the `callee` function.
 function catspeak_execute(callee) {
     static args = [];
-    for (var i = argument_count; i >= 0; i -= 1) {
-        args[@ i] = argument[i];
+    for (var i = argument_count; i >= 1; i -= 1) {
+        args[@ i - 1] = argument[i];
     }
-    return catspeak_execute_ext(callee, self, args);
+    return catspeak_execute_ext(callee, self, args, 0, argument_count - 1);
 }
 
 #macro __CATSPEAK_BEGIN_SELF \
@@ -603,7 +603,36 @@ function catspeak_globals(callee) {
     if (is_catspeak(callee)) {
         return callee.getGlobals();
     }
+    if (is_catspeak_method(callee)) {
+        // TODO
+    }
     return undefined;
+}
+
+function catspeak_method(self_, callee) {
+    if (is_catspeak(callee)) {
+        return method({
+            callee : callee,
+            self_ : self_,
+        }, __catspeak_function_method__);
+    }
+    if (is_catspeak_method(callee)) {
+        var methodData = method_get_self(callee);
+        return method({
+            callee : methodData.callee,
+            self_ : self_,
+        }, __catspeak_function_method__);
+    }
+    return method(self_, callee);
+}
+
+/// @ignore
+function __catspeak_function_method__() {
+    static args = [];
+    for (var i = argument_count; i >= 0; i -= 1) {
+        args[@ i] = argument[i];
+    }
+    return catspeak_execute_ext(callee, self_, args, 0, argument_count);
 }
 
 /// @ignore
