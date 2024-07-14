@@ -388,8 +388,11 @@ class HTMLCodegen(BasicCodegen):
         h2.heading { border-bottom : var(--c-fg-light) solid 1px }
 
         section > section {
-            padding-top : 1rem;
             padding-left : 1rem;
+        }
+
+        section {
+            padding-top : 2rem;
         }
 
         .heading > a {

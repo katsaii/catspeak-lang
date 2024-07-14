@@ -1,0 +1,143 @@
+# Installation
+
+1) Get a recent release of Catspeak from the [GitHub releases page](https://github.com/NuxiiGit/catspeak-lang/releases).
+    You should see a download for a file with the extension `.yymps`.
+
+ 2) Open your project file in the GameMaker IDE.
+
+ 3) Navigate to the toolbar at the top of the IDE and find "Tools". Click this
+    and select "Import Local Package" from the drop-down menu.
+
+ 4) Select the `.yymps` file you downloaded, and follow the wizard to import
+    the Catspeak resources. If you're not sure what to import, click "Add All".
+
+Now you're setup, see the [Basic Usage](#basic-usage) section for some
+introductory examples, or read through the [Introduction](#introduction) section
+for a full-fat overview.
+
+# Introduction
+
+Catspeak is the spiritual successor to the old GML function `execute_string`.
+This means that custom user code can be executed as a string by your game
+for modding support or a debug console. In nerdspeak: Catspeak is a compiler
+backend and virtual machine for executing arbitrary code at runtime.
+
+Unlike `execute_string`, Catspeak is slightly more involved, requiring three
+separate steps:
+
+ - [Parsing](#parsing)
+ - [Compiling](#compiling)
+ - [Executing](#executing)
+
+# Parsing
+
+Parsing is the first step. This involves taking the human-readable form of
+Catspeak source code, and converting it into an executable form. This can
+be done from a string or a UTF-8 encoded buffer.
+
+Parsing code from a string using `Catspeak.parseString`:
+```gml
+var hir = Catspeak.parseString(@'
+  let n = 0
+  while n <= 10 {
+    n += 1
+  }
+  return "blast off!"
+');
+```
+
+Parsing code from a file called "my_mod.meow", using `Catspeak.parse`:
+```gml
+var file = buffer_load("my_mod.meow");
+
+var hir = Catspeak.parse(file);
+
+buffer_delete(file);
+```
+
+The parser produces a **hierarchical intermediate-representation** (HIR),
+storing information like what functions are defined, where they are defined,
+how many variables are used, what functions are being called and when, etc.
+
+This information is stored as a JSON object, so you can cache this to a file
+to avoid parsing large mods every time the game loads.
+
+# Compiling
+
+Compiling is the second step. This involves taking the executable form of a
+Catspeak program (the HIR obtained from [Parsing](#parsing)) and transforms it
+into a callable GML function.
+
+Compiling a `program` from the `hir` using `Catspeak.compile`:
+```gml
+var program = Catspeak.compile(hir);
+```
+
+# Executing
+
+Executing is the third and final step; this is the fun part. After compiling
+a program, it can be called like any ordinary GML function like:
+```gml
+program();
+```
+
+As many times as you want:
+```gml
+program();
+program();
+program();
+repeat (10) {
+    program();
+}
+```
+
+When adding mod support, you should aim to pre-compile all of your mod scripts
+at the start of the game, and then reuse the compiled program during gameplay.
+Otherwise, your game may experience performance issues due to the slowness of
+parsing and compiling programs relative to execution.
+
+# Basic Usage
+
+A minimal working example of a function which returns a message is:
+
+```gml
+// parse Catspeak code
+var hir = Catspeak.parseString(@'
+  let catspeak = "Catspeak"
+
+  return "hello! from within " + catspeak
+');
+
+// compile Catspeak code into a callable GML function
+var getMessage = Catspeak.compile(hir);
+
+// call the Catspeak code just like you would any other GML function!
+show_message(getMessage());
+```
+
+# Interfacing with GML
+
+You can expose additional functions, constants, and assets to Catspeak programs
+by using the methods on `Catspeak.interface`. For example, using the functions
+`exposeFunction`, `exposeConstant`, and `exposeAsset` to make `show_message`,
+`pi`, and `spr_player` available from within a Catspeak function:
+
+```gml
+Catspeak.interface.exposeFunction("show_message", show_message);
+Catspeak.interface.exposeConstant("math_pi", pi);
+Catspeak.interface.exposeAsset("sPlayer", spr_player);
+```
+
+Then using these from within a custom Catspeak function, like:
+```gml
+var hir = Catspeak.parseString(@'
+  let tau = math_pi * 2;
+  show_message([sPlayer, tau]);
+');
+var program = Catspeak.compile(hir);
+program();
+```
+
+This is necessary so that modders are sandboxed from each other, and don't have
+unchecked access to your entire game state. There are many other ways of
+exposing GML assets to Catspeak programs, see [CatspeakForeignInterface](lib-struct-catspeakforeigninte+s.html)

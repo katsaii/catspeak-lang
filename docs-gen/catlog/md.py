@@ -81,8 +81,8 @@ def parse_content(content):
     return a
 
 def note_name_to_module_name(module):
-    name = module.replace("not_", "").replace("catspeak_", "")
-    return name
+    name = module.replace("not_", "").replace("catspeak_", "").replace("_", " ")
+    return name.title()
 
 @dataclass
 class ParseCtx():
@@ -105,7 +105,6 @@ class ParseCtx():
                 self.create_new_section(child)
             else:
                 self.currentSection.append(ast_to_doc(child))
-
 
 def parse_chapter(fullpath):
     name = note_name_to_module_name(Path(fullpath).with_suffix("").name)

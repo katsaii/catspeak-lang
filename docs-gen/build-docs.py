@@ -27,6 +27,7 @@ book_home = cl.doc.Book(
     brief = "A brief overview of Catspeak.",
     chapters = [
         parse_md_chapter("not_catspeak_welcome"),
+        parse_md_chapter("not_catspeak_getting_started"),
         parse_md_chapter("./LICENSE"),
     ]
 )
