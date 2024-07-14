@@ -526,11 +526,12 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             argCount : func.argCount,
         };
         ctx.program = __compileTerm(ctx, func.root);
-        if (__catspeak_term_is_pure(func.root.type)) {
-            // if there's absolutely no way this function could misbehave,
-            // use the fast path
-            return ctx.program;
-        }
+        // this code actually doesn't work with `is_catspeak`, think of something better later
+        //if (__catspeak_term_is_pure(func.root.type)) {
+        //    // if there's absolutely no way this function could misbehave,
+        //    // use the fast path
+        //    return ctx.program;
+        //}
         return method(ctx, __catspeak_function__);
     };
 
@@ -1847,7 +1848,13 @@ function __catspeak_expr_local_set_plus__() {
 function __catspeak_expr_self__() {
     // will either access a user-defined self instance, or the internal
     // global struct
-    return self_ ?? globals;
+    return global.__catspeakGmlSelf ?? (self_ ?? globals);
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_other__() {
+    return global.__catspeakGmlOther ?? globals;
 }
 
 /// @ignore
@@ -1858,4 +1865,8 @@ function __catspeak_init_codegen() {
     global.__catspeakGmlBreakRef = [undefined];
     /// @ignore
     global.__catspeakGmlContinueRef = [];
+    /// @ignore
+    global.__catspeakGmlSelf = undefined;
+    /// @ignore
+    global.__catspeakGmlOther = undefined;
 }

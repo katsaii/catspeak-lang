@@ -147,8 +147,9 @@ test_add(function () : Test("env-function-set-self") constructor {
         return fun { self };
     '));
     var fun = f();
-    fun.setSelf({ hi : "hi" });
-    assertEq("hi", fun().hi);
+    var result = catspeak_execute_ext(fun, { hi : "hi" });
+    assertTypeof(result, "struct");
+    assertEq("hi", result.hi);
 });
 
 function EngineFunctionMethodCallTest__Construct() constructor {
