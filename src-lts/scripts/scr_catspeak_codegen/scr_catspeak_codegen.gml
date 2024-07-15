@@ -909,6 +909,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         for (var i = 0; i < argCount; i += 1) {
             exprs[@ i] = __compileTerm(ctx, args[i]);
         }
+        var dbgError = __dbgTerm(term.callee, "is not a function");
         if (term.callee.type == CatspeakTerm.INDEX) {
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg_struct("term.callee", term.callee,
@@ -919,7 +920,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             var collection = __compileTerm(ctx, term.callee.collection);
             var key = __compileTerm(ctx, term.callee.key);
             return method({
-                dbgError : __dbgTerm(term.callee, "is not a function"),
+                dbgError : dbgError,
                 collection : collection,
                 key : key,
                 args : exprs,
@@ -927,12 +928,19 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             }, __catspeak_expr_call_method__);
         } else {
             var callee = __compileTerm(ctx, term.callee);
+            var func = __catspeak_expr_call__;
+            switch (array_length(exprs)) {
+            case 0: func = __catspeak_expr_call_0__; break;
+            case 1: func = __catspeak_expr_call_1__; break;
+            case 2: func = __catspeak_expr_call_2__; break;
+            case 3: func = __catspeak_expr_call_3__; break;
+            }
             return method({
-                dbgError : __dbgTerm(term.callee, "is not a function"),
+                dbgError : dbgError,
                 callee : callee,
                 args : exprs,
                 shared : sharedData,
-            }, __catspeak_expr_call__);
+            }, func);
         }
     };
 
@@ -1116,9 +1124,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
                 return method({
                     dbgError : __dbgTerm(term, "is not a function"),
                     callee : _callee,
-                    args : [],
                     shared : sharedData,
-                }, __catspeak_expr_call__);
+                }, __catspeak_expr_call_0__);
             } else {
                 // user-defined interface
                 return _callee;
@@ -1676,6 +1683,71 @@ function __catspeak_expr_call__() {
     with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return script_execute_ext(calleeIdx, args_);
+    }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_0__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var shared_ = shared;
+    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute(calleeIdx);
+    }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_1__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var values_ = args;
+    var arg1 = values_[0]();
+    var shared_ = shared;
+    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute(calleeIdx, arg1);
+    }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_2__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var values_ = args;
+    var arg1 = values_[0]();
+    var arg2 = values_[1]();
+    var shared_ = shared;
+    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute(calleeIdx, arg1, arg2);
+    }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_3__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var values_ = args;
+    var arg1 = values_[0]();
+    var arg2 = values_[1]();
+    var arg3 = values_[2]();
+    var shared_ = shared;
+    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute(calleeIdx, arg1, arg2, arg3);
     }
 }
 
