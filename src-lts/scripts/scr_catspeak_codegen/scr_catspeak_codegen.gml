@@ -25,23 +25,25 @@ function __catspeak_infer_function_name(func) {
 /// Checks whether a value is a valid Catspeak function compiled through
 /// `CatspeakGMLCompiler`.
 ///
+/// @warning
+///   Internally, this actually just checks whether the methods name starts
+///   with `__catspeak_`. Because of this, you should avoid giving your
+///   functions that prefix to prevent false positives.
+///
 /// @param {Any} value
 ///   The value to check is a Catspeak function.
 ///
 /// @return {Bool}
 function is_catspeak(value) {
-    return is_method(value) && method_get_index(value) == __catspeak_function__;
-}
-
-/// Checks whether a value is a valid Catspeak function bound using
-/// `catspeak_method`.
-///
-/// @param {Any} value
-///   The value to check is a Catspeak method.
-///
-/// @return {Bool}
-function is_catspeak_method(value) {
-    return is_method(value) && method_get_index(value) == __catspeak_function_method__;
+    if (!is_method(value)) {
+        return false;
+    }
+    var scr = method_get_index(value);
+    if (scr == __catspeak_function__) {
+        return true;
+    }
+    var scrName = script_get_name(scr);
+    return string_starts_with(scrName, "__catspeak_");
 }
 
 /// Used by Catspeak code generators to expose foreign GML functions,
@@ -537,12 +539,11 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             argCount : func.argCount,
         };
         ctx.program = __compileTerm(ctx, func.root);
-        // this code actually doesn't work with `is_catspeak`, think of something better later
-        //if (__catspeak_term_is_pure(func.root.type)) {
-        //    // if there's absolutely no way this function could misbehave,
-        //    // use the fast path
-        //    return ctx.program;
-        //}
+        if (__catspeak_term_is_pure(func.root.type)) {
+            // if there's absolutely no way this function could misbehave,
+            // use the fast path
+            return ctx.program;
+        }
         return method(ctx, __catspeak_function__);
     };
 
