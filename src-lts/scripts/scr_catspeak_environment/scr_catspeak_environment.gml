@@ -601,27 +601,44 @@ function catspeak_execute_ext(
 /// @return {Struct}
 function catspeak_globals(callee) {
     if (is_catspeak(callee)) {
-        return callee.getGlobals();
-    }
-    if (is_catspeak_method(callee)) {
-        // TODO
+        if (method_get_index(callee) == __catspeak_function_method__) {
+            // TODO
+        } else {
+            return callee.getGlobals();
+        }
     }
     return undefined;
 }
 
+/// Binds a function to a `self`. Similar to the built-in `method` function,
+/// except this supports Catspeak functions as well as GML functions.
+///
+/// @remark
+///   Prefered over using `method` otherwise you risk breaking your compiled
+///   Catspeak functions.
+///
+/// @param {Any} self_
+///   The scope to bind this function to. Can be a struct or `undefined`.
+///
+/// @param {Any} callee
+///   The function to get the global context of. Can be a GML function,
+///   Catspeak function, or a function bound using `catspeak_method`.
+///
+/// @return {Any}
 function catspeak_method(self_, callee) {
     if (is_catspeak(callee)) {
-        return method({
-            callee : callee,
-            self_ : self_,
-        }, __catspeak_function_method__);
-    }
-    if (is_catspeak_method(callee)) {
-        var methodData = method_get_self(callee);
-        return method({
-            callee : methodData.callee,
-            self_ : self_,
-        }, __catspeak_function_method__);
+        if (method_get_index(callee) == __catspeak_function_method__) {
+            var methodData = method_get_self(callee);
+            return method({
+                callee : methodData.callee,
+                self_ : self_,
+            }, __catspeak_function_method__);
+        } else {
+            return method({
+                callee : callee,
+                self_ : self_,
+            }, __catspeak_function_method__);
+        }
     }
     return method(self_, callee);
 }
