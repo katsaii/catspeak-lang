@@ -1830,7 +1830,12 @@ function __catspeak_expr_call_0__() {
         __catspeak_error_got(dbgError, callee_);
     }
     var shared_ = shared;
-    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+	
+    if (method_get_self(callee_) != undefined) {
+        return callee_();
+    }
+	
+    with (shared_.self_ ?? shared_.globals) {
         var calleeIdx = method_get_index(callee_);
         return script_execute(calleeIdx);
     }
@@ -1846,7 +1851,12 @@ function __catspeak_expr_call_1__() {
     var values_ = args;
     var arg1 = values_[0]();
     var shared_ = shared;
-    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+	
+    if (method_get_self(callee_) != undefined) {
+        return callee_(arg1);
+    }
+	
+    with (shared_.self_ ?? shared_.globals) {
         var calleeIdx = method_get_index(callee_);
         return script_execute(calleeIdx, arg1);
     }
@@ -1863,7 +1873,12 @@ function __catspeak_expr_call_2__() {
     var arg1 = values_[0]();
     var arg2 = values_[1]();
     var shared_ = shared;
-    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+	
+    if (method_get_self(callee_) != undefined) {
+        return callee_(arg1, arg2);
+    }
+	
+    with (shared_.self_ ?? shared_.globals) {
         var calleeIdx = method_get_index(callee_);
         return script_execute(calleeIdx, arg1, arg2);
     }
@@ -1881,7 +1896,12 @@ function __catspeak_expr_call_3__() {
     var arg2 = values_[1]();
     var arg3 = values_[2]();
     var shared_ = shared;
-    with (method_get_self(callee_) ?? (shared_.self_ ?? shared_.globals)) {
+	
+    if (method_get_self(callee_) != undefined) {
+        return callee_(arg1, arg2, arg3);
+    }
+	
+    with (shared_.self_ ?? shared_.globals) {
         var calleeIdx = method_get_index(callee_);
         return script_execute(calleeIdx, arg1, arg2, arg3);
     }
