@@ -69,8 +69,6 @@
 
       img { max-width : 100% }
 
-      .header { padding: 10rem 2rem 0 2rem }
-
       .grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -100,19 +98,6 @@
         font-weight : 400;
       }
 
-      .nav {
-        display : flex;
-        flex-wrap : wrap;
-        justify-content : space-evenly;
-      }
-
-      .nav > article {
-        padding : 0.5rem;
-        font-weight : bold;
-        font-size : 1.5em;
-        font-family : var(--f-prop);
-      }
-
       @media screen and (max-width : 9in) {
         body { margin : 1rem 2rem }
         .grid { padding : 0 }
@@ -130,61 +115,56 @@
         overflow-x : scroll;
       }
 
+      .nav {
+        display : flex;
+        flex-wrap : wrap;
+        flex-direction : column;
+        align-content : center;
+        justify-content : space-evenly;
+      }
+
+      .nav > article {
+        padding : 0.5rem;
+        font-weight : bold;
+        font-size : 1.5em;
+        font-family : var(--f-mono);
+      }
+
       .code * { color : var(--c-fg) }
 
-      .kw-key { font-weight : bold }
-      .kw-com { color : var(--c-fg-2)!important }
-      .kw-val { color : var(--c-accent)!important }
+      .header > code {
+        font-size : 2em;
+        margin : auto;
+        width : fit-content;
+        display : block;
+        color : var(--c-fg-2);
+      }
     </style>
   </head>
   <body>
-    <div class="grid header">
-      <article>
-        <!--<h1 class="f-mono t-break t-centre">Catspeak</h1>-->
+    <div class="grid">
+      <article class="header">
         <img class="blk-centre" src="cats-title.svg">
-        <div class="centre">
-          <p class="f-prop t-centre t-balanced">A <b>cross-platform</b> scripting language and compiler back-end for exposing modding APIs in <a href="https://gamemaker.io/"><b>GameMaker</b></a> projects.</p>
-          <p class="f-prop t-centre t-balanced">Designed with performance and safety in mind: the sandboxed environment prevents modders from modifying sensitive game state, or freezing your game with infinite loops.</p>
-        </div>
+        <code>Documentation Archive <sub>(<a href="./index.html">&lt;-home</a>)</sub></code>
+        <br>
         <div class="nav">
           <article>
-            <a href="https://github.com/katsaii/catspeak-lang">GitHub</a>
+            <a href="./3.0.2/hom-welcome.html">3.0.2</a>
           </article>
           <article>
-            <a href="./3.0.2/hom-welcome.html">Documentation</a> <code><sub>(<a href="./archive.html">Archive</a>)</sub></code>
+            <a href="./3.0.0/hom-welcome.html">3.0.0</a>
           </article>
           <article>
-            <a href="https://github.com/katsaii/catspeak-lang/releases/">Download</a> <code><sub>(3.0.2)</sub></code>
+            <a href="./2.3.3/index.html">2.3.3</a>
           </article>
           <article>
-            <a href="https://discord.gg/8krYCqr">Discord</a>
+            <a href="./2.3.1/index.html">2.3.1</a>
+          </article>
+          <article>
+            <a href="./2.3.0/index.html">2.3.0</a>
           </article>
         </div>
       </article>
-      <article>
-        <div class="code">speed = <span class="kw-val">2</span>
-
-step = <span class="kw-key">fun</span> (inst) {
-  <span class="kw-com">-- update player position using WASD</span>
-  <span class="kw-key">let</span> dirX = keyboard_check(<span class="kw-val">'D'</span>) - keyboard_check(<span class="kw-val">'A'</span>)
-  <span class="kw-key">let</span> dirY = keyboard_check(<span class="kw-val">'S'</span>) - keyboard_check(<span class="kw-val">'W'</span>)
-
-  inst.x += dirX * speed
-  inst.y += dirY * speed
-}
-
-draw = <span class="kw-key">fun</span> (inst) {
-  <span class="kw-com">-- draw the player</span>
-  draw_sprite(spr_player, <span class="kw-val">0</span>, inst.x, inst.y)
-}</div>
-      </article>
-    </div>
-    <div class="separator"></div>
-    <div class="f-prop"><i>Catspeak (c) 2021-2023 <a href="https://www.katsaii.com/">Katsaii</a>, <a href="https://github.com/katsaii/catspeak-lang/blob/main/LICENSE">LICENSE</a>.</i></div>
-    <div class="f-mono t-pre c-fg">
- |\ /|
->(OwO)< Little Catspeak
-    \(
     </div>
   </body>
 </html>
