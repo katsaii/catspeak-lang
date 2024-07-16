@@ -1,8 +1,6 @@
 name: Feature Request
 description: Request a new feature for Catspeak
 labels: ["enhancement"]
-assignees:
-  - katsaii
 body:
   - type: markdown
     attributes:

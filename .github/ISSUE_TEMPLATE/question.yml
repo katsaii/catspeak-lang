@@ -1,8 +1,6 @@
 name: Question
 description: Ask a question about Catspeak
 labels: ["question"]
-assignees:
-  - katsaii
 body:
   - type: markdown
     attributes:
