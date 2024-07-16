@@ -669,3 +669,36 @@ test_add(function() : Test("with-inst") constructor {
     instance_destroy(inst1);
     instance_destroy(inst2);
 });
+
+test_add(function() : Test("method-scope-vs-undefined") constructor {
+    var env = new CatspeakEnvironment();
+    var func = function(value) {
+        return value * 32;
+    }
+    env.interface.exposeFunction("func", func);
+    env.interface.exposeMethod("funcM", func);
+    
+    var ir = env.parseString(@'
+        func(0.5);
+    ');
+    
+    var gmlFuncA = env.compile(ir);
+	
+    ir = env.parseString(@'
+        funcM(0.5);
+    ');
+    
+    var gmlFuncB = env.compile(ir);
+    
+    var t = get_timer();
+    repeat(100000) {
+        gmlFuncA();	
+    }
+    show_debug_message("gmlFuncA (func) Time taken: " + string((get_timer() - t) / 1000) + "ms");
+    
+    t = get_timer();
+    repeat(100000) {
+        gmlFuncB();	
+    }
+    show_debug_message("gmlFuncB (funcM) Time taken: " + string((get_timer() - t) / 1000) + "ms");
+});
