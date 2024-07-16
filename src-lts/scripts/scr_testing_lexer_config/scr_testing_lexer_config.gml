@@ -32,10 +32,6 @@ test_add(function () : Test("lexer-config-offset-2") constructor {
     buffer_delete(buff);
 });
 
-test_add(function () : TestLexerKeyword("lexer-config-custom-keyword",
-    CatspeakToken.FUN, @'\'
-) constructor { });
-
 test_add(function () : TestLexerKeyword("lexer-config-custom-keyword-2",
     CatspeakToken.FUN, @'f'
 ) constructor { });

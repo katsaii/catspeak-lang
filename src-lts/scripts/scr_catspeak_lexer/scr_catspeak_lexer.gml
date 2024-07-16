@@ -16,139 +16,139 @@
 ///   - `+`    (is a `CatspeakToken.PLUS`)
 enum CatspeakToken {
     /// The `(` character.
-    PAREN_LEFT,
+    PAREN_LEFT = 0,
     /// The `)` character.
-    PAREN_RIGHT,
+    PAREN_RIGHT = 1,
     /// The `[` character.
-    BOX_LEFT,
+    BOX_LEFT = 2,
     /// The `]` character.
-    BOX_RIGHT,
+    BOX_RIGHT = 3,
     /// The `{` character.
-    BRACE_LEFT,
+    BRACE_LEFT = 4,
     /// The `}` character.
-    BRACE_RIGHT,
+    BRACE_RIGHT = 5,
     /// The `:` character.
-    COLON,
+    COLON = 6,
     /// The `;` character.
-    SEMICOLON,
+    SEMICOLON = 7,
     /// The `,` character.
-    COMMA,
+    COMMA = 8,
     /// The `.` operator.
-    DOT,
+    DOT = 9,
     /// The `=>` operator.
-    ARROW,
+    ARROW = 10,
     /// @ignore
-    __OP_ASSIGN_BEGIN__,
+    __OP_ASSIGN_BEGIN__ = 11,
     /// The `=` operator.
-    ASSIGN,
+    ASSIGN = 12,
     /// The `*=` operator.
-    ASSIGN_MULTIPLY,
+    ASSIGN_MULTIPLY = 13,
     /// The `/=` operator.
-    ASSIGN_DIVIDE,
+    ASSIGN_DIVIDE = 14,
     /// The `-=` operator.
-    ASSIGN_SUBTRACT,
+    ASSIGN_SUBTRACT = 15,
     /// The `+=` operator.
-    ASSIGN_PLUS,
+    ASSIGN_PLUS = 16,
     /// @ignore
-    __OP_BEGIN__,
+    __OP_BEGIN__ = 17,
     /// The remainder `%` operator.
-    REMAINDER,
+    REMAINDER = 18,
     /// The `*` operator.
-    MULTIPLY,
+    MULTIPLY = 19,
     /// The `/` operator.
-    DIVIDE,
+    DIVIDE = 20,
     /// The integer division `//` operator.
-    DIVIDE_INT,
+    DIVIDE_INT = 21,
     /// The `-` operator.
-    SUBTRACT,
+    SUBTRACT = 22,
     /// The `+` operator.
-    PLUS,
+    PLUS = 23,
     /// The relational `==` operator.
-    EQUAL,
+    EQUAL = 24,
     /// The relational `!=` operator.
-    NOT_EQUAL,
+    NOT_EQUAL = 25,
     /// The relational `>` operator.
-    GREATER,
+    GREATER = 26,
     /// The relational `>=` operator.
-    GREATER_EQUAL,
+    GREATER_EQUAL = 27,
     /// The relational `<` operator.
-    LESS,
+    LESS = 28,
     /// The relational `<=` operator.
-    LESS_EQUAL,
+    LESS_EQUAL = 29,
     /// The logical negation `!` operator.
-    NOT,
+    NOT = 30,
     /// The bitwise negation `~` operator.
-    BITWISE_NOT,
+    BITWISE_NOT = 31,
     /// The bitwise right shift `>>` operator.
-    SHIFT_RIGHT,
+    SHIFT_RIGHT = 32,
     /// The bitwise left shift `<<` operator.
-    SHIFT_LEFT,
+    SHIFT_LEFT = 33,
     /// The bitwise and `&` operator.
-    BITWISE_AND,
+    BITWISE_AND = 34,
     /// The bitwise xor `^` operator.
-    BITWISE_XOR,
+    BITWISE_XOR = 35,
     /// The bitwise or `|` operator.
-    BITWISE_OR,
+    BITWISE_OR = 36,
     /// The logical `and` operator.
-    AND,
+    AND = 37,
     /// The logical `or` operator.
-    OR,
+    OR = 38,
     /// The logical `xor` operator.
-    XOR,
+    XOR = 39,
     /// The functional pipe right `|>` operator.
-    PIPE_RIGHT,
+    PIPE_RIGHT = 40,
     /// The functional pipe left `<|` operator.
-    PIPE_LEFT,
+    PIPE_LEFT = 41,
     /// The `do` keyword.
-    DO,
+    DO = 42,
     /// The `if` keyword.
-    IF,
+    IF = 43,
     /// The `else` keyword.
-    ELSE,
+    ELSE = 44,
     /// The `while` keyword.
-    WHILE,
+    WHILE = 45,
     /// The `for` keyword.
     ///
     /// @experimental
-    FOR,
+    FOR = 46,
     /// The `loop` keyword.
     ///
     /// @experimental
-    LOOP,
+    LOOP = 47,
     /// The `with` keyword.
     ///
     /// @experimental
-    WITH,
+    WITH = 48,
     /// The `match` keyword.
     ///
     /// @experimental
-    MATCH,
+    MATCH = 49,
     /// The `let` keyword.
-    LET,
+    LET = 50,
     /// The `fun` keyword.
-    FUN,
+    FUN = 51,
     /// The `break` keyword.
-    BREAK,
+    BREAK = 52,
     /// The `continue` keyword.
-    CONTINUE,
+    CONTINUE = 53,
     /// The `return` keyword.
-    RETURN,
+    RETURN = 54,
     /// The `new` keyword.
-    NEW,
+    NEW = 55,
     /// The `impl` keyword.
     ///
     /// @experimental
-    IMPL,
+    IMPL = 56,
     /// The `self` keyword.
     ///
     /// @experimental
-    SELF,
+    SELF = 57,
     /// The `params` keyword.
     ///
     /// @experimental
-    PARAMS,
+    PARAMS = 58,
     /// Represents a variable name.
-    IDENT,
+    IDENT = 59,
     /// Represents a GML value. This could be one of:
     ///  - string literal:    `"hello world"`
     ///  - verbatim literal:  `@"\(0_0)/ no escapes!"`
@@ -157,22 +157,22 @@ enum CatspeakToken {
     ///  - character:         `'A'`, `'0'`, `'\n'`
     ///  - boolean:           `true` or `false`
     ///  - `undefined`
-    VALUE,
+    VALUE = 60,
     /// Represents a sequence of non-breaking whitespace characters.
-    WHITESPACE,
+    WHITESPACE = 61,
     /// Represents a comment.
-    COMMENT,
+    COMMENT = 62,
     /// Represents the end of the file.
-    EOF,
+    EOF = 63,
     /// Represents any other unrecognised character.
     ///
     /// @remark
     ///   If the compiler encounters a token of this type, it will typical
     ///   raise an exception. This likely indicates that a Catspeak script has
     ///   a syntax error somewhere.
-    OTHER,
+    OTHER = 64,
     /// @ignore
-    __SIZE__
+    __SIZE__ = 65,
 }
 
 /// @ignore
@@ -511,27 +511,118 @@ function CatspeakLexer(
             hasValue = true;
         } else if (__catspeak_char_is_operator(charCurr_)) {
             // operators
-            while (__catspeak_char_is_operator(charNext)) {
-                __advance();
+            switch (charCurr) {
+            case ord(";"): token = CatspeakToken.SEMICOLON; break;
+            case ord(":"): token = CatspeakToken.COLON; break;
+            case ord(","): token = CatspeakToken.COMMA; break;
+            case ord("."): token = CatspeakToken.DOT; break;
+            case ord("="):
+                if (charNext == ord("=")) { // ==
+                    __advance();
+                    token = CatspeakToken.EQUAL;
+                } else { // =
+                    token = CatspeakToken.ASSIGN;
+                }
+                break;
+            case ord("*"):
+                if (charNext == ord("=")) { // *=
+                    __advance();
+                    token = CatspeakToken.ASSIGN_MULTIPLY;
+                } else { // *
+                    token = CatspeakToken.MULTIPLY;
+                }
+                break;
+            case ord("/"):
+                if (charNext == ord("=")) { // /=
+                    __advance();
+                    token = CatspeakToken.ASSIGN_DIVIDE;
+                } else if (charNext == ord("/")) { // //
+                    __advance();
+                    token = CatspeakToken.DIVIDE_INT;
+                } else { // /
+                    token = CatspeakToken.DIVIDE;
+                }
+                break;
+            case ord("%"): token = CatspeakToken.REMAINDER; break;
+            case ord("+"):
+                if (charNext == ord("=")) { // +=
+                    __advance();
+                    token = CatspeakToken.ASSIGN_PLUS;
+                } else { // +
+                    token = CatspeakToken.PLUS;
+                }
+                break;
+            case ord("-"):
+                if (charNext == ord("=")) { // -=
+                    __advance();
+                    token = CatspeakToken.ASSIGN_SUBTRACT;
+                } else if (charNext == ord("-")) { // --
+                    __advance();
+                    token = CatspeakToken.COMMENT;
+                } else { // -
+                    token = CatspeakToken.SUBTRACT;
+                }
+                break;
+            case ord("!"):
+                if (charNext == ord("=")) { // !=
+                    __advance();
+                    token = CatspeakToken.NOT_EQUAL;
+                } else { // !
+                    token = CatspeakToken.NOT;
+                }
+                break;
+            case ord(">"):
+                if (charNext == ord("=")) { // >=
+                    __advance();
+                    token = CatspeakToken.GREATER_EQUAL;
+                } else if (charNext == ord(">")) { // >>
+                    __advance();
+                    token = CatspeakToken.SHIFT_RIGHT;
+                } else { // >
+                    token = CatspeakToken.GREATER;
+                }
+                break;
+            case ord("<"):
+                if (charNext == ord("=")) { // <=
+                    __advance();
+                    token = CatspeakToken.LESS_EQUAL;
+                } else if (charNext == ord("|")) { // <|
+                    __advance();
+                    token = CatspeakToken.PIPE_LEFT;
+                } else if (charNext == ord("<")) { // <<
+                    __advance();
+                    token = CatspeakToken.SHIFT_LEFT;
+                } else { // >
+                    token = CatspeakToken.LESS;
+                }
+                break;
+            case ord("~"): token = CatspeakToken.BITWISE_NOT; break;
+            case ord("&"): token = CatspeakToken.BITWISE_AND; break;
+            case ord("^"): token = CatspeakToken.BITWISE_XOR; break;
+            case ord("|"):
+                if (charNext == ord(">")) { // |>
+                    __advance();
+                    token = CatspeakToken.PIPE_RIGHT;
+                } else { // |
+                    token = CatspeakToken.BITWISE_OR;
+                }
+                break;
             }
-            var keyword = __getKeyword(getLexeme());
-            if (keyword != undefined) {
-                token = keyword;
-                if (keyword == CatspeakToken.COMMENT) {
-                    // consume the comment
-                    lexeme = undefined; // since the lexeme is now invalid
-                                        // we have more work to do
-                    while (true) {
-                        var charNext_ = charNext;
-                        if (
-                            charNext_ == ord("\n") ||
-                            charNext_ == ord("\r") ||
-                            charNext_ == 0
-                        ) {
-                            break;
-                        }
-                        __advance();
+            // comment
+            if (token == CatspeakToken.COMMENT) {
+                // consume the comment
+                lexeme = undefined; // since the lexeme is now invalid
+                                    // we have more work to do
+                while (true) {
+                    var charNext_ = charNext;
+                    if (
+                        charNext_ == ord("\n") ||
+                        charNext_ == ord("\r") ||
+                        charNext_ == 0
+                    ) {
+                        break;
                     }
+                    __advance();
                 }
             }
         } else if (charCurr_ == ord("`")) {
@@ -952,41 +1043,9 @@ function __catspeak_init_lexer_codepage() {
 /// @return {Struct}
 function __catspeak_keywords_create() {
     var keywords = { };
-    keywords[$ "--"] = CatspeakToken.COMMENT;
-    keywords[$ ";"] = CatspeakToken.SEMICOLON;
-    keywords[$ "..."] = CatspeakToken.WHITESPACE; // legacy
-    keywords[$ ":"] = CatspeakToken.COLON;
-    keywords[$ ","] = CatspeakToken.COMMA;
-    keywords[$ "."] = CatspeakToken.DOT;
-    keywords[$ "="] = CatspeakToken.ASSIGN;
-    keywords[$ "*="] = CatspeakToken.ASSIGN_MULTIPLY;
-    keywords[$ "/="] = CatspeakToken.ASSIGN_DIVIDE;
-    keywords[$ "-="] = CatspeakToken.ASSIGN_SUBTRACT;
-    keywords[$ "+="] = CatspeakToken.ASSIGN_PLUS;
-    keywords[$ "%"] = CatspeakToken.REMAINDER;
-    keywords[$ "*"] = CatspeakToken.MULTIPLY;
-    keywords[$ "/"] = CatspeakToken.DIVIDE;
-    keywords[$ "//"] = CatspeakToken.DIVIDE_INT;
-    keywords[$ "-"] = CatspeakToken.SUBTRACT;
-    keywords[$ "+"] = CatspeakToken.PLUS;
-    keywords[$ "=="] = CatspeakToken.EQUAL;
-    keywords[$ "!="] = CatspeakToken.NOT_EQUAL;
-    keywords[$ ">"] = CatspeakToken.GREATER;
-    keywords[$ ">="] = CatspeakToken.GREATER_EQUAL;
-    keywords[$ "<"] = CatspeakToken.LESS;
-    keywords[$ "<="] = CatspeakToken.LESS_EQUAL;
-    keywords[$ "!"] = CatspeakToken.NOT;
-    keywords[$ "~"] = CatspeakToken.BITWISE_NOT;
-    keywords[$ ">>"] = CatspeakToken.SHIFT_RIGHT;
-    keywords[$ "<<"] = CatspeakToken.SHIFT_LEFT;
-    keywords[$ "&"] = CatspeakToken.BITWISE_AND;
-    keywords[$ "^"] = CatspeakToken.BITWISE_XOR;
-    keywords[$ "|"] = CatspeakToken.BITWISE_OR;
     keywords[$ "and"] = CatspeakToken.AND;
     keywords[$ "or"] = CatspeakToken.OR;
     keywords[$ "xor"] = CatspeakToken.XOR;
-    keywords[$ "|>"] = CatspeakToken.PIPE_RIGHT;
-    keywords[$ "<|"] = CatspeakToken.PIPE_LEFT;
     keywords[$ "do"] = CatspeakToken.DO;
     keywords[$ "if"] = CatspeakToken.IF;
     keywords[$ "else"] = CatspeakToken.ELSE;
