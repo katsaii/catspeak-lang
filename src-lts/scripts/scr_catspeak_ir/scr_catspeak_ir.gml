@@ -249,10 +249,59 @@ function CatspeakIRBuilder() constructor {
         });
     };
 
-    /// Emits the instruction for a while loop.
+    /// Emits the instruction for a generic loop. GML style `while`,
+    /// `for`, and `do` loops can be implemented in terms of this function.
+    ///
+    /// @param {Struct} preCondition
+    ///   The term which evaluates to the condition of a `while` loop.
+    ///   Can be `undefined`.
+    ///
+    /// @param {Struct} postCondition
+    ///   The term which evaluates to the condition of a `do` loop.
+    ///   Can be `undefined`.
+    ///
+    /// @param {Struct} step
+    ///   The term which evaluates to the step of a `for` loop.
+    ///   Can be `undefined`.
+    ///
+    /// @param {Struct} body
+    ///   The body of the while loop.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createLoop = function (
+        preCondition, postCondition, step, body, location=undefined
+    ) {
+        if (CATSPEAK_DEBUG_MODE) {
+            if (preCondition != undefined) {
+                __catspeak_check_arg_struct("preCondition", preCondition);
+            }
+            if (postCondition != undefined) {
+                __catspeak_check_arg_struct("postCondition", postCondition);
+            }
+            if (step != undefined) {
+                __catspeak_check_arg_struct("step", step);
+            }
+            __catspeak_check_arg_struct("body", body);
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.LOOP, location, {
+            preCondition : preCondition,
+            postCondition : postCondition,
+            step : step,
+            body : body,
+        });
+    };
+
+    /// Emits the instruction for a GML style `while` loop.
+    ///
+    /// @deprecated
+    ///   Use `createLoop` instead.
     ///
     /// @param {Struct} condition
-    ///   The term which evaluates to the condition of the while loop.
+    ///   The term which evaluates to the condition of the `while` loop.
     ///
     /// @param {Struct} body
     ///   The body of the while loop.
@@ -262,22 +311,7 @@ function CatspeakIRBuilder() constructor {
     ///
     /// @return {Struct}
     static createWhile = function (condition, body, location=undefined) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_check_arg_struct("condition", condition,
-                "type", is_numeric
-            );
-            __catspeak_check_arg_struct("body", body);
-        }
-        if (condition.type == CatspeakTerm.VALUE && !__getValue(condition)) {
-            return createValue(undefined, condition.dbg);
-        }
-        // __createTerm() will do argument validation
-        return __createTerm(CatspeakTerm.LOOP, location, {
-            preCondition : condition,
-            postCondition : undefined,
-            step : undefined,
-            body : body,
-        });
+        return createLoop(condition, undefined, undefined, body, location);
     };
 
     /// Emits the instruction for a GML style `with` loop.
