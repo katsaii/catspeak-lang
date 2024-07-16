@@ -64,6 +64,14 @@ try {
 }
 ```
 
+## Projects Using Catspeak
+
+In no particular order:
+
+ - [Rusted Moss](https://store.steampowered.com/app/1772830/Rusted_Moss/)
+
+_(If you have a project you would want to appear here, please get in contact!)_
+
 ## Features
 
 If you run into any issues using this project, please create a [GitHub issue](https://github.com/katsaii/catspeak-lang/issues/new/choose)
