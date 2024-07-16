@@ -280,6 +280,30 @@ function CatspeakIRBuilder() constructor {
         });
     };
 
+    /// Emits the instruction for a GML style `with` loop.
+    ///
+    /// @param {Struct} scope
+    ///   The term which evaluates to the self scope of the `with` loop.
+    ///
+    /// @param {Struct} body
+    ///   The body of the while loop.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createWith = function (scope, body, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("scope", scope);
+            __catspeak_check_arg_struct("body", body);
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.WITH, location, {
+            scope : scope,
+            body : body,
+        });
+    };
+
     /// Emits the instruction to return a value from the current function.
     ///
     /// @param {Struct} value
@@ -877,6 +901,7 @@ enum CatspeakTerm {
     AND,
     OR,
     LOOP,
+    WITH,
     MATCH,
     USE,
     RETURN,

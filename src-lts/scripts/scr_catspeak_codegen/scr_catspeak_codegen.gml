@@ -1647,7 +1647,27 @@ function __catspeak_expr_loop_general__() {
 }
 
 /// @ignore
-///@return {Any}
+/// @return {Any}
+function __catspeak_expr_loop_with__() {
+    var body_ = body;
+    with (scope()) {
+        __CATSPEAK_BEGIN_SELF = self;
+        try {
+            body_();
+        } catch (e) {
+            if (e == global.__catspeakGmlBreakRef) {
+                return e[0];
+            } else if (e != global.__catspeakGmlContinueRef) {
+                throw e;
+            }
+        }
+        __CATSPEAK_END_SELF;
+    }
+    return undefined;
+}
+
+/// @ignore
+/// @return {Any}
 function __catspeak_expr_match__() {
     var value_ = value();
     var i = 0;
