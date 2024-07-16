@@ -49,22 +49,18 @@ test_add(function () : TestLexerToken("lexer-whitespace-break-line",
     CatspeakToken.SEMICOLON, ";", ";"
 ) constructor { });
 
-test_add(function () : TestLexerToken("lexer-whitespace-continue-line",
-    CatspeakToken.WHITESPACE, "...", "..."
-) constructor { });
-
 test_add(function () : TestLexerToken("lexer-whitespace-comment",
     CatspeakToken.COMMENT, "-- hello world", "-- hello world"
 ) constructor { });
 
 test_add(function () : Test("lexer-whitespace-legacy-line-continue") constructor {
-    var buff = __catspeak_create_buffer_from_string(@'...
+    var buff = __catspeak_create_buffer_from_string(@' -- ...
         let a = (
             1,
-            2, ...
+            2, -- ...
             3,
-        )...
-... ...
+        ) --...
+--... ...
     ');
     var lexer = new CatspeakLexer(buff);
     var token;

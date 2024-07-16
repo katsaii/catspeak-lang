@@ -97,7 +97,7 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example-3",
  ; hi ; 
  ; ; ; ;
  
-                                                        ...
+                                                        
     '
 ) constructor {
     checkTokens(

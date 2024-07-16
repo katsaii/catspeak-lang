@@ -21,10 +21,6 @@ test_add(function () : TestLexerToken("lexer-keyword-dot",
     CatspeakToken.DOT, ".", "."
 ) constructor { });
 
-test_add(function () : TestLexerToken("lexer-keyword-continue-line",
-    CatspeakToken.WHITESPACE, "...", "..."
-) constructor { });
-
 test_add(function () : TestLexerToken("lexer-keyword-do",
     CatspeakToken.DO, "do", "do"
 ) constructor { });
