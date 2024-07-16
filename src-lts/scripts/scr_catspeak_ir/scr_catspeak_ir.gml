@@ -700,8 +700,38 @@ function CatspeakIRBuilder() constructor {
         });
     };
 
+    /// Reuses a local variable with the supplied name, if one exists in the
+    /// current scope. Otherwise, behaves identically to `allocLocal`.
+    ///
+    /// @param {String} name
+    ///   The name of the local variable to allocate.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this local variable.
+    ///
+    /// @return {Struct}
+    static allocLocalOrReuse = function (name, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg("name", name, is_string);
+        }
+        var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
+        var scope = block.locals;
+        if (ds_map_exists(scope, name)) {
+            // __createTerm() will do argument validation
+            return __createTerm(CatspeakTerm.LOCAL, location, {
+                idx : scope[? name],
+            });
+        } else {
+            return allocLocal(name, location);
+        }
+    };
+
     /// Allocates a new named function argument with the supplied name.
     /// Returns a term to get or set the value of this argument.
+    ///
+    /// @warning
+    ///   All parameter names must be allocated before allocating any
+    ///   local variables.
     ///
     /// @param {String} name
     ///   The name of the local variable to allocate.
