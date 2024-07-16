@@ -850,6 +850,24 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
+    static __compileWith = function(ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "scope", undefined,
+                "body", undefined
+            );
+        }
+        return method({
+            scope : __compileTerm(ctx, term.scope),
+            body : __compileTerm(ctx, term.body),
+        }, __catspeak_expr_loop_with__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
     static __compileMatch = function(ctx, term) {
         var i = 0;
         var n = array_length(term.arms);
@@ -1307,6 +1325,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
         db[@ CatspeakTerm.LOOP] = __compileLoop;
+        db[@ CatspeakTerm.WITH] = __compileWith;
         db[@ CatspeakTerm.MATCH] = __compileMatch;
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;

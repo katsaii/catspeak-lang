@@ -613,3 +613,59 @@ test_add(function() : Test("expr-xor-true") constructor {
     var _func = engine.compileGML(ir);
     assertEq(true, _func());
 });
+
+test_add(function() : Test("with-struct") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        with { a : 1 } {
+            return self;
+        }
+    ');
+    var _func = engine.compileGML(ir);
+    var result = _func();
+    assertTypeof(result, "struct");
+    assertEq(1, result.a);
+});
+
+test_add(function() : Test("with-noone") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        let success = true;
+        with -4 {
+            success = false;
+        }
+        return success;
+    ');
+    var _func = engine.compileGML(ir);
+    assertEq(true, _func());
+});
+
+test_add(function() : Test("with-inst") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeAsset("obj_unit_test_inst");
+    env.interface.exposeFunctionByName(array_push);
+    var ir = env.parseString(@'
+        let arr = [];
+        let n = 0;
+        with obj_unit_test_inst {
+            array_push(arr, self);
+            n += 1;
+        }
+        return { arr, n };
+    ');
+    var inst1 = instance_create_depth(0, 0, 0, obj_unit_test_inst);
+    var inst2 = instance_create_depth(0, 0, 0, obj_unit_test_inst);
+    var gmlFunc = env.compile(ir);
+    var result = gmlFunc();
+    assertTypeof(result, "struct");
+    assertTypeof(result.arr, "array");
+    assertEq(result.n, array_length(result.arr));
+    assertEq(2, result.n);
+    var inst1Self, inst2Self;
+    with (inst1) { inst1Self = self }
+    with (inst2) { inst2Self = self }
+    assertEq(inst1Self, result.arr[0]);
+    assertEq(inst2Self, result.arr[1]);
+    instance_destroy(inst1);
+    instance_destroy(inst2);
+});
