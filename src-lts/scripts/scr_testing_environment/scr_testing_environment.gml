@@ -670,6 +670,8 @@ test_add(function() : Test("with-inst") constructor {
     instance_destroy(inst2);
 });
 
+// TODO :: i dont really want tests to last longer than a frame or two, so this shoould really
+//         be turned into a benchmark instead
 test_add(function() : Test("method-scope-vs-undefined") constructor {
     var env = new CatspeakEnvironment();
     var func = function(value) {
