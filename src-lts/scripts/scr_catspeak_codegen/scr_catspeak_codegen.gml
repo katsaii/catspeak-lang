@@ -231,11 +231,50 @@ function CatspeakForeignInterface() constructor {
     static exposeFunctionByName = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var func = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                //__catspeak_check_arg("func", func, __catspeak_is_callable);
+            var name;
+            if (is_string(func)) {
+                name = func;
+                func = undefined;
+                if (
+                    !string_starts_with(name, "<unknown>") &&
+                    !string_starts_with(name, "@@") &&
+                    !string_starts_with(name, "$") &&
+                    !string_starts_with(name, "YoYo") &&
+                    !string_starts_with(name, "yy") &&
+                    !string_starts_with(name, "[[") &&
+                    !string_starts_with(name, "__")
+                ) {
+                    for(var builtinID = 0; builtinID < 10000; builtinID += 1;) {
+                        var scriptName = script_get_name(builtinID);
+                        if (scriptName == name) {
+                            func = builtinID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+                        var scriptName = script_get_name(scriptID);
+                        if (
+                            string_starts_with(scriptName, "anon") ||
+                            string_count("gml_GlobalScript", scriptName) > 0 ||
+                            string_count("__struct__", scriptName) > 0
+                        ) {
+                            continue;
+                        }
+                        if (scriptName == name) {
+                            func = scriptID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    __catspeak_error("function with the name '", name, "' cannot be found");
+                }
+            } else {
+                name = __catspeak_infer_function_name(func);
+                func = is_method(func) ? method_get_index(func) : func;
             }
-            var name = __catspeak_infer_function_name(func);
-            func = is_method(func) ? method_get_index(func) : func;
             database[$ name] = method(undefined, func);
         }
     };
@@ -257,7 +296,25 @@ function CatspeakForeignInterface() constructor {
             //
             // their positions aren't always 100% known, except for anon
             // (which is always at the front)
+            //
+            // NOTE: not GMRT compatible
             var database_ = database;
+            if (
+                !string_starts_with(namespace, "<unknown>") &&
+                !string_starts_with(namespace, "@@") &&
+                !string_starts_with(namespace, "$") &&
+                !string_starts_with(namespace, "YoYo") &&
+                !string_starts_with(namespace, "yy") &&
+                !string_starts_with(namespace, "[[") &&
+                !string_starts_with(namespace, "__")
+            ) {
+                for(var builtinID = 0; builtinID < 10000; builtinID += 1;) {
+                    var name = script_get_name(builtinID);
+                    if (string_starts_with(name, namespace)) {
+                        database_[$ name] = method(undefined, builtinID);
+                    }
+                }
+            }
             for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
                 var name = script_get_name(scriptID);
                 if (
@@ -319,10 +376,49 @@ function CatspeakForeignInterface() constructor {
     static exposeMethodByName = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var func = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                //__catspeak_check_arg("func", func, __catspeak_is_callable);
+            var name;
+            if (is_string(func)) {
+                name = func;
+                func = undefined;
+                if (
+                    !string_starts_with(name, "<unknown>") &&
+                    !string_starts_with(name, "@@") &&
+                    !string_starts_with(name, "$") &&
+                    !string_starts_with(name, "YoYo") &&
+                    !string_starts_with(name, "yy") &&
+                    !string_starts_with(name, "[[") &&
+                    !string_starts_with(name, "__")
+                ) {
+                    for(var builtinID = 0; builtinID < 10000; builtinID += 1;) {
+                        var scriptName = script_get_name(builtinID);
+                        if (scriptName == name) {
+                            func = builtinID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+                        var scriptName = script_get_name(scriptID);
+                        if (
+                            string_starts_with(scriptName, "anon") ||
+                            string_count("gml_GlobalScript", scriptName) > 0 ||
+                            string_count("__struct__", scriptName) > 0
+                        ) {
+                            continue;
+                        }
+                        if (scriptName == name) {
+                            func = scriptID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    __catspeak_error("method with the name '", name, "' cannot be found");
+                }
+            } else {
+                name = __catspeak_infer_function_name(func);
             }
-            var name = __catspeak_infer_function_name(func);
             func = is_method(func) ? func : method(undefined, func);
             database[$ name] = func;
         }

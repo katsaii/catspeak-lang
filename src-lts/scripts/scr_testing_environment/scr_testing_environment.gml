@@ -344,7 +344,31 @@ test_add(function () : Test("env-gm-asset") constructor {
 test_add(function () : Test("env-gml-function") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
+    ffi.exposeFunctionByName("is_string");
+    var ir = env.parseString(@'
+        return is_string("Hello World!");
+    ');
+    var func = env.compileGML(ir);
+    var result = func();
+    assertEq(true, result);
+});
+
+test_add(function () : Test("env-gml-function-2") constructor {
+    var env = new CatspeakEnvironment();
+    var ffi = env.getInterface();
     ffi.exposeFunctionByName(is_string);
+    var ir = env.parseString(@'
+        return is_string("Hello World!");
+    ');
+    var func = env.compileGML(ir);
+    var result = func();
+    assertEq(true, result);
+});
+
+test_add(function () : Test("env-gml-function-3") constructor {
+    var env = new CatspeakEnvironment();
+    var ffi = env.getInterface();
+    ffi.exposeFunctionByPrefix("is_");
     var ir = env.parseString(@'
         return is_string("Hello World!");
     ');
