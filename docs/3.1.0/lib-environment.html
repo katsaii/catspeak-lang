@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="The Catspeak library documentation."><title>Catspeak Reference :: environment of Library Reference</title><link rel="stylesheet" href="./style.css"></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lib-init.html"><mark>Library Reference</mark></a></li><li><a href="dub-compatibility_v2.html">Dubiously Undocumented</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lib-init.html">init</a></li><li><a href="lib-environment.html"><mark>environment</mark></a><ul><li><a href="lib-struct-catspeakenvironment.html">struct CatspeakEnvironment</a></li></ul></li><li><a href="lib-presets.html">presets</a></li><li><a href="lib-lexer.html">lexer</a></li><li><a href="lib-parser.html">parser</a></li><li><a href="lib-codegen.html">codegen</a></li><li><a href="lib-ir.html">ir</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#catspeak">Catspeak</a></li><li><a href="#catspeak_execute">catspeak_execute</a></li><li><a href="#catspeak_execute_ext">catspeak_execute_ext</a></li><li><a href="#catspeak_globals">catspeak_globals</a></li><li><a href="#catspeak_method">catspeak_method</a></li><li><a href="#catspeak_special_to_struct">catspeak_special_to_struct</a></li></ul></aside><main><article><h1 class="chapter-title">environment</h1><div class="subchapter-title">↳ <a href="lib-struct-catspeakenvironment.html" class="subchapter-title">struct CatspeakEnvironment</a></div><p>The primary user-facing API for compiling Catspeak programs and
+configuring the Catspeak runtime environment.</p><p><strong>Example</strong></p><p>A high-level overview of Catspeak usage. The example walks through how
+to compile, execute, and introspect the global variables of a Catspeak
+script:</p><pre><code><span class="kw-com">// parse Catspeak code</span>
+<span class="kw-key">var</span> <span class="kw-var">ir</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">parseString</span>(<span class="kw-val">@'
+  count = 0
+  counter = fun {
+    count += 1
+    return count
+  }
+'</span>);
+
+<span class="kw-com">// compile Catspeak code into a callable GML function</span>
+<span class="kw-key">var</span> <span class="kw-var">main</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">compileGML</span>(<span class="kw-var">ir</span>);
+
+<span class="kw-com">// initialise the Catspeak script by calling its main entry point</span>
+<span class="kw-fun">catspeak_execute</span>(<span class="kw-var">main</span>);
+
+<span class="kw-com">// grab the counter function from the script</span>
+<span class="kw-key">var</span> <span class="kw-var">counter</span> = <span class="kw-fun">catspeak_globals</span>(<span class="kw-var">main</span>).<span class="kw-var">counter</span>;
+
+<span class="kw-com">// call the Catspeak `counter` function from GML!</span>
+<span class="kw-fun">show_message</span>(<span class="kw-fun">counter</span>()); <span class="kw-com">// prints 1</span>
+<span class="kw-fun">show_message</span>(<span class="kw-fun">counter</span>()); <span class="kw-com">// prints 2</span>
+<span class="kw-fun">show_message</span>(<span class="kw-fun">counter</span>()); <span class="kw-com">// prints 3</span>
+<span class="kw-fun">show_message</span>(<span class="kw-fun">counter</span>()); <span class="kw-com">// prints 4</span>
+</code></pre><section><h1 class="heading" id="catspeak"><a href="#catspeak">§</a> Catspeak</h1><pre><code><span class="kw-key">#macro</span> <span class="kw-typ">Catspeak</span> <span class="kw-val">global</span>.__<span class="kw-var">catspeak__</span></code></pre><p>The default global Catspeak environment. Mostly exists for UX reasons.</p><p>Unless you need to have multiple instances of Catspeak with different
+configurations, you should use this. Otherwise, you should create a new
+sandboxed Catspeak environment using <code class="inline-code">new CatspeakEnvironment()</code>.</p><p><strong>Returns</strong> <code class="inline-code">Struct.CatspeakEnvironment</code></p></section><section><h1 class="heading" id="catspeak_execute"><a href="#catspeak_execute">§</a> catspeak_execute</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_execute</span>(
+  <span class="kw-var">callee</span> : <span class="kw-typ">Any</span>,
+  ... : <span class="kw-typ">Any</span>,
+) -> <span class="kw-typ">Any</span></code></pre><p>Simple wrapper over <code class="inline-code">catspeak_execute_ext</code> which infers the <code class="inline-code">self</code> and
+<code class="inline-code">other</code> context from the current callsite.</p><blockquote class="remark"><strong>📝 Note</strong><p>Gets around a limitation in GML where the <code class="inline-code">self</code> and <code class="inline-code">other</code> of the
+callsite cannot be accessed from within bound methods. Use this
+function if you want the <code class="inline-code">self</code> of a called Catspeak function to be
+the same as the <code class="inline-code">self</code> of the callsite in GML land.</p></blockquote><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">callee</code></p><p>The function to call. Can be a GML function, Catspeak function, or a
+function bound using <code class="inline-code">catspeak_method</code>.</p></li><li><p><code class="inline-code">...</code></p><p>The arguments to pass to this function.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Any</code></p><p>The result of evaluating the <code class="inline-code">callee</code> function.</p></section><section><h1 class="heading" id="catspeak_execute_ext"><a href="#catspeak_execute_ext">§</a> catspeak_execute_ext</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_execute_ext</span>(
+  <span class="kw-var">callee</span> : <span class="kw-typ">Any</span>,
+  <span class="kw-var">self_</span> : <span class="kw-typ">Struct</span>,
+  <span class="kw-var">args</span>? : <span class="kw-typ">Array</span><<span class="kw-typ">Any</span>>,
+  <span class="kw-var">offset</span>? : <span class="kw-typ">Real</span>,
+  <span class="kw-var">argc</span>? : <span class="kw-typ">Real</span>,
+) -> <span class="kw-typ">Any</span></code></pre><p>Executes a Catspeak-compatible function in the supplied <code class="inline-code">self</code> scope.</p><blockquote class="remark"><strong>📝 Note</strong><p>Gets around a limitation in GML where the <code class="inline-code">self</code> and <code class="inline-code">other</code> of the
+callsite cannot be accessed from within bound methods. Use this
+function if you want the <code class="inline-code">self</code> of a called Catspeak function to be
+the same as the <code class="inline-code">self</code> of the callsite in GML land.</p></blockquote><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">callee</code></p><p>The function to call. Can be a GML function, Catspeak function, or a
+function bound using <code class="inline-code">catspeak_method</code>.</p></li><li><p><code class="inline-code">self_</code></p><p>The <code class="inline-code">self</code> context to use when calling this Catspeak function.</p></li><li><p><code class="inline-code">args</code> <em>(optional)</em></p><p>The argument list to call this function with. Defaults to no arguments.</p></li><li><p><code class="inline-code">offset</code> <em>(optional)</em></p><p>The offset in the <code class="inline-code">args</code> array to begin reading arguments from. Defaults
+to 0.</p></li><li><p><code class="inline-code">argc</code> <em>(optional)</em></p><p>The number of arguments to pass to the function call. Defaults to
+<code class="inline-code">array_length(args) - offset</code>.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Any</code></p><p>The result of evaluating the <code class="inline-code">callee</code> function.</p></section><section><h1 class="heading" id="catspeak_globals"><a href="#catspeak_globals">§</a> catspeak_globals</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_globals</span>(
+  <span class="kw-var">callee</span> : <span class="kw-typ">Any</span>,
+) -> <span class="kw-typ">Struct</span></code></pre><p>Returns a struct containing the global variable context of a Catspeak
+function, or <code class="inline-code">undefined</code> if no globals exist.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">callee</code></p><p>The function to get the global context of. Can be a GML function,
+Catspeak function, or a function bound using <code class="inline-code">catspeak_method</code>.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Struct</code></p></section><section><h1 class="heading" id="catspeak_method"><a href="#catspeak_method">§</a> catspeak_method</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_method</span>(
+  <span class="kw-var">self_</span> : <span class="kw-typ">Any</span>,
+  <span class="kw-var">callee</span> : <span class="kw-typ">Any</span>,
+) -> <span class="kw-typ">Any</span></code></pre><p>Binds a function to a <code class="inline-code">self</code>. Similar to the built-in <code class="inline-code">method</code> function,
+except this supports Catspeak functions as well as GML functions.</p><blockquote class="remark"><strong>📝 Note</strong><p>Prefered over using <code class="inline-code">method</code> otherwise you risk breaking your compiled
+Catspeak functions.</p></blockquote><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">self_</code></p><p>The scope to bind this function to. Can be a struct or <code class="inline-code">undefined</code>.</p></li><li><p><code class="inline-code">callee</code></p><p>The function to get the global context of. Can be a GML function,
+Catspeak function, or a function bound using <code class="inline-code">catspeak_method</code>.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Any</code></p></section><section><h1 class="heading" id="catspeak_special_to_struct"><a href="#catspeak_special_to_struct">§</a> catspeak_special_to_struct</h1><pre><code><span class="kw-key">function</span> <span class="kw-fun">catspeak_special_to_struct</span>(
+  <span class="kw-var">gmlSpecial</span> : <span class="kw-typ">Any</span>,
+) -> <span class="kw-typ">Struct</span></code></pre><p>Because Catspeak is sandboxed, care must be taken to not expose any
+unintentional exploits to modders with GML-specific knowledge. One
+exampe of an exploit is using the number <code class="inline-code">-5</code> to access all the
+internal global variables of a game:</p><pre><code><span class="kw-key">var</span> <span class="kw-var">globalBypass</span> = -<span class="kw-val">5</span>;
+<span class="kw-fun">show_message</span>(<span class="kw-var">globalBypass</span>.<span class="kw-var">secret</span>);
+</code></pre><p>Catspeak avoids these exploits by requiring that all special values
+be converted to their struct counterpart; that is, Catspeak does not
+coerce numbers to these special types implicitly.</p><p>Use this function to convert special GML constants, such as <code class="inline-code">self</code>,
+<code class="inline-code">global</code>, or instances into their struct counterparts. Will return
+<code class="inline-code">undefined</code> if there does not exist a valid conversion.</p><p><strong>Arguments</strong></p><ul><li><p><code class="inline-code">gmlSpecial</code></p><p>Any special GML value to convert into a Catspeak-compatible struct.
+E.g. <code class="inline-code">global</code> or an instance ID.</p></li></ul><p><strong>Returns</strong> <code class="inline-code">Struct</code></p></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>
