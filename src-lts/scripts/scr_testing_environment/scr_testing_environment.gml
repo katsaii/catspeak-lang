@@ -704,3 +704,22 @@ test_add(function() : Test("method-scope-vs-undefined") constructor {
     }
     show_debug_message("gmlFuncB (funcM) Time taken: " + string((get_timer() - t) / 1000) + "ms");
 });
+
+test_add(function() : Test("while-loop") constructor {
+    var env = new CatspeakEnvironment();
+    
+    ir = env.parseString(@'
+        let n = 0;
+        while true {
+            n += 1;
+            if n > 100 {
+                break;
+            }
+        }
+        return n;
+    ');
+    
+    var gmlFuncB = env.compile(ir);
+    var res = gmlFuncB();
+    assertEq(101, res);
+});

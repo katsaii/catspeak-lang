@@ -802,46 +802,57 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     static __compileLoop = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
-                "condition", undefined,
+                "preCondition", undefined,
+                "postCondition", undefined,
+                "step", undefined,
                 "body", undefined
             );
         }
+        var preCondition_ = term.preCondition == undefined
+                ? undefined : __compileTerm(ctx, term.preCondition);
+        var body_ = term.body == undefined
+                ? undefined : __compileTerm(ctx, term.body);
+        var postCondition_ = term.postCondition == undefined
+                ? undefined : __compileTerm(ctx, term.postCondition);
+        var step_ = term.step == undefined
+                ? undefined : __compileTerm(ctx, term.step);
         if (
-            term.preCondition != undefined &&
-            term.postCondition == undefined
+            preCondition_ != undefined &&
+            postCondition_ == undefined
         ) {
             if (term.step == undefined) {
                 return method({
                     ctx : ctx,
-                    condition : __compileTerm(ctx, term.preCondition),
-                    body : __compileTerm(ctx, term.body),
+                    condition : preCondition_,
+                    body : body_,
                 }, __catspeak_expr_loop_while__);
             } else {
                 return method({
                     ctx : ctx,
-                    condition : __compileTerm(ctx, term.preCondition),
-                    body : __compileTerm(ctx, term.body),
-                    step : __compileTerm(ctx, term.step),
+                    condition : preCondition_,
+                    body : body_,
+                    step : step_,
                 }, __catspeak_expr_loop_for__);
             }
         }
         if (
-            term.preCondition == undefined &&
-            term.postCondition != undefined &&
-            term.step == undefined
+            preCondition_ == undefined &&
+            postCondition_ != undefined &&
+            step_ == undefined
         ) {
             return method({
                 ctx : ctx,
-                condition : __compileTerm(ctx, term.postCondition),
-                body : __compileTerm(ctx, term.body),
+                condition : postCondition_,
+                body : body_,
             }, __catspeak_expr_loop_do__);
         }
+        
         return method({
             ctx : ctx,
-            preCondition : __compileTerm(ctx, term.preCondition),
-            postCondition : __compileTerm(ctx, term.postCondition),
-            step : __compileTerm(ctx, term.step),
-            body : __compileTerm(ctx, term.body),
+            preCondition : preCondition_,
+            postCondition : postCondition_,
+            step : step_,
+            body : body_,
         }, __catspeak_expr_loop_general__);
     };
 
@@ -1645,7 +1656,7 @@ function __catspeak_expr_loop_general__() {
     var body_ = body;
     while (true) {
         __catspeak_timeout_check(callTime);
-        if (!preCondition_()) {
+        if (preCondition_ != undefined && !preCondition_()) {
             break;
         }
         try {
@@ -1657,10 +1668,12 @@ function __catspeak_expr_loop_general__() {
                 throw e;
             }
         }
-        if (!postCondition_()) {
+        if (postCondition_ != undefined && !postCondition_()) {
             break;
         }
-        step_();
+        if (step_ != undefined) {
+            step_();
+        }
     }
     return undefined;
 }
