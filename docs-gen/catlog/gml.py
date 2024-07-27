@@ -219,7 +219,7 @@ class Macro(Definition):
 
     def into_content(self):
         content = doc.RichText([
-            doc.CodeBlock([self.signature()]),
+            doc.CodeBlock([self.signature()], "gml"),
             self.get_doc_richtext()
         ])
         return doc.Section(
@@ -242,7 +242,7 @@ class Variable(Definition):
 
     def into_content(self):
         content = doc.RichText([
-            doc.CodeBlock([self.signature()]),
+            doc.CodeBlock([self.signature()], "gml"),
             self.get_doc_richtext()
         ])
         return doc.Section(
@@ -329,7 +329,7 @@ class Enum(Definition):
 
     def into_content(self):
         content = doc.RichText([
-            doc.CodeBlock([self.signature()]),
+            doc.CodeBlock([self.signature()], "gml"),
             self.get_doc_richtext()
         ])
         return doc.Chapter(
@@ -393,7 +393,7 @@ class Function(Definition):
 
     def into_content(self):
         content = doc.RichText([
-            doc.CodeBlock([self.signature()]),
+            doc.CodeBlock([self.signature()], "gml"),
             self.get_doc_richtext()
         ])
         return doc.Section(
@@ -473,7 +473,7 @@ class Constructor(Function):
 
     def into_content(self):
         content = doc.RichText([
-            doc.CodeBlock([self.signature()]),
+            doc.CodeBlock([self.signature()], "gml"),
             self.get_doc_richtext()
         ])
         return doc.Chapter(

@@ -10,10 +10,10 @@ class HTMLCodegen(BasicCodegen):
         "class_" : "class"
     }
 
-    enable_highlighter : bool = False
+    highlighter : ... = None
 
     def write(self, x):
-        if not self.enable_highlighter:
+        if self.highlighter == None:
             super().write(x)
             return
         token_styles = {
@@ -25,7 +25,7 @@ class HTMLCodegen(BasicCodegen):
             highlight.TypeName : "kw-typ",
             highlight.MacroName : "kw-mac",
         }
-        for kind, content in highlight.tokenise_gml(x):
+        for kind, content in self.highlighter(x):
             style = token_styles.get(type(kind))
             if not style:
                 super().write(content)
@@ -150,17 +150,30 @@ class HTMLCodegen(BasicCodegen):
     @BasicCodegen.block
     def code(self, **attrs):
         with self.tag("code", class_="inline-code", **attrs):
-            #self.enable_highlighter = True
+            self.highlighter = highlight.tokenise_gml
             yield
-            #self.enable_highlighter = False
+            self.highlighter = None
 
     @BasicCodegen.block
     def code_block(self, **attrs):
         with self.tag("pre", **attrs):
             with self.tag("code", **attrs):
-                self.enable_highlighter = True
+                highlight_prev = self.highlighter
+                self.highlighter = None
+                if lang := attrs.get("lang"):
+                    if lang == "gml":
+                        self.highlighter = highlight.tokenise_gml
+                    elif lang == "meow":
+                        self.highlighter = highlight.tokenise_meow
                 yield
-                self.enable_highlighter = False
+                self.highlighter = highlight_prev
+
+    def code_block_lang(self, lang):
+        @BasicCodegen.block
+        def do_(**attrs):
+            with self.code_block(lang = lang, **attrs):
+                yield
+        return do_
 
     @BasicCodegen.block
     def bold(self, **attrs):

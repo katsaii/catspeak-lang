@@ -5,13 +5,17 @@ class RichText():
     children : ... = field(default_factory=list)
 
 class Paragraph(RichText): pass
-class CodeBlock(RichText): pass
-class InlineCode(RichText): pass
 class Bold(RichText): pass
 class Emphasis(RichText): pass
 class Remark(RichText): pass
 class Warning(RichText): pass
 class Experimental(RichText): pass
+
+@dataclass
+class CodeBlock(RichText):
+    lang : str = "txt"
+
+class InlineCode(RichText): pass
 
 @dataclass
 class Deprecated(RichText):

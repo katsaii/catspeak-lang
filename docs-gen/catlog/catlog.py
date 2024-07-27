@@ -181,13 +181,17 @@ def write_richtext(sb, textdata):
                 write_richtext(sb, child)
     elif isinstance(textdata, doc.RichText):
         writers = {
-            doc.Paragraph : sb.paragraph,
-            doc.CodeBlock : sb.code_block,
-            doc.InlineCode : sb.code,
-            doc.Bold : sb.bold,
-            doc.Emphasis : sb.emphasis,
+            doc.Paragraph : lambda _: sb.paragraph,
+            doc.CodeBlock : lambda cb: sb.code_block_lang(cb.lang),
+            doc.InlineCode : lambda _: sb.code,
+            doc.Bold : lambda _: sb.bold,
+            doc.Emphasis : lambda _: sb.emphasis,
         }
-        writer = writers.get(type(textdata)) or sb.no_style
+        writer = writers.get(type(textdata))
+        if writer:
+            writer = writer(textdata)
+        else:
+            writer = sb.no_style
         with writer():
             for child in textdata.children:
                 write_richtext(sb, child)

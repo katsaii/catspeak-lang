@@ -13,7 +13,7 @@ def ast_to_doc(term):
         case mistletoe.block_tokens.Paragraph:
             return doc.Paragraph(list(map(ast_to_doc, term.children)))
         case mistletoe.block_tokens.CodeFence:
-            return doc.CodeBlock(list(map(ast_to_doc, term.children)))
+            return doc.CodeBlock(list(map(ast_to_doc, term.children)), term.language)
         case mistletoe.block_tokens.List:
             return doc.List(list(map(ast_to_doc, term.children)))
         case mistletoe.block_tokens.ListItem:

@@ -139,3 +139,93 @@ def tokenise_gml(input_):
             yield (Value() if has_digits(lexeme) else Other()), lexeme
         else:
             yield Other(), lex.advance()
+
+def tokenise_meow(input_):
+    keyword_database = set("""
+        if else while do break continue
+        with and or xor return
+        match case let fun
+        catch finally throw new
+    """.split())
+    value_database = set("""
+        true false undefined self
+    """.split())
+    lex = Tokeniser(input_)
+    while not lex.is_empty():
+        if lex.peek().isspace():
+            yield Whitespace(), lex.advance_while(lambda x: x.isspace())
+        elif lex.peek(2) == "--":
+            yield Comment(), lex.advance_while(
+                lambda x: not (x in { "\n", "\r" })
+            )
+        elif lex.peek().isalpha():
+            # keywords and identifiers
+            ident = lex.advance_while(lambda x: x.isalnum() or x == "_")
+            kind = Variable()
+            if ident in keyword_database:
+                kind = Keyword()
+            elif ident in value_database:
+                kind = Value()
+            elif ident == ident.upper():
+                kind = MacroName()
+            elif ident[:1].isupper():
+                kind = TypeName()
+            elif lex.peek() == "(":
+                kind = FunctionName()
+            yield kind, ident
+        elif lex.peek() == "`":
+            lexeme = lex.advance()
+            while not lex.is_empty():
+                if lex.peek() in { "\n", "\r" }:
+                    break
+                ch = lex.advance()
+                lexeme += ch
+                if ch == "`":
+                    break
+            yield Value(), lexeme
+        elif lex.peek() == "\"":
+            lexeme = lex.advance()
+            skip = False
+            while not lex.is_empty():
+                if lex.peek() in { "\n", "\r" }:
+                    break
+                ch = lex.advance()
+                lexeme += ch
+                if skip:
+                    skip = False
+                    continue
+                elif ch == "\\":
+                    skip = True
+                elif ch == "\"":
+                    break
+            yield Value(), lexeme
+        elif lex.peek() == "'":
+            lexeme = lex.advance()
+            skip = False
+            while not lex.is_empty():
+                if lex.peek() in { "\n", "\r" }:
+                    break
+                ch = lex.advance()
+                lexeme += ch
+                if skip:
+                    skip = False
+                    continue
+                elif ch == "\\":
+                    skip = True
+                elif ch == "'":
+                    break
+            yield Value(), lexeme
+        elif lex.peek(2) in { "0x", "0X" }:
+            prefix = lex.advance(2)
+            yield Value(), prefix + lex.advance_while(is_hexnum)
+        elif lex.peek(2) in { "0b", "0B" }:
+            prefix = lex.advance(2)
+            yield Value(), prefix + lex.advance_while(is_binnum)
+        elif is_digit(lex.peek()) or lex.peek() == ".":
+            lexeme = lex.advance_while(is_digit)
+            if lex.peek() == ".":
+                lexeme += lex.advance()
+                lexeme += lex.advance_while(is_digit)
+            yield (Value() if has_digits(lexeme) else Other()), lexeme
+        else:
+            yield Other(), lex.advance()
