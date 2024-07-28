@@ -42,6 +42,20 @@ function CatspeakForeignInterface() constructor {
     self.databaseDynConst = { }; // contains keywords marked as "dynamic constants"
     /// @ignore
     self.banList = { };
+    /// Whether to expose every symbol available to Catspeak programs. This will
+    /// attempt to expose all functions, assets, constants, and global properties
+    /// available in the GameMaker language (with a few exceptions).
+    ///
+    /// @warning
+    ///   This turns off sandboxing in Catspeak, and as a result modders will be
+    ///   able to access everything about your game state, its global variables,
+    ///   user save files (and potentially corrupt them), unlock achievements,
+    ///   cheat, access sensitive information such as API keys (if they are stored
+    ///   in variables), and much more that I can't think of right now.
+    ///
+    ///   If this sounds okay with you, set this property to `true`, and all bets
+    ///   are off. You will meet God.
+    self.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = false;
 
     /// Returns the value of a foreign symbol exposed to this interface.
     ///
@@ -54,7 +68,13 @@ function CatspeakForeignInterface() constructor {
             // this function has been banned!
             return undefined;
         }
-        return database[$ name];
+        if (variable_struct_exists(database, name)) {
+            return database[$ name];
+        }
+        if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
+            // TODO
+        }
+        return undefined;
     };
 
     /// Returns whether the foreign symbol is a "dynamic constant".
@@ -67,7 +87,13 @@ function CatspeakForeignInterface() constructor {
     ///
     /// @return {Bool}
     static isDynamicConstant = function (name) {
-        return databaseDynConst[$ name] ?? false;
+        if (databaseDynConst[$ name] ?? false) {
+            return true;
+        }
+        if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
+            // TODO
+        }
+        return false;
     };
 
     /// Returns whether a foreign symbol is exposed to this interface.
@@ -81,7 +107,16 @@ function CatspeakForeignInterface() constructor {
             // this function has been banned!
             return false;
         }
-        return variable_struct_exists(database, name);
+        if (
+            variable_struct_exists(database, name) ||
+            variable_struct_exists(databaseDynConst, name)
+        ) {
+            return true;
+        }
+        if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
+            // TODO
+        }
+        return false;
     };
 
     /// Bans an array of symbols from being used by this interface. Any
