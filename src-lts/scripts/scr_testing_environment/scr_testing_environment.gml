@@ -723,3 +723,26 @@ test_add(function() : Test("while-loop") constructor {
     var res = gmlFuncB();
     assertEq(101, res);
 });
+
+test_add(function() : Test("expose-everything-const") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString("[ev_async_dialog, os_linux, c_maroon]");
+    var fun = env.compile(ir);
+    var result = fun();
+    assertEq(ev_async_dialog, result[0]);
+    assertEq(os_linux, result[1]);
+    assertEq(c_maroon, result[2]);
+});
+
+test_add(function() : Test("expose-everything-func") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString("[real, is_string, sha1_string_unicode]");
+    var fun = env.compile(ir);
+    var result = fun();
+    assertEq(real("-123"), result[0]("-123"));
+    assertEq(true, result[1](""));
+    assertEq(false, result[1](-12));
+    assertEq(sha1_string_unicode("some hash"), result[2]("some hash"));
+});
