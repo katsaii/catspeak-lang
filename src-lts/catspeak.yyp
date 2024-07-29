@@ -21,6 +21,7 @@
     {"id":{"name":"scr_testing_lexer_ident","path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},"order":2,},
     {"id":{"name":"scr_testing_lexer_whitespace","path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},"order":10,},
     {"id":{"name":"scr_testing_environment","path":"scripts/scr_testing_environment/scr_testing_environment.yy",},"order":1,},
+    {"id":{"name":"__scr_catspeak_gml_interface","path":"scripts/__scr_catspeak_gml_interface/__scr_catspeak_gml_interface.yy",},"order":6,},
     {"id":{"name":"scr_testing_codegen","path":"scripts/scr_testing_codegen/scr_testing_codegen.yy",},"order":0,},
     {"id":{"name":"scr_testing_lexer_number","path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},"order":7,},
     {"id":{"name":"obj_unit_test_inst","path":"objects/obj_unit_test_inst/obj_unit_test_inst.yy",},"order":5,},

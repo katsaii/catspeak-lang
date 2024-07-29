@@ -46,6 +46,12 @@ function CatspeakForeignInterface() constructor {
     /// attempt to expose all functions, assets, constants, and global properties
     /// available in the GameMaker language (with a few exceptions).
     ///
+    /// @experimental
+    ///
+    /// @remark
+    ///   Potentially extremely slow, since every global variable will iterate over
+    ///   a massive list of constants and functions in order to find a reference.
+    ///
     /// @warning
     ///   This turns off sandboxing in Catspeak, and as a result modders will be
     ///   able to access everything about your game state, its global variables,
@@ -72,7 +78,14 @@ function CatspeakForeignInterface() constructor {
             return database[$ name];
         }
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            // TODO
+            try {
+                var db = __catspeak_get_gml_interface();
+                if (variable_struct_exists(db, name)) {
+                    return db[$ name];
+                }
+            } catch (_) {
+                __catspeak_error_silent("GML interface not included, defaulting to `undefined`");
+            }
         }
         return undefined;
     };
@@ -89,9 +102,6 @@ function CatspeakForeignInterface() constructor {
     static isDynamicConstant = function (name) {
         if (databaseDynConst[$ name] ?? false) {
             return true;
-        }
-        if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            // TODO
         }
         return false;
     };
@@ -114,7 +124,12 @@ function CatspeakForeignInterface() constructor {
             return true;
         }
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            // TODO
+            try {
+                var db = __catspeak_get_gml_interface();
+                return variable_struct_exists(db, name);
+            } catch (_) {
+                __catspeak_error_silent("GML interface not included, defaulting to `false`");
+            }
         }
         return false;
     };
