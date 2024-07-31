@@ -500,6 +500,39 @@ function CatspeakIRBuilder() constructor {
             property : property,
         });
     };
+    
+    /// Creates a params expression.
+    ///
+    /// @param {Struct} property
+    ///   The term containing the property to access.
+    ///
+    /// @param {Struct} key
+    ///   The term containing the key to access the collection with.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createParams = function (key, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.PARAMS, location, {
+            key : key,
+        });
+    };
+    
+    /// Creates a params expression.
+    ///
+    /// @param {Struct} property
+    ///   The term containing the property to access.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createParamsCount = function (location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.PARAMS_COUNT, location, { });
+    };
 
     /// Creates a binary operator.
     ///
@@ -981,6 +1014,8 @@ enum CatspeakTerm {
     LOCAL,
     GLOBAL,
     FUNCTION,
+    PARAMS,
+    PARAMS_COUNT,
     SELF,
     /// @ignore
     __SIZE__

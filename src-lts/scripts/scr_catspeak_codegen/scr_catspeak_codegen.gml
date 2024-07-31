@@ -633,6 +633,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             program : undefined,
             locals : array_create(func.localCount),
             argCount : func.argCount,
+            args : array_create(argCount),
+            currentArgCount: 0,
         };
         ctx.program = __compileTerm(ctx, func.root);
         if (__catspeak_term_is_pure(func.root.type)) {
@@ -1281,6 +1283,35 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             idx : term.idx,
         }, __catspeak_expr_local_get__);
     };
+    
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
+    static __compileParams = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "key", is_struct
+            );
+        }
+        return method({
+            args : ctx.args,
+            key : __compileTerm(ctx, term.key),
+        }, __catspeak_expr_params_get__);
+    };
+    
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
+    static __compileParamsCount = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term);
+        }
+        return method(ctx, __catspeak_expr_params_count_get__);
+    };
 
     /// @ignore
     ///
@@ -1354,6 +1385,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         db[@ CatspeakTerm.SELF] = __compileSelf;
         db[@ CatspeakTerm.AND] = __compileAnd;
         db[@ CatspeakTerm.OR] = __compileOr;
+        db[@ CatspeakTerm.PARAMS] = __compileParams;
+        db[@ CatspeakTerm.PARAMS_COUNT] = __compileParamsCount;
         return db;
     })();
 
@@ -1431,11 +1464,23 @@ function __catspeak_function__() {
         // hopefully that's uncommon enough for it to not matter
         var oldLocals = array_create(localCount);
         array_copy(oldLocals, 0, locals, 0, localCount);
+        // store the previous argument array
+        // this requires a fair bit more work to ensure nothing 
+        // is leaked to recursive calls
+        var oldArgsCount = currentArgCount;
+        var oldArgs = array_create(oldArgsCount);
+        array_copy(oldArgs, 0, args, 0, oldArgsCount);
+        array_resize(args, argument_count);
     } else {
         callTime = current_time;
     }
+    // used for params_count, to reflect current argument count
+    currentArgCount = argument_count;
     for (var argI = argCount - 1; argI >= 0; argI -= 1) {
         locals[@ argI] = argument[argI];
+    }
+    for(var argI = argument_count - 1; argI >= 0; argI -= 1) {
+        args[@ argI] = argument[argI];	
     }
     var value;
     try {
@@ -1450,8 +1495,13 @@ function __catspeak_function__() {
         if (isRecursing) {
             // bad practice to use `localCount_` here, but it saves
             // a tiny bit of time so I'll be a bit evil
-            //# feather disable once GM2043
+            //# feather disable GM2043
             array_copy(locals, 0, oldLocals, 0, localCount);
+            // resetting arguments
+            currentArgCount = oldArgsCount;
+            array_resize(args, currentArgCount);
+            array_copy(args, 0, oldArgs, 0, currentArgCount);
+            //# feather enable GM2043
         } else {
             // reset the timer
             callTime = -1;
@@ -1459,6 +1509,8 @@ function __catspeak_function__() {
             // Gone with array_resize, as it's faster to resize than to loop
             array_resize(locals, 0);
             array_resize(locals, localCount);
+            array_resize(args, 0);
+            array_resize(args, argCount);
         }
     }
     return value;
@@ -2196,6 +2248,19 @@ function __catspeak_expr_self__() {
 /// @return {Any}
 function __catspeak_expr_other__() {
     return global.__catspeakGmlOther ?? globals;
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_params_get__() {
+    var key_ = key();
+    return args[key_];
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_params_count_get__() {
+    return currentArgCount;
 }
 
 /// @ignore
