@@ -147,8 +147,12 @@ enum CatspeakToken {
     ///
     /// @experimental
     PARAMS = 58,
+    /// The `params_count` keyword.
+    ///
+    /// @experimental
+    PARAMS_COUNT = 59,
     /// Represents a variable name.
-    IDENT = 59,
+    IDENT = 60,
     /// Represents a GML value. This could be one of:
     ///  - string literal:    `"hello world"`
     ///  - verbatim literal:  `@"\(0_0)/ no escapes!"`
@@ -157,22 +161,22 @@ enum CatspeakToken {
     ///  - character:         `'A'`, `'0'`, `'\n'`
     ///  - boolean:           `true` or `false`
     ///  - `undefined`
-    VALUE = 60,
+    VALUE = 61,
     /// Represents a sequence of non-breaking whitespace characters.
-    WHITESPACE = 61,
+    WHITESPACE = 62,
     /// Represents a comment.
-    COMMENT = 62,
+    COMMENT = 63,
     /// Represents the end of the file.
-    EOF = 63,
+    EOF = 64,
     /// Represents any other unrecognised character.
     ///
     /// @remark
     ///   If the compiler encounters a token of this type, it will typical
     ///   raise an exception. This likely indicates that a Catspeak script has
     ///   a syntax error somewhere.
-    OTHER = 64,
+    OTHER = 65,
     /// @ignore
-    __SIZE__ = 65,
+    __SIZE__ = 66,
 }
 
 /// @ignore
