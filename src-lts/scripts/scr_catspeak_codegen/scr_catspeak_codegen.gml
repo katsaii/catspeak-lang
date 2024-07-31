@@ -633,7 +633,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             program : undefined,
             locals : array_create(func.localCount),
             argCount : func.argCount,
-            args : array_create(argCount),
+            args : array_create(func.argCount),
             currentArgCount: 0,
         };
         ctx.program = __compileTerm(ctx, func.root);
