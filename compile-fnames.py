@@ -73,6 +73,8 @@ with open(codegen_path, "w", encoding="utf-8") as file:
         //! Catspeak.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
         //! ```
 
+        //# feather use syntax-errors
+
         /// @ignore
         function __catspeak_get_gml_interface() {
             static db = undefined;

@@ -5,6 +5,8 @@
 //! Catspeak.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
 //! ```
 
+//# feather use syntax-errors
+
 /// @ignore
 function __catspeak_get_gml_interface() {
     static db = undefined;
