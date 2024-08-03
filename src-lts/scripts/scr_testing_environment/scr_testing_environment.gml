@@ -746,3 +746,19 @@ test_add(function() : Test("expose-everything-func") constructor {
     assertEq(false, result[1](-12));
     assertEq(sha1_string_unicode("some hash"), result[2]("some hash"));
 });
+
+test_add(function() : Test("expose-everything-assets") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
+        let inst = instance_create_depth(1, 2, 3, obj_unit_test_inst);
+        return inst;
+    ');
+    var fun = env.compile(ir);
+    var result = fun();
+    assert(instance_exists(result));
+    assertEq(1, result.x);
+    assertEq(2, result.y);
+    assertEq(3, result.depth);
+    instance_destroy(result);
+});

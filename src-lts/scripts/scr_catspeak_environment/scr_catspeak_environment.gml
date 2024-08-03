@@ -49,6 +49,10 @@ function CatspeakForeignInterface() constructor {
     /// @experimental
     ///
     /// @remark
+    ///   **Does not** support the physics capabilities of GameMaker because of some
+    ///   weird quirks with how functions are bound.
+    ///
+    /// @warning
     ///   Potentially extremely slow, since every global variable will iterate over
     ///   a massive list of constants and functions in order to find a reference.
     ///
@@ -82,6 +86,13 @@ function CatspeakForeignInterface() constructor {
                 var db = __catspeak_get_gml_interface();
                 if (variable_struct_exists(db, name)) {
                     return db[$ name];
+                }
+                var asset = asset_get_index(name);
+                if (asset != -1) {
+                    if (asset_get_type(name) == asset_script) {
+                        return method(undefined, asset);
+                    }
+                    return asset;
                 }
             } catch (_) {
                 __catspeak_error_silent("GML interface not included, defaulting to `undefined`");
@@ -126,7 +137,7 @@ function CatspeakForeignInterface() constructor {
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
             try {
                 var db = __catspeak_get_gml_interface();
-                return variable_struct_exists(db, name);
+                return variable_struct_exists(db, name) || asset_get_index(name) != -1;
             } catch (_) {
                 __catspeak_error_silent("GML interface not included, defaulting to `false`");
             }
