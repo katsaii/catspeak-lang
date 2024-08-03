@@ -33,7 +33,7 @@
 //!   ');
 //!
 //!   // compile Catspeak code into a callable GML function
-//!   var getMessage = Catspeak.compileGML(ir);
+//!   var getMessage = Catspeak.compile(ir);
 //!
 //!   // call the Catspeak code just like you would any other GML function!
 //!   show_message(getMessage());
@@ -48,7 +48,7 @@
 //!   // calling `badMod` will throw an error instead
 //!   // of calling the `game_end` function
 //!   try {
-//!     var badMod = Catspeak.compileGML(ir);
+//!     var badMod = Catspeak.compile(ir);
 //!     badMod();
 //!   } catch (e) {
 //!     show_message("a mod did something bad!");

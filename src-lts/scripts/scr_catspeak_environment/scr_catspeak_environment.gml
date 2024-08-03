@@ -16,7 +16,7 @@
 //!   ');
 //!
 //!   // compile Catspeak code into a callable GML function
-//!   var main = Catspeak.compileGML(ir);
+//!   var main = Catspeak.compile(ir);
 //!
 //!   // initialise the Catspeak script by calling its main entry point
 //!   catspeak_execute(main);

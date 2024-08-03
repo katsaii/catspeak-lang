@@ -47,7 +47,7 @@ test_add(function () : Test("env-tokenise-keywords") constructor {
 test_add(function () : Test("env-self-inst") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString(@'self');
-    var gmlFunc = env.compileGML(ir);
+    var gmlFunc = env.compile(ir);
     var inst = instance_create_depth(0, 0, 0, obj_unit_test_inst);
     gmlFunc.setSelf(inst);
     assertEq(catspeak_special_to_struct(inst), gmlFunc());
@@ -56,8 +56,8 @@ test_add(function () : Test("env-self-inst") constructor {
 
 test_add(function () : Test("env-global-shared") constructor {
     var env = new CatspeakEnvironment();
-    var fA = env.compileGML(env.parseString(@'globalvar = 1;'));
-    var fB = env.compileGML(env.parseString(@'globalvar'));
+    var fA = env.compile(env.parseString(@'globalvar = 1;'));
+    var fB = env.compile(env.parseString(@'globalvar'));
     var s = { };
     fA.setGlobals(s);
     fB.setGlobals(s);
@@ -68,8 +68,8 @@ test_add(function () : Test("env-global-shared") constructor {
 test_add(function () : Test("env-global-shared-2") constructor {
     var env = new CatspeakEnvironment();
     env.enableSharedGlobal(true);
-    var fA = env.compileGML(env.parseString(@'globalvar = 1;'));
-    var fB = env.compileGML(env.parseString(@'globalvar'));
+    var fA = env.compile(env.parseString(@'globalvar = 1;'));
+    var fB = env.compile(env.parseString(@'globalvar'));
     fA();
     assertEq(1, fB());
 });
@@ -94,20 +94,20 @@ test_add(function () : Test("env-struct-not-terminated") constructor {
             a_string: "Hello World!"
         }
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(result, { foo : "bar", a_number : 0, a_string : "Hello World!" });
 });
 
 test_add(function () : Test("env-function-brace-style") constructor {
     var env = new CatspeakEnvironment();
-    var fA = env.compileGML(env.parseString(@'
+    var fA = env.compile(env.parseString(@'
         main = fun()
         {
             return "hi"
         }
     '));
-    var fB = env.compileGML(env.parseString(@'
+    var fB = env.compile(env.parseString(@'
         main = fun() {
             return "hi"
         }
@@ -129,7 +129,7 @@ test_add(function () : Test("env-function-brace-style") constructor {
 //    env.addMethod("get_msg", function () {
 //        return msg;
 //    });
-//    var fA = env.compileGML(env.parseString(@'
+//    var fA = env.compile(env.parseString(@'
 //        let a = get_msg();
 //        let b;
 //        use thing {
@@ -143,7 +143,7 @@ test_add(function () : Test("env-function-brace-style") constructor {
 
 test_add(function () : Test("env-function-set-self") constructor {
     var env = new CatspeakEnvironment();
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         return fun { self };
     '));
     var fun = f();
@@ -188,7 +188,7 @@ test_add(function () : Test("env-function-method-call") constructor {
     env.getInterface().exposeFunction("Construct", function() {
         return new EngineFunctionMethodCallTest__Construct();
     });
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         let _inst = Construct();
         _inst.add("Woo!");
         _inst.add("Yeehaw!");
@@ -204,7 +204,7 @@ test_add(function () : Test("env-function-constructor-call") constructor {
     env.getInterface().exposeFunction(
         "Construct", EngineFunctionMethodCallTest__Construct
     );
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         let _inst = new Construct();
         _inst.add("Woo!");
         _inst.add("Yeehaw!");
@@ -220,7 +220,7 @@ test_add(function () : Test("env-function-constructor-call-implicit") constructo
     env.getInterface().exposeFunction(
         "Construct", EngineFunctionMethodCallTest__Construct
     );
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         let _inst = new Construct;
         _inst.add("Woo!");
         _inst.add("Yeehaw!");
@@ -236,7 +236,7 @@ test_add(function () : Test("env-function-constructor-call-implicit-index") cons
     env.getInterface().exposeConstant(
         "ctx", { C : method(undefined, EngineFunctionMethodCallTest__Construct) }
     );
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         let _inst = new ctx.C;
         _inst.add("Woo!");
         _inst.add("Yeehaw!");
@@ -253,7 +253,7 @@ test_add(function () : Test("global-custom-presets") constructor {
     });
     var env = new CatspeakEnvironment();
     env.applyPreset("test-preset");
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         return double(103);
     '));
     assertEq(2 * 103, f());
@@ -262,7 +262,7 @@ test_add(function () : Test("global-custom-presets") constructor {
 test_add(function () : Test("env-properties") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeDynamicConstant("some_property", function () { return 620 });
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         return some_property + 2 * some_property
     '));
     assertEq(620 + 2 * 620, f());
@@ -270,7 +270,7 @@ test_add(function () : Test("env-properties") constructor {
 
 test_add(function () : Test("env-misc-counter") constructor {
     var env = new CatspeakEnvironment();
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         count = 1
         let counter = fun {
             let res = count
@@ -291,7 +291,7 @@ test_add(function () : Test("env-misc-counter") constructor {
 
 test_add(function () : Test("env-misc-get-set") constructor {
     var env = new CatspeakEnvironment();
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         value = 0
         let double = fun (x) {
             if x == undefined { value } else { value = 2 * x }
@@ -312,7 +312,7 @@ test_add(function () : Test("env-misc-get-set") constructor {
 
 test_add(function () : Test("env-pipe-left") constructor {
     var env = new CatspeakEnvironment();
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         let f = fun (x) { return x * 2 }
         f <| 7
     '));
@@ -321,7 +321,7 @@ test_add(function () : Test("env-pipe-left") constructor {
 
 test_add(function () : Test("env-pipe-right") constructor {
     var env = new CatspeakEnvironment();
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         let f = fun (x) { return x + "world" }
         "hello" |> f
     '));
@@ -336,7 +336,7 @@ test_add(function () : Test("env-gm-asset") constructor {
     var ir = env.parseString(@'
         return font_exists(fnt_testing);
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(true, result);
 });
@@ -348,7 +348,7 @@ test_add(function () : Test("env-gml-function") constructor {
     var ir = env.parseString(@'
         return is_string("Hello World!");
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(true, result);
 });
@@ -360,7 +360,7 @@ test_add(function () : Test("env-gml-function-2") constructor {
     var ir = env.parseString(@'
         return is_string("Hello World!");
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(true, result);
 });
@@ -372,7 +372,7 @@ test_add(function () : Test("env-gml-function-3") constructor {
     var ir = env.parseString(@'
         return is_string("Hello World!");
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(true, result);
 });
@@ -385,7 +385,7 @@ test_add(function () : Test("env-gml-function-by-substring") constructor {
         let array = [2, 2, 4];
         return test_array_sum(array);
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(8, result);
 });
@@ -403,7 +403,7 @@ test_add(function () : Test("env-gml-function-by-substring-exist") constructor {
             test_array_median,
         ];
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertNeq(undefined, result[0]);
     assertNeq(undefined, result[1]);
@@ -424,7 +424,7 @@ test_add(function () : Test("env-gml-function-by-substring-not-exist") construct
     var ir = env.parseString(@'
         return test_struct_create;
     ');
-    var func = env.compileGML(ir);
+    var func = env.compile(ir);
     var result = func();
     assertEq(undefined, result);
     assert(!is_method(result));
@@ -449,7 +449,7 @@ test_add(function () : Test("env-else-if") constructor {
 
             }
         ');
-        env.compileGML(ir);
+        env.compile(ir);
     } catch (e) {
         fail(e.message);
     }
@@ -469,7 +469,7 @@ test_add_force(function () : Test(
             "also bad"
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq("good", result);
 });
@@ -483,7 +483,7 @@ test_add_force(function () : Test(
     var ir = engine.parseString(@'
         return (room_width == room_width_function());
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq(true, result);
 });
@@ -500,7 +500,7 @@ test_add(function() : Test("match-1") constructor {
             else { 0 }
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq(42, result);
 });
@@ -517,7 +517,7 @@ test_add(function() : Test("match-2") constructor {
             case 3 { 3.14 }
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq(0, result);
 });
@@ -533,7 +533,7 @@ test_add(function() : Test("match-3") constructor {
             case 3 { 3.14 }
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq(undefined, result);
 });
@@ -544,7 +544,7 @@ test_add(function() : Test("match-4") constructor {
         let a = 0
         match a {}
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq(undefined, result);
 });
@@ -566,7 +566,7 @@ test_add(function() : Test("match-5") constructor {
             else { 2 }
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertEq(1, result);
 });
@@ -582,7 +582,7 @@ test_add(function() : Test("match-local") constructor {
             }
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     assertEq(1 + 2, _func());
 });
 
@@ -596,21 +596,21 @@ test_add(function() : Test("match-local-scope") constructor {
         }
         b
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     assertEq(undefined, _func());
 });
 
 test_add(function() : Test("expr-xor-false") constructor {
     var engine = new CatspeakEnvironment();
     var ir = engine.parseString(@'15 xor 12');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     assertEq(false, _func());
 });
 
 test_add(function() : Test("expr-xor-true") constructor {
     var engine = new CatspeakEnvironment();
     var ir = engine.parseString(@'-15 xor 12');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     assertEq(true, _func());
 });
 
@@ -621,7 +621,7 @@ test_add(function() : Test("with-struct") constructor {
             return self;
         }
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     var result = _func();
     assertTypeof(result, "struct");
     assertEq(1, result.a);
@@ -636,7 +636,7 @@ test_add(function() : Test("with-noone") constructor {
         }
         return success;
     ');
-    var _func = engine.compileGML(ir);
+    var _func = engine.compile(ir);
     assertEq(true, _func());
 });
 

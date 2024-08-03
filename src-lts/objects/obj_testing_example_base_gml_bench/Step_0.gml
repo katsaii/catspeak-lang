@@ -71,7 +71,7 @@ if (frame < runTime) {
     var ir = Catspeak.parseString(code);
     var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
     while (get_timer() < expectTime) {
-        Catspeak.compileGML(ir);
+        Catspeak.compile(ir);
 
         countTotal_ += 1;
     }
