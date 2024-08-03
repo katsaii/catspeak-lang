@@ -57,18 +57,9 @@ book_api = compile_gml_book(
     ]
 )
 
-book_api_dubious = compile_gml_book(
-    "Dubiously Undocumented",
-    "Dubiously undocumented behaviour and quirks.",
-    [
-        "scr_catspeak_compatibility_v2",
-    ]
-)
-
 compiled_books = cl.compile_books(cl.html.HTMLCodegen, meta,
     book_home,
-    book_api,
-    book_api_dubious
+    book_api
 )
 
 version = f"{meta.version[0]}.{meta.version[1]}.{meta.version[2]}"
