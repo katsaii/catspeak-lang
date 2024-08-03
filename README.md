@@ -98,7 +98,7 @@ or get in contact on Discord through the [GameMaker Kitchen](https://discord.gg/
 
  - Implemented in pure GML.
  - No external dependencies or platform-specific DLLs.
- - Mods should work on any target platform. _(Tested on VM, YYC, HTML5, and others)_
+ - Mods should work on any target platform. _(Tested on Windows 10 using: VM, YYC, HTML5, and GMRT)_
 
 ### 🔨 Customisable, Sandboxed Runtime Environment
 

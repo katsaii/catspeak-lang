@@ -488,7 +488,7 @@ class Constructor(Function):
 # PARSING
 
 def script_name_to_module_name(module):
-    name = module.replace("scr_", "").replace("catspeak_", "")
+    name = module.replace("scr_catspeak_", "")
     return name
 
 def feather_name_to_type_name(typename):
