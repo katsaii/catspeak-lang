@@ -28,7 +28,20 @@ book_home = cl.doc.Book(
     chapters = [
         parse_md_chapter("not_catspeak_welcome"),
         parse_md_chapter("not_catspeak_getting_started"),
+        parse_md_chapter("not_catspeak_catspeak_for_developers"),
+        parse_md_chapter("not_catspeak_catspeak_for_modders"),
         parse_md_chapter("./LICENSE"),
+    ]
+)
+
+book_lang = cl.doc.Book(
+    title = "Language Reference",
+    brief = "Documentation for the Catspeak programming language.",
+    chapters = [
+        parse_md_chapter("not_catspeak_basics"),
+        parse_md_chapter("not_catspeak_lexical_syntax"),
+        parse_md_chapter("not_catspeak_expressions"),
+        parse_md_chapter("not_catspeak_statements"),
     ]
 )
 
@@ -42,7 +55,7 @@ def compile_gml_book(title, brief, pages):
 
 book_api = compile_gml_book(
     "Library Reference",
-    "The Catspeak library documentation.",
+    "Documentation for the the Catspeak compiler backend.",
     [
         # basic
         "scr_catspeak_init",
@@ -59,6 +72,7 @@ book_api = compile_gml_book(
 
 compiled_books = cl.compile_books(cl.html.HTMLCodegen, meta,
     book_home,
+    book_lang,
     book_api
 )
 

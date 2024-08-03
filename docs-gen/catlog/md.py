@@ -81,7 +81,7 @@ def parse_content(content):
     return a
 
 def note_name_to_module_name(module):
-    name = module.replace("not_", "").replace("catspeak_", "").replace("_", " ")
+    name = module.replace("not_catspeak_", "").replace("_", " ")
     return name.title()
 
 @dataclass
