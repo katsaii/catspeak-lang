@@ -52,7 +52,7 @@ TEST_EXPERIMENT "parser-3" {
 TEST_EXPERIMENT "compiler" {
     var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
     var ir = Catspeak.parse(buff);
-    var f = Catspeak.compileGML(ir);
+    var f = Catspeak.compile(ir);
     show_message([f(), f]);
     show_message([ir]);
 }
@@ -60,7 +60,7 @@ TEST_EXPERIMENT "compiler" {
 TEST_EXPERIMENT "compiler-2" {
     var buff = __catspeak_create_buffer_from_string(@'let a = fun () { let b = "hiiiii"; b } ; a ');
     var ir = Catspeak.parse(buff);
-    var f = Catspeak.compileGML(ir);
+    var f = Catspeak.compile(ir);
     show_message(json_stringify(ir)); //, true));
     show_message([f(), f()()]);
 }
@@ -77,7 +77,7 @@ TEST_EXPERIMENT "compiler-3" {
         }
     ');
     var ir = Catspeak.parse(buff);
-    var f = Catspeak.compileGML(ir);
+    var f = Catspeak.compile(ir);
     show_message(json_stringify(ir)); //, true));
     show_message(f());
 }
@@ -91,7 +91,7 @@ TEST_EXPERIMENT "compiler-4" {
     ');
     var ir = Catspeak.parse(buff);
     show_message(json_stringify(ir)); //, true));
-    var f = Catspeak.compileGML(ir);
+    var f = Catspeak.compile(ir);
     show_message(f());
     
 }
@@ -112,7 +112,7 @@ TEST_EXPERIMENT "compiler-5" {
     env.applyPreset(CatspeakPreset.TYPE, CatspeakPreset.MATH);
     var ir = env.parse(buff);
     //show_message(json_stringify(ir, true));
-    var f = env.compileGML(ir);
+    var f = env.compile(ir);
     show_message(f());
     
 }
@@ -127,7 +127,7 @@ TEST_EXPERIMENT "compiler-6" {
         "global", catspeak_special_to_struct(global)
     );
     var ir = env.parse(buff);
-    var f = env.compileGML(ir);
+    var f = env.compile(ir);
     global.n = 10;
     f();
     show_message([global.hello, global.n]);
@@ -136,7 +136,7 @@ TEST_EXPERIMENT "compiler-6" {
 TEST_EXPERIMENT "env" {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction("print", show_message);
-    var f = env.compileGML(env.parseString(@'
+    var f = env.compile(env.parseString(@'
         print(self.id);
     '));
     with ({ something : 1 }) {

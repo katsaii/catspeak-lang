@@ -167,7 +167,7 @@ function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) 
     __catspeak_error_deprecated("catspeak_compile_buffer", "Catspeak.parse");
     var ret;
     try {
-        var f = Catspeak.compileGML(Catspeak.parse(buff, offset, size));
+        var f = Catspeak.compile(Catspeak.parse(buff, offset, size));
         ret = future_ok(f);
     } catch (e) {
         ret = future_error(e);
@@ -194,7 +194,7 @@ function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) 
 function catspeak_compile_string(src) {
     __catspeak_error_deprecated("catspeak_compile_buffer", "Catspeak.parseString");
     try {
-        var f = Catspeak.compileGML(Catspeak.parseString(src));
+        var f = Catspeak.compile(Catspeak.parseString(src));
         return future_ok(f);
     } catch (e) {
         return future_error(e);

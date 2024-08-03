@@ -1,6 +1,6 @@
 # Installation
 
-1) Get a recent release of Catspeak from the [GitHub releases page](https://github.com/NuxiiGit/catspeak-lang/releases).
+1) Get a recent release of Catspeak from the [GitHub releases page](https://github.com/katsaii/catspeak-lang/releases).
     You should see a download for a file with the extension `.yymps`.
 
  2) Open your project file in the GameMaker IDE.
