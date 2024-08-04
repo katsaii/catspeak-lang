@@ -90,7 +90,7 @@ def tokenise_gml(input_):
             if not found:
                 lexeme = lex.advance_while(is_hexnum)
                 yield (Other() if lexeme == "#" else Value()), lexeme
-        elif lex.peek().isalpha():
+        elif lex.peek().isalpha() or lex.peek() == "_":
             # keywords and identifiers
             ident = lex.advance_while(lambda x: x.isalnum() or x == "_")
             kind = Variable()
@@ -158,7 +158,7 @@ def tokenise_meow(input_):
             yield Comment(), lex.advance_while(
                 lambda x: not (x in { "\n", "\r" })
             )
-        elif lex.peek().isalpha():
+        elif lex.peek().isalpha() or lex.peek() == "_":
             # keywords and identifiers
             ident = lex.advance_while(lambda x: x.isalnum() or x == "_")
             kind = Variable()
@@ -166,8 +166,6 @@ def tokenise_meow(input_):
                 kind = Keyword()
             elif ident in value_database:
                 kind = Value()
-            elif ident == ident.upper():
-                kind = MacroName()
             elif ident[:1].isupper():
                 kind = TypeName()
             elif lex.peek() == "(":
