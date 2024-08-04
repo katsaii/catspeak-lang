@@ -180,7 +180,7 @@ def tokenise_meow(input_):
                 lexeme += ch
                 if ch == "`":
                     break
-            yield Value(), lexeme
+            yield Variable(), lexeme
         elif lex.peek() == "\"":
             lexeme = lex.advance()
             skip = False

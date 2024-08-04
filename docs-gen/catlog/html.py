@@ -150,9 +150,10 @@ class HTMLCodegen(BasicCodegen):
     @BasicCodegen.block
     def code(self, **attrs):
         with self.tag("code", class_="inline-code", **attrs):
-            self.highlighter = highlight.tokenise_gml
-            yield
+            highlight_prev = self.highlighter
             self.highlighter = None
+            yield
+            self.highlighter = highlight_prev
 
     @BasicCodegen.block
     def code_block(self, **attrs):
