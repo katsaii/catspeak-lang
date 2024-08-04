@@ -12,7 +12,14 @@ are parsed.
 
 # Numbers
 
-TODO
+Simple numbers (or "numeric literals") are a sequence of ASCII digits (`0&#8209;9`),
+optionally separated by a single decimal point:
+```
+1234567890
+3.1415
+```
+
+Numbers may also contain underscores (`_`).
 
 # Binary Numbers
 
@@ -73,7 +80,7 @@ comments. Use multiple comments instead:
 # Identifiers
 
 Mostly used for variable names; identifiers start with either a letter
-(A&#8209;Z or a&#8209;z) or an underscore `_`, followed by a sequence of other
+(A&#8209;Z or a&#8209;z) or an underscore (`_`), followed by a sequence of other
 letters, numbers, or underscores.
 
 Examples of valid identifiers are:
@@ -86,14 +93,47 @@ abc123XYZ
 
 _Identifiers **can not** start with numbers, e.g. `1st` is not a valid identifier._
 
+# Keywords and Symbols
+
+Keywords are special identifiers which are reserved for use by Catspeak, and
+cannot be used as variables; these are:
+
+ - `--`       see [Comments]
+ - `:`        see [Struct Expressions]
+ - `;`        
+ - `do`       see [Block Expressions]
+ - `if`       see [If Expressions]
+ - `else`     see [If Expressions]
+ - `while`    see [While Expressions]
+ - `for`      (reserved in case of `for` loops)
+ - `loop`     (reserved in case of infinite loops)
+ - `with`     
+ - `let`      see [Let Statements]
+ - `fun`      see [Function Expressions]
+ - `break`    see [Break Expressions]
+ - `continue` see [Continue Expressions]
+ - `return`   see [Return Expressions]
+ - `impl`     (reserved in case of constructor functions)
+ - `new`      
+ - `self`     
+ - `and`      
+ - `or`       
+ - `xor`      
+
+If you ever need to use one of these keywords as a variable name, you should
+use [Literal Identifiers](#literal-identifiers) instead.
+
 # Raw Identifiers
 
-TODO
+Raw identifiers are a special type of identifier which start and end with a
+backtick symbol (`` ` ``), for example:
 
-# Keywords
+```meow
+let `1st-of-march` = "2022-03-01"
+```
 
-TODO
+`1st-of-march` is not a valid identifier, but it is a valid **raw identifier**.
 
-# Operators and Symbols
+You can use any non-whitespace, non-backtick character between the backticks.
 
-TODO
+# Operators
