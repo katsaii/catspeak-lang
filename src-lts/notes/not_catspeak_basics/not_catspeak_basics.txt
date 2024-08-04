@@ -1,1 +1,38 @@
-TODO
+Catspeak is a simple imperative language with a vaguely similar syntax to GML
+and JavaScript. Consider the following program written in GML to calculate the
+factorial of a number `n`:
+
+```gml
+// GML CODE
+function factorial(n) {
+    var m = 1;
+    if (n > 1) {
+        m = n * factorial(n - 1);
+    }
+    return m;
+}
+
+factorial(5); // output: 120
+```
+
+The same code re-written in the Catspeak programming language looks like:
+
+```meow
+-- CATSPEAK CODE
+factorial = fun(n) {
+    let m = 1
+    if (n > 1) {
+        m = n * factorial(n - 1)
+    }
+    return m
+}
+
+factorial(5) -- output: 120
+```
+
+There are some immediately obvious differences here, such as the `m` variable
+being declared using `let` instead of `var`, `fun` instead of `function`, and
+comments using `--` instead of `//`.
+
+All of these differences (and more) are described in the [Lexical Grammar](./lan-lexical-grammar.html),
+[Statements](./lan-statements.html), and [Expressions](./lan-expressions.html) pages.
