@@ -1,0 +1,99 @@
+Catspeak source code is stored as a sequence of Unicode characters using
+UTF-8 encoding. This means that most text rendered in the GameMaker IDE or
+an external text editor will be interpreted as individual characters. Unicode
+character clusters (such as skin tone emojis) are an exception to this, and
+are instead interpreted as multiple characters, depending on the size of the
+cluster.
+
+In order for the computer to understand what these characters mean, they first
+need to be transformed into larger groups of characters called [tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization).
+The following sections will cover what each of these tokens are, and how they
+are parsed.
+
+# Numbers
+
+TODO
+
+# Binary Numbers
+
+TODO
+
+# Hexadecimal Numbers
+
+TODO
+
+# Character Codes
+
+TODO
+
+# Colour Codes
+
+TODO
+
+# Text (Strings)
+
+TODO
+
+# Whitespace
+
+For the most part Catspeak is whitespace insensitive, ignoring any of the
+following characters:
+
+ - **Character tabulation** `'\t'` (U+0009)
+ - **Line feed**            `'\n'` (U+000A)
+ - **Line tabulation**      `'\v'` (U+000B)
+ - **Form feed**            `'\f'` (U+000C)
+ - **Carriage return**      `'\r'` (U+000D)
+ - **Space**                       (U+0020)
+ - **Next Line**                   (U+0085)
+
+[Comments](#comments) are also ignored by the Catspeak parser.
+
+# Comments
+
+Comments in Catspeak are prefixed by `--`. This will ignore all of the
+characters following it until a new line is reached:
+
+```meow
+-- this is a Catspeak comment!
+```
+
+Unlike GML, the Catspeak programming language **does not** include multi-line
+comments. Use multiple comments instead:
+
+```meow
+-- comment
+-- split
+-- over multiple
+-- lines
+--
+-- ~(￣▽￣)~*
+```
+
+# Identifiers
+
+Mostly used for variable names; identifiers start with either a letter
+(A&#8209;Z or a&#8209;z) or an underscore `_`, followed by a sequence of other
+letters, numbers, or underscores.
+
+Examples of valid identifiers are:
+```meow
+bag_pipes
+oneShot
+__IMPALA_666__
+abc123XYZ
+```
+
+_Identifiers **can not** start with numbers, e.g. `1st` is not a valid identifier._
+
+# Raw Identifiers
+
+TODO
+
+# Keywords
+
+TODO
+
+# Operators and Symbols
+
+TODO

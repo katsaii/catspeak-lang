@@ -1,13 +1,9 @@
-Welcome to the Catspeak documentation, this page is **extremely**
-work-in-progress. See the "Library Reference" tab for the library
-documentation.
-
 # Navigating the Book
 
  - [Home](./hom-welcome.html):
     Basic information about how to use the Catspeak library.
 
- - [Language Reference](./lan-init.html):
+ - [Language Reference](./lan-basics.html):
     Documentation for the Catspeak programming language.
 
  - [Library Reference](./lib-init.html):
