@@ -443,7 +443,8 @@ class HTMLCodegen(BasicCodegen):
         .heading {
             background-color : var(--c-bg);
             position : sticky;
-            top : 38px;
+            scroll-margin-top : 38px;
+            top : 36px;
             z-index : 98;
         }
 
