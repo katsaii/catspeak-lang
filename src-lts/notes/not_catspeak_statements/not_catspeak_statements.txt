@@ -1,5 +1,75 @@
-TODO
+Unlike GML, Catspeak only has two kinds of statement: [Let Statements](#let-statements), and [Expression Statements](#expression-statements).
+This is because Catspeak is an [expression-oriented language](https://en.wikipedia.org/wiki/Expression-oriented_programming_language), where almost every statement and/or
+expression evaluates to a value.
 
-# Automatic Semi-colon Insertion
+As a result, things like "if" statements become [If Expressions](./lan-expressions.html#if-expressions):
 
-TODO
+```meow
+let result = if a > b {
+    "a is bigger"
+} else {
+    "b is bigger"
+}
+```
+
+Other notable languages in this family are [Ruby](https://ruby-doc.com/docs/ProgrammingRuby/html/tut_expressions.html)
+and [Rust](https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/first-edition/functions.html#expressions-vs-statements).
+
+# Let Statements
+
+The `let` statement creates a new local variable in the current block scope. It
+can optionally be followed by an initialiser expression. If no initialiser
+expression is used, then the variable will be initialised to `undefined`:
+
+```meow
+let a = 1 + 3  -- initialised to the value 3
+let b          -- initialised to undefined
+```
+
+Unlike GML, local variables in Catspeak are only visible from within the scope
+they are defined in. This means that the following code is **incorrect** in
+Catspeak:
+
+```meow
+if condition {
+    let result = 1  -- local to the "true" branch of the if expression
+} else {
+    let result = 2  -- local to the "false" branch of the if expression
+}
+
+-- local variable 'result' does not exist here
+-- instead, 'result' gets interpreted as a global variable here
+return result
+```
+
+**You must always define the local variables before using them in Catspeak:**
+
+```meow
+let result
+if condition {
+    result = 1  -- assign to the previously defined 'result' variable
+} else {
+    result = 2
+}
+
+-- now 'result' is in scope
+return result
+```
+
+# Expression Statements
+
+Most often than not, an expression statement will evaluate its [expression](./lan-expressions.html)
+and ignore the result. There are exceptions to this rule, where the result of a
+**block** will be the value of the last expression statement. For example, the
+value returned from the following [Function Expression](./lan-expressions.html#function-expression) will be "10":
+
+```meow
+let get_value = fun () {
+  let a = 2;
+  let b = 5;
+  a * b
+}
+```
+
+Since `a * b` evaluates to 10, and it is the last statement in the body of the
+function.

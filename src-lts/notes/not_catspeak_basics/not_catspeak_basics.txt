@@ -1,6 +1,6 @@
-Catspeak is a simple imperative language with a vaguely similar syntax to GML
-and JavaScript. Consider the following program written in GML to calculate the
-factorial of a number `n`:
+Catspeak is a simple imperative language with a vaguely similar syntax to 
+GameMaker Language (GML) and JavaScript. Consider the following program written
+in GML to calculate the factorial of a number `n`:
 
 ```gml
 // GML CODE
