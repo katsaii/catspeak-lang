@@ -1,4 +1,4 @@
-Unlike GML, Catspeak only has two kinds of statement: [Let Statements](#let-statements), and [Expression Statements](#expression-statements).
+Unlike GameMaker Language (GML), Catspeak only has two kinds of statement: [Let Statements](#let-statements), and [Expression Statements](#expression-statements).
 This is because Catspeak is an [expression-oriented language](https://en.wikipedia.org/wiki/Expression-oriented_programming_language), where almost every statement and/or
 expression evaluates to a value.
 
