@@ -50,10 +50,10 @@ def is_digit(x):
     return x in { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "_" }
 
 def is_hexnum(x):
-    return is_digit(x) or x.lower() in { "a", "b", "c", "d", "e", "f" }
+    return is_digit(x) or x.lower() in { "a", "b", "c", "d", "e", "f", "_" }
 
 def is_binnum(x):
-    return x in { "0", "1" }
+    return x in { "0", "1", "_" }
 
 def has_digits(lexeme):
     return any(not (ch in { "_", "." }) for ch in lexeme)
@@ -148,7 +148,7 @@ def tokenise_meow(input_):
         catch finally throw new
     """.split())
     value_database = set("""
-        true false undefined self
+        true false undefined self NaN infinity
     """.split())
     lex = Tokeniser(input_)
     while not lex.is_empty():
