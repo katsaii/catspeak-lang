@@ -138,7 +138,7 @@ if keyboard_check('A') {
 
 in Catspeak.
 
-# Text (Strings)
+# Strings
 
 There are two types of string literal in Catspeak. The most common is a sequence
 of characters starting and ending in double quotes (`"`):
@@ -201,24 +201,31 @@ when writing a raw identifier.
 Keywords are special identifiers which are reserved for use by Catspeak, and
 cannot be used as variables; these are:
 
- - `do`       See [Do Expressions](./lan-expressions.html#do-expressions).
- - `if`       See [If Expressions](./lan-expressions.html#if-expressions).
- - `else`     See [If Expressions](./lan-expressions.html#if-expressions).
- - `while`    See [While Expressions](./lan-expressions.html#while-expressions).
- - `for`      Reserved in case of `for` loops.
- - `loop`     Reserved in case of infinite loops.
- - `with`     See [With Expressions](./lan-expressions.html#with-expressions).
- - `let`      See [Let Statements](./lan-statements.html#let-statements).
- - `fun`      See [Function Expressions](./lan-expressions.html#function-expressions).
- - `break`    See [Break Expressions](./lan-expressions.html#break-expressions).
- - `continue` See [Continue Expressions](./lan-expressions.html#continue-expressions).
- - `return`   See [Return Expressions](./lan-expressions.html#return-expressions).
- - `impl`     Reserved in case of constructor functions.
- - `new`      See [New Expressions](./lan-expressions.html#new-expressions).
- - `self`     See [Self Expressions](./lan-expressions.html#self-expressions).
- - `and`      See [Logical Expressions](./lan-expressions.html#logical-expressions).
- - `or`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
- - `xor`      See [Logical Expressions](./lan-expressions.html#logical-expressions).
+ - `true`      Evaluates to boolean True.
+ - `false`     Evaluates to boolean False.
+ - `undefined` GameMaker `undefined`.
+ - `infinity`  Floating-point positive infinity.
+ - `NaN`       Floating-point NaN.
+ - `and`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
+ - `or`        See [Logical Expressions](./lan-expressions.html#logical-expressions).
+ - `xor`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
+ - `do`        See [Do Expressions](./lan-expressions.html#do-expressions).
+ - `if`        See [If Expressions](./lan-expressions.html#if-expressions).
+ - `else`      See [If Expressions](./lan-expressions.html#if-expressions).
+ - `while`     See [While Expressions](./lan-expressions.html#while-expressions).
+ - `for`       Reserved in case of `for` loops.
+ - `loop`      Reserved in case of infinite loops.
+ - `with`      See [With Expressions](./lan-expressions.html#with-expressions).
+ - `match`     See [Match Expressions](./lan-expressions.html#match-expressions).
+ - `let`       See [Let Statements](./lan-statements.html#let-statements).
+ - `fun`       See [Function Expressions](./lan-expressions.html#function-expressions).
+ - `params`    Reserved in case of spread operator.
+ - `break`     See [Break Expressions](./lan-expressions.html#break-expressions).
+ - `continue`  See [Continue Expressions](./lan-expressions.html#continue-expressions).
+ - `return`    See [Return Expressions](./lan-expressions.html#return-expressions).
+ - `new`       See [New Expressions](./lan-expressions.html#new-expressions).
+ - `impl`      Reserved in case of constructor functions.
+ - `self`      See [Self Expressions](./lan-expressions.html#self-expressions).
 
 If you ever need to use one of these keywords as a variable name, you should
 use [Raw Identifiers](#raw-identifiers) instead.
@@ -354,7 +361,7 @@ usage, and syntax:
     </td>
     <td>Left-to-right →</td>
   </tr>
-  <tr>
+  <tr id="op-assign">
     <td>
         <code>a = b</code><br>
         <code>a *= b</code><br>
@@ -363,11 +370,11 @@ usage, and syntax:
         <code>a += b</code>
     </td>
     <td>
-        Direct assignment<br>
-        Multiplication assignment<br>
-        Division assignment<br>
-        Subtraction assignment<br>
-        Addition assignment
+        <a href="./lan-expressions.html#assign-vanilla">Direct assignment</a><br>
+        <a href="./lan-expressions.html#assign-multiply">Multiplication assignment</a><br>
+        <a href="./lan-expressions.html#assign-divide">Division assignment</a><br>
+        <a href="./lan-expressions.html#assign-subtract">Subtraction assignment</a><br>
+        <a href="./lan-expressions.html#assign-add">Addition assignment</a>
     </td>
     <td>Right-to-left ←</td>
   </tr>

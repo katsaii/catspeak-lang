@@ -1,1 +1,69 @@
-TODO
+An expression is is a term which always produces a value, and may be composed
+of many sub-expressions. Most statements you would typically find in GameMaker
+Language (GML) appear as expressions in Catspeak. This includes [Break Expressions](#break-expressions), [Return Expressions](#return-expressions), and
+[Continue Expressions](#continue-expressions).
+
+# Terminal Expressions
+
+Terminal expressions are either [Identifiers](./lan-lexical-grammar.html#identifiers) or literals (e.g. [Numbers](./lan-lexical-grammar.html#numbers) and [Strings](./lan-lexical-grammar.html#strings)).
+These expressions have no further sub-expressions, hence the name.
+
+Examples of terminal expressions:
+
+```meow
+"2036-02-03"  -- string literal
+#BBE31A       -- colour code
+3.1415        -- numeric literal
+'K'           -- character literal
+0b0011_1110   -- binary literal
+true          -- boolean True
+undefined
+NaN           -- not a number
+```
+
+# Assignment Expressions
+
+Assignment expressions are made up of two sub-expressions separated by an
+[assignment operator](./lan-lexical-grammar.html#op-assign). The value of the
+right-hand-side expression will be written to left-hand-side assignment target
+expression.
+
+The expression `a` in the following examples can be an [Identifier](./lan-lexical-grammar.html#identifiers)
+or an [Accessor Expression](#accessor-expression):
+
+<table>
+  <tr>
+    <th>Operator</th>
+    <th>Description</th>
+  </tr>
+  <tr id="assign-vanilla">
+    <td><code>a = b</code></td>
+    <td>Writes the value of <code>b</code> to <code>a</code>.</td>
+  </tr>
+  <tr id="assign-multiply">
+    <td><code>a *= b</code></td>
+    <td>Writes the value of <code>a * b</code> to <code>a</code>.</td>
+  </tr>
+  <tr id="assign-divide">
+    <td><code>a /= b</code></td>
+    <td>Writes the value of <code>a / b</code> to <code>a</code>.</td>
+  </tr>
+  <tr id="assign-subtract">
+    <td><code>a -= b</code></td>
+    <td>Writes the value of <code>a - b</code> to <code>a</code>.</td>
+  </tr>
+  <tr id="assign-add">
+    <td><code>a += b</code></td>
+    <td>Writes the value of <code>a + b</code> to <code>a</code>.</td>
+  </tr>
+</table>
+
+**The result of an assignment expression is always `undefined`:**
+
+```meow
+let a
+let b = (a = 2)
+
+-- a is 2
+-- b is undefined
+```
