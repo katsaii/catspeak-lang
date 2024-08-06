@@ -70,7 +70,7 @@ In no particular order:
 
  - [Rusted Moss](https://store.steampowered.com/app/1772830/Rusted_Moss/)
 
-_(If you have a project you would want to appear here, please get in contact!)_
+_(If you have a project you would want to appear here, please [get in contact](https://github.com/katsaii/catspeak-lang/issues/new?template=iuseit.yml)!)_
 
 ## Features
 

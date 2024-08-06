@@ -1,3 +1,6 @@
+_This is the documentation site for the [Catspeak](https://github.com/katsaii/catspeak-lang)
+programming language._
+
 # Navigating the Book
 
  - [Home](./hom-welcome.html):
