@@ -34,6 +34,9 @@ characters following it until a new line is reached:
 -- this is a Catspeak comment!
 ```
 
+_(Catspeak reserves the `//` syntax for integer division. See the section on
+[Operators](#operators) for more information.)_
+
 Unlike GML, the Catspeak programming language **does not** include multi-line
 comments. Use multiple comments instead:
 
