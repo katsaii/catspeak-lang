@@ -10,60 +10,6 @@ need to be transformed into larger groups of characters called [tokens](https://
 The following sections will cover what each of these tokens are, and how they
 are parsed.
 
-# Numbers
-
-Simple numbers like `123` are a sequence of ASCII digits (0&#8209;9),
-optionally separated by a single decimal point `3.1415`.
-
-Catspeak also supports writing numbers in [binary](https://en.wikipedia.org/wiki/Binary_number)
-or [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) notation, by
-prefixing the number literal with either `0b` or `0x`. For example, the binary
-representation of the number 10 is `0b1010`, and its hexadecimal representation
-is `0bA`. _Catspeak also supports CSS-style colour literals by prefixing a
-number with `#` instead of `0x`. See the [Colour Codes](#colour-codes) section
-for more information._
-
-Numbers may also contain underscores `_` to improve readability. For example,
-`1_000` is the same as `1000`, and `0b0111_1000` is the same as `0b01111000`.
-
-# Colour Codes
-
-Just like [GameMaker Language](https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Drawing/Colour_And_Alpha/Colour_And_Alpha.htm#hex_colours)
-and [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/hex-color), Catspeak
-supports colour codes by typing a `#` symbol, followed by three, four, six, or
-eight [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) digits which
-express the colour:
-
-_(`RR` is the red colour channel value, written in hexadecimal; `GG` is the
-green colour channel, `BB` is the blue colour channel, and `AA` is the (optional)
-alpha colour channel.)_
-
- - `#RGB`
-   Three-value colour syntax: same as `#RRGGBB`.
-
- - `#RGBA`
-   Four-value colour syntax: same as `#RRGGBBAA`, includes an alpha channel.
-
- - `#RRGGBB`
-   Six-value colour syntax: creates an RGB colour from the red, green, and blue
-   colour values.
-
- - `#RRGGBBAA`
-   Eight-value colour syntax: creates an RGBA colour with transparency from the
-   red, green, blue, and alpha colour values.
-
-
-If a colour channel is only one character wide `R`, then it is repeated as `RR`.
-For example, the colour `#1AF` is the same as the colour `#11AAFF`.
-
-# Character Codes
-
-TODO
-
-# Text (Strings)
-
-TODO
-
 # Whitespace
 
 For the most part Catspeak is whitespace insensitive, ignoring any of the
@@ -100,6 +46,125 @@ comments. Use multiple comments instead:
 -- ~(￣▽￣)~*
 ```
 
+# Numbers
+
+Simple numbers like `123` are a sequence of ASCII digits (0&#8209;9),
+optionally separated by a single decimal point `3.1415`.
+
+Catspeak also supports writing numbers in [binary](https://en.wikipedia.org/wiki/Binary_number)
+or [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) notation, by
+prefixing the number literal with either `0b` or `0x`. For example, the binary
+representation of the number 10 is `0b1010`, and its hexadecimal representation
+is `0bA`. _Catspeak also supports CSS-style colour literals by prefixing a
+number with `#` instead of `0x`. See the [Colour Codes](#colour-codes) section
+for more information._
+
+Numbers may also contain underscores `_` to improve readability. For example,
+`1_000` is the same as `1000`, and `0b0111_1000` is the same as `0b01111000`.
+
+```meow
+1_000_000    -- integer number
+6.2831       -- fractional number
+0b0110       -- binary number
+0xDEAD_BEEF  -- hexadecimal number
+```
+
+# Colour Codes
+
+Just like [GameMaker Language](https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Drawing/Colour_And_Alpha/Colour_And_Alpha.htm#hex_colours) (GML)
+and [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/hex-color), Catspeak
+supports colour codes by typing a `#` symbol, followed by three, four, six, or
+eight [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) digits which
+express the colour:
+
+_(`RR` is the red colour channel value, written in hexadecimal; `GG` is the
+green colour channel, `BB` is the blue colour channel, and `AA` is the (optional)
+alpha colour channel.)_
+
+ - `#RGB`
+   Three-value colour syntax: same as `#RRGGBB`.
+
+ - `#RGBA`
+   Four-value colour syntax: same as `#RRGGBBAA`, includes an alpha channel.
+
+ - `#RRGGBB`
+   Six-value colour syntax: creates an RGB colour from the red, green, and blue
+   colour values.
+
+ - `#RRGGBBAA`
+   Eight-value colour syntax: creates an RGBA colour with transparency from the
+   red, green, blue, and alpha colour values.
+
+
+If a colour channel is only one character wide `R`, then it is repeated as `RR`.
+For example, the colour `#1AF` is the same as the colour `#11AAFF`.
+
+```meow
+#A83256  -- represents the colour rbg(168, 50, 86)
+#FAE     -- represents the colour rbg(255, 170, 238)
+#FFAAEE  -- ALSO represents the colour rbg(255, 170, 238)
+```
+
+# Character Literals
+
+A common pattern in GML is to use `ord("A")` for keyboard input, for example:
+
+```gml
+if (keyboard_check(ord("A"))) {
+  do_stuff();
+}
+```
+
+Catspeak has a special syntax for `ord("A")` in the form of character literals
+`'A'`. These are a single UTF-8 encoded character surrounded by apostrophes `'`.
+
+Character literals are converted into numbers by the Catspeak programming language,
+and as a result you can do arithmetic on them:
+
+```meow
+'A' + 1 == 'B'  -- since 'A' == 65, 'B' == 66, and 65 + 1 == 66
+```
+
+This allows the previous GML code to be written as
+
+```meow
+if keyboard_check('A') {
+  do_stuff()
+}
+```
+
+in Catspeak.
+
+# Text (Strings)
+
+There are two types of string literal in Catspeak. The most common is a sequence
+of characters starting and ending in double quotes (`"`):
+
+```meow
+let hi = "hello world"
+```
+
+This type of string allows the following escape sequences to be used:
+
+- `\"` Quotation mark
+- `\`  Escape new line
+- `\\` Backslash
+- `\t` Character tabulation
+- `\n` Line feed
+- `\v` Line tabulation
+- `\f` Form feed
+- `\r` Carriage return
+
+The other type of string is the **raw string**. [Similarly to GML](https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm#h2),
+a raw string is prefixed by the address symbol `@`, and does not interpret any
+of the previously mentioned escape sequences:
+
+```meow
+let hi_again = @"\hello\"  -- \h and \" here are not escape sequences
+```
+
+All strings in Catspeak can be multi-line.
+
 # Identifiers
 
 Mostly used for variable names; identifiers start with either a letter
@@ -107,6 +172,7 @@ Mostly used for variable names; identifiers start with either a letter
 letters, numbers, or underscores.
 
 Examples of valid identifiers are:
+
 ```meow
 bag_pipes
 oneShot
@@ -114,49 +180,192 @@ __IMPALA_666__
 abc123XYZ
 ```
 
-_Identifiers **can not** start with numbers, e.g. `1st` is not a valid identifier._
-
-# Keywords and Symbols
-
-Keywords are special identifiers which are reserved for use by Catspeak, and
-cannot be used as variables; these are:
-
- - `--`       see [Comments]
- - `:`        see [Struct Expressions]
- - `;`        
- - `do`       see [Block Expressions]
- - `if`       see [If Expressions]
- - `else`     see [If Expressions]
- - `while`    see [While Expressions]
- - `for`      (reserved in case of `for` loops)
- - `loop`     (reserved in case of infinite loops)
- - `with`     
- - `let`      see [Let Statements]
- - `fun`      see [Function Expressions]
- - `break`    see [Break Expressions]
- - `continue` see [Continue Expressions]
- - `return`   see [Return Expressions]
- - `impl`     (reserved in case of constructor functions)
- - `new`      
- - `self`     
- - `and`      
- - `or`       
- - `xor`      
-
-If you ever need to use one of these keywords as a variable name, you should
-use [Literal Identifiers](#literal-identifiers) instead.
-
-# Raw Identifiers
-
-Raw identifiers are a special type of identifier which start and end with a
-backtick symbol (`` ` ``), for example:
+Normal identifiers **can not** start with numbers, e.g. `1st` is not a valid
+identifier. In this case, you can use **raw identifiers**:
 
 ```meow
 let `1st-of-march` = "2022-03-01"
 ```
 
-`1st-of-march` is not a valid identifier, but it is a valid **raw identifier**.
+Where raw identifiers start and end with a backtick symbol (`` ` ``).
+`1st-of-march` may not be a valid identifier, but it is a valid raw identifier.
 
-You can use any non-whitespace, non-backtick character between the backticks.
+You can use any non-whitespace, non-backtick character between the backticks
+when writing a raw identifier.
+
+# Keywords
+
+Keywords are special identifiers which are reserved for use by Catspeak, and
+cannot be used as variables; these are:
+
+ - `do`       See [Do Expressions](./lan-expressions.html#do-expressions).
+ - `if`       See [If Expressions](./lan-expressions.html#if-expressions).
+ - `else`     See [If Expressions](./lan-expressions.html#if-expressions).
+ - `while`    See [While Expressions](./lan-expressions.html#while-expressions).
+ - `for`      Reserved in case of `for` loops.
+ - `loop`     Reserved in case of infinite loops.
+ - `with`     See [With Expressions](./lan-expressions.html#with-expressions).
+ - `let`      See [Let Statements](./lan-statements.html#let-statements).
+ - `fun`      See [Function Expressions](./lan-expressions.html#function-expressions).
+ - `break`    See [Break Expressions](./lan-expressions.html#break-expressions).
+ - `continue` See [Continue Expressions](./lan-expressions.html#continue-expressions).
+ - `return`   See [Return Expressions](./lan-expressions.html#return-expressions).
+ - `impl`     Reserved in case of constructor functions.
+ - `new`      See [New Expressions](./lan-expressions.html#new-expressions).
+ - `self`     See [Self Expressions](./lan-expressions.html#self-expressions).
+ - `and`      See [Logical Expressions](./lan-expressions.html#logical-expressions).
+ - `or`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
+ - `xor`      See [Logical Expressions](./lan-expressions.html#logical-expressions).
+
+If you ever need to use one of these keywords as a variable name, you should
+use [Raw Identifiers](#raw-identifiers) instead.
 
 # Operators
+
+Catspeak shares many operators with GML, but there are some differences. Below
+is a table of all operators, organised from highest-to-lowest [precedence](https://en.wikipedia.org/wiki/Order_of_operations)
+(which operators are evaluated first when there are no parenthesis); including
+information about each operators [associativity](https://en.wikipedia.org/wiki/Operator_associativity),
+usage, and syntax:
+
+<table>
+  <tr>
+    <th>Operator</th>
+    <th>Description</th>
+    <th>Associativity</th>
+  </tr>
+  <tr>
+    <td>
+        <code>(a)</code><br>
+        <code>[a, ...]</code><br>
+        <code>{ k : v, ... }</code><br>
+    </td>
+    <td>
+        Grouping<br>
+        Array initialisation<br>
+        Struct/object initialisation
+    </td>
+    <td>N/a</td>
+  </tr>
+  <tr>
+    <td>
+        <code>a(...)</code><br>
+        <code>new a(...)</code><br>
+        <code>a.b</code><br>
+        <code>a[i]</code>
+    </td>
+    <td>
+        Function call<br>
+        Constructor function call<br>
+        Member access<br>
+        Collection indexing (computed member access)<br>
+    </td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td>
+        <code>!a</code><br>
+        <code>-a</code><br>
+        <code>+a</code>
+    </td>
+    <td>
+        Logical <b>NOT</b><br>
+        Unary minus (negation)<br>
+        Unary plus
+    </td>
+    <td>Right-to-left ←</td>
+  </tr>
+  <tr>
+    <td>
+        <code>a * b</code><br>
+        <code>a / b</code><br>
+        <code>a // b</code><br>
+        <code>a % b</code>
+    </td>
+    <td>
+        Multiplication<br>
+        Division<br>
+        Integer division<br>
+        Remainder
+    </td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td><code>a + b</code><br><code>a - b</code></td>
+    <td>Addition<br>Subtraction</td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td>
+        <code>a &lt; b</code><br>
+        <code>a &lt;= b</code><br>
+        <code>a &gt; b</code><br>
+        <code>a &gt;= b</code>
+    </td>
+    <td>
+        Relational less-than &lt;<br>
+        Relational less-than-or-equal ≤<br>
+        Relational greater-than &gt;<br>
+        Relational greater-than-or-equal ≥
+    </td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td><code>a == b</code><br><code>a != b</code></td>
+    <td>Equality =<br>Inequality ≠</td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td><code>a &lt;&lt; b</code><br><code>a &gt;&gt; b</code></td>
+    <td>Bitwise left shift<br>Bitwise right shift</td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td>
+        <code>a &amp; b</code><br>
+        <code>a | b</code><br>
+        <code>a ^ b</code>
+    </td>
+    <td>
+        Bitwise <b>AND</b><br>
+        Bitwise <b>OR</b><br>
+        Bitwise <b>XOR</b>
+    </td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td><code>a &lt;| b</code><br><code>a |&gt; b</code></td>
+    <td>Left pipe<br>Right pipe</td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td>
+        <code>a and b</code><br>
+        <code>a or b</code><br>
+        <code>a xor b</code><br>
+    </td>
+    <td>
+        Logical <b>AND</b><br>
+        Logical <b>OR</b><br>
+        Logical <b>XOR</b>
+    </td>
+    <td>Left-to-right →</td>
+  </tr>
+  <tr>
+    <td>
+        <code>a = b</code><br>
+        <code>a *= b</code><br>
+        <code>a /= b</code><br>
+        <code>a -= b</code><br>
+        <code>a += b</code>
+    </td>
+    <td>
+        Direct assignment<br>
+        Multiplication assignment<br>
+        Division assignment<br>
+        Subtraction assignment<br>
+        Addition assignment
+    </td>
+    <td>Right-to-left ←</td>
+  </tr>
+</table>
