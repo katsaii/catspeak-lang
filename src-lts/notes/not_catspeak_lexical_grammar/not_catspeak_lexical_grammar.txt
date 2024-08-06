@@ -12,28 +12,51 @@ are parsed.
 
 # Numbers
 
-Simple numbers (or "numeric literals") are a sequence of ASCII digits (`0&#8209;9`),
-optionally separated by a single decimal point:
-```
-1234567890
-3.1415
-```
+Simple numbers like `123` are a sequence of ASCII digits (0&#8209;9),
+optionally separated by a single decimal point `3.1415`.
 
-Numbers may also contain underscores (`_`).
+Catspeak also supports writing numbers in [binary](https://en.wikipedia.org/wiki/Binary_number)
+or [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) notation, by
+prefixing the number literal with either `0b` or `0x`. For example, the binary
+representation of the number 10 is `0b1010`, and its hexadecimal representation
+is `0bA`. _Catspeak also supports CSS-style colour literals by prefixing a
+number with `#` instead of `0x`. See the [Colour Codes](#colour-codes) section
+for more information._
 
-# Binary Numbers
-
-TODO
-
-# Hexadecimal Numbers
-
-TODO
-
-# Character Codes
-
-TODO
+Numbers may also contain underscores `_` to improve readability. For example,
+`1_000` is the same as `1000`, and `0b0111_1000` is the same as `0b01111000`.
 
 # Colour Codes
+
+Just like [GameMaker Language](https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Drawing/Colour_And_Alpha/Colour_And_Alpha.htm#hex_colours)
+and [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/hex-color), Catspeak
+supports colour codes by typing a `#` symbol, followed by three, four, six, or
+eight [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) digits which
+express the colour:
+
+_(`RR` is the red colour channel value, written in hexadecimal; `GG` is the
+green colour channel, `BB` is the blue colour channel, and `AA` is the (optional)
+alpha colour channel.)_
+
+ - `#RGB`
+   Three-value colour syntax: same as `#RRGGBB`.
+
+ - `#RGBA`
+   Four-value colour syntax: same as `#RRGGBBAA`, includes an alpha channel.
+
+ - `#RRGGBB`
+   Six-value colour syntax: creates an RGB colour from the red, green, and blue
+   colour values.
+
+ - `#RRGGBBAA`
+   Eight-value colour syntax: creates an RGBA colour with transparency from the
+   red, green, blue, and alpha colour values.
+
+
+If a colour channel is only one character wide `R`, then it is repeated as `RR`.
+For example, the colour `#1AF` is the same as the colour `#11AAFF`.
+
+# Character Codes
 
 TODO
 
