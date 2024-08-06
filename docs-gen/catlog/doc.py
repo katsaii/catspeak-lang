@@ -12,6 +12,13 @@ class Warning(RichText): pass
 class Experimental(RichText): pass
 
 @dataclass
+class Table(RichText):
+    header : ... = field(default_factory=list)
+
+class TableRow(RichText): pass
+class TableCell(RichText): pass
+
+@dataclass
 class CodeBlock(RichText):
     lang : str = "txt"
 
@@ -29,6 +36,10 @@ class List():
 class LinkText():
     children : ... = None
     url : str = None
+
+@dataclass
+class EmbeddedHTML():
+    content : str = ""
 
 @dataclass
 class Section:

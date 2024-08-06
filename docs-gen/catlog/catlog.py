@@ -179,6 +179,17 @@ def write_richtext(sb, textdata):
                 sb.write("🔬 This is an experimental feature. It may change at any moment.")
             for child in textdata.children:
                 write_richtext(sb, child)
+    elif isinstance(textdata, doc.EmbeddedHTML):
+        sb.write(textdata.content)
+    elif isinstance(textdata, doc.Table):
+        with sb.table():
+            with sb.table_row():
+                for header_cell in textdata.header:
+                    with sb.table_header():
+                        for child in header_cell.children:
+                            write_richtext(sb, child)
+            for child in textdata.children:
+                write_richtext(sb, child)
     elif isinstance(textdata, doc.RichText):
         writers = {
             doc.Paragraph : lambda _: sb.paragraph,
@@ -186,6 +197,8 @@ def write_richtext(sb, textdata):
             doc.InlineCode : lambda _: sb.code,
             doc.Bold : lambda _: sb.bold,
             doc.Emphasis : lambda _: sb.emphasis,
+            doc.TableRow : lambda _: sb.table_row,
+            doc.TableCell : lambda _: sb.table_cell,
         }
         writer = writers.get(type(textdata))
         if writer:
