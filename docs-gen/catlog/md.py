@@ -39,8 +39,21 @@ def ast_to_doc(term):
             return doc.Emphasis(list(map(ast_to_doc, term.children)))
         case mistletoe.span_tokens.InlineCode:
             return doc.InlineCode(list(map(ast_to_doc, term.children)))
+        case mistletoe.block_tokens_ext.Table:
+            return doc.Table(
+                children = list(map(ast_to_doc, term.children)),
+                header = list(map(ast_to_doc, term.header.children))
+            )
+        case mistletoe.block_tokens_ext.TableRow:
+            return doc.TableRow(list(map(ast_to_doc, term.children)))
+        case mistletoe.block_tokens_ext.TableCell:
+            return doc.TableCell(list(map(ast_to_doc, term.children)))
         case mistletoe.span_tokens.LineBreak:
             return "\n"
+        case mistletoe.span_tokens.HTMLSpan:
+            return doc.EmbeddedHTML(term.content)
+        case mistletoe.block_tokens.HTMLBlock:
+            return doc.EmbeddedHTML(term.content)
         case other:
             return f"(unknown content {other})".replace("<", "&lt;")
 

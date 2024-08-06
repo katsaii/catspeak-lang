@@ -181,6 +181,10 @@ def tokenise_meow(input_):
                 if ch == "`":
                     break
             yield Variable(), lexeme
+        elif lex.peek(2) == "@\"":
+            lex.advance()
+            terminator = lex.advance()
+            yield Value(), f"@{terminator}" + lex.advance_until_terminated_by(terminator)
         elif lex.peek() == "\"":
             lexeme = lex.advance()
             skip = False
@@ -213,6 +217,9 @@ def tokenise_meow(input_):
                 elif ch == "'":
                     break
             yield Value(), lexeme
+        elif lex.peek() == "#":
+            prefix = lex.advance()
+            yield Value(), prefix + lex.advance_while(is_hexnum)
         elif lex.peek(2) in { "0x", "0X" }:
             prefix = lex.advance(2)
             yield Value(), prefix + lex.advance_while(is_hexnum)

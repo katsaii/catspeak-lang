@@ -209,6 +209,22 @@ class HTMLCodegen(BasicCodegen):
         attrs["class_"] = "stab " + attrs.get("class_", "")
         with self.tag("blockquote", **attrs): yield
 
+    @BasicCodegen.block
+    def table(self, **attrs):
+        with self.tag("table", **attrs): yield
+
+    @BasicCodegen.block
+    def table_row(self, **attrs):
+        with self.tag("tr", **attrs): yield
+
+    @BasicCodegen.block
+    def table_cell(self, **attrs):
+        with self.tag("td", **attrs): yield
+
+    @BasicCodegen.block
+    def table_header(self, **attrs):
+        with self.tag("th", **attrs): yield
+
     # CSS
 
     DEFAULT_STYLE = """
@@ -523,6 +539,29 @@ class HTMLCodegen(BasicCodegen):
             display : inline-block;
             padding : 0 0.5rem;
             margin : 0;
+        }
+
+        table {
+            width : fit-content;
+            border-collapse : collapse;
+            border : 1px solid var(--c-fg);
+        }
+
+        th { font-weight : bold }
+
+        th, td {
+            color : var(--c-fg);
+            font-family : var(--f-prop);
+            padding : 10px;
+            border : 1px solid var(--c-fg-light);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--c-bg-dark);
+        }
+
+        tbody tr:nth-child(1) {
+            border-bottom : 2px solid var(--c-fg);
         }
 
         .code * { color : var(--c-fg) }
