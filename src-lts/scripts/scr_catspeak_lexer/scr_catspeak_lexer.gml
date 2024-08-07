@@ -147,6 +147,10 @@ enum CatspeakToken {
     ///
     /// @experimental
     PARAMS = 58,
+    /// The `params_count` keyword.
+    ///
+    /// @experimental
+    PARAMS_COUNT = 65,
     /// Represents a variable name.
     IDENT = 59,
     /// Represents a GML value. This could be one of:
@@ -171,10 +175,6 @@ enum CatspeakToken {
     ///   raise an exception. This likely indicates that a Catspeak script has
     ///   a syntax error somewhere.
     OTHER = 64,
-    /// The `params_count` keyword.
-    ///
-    /// @experimental
-    PARAMS_COUNT = 65,
     /// @ignore
     __SIZE__ = 66,
 }

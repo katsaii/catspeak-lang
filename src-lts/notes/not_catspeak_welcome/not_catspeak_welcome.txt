@@ -6,7 +6,7 @@ programming language._
  - [Home](./hom-welcome.html):
     Basic information about how to use the Catspeak library.
 
- - [Language Reference](./lan-basics.html):
+ - [Language Reference](./lan-overview.html):
     Documentation for the Catspeak programming language.
 
  - [Library Reference](./lib-init.html):
