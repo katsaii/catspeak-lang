@@ -562,6 +562,7 @@ class HTMLCodegen(BasicCodegen):
 
         table {
             width : fit-content;
+            max-width : 750px;
             border-collapse : collapse;
             border : 1px solid var(--c-fg);
         }
