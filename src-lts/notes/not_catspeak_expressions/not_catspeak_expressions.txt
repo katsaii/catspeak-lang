@@ -187,7 +187,7 @@ The built-in unary operators are:
 
 # Multiplicative Operators
 
-Multiplicative operators have the [highest precedence](./lan-lexical-grammar.html#operators)
+Multiplicative operators have the highest [precedence](./lan-lexical-grammar.html#operators)
 of all binary operators, and are made up of two sub-expressions separated by
 `*`, `/`, `//`, or `%`:
 
@@ -209,8 +209,10 @@ The built-in multiplicative operators are:
 
 # Additive Operators
 
-The binary additive operators `+` and `-` have [higher precedence](./lan-lexical-grammar.html#operators)
-than all other binary operators except `*`, `/`, `//`, or `%`:
+The binary additive operators have [higher precedence](./lan-lexical-grammar.html#operators)
+than all other binary operators except the [Multiplicative Operators](#multiplicative-operators).
+
+They are made up of two sub-expressions separated by `+` or `-`:
 
 ```meow
 a * b + c  -- same as (a * b) + c, NOT a * (b + c)
@@ -226,42 +228,65 @@ The built-in additive operators are:
 | `a + b` | Converts `a` and `b` into numbers, returning their sum. |
 | `a - b` | Converts `a` and `b` into numbers, returning the result of subtracting `b` from `a`. |
 
+# Relational Operators
+
+The binary relational operators have a [higher precedence](./lan-lexical-grammar.html#operators)
+than the [Equality Operators](#equality-operators), but a lower precedence than
+the [Additive Operators](#additive-operators).
+
+They are made up of two sub-expressions separated by `<`, `<=`, `>`, or `>=`:
+
+```meow
+a * b < c   -- same as (a * b) < c, NOT a * (b < c)
+a >= b / c  -- same as a >= (b / c), NOT (a >= b) / c
+
+a < b < c < d  -- same as ((a < b) < c) < d
+```
+
+The built-in relational operators are:
+
+| Operator | Description |
+| -------- | ----------- |
+| `a < b` | Converts `a` and `b` into numbers, returning whether `a` is less than `b`. |
+| `a <= b` | Converts `a` and `b` into numbers, returning whether `a` is less than or equal to `b` |
+| `a > b` | Converts `a` and `b` into numbers, returning whether `a` is greater than `b`. |
+| `a >= b` | Converts `a` and `b` into numbers, returning whether `a` is greater than or equal to `b` |
+
+# Equality Operators
+
+# Bitwise Shift Operators
+
+# Bitwise Operators
+
+# Pipe Operators
+
+# Logical Operators
+
 # Assignment Expressions
 
-Assignment expressions are made up of two sub-expressions separated by an
-[assignment operator](./lan-lexical-grammar.html#op-assign). The value of the
-right-hand-side expression will be written to left-hand-side assignment target
-expression.
+Assignment expressions have the lowest [precedence](./lan-lexical-grammar.html#operators)
+of all binary operators, and are made up of two sub-expressions separated by an
+[assignment operator](./lan-lexical-grammar.html#op-assign).
 
-The expression `a` in the following examples can be an [Identifier](./lan-lexical-grammar.html#identifiers)
-or an [Accessor Expression](#accessor-expression):
+The value of the right-hand-side expression will be written to left-hand-side
+assignment target expression.
 
-<table>
-  <tr>
-    <th>Operator</th>
-    <th>Description</th>
-  </tr>
-  <tr id="assign-vanilla">
-    <td><code>a = b</code></td>
-    <td>Writes the value of <code>b</code> to <code>a</code>.</td>
-  </tr>
-  <tr id="assign-multiply">
-    <td><code>a *= b</code></td>
-    <td>Writes the value of <code>a * b</code> to <code>a</code>.</td>
-  </tr>
-  <tr id="assign-divide">
-    <td><code>a /= b</code></td>
-    <td>Writes the value of <code>a / b</code> to <code>a</code>.</td>
-  </tr>
-  <tr id="assign-subtract">
-    <td><code>a -= b</code></td>
-    <td>Writes the value of <code>a - b</code> to <code>a</code>.</td>
-  </tr>
-  <tr id="assign-add">
-    <td><code>a += b</code></td>
-    <td>Writes the value of <code>a + b</code> to <code>a</code>.</td>
-  </tr>
-</table>
+```meow
+a = b = c  -- same as a = (b = c), NOT a = c; b = c
+```
+
+The built-in assignment operators are:
+
+| Operator | Description |
+| -------- | ----------- |
+| `a = b` | Writes the value of `b` to `a` |
+| `a *= b` | Writes the value of `a * b` to `a` |
+| `a /= b` | Writes the value of `a / b` to `a` |
+| `a -= b` | Writes the value of `a - b` to `a` |
+| `a += b` | Writes the value of `a + b` to `a` |
+
+Valid assignment targets for the expression `a` include [Identifiers](./lan-lexical-grammar.html#identifiers)
+(if they refer to a writable variable), and [Accessor Expressions](#accessor-expression).
 
 **The result of an assignment expression is always `undefined`:**
 

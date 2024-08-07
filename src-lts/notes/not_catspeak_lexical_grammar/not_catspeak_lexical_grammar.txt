@@ -238,154 +238,170 @@ is a table of all operators, organised from highest-to-lowest [precedence](https
 information about each operators [associativity](https://en.wikipedia.org/wiki/Operator_associativity),
 usage, and syntax:
 
-<table>
-  <tr>
-    <th>Operator</th>
-    <th>Description</th>
-    <th>Associativity</th>
-  </tr>
-  <tr>
-    <td>
-        <code>(a)</code><br>
-        <code>[a, ...]</code><br>
-        <code>{ k : v, ... }</code><br>
-    </td>
-    <td>
-        <a href="./lan-expressions.html#grouped-expressions">Grouping</a><br>
-        <a href="./lan-expressions.html#array-expressions">Array initialisation</a><br>
-        <a href="./lan-expressions.html#struct-expressions">Struct/object initialisation</a>
-    </td>
-    <td>N/a</td>
-  </tr>
-  <tr>
-    <td>
-        <code>a(...)</code><br>
-        <code>new a(...)</code><br>
-        <code>a.b</code><br>
-        <code>a[i]</code>
-    </td>
-    <td>
-        <a href="./lan-expressions.html#call-expressions">Function call</a><br>
-        <a href="./lan-expressions.html#call-expressions">Constructor function call</a><br>
-        <a href="./lan-expressions.html#accessor-expressions">Member access</a><br>
-        <a href="./lan-expressions.html#accessor-expressions">Collection indexing</a> (computed member access)<br>
-    </td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td>
-        <code>!a</code><br>
-        <code>-a</code><br>
-        <code>+a</code>
-    </td>
-    <td>
-        <a href="./lan-expressions.html#unary-operators">Logical <b>NOT</b></a><br>
-        <a href="./lan-expressions.html#unary-operators">Unary minus</a> (negation)<br>
-        <a href="./lan-expressions.html#unary-operators">Unary plus</a>
-    </td>
-    <td>N/a</td>
-  </tr>
-  <tr>
-    <td>
-        <code>a * b</code><br>
-        <code>a / b</code><br>
-        <code>a // b</code><br>
-        <code>a % b</code>
-    </td>
-    <td>
-        Multiplication<br>
-        Division<br>
-        Integer division<br>
-        Remainder
-    </td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td><code>a + b</code><br><code>a - b</code></td>
-    <td>Addition<br>Subtraction</td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td>
-        <code>a &lt; b</code><br>
-        <code>a &lt;= b</code><br>
-        <code>a &gt; b</code><br>
-        <code>a &gt;= b</code>
-    </td>
-    <td>
-        Relational less-than &lt;<br>
-        Relational less-than-or-equal ≤<br>
-        Relational greater-than &gt;<br>
-        Relational greater-than-or-equal ≥
-    </td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td><code>a == b</code><br><code>a != b</code></td>
-    <td>Equality =<br>Inequality ≠</td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td><code>a &lt;&lt; b</code><br><code>a &gt;&gt; b</code></td>
-    <td>Bitwise left shift<br>Bitwise right shift</td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td>
-        <code>a &amp; b</code><br>
-        <code>a | b</code><br>
-        <code>a ^ b</code>
-    </td>
-    <td>
-        Bitwise <b>AND</b><br>
-        Bitwise <b>OR</b><br>
-        Bitwise <b>XOR</b>
-    </td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td><code>a &lt;| b</code><br><code>a |&gt; b</code></td>
-    <td>Left pipe<br>Right pipe</td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr>
-    <td>
-        <code>a and b</code><br>
-        <code>a or b</code><br>
-        <code>a xor b</code><br>
-    </td>
-    <td>
-        Logical <b>AND</b><br>
-        Logical <b>OR</b><br>
-        Logical <b>XOR</b>
-    </td>
-    <td>Left-to-right →</td>
-  </tr>
-  <tr id="op-assign">
-    <td>
-        <code>a = b</code><br>
-        <code>a *= b</code><br>
-        <code>a /= b</code><br>
-        <code>a -= b</code><br>
-        <code>a += b</code>
-    </td>
-    <td>
-        <a href="./lan-expressions.html#assign-vanilla">Direct assignment</a><br>
-        <a href="./lan-expressions.html#assign-multiply">Multiplication assignment</a><br>
-        <a href="./lan-expressions.html#assign-divide">Division assignment</a><br>
-        <a href="./lan-expressions.html#assign-subtract">Subtraction assignment</a><br>
-        <a href="./lan-expressions.html#assign-add">Addition assignment</a>
-    </td>
-    <td>Right-to-left ←</td>
-  </tr>
-  <tr>
-    <td>N/a</td>
-    <td>
-      Control flow (e.g.
-        <a href="./lan-expressions.html#return-expressions"><code>return</code></a>,
-        <a href="./lan-expressions.html#if-expressions"><code>if</code></a>, and
-        <a href="./lan-expressions.html#while-expressions"><code>while</code></a>)
-    </td>
-    <td>N/a</td>
-  </tr>
-</table>
+<div class="responsive-overflow">
+  <table>
+    <tr>
+      <th>Precedence</th>
+      <th>Operator</th>
+      <th>Description</th>
+      <th>Associativity</th>
+    </tr>
+    <tr>
+      <td><b>12<b></td>
+      <td>
+          <code>(a)</code><br>
+          <code>[a, ...]</code><br>
+          <code>{ k : v, ... }</code><br>
+      </td>
+      <td>
+          <a href="./lan-expressions.html#grouped-expressions">Grouping</a><br>
+          <a href="./lan-expressions.html#array-expressions">Array initialisation</a><br>
+          <a href="./lan-expressions.html#struct-expressions">Struct/object initialisation</a>
+      </td>
+      <td>N/a</td>
+    </tr>
+    <tr>
+      <td><b>11<b></td>
+      <td>
+          <code>a(...)</code><br>
+          <code>new a(...)</code><br>
+          <code>a.b</code><br>
+          <code>a[i]</code>
+      </td>
+      <td>
+          <a href="./lan-expressions.html#call-expressions">Function call</a><br>
+          <a href="./lan-expressions.html#call-expressions">Constructor function call</a><br>
+          <a href="./lan-expressions.html#accessor-expressions">Member access</a><br>
+          <a href="./lan-expressions.html#accessor-expressions">Collection indexing</a> (computed member access)<br>
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>10</b> <a href="./lan-expressions.html#unary-operators">Unary</a></td>
+      <td>
+          <code>!a</code><br>
+          <code>-a</code><br>
+          <code>+a</code>
+      </td>
+      <td>
+          Logical <b>NOT</b><br>
+          Unary minus (negation)<br>
+          Unary plus
+      </td>
+      <td>N/a</td>
+    </tr>
+    <tr>
+      <td><b>9</b> <a href="./lan-expressions.html#multiplicative-operators">Multiplicative</a></td>
+      <td>
+          <code>a * b</code><br>
+          <code>a / b</code><br>
+          <code>a // b</code><br>
+          <code>a % b</code>
+      </td>
+      <td>
+          Multiplication<br>
+          Division<br>
+          Integer division<br>
+          Remainder
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>8</b> <a href="./lan-expressions.html#additive-operators">Additive</a></td>
+      <td><code>a + b</code><br><code>a - b</code></td>
+      <td>Addition<br>Subtraction</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>7</b> <a href="./lan-expressions.html#relational-operators">Relational</a></td>
+      <td>
+          <code>a &lt; b</code><br>
+          <code>a &lt;= b</code><br>
+          <code>a &gt; b</code><br>
+          <code>a &gt;= b</code>
+      </td>
+      <td>
+          Relational less-than &lt;<br>
+          Relational less-than-or-equal ≤<br>
+          Relational greater-than &gt;<br>
+          Relational greater-than-or-equal ≥
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>6</b> <a href="./lan-expressions.html#equality-operators">Equality</a></td>
+      <td><code>a == b</code><br><code>a != b</code></td>
+      <td>Equality =<br>Inequality ≠</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>5</b> <a href="./lan-expressions.html#bitwise-shift-operators">Bitwise (Shift)</a></td>
+      <td><code>a &lt;&lt; b</code><br><code>a &gt;&gt; b</code></td>
+      <td>Bitwise left shift<br>Bitwise right shift</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>4</b> <a href="./lan-expressions.html#bitwise-operators">Bitwise</a></td>
+      <td>
+          <code>a &amp; b</code><br>
+          <code>a | b</code><br>
+          <code>a ^ b</code>
+      </td>
+      <td>
+          Bitwise <b>AND</b><br>
+          Bitwise <b>OR</b><br>
+          Bitwise <b>XOR</b>
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>3</b> <a href="./lan-expressions.html#pipe-operators">Pipe</a></td>
+      <td><code>a &lt;| b</code><br><code>a |&gt; b</code></td>
+      <td>Left pipe<br>Right pipe</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>2</b> <a href="./lan-expressions.html#logical-operators">Logical</a></td>
+      <td>
+          <code>a and b</code><br>
+          <code>a or b</code><br>
+          <code>a xor b</code><br>
+      </td>
+      <td>
+          Logical <b>AND</b><br>
+          Logical <b>OR</b><br>
+          Logical <b>XOR</b>
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-assign">
+      <td><b>1</b> <a href="./lan-expressions.html#assignment-expressions">Assignment</a></td>
+      <td>
+          <code>a = b</code><br>
+          <code>a *= b</code><br>
+          <code>a /= b</code><br>
+          <code>a -= b</code><br>
+          <code>a += b</code>
+      </td>
+      <td>
+          Direct assignment<br>
+          Multiplication assignment<br>
+          Division assignment<br>
+          Subtraction assignment<br>
+          Addition assignment
+      </td>
+      <td>Right&#8209;to&#8209;left&nbsp;←</td>
+    </tr>
+    <tr>
+      <td><b>0</b></td>
+      <td>N/a</td>
+      <td>
+        Control flow (e.g.
+          <a href="./lan-expressions.html#return-expressions"><code>return</code></a>,
+          <a href="./lan-expressions.html#if-expressions"><code>if</code></a>, and
+          <a href="./lan-expressions.html#while-expressions"><code>while</code></a>)
+      </td>
+      <td>N/a</td>
+    </tr>
+  </table>
+</div>
