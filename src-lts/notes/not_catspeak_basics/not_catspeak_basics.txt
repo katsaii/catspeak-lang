@@ -1,3 +1,8 @@
+_See the pages on [Lexical Grammar](./lan-lexical-grammar.html),
+[Statements](./lan-statements.html), and [Expressions](./lan-expressions.html) for more in-depth information on the Catspeak language syntax._
+
+# Similarity to GML
+
 Catspeak is a simple imperative language with a vaguely similar syntax to 
 GameMaker Language (GML) and JavaScript. Consider the following program written
 in GML to calculate the factorial of a number `n`:
@@ -19,7 +24,7 @@ The same code re-written in the Catspeak programming language looks like:
 
 ```meow
 -- CATSPEAK CODE
-factorial = fun(n) {
+factorial = fun (n) {
     let m = 1
     if (n > 1) {
         m = n * factorial(n - 1)
@@ -30,9 +35,53 @@ factorial = fun(n) {
 factorial(5) -- output: 120
 ```
 
-There are some immediately obvious differences here, such as the `m` variable
-being declared using `let` instead of `var`, `fun` instead of `function`, and
-comments using `--` instead of `//`.
+The "shape" of the code is similar to GML, but there are some immediately
+obvious differences here. For example: the `m` variable
+being declared using `let` instead of `var`; `fun` instead of `function`; and
+comments using `--` instead of `//`. All of these and more are covered in the
+[Pitfalls](#pitfalls) section.
 
-All of these differences (and more) are described in the [Lexical Grammar](./lan-lexical-grammar.html),
-[Statements](./lan-statements.html), and [Expressions](./lan-expressions.html) pages.
+# Pitfalls
+
+Catspeak is **not** GML, and so you should not assume it will behave
+identically to GML. This section lists the common differences between GML and
+the Catspeak programming language:
+
+ - **Variables**:
+
+   - Local variables in Catspeak are declared using `let` instead of `var`.
+
+   - Local variables and function definitions are [**not hoisted**](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) _(using local variables and functions before they are defined)_:
+     ```meow
+     show_mesage(my_var)  -- does NOT print '2'
+
+     let my_var = 2
+     ```
+
+   - Local variables can only be used inside of the block they are defined in:
+     ```meow
+     if condition {
+        let a = "hello chat"
+     }
+     return a  -- does NOT refer to the local variable 'a' here
+     ```
+
+   - Global variables are not accessible by default.
+
+   - To access instance variables you need to explicitly write `self.`
+     ```meow
+     let a = item       -- 'item' refers to a Catspeak variable here
+     let b = self.item  -- 'item' refers to a GML instance variable here
+     ```
+
+ - **Syntax**:
+
+   - `for`, `repeat`, and `do` loops do not exist. Instead you should use
+     `while` loops.
+
+   - There are no `[@` and `[$` accessors, both structs and arrays can be
+     indexed using `a[i]`.
+
+   - There are no `[#`, `[?`, and `[|` accessors. Data structures should use
+     functions like `ds_list_get` and `ds_list_set`, if exposed by the modding
+     API.
