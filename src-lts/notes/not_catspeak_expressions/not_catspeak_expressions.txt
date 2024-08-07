@@ -312,7 +312,14 @@ Logical operations are made up of two sub-expressions separated by one of
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-logical) than
 [Assignment Expressions](#assignment-expressions), but a lower precedence than
-[Pipe Operators](#pipe-operators).
+[Pipe Operators](#pipe-operators). Additionally, the `and` operator takes precedence over `or` and `xor`:
+
+```meow
+a and b or c  -- same as (a and b) or c, NOT a and (b or c)
+a or b and c  -- same as a or (b and c), NOT (a or b) and c
+
+a and b or c and d  -- same as (a and b) or (c and d), NOT ((a and b) or c) and d
+```
 
 | Operator | Description |
 | -------- | ----------- |
