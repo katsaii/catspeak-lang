@@ -237,7 +237,7 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseAssign = function () {
-        var lhs = __parseOpLogical();
+        var lhs = __parseOpLogicalOR();
         var peeked = lexer.peek();
         if (
             peeked == CatspeakToken.ASSIGN ||
@@ -261,7 +261,30 @@ function CatspeakParser(lexer, builder) constructor {
     /// @ignore
     ///
     /// @return {Struct}
-    static __parseOpLogical = function () {
+    static __parseOpLogicalOR = function () {
+        var result = __parseOpLogicalAND();
+        while (true) {
+            var peeked = lexer.peek();
+            if (peeked == CatspeakToken.OR) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpLogicalAND();
+                result = ir.createOr(lhs, rhs, lexer.getLocation());
+            } else if (peeked == CatspeakToken.XOR) {
+                lexer.next();
+                var lhs = result;
+                var rhs = __parseOpLogicalAND();
+                result = ir.createBinary(CatspeakOperator.XOR, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
+    };
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpLogicalAND = function () {
         var result = __parseOpPipe();
         while (true) {
             var peeked = lexer.peek();
@@ -270,16 +293,6 @@ function CatspeakParser(lexer, builder) constructor {
                 var lhs = result;
                 var rhs = __parseOpPipe();
                 result = ir.createAnd(lhs, rhs, lexer.getLocation());
-            } else if (peeked == CatspeakToken.OR) {
-                lexer.next();
-                var lhs = result;
-                var rhs = __parseOpPipe();
-                result = ir.createOr(lhs, rhs, lexer.getLocation());
-            } else if (peeked == CatspeakToken.XOR) {
-                lexer.next();
-                var lhs = result;
-                var rhs = __parseOpPipe();
-                result = ir.createBinary(CatspeakOperator.XOR, lhs, rhs, lexer.getLocation());
             } else {
                 return result;
             }
