@@ -244,7 +244,9 @@ class HTMLCodegen(BasicCodegen):
 
     @BasicCodegen.block
     def table(self, **attrs):
-        with self.tag("table", **attrs): yield
+        with self.tag("div", class_="responsive-overflow"):
+            with self.tag("table", **attrs):
+                yield
 
     @BasicCodegen.block
     def table_row(self, **attrs):
@@ -545,7 +547,7 @@ class HTMLCodegen(BasicCodegen):
             display : block;
             padding : 1rem;
             white-space : pre;
-            overflow-x : scroll;
+            overflow-x : auto;
         }
 
         a.code-copy {
@@ -602,6 +604,8 @@ class HTMLCodegen(BasicCodegen):
             border-collapse : collapse;
             border : 1px solid var(--c-fg);
         }
+
+        .responsive-overflow { overflow-x : auto }
 
         th { font-weight : bold }
 
