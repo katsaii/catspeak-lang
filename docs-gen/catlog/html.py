@@ -67,6 +67,16 @@ class HTMLCodegen(BasicCodegen):
             )
             yield
             self.tag("link", rel="stylesheet", href="./style.css")
+            with self.tag("script"):
+                self.write_heredoc("""
+                    function copyToClipboard(id) {
+                        let e = document.getElementById(id);
+                        navigator.clipboard.writeText(e.textContent);
+                    }
+                """)
+            with self.tag("noscript"):
+                with self.tag("style"):
+                    self.write("a.code-copy { display : none }")
 
     def meta_data(self, **meta_tags):
         for key, val in meta_tags.items():
@@ -145,7 +155,10 @@ class HTMLCodegen(BasicCodegen):
 
     @BasicCodegen.block
     def anchor(self, id, **attrs):
-        with self.tag("a", href=f"#{id}", **attrs): yield
+        if id == None:
+            with self.tag("a", **attrs): yield
+        else:
+            with self.tag("a", href=f"#{id}", **attrs): yield
 
     @BasicCodegen.block
     def code(self, **attrs):
@@ -155,9 +168,11 @@ class HTMLCodegen(BasicCodegen):
             yield
             self.highlighter = highlight_prev
 
+    code_block_idx : ... = 0
+
     @BasicCodegen.block
     def code_block(self, **attrs):
-        with self.tag("pre", **attrs):
+        with self.tag("pre", class_="code-block", **attrs):
             lang_data = None
             if lang := attrs.get("lang"):
                 if lang == "gml":
@@ -167,13 +182,23 @@ class HTMLCodegen(BasicCodegen):
             highlight_prev = self.highlighter
             self.highlighter = None
             if lang_data:
-                lang_name, lang_ext, lang_highlighter = lang_data
+                lang_name, lang_ext, _ = lang_data
                 with self.tag("div", class_="code-triangle"):
                     pass
                 with self.tag("div", class_="code-title"):
                     self.write(f"{lang_name} ({lang_ext})")
+                
+            code_block_tag = f"cb-{self.code_block_idx}"
+            self.code_block_idx += 1
+            with self.anchor(None,
+                class_="code-copy",
+                onclick=f"copyToClipboard('{code_block_tag}')"
+            ):
+                self.write("Copy")
+            if lang_data:
+                _, _, lang_highlighter = lang_data
                 self.highlighter = lang_highlighter
-            with self.tag("code", **attrs):
+            with self.tag("code", id = code_block_tag):
                 yield
             self.highlighter = highlight_prev
 
@@ -512,11 +537,22 @@ class HTMLCodegen(BasicCodegen):
             background-color : var(--c-bg-dark);
         }
 
-        pre > code {
+        .code-block {
+            position : relative;
+        }
+
+        .code-block > code {
             display : block;
             padding : 1rem;
             white-space : pre;
             overflow-x : scroll;
+        }
+
+        a.code-copy {
+            position : absolute;
+            right : 5px;
+            text-decoration : none;
+            color : var(--c-fg-2);
         }
 
         code.inline-code {

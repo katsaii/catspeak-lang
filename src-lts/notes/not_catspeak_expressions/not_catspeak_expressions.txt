@@ -224,7 +224,7 @@ The built-in additive operators are:
 | Operator | Description |
 | -------- | ----------- |
 | `a + b` | Converts `a` and `b` into numbers, returning their sum. |
-| `a / b` | Converts `a` and `b` into numbers, returning the result of subtracting `b` from `a`. |
+| `a - b` | Converts `a` and `b` into numbers, returning the result of subtracting `b` from `a`. |
 
 # Assignment Expressions
 
