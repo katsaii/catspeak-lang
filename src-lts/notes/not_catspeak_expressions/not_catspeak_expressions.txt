@@ -166,18 +166,19 @@ the accessor expression is on, determines whether to read or assign a value.
 
 # Unary Operators
 
-Unary operators have the highest precedence, and are made up of a single
-sub-expression prefixed by `!`, `-`, or `+`:
+Unary operations are made up of a single sub-expression prefixed by one of
+`!`, `-`, or `+`.
+
+They have the highest [precedence](./lan-lexical-grammar.html#op-unary) of all
+operators, even greater than the [Multiplicative Operators](#multiplicative-operators):
 
 ```meow
 +a - b  -- same as (+a) - b, NOT +(a - b)
--a + d  -- same as (-a) + d, NOT -(a + d)
+-a * d  -- same as (-a) * d, NOT -(a * d)
 
 +-a  -- not valid, unary operators cannot be chained together
      -- parenthesis should be used to resolve ambiguity: +(-a)
 ```
-
-The built-in unary operators are:
 
 | Operator | Description |
 | -------- | ----------- |
@@ -187,9 +188,11 @@ The built-in unary operators are:
 
 # Multiplicative Operators
 
-Multiplicative operators have the highest [precedence](./lan-lexical-grammar.html#operators)
-of all binary operators, and are made up of two sub-expressions separated by
-`*`, `/`, `//`, or `%`:
+Multiplicative operations are made up of two sub-expressions separated by one of
+`*`, `/`, `//`, or `%`.
+
+They have the highest [precedence](./lan-lexical-grammar.html#op-mult) of all
+binary operators:
 
 ```meow
 a + b * c  -- same as a + (b * c), NOT (a + b) * c
@@ -198,21 +201,20 @@ a / b - c  -- same as (a * b) - c, NOT a / (b - c)
 a * b / c * d  -- same as ((a * b) / c) * d, NOT (a * b) / (c * d)
 ```
 
-The built-in multiplicative operators are:
-
 | Operator | Description |
 | -------- | ----------- |
 | `a * b` | Converts `a` and `b` into numbers, returning the result of multiplying them together. |
 | `a / b` | Converts `a` and `b` into numbers, returning the result of dividing `a` by `b`. |
 | `a // b` | Converts `a` and `b` into 32-bit integers, returning the quotient after dividing `a` by `b`. |
-| `a % b` | Converts `a` and `b` into 32-bit integers, returning the remainder after dividing `a` by `b`. The remainder has the same sign as `a`; if `a` is positive then the remainder will be positive, and if `a` is negative then the remainder will be negative. |
+| `a % b` | Converts `a` and `b` into numbers, returning the remainder after dividing `a` by `b`. <br><br> _The remainder has the **same sign as `a`**; if `a` is positive then the remainder will be positive, and if `a` is negative then the remainder will be negative._ |
 
 # Additive Operators
 
-The binary additive operators have [higher precedence](./lan-lexical-grammar.html#operators)
-than all other binary operators except the [Multiplicative Operators](#multiplicative-operators).
+Additive operations are made up of two sub-expressions separated by one of
+`+` or `-`.
 
-They are made up of two sub-expressions separated by `+` or `-`:
+They have higher [precedence](./lan-lexical-grammar.html#op-add)
+than all other binary operators except the [Multiplicative Operators](#multiplicative-operators):
 
 ```meow
 a * b + c  -- same as (a * b) + c, NOT a * (b + c)
@@ -221,8 +223,6 @@ a - b / c  -- same as a - (b / c), NOT (a - b) / c
 a + b - c + d  -- same as ((a + b) - c) + d, NOT (a + b) - (c + d)
 ```
 
-The built-in additive operators are:
-
 | Operator | Description |
 | -------- | ----------- |
 | `a + b` | Converts `a` and `b` into numbers, returning their sum. |
@@ -230,20 +230,19 @@ The built-in additive operators are:
 
 # Relational Operators
 
-The binary relational operators have a [higher precedence](./lan-lexical-grammar.html#operators)
-than the [Equality Operators](#equality-operators), but a lower precedence than
-the [Additive Operators](#additive-operators).
+Relational operations are made up of two sub-expressions separated by one of
+`<`, `<=`, `>`, or `>=`.
 
-They are made up of two sub-expressions separated by `<`, `<=`, `>`, or `>=`:
+They have a higher [precedence](./lan-lexical-grammar.html#op-relation) than
+[Equality Operators](#equality-operators), but a lower precedence than
+[Additive Operators](#additive-operators):
 
 ```meow
 a * b < c   -- same as (a * b) < c, NOT a * (b < c)
 a >= b / c  -- same as a >= (b / c), NOT (a >= b) / c
 
-a < b < c < d  -- same as ((a < b) < c) < d
+a < b < c  -- same as (a < b) < c, NOT (a < b) and (b < c)
 ```
-
-The built-in relational operators are:
 
 | Operator | Description |
 | -------- | ----------- |
@@ -254,28 +253,101 @@ The built-in relational operators are:
 
 # Equality Operators
 
+Equality operations are made up of two sub-expressions separated by one of `==`
+or `!=`.
+
+They have a higher [precedence](./lan-lexical-grammar.html#op-equal) than
+[Bitwise Shift Operators](#bitwise-shift-operators), but a lower precedence than
+[Relational Operators](#relational-operators):
+
+```meow
+a * b == c  -- same as (a * b) == c, NOT a * (b == c)
+a != b < c  -- same as a != (b < c), NOT (a != b) < c
+
+a == b == c  -- same as ((a == b) == c), NOT (a == b) and (b == c)
+```
+
+| Operator | Description |
+| -------- | ----------- |
+| `a == b` | Compares the values of `a` and `b`, returning `true` if they are equal. <br><br> _Equivalence is determined by the behaviour of GML equality._ |
+| `a != b` | Compares the values of `a` and `b`, returning `true` if they are not equal. |
+
 # Bitwise Shift Operators
+
+Bitwise shift operations are made up of two sub-expressions separated by one of
+`<<` or `>>`.
+
+They have a higher [precedence](./lan-lexical-grammar.html#op-shift) than
+[Bitwise Operators](#bitwise-operators), but a lower precedence than
+[Equality Operators](#equality-operators).
+
+| Operator | Description |
+| -------- | ----------- |
+| `a << b` | Converts `a` and `b` to 32-bit integers, shifting the binary representation of the value `a` to the **left** by `b`-many bits. e.g. `b0110 << 1` becomes `0b1100`. <br><br> _This has the effect of multiplying `a` by 2<sup><code>b</code></sup>._ |
+| `a >> b` | Converts `a` and `b` to 32-bit integers, shifting the binary representation of the value `a` to the **right** by `b`-many bits. |
 
 # Bitwise Operators
 
+Bitwise operations are made up of two sub-expressions separated by one of
+`&`, `|`, or `^`.
+
+They have a higher [precedence](./lan-lexical-grammar.html#op-bitwise) than
+[Pipe Operators](#pipe-operators), but a lower precedence than
+[Bitwise Shift Operators](#bitwise-shift-operators).
+
+| Operator | Description |
+| -------- | ----------- |
+| `a & b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **AND** of every bit from `a` and `b`. e.g. `0b1110 & 0b0111` becomes `0b0110`, since: <br><br>1 AND 0 = 0<br>1 AND 1 = 1<br>1 AND 1 = 1<br>0 AND 1 = 0 |
+| `a &#124; b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **OR** of every bit from `a` and `b`. e.g. `0b1110 &#124; 0b0111` becomes `0b1111`, since: <br><br>1 OR 0 = 1<br>1 OR 1 = 1<br>1 OR 1 = 1<br>0 OR 1 = 1 |
+| `a ^ b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **XOR** (exclusive **OR**) of every bit from `a` and `b`. e.g. `0b1110 ^ 0b0111` becomes `0b1001`, since: <br><br>1 XOR 0 = 1<br>1 XOR 1 = 0<br>1 XOR 1 = 0<br>0 XOR 1 = 1 |
+
 # Pipe Operators
+
+Pipe operations are made up of two sub-expressions separated by one of
+`<|` or `|>`.
+
+They have a higher [precedence](./lan-lexical-grammar.html#op-pipe) than
+[Logical Operators](#logical-operators), but a lower precedence than
+[Bitwise Operators](#bitwise-operators).
+
+| Operator | Description |
+| -------- | ----------- |
+| `a <&#124; b` | Syntactic sugar for a function call `a(b)`. |
+| `a &#124;> b` | Syntactic sugar for a function call `b(a)`. |
 
 # Logical Operators
 
+Logical operations are made up of two sub-expressions separated by one of
+`and`, `or`, or `xor`.
+
+They have a higher [precedence](./lan-lexical-grammar.html#op-logical) than
+[Assignment Expressions](#assignment-expressions), but a lower precedence than
+[Pipe Operators](#pipe-operators).
+
+| Operator | Description |
+| -------- | ----------- |
+| `a and b` | Converts `a` to a Boolean value, returning `b` if `a` evaluates to True. Returns `a` otherwise. <br><br> _Does not evaluate `b` if `a` evaluates to False. This is called [short-circuit evaluation](https://en.wikipedia.org/wiki/Short-circuit_evaluation)._ |
+| `a or b` | Converts `a` to a Boolean value, returning `b` if `a` evaluates to False. Returns `a` otherwise. <br><br> _Just like the `and` operator, `b` is not evaluated if `a` evaluates to True._ |
+| `a xor b` | Converts `a` and `b` to a Boolean values, returning `true` if the values of `a` and `b` are different. Returns `false` otherwise. <br><br> _Unlike `and` and `or`, the `xor` operator is **not short-circuiting**._ |
+
 # Assignment Expressions
 
-Assignment expressions have the lowest [precedence](./lan-lexical-grammar.html#operators)
-of all binary operators, and are made up of two sub-expressions separated by an
-[assignment operator](./lan-lexical-grammar.html#op-assign).
+Assignment expressions are made up of two sub-expressions separated by one of
+`=`, `*=`, `/=`, `-=`, or `+=`.
 
-The value of the right-hand-side expression will be written to left-hand-side
-assignment target expression.
+They have the lowest [precedence](./lan-lexical-grammar.html#op-assign) of all
+binary operators:
 
 ```meow
 a = b = c  -- same as a = (b = c), NOT a = c; b = c
+
+-- the result of an assignment expression is always 'undefined'
+let a
+let b = (a = 2)  -- a is 2, b is undefined
 ```
 
-The built-in assignment operators are:
+The value of the right-hand-side expression will be written to left-hand-side
+assignment target expression.
 
 | Operator | Description |
 | -------- | ----------- |
@@ -287,13 +359,3 @@ The built-in assignment operators are:
 
 Valid assignment targets for the expression `a` include [Identifiers](./lan-lexical-grammar.html#identifiers)
 (if they refer to a writable variable), and [Accessor Expressions](#accessor-expression).
-
-**The result of an assignment expression is always `undefined`:**
-
-```meow
-let a
-let b = (a = 2)
-
--- a is 2
--- b is undefined
-```
