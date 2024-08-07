@@ -167,7 +167,7 @@ the accessor expression is on, determines whether to read or assign a value.
 # Unary Operators
 
 Unary operations are made up of a single sub-expression prefixed by one of
-`!`, `-`, or `+`.
+`!`, `~`, `-`, or `+`.
 
 They have the highest [precedence](./lan-lexical-grammar.html#op-unary) of all
 operators, even greater than the [Multiplicative Operators](#multiplicative-operators):
@@ -183,6 +183,7 @@ operators, even greater than the [Multiplicative Operators](#multiplicative-oper
 | Operator | Description |
 | -------- | ----------- |
 | `!a` | Converts `a` into a Boolean value (True or False), returning `false` if `a` evaluates to True and `true` if `a` evaluates to False. |
+| `~a` | Converts `a` into a 32-bit integer, returning a new number whose binary representation flips every 0 to a 1 and every 1 to a 0. e.g. `~0b1010` becomes `0b0101`. |
 | `-a` | Converts `a` into a number, returning the number with the opposite sign. If `a` is positive then its negative counterpart is returned, and vice versa. |
 | `+a` | Converts `a` into a number, returning that number. |
 
