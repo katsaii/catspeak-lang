@@ -167,7 +167,7 @@ the accessor expression is on, determines whether to read or assign a value.
 # Unary Operators
 
 Unary operators have the highest precedence, and are made up of a single
-sub-expression prefixed by an operator symbol:
+sub-expression prefixed by `!`, `-`, or `+`:
 
 ```meow
 +a - b  -- same as (+a) - b, NOT +(a - b)
@@ -177,25 +177,54 @@ sub-expression prefixed by an operator symbol:
      -- parenthesis should be used to resolve ambiguity: +(-a)
 ```
 
-Catspeak has three different unary operators:
+The built-in unary operators are:
 
- - `!a` Logical **NOT**:
-   converts `a` into a Boolean value (True or False), returning `false` if `a`
-   evaluates to True and `true` if `a` evaluates to False.
+| Operator | Description |
+| -------- | ----------- |
+| `!a` | Converts `a` into a Boolean value (True or False), returning `false` if `a` evaluates to True and `true` if `a` evaluates to False. |
+| `-a` | Converts `a` into a number, returning the number with the opposite sign. If `a` is positive then its negative counterpart is returned, and vice versa. |
+| `+a` | Converts `a` into a number, returning that number. |
 
-   Raises a runtime exception if the conversion to Boolean fails.
+# Multiplicative Operators
 
- - `-a` Arithmetic negation:
-   converts `a` into a number, returning the number with the opposite sign. If
-   `a` is positive then its negative counterpart is returned, and vice versa.
+Multiplicative operators have the [highest precedence](./lan-lexical-grammar.html#operators)
+of all binary operators, and are made up of two sub-expressions separated by
+`*`, `/`, `//`, or `%`:
 
-   Raises a runtime exception if the conversion to a number fails.
+```meow
+a + b * c  -- same as a + (b * c), NOT (a + b) * c
+a / b - c  -- same as (a * b) - c, NOT a / (b - c)
 
- - `+a` Arithmetic plus:
-   converts `a` into a number, returning the number.
+a * b / c * d  -- same as ((a * b) / c) * d, NOT (a * b) / (c * d)
+```
 
-   Raises a runtime exception if the conversion to a number fails. Generally a
-   no-op otherwise.
+The built-in multiplicative operators are:
+
+| Operator | Description |
+| -------- | ----------- |
+| `a * b` | Converts `a` and `b` into numbers, returning the result of multiplying them together. |
+| `a / b` | Converts `a` and `b` into numbers, returning the result of dividing `a` by `b`. |
+| `a // b` | Converts `a` and `b` into 32-bit integers, returning the quotient after dividing `a` by `b`. |
+| `a % b` | Converts `a` and `b` into 32-bit integers, returning the remainder after dividing `a` by `b`. The remainder has the same sign as `a`; if `a` is positive then the remainder will be positive, and if `a` is negative then the remainder will be negative. |
+
+# Additive Operators
+
+The binary additive operators `+` and `-` have [higher precedence](./lan-lexical-grammar.html#operators)
+than all other binary operators except `*`, `/`, `//`, or `%`:
+
+```meow
+a * b + c  -- same as (a * b) + c, NOT a * (b + c)
+a - b / c  -- same as a - (b / c), NOT (a - b) / c
+
+a + b - c + d  -- same as ((a + b) - c) + d, NOT (a + b) - (c + d)
+```
+
+The built-in additive operators are:
+
+| Operator | Description |
+| -------- | ----------- |
+| `a + b` | Converts `a` and `b` into numbers, returning their sum. |
+| `a / b` | Converts `a` and `b` into numbers, returning the result of subtracting `b` from `a`. |
 
 # Assignment Expressions
 
