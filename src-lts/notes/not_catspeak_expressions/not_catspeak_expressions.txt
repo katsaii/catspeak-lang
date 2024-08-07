@@ -3,6 +3,9 @@ of many sub-expressions. Most statements you would typically find in GameMaker
 Language (GML) appear as expressions in Catspeak. This includes [Break Expressions](#break-expressions), [Return Expressions](#return-expressions), and
 [Continue Expressions](#continue-expressions).
 
+For the precedence of many of these expressions, see the [**precedence table**](./lan-lexical-grammar.html#operators) in the [Lexical Grammar](./lan-lexical-grammar.html)
+chapter.
+
 # Terminal Expressions
 
 Terminal expressions are either [Identifiers](./lan-lexical-grammar.html#identifiers) or literals (e.g. [Numbers](./lan-lexical-grammar.html#numbers) and [Strings](./lan-lexical-grammar.html#strings)).
@@ -18,8 +21,181 @@ Examples of terminal expressions:
 0b0011_1110   -- binary literal
 true          -- boolean True
 undefined
+player_name   -- variable identifier
 NaN           -- not a number
 ```
+
+# Grouped Expressions
+
+A grouped expression wraps a single sub-expression between `(` and `)`,
+evaluating the sub-expression. This is typically used to make the precedence of
+the inner expression clear:
+
+```meow
+let a = 1 + 2 * 3    -- a = 7
+let b = (1 + 2) * 3  -- b = 9
+```
+
+# Array Expressions
+
+Arrays are a sequence of comma-separated sub-expressions wrapped between `[`
+and `]`:
+
+```meow
+let array = [1, 2, 3]
+```
+
+The order of evaluation of sub-expressions `[a, b, c]` is **left-to-right**, i.e.
+`a` is evaluated first, then `b`, and finally `c`.
+
+**Whitespace does not matter**, and the elements of an array can be split over
+multiple lines if needed (including a trailing comma on the final element if
+desired):
+
+```meow
+let names = [
+  "Jane",
+  "June",
+  "Jake",
+  "Jade",
+]
+```
+
+For information on how to modify the elements of an array, see the section on
+[Accessor Expressions](#accessor-expressions).
+
+# Struct Expressions
+
+Structs are a sequence of comma-separated key-value pairs (`key: value`) wrapped
+between `{` and `}`:
+
+```meow
+let struct = { x: 1, y: 2 }
+```
+
+Just like [Array Expressions](#array-expressions) **whitespace does not matter**,
+and the order of evaluation for sub-expressions is **left-to-right**.
+
+Struct keys (seen on the left-hand-side of the `:` symbol) can be any valid
+[Terminal Expression](#terminal-expressions):
+
+```meow
+let metadata = {
+  name   : "Roxy",  -- identifier 'name' used as a key
+  "age"  : 21,      -- string "age" used as a key
+  0b0110 : 0x42,    -- the binary number '0b0110' used as a key
+}
+```
+
+Any non-string key will be implicitly converted into a string before being
+assigned its value. For example, the identifier `name` becomes `"name"`, and the
+binary number `0b0110` becomes `"6"`.
+
+Using an expression for a struct key (so-called _"computed keys"_) is allowed, so
+long as the expression is surrounded with `[` and `]`:
+
+```meow
+{ ["hello" + "world"]: 123 }
+```
+
+If the key and value are both the same identifier `{ x: x, y: y }`, then the
+**key can be omitted** in a short-hand initialisation syntax like `{ x, y }`:
+
+```meow
+let a = 1
+let b = 2
+let c = 3
+
+return { a, b, c }  -- this is short for { a: a, b: b, c: c }
+```
+
+For information on how to modify the elements of a struct, see the section on
+[Accessor Expressions](#accessor-expressions).
+
+# Call Expressions
+
+A call expression is a single sub-expression (the _callee_) followed by a
+sequence of comma-separated sub-expressions (the _arguments_) wrapped between
+`(` and `)`:
+
+```meow
+show_message("hello from Catspeak!")
+
+-- 'show_message' is the callee
+-- "hello from Catspeak!" is the argument
+```
+
+If the callee is a constructor function from GML, then it can be constructed
+by prefixing a call expression with the `new` keyword:
+
+```meow
+let v = new Vec2(13, 12)
+```
+
+If the constructor does not have any parameters, then the `()` can be omited:
+
+```meow
+let player = new Player  -- instead of `new Player()`
+```
+
+# Accessor Expressions
+
+An accessor expression will allow you to access or modify the elements of an
+array or struct. They consist of a single sub-expression (the array or struct)
+followed by a sequence of comma-separated sub-expressions (the indices) wrapped
+between `[` and `]`:
+
+```meow
+array[0]
+struct["y"]
+```
+
+If the index is a valid identifier, the `.` symbol can be used for short-hand
+member access `vec.x`, which is the same as `vec["x"]`. This is useful
+when working with structs:
+
+```meow
+let vec = { x: 0, y: 0 }
+
+vec.x = 10
+vec.y = vec.x + 12
+```
+
+Depending on which side of an [Assignment Expression](#assignment-expressions)
+the accessor expression is on, determines whether to read or assign a value.
+
+# Unary Operators
+
+Unary operators have the highest precedence, and are made up of a single
+sub-expression prefixed by an operator symbol:
+
+```meow
++a - b  -- same as (+a) - b, NOT +(a - b)
+-a + d  -- same as (-a) + d, NOT -(a + d)
+
++-a  -- not valid, unary operators cannot be chained together
+     -- parenthesis should be used to resolve ambiguity: +(-a)
+```
+
+Catspeak has three different unary operators:
+
+ - `!a` Logical **NOT**:
+   converts `a` into a Boolean value (True or False), returning `false` if `a`
+   evaluates to True and `true` if `a` evaluates to False.
+
+   Raises a runtime exception if the conversion to Boolean fails.
+
+ - `-a` Arithmetic negation:
+   converts `a` into a number, returning the number with the opposite sign. If
+   `a` is positive then its negative counterpart is returned, and vice versa.
+
+   Raises a runtime exception if the conversion to a number fails.
+
+ - `+a` Arithmetic plus:
+   converts `a` into a number, returning the number.
+
+   Raises a runtime exception if the conversion to a number fails. Generally a
+   no-op otherwise.
 
 # Assignment Expressions
 
