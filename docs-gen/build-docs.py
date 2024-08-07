@@ -38,7 +38,7 @@ book_lang = cl.doc.Book(
     title = "Language Reference",
     brief = "Documentation for the Catspeak programming language.",
     chapters = [
-        parse_md_chapter("not_catspeak_basics"),
+        parse_md_chapter("not_catspeak_overview"),
         parse_md_chapter("not_catspeak_lexical_grammar"),
         parse_md_chapter("not_catspeak_statements"),
         parse_md_chapter("not_catspeak_expressions"),

@@ -228,6 +228,24 @@ a + b - c + d  -- same as ((a + b) - c) + d, NOT (a + b) - (c + d)
 | `a + b` | Converts `a` and `b` into numbers, returning their sum. |
 | `a - b` | Converts `a` and `b` into numbers, returning the result of subtracting `b` from `a`. |
 
+# Bitwise Operators
+
+Bitwise operations are made up of two sub-expressions separated by one of
+`&`, `|`, `^`, `<<`, or `>>`.
+
+They have a higher [precedence](./lan-lexical-grammar.html#op-bitwise) than
+[Relational Operators](#relational-operators), but a lower precedence than
+[Additive Operators](#additive-operators).
+
+| Operator | Description |
+| -------- | ----------- |
+| `a & b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **AND** of every bit from `a` and `b`. e.g. `0b1110 & 0b0111` becomes `0b0110`, since: <br><br>1 AND 0 = 0<br>1 AND 1 = 1<br>1 AND 1 = 1<br>0 AND 1 = 0 |
+| `a &#124; b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **OR** of every bit from `a` and `b`. e.g. `0b1110 &#124; 0b0111` becomes `0b1111`, since: <br><br>1 OR 0 = 1<br>1 OR 1 = 1<br>1 OR 1 = 1<br>0 OR 1 = 1 |
+| `a ^ b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **XOR** (exclusive **OR**) of every bit from `a` and `b`. e.g. `0b1110 ^ 0b0111` becomes `0b1001`, since: <br><br>1 XOR 0 = 1<br>1 XOR 1 = 0<br>1 XOR 1 = 0<br>0 XOR 1 = 1 |
+| `a << b` | Converts `a` and `b` to 32-bit integers, shifting the binary representation of the value `a` to the **left** by `b`-many bits. e.g. `b0110 << 1` becomes `0b1100`. <br><br> _This has the effect of multiplying `a` by 2<sup><code>b</code></sup>._ |
+| `a >> b` | Converts `a` and `b` to 32-bit integers, shifting the binary representation of the value `a` to the **right** by `b`-many bits. |
+
+
 # Relational Operators
 
 Relational operations are made up of two sub-expressions separated by one of
@@ -235,7 +253,7 @@ Relational operations are made up of two sub-expressions separated by one of
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-relation) than
 [Equality Operators](#equality-operators), but a lower precedence than
-[Additive Operators](#additive-operators):
+[Bitwise Operators](#bitwise-operators):
 
 ```meow
 a * b < c   -- same as (a * b) < c, NOT a * (b < c)
@@ -257,7 +275,7 @@ Equality operations are made up of two sub-expressions separated by one of `==`
 or `!=`.
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-equal) than
-[Bitwise Shift Operators](#bitwise-shift-operators), but a lower precedence than
+[Bitwise Operators](#bitwise-operators), but a lower precedence than
 [Relational Operators](#relational-operators):
 
 ```meow
@@ -271,35 +289,6 @@ a == b == c  -- same as ((a == b) == c), NOT (a == b) and (b == c)
 | -------- | ----------- |
 | `a == b` | Compares the values of `a` and `b`, returning `true` if they are equal. <br><br> _Equivalence is determined by the behaviour of GML equality._ |
 | `a != b` | Compares the values of `a` and `b`, returning `true` if they are not equal. |
-
-# Bitwise Shift Operators
-
-Bitwise shift operations are made up of two sub-expressions separated by one of
-`<<` or `>>`.
-
-They have a higher [precedence](./lan-lexical-grammar.html#op-shift) than
-[Bitwise Operators](#bitwise-operators), but a lower precedence than
-[Equality Operators](#equality-operators).
-
-| Operator | Description |
-| -------- | ----------- |
-| `a << b` | Converts `a` and `b` to 32-bit integers, shifting the binary representation of the value `a` to the **left** by `b`-many bits. e.g. `b0110 << 1` becomes `0b1100`. <br><br> _This has the effect of multiplying `a` by 2<sup><code>b</code></sup>._ |
-| `a >> b` | Converts `a` and `b` to 32-bit integers, shifting the binary representation of the value `a` to the **right** by `b`-many bits. |
-
-# Bitwise Operators
-
-Bitwise operations are made up of two sub-expressions separated by one of
-`&`, `|`, or `^`.
-
-They have a higher [precedence](./lan-lexical-grammar.html#op-bitwise) than
-[Pipe Operators](#pipe-operators), but a lower precedence than
-[Bitwise Shift Operators](#bitwise-shift-operators).
-
-| Operator | Description |
-| -------- | ----------- |
-| `a & b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **AND** of every bit from `a` and `b`. e.g. `0b1110 & 0b0111` becomes `0b0110`, since: <br><br>1 AND 0 = 0<br>1 AND 1 = 1<br>1 AND 1 = 1<br>0 AND 1 = 0 |
-| `a &#124; b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **OR** of every bit from `a` and `b`. e.g. `0b1110 &#124; 0b0111` becomes `0b1111`, since: <br><br>1 OR 0 = 1<br>1 OR 1 = 1<br>1 OR 1 = 1<br>0 OR 1 = 1 |
-| `a ^ b` | Converts `a` and `b` to 32-bit integers, returning a new number whose binary representation is the logical **XOR** (exclusive **OR**) of every bit from `a` and `b`. e.g. `0b1110 ^ 0b0111` becomes `0b1001`, since: <br><br>1 XOR 0 = 1<br>1 XOR 1 = 0<br>1 XOR 1 = 0<br>0 XOR 1 = 1 |
 
 # Pipe Operators
 
@@ -346,7 +335,7 @@ let a
 let b = (a = 2)  -- a is 2, b is undefined
 ```
 
-The value of the right-hand-side expression will be written to left-hand-side
+The value of the right-hand-side expression will be written to the left-hand-side
 assignment target expression.
 
 | Operator | Description |

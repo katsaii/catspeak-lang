@@ -247,7 +247,7 @@ usage, and syntax:
       <th>Associativity</th>
     </tr>
     <tr>
-      <td><b>12<b></td>
+      <td><b>11<b></td>
       <td>
           <code>(a)</code><br>
           <code>[a,&nbsp;...]</code><br>
@@ -261,7 +261,7 @@ usage, and syntax:
       <td>N/a</td>
     </tr>
     <tr>
-      <td><b>11<b></td>
+      <td><b>10<b></td>
       <td>
           <code>a(...)</code><br>
           <code>new&nbsp;a(...)</code><br>
@@ -277,7 +277,7 @@ usage, and syntax:
       <td>Left&#8209;to&#8209;right&nbsp;→</td>
     </tr>
     <tr id="op-unary">
-      <td><b>10</b> <a href="./lan-expressions.html#unary-operators">Unary</a></td>
+      <td><b>9</b> <a href="./lan-expressions.html#unary-operators">Unary</a></td>
       <td>
           <code>!a</code><br>
           <code>-a</code><br>
@@ -291,7 +291,7 @@ usage, and syntax:
       <td>N/a</td>
     </tr>
     <tr id="op-mult">
-      <td><b>9</b> <a href="./lan-expressions.html#multiplicative-operators">Multiplicative</a></td>
+      <td><b>8</b> <a href="./lan-expressions.html#multiplicative-operators">Multiplicative</a></td>
       <td>
           <code>a&nbsp;*&nbsp;b</code><br>
           <code>a&nbsp;/&nbsp;b</code><br>
@@ -307,13 +307,31 @@ usage, and syntax:
       <td>Left&#8209;to&#8209;right&nbsp;→</td>
     </tr>
     <tr id="op-add">
-      <td><b>8</b> <a href="./lan-expressions.html#additive-operators">Additive</a></td>
+      <td><b>7</b> <a href="./lan-expressions.html#additive-operators">Additive</a></td>
       <td><code>a&nbsp;+&nbsp;b</code><br><code>a&nbsp;-&nbsp;b</code></td>
       <td>Addition<br>Subtraction</td>
       <td>Left&#8209;to&#8209;right&nbsp;→</td>
     </tr>
+    <tr id="op-bitwise">
+      <td><b>6</b> <a href="./lan-expressions.html#bitwise-operators">Bitwise</a></td>
+      <td>
+          <code>a&nbsp;&amp;&nbsp;b</code><br>
+          <code>a&nbsp;|&nbsp;b</code><br>
+          <code>a&nbsp;^&nbsp;b</code><br>
+          <code>a&nbsp;&lt;&lt;&nbsp;b</code><br>
+          <code>a&nbsp;&gt;&gt;&nbsp;b</code>
+      </td>
+      <td>
+          Bitwise <b>AND</b><br>
+          Bitwise <b>OR</b><br>
+          Bitwise <b>XOR</b><br>
+          Bitwise left shift<br>
+          Bitwise right shift
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
     <tr id="op-relation">
-      <td><b>7</b> <a href="./lan-expressions.html#relational-operators">Relational</a></td>
+      <td><b>5</b> <a href="./lan-expressions.html#relational-operators">Relational</a></td>
       <td>
           <code>a&nbsp;&lt;&nbsp;b</code><br>
           <code>a&nbsp;&lt;=&nbsp;b</code><br>
@@ -329,29 +347,9 @@ usage, and syntax:
       <td>Left&#8209;to&#8209;right&nbsp;→</td>
     </tr>
     <tr id="op-equal">
-      <td><b>6</b> <a href="./lan-expressions.html#equality-operators">Equality</a></td>
+      <td><b>4</b> <a href="./lan-expressions.html#equality-operators">Equality</a></td>
       <td><code>a&nbsp;==&nbsp;b</code><br><code>a&nbsp;!=&nbsp;b</code></td>
       <td>Equality =<br>Inequality ≠</td>
-      <td>Left&#8209;to&#8209;right&nbsp;→</td>
-    </tr>
-    <tr id="op-shift">
-      <td><b>5</b> <a href="./lan-expressions.html#bitwise-shift-operators">Bitwise (Shift)</a></td>
-      <td><code>a&nbsp;&lt;&lt;&nbsp;b</code><br><code>a&nbsp;&gt;&gt;&nbsp;b</code></td>
-      <td>Bitwise left shift<br>Bitwise right shift</td>
-      <td>Left&#8209;to&#8209;right&nbsp;→</td>
-    </tr>
-    <tr id="op-bitwise">
-      <td><b>4</b> <a href="./lan-expressions.html#bitwise-operators">Bitwise</a></td>
-      <td>
-          <code>a&nbsp;&amp;&nbsp;b</code><br>
-          <code>a&nbsp;|&nbsp;b</code><br>
-          <code>a&nbsp;^&nbsp;b</code>
-      </td>
-      <td>
-          Bitwise <b>AND</b><br>
-          Bitwise <b>OR</b><br>
-          Bitwise <b>XOR</b>
-      </td>
       <td>Left&#8209;to&#8209;right&nbsp;→</td>
     </tr>
     <tr id="op-pipe">

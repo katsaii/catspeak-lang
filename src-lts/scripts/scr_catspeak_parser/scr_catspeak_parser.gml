@@ -290,64 +290,19 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseOpPipe = function () {
-        var result = __parseOpBitwise();
+        var result = __parseOpEquality();
         while (true) {
             var peeked = lexer.peek();
             if (peeked == CatspeakToken.PIPE_RIGHT) {
                 lexer.next();
                 var lhs = result;
-                var rhs = __parseOpBitwise();
+                var rhs = __parseOpEquality();
                 result = ir.createCall(rhs, [lhs], lexer.getLocation());
             } else if (peeked == CatspeakToken.PIPE_LEFT) {
                 lexer.next();
                 var lhs = result;
-                var rhs = __parseOpBitwise();
-                result = ir.createCall(lhs, [rhs], lexer.getLocation());
-            } else {
-                return result;
-            }
-        }
-    };
-
-    /// @ignore
-    ///
-    /// @return {Struct}
-    static __parseOpBitwise = function () {
-        var result = __parseOpBitwiseShift();
-        while (true) {
-            var peeked = lexer.peek();
-            if (
-                peeked == CatspeakToken.BITWISE_AND ||
-                peeked == CatspeakToken.BITWISE_XOR ||
-                peeked == CatspeakToken.BITWISE_OR
-            ) {
-                lexer.next();
-                var op = __catspeak_operator_from_token(peeked);
-                var lhs = result;
-                var rhs = __parseOpBitwiseShift();
-                result = ir.createBinary(op, lhs, rhs, lexer.getLocation());
-            } else {
-                return result;
-            }
-        }
-    };
-
-    /// @ignore
-    ///
-    /// @return {Struct}
-    static __parseOpBitwiseShift = function () {
-        var result = __parseOpEquality();
-        while (true) {
-            var peeked = lexer.peek();
-            if (
-                peeked == CatspeakToken.SHIFT_LEFT ||
-                peeked == CatspeakToken.SHIFT_RIGHT
-            ) {
-                lexer.next();
-                var op = __catspeak_operator_from_token(peeked);
-                var lhs = result;
                 var rhs = __parseOpEquality();
-                result = ir.createBinary(op, lhs, rhs, lexer.getLocation());
+                result = ir.createCall(lhs, [rhs], lexer.getLocation());
             } else {
                 return result;
             }
@@ -380,7 +335,7 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseOpRelational = function () {
-        var result = __parseOpAdd();
+        var result = __parseOpBitwise();
         while (true) {
             var peeked = lexer.peek();
             if (
@@ -392,7 +347,7 @@ function CatspeakParser(lexer, builder) constructor {
                 lexer.next();
                 var op = __catspeak_operator_from_token(peeked);
                 var lhs = result;
-                var rhs = __parseOpAdd();
+                var rhs = __parseOpBitwise();
                 result = ir.createBinary(op, lhs, rhs, lexer.getLocation());
             } else {
                 return result;
@@ -400,6 +355,32 @@ function CatspeakParser(lexer, builder) constructor {
         }
     };
 
+
+    /// @ignore
+    ///
+    /// @return {Struct}
+    static __parseOpBitwise = function () {
+        var result = __parseOpAdd();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked == CatspeakToken.BITWISE_AND ||
+                peeked == CatspeakToken.BITWISE_XOR ||
+                peeked == CatspeakToken.BITWISE_OR ||
+                peeked == CatspeakToken.SHIFT_LEFT ||
+                peeked == CatspeakToken.SHIFT_RIGHT
+            ) {
+                lexer.next();
+                var op = __catspeak_operator_from_token(peeked);
+                var lhs = result;
+                var rhs = __parseOpAdd();
+                result = ir.createBinary(op, lhs, rhs, lexer.getLocation());
+            } else {
+                return result;
+            }
+        }
+    };
+    
     /// @ignore
     ///
     /// @return {Struct}
