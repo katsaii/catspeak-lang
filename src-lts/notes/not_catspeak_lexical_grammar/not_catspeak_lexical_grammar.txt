@@ -280,11 +280,13 @@ usage, and syntax:
       <td><b>9</b> <a href="./lan-expressions.html#unary-operators">Unary</a></td>
       <td>
           <code>!a</code><br>
+          <code>~a</code><br>
           <code>-a</code><br>
           <code>+a</code>
       </td>
       <td>
           Logical <b>NOT</b><br>
+          Bitwise <b>NOT</b><br>
           Unary minus (negation)<br>
           Unary plus
       </td>

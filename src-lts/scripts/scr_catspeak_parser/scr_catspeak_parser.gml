@@ -434,6 +434,7 @@ function CatspeakParser(lexer, builder) constructor {
         var peeked = lexer.peek();
         if (
             peeked == CatspeakToken.NOT ||
+            peeked == CatspeakToken.BITWISE_NOT ||
             peeked == CatspeakToken.SUBTRACT ||
             peeked == CatspeakToken.PLUS
         ) {
