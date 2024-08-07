@@ -146,6 +146,8 @@ def write_section(sb, section, depth):
                 write_richtext(sb, section.title_content)
             else:
                 sb.write(section.title)
+            with sb.link("#", class_="heading-top"):
+                sb.write("top ^")
         write_richtext(sb, section.content)
         for subsection in section.subsections:
             write_section(sb, subsection, depth + 1)

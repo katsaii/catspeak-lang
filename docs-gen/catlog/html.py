@@ -434,11 +434,20 @@ class HTMLCodegen(BasicCodegen):
             padding-top : 2rem;
         }
 
-        .heading > a {
+        .heading > a:not(.heading-top) {
             color : var(--c-fg-light);
             font-family : var(--f-mono);
             font-weight : bold;
             font-size : 1.25em;
+            text-decoration : none;
+        }
+
+        .heading > .heading-top {
+            float : right;
+            color : var(--c-fg-2);
+            font-family : monospace;
+            font-weight : bold;
+            font-size : 0.5em;
             text-decoration : none;
         }
 
