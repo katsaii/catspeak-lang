@@ -158,16 +158,24 @@ class HTMLCodegen(BasicCodegen):
     @BasicCodegen.block
     def code_block(self, **attrs):
         with self.tag("pre", **attrs):
+            lang_data = None
+            if lang := attrs.get("lang"):
+                if lang == "gml":
+                    lang_data = "GameMaker Language", ".gml", highlight.tokenise_gml
+                elif lang == "meow":
+                    lang_data = "Catspeak", ".meow", highlight.tokenise_meow
+            highlight_prev = self.highlighter
+            self.highlighter = None
+            if lang_data:
+                lang_name, lang_ext, lang_highlighter = lang_data
+                with self.tag("div", class_="code-triangle"):
+                    pass
+                with self.tag("div", class_="code-title"):
+                    self.write(f"{lang_name} ({lang_ext})")
+                self.highlighter = lang_highlighter
             with self.tag("code", **attrs):
-                highlight_prev = self.highlighter
-                self.highlighter = None
-                if lang := attrs.get("lang"):
-                    if lang == "gml":
-                        self.highlighter = highlight.tokenise_gml
-                    elif lang == "meow":
-                        self.highlighter = highlight.tokenise_meow
                 yield
-                self.highlighter = highlight_prev
+            self.highlighter = highlight_prev
 
     def code_block_lang(self, lang):
         @BasicCodegen.block
@@ -238,7 +246,7 @@ class HTMLCodegen(BasicCodegen):
             --c-bg-dark : #2024240f; /* #ecebeb; */
             --c-fg : #202424;
             --c-fg-light : #cacecf;
-            --c-fg-2 : #526666;
+            --c-fg-2 : #1c5353; /* #526666; */
             --c-accent : #007ffd;
             --c-stab : #fff2dc;
 
@@ -246,6 +254,7 @@ class HTMLCodegen(BasicCodegen):
             --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
 
             --pad : 1rem;
+            --code-title-height : 20px;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -566,6 +575,24 @@ class HTMLCodegen(BasicCodegen):
         }
 
         .code * { color : var(--c-fg) }
+
+        .code-triangle {
+            display : inline;
+            width : 0;
+            height : 0;
+            border-bottom : var(--code-title-height) solid var(--c-fg-light);
+            border-left : var(--code-title-height) solid transparent;
+        }
+
+        .code-title {
+            height : var(--code-title-height);
+            padding : 2px;
+            background-color : var(--c-fg-light);
+            margin-left : var(--code-title-height);
+            font-family : monospace;
+            font-weight : bold;
+            color : var(--c-fg-2);
+        }
 
         .kw-com { color : #080!important; font-style : italic }
         .kw-key { color : #34347e!important; font-weight : bold }
