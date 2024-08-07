@@ -46,6 +46,7 @@ class Section:
     title : str = "Section"
     title_content : ... = None
     content : ... = None
+    source_url : ... = None
     subsections : ... = field(default_factory=list)
 
 @dataclass

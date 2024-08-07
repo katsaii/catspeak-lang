@@ -251,9 +251,9 @@ usage, and syntax:
         <code>{ k : v, ... }</code><br>
     </td>
     <td>
-        Grouping<br>
-        Array initialisation<br>
-        Struct/object initialisation
+        <a href="./lan-expressions.html#grouped-expressions">Grouping</a><br>
+        <a href="./lan-expressions.html#array-expressions">Array initialisation</a><br>
+        <a href="./lan-expressions.html#struct-expressions">Struct/object initialisation</a>
     </td>
     <td>N/a</td>
   </tr>
@@ -265,10 +265,10 @@ usage, and syntax:
         <code>a[i]</code>
     </td>
     <td>
-        Function call<br>
-        Constructor function call<br>
-        Member access<br>
-        Collection indexing (computed member access)<br>
+        <a href="./lan-expressions.html#call-expressions">Function call</a><br>
+        <a href="./lan-expressions.html#call-expressions">Constructor function call</a><br>
+        <a href="./lan-expressions.html#accessor-expressions">Member access</a><br>
+        <a href="./lan-expressions.html#accessor-expressions">Collection indexing</a> (computed member access)<br>
     </td>
     <td>Left-to-right →</td>
   </tr>
@@ -279,11 +279,11 @@ usage, and syntax:
         <code>+a</code>
     </td>
     <td>
-        Logical <b>NOT</b><br>
-        Unary minus (negation)<br>
-        Unary plus
+        <a href="./lan-expressions.html#unary-operators">Logical <b>NOT</b></a><br>
+        <a href="./lan-expressions.html#unary-operators">Unary minus</a> (negation)<br>
+        <a href="./lan-expressions.html#unary-operators">Unary plus</a>
     </td>
-    <td>Right-to-left ←</td>
+    <td>N/a</td>
   </tr>
   <tr>
     <td>
@@ -377,5 +377,15 @@ usage, and syntax:
         <a href="./lan-expressions.html#assign-add">Addition assignment</a>
     </td>
     <td>Right-to-left ←</td>
+  </tr>
+  <tr>
+    <td>N/a</td>
+    <td>
+      Control flow (e.g.
+        <a href="./lan-expressions.html#return-expressions"><code>return</code></a>,
+        <a href="./lan-expressions.html#if-expressions"><code>if</code></a>, and
+        <a href="./lan-expressions.html#while-expressions"><code>while</code></a>)
+    </td>
+    <td>N/a</td>
   </tr>
 </table>
