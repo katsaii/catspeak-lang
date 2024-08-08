@@ -405,7 +405,7 @@ class HTMLCodegen(BasicCodegen):
 
         #contents,
         #chapters {
-            overflow-y : scroll;
+            overflow-y : auto;
             max-height : 75vh;
         }
 
