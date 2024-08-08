@@ -27,7 +27,7 @@ NaN           -- not a number
 
 # Grouped Expressions
 
-A grouped expression wraps a single sub-expression between `(` and `)`,
+Grouped expressions wrap a single sub-expression between `(` and `)`,
 evaluating the sub-expression. This is typically used to make the precedence of
 the inner expression clear:
 
@@ -161,12 +161,12 @@ vec.x = 10
 vec.y = vec.x + 12
 ```
 
-Depending on which side of an [Assignment Expression](#assignment-expressions)
+Depending on which side of an [Assignment Operator](#assignment-operators)
 the accessor expression is on, determines whether to read or assign a value.
 
 # Unary Operators
 
-Unary operations are made up of a single sub-expression prefixed by one of
+Unary operators are made up of a single sub-expression prefixed by one of
 `!`, `~`, `-`, or `+`.
 
 They have the highest [precedence](./lan-lexical-grammar.html#op-unary) of all
@@ -189,11 +189,11 @@ operators, even greater than the [Multiplicative Operators](#multiplicative-oper
 
 # Multiplicative Operators
 
-Multiplicative operations are made up of two sub-expressions separated by one of
+Multiplicative operators are made up of two sub-expressions separated by one of
 `*`, `/`, `//`, or `%`.
 
 They have the highest [precedence](./lan-lexical-grammar.html#op-mult) of all
-binary operators:
+the binary operators:
 
 ```meow
 a + b * c  -- same as a + (b * c), NOT (a + b) * c
@@ -211,7 +211,7 @@ a * b / c * d  -- same as ((a * b) / c) * d, NOT (a * b) / (c * d)
 
 # Additive Operators
 
-Additive operations are made up of two sub-expressions separated by one of
+Additive operators are made up of two sub-expressions separated by one of
 `+` or `-`.
 
 They have higher [precedence](./lan-lexical-grammar.html#op-add)
@@ -231,7 +231,7 @@ a + b - c + d  -- same as ((a + b) - c) + d, NOT (a + b) - (c + d)
 
 # Bitwise Operators
 
-Bitwise operations are made up of two sub-expressions separated by one of
+Bitwise operators are made up of two sub-expressions separated by one of
 `&`, `|`, `^`, `<<`, or `>>`.
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-bitwise) than
@@ -249,7 +249,7 @@ They have a higher [precedence](./lan-lexical-grammar.html#op-bitwise) than
 
 # Relational Operators
 
-Relational operations are made up of two sub-expressions separated by one of
+Relational operators are made up of two sub-expressions separated by one of
 `<`, `<=`, `>`, or `>=`.
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-relation) than
@@ -272,7 +272,7 @@ a < b < c  -- same as (a < b) < c, NOT (a < b) and (b < c)
 
 # Equality Operators
 
-Equality operations are made up of two sub-expressions separated by one of `==`
+Equality operators are made up of two sub-expressions separated by one of `==`
 or `!=`.
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-equal) than
@@ -293,7 +293,7 @@ a == b == c  -- same as ((a == b) == c), NOT (a == b) and (b == c)
 
 # Pipe Operators
 
-Pipe operations are made up of two sub-expressions separated by one of
+Pipe operators are made up of two sub-expressions separated by one of
 `<|` or `|>`.
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-pipe) than
@@ -307,11 +307,11 @@ They have a higher [precedence](./lan-lexical-grammar.html#op-pipe) than
 
 # Logical Operators
 
-Logical operations are made up of two sub-expressions separated by one of
+Logical operators are made up of two sub-expressions separated by one of
 `and`, `or`, or `xor`.
 
 They have a higher [precedence](./lan-lexical-grammar.html#op-logical) than
-[Assignment Expressions](#assignment-expressions), but a lower precedence than
+[Assignment Operators](#assignment-operators), but a lower precedence than
 [Pipe Operators](#pipe-operators). Additionally, the `and` operator takes precedence over `or` and `xor`:
 
 ```meow
@@ -327,9 +327,9 @@ a and b or c and d  -- same as (a and b) or (c and d), NOT ((a and b) or c) and 
 | `a or b` | Converts `a` to a Boolean value, returning `b` if `a` evaluates to False. Returns `a` otherwise. <br><br> _Just like the `and` operator, `b` is not evaluated if `a` evaluates to True._ |
 | `a xor b` | Converts `a` and `b` to a Boolean values, returning `true` if the values of `a` and `b` are different. Returns `false` otherwise. <br><br> _Unlike `and` and `or`, the `xor` operator is **not short-circuiting**._ |
 
-# Assignment Expressions
+# Assignment Operators
 
-Assignment expressions are made up of two sub-expressions separated by one of
+Assignment operators are made up of two sub-expressions separated by one of
 `=`, `*=`, `/=`, `-=`, or `+=`.
 
 They have the lowest [precedence](./lan-lexical-grammar.html#op-assign) of all
@@ -338,7 +338,7 @@ binary operators:
 ```meow
 a = b = c  -- same as a = (b = c), NOT a = c; b = c
 
--- the result of an assignment expression is always 'undefined'
+-- the result of an assignment operator is always 'undefined'
 let a
 let b = (a = 2)  -- a is 2, b is undefined
 ```
@@ -356,3 +356,67 @@ assignment target expression.
 
 Valid assignment targets for the expression `a` include [Identifiers](./lan-lexical-grammar.html#identifiers)
 (if they refer to a writable variable), and [Accessor Expressions](#accessor-expression).
+
+# If Expressions
+
+TODO
+
+# While Loops
+
+TODO
+
+# With Loops
+
+TODO
+
+# Continue Expressions
+
+The `continue` expression will immediately jump to the start of the current
+[While Loop](#while-loops) or [With Loop](#with-loops), entering the next
+iteration of the loop if one exists.
+
+```meow
+let n = 10
+while n > 0 {
+  n -= 1
+  continue  -- will skip the remainder of the loop
+  n += 1    -- this line will never be evaluated
+}
+```
+
+# Break Expressions
+
+TODO
+
+# Block Expressions
+
+TODO
+
+# Function Expressions
+
+TODO
+
+# Return Expressions
+
+Return expressions start with the `return` keyword, optionally followed by a
+single sub-expression (the _return value_). A return expression will
+immediately terminate the current function call, using the return value as the
+result of the function call.
+
+```meow
+let max = fun (a, b) {
+    if (a > b) {
+        return a
+    }
+    return b
+}
+
+let max_of_12_9 = max(12, 9)  -- 12
+let max_of_5_8 = max(5, 8)    -- 8
+```
+
+If no return value exists, then `undefined` is returned instead.
+
+# Match Expressions
+
+TODO

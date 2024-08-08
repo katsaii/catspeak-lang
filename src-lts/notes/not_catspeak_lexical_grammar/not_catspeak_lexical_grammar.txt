@@ -209,7 +209,7 @@ cannot be used as variables; these are:
  - `and`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
  - `or`        See [Logical Expressions](./lan-expressions.html#logical-expressions).
  - `xor`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
- - `do`        See [Do Expressions](./lan-expressions.html#do-expressions).
+ - `do`        See [Block Expressions](./lan-expressions.html#block-expressions).
  - `if`        See [If Expressions](./lan-expressions.html#if-expressions).
  - `else`      See [If Expressions](./lan-expressions.html#if-expressions).
  - `while`     See [While Expressions](./lan-expressions.html#while-expressions).
@@ -379,7 +379,7 @@ usage, and syntax:
       <td>Left&#8209;to&#8209;right&nbsp;→</td>
     </tr>
     <tr id="op-assign">
-      <td><b>1</b> <a href="./lan-expressions.html#assignment-expressions">Assignment</a></td>
+      <td><b>1</b> <a href="./lan-expressions.html#assignment-operators">Assignment</a></td>
       <td>
           <code>a&nbsp;=&nbsp;b</code><br>
           <code>a&nbsp;*=&nbsp;b</code><br>
