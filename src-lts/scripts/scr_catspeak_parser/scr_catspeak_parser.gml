@@ -130,7 +130,8 @@ function CatspeakParser(lexer, builder) constructor {
             var value;
             if (
                 peeked == CatspeakToken.SEMICOLON ||
-                peeked == CatspeakToken.BRACE_RIGHT
+                peeked == CatspeakToken.BRACE_RIGHT ||
+                peeked == CatspeakToken.LET
             ) {
                 value = ir.createValue(undefined, lexer.getLocation());
             } else {
