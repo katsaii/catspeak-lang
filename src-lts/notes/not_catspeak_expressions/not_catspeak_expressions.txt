@@ -386,7 +386,37 @@ while n > 0 {
 
 # Break Expressions
 
-TODO
+The `break` expression will immediately terminate the execution of the current
+[While Loop](#while-loops) or [With Loop](#with-loops), skipping the rest of
+the current iteration.
+
+```meow
+let n = 0
+while true {
+  n += 1
+  if n > 10 {
+    -- break out of the loop when the number is greater than 10
+    break
+  }
+}
+
+show_message(n)  -- n = 11
+```
+
+Break expressions start with the `break` keyword, optionally followed by a
+single sub-expression. If this sub-expression is supplied then then it is used
+as the result of loop it broke out of:
+
+```meow
+-- loop until some random number greater than 75 is generated, then
+-- store it inside of the 'random_result' variable
+let random_result = while true {
+  let n = irandom_range(0, 100)
+  if n > 75 {
+    break n
+  }
+}
+```
 
 # Block Expressions
 
