@@ -439,6 +439,8 @@ class HTMLCodegen(BasicCodegen):
             font-family : var(--f-prop);
         }
 
+        section li { padding-top : 10px }
+
         #chapters li > a,
         #contents li > a { text-decoration : none!important }
 

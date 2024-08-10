@@ -49,16 +49,22 @@ the Catspeak programming language:
 
  - **Variables**:
 
-   - Local variables in Catspeak are declared using `let` instead of `var`.
+   - Local variables in Catspeak are **declared using `let`**, not `var`.
+     (See [Let Statements](./lan-expressions.html#let-statements))
 
-   - Local variables and function definitions are [**not hoisted**](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting) _(using local variables and functions before they are defined)_:
+   - Local variables and function definitions are **not [hoisted](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)**;
+     that is, _using local variables and functions before they are defined_.
+     (See [Let Statements](./lan-expressions.html#let-statements) and [Function Expressions](./lan-expressions.html#function-expressions))
+
      ```meow
      show_mesage(my_var)  -- does NOT print '2'
 
      let my_var = 2
      ```
 
-   - Local variables can only be used inside of the block they are defined in:
+   - Local variables can **only be used inside of the block they are defined in**.
+     (See [Let Statements](./lan-expressions.html#let-statements))
+
      ```meow
      if condition {
         let a = "hello chat"
@@ -66,9 +72,12 @@ the Catspeak programming language:
      return a  -- does NOT refer to the local variable 'a' here
      ```
 
-   - Global variables are not accessible by default.
+   - **Global variables are not accessible** by default. There is no built-in
+     `global` object, this must be explicitly exposed by the modding API.
 
-   - To access instance variables you need to explicitly write `self.`
+   - To access instance variables you need to **explicitly write `self`**.
+     (See [Self Expressions](./lan-expressions.html#self-expressions))
+
      ```meow
      let a = item       -- 'item' refers to a Catspeak variable here
      let b = self.item  -- 'item' refers to a GML instance variable here
@@ -76,18 +85,28 @@ the Catspeak programming language:
 
  - **Syntax**:
 
-   - `++` and `--` are **not valid operators** use `i += 1` and `i -= 1` instead
+   - `++` and `--` are **not valid operators** use `i += 1` and `i -= 1` instead.
+     (See [Operators](./lan-lexical-grammar.html#operators))
 
-   - The ternary operator `condition ? a : b` does not exist in Catspeak, instead
+   - Catspeak reserves **`--` for comments**.
+     (See [Operators](./lan-lexical-grammar.html#operators) and [Comments](./lan-lexical-grammar.html#comments))
+
+   - Catspeak reserves `//` for **integer division**.
+     (See [Operators](./lan-lexical-grammar.html#operators) and [Comments](./lan-lexical-grammar.html#comments))
+
+   - The ternary operator **`condition ? a : b` does not exist** in Catspeak, instead
      the [If Expression](./lan-expressions.html#if-expressions) should be used
      `if a > b { a } else { b }`
 
-   - `for`, `repeat`, and `do` loops do not exist. Instead you should use
-     `while` loops.
+   - **`for`, `repeat`, and `do` loops do not exist**. Instead you should use
+     [While Loops](./lan-expressions.html#while-loops).
 
-   - There are no `[@` and `[$` accessors, both structs and arrays can be
+   - **`switch` does not exist**. Instead you should use [Match Expressions](./lan-expressions.html#while-loops).
+
+   - There are **no `[@` and `[$` accessors**, both structs and arrays can be
      indexed using `a[i]`.
+     (See [Accessor Expressions](./lan-expressions.html#accessor-expressions))
 
-   - There are no `[#`, `[?`, and `[|` accessors. Data structures should use
+   - There are **no `[#`, `[?`, and `[|` accessors**. Data structures should use
      functions like `ds_list_get` and `ds_list_set`, if exposed by the modding
      API.

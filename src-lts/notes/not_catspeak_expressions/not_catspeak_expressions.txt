@@ -591,4 +591,51 @@ If no return value exists, then `undefined` is returned instead.
 
 # Match Expressions
 
-TODO
+Match expressions start with the `match` keyword, followed by a
+single sub-expression (the _condition_), and then zero or more _match cases_
+wrapped between `{` and `}`:
+
+```meow
+let colour
+match player {
+  case "Dave" { colour = #e00707 }
+  case "Rose" { colour = #b536da }
+  case "Dash" { colour = #f2a400 }
+  case "Roxy" { colour = #ff6ff2 }
+  else        { show_message("invalid player") }
+}
+```
+
+A match case can be one of two things:
+
+ - A sequence of cases starting with the `case` keyword, followed by a single
+   sub-expression representing the expected value of the match condition.
+
+ - Or the `else` keyword, representing the _default case_.
+
+Every match case ends in a [block](#block-expressions) containing code to run
+if that case is satisfies. The default case only runs its code if no other case
+is satisfied.
+
+For most intents and purposes, match expressions are syntactic sugar for [If Expressions](#if-expressions):
+
+```meow
+-- match expression
+let result = match chr {
+  case 'A' { some_a() }
+  case 'B' { some_b() }
+  case 'C' { some_c() }
+  else     { some_else() }
+}
+
+-- equivalent if expression
+let result = if chr == 'A' {
+  some_a()
+} else if chr == 'B' {
+  some_b()
+} else if chr == 'C' {
+  some_c()
+} else {
+  some_else()
+}
+```
