@@ -56,18 +56,76 @@ if condition {
 return result
 ```
 
+# Dynamically Scoped Local Variables
+
+If an variable is declared without using `let`, then it is interpreted as a
+local variable with **dynamic scope**. Unlike variables defined using `let`,
+dynamically scoped variables can be read from and written to outside of the
+scope they were defined in. This makes them useful tools when working with
+**recursive functions**:
+
+```meow
+is_odd = fun (n) {
+    if n < 1 {
+        return false
+    } else {
+        return !is_odd(n - 1)
+    }
+}
+```
+
+These resemble global variables found in GML, but to avoid confusion a
+different name is being used. **These are not GML global variables**, all
+variables in Catspeak (whether or not they are defined using `let`) are
+constrained to the source file they are defined in.
+
+If there exists a dynamic variable and a scoped variable with the same name,
+then the scoped variable takes priority:
+
+```meow
+player = "Serket"
+show_message(player)  -- shows "Serket"
+
+if condition {
+    let player = "Vantas"
+    show_message(player)  -- shows "Vantas"
+}
+
+show_message(player)  -- also shows "Serket", since the variable inside
+                      -- of the if expression has gone out of scope
+```
+
 # Expression Statements
 
-Most often than not, an expression statement will evaluate its [expression](./lan-expressions.html)
+Because Catspeak is an expression-oriented language, everything that is not a
+[variable declaration](#let-statements) is an [expression](./lan-expressions.html)
+and can return a value. This also includes [`if` conditionals](./lan-expressions.html#if-expressions)
+and [`while` loops](./lan-expressions.html#while-loops):
+
+```meow
+let result = while true {
+  let n = irandom_range(0, 100)
+  if n > 75 {
+    break n
+  }
+}
+
+let use_result = choose(true, false)  -- coin flip
+show_message(if use_result { result } else { 0 })
+```
+
+More often than not, an expression statement will evaluate its expression
 and ignore the result. There are exceptions to this rule, where the result of a
-**block** will be the value of the last expression statement. For example, the
-value returned from the following [Function Expression](./lan-expressions.html#function-expression) will be "10":
+[block](./lan-expressions.html#block-expressions) will be the value of its final
+expression statement. For example, the value returned from the following
+[Function Expression](./lan-expressions.html#function-expressions) will be "10":
 
 ```meow
 let get_value = fun () {
   let a = 2;
   let b = 5;
-  a * b
+  a * b  -- this is the last expression in the function body
+         -- so its returned as the result of the function when called
 }
 ```
 
