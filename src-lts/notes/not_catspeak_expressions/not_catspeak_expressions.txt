@@ -359,7 +359,41 @@ Valid assignment targets for the expression `a` include [Identifiers](./lan-lexi
 
 # If Expressions
 
-TODO
+Simple if expressions start with the `if` keyword, followed by a single
+sub-expression (the _condition_), and finally a [block](#block-expressions)
+containing code to run when the condition evaluates to True:
+
+```meow
+if a > b {
+  show_message("a is greater than b")
+}
+```
+
+An optional `else` keyword can be used, followed by another block or if
+expression, to handle the case where the condition evaluates to False:
+
+```meow
+if a > b {
+  show_message("a is greater than b")
+} else if a < b {
+  show_message("a is less than b")
+} else {
+  show_message("a and b are equal")
+}
+```
+
+Unlike GML, only a block or another if expression can follow the `else` keyword.
+So shortcuts like `else while` or `else do` are not allowed.
+
+As mentioned on the page about [Statements](./lan-statements.html), almost all
+statements found in GML are allowed to be used as expressions in Catspeak. This
+allows Catspeak to imitate **ternary operators** from GML:
+
+```meow
+let max = if a > b { a } else { b }
+
+-- instead of a > b ? a : e
+```
 
 # While Loops
 
@@ -420,11 +454,69 @@ let random_result = while true {
 
 # Block Expressions
 
-TODO
+Blocks in Catspeak are made up of a sequence of [Statements](./lan-statements.html)
+wrapped between `{` and `}`. Many expressions (such as [If Expressions](#if-expressions),
+[While Loops](#while-loops), and [Function Expressions](#function-expressions))
+use blocks for the purposes of control flow.
+
+Block expressions start with the `do` keyword
+(_not to be confused with `do` loops from GML_) followed by a block:
+
+```meow
+let r = do {
+  let a = 1
+  let b = 2
+  a + b  -- a + b is used as the value of the whole block expression
+}
+
+-- r is 3 here, because a + b = 3
+```
+
+Each statement in a block is evaluated in sequence from top-to-bottom, with the
+last value (if one exists) being used as the result. If the last statement of
+a block expression is not an expression, then the result of the block is `undefined`.
+
+Unlike other expressions which use blocks, block expressions have no control
+flow mechanism. In many cases, using a block expression or not has no real
+impact on the behaviour of the code:
+
+```meow
+-- with a block expression
+do {
+  let message = "five pebbles"
+  something()
+  something_else(message)
+}
+another_thing()
+
+-- without a block expression
+let message = "five pebbles"
+something()
+something_else(message)
+another_thing()
+```
+
+However, reiterating what was said in the section on [Let Statements](./lan-statements.html#let-statements),
+all local variables defined within a block will become inaccessible after the
+block has ended. This is different from GML variables, whose definitions are
+hoisted.
 
 # Function Expressions
 
-TODO
+Function expressions start with the `fun` keyword, followed by an optional
+sequence of comma-separated identifiers (the _parameters_) between `(` and `)`,
+and finally a single [block](#block-expressions) containing the _function body_:
+
+```meow
+let add = fun (a, b) {
+  return a + b
+}
+
+show_message(add(1, 2))  -- prints '3'
+```
+
+Unlike GML, **all functions in Catspeak are anonymous**. There is no such thing
+as a "named function" (i.e. `function foo() { }` in GML). 
 
 # Return Expressions
 

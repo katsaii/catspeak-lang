@@ -76,6 +76,12 @@ the Catspeak programming language:
 
  - **Syntax**:
 
+   - `++` and `--` are **not valid operators** use `i += 1` and `i -= 1` instead
+
+   - The ternary operator `condition ? a : b` does not exist in Catspeak, instead
+     the [If Expression](./lan-expressions.html#if-expressions) should be used
+     `if a > b { a } else { b }`
+
    - `for`, `repeat`, and `do` loops do not exist. Instead you should use
      `while` loops.
 
