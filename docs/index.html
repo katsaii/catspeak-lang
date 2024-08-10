@@ -15,15 +15,34 @@
 
       :root {
         --c-bg : #f9f9f9;
+        --c-bg-dark : #2024240f; /* #ecebeb; */
         --c-fg : #202424;
-        --c-fg-2 : #526666;
         --c-fg-light : #cacecf;
+        --c-fg-2 : #1c5353; /* #526666; */
         --c-accent : #007ffd;
+        --c-stab : #fff2dc;
 
         --f-mono : "Courier New", Courier, monospace;
         --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
 
+        --pad : 1rem;
+        --code-title-height : 20px;
+
         font-size : 0.8em;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --c-bg : #1b1e1f;
+          --c-bg-dark : #d3cfc90f; /* #232627; */
+          --c-fg : #d3cfc9;
+          --c-fg-light : #3e4346;
+          --c-fg-2 : #a2947d;
+          --c-accent : #34a4ff;
+          --c-stab : #362c2c;
+
+          color-scheme : dark;
+        }
       }
 
       body {
@@ -132,9 +151,23 @@
 
       .code * { color : var(--c-fg) }
 
-      .kw-key { font-weight : bold }
-      .kw-com { color : var(--c-fg-2)!important }
-      .kw-val { color : var(--c-accent)!important }
+      .kw-com { color : #080!important; font-style : italic }
+      .kw-key { color : #34347e!important; font-weight : bold }
+      .kw-val { color : #fa3232!important }
+      .kw-var { opacity : 0.9 }
+      .kw-fun { color : #808!important }
+      .kw-typ { color : #7b7c26!important; font-weight : bold }
+      .kw-mac { color : #ff2558!important; font-weight : bold }
+
+      @media (prefers-color-scheme: dark) {
+          .kw-com { color : #416e41!important }
+          .kw-key { color : #5c5c9b!important; font-weight : bold }
+          .kw-val { color : #c78888!important }
+          .kw-var { opacity : 0.9 }
+          .kw-fun { color : #8f5c8f!important }
+          .kw-typ { color : #7b7c26!important; font-weight : bold }
+          .kw-mac { color : #a72555!important; font-weight : bold }
+      }
     </style>
   </head>
   <body>
@@ -166,8 +199,8 @@
 
 step = <span class="kw-key">fun</span> (inst) {
   <span class="kw-com">-- update player position using WASD</span>
-  <span class="kw-key">let</span> dirX = keyboard_check(<span class="kw-val">'D'</span>) - keyboard_check(<span class="kw-val">'A'</span>)
-  <span class="kw-key">let</span> dirY = keyboard_check(<span class="kw-val">'S'</span>) - keyboard_check(<span class="kw-val">'W'</span>)
+  <span class="kw-key">let</span> dirX = <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'D'</span>) - <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'A'</span>)
+  <span class="kw-key">let</span> dirY = <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'S'</span>) - <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'W'</span>)
 
   inst.x += dirX * speed
   inst.y += dirY * speed
@@ -175,7 +208,7 @@ step = <span class="kw-key">fun</span> (inst) {
 
 draw = <span class="kw-key">fun</span> (inst) {
   <span class="kw-com">-- draw the player</span>
-  draw_sprite(spr_player, <span class="kw-val">0</span>, inst.x, inst.y)
+  <span class="kw-fun">draw_sprite</span>(spr_player, <span class="kw-val">0</span>, inst.x, inst.y)
 }</div>
       </article>
     </div>
