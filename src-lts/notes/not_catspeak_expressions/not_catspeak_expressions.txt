@@ -25,6 +25,22 @@ player_name   -- variable identifier
 NaN           -- not a number
 ```
 
+# Self Expressions
+
+`self` is a special built-in value which refers to the current context a piece
+of code is being executed in. For example, the current GML instance, or current
+struct a method is bound to.
+
+This behaves similarly to `self` from GML and `this` from JavaScript. However,
+unlike GML `self` is **required** in order to access instance variables:
+
+```meow
+my_var       -- this refers to a LOCAL variable called 'my_var'
+self.my_var  -- this refers to an INSTANCE variable on self called 'my_var'
+
+-- they are NOT the same
+```
+
 # Grouped Expressions
 
 Grouped expressions wrap a single sub-expression between `(` and `)`,
@@ -397,11 +413,45 @@ let max = if a > b { a } else { b }
 
 # While Loops
 
-TODO
+While loops start with the `while` keyword, followed by a single
+sub-expression (the _condition_), and finally a [block](#block-expressions)
+containing code to run whilst the condition evaluates to True:
+
+```meow
+-- counts down from 100
+let n = 100
+while n > 0 {
+  show_message(n)
+  n -= 1
+}
+```
+
+[Continue Expressions](#continue-expressions) and [Break Expressions](#break-expressions)
+are also valid from within while loops, allowing for a loop iteration to be
+skipped using `continue` or to break out of the loop early using `break`.
 
 # With Loops
 
-TODO
+With loops behave similarly to GML. They start with the `with` keyword, followed
+by a single sub-expression (the _context_), and finally a [block](#block-expressions)
+containing code to run in that context. This basically modifies the value
+returned by [Self Expressions](#self-expressions) to instead return the context:
+
+```meow
+let vec = { x : 1, y : 2 }
+with vec {
+  show_message(self.x * self.y)  -- 'self' here refers to the 'vec' struct
+}
+```
+
+Unlike GML, **the `self` keyword is not optional**.
+
+[Continue Expressions](#continue-expressions) and [Break Expressions](#break-expressions)
+are also valid from within while loops, allowing for a loop iteration to be
+skipped using `continue` or to break out of the loop early using `break`. These
+only really become useful when using an [GML object asset](https://manual.gamemaker.io/monthly/en/Quick_Start_Guide/Objects_And_Instances.htm)
+as the context, as it will loop over every active instance of that object that
+exists in the current room.
 
 # Continue Expressions
 
