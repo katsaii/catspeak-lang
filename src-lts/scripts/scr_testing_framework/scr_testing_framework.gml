@@ -166,8 +166,11 @@ function Test(name) constructor {
         return testCase;
     };
 
+    self.currentTestCase = 0;
     __makeTestCaseStruct = function () {
+        currentTestCase += 1;
         return {
+            testCaseIdx : currentTestCase,
             idx : -1,
             fails : fails,
             failed : false,
@@ -175,7 +178,7 @@ function Test(name) constructor {
                 failed = true;
                 if (idx < 0) {
                     idx = array_length(fails);
-                    fails[@ idx] = __cat(msg);
+                    fails[@ idx] = __cat("#", testCaseIdx, " ", msg);
                 } else {
                     fails[@ idx] = __cat(fails[idx], " + ", msg);
                 }

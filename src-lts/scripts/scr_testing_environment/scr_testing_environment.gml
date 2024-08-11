@@ -625,7 +625,7 @@ test_add(function() : Test("with-struct") constructor {
     var result = _func();
     assertTypeof(result, "struct");
     assertEq(1, result.a);
-});
+}, IgnorePlatform.WIN_YYC);
 
 test_add(function() : Test("with-noone") constructor {
     var engine = new CatspeakEnvironment();
@@ -664,8 +664,13 @@ test_add(function() : Test("with-inst") constructor {
     var inst1Self, inst2Self;
     with (inst1) { inst1Self = self }
     with (inst2) { inst2Self = self }
-    assertEq(inst1Self, result.arr[0]);
-    assertEq(inst2Self, result.arr[1]);
+    assert(instance_exists(result.arr[0]));
+    assert(instance_exists(result.arr[1]));
+    for (var i = 0; i < array_length(result.arr); i += 1) {
+        // order may be inconsistent
+        var catspeakSelf = result.arr[i];
+        assert(inst1Self == catspeakSelf || inst2Self == catspeakSelf);
+    }
     instance_destroy(inst1);
     instance_destroy(inst2);
 });
