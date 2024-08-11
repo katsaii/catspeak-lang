@@ -66,10 +66,10 @@ Numbers may also contain underscores `_` to improve readability. For example,
 `1_000` is the same as `1000`, and `0b0111_1000` is the same as `0b01111000`.
 
 ```meow
-1_000_000    -- integer number
-6.2831       -- fractional number
-0b0110       -- binary number
-0xDEAD_BEEF  -- hexadecimal number
+1_000_000   -- integer number
+6.2831      -- fractional number
+0b0110      -- binary number
+0xDEAD_BEEF -- hexadecimal number
 ```
 
 # Colour Codes
@@ -103,9 +103,9 @@ If a colour channel is only one character wide `R`, then it is repeated as `RR`.
 For example, the colour `#1AF` is the same as the colour `#11AAFF`.
 
 ```meow
-#A83256  -- represents the colour rbg(168, 50, 86)
-#FAE     -- represents the colour rbg(255, 170, 238)
-#FFAAEE  -- ALSO represents the colour rbg(255, 170, 238)
+#A83256 -- represents the colour rbg(168, 50, 86)
+#FAE    -- represents the colour rbg(255, 170, 238)
+#FFAAEE -- ALSO represents the colour rbg(255, 170, 238)
 ```
 
 # Character Literals
@@ -125,7 +125,7 @@ Character literals are converted into numbers by the Catspeak programming langua
 and as a result you can do arithmetic on them:
 
 ```meow
-'A' + 1 == 'B'  -- since 'A' == 65, 'B' == 66, and 65 + 1 == 66
+'A' + 1 == 'B' -- since 'A' == 65, 'B' == 66, and 65 + 1 == 66
 ```
 
 This allows the previous GML code to be written as
@@ -163,7 +163,7 @@ a raw string is prefixed by the address symbol `@`, and does not interpret any
 of the previously mentioned escape sequences:
 
 ```meow
-let hi_again = @"\hello\"  -- \h and \" here are not escape sequences
+let hi_again = @"\hello\" -- \h and \" here are not escape sequences
 ```
 
 All strings in Catspeak can be multi-line.

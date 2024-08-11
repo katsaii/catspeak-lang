@@ -387,6 +387,8 @@ class HTMLCodegen(BasicCodegen):
             width : 60%;
             order : 2;
             flex-grow : 4;
+            border-left : dashed 3px var(--c-fg-light);
+            padding-left : 15px;
         }
 
         @media screen and (max-width: 14in) {
