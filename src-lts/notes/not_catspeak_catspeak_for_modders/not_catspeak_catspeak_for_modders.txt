@@ -1,1 +1,41 @@
-Catspeak 
+_Documentation for the Catspeak programming language is included in the [Language Reference](./lan-overview.html) book._
+
+Catspeak is a tool game developers can use to offer modding support to players.
+However, depending on the game, the modding API its developers reveal to modders
+could vary wildly. Because of this, you should contact the developers of the
+game and make sure they compile a list of which functions are exposed by their
+API, if they haven't already. Catspeak is not responsible for this.
+
+The likelyhood that the modding API will include built-in GameMaker functions
+is high, so you should familiarise yourself with the documentation for the
+[GameMaker standard library](https://manual.gamemaker.io/monthly/en/#t=GameMaker_Language%2FGML_Reference%2FGML_Reference.htm).
+
+Catspeak comes packaged with a custom programming language which resembles
+JavaScript and GameMaker Language. It's likely that most games adding mod
+support through Catspeak will use this pre-packaged language. However, if the
+game you are creating a mod for uses a different language, then you need to ask
+the developers of that game for information about the language they are using
+for modding.
+
+# Dealing with Errors
+
+Chances are your mod will fail or misbehave eventually. Whether or not this is
+a fatal error (the game crashes) or a silent error (the game unloads your mod)
+is up to the developers of the game to decide. If you suspect that your mod is
+failing for whatever reason, you should:
+
+ - Figure out how the developers are handling mod errors so you can get a an
+   error trace. This will help tell you the line and column the error occurred
+   on.
+
+ - Check that your code does not have any typos, which can be a common error.
+
+ - Check that the syntax for your code is correct by familiarising yourself with
+   the modding language. _Documentation for the built-in Catspeak programming
+   language can be found in the [Language Reference](./lan-overview.html) book._
+   When in doubt, do not make assumptions about syntax; look it up.
+
+ - Ask the developers for more debugging tools, like exposing GameMakers
+   `show_debug_message` function.
+
+ - Cry in a corner against all odds.
