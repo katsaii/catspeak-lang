@@ -58,7 +58,7 @@ Catspeak also supports writing numbers in [binary](https://en.wikipedia.org/wiki
 or [hexadecimal](https://en.wikipedia.org/wiki/Hexadecimal) notation, by
 prefixing the number literal with either `0b` or `0x`. For example, the binary
 representation of the number 10 is `0b1010`, and its hexadecimal representation
-is `0bA`. _Catspeak also supports CSS-style colour literals by prefixing a
+is `0xA`. _Catspeak also supports CSS-style colour literals by prefixing a
 number with `#` instead of `0x`. See the [Colour Codes](#colour-codes) section
 for more information._
 
