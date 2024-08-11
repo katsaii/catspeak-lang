@@ -362,6 +362,8 @@ class HTMLCodegen(BasicCodegen):
             transition : color 0.25s;
         }
 
+        p a { color : var(--c-fg-2)!important }
+
         a:hover { color : var(--c-accent)!important }
 
         #chapter-content {
@@ -441,7 +443,7 @@ class HTMLCodegen(BasicCodegen):
             font-family : var(--f-prop);
         }
 
-        section li { padding-top : 10px }
+        section li + li { padding-top : 10px }
 
         #chapters li > a,
         #contents li > a { text-decoration : none!important }
