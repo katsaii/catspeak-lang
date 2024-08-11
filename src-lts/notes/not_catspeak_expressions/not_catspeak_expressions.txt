@@ -14,15 +14,15 @@ These expressions have no further sub-expressions, hence the name.
 Examples of terminal expressions:
 
 ```meow
-"2036-02-03"  -- string literal
-#BBE31A       -- colour code
-3.1415        -- numeric literal
-'K'           -- character literal
-0b0011_1110   -- binary literal
-true          -- boolean True
+"2036-02-03" -- string literal
+#BBE31A      -- colour code
+3.1415       -- numeric literal
+'K'          -- character literal
+0b0011_1110  -- binary literal
+true         -- boolean True
 undefined
-player_name   -- variable identifier
-NaN           -- not a number
+player_name  -- variable identifier
+NaN          -- not a number
 ```
 
 # Self Expressions
@@ -35,8 +35,8 @@ This behaves similarly to `self` from GML and `this` from JavaScript. However,
 unlike GML `self` is **required** in order to access instance variables:
 
 ```meow
-my_var       -- this refers to a LOCAL variable called 'my_var'
-self.my_var  -- this refers to an INSTANCE variable on self called 'my_var'
+my_var      -- this refers to a LOCAL variable called 'my_var'
+self.my_var -- this refers to an INSTANCE variable on self called 'my_var'
 
 -- they are NOT the same
 ```
@@ -48,8 +48,8 @@ evaluating the sub-expression. This is typically used to make the precedence of
 the inner expression clear:
 
 ```meow
-let a = 1 + 2 * 3    -- a = 7
-let b = (1 + 2) * 3  -- b = 9
+let a = 1 + 2 * 3   -- a = 7
+let b = (1 + 2) * 3 -- b = 9
 ```
 
 # Array Expressions
@@ -97,9 +97,9 @@ Struct keys (seen on the left-hand-side of the `:` symbol) can be any valid
 
 ```meow
 let metadata = {
-  name   : "Roxy",  -- identifier 'name' used as a key
-  "age"  : 21,      -- string "age" used as a key
-  0b0110 : 0x42,    -- the binary number '0b0110' used as a key
+  name   : "Roxy", -- identifier 'name' used as a key
+  "age"  : 21,     -- string "age" used as a key
+  0b0110 : 0x42,   -- the binary number '0b0110' used as a key
 }
 ```
 
@@ -122,7 +122,7 @@ let a = 1
 let b = 2
 let c = 3
 
-return { a, b, c }  -- this is short for { a: a, b: b, c: c }
+return { a, b, c } -- this is short for { a: a, b: b, c: c }
 ```
 
 For information on how to modify the elements of a struct, see the section on
@@ -151,7 +151,7 @@ let v = new Vec2(13, 12)
 If the constructor does not have any parameters, then the `()` can be omited:
 
 ```meow
-let player = new Player  -- instead of `new Player()`
+let player = new Player -- instead of `new Player()`
 ```
 
 # Accessor Expressions
@@ -189,10 +189,10 @@ They have the highest [precedence](./lan-lexical-grammar.html#op-unary) of all
 operators, even greater than the [Multiplicative Operators](#multiplicative-operators):
 
 ```meow
-+a - b  -- same as (+a) - b, NOT +(a - b)
--a * d  -- same as (-a) * d, NOT -(a * d)
++a - b -- same as (+a) - b, NOT +(a - b)
+-a * d -- same as (-a) * d, NOT -(a * d)
 
-+-a  -- not valid, unary operators cannot be chained together
++-a -- not valid, unary operators cannot be chained together
      -- parenthesis should be used to resolve ambiguity: +(-a)
 ```
 
@@ -212,10 +212,10 @@ They have the highest [precedence](./lan-lexical-grammar.html#op-mult) of all
 the binary operators:
 
 ```meow
-a + b * c  -- same as a + (b * c), NOT (a + b) * c
-a / b - c  -- same as (a * b) - c, NOT a / (b - c)
+a + b * c -- same as a + (b * c), NOT (a + b) * c
+a / b - c -- same as (a * b) - c, NOT a / (b - c)
 
-a * b / c * d  -- same as ((a * b) / c) * d, NOT (a * b) / (c * d)
+a * b / c * d -- same as ((a * b) / c) * d, NOT (a * b) / (c * d)
 ```
 
 | Operator | Description |
@@ -234,10 +234,10 @@ They have higher [precedence](./lan-lexical-grammar.html#op-add)
 than all other binary operators except the [Multiplicative Operators](#multiplicative-operators):
 
 ```meow
-a * b + c  -- same as (a * b) + c, NOT a * (b + c)
-a - b / c  -- same as a - (b / c), NOT (a - b) / c
+a * b + c -- same as (a * b) + c, NOT a * (b + c)
+a - b / c -- same as a - (b / c), NOT (a - b) / c
 
-a + b - c + d  -- same as ((a + b) - c) + d, NOT (a + b) - (c + d)
+a + b - c + d -- same as ((a + b) - c) + d, NOT (a + b) - (c + d)
 ```
 
 | Operator | Description |
@@ -273,10 +273,10 @@ They have a higher [precedence](./lan-lexical-grammar.html#op-relation) than
 [Bitwise Operators](#bitwise-operators):
 
 ```meow
-a * b < c   -- same as (a * b) < c, NOT a * (b < c)
-a >= b / c  -- same as a >= (b / c), NOT (a >= b) / c
+a * b < c  -- same as (a * b) < c, NOT a * (b < c)
+a >= b / c -- same as a >= (b / c), NOT (a >= b) / c
 
-a < b < c  -- same as (a < b) < c, NOT (a < b) and (b < c)
+a < b < c -- same as (a < b) < c, NOT (a < b) and (b < c)
 ```
 
 | Operator | Description |
@@ -296,10 +296,10 @@ They have a higher [precedence](./lan-lexical-grammar.html#op-equal) than
 [Relational Operators](#relational-operators):
 
 ```meow
-a * b == c  -- same as (a * b) == c, NOT a * (b == c)
-a != b < c  -- same as a != (b < c), NOT (a != b) < c
+a * b == c -- same as (a * b) == c, NOT a * (b == c)
+a != b < c -- same as a != (b < c), NOT (a != b) < c
 
-a == b == c  -- same as ((a == b) == c), NOT (a == b) and (b == c)
+a == b == c -- same as ((a == b) == c), NOT (a == b) and (b == c)
 ```
 
 | Operator | Description |
@@ -331,10 +331,10 @@ They have a higher [precedence](./lan-lexical-grammar.html#op-logical) than
 [Pipe Operators](#pipe-operators). Additionally, the `and` operator takes precedence over `or` and `xor`:
 
 ```meow
-a and b or c  -- same as (a and b) or c, NOT a and (b or c)
-a or b and c  -- same as a or (b and c), NOT (a or b) and c
+a and b or c -- same as (a and b) or c, NOT a and (b or c)
+a or b and c -- same as a or (b and c), NOT (a or b) and c
 
-a and b or c and d  -- same as (a and b) or (c and d), NOT ((a and b) or c) and d
+a and b or c and d -- same as (a and b) or (c and d), NOT ((a and b) or c) and d
 ```
 
 | Operator | Description |
@@ -352,11 +352,11 @@ They have the lowest [precedence](./lan-lexical-grammar.html#op-assign) of all
 binary operators:
 
 ```meow
-a = b = c  -- same as a = (b = c), NOT a = c; b = c
+a = b = c -- same as a = (b = c), NOT a = c; b = c
 
 -- the result of an assignment operator is always 'undefined'
 let a
-let b = (a = 2)  -- a is 2, b is undefined
+let b = (a = 2) -- a is 2, b is undefined
 ```
 
 The value of the right-hand-side expression will be written to the left-hand-side
@@ -440,7 +440,7 @@ returned by [Self Expressions](#self-expressions) to instead return the context:
 ```meow
 let vec = { x : 1, y : 2 }
 with vec {
-  show_message(self.x * self.y)  -- 'self' here refers to the 'vec' struct
+  show_message(self.x * self.y) -- 'self' here refers to the 'vec' struct
 }
 ```
 
@@ -463,8 +463,8 @@ iteration of the loop if one exists.
 let n = 10
 while n > 0 {
   n -= 1
-  continue  -- will skip the remainder of the loop
-  n += 1    -- this line will never be evaluated
+  continue -- will skip the remainder of the loop
+  n += 1   -- this line will never be evaluated
 }
 ```
 
@@ -484,7 +484,7 @@ while true {
   }
 }
 
-show_message(n)  -- n = 11
+show_message(n) -- n = 11
 ```
 
 Break expressions start with the `break` keyword, optionally followed by a
@@ -516,7 +516,7 @@ Block expressions start with the `do` keyword
 let r = do {
   let a = 1
   let b = 2
-  a + b  -- a + b is used as the value of the whole block expression
+  a + b -- a + b is used as the value of the whole block expression
 }
 
 -- r is 3 here, because a + b = 3
@@ -562,7 +562,7 @@ let add = fun (a, b) {
   return a + b
 }
 
-show_message(add(1, 2))  -- prints '3'
+show_message(add(1, 2)) -- prints '3'
 ```
 
 Unlike GML, **all functions in Catspeak are anonymous**. There is no such thing
@@ -583,8 +583,8 @@ let max = fun (a, b) {
     return b
 }
 
-let max_of_12_9 = max(12, 9)  -- 12
-let max_of_5_8 = max(5, 8)    -- 8
+let max_of_12_9 = max(12, 9) -- 12
+let max_of_5_8 = max(5, 8)   -- 8
 ```
 
 If no return value exists, then `undefined` is returned instead.

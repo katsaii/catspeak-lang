@@ -57,7 +57,7 @@ the Catspeak programming language:
      (See [Let Statements](./lan-expressions.html#let-statements) and [Function Expressions](./lan-expressions.html#function-expressions))
 
      ```meow
-     show_mesage(my_var)  -- does NOT print '2'
+     show_mesage(my_var) -- does NOT print '2'
 
      let my_var = 2
      ```
@@ -69,7 +69,7 @@ the Catspeak programming language:
      if condition {
         let a = "hello chat"
      }
-     return a  -- does NOT refer to the local variable 'a' here
+     return a -- does NOT refer to the local variable 'a' here
      ```
 
    - **Global variables are not accessible** by default. There is no built-in
@@ -79,8 +79,8 @@ the Catspeak programming language:
      (See [Self Expressions](./lan-expressions.html#self-expressions))
 
      ```meow
-     let a = item       -- 'item' refers to a Catspeak variable here
-     let b = self.item  -- 'item' refers to a GML instance variable here
+     let a = item      -- 'item' refers to a Catspeak variable here
+     let b = self.item -- 'item' refers to a GML instance variable here
      ```
 
  - **Syntax**:

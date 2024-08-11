@@ -22,8 +22,8 @@ can optionally be followed by an initialiser expression. If no initialiser
 expression is used, then the variable will be initialised to `undefined`:
 
 ```meow
-let a = 1 + 3  -- initialised to the value 3
-let b          -- initialised to undefined
+let a = 1 + 3 -- initialised to the value 3
+let b         -- initialised to undefined
 ```
 
 Unlike GML, local variables in Catspeak are only visible from within the scope
@@ -32,9 +32,9 @@ Catspeak:
 
 ```meow
 if condition {
-    let result = 1  -- local to the "true" branch of the if expression
+    let result = 1 -- local to the "true" branch of the if expression
 } else {
-    let result = 2  -- local to the "false" branch of the if expression
+    let result = 2 -- local to the "false" branch of the if expression
 }
 
 -- local variable 'result' does not exist here
@@ -47,7 +47,7 @@ return result
 ```meow
 let result
 if condition {
-    result = 1  -- assign to the previously defined 'result' variable
+    result = 1 -- assign to the previously defined 'result' variable
 } else {
     result = 2
 }
@@ -84,15 +84,15 @@ then the scoped variable takes priority:
 
 ```meow
 player = "Serket"
-show_message(player)  -- shows "Serket"
+show_message(player) -- shows "Serket"
 
 if condition {
     let player = "Vantas"
-    show_message(player)  -- shows "Vantas"
+    show_message(player) -- shows "Vantas"
 }
 
-show_message(player)  -- also shows "Serket", since the variable inside
-                      -- of the if expression has gone out of scope
+show_message(player) -- also shows "Serket", since the variable inside
+                     -- of the if expression has gone out of scope
 ```
 
 # Expression Statements
@@ -110,7 +110,7 @@ let result = while true {
   }
 }
 
-let use_result = choose(true, false)  -- coin flip
+let use_result = choose(true, false) -- coin flip
 show_message(if use_result { result } else { 0 })
 ```
 
@@ -124,8 +124,8 @@ expression statement. For example, the value returned from the following
 let get_value = fun () {
   let a = 2;
   let b = 5;
-  a * b  -- this is the last expression in the function body
-         -- so its returned as the result of the function when called
+  a * b -- this is the last expression in the function body
+        -- so its returned as the result of the function when called
 }
 ```
 
