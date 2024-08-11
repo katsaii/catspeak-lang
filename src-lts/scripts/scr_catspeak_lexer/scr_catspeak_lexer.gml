@@ -171,7 +171,7 @@ enum CatspeakToken {
     /// Represents any other unrecognised character.
     ///
     /// @remark
-    ///   If the compiler encounters a token of this type, it will typical
+    ///   If the compiler encounters a token of this type, it will typically
     ///   raise an exception. This likely indicates that a Catspeak script has
     ///   a syntax error somewhere.
     OTHER = 64,
