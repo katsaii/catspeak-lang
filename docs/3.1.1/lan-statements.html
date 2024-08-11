@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="Documentation for the Catspeak programming language."><title>Catspeak Reference :: Statements of Language Reference</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lan-overview.html"><mark>Language Reference</mark></a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lan-overview.html">Overview</a></li><li><a href="lan-lexical-grammar.html">Lexical Grammar</a></li><li><a href="lan-statements.html"><mark>Statements</mark></a></li><li><a href="lan-expressions.html">Expressions</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#let-statements">Let Statements</a></li><li><a href="#dynamically-scoped-local-varia+s">Dynamically Scoped Local Variables</a></li><li><a href="#expression-statements">Expression Statements</a></li></ul></aside><main><article><h1 class="chapter-title">Statements</h1><p>Unlike GameMaker Language (GML), Catspeak only has two kinds of statement: <a href="#let-statements">Let Statements</a>, and <a href="#expression-statements">Expression Statements</a>.
+This is because Catspeak is an <a href="https://en.wikipedia.org/wiki/Expression-oriented_programming_language">expression-oriented language</a>, where almost every statement and/or
+expression evaluates to a value.</p><p>As a result, things like "if" statements become <a href="./lan-expressions.html#if-expressions">If Expressions</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-0')">Copy</a><code id="cb-0"><span class="kw-key">let</span> <span class="kw-var">result</span> = <span class="kw-key">if</span> <span class="kw-var">a</span> > <span class="kw-var">b</span> {
+    <span class="kw-val">"a is bigger"</span>
+} <span class="kw-key">else</span> {
+    <span class="kw-val">"b is bigger"</span>
+}
+</code></pre><p>Other notable languages in this family are <a href="https://ruby-doc.com/docs/ProgrammingRuby/html/tut_expressions.html">Ruby</a>
+and <a href="https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/first-edition/functions.html#expressions-vs-statements">Rust</a>.</p><section><h1 class="heading" id="let-statements"><a href="#let-statements">§</a> <strong>Let Statements</strong><a href="#" class="heading-top">top ^</a></h1><p>The <code class="inline-code">let</code> statement creates a new local variable in the current block scope. It
+can optionally be followed by an initialiser expression. If no initialiser
+expression is used, then the variable will be initialised to <code class="inline-code">undefined</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-1')">Copy</a><code id="cb-1"><span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-val">1</span> + <span class="kw-val">3</span> <span class="kw-com">-- initialised to the value 3</span>
+<span class="kw-key">let</span> <span class="kw-var">b</span>         <span class="kw-com">-- initialised to undefined</span>
+</code></pre><p>Unlike GML, local variables in Catspeak are only visible from within the scope
+they are defined in. This means that the following code is <strong>incorrect</strong> in
+Catspeak:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-2')">Copy</a><code id="cb-2"><span class="kw-key">if</span> <span class="kw-var">condition</span> {
+    <span class="kw-key">let</span> <span class="kw-var">result</span> = <span class="kw-val">1</span> <span class="kw-com">-- local to the "true" branch of the if expression</span>
+} <span class="kw-key">else</span> {
+    <span class="kw-key">let</span> <span class="kw-var">result</span> = <span class="kw-val">2</span> <span class="kw-com">-- local to the "false" branch of the if expression</span>
+}
+
+<span class="kw-com">-- local variable 'result' does not exist here</span>
+<span class="kw-com">-- instead, 'result' gets interpreted as a global variable here</span>
+<span class="kw-key">return</span> <span class="kw-var">result</span>
+</code></pre><p><strong>You must always define the local variables before using them in Catspeak:</strong></p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-3')">Copy</a><code id="cb-3"><span class="kw-key">let</span> <span class="kw-var">result</span>
+<span class="kw-key">if</span> <span class="kw-var">condition</span> {
+    <span class="kw-var">result</span> = <span class="kw-val">1</span> <span class="kw-com">-- assign to the previously defined 'result' variable</span>
+} <span class="kw-key">else</span> {
+    <span class="kw-var">result</span> = <span class="kw-val">2</span>
+}
+
+<span class="kw-com">-- now 'result' is in scope</span>
+<span class="kw-key">return</span> <span class="kw-var">result</span>
+</code></pre></section><section><h1 class="heading" id="dynamically-scoped-local-varia+s"><a href="#dynamically-scoped-local-varia+s">§</a> <strong>Dynamically Scoped Local Variables</strong><a href="#" class="heading-top">top ^</a></h1><p>If an variable is declared without using <code class="inline-code">let</code>, then it is interpreted as a
+local variable with <strong>dynamic scope</strong>. Unlike variables defined using <code class="inline-code">let</code>,
+dynamically scoped variables can be read from and written to outside of the
+scope they were defined in. This makes them useful tools when working with
+<strong>recursive functions</strong>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-4')">Copy</a><code id="cb-4"><span class="kw-var">is_odd</span> = <span class="kw-key">fun</span> (<span class="kw-var">n</span>) {
+    <span class="kw-key">if</span> <span class="kw-var">n</span> < <span class="kw-val">1</span> {
+        <span class="kw-key">return</span> <span class="kw-val">false</span>
+    } <span class="kw-key">else</span> {
+        <span class="kw-key">return</span> !<span class="kw-fun">is_odd</span>(<span class="kw-var">n</span> - <span class="kw-val">1</span>)
+    }
+}
+</code></pre><p>These resemble global variables found in GML, but to avoid confusion a
+different name is being used. <strong>These are not GML global variables</strong>, all
+variables in Catspeak (whether or not they are defined using <code class="inline-code">let</code>) are
+constrained to the source file they are defined in.</p><p>If there exists a dynamic variable and a scoped variable with the same name,
+then the scoped variable takes priority:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-5')">Copy</a><code id="cb-5"><span class="kw-var">player</span> = <span class="kw-val">"Serket"</span>
+<span class="kw-fun">show_message</span>(<span class="kw-var">player</span>) <span class="kw-com">-- shows "Serket"</span>
+
+<span class="kw-key">if</span> <span class="kw-var">condition</span> {
+    <span class="kw-key">let</span> <span class="kw-var">player</span> = <span class="kw-val">"Vantas"</span>
+    <span class="kw-fun">show_message</span>(<span class="kw-var">player</span>) <span class="kw-com">-- shows "Vantas"</span>
+}
+
+<span class="kw-fun">show_message</span>(<span class="kw-var">player</span>) <span class="kw-com">-- also shows "Serket", since the variable inside</span>
+                     <span class="kw-com">-- of the if expression has gone out of scope</span>
+</code></pre></section><section><h1 class="heading" id="expression-statements"><a href="#expression-statements">§</a> <strong>Expression Statements</strong><a href="#" class="heading-top">top ^</a></h1><p>Because Catspeak is an expression-oriented language, everything that is not a
+<a href="#let-statements">variable declaration</a> is an <a href="./lan-expressions.html">expression</a>
+and can return a value. This also includes <a href="./lan-expressions.html#if-expressions"><code class="inline-code">if</code> conditionals</a>
+and <a href="./lan-expressions.html#while-loops"><code class="inline-code">while</code> loops</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-6')">Copy</a><code id="cb-6"><span class="kw-key">let</span> <span class="kw-var">result</span> = <span class="kw-key">while</span> <span class="kw-val">true</span> {
+  <span class="kw-key">let</span> <span class="kw-var">n</span> = <span class="kw-fun">irandom_range</span>(<span class="kw-val">0</span>, <span class="kw-val">100</span>)
+  <span class="kw-key">if</span> <span class="kw-var">n</span> > <span class="kw-val">75</span> {
+    <span class="kw-key">break</span> <span class="kw-var">n</span>
+  }
+}
+
+<span class="kw-key">let</span> <span class="kw-var">use_result</span> = <span class="kw-fun">choose</span>(<span class="kw-val">true</span>, <span class="kw-val">false</span>) <span class="kw-com">-- coin flip</span>
+<span class="kw-fun">show_message</span>(<span class="kw-key">if</span> <span class="kw-var">use_result</span> { <span class="kw-var">result</span> } <span class="kw-key">else</span> { <span class="kw-val">0</span> })
+</code></pre><p>More often than not, an expression statement will evaluate its expression
+and ignore the result. There are exceptions to this rule, where the result of a
+<a href="./lan-expressions.html#block-expressions">block</a> will be the value of its final
+expression statement. For example, the value returned from the following
+<a href="./lan-expressions.html#function-expressions">Function Expression</a> will be "10":</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-7')">Copy</a><code id="cb-7"><span class="kw-key">let</span> <span class="kw-var">get_value</span> = <span class="kw-key">fun</span> () {
+  <span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-val">2</span>;
+  <span class="kw-key">let</span> <span class="kw-var">b</span> = <span class="kw-val">5</span>;
+  <span class="kw-var">a</span> * <span class="kw-var">b</span> <span class="kw-com">-- this is the last expression in the function body</span>
+        <span class="kw-com">-- so its returned as the result of the function when called</span>
+}
+</code></pre><p>Since <code class="inline-code">a * b</code> evaluates to 10, and it is the last statement in the body of the
+function.</p></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>

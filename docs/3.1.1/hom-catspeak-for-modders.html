@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="A brief overview of Catspeak."><title>Catspeak Reference :: Catspeak For Modders of Home</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html"><mark>Home</mark></a></li><li><a href="lan-overview.html">Language Reference</a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="hom-welcome.html">Welcome</a></li><li><a href="hom-getting-started.html">Getting Started</a></li><li><a href="hom-catspeak-for-developers.html">Catspeak For Developers</a></li><li><a href="hom-catspeak-for-modders.html"><mark>Catspeak For Modders</mark></a></li><li><a href="hom-license.html">License</a></li></ul></aside><aside id="contents"></aside><main><article><h1 class="chapter-title">Catspeak For Modders</h1><p><em>Documentation for the Catspeak programming language is included in the <a href="./lan-overview.html">Language Reference</a> book.</em></p><p>Catspeak is a tool game developers can use to offer modding support to players.
+However, depending on the game, the modding API its developers reveal to modders
+could vary wildly. Because of this, you should contact the developers of the
+game and make sure they compile a list of which functions are exposed by their
+API, if they haven't already. Catspeak is not responsible for this.</p><p>The likelyhood that the modding API will include built-in GameMaker functions
+is high, so you should familiarise yourself with the documentation for the
+<a href="https://manual.gamemaker.io/monthly/en/#t=GameMaker_Language%2FGML_Reference%2FGML_Reference.htm">GameMaker standard library</a>.</p><p>Catspeak comes packaged with a custom programming language which resembles
+JavaScript and GameMaker Language. It's likely that most games adding mod
+support through Catspeak will use this pre-packaged language. However, if the
+game you are creating a mod for uses a different language, then you need to ask
+the developers of that game for information about the language they are using
+for modding.</p><section><h1 class="heading" id="dealing-with-errors"><a href="#dealing-with-errors">§</a> <strong>Dealing with Errors</strong><a href="#" class="heading-top">top ^</a></h1><p>Chances are your mod will fail or misbehave eventually. Whether or not this is
+a fatal error (the game crashes) or a silent error (the game unloads your mod)
+is up to the developers of the game to decide. If you suspect that your mod is
+failing for whatever reason, you should:</p><ul><li><p>Figure out how the developers are handling mod errors so you can get a an
+error trace. This will help tell you the line and column the error occurred
+on.</p></li><li><p>Check that your code does not have any typos, which can be a common error.</p></li><li><p>Check that the syntax for your code is correct by familiarising yourself with
+the modding language. <em>Documentation for the built-in Catspeak programming
+language can be found in the <a href="./lan-overview.html">Language Reference</a> book.</em>
+When in doubt, do not make assumptions about syntax; look it up.</p></li><li><p>Ask the developers for more debugging tools, like exposing GameMakers
+<code class="inline-code">show_debug_message</code> function.</p></li><li><p>Cry in a corner against all odds.</p></li></ul></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>
