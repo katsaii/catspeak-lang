@@ -644,6 +644,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             case 1: func = __catspeak_expr_call_1__; break;
             case 2: func = __catspeak_expr_call_2__; break;
             case 3: func = __catspeak_expr_call_3__; break;
+            case 4: func = __catspeak_expr_call_4__; break;
+            case 5: func = __catspeak_expr_call_5__; break;
             }
             return method({
                 dbgError : dbgError,
@@ -1555,6 +1557,57 @@ function __catspeak_expr_call_3__() {
         return script_execute(calleeIdx, arg1, arg2, arg3);
     }
 }
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_4__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var values_ = args;
+    var arg1 = values_[0]();
+    var arg2 = values_[1]();
+    var arg3 = values_[2]();
+    var arg4 = values_[3]();
+    var shared_ = shared;
+
+    if (method_get_self(callee_) != undefined) {
+        return callee_(arg1, arg2, arg3, arg4);
+    }
+
+    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute(calleeIdx, arg1, arg2, arg3, arg4);
+    }
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_call_5__() {
+    var callee_ = callee();
+    if (!is_method(callee_)) {
+        __catspeak_error_got(dbgError, callee_);
+    }
+    var values_ = args;
+    var arg1 = values_[0]();
+    var arg2 = values_[1]();
+    var arg3 = values_[2]();
+    var arg4 = values_[3]();
+    var arg5 = values_[4]();
+    var shared_ = shared;
+
+    if (method_get_self(callee_) != undefined) {
+        return callee_(arg1, arg2, arg3, arg4, arg5);
+    }
+
+    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+        var calleeIdx = method_get_index(callee_);
+        return script_execute(calleeIdx, arg1, arg2, arg3, arg4, arg5);
+    }
+}
+
+
 
 /// @ignore
 /// @return {Any}
