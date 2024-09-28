@@ -741,10 +741,14 @@ test_add(function() : Test("catspeak-get-index") constructor {
     assertEq(true, catspeak_get_index(speak) == speak);
     assertEq(true, catspeak_get_index(noInstSpeak) == speak);
     
+    var speakA = catspeak_get_index(instSpeak);
+    var speakB = catspeak_get_index(speak);
+    var speakC = catspeak_get_index(noInstSpeak);
+    
     // Should all return the correct name
-    assertEq(true, instSpeak() == "Elephant");
-    assertEq(true, speak() == "Rabbit");
-    assertEq(true, noInstSpeak() == "Rabbit");
+    assertEq(true, speakA() == "Rabbit");
+    assertEq(true, speakB() == "Rabbit");
+    assertEq(true, speakC() == "Rabbit");
 });
 
 test_add(function() : Test("while-loop") constructor {
