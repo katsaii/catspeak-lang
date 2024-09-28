@@ -710,6 +710,43 @@ test_add(function() : Test("method-scope-vs-undefined") constructor {
     show_debug_message("gmlFuncB (funcM) Time taken: " + string((get_timer() - t) / 1000) + "ms");
 });
 
+test_add(function() : Test("catspeak-get-index") constructor {
+    var env = new CatspeakEnvironment();
+    
+    ir = env.parseString(@'
+        name = "Rabbit";
+        
+        speak = fun() {
+            return self.name;
+        };
+    ');
+    
+    var program = env.compile(ir);
+    program();
+    var globals = program.getGlobals();
+    var speak = globals.speak;
+    
+    var inst = {name: "Elephant"};
+    var instSpeak = catspeak_method(inst, speak); 
+    
+    var noInstSpeak = catspeak_method(undefined, instSpeak);
+    
+    // Only one should be a valid scope, rest is undefined
+    assertEq(true, catspeak_get_self(instSpeak) == inst);
+    assertEq(true, catspeak_get_self(speak) == undefined);
+    assertEq(true, catspeak_get_self(noInstSpeak) == undefined);
+    
+    // Should all be speak
+    assertEq(true, catspeak_get_index(instSpeak) == speak);
+    assertEq(true, catspeak_get_index(speak) == speak);
+    assertEq(true, catspeak_get_index(noInstSpeak) == speak);
+    
+    // Should all return the correct name
+    assertEq(true, instSpeak() == "Elephant");
+    assertEq(true, speak() == "Rabbit");
+    assertEq(true, noInstSpeak() == "Rabbit");
+});
+
 test_add(function() : Test("while-loop") constructor {
     var env = new CatspeakEnvironment();
     
