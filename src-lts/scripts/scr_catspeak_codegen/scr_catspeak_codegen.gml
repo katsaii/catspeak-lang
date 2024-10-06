@@ -1438,8 +1438,9 @@ function __catspeak_expr_call_method__() {
     }
     var shared_ = shared;
     with (method_get_self(callee_) ?? collection_) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute_ext(calleeIdx, args_);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, args_);
     }
 }
 
@@ -1468,8 +1469,9 @@ function __catspeak_expr_call__() {
     with (method_get_self(callee_) ?? 
         (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals))
     ) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute_ext(calleeIdx, args_);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, args_);
     }
 }
 
@@ -1487,8 +1489,9 @@ function __catspeak_expr_call_0__() {
     }
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_);
     }
 }
 
@@ -1508,8 +1511,9 @@ function __catspeak_expr_call_1__() {
     }
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, arg1);
     }
 }
 
@@ -1530,8 +1534,9 @@ function __catspeak_expr_call_2__() {
     }
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, arg1, arg2);
     }
 }
 
@@ -1553,8 +1558,9 @@ function __catspeak_expr_call_3__() {
     }
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2, arg3);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, arg1, arg2, arg3);
     }
 }
 
@@ -1577,8 +1583,9 @@ function __catspeak_expr_call_4__() {
     }
 
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2, arg3, arg4);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, arg1, arg2, arg3, arg4);
     }
 }
 
@@ -1602,8 +1609,9 @@ function __catspeak_expr_call_5__() {
     }
 
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
-        var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2, arg3, arg4, arg5);
+        //unneeded, `script_execute_ext` already internally pulls the index
+	//var calleeIdx = method_get_index(callee_);
+        return script_execute_ext(callee_, arg1, arg2, arg3, arg4, arg5);
     }
 }
 
