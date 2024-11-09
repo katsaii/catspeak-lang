@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="Documentation for the the Catspeak compiler backend."><title>Catspeak Reference :: parser of Library Reference</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lan-overview.html">Language Reference</a></li><li><a href="lib-init.html"><mark>Library Reference</mark></a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lib-init.html">init</a></li><li><a href="lib-environment.html">environment</a></li><li><a href="lib-presets.html">presets</a></li><li><a href="lib-lexer.html">lexer</a></li><li><a href="lib-parser.html"><mark>parser</mark></a><ul><li><a href="lib-struct-catspeakparser.html">struct CatspeakParser</a></li></ul></li><li><a href="lib-codegen.html">codegen</a></li><li><a href="lib-ir.html">ir</a></li></ul></aside><aside id="contents"></aside><main><article><h1 class="chapter-title">parser</h1><div class="subchapter-title">↳ <a href="lib-struct-catspeakparser.html" class="subchapter-title">struct CatspeakParser</a></div><p>Responsible for the syntax analysis stage of the Catspeak compiler.</p><p>This stage uses <code class="inline-code">CatspeakIRBuilder</code> to create a hierarchical
+representation of your Catspeak programs, called an abstract syntax graph
+(or ASG for short). These graphs are encoded as a JSON object, making it
+possible for you to cache the result of parsing a mod to a file, instead
+of re-parsing each time the game loads.</p></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>
