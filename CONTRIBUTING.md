@@ -138,6 +138,9 @@ If you encounter no errors, then a new documentation page will be written to
 ## Creating a Local Package
 
 Publisher Name: katsaii (lowercase)
+
 Display name: Catspeak &lt;major&gt;
+
 Version: &lt;major&gt;.&lt;minor&gt;.&lt;patch&gt; (see `CATSPEAK_VERSION` for what this should be)
+
 Package ID (Filename): catspeak_&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;
