@@ -1441,7 +1441,9 @@ function __catspeak_expr_call_method__() {
     var callee_;
     if (is_array(collection_)) {
         callee_ = collection_[key_];
-        collection_ = undefined;
+        var shared_ = shared;
+        // since arrays cannot be used in with statements, let's use something else
+        collection_ = global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals);
     } else if (__catspeak_is_withable(collection_)) {
         callee_ = collection_[$ key_];
     } else {
