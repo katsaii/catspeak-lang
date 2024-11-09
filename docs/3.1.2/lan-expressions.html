@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="Documentation for the Catspeak programming language."><title>Catspeak Reference :: Expressions of Language Reference</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lan-overview.html"><mark>Language Reference</mark></a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lan-overview.html">Overview</a></li><li><a href="lan-lexical-grammar.html">Lexical Grammar</a></li><li><a href="lan-statements.html">Statements</a></li><li><a href="lan-expressions.html"><mark>Expressions</mark></a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#terminal-expressions">Terminal Expressions</a></li><li><a href="#self-expressions">Self Expressions</a></li><li><a href="#grouped-expressions">Grouped Expressions</a></li><li><a href="#array-expressions">Array Expressions</a></li><li><a href="#struct-expressions">Struct Expressions</a></li><li><a href="#call-expressions">Call Expressions</a></li><li><a href="#accessor-expressions">Accessor Expressions</a></li><li><a href="#unary-operators">Unary Operators</a></li><li><a href="#multiplicative-operators">Multiplicative Operators</a></li><li><a href="#additive-operators">Additive Operators</a></li><li><a href="#bitwise-operators">Bitwise Operators</a></li><li><a href="#relational-operators">Relational Operators</a></li><li><a href="#equality-operators">Equality Operators</a></li><li><a href="#pipe-operators">Pipe Operators</a></li><li><a href="#logical-operators">Logical Operators</a></li><li><a href="#assignment-operators">Assignment Operators</a></li><li><a href="#if-expressions">If Expressions</a></li><li><a href="#while-loops">While Loops</a></li><li><a href="#with-loops">With Loops</a></li><li><a href="#continue-expressions">Continue Expressions</a></li><li><a href="#break-expressions">Break Expressions</a></li><li><a href="#block-expressions">Block Expressions</a></li><li><a href="#function-expressions">Function Expressions</a></li><li><a href="#return-expressions">Return Expressions</a></li><li><a href="#match-expressions">Match Expressions</a></li></ul></aside><main><article><h1 class="chapter-title">Expressions</h1><p>An expression is is a term which always produces a value, and may be composed
+of many sub-expressions. Most statements you would typically find in GameMaker
+Language (GML) appear as expressions in Catspeak. This includes <a href="#break-expressions">Break Expressions</a>, <a href="#return-expressions">Return Expressions</a>, and
+<a href="#continue-expressions">Continue Expressions</a>.</p><p>For the precedence of many of these expressions, see the <a href="./lan-lexical-grammar.html#operators"><strong>precedence table</strong></a> in the <a href="./lan-lexical-grammar.html">Lexical Grammar</a>
+chapter.</p><section><h1 class="heading" id="terminal-expressions"><a href="#terminal-expressions">§</a> <strong>Terminal Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Terminal expressions are either <a href="./lan-lexical-grammar.html#identifiers">Identifiers</a> or literals (e.g. <a href="./lan-lexical-grammar.html#numbers">Numbers</a> and <a href="./lan-lexical-grammar.html#strings">Strings</a>).
+These expressions have no further sub-expressions, hence the name.</p><p>Examples of terminal expressions:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-0')">Copy</a><code id="cb-0"><span class="kw-val">"2036-02-03"</span> <span class="kw-com">-- string literal</span>
+<span class="kw-val">#BBE31A</span>      <span class="kw-com">-- colour code</span>
+<span class="kw-val">3.1415</span>       <span class="kw-com">-- numeric literal</span>
+<span class="kw-val">'K'</span>          <span class="kw-com">-- character literal</span>
+<span class="kw-val">0b0011_1110</span>  <span class="kw-com">-- binary literal</span>
+<span class="kw-val">true</span>         <span class="kw-com">-- boolean True</span>
+<span class="kw-val">undefined</span>
+<span class="kw-var">player_name</span>  <span class="kw-com">-- variable identifier</span>
+<span class="kw-val">NaN</span>          <span class="kw-com">-- not a number</span>
+</code></pre></section><section><h1 class="heading" id="self-expressions"><a href="#self-expressions">§</a> <strong>Self Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p><code class="inline-code">self</code> is a special built-in value which refers to the current context a piece
+of code is being executed in. For example, the current GML instance, or current
+struct a method is bound to.</p><p>This behaves similarly to <code class="inline-code">self</code> from GML and <code class="inline-code">this</code> from JavaScript. However,
+unlike GML <code class="inline-code">self</code> is <strong>required</strong> in order to access instance variables:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-1')">Copy</a><code id="cb-1"><span class="kw-var">my_var</span>      <span class="kw-com">-- this refers to a LOCAL variable called 'my_var'</span>
+<span class="kw-val">self</span>.<span class="kw-var">my_var</span> <span class="kw-com">-- this refers to an INSTANCE variable on self called 'my_var'</span>
+
+<span class="kw-com">-- they are NOT the same</span>
+</code></pre></section><section><h1 class="heading" id="grouped-expressions"><a href="#grouped-expressions">§</a> <strong>Grouped Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Grouped expressions wrap a single sub-expression between <code class="inline-code">(</code> and <code class="inline-code">)</code>,
+evaluating the sub-expression. This is typically used to make the precedence of
+the inner expression clear:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-2')">Copy</a><code id="cb-2"><span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-val">1</span> + <span class="kw-val">2</span> * <span class="kw-val">3</span>   <span class="kw-com">-- a = 7</span>
+<span class="kw-key">let</span> <span class="kw-var">b</span> = (<span class="kw-val">1</span> + <span class="kw-val">2</span>) * <span class="kw-val">3</span> <span class="kw-com">-- b = 9</span>
+</code></pre></section><section><h1 class="heading" id="array-expressions"><a href="#array-expressions">§</a> <strong>Array Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Arrays are a sequence of comma-separated sub-expressions wrapped between <code class="inline-code">[</code>
+and <code class="inline-code">]</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-3')">Copy</a><code id="cb-3"><span class="kw-key">let</span> <span class="kw-var">array</span> = [<span class="kw-val">1</span>, <span class="kw-val">2</span>, <span class="kw-val">3</span>]
+</code></pre><p>The order of evaluation of sub-expressions <code class="inline-code">[a, b, c]</code> is <strong>left-to-right</strong>, i.e.
+<code class="inline-code">a</code> is evaluated first, then <code class="inline-code">b</code>, and finally <code class="inline-code">c</code>.</p><p><strong>Whitespace does not matter</strong>, and the elements of an array can be split over
+multiple lines if needed (including a trailing comma on the final element if
+desired):</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-4')">Copy</a><code id="cb-4"><span class="kw-key">let</span> <span class="kw-var">names</span> = [
+  <span class="kw-val">"Jane"</span>,
+  <span class="kw-val">"June"</span>,
+  <span class="kw-val">"Jake"</span>,
+  <span class="kw-val">"Jade"</span>,
+]
+</code></pre><p>For information on how to modify the elements of an array, see the section on
+<a href="#accessor-expressions">Accessor Expressions</a>.</p></section><section><h1 class="heading" id="struct-expressions"><a href="#struct-expressions">§</a> <strong>Struct Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Structs are a sequence of comma-separated key-value pairs (<code class="inline-code">key: value</code>) wrapped
+between <code class="inline-code">{</code> and <code class="inline-code">}</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-5')">Copy</a><code id="cb-5"><span class="kw-key">let</span> <span class="kw-var">struct</span> = { <span class="kw-var">x</span>: <span class="kw-val">1</span>, <span class="kw-var">y</span>: <span class="kw-val">2</span> }
+</code></pre><p>Just like <a href="#array-expressions">Array Expressions</a> <strong>whitespace does not matter</strong>,
+and the order of evaluation for sub-expressions is <strong>left-to-right</strong>.</p><p>Struct keys (seen on the left-hand-side of the <code class="inline-code">:</code> symbol) can be any valid
+<a href="#terminal-expressions">Terminal Expression</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-6')">Copy</a><code id="cb-6"><span class="kw-key">let</span> <span class="kw-var">metadata</span> = {
+  <span class="kw-var">name</span>   : <span class="kw-val">"Roxy"</span>, <span class="kw-com">-- identifier 'name' used as a key</span>
+  <span class="kw-val">"age"</span>  : <span class="kw-val">21</span>,     <span class="kw-com">-- string "age" used as a key</span>
+  <span class="kw-val">0b0110</span> : <span class="kw-val">0x42</span>,   <span class="kw-com">-- the binary number '0b0110' used as a key</span>
+}
+</code></pre><p>Any non-string key will be implicitly converted into a string before being
+assigned its value. For example, the identifier <code class="inline-code">name</code> becomes <code class="inline-code">"name"</code>, and the
+binary number <code class="inline-code">0b0110</code> becomes <code class="inline-code">"6"</code>.</p><p>Using an expression for a struct key (so-called <em>"computed keys"</em>) is allowed, so
+long as the expression is surrounded with <code class="inline-code">[</code> and <code class="inline-code">]</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-7')">Copy</a><code id="cb-7">{ [<span class="kw-val">"hello"</span> + <span class="kw-val">"world"</span>]: <span class="kw-val">123</span> }
+</code></pre><p>If the key and value are both the same identifier <code class="inline-code">{ x: x, y: y }</code>, then the
+<strong>key can be omitted</strong> in a short-hand initialisation syntax like <code class="inline-code">{ x, y }</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-8')">Copy</a><code id="cb-8"><span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-val">1</span>
+<span class="kw-key">let</span> <span class="kw-var">b</span> = <span class="kw-val">2</span>
+<span class="kw-key">let</span> <span class="kw-var">c</span> = <span class="kw-val">3</span>
+
+<span class="kw-key">return</span> { <span class="kw-var">a</span>, <span class="kw-var">b</span>, <span class="kw-var">c</span> } <span class="kw-com">-- this is short for { a: a, b: b, c: c }</span>
+</code></pre><p>For information on how to modify the elements of a struct, see the section on
+<a href="#accessor-expressions">Accessor Expressions</a>.</p></section><section><h1 class="heading" id="call-expressions"><a href="#call-expressions">§</a> <strong>Call Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>A call expression is a single sub-expression (the <em>callee</em>) followed by a
+sequence of comma-separated sub-expressions (the <em>arguments</em>) wrapped between
+<code class="inline-code">(</code> and <code class="inline-code">)</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-9')">Copy</a><code id="cb-9"><span class="kw-fun">show_message</span>(<span class="kw-val">"hello from Catspeak!"</span>)
+
+<span class="kw-com">-- 'show_message' is the callee</span>
+<span class="kw-com">-- "hello from Catspeak!" is the argument</span>
+</code></pre><p>If the callee is a constructor function from GML, then it can be constructed
+by prefixing a call expression with the <code class="inline-code">new</code> keyword:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-10')">Copy</a><code id="cb-10"><span class="kw-key">let</span> <span class="kw-var">v</span> = <span class="kw-key">new</span> <span class="kw-typ">Vec2</span>(<span class="kw-val">13</span>, <span class="kw-val">12</span>)
+</code></pre><p>If the constructor does not have any parameters, then the <code class="inline-code">()</code> can be omited:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-11')">Copy</a><code id="cb-11"><span class="kw-key">let</span> <span class="kw-var">player</span> = <span class="kw-key">new</span> <span class="kw-typ">Player</span> <span class="kw-com">-- instead of `new Player()`</span>
+</code></pre></section><section><h1 class="heading" id="accessor-expressions"><a href="#accessor-expressions">§</a> <strong>Accessor Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>An accessor expression will allow you to access or modify the elements of an
+array or struct. They consist of a single sub-expression (the array or struct)
+followed by a sequence of comma-separated sub-expressions (the indices) wrapped
+between <code class="inline-code">[</code> and <code class="inline-code">]</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-12')">Copy</a><code id="cb-12"><span class="kw-var">array</span>[<span class="kw-val">0</span>]
+<span class="kw-var">struct</span>[<span class="kw-val">"y"</span>]
+</code></pre><p>If the index is a valid identifier, the <code class="inline-code">.</code> symbol can be used for short-hand
+member access <code class="inline-code">vec.x</code>, which is the same as <code class="inline-code">vec["x"]</code>. This is useful
+when working with structs:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-13')">Copy</a><code id="cb-13"><span class="kw-key">let</span> <span class="kw-var">vec</span> = { <span class="kw-var">x</span>: <span class="kw-val">0</span>, <span class="kw-var">y</span>: <span class="kw-val">0</span> }
+
+<span class="kw-var">vec</span>.<span class="kw-var">x</span> = <span class="kw-val">10</span>
+<span class="kw-var">vec</span>.<span class="kw-var">y</span> = <span class="kw-var">vec</span>.<span class="kw-var">x</span> + <span class="kw-val">12</span>
+</code></pre><p>Depending on which side of an <a href="#assignment-operators">Assignment Operator</a>
+the accessor expression is on, determines whether to read or assign a value.</p></section><section><h1 class="heading" id="unary-operators"><a href="#unary-operators">§</a> <strong>Unary Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Unary operators are made up of a single sub-expression prefixed by one of
+<code class="inline-code">!</code>, <code class="inline-code">~</code>, <code class="inline-code">-</code>, or <code class="inline-code">+</code>.</p><p>They have the highest <a href="./lan-lexical-grammar.html#op-unary">precedence</a> of all
+operators, even greater than the <a href="#multiplicative-operators">Multiplicative Operators</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-14')">Copy</a><code id="cb-14">+<span class="kw-var">a</span> - <span class="kw-var">b</span> <span class="kw-com">-- same as (+a) - b, NOT +(a - b)</span>
+-<span class="kw-var">a</span> * <span class="kw-var">d</span> <span class="kw-com">-- same as (-a) * d, NOT -(a * d)</span>
+
++-<span class="kw-var">a</span> <span class="kw-com">-- not valid, unary operators cannot be chained together</span>
+     <span class="kw-com">-- parenthesis should be used to resolve ambiguity: +(-a)</span>
+</code></pre><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">!a</code></td><td>Converts <code class="inline-code">a</code> into a Boolean value (True or False), returning <code class="inline-code">false</code> if <code class="inline-code">a</code> evaluates to True and <code class="inline-code">true</code> if <code class="inline-code">a</code> evaluates to False.</td></tr><tr><td><code class="inline-code">~a</code></td><td>Converts <code class="inline-code">a</code> into a 32-bit integer, returning a new number whose binary representation flips every 0 to a 1 and every 1 to a 0. e.g. <code class="inline-code">~0b1010</code> becomes <code class="inline-code">0b0101</code>.</td></tr><tr><td><code class="inline-code">-a</code></td><td>Converts <code class="inline-code">a</code> into a number, returning the number with the opposite sign. If <code class="inline-code">a</code> is positive then its negative counterpart is returned, and vice versa.</td></tr><tr><td><code class="inline-code">+a</code></td><td>Converts <code class="inline-code">a</code> into a number, returning that number.</td></tr></table></div></section><section><h1 class="heading" id="multiplicative-operators"><a href="#multiplicative-operators">§</a> <strong>Multiplicative Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Multiplicative operators are made up of two sub-expressions separated by one of
+<code class="inline-code">*</code>, <code class="inline-code">/</code>, <code class="inline-code">//</code>, or <code class="inline-code">%</code>.</p><p>They have the highest <a href="./lan-lexical-grammar.html#op-mult">precedence</a> of all
+the binary operators:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-15')">Copy</a><code id="cb-15"><span class="kw-var">a</span> + <span class="kw-var">b</span> * <span class="kw-var">c</span> <span class="kw-com">-- same as a + (b * c), NOT (a + b) * c</span>
+<span class="kw-var">a</span> / <span class="kw-var">b</span> - <span class="kw-var">c</span> <span class="kw-com">-- same as (a * b) - c, NOT a / (b - c)</span>
+
+<span class="kw-var">a</span> * <span class="kw-var">b</span> / <span class="kw-var">c</span> * <span class="kw-var">d</span> <span class="kw-com">-- same as ((a * b) / c) * d, NOT (a * b) / (c * d)</span>
+</code></pre><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a * b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning the result of multiplying them together.</td></tr><tr><td><code class="inline-code">a / b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning the result of dividing <code class="inline-code">a</code> by <code class="inline-code">b</code>.</td></tr><tr><td><code class="inline-code">a // b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into 32-bit integers, returning the quotient after dividing <code class="inline-code">a</code> by <code class="inline-code">b</code>.</td></tr><tr><td><code class="inline-code">a % b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning the remainder after dividing <code class="inline-code">a</code> by <code class="inline-code">b</code>. <br><br> <em>The remainder has the <strong>same sign as <code class="inline-code">a</code></strong>; if <code class="inline-code">a</code> is positive then the remainder will be positive, and if <code class="inline-code">a</code> is negative then the remainder will be negative.</em></td></tr></table></div></section><section><h1 class="heading" id="additive-operators"><a href="#additive-operators">§</a> <strong>Additive Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Additive operators are made up of two sub-expressions separated by one of
+<code class="inline-code">+</code> or <code class="inline-code">-</code>.</p><p>They have higher <a href="./lan-lexical-grammar.html#op-add">precedence</a>
+than all other binary operators except the <a href="#multiplicative-operators">Multiplicative Operators</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-16')">Copy</a><code id="cb-16"><span class="kw-var">a</span> * <span class="kw-var">b</span> + <span class="kw-var">c</span> <span class="kw-com">-- same as (a * b) + c, NOT a * (b + c)</span>
+<span class="kw-var">a</span> - <span class="kw-var">b</span> / <span class="kw-var">c</span> <span class="kw-com">-- same as a - (b / c), NOT (a - b) / c</span>
+
+<span class="kw-var">a</span> + <span class="kw-var">b</span> - <span class="kw-var">c</span> + <span class="kw-var">d</span> <span class="kw-com">-- same as ((a + b) - c) + d, NOT (a + b) - (c + d)</span>
+</code></pre><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a + b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning their sum.</td></tr><tr><td><code class="inline-code">a - b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning the result of subtracting <code class="inline-code">b</code> from <code class="inline-code">a</code>.</td></tr></table></div></section><section><h1 class="heading" id="bitwise-operators"><a href="#bitwise-operators">§</a> <strong>Bitwise Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Bitwise operators are made up of two sub-expressions separated by one of
+<code class="inline-code">&</code>, <code class="inline-code">|</code>, <code class="inline-code">^</code>, <code class="inline-code"><<</code>, or <code class="inline-code">>></code>.</p><p>They have a higher <a href="./lan-lexical-grammar.html#op-bitwise">precedence</a> than
+<a href="#relational-operators">Relational Operators</a>, but a lower precedence than
+<a href="#additive-operators">Additive Operators</a>.</p><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a & b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> to 32-bit integers, returning a new number whose binary representation is the logical <strong>AND</strong> of every bit from <code class="inline-code">a</code> and <code class="inline-code">b</code>. e.g. <code class="inline-code">0b1110 & 0b0111</code> becomes <code class="inline-code">0b0110</code>, since: <br><br>1 AND 0 = 0<br>1 AND 1 = 1<br>1 AND 1 = 1<br>0 AND 1 = 0</td></tr><tr><td><code class="inline-code">a &#124; b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> to 32-bit integers, returning a new number whose binary representation is the logical <strong>OR</strong> of every bit from <code class="inline-code">a</code> and <code class="inline-code">b</code>. e.g. <code class="inline-code">0b1110 &#124; 0b0111</code> becomes <code class="inline-code">0b1111</code>, since: <br><br>1 OR 0 = 1<br>1 OR 1 = 1<br>1 OR 1 = 1<br>0 OR 1 = 1</td></tr><tr><td><code class="inline-code">a ^ b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> to 32-bit integers, returning a new number whose binary representation is the logical <strong>XOR</strong> (exclusive <strong>OR</strong>) of every bit from <code class="inline-code">a</code> and <code class="inline-code">b</code>. e.g. <code class="inline-code">0b1110 ^ 0b0111</code> becomes <code class="inline-code">0b1001</code>, since: <br><br>1 XOR 0 = 1<br>1 XOR 1 = 0<br>1 XOR 1 = 0<br>0 XOR 1 = 1</td></tr><tr><td><code class="inline-code">a << b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> to 32-bit integers, shifting the binary representation of the value <code class="inline-code">a</code> to the <strong>left</strong> by <code class="inline-code">b</code>-many bits. e.g. <code class="inline-code">b0110 << 1</code> becomes <code class="inline-code">0b1100</code>. <br><br> <em>This has the effect of multiplying <code class="inline-code">a</code> by 2<sup><code>b</code></sup>.</em></td></tr><tr><td><code class="inline-code">a >> b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> to 32-bit integers, shifting the binary representation of the value <code class="inline-code">a</code> to the <strong>right</strong> by <code class="inline-code">b</code>-many bits.</td></tr></table></div></section><section><h1 class="heading" id="relational-operators"><a href="#relational-operators">§</a> <strong>Relational Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Relational operators are made up of two sub-expressions separated by one of
+<code class="inline-code"><</code>, <code class="inline-code"><=</code>, <code class="inline-code">></code>, or <code class="inline-code">>=</code>.</p><p>They have a higher <a href="./lan-lexical-grammar.html#op-relation">precedence</a> than
+<a href="#equality-operators">Equality Operators</a>, but a lower precedence than
+<a href="#bitwise-operators">Bitwise Operators</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-17')">Copy</a><code id="cb-17"><span class="kw-var">a</span> * <span class="kw-var">b</span> < <span class="kw-var">c</span>  <span class="kw-com">-- same as (a * b) < c, NOT a * (b < c)</span>
+<span class="kw-var">a</span> >= <span class="kw-var">b</span> / <span class="kw-var">c</span> <span class="kw-com">-- same as a >= (b / c), NOT (a >= b) / c</span>
+
+<span class="kw-var">a</span> < <span class="kw-var">b</span> < <span class="kw-var">c</span> <span class="kw-com">-- same as (a < b) < c, NOT (a < b) and (b < c)</span>
+</code></pre><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a < b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning whether <code class="inline-code">a</code> is less than <code class="inline-code">b</code>.</td></tr><tr><td><code class="inline-code">a <= b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning whether <code class="inline-code">a</code> is less than or equal to <code class="inline-code">b</code></td></tr><tr><td><code class="inline-code">a > b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning whether <code class="inline-code">a</code> is greater than <code class="inline-code">b</code>.</td></tr><tr><td><code class="inline-code">a >= b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> into numbers, returning whether <code class="inline-code">a</code> is greater than or equal to <code class="inline-code">b</code></td></tr></table></div></section><section><h1 class="heading" id="equality-operators"><a href="#equality-operators">§</a> <strong>Equality Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Equality operators are made up of two sub-expressions separated by one of <code class="inline-code">==</code>
+or <code class="inline-code">!=</code>.</p><p>They have a higher <a href="./lan-lexical-grammar.html#op-equal">precedence</a> than
+<a href="#bitwise-operators">Bitwise Operators</a>, but a lower precedence than
+<a href="#relational-operators">Relational Operators</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-18')">Copy</a><code id="cb-18"><span class="kw-var">a</span> * <span class="kw-var">b</span> == <span class="kw-var">c</span> <span class="kw-com">-- same as (a * b) == c, NOT a * (b == c)</span>
+<span class="kw-var">a</span> != <span class="kw-var">b</span> < <span class="kw-var">c</span> <span class="kw-com">-- same as a != (b < c), NOT (a != b) < c</span>
+
+<span class="kw-var">a</span> == <span class="kw-var">b</span> == <span class="kw-var">c</span> <span class="kw-com">-- same as ((a == b) == c), NOT (a == b) and (b == c)</span>
+</code></pre><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a == b</code></td><td>Compares the values of <code class="inline-code">a</code> and <code class="inline-code">b</code>, returning <code class="inline-code">true</code> if they are equal. <br><br> <em>Equivalence is determined by the behaviour of GML equality.</em></td></tr><tr><td><code class="inline-code">a != b</code></td><td>Compares the values of <code class="inline-code">a</code> and <code class="inline-code">b</code>, returning <code class="inline-code">true</code> if they are not equal.</td></tr></table></div></section><section><h1 class="heading" id="pipe-operators"><a href="#pipe-operators">§</a> <strong>Pipe Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Pipe operators are made up of two sub-expressions separated by one of
+<code class="inline-code"><|</code> or <code class="inline-code">|></code>.</p><p>They have a higher <a href="./lan-lexical-grammar.html#op-pipe">precedence</a> than
+<a href="#logical-operators">Logical Operators</a>, but a lower precedence than
+<a href="#bitwise-operators">Bitwise Operators</a>.</p><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a <&#124; b</code></td><td>Syntactic sugar for a function call <code class="inline-code">a(b)</code>.</td></tr><tr><td><code class="inline-code">a &#124;> b</code></td><td>Syntactic sugar for a function call <code class="inline-code">b(a)</code>.</td></tr></table></div></section><section><h1 class="heading" id="logical-operators"><a href="#logical-operators">§</a> <strong>Logical Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Logical operators are made up of two sub-expressions separated by one of
+<code class="inline-code">and</code>, <code class="inline-code">or</code>, or <code class="inline-code">xor</code>.</p><p>They have a higher <a href="./lan-lexical-grammar.html#op-logical">precedence</a> than
+<a href="#assignment-operators">Assignment Operators</a>, but a lower precedence than
+<a href="#pipe-operators">Pipe Operators</a>. Additionally, the <code class="inline-code">and</code> operator takes precedence over <code class="inline-code">or</code> and <code class="inline-code">xor</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-19')">Copy</a><code id="cb-19"><span class="kw-var">a</span> <span class="kw-key">and</span> <span class="kw-var">b</span> <span class="kw-key">or</span> <span class="kw-var">c</span> <span class="kw-com">-- same as (a and b) or c, NOT a and (b or c)</span>
+<span class="kw-var">a</span> <span class="kw-key">or</span> <span class="kw-var">b</span> <span class="kw-key">and</span> <span class="kw-var">c</span> <span class="kw-com">-- same as a or (b and c), NOT (a or b) and c</span>
+
+<span class="kw-var">a</span> <span class="kw-key">and</span> <span class="kw-var">b</span> <span class="kw-key">or</span> <span class="kw-var">c</span> <span class="kw-key">and</span> <span class="kw-var">d</span> <span class="kw-com">-- same as (a and b) or (c and d), NOT ((a and b) or c) and d</span>
+</code></pre><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a and b</code></td><td>Converts <code class="inline-code">a</code> to a Boolean value, returning <code class="inline-code">b</code> if <code class="inline-code">a</code> evaluates to True. Returns <code class="inline-code">a</code> otherwise. <br><br> <em>Does not evaluate <code class="inline-code">b</code> if <code class="inline-code">a</code> evaluates to False. This is called <a href="https://en.wikipedia.org/wiki/Short-circuit_evaluation">short-circuit evaluation</a>.</em></td></tr><tr><td><code class="inline-code">a or b</code></td><td>Converts <code class="inline-code">a</code> to a Boolean value, returning <code class="inline-code">b</code> if <code class="inline-code">a</code> evaluates to False. Returns <code class="inline-code">a</code> otherwise. <br><br> <em>Just like the <code class="inline-code">and</code> operator, <code class="inline-code">b</code> is not evaluated if <code class="inline-code">a</code> evaluates to True.</em></td></tr><tr><td><code class="inline-code">a xor b</code></td><td>Converts <code class="inline-code">a</code> and <code class="inline-code">b</code> to a Boolean values, returning <code class="inline-code">true</code> if the values of <code class="inline-code">a</code> and <code class="inline-code">b</code> are different. Returns <code class="inline-code">false</code> otherwise. <br><br> <em>Unlike <code class="inline-code">and</code> and <code class="inline-code">or</code>, the <code class="inline-code">xor</code> operator is <strong>not short-circuiting</strong>.</em></td></tr></table></div></section><section><h1 class="heading" id="assignment-operators"><a href="#assignment-operators">§</a> <strong>Assignment Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Assignment operators are made up of two sub-expressions separated by one of
+<code class="inline-code">=</code>, <code class="inline-code">*=</code>, <code class="inline-code">/=</code>, <code class="inline-code">-=</code>, or <code class="inline-code">+=</code>.</p><p>They have the lowest <a href="./lan-lexical-grammar.html#op-assign">precedence</a> of all
+binary operators:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-20')">Copy</a><code id="cb-20"><span class="kw-var">a</span> = <span class="kw-var">b</span> = <span class="kw-var">c</span> <span class="kw-com">-- same as a = (b = c), NOT a = c; b = c</span>
+
+<span class="kw-com">-- the result of an assignment operator is always 'undefined'</span>
+<span class="kw-key">let</span> <span class="kw-var">a</span>
+<span class="kw-key">let</span> <span class="kw-var">b</span> = (<span class="kw-var">a</span> = <span class="kw-val">2</span>) <span class="kw-com">-- a is 2, b is undefined</span>
+</code></pre><p>The value of the right-hand-side expression will be written to the left-hand-side
+assignment target expression.</p><div class="responsive-overflow"><table><tr><th>Operator</th><th>Description</th></tr><tr><td><code class="inline-code">a = b</code></td><td>Writes the value of <code class="inline-code">b</code> to <code class="inline-code">a</code></td></tr><tr><td><code class="inline-code">a *= b</code></td><td>Writes the value of <code class="inline-code">a * b</code> to <code class="inline-code">a</code></td></tr><tr><td><code class="inline-code">a /= b</code></td><td>Writes the value of <code class="inline-code">a / b</code> to <code class="inline-code">a</code></td></tr><tr><td><code class="inline-code">a -= b</code></td><td>Writes the value of <code class="inline-code">a - b</code> to <code class="inline-code">a</code></td></tr><tr><td><code class="inline-code">a += b</code></td><td>Writes the value of <code class="inline-code">a + b</code> to <code class="inline-code">a</code></td></tr></table></div><p>Valid assignment targets for the expression <code class="inline-code">a</code> include <a href="./lan-lexical-grammar.html#identifiers">Identifiers</a>
+(if they refer to a writable variable), and <a href="#accessor-expression">Accessor Expressions</a>.</p></section><section><h1 class="heading" id="if-expressions"><a href="#if-expressions">§</a> <strong>If Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Simple if expressions start with the <code class="inline-code">if</code> keyword, followed by a single
+sub-expression (the <em>condition</em>), and finally a <a href="#block-expressions">block</a>
+containing code to run when the condition evaluates to True:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-21')">Copy</a><code id="cb-21"><span class="kw-key">if</span> <span class="kw-var">a</span> > <span class="kw-var">b</span> {
+  <span class="kw-fun">show_message</span>(<span class="kw-val">"a is greater than b"</span>)
+}
+</code></pre><p>An optional <code class="inline-code">else</code> keyword can be used, followed by another block or if
+expression, to handle the case where the condition evaluates to False:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-22')">Copy</a><code id="cb-22"><span class="kw-key">if</span> <span class="kw-var">a</span> > <span class="kw-var">b</span> {
+  <span class="kw-fun">show_message</span>(<span class="kw-val">"a is greater than b"</span>)
+} <span class="kw-key">else</span> <span class="kw-key">if</span> <span class="kw-var">a</span> < <span class="kw-var">b</span> {
+  <span class="kw-fun">show_message</span>(<span class="kw-val">"a is less than b"</span>)
+} <span class="kw-key">else</span> {
+  <span class="kw-fun">show_message</span>(<span class="kw-val">"a and b are equal"</span>)
+}
+</code></pre><p>Unlike GML, only a block or another if expression can follow the <code class="inline-code">else</code> keyword.
+So shortcuts like <code class="inline-code">else while</code> or <code class="inline-code">else do</code> are not allowed.</p><p>As mentioned on the page about <a href="./lan-statements.html">Statements</a>, almost all
+statements found in GML are allowed to be used as expressions in Catspeak. This
+allows Catspeak to imitate <strong>ternary operators</strong> from GML:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-23')">Copy</a><code id="cb-23"><span class="kw-key">let</span> <span class="kw-var">max</span> = <span class="kw-key">if</span> <span class="kw-var">a</span> > <span class="kw-var">b</span> { <span class="kw-var">a</span> } <span class="kw-key">else</span> { <span class="kw-var">b</span> }
+
+<span class="kw-com">-- instead of a > b ? a : e</span>
+</code></pre></section><section><h1 class="heading" id="while-loops"><a href="#while-loops">§</a> <strong>While Loops</strong><a href="#" class="heading-top">top ^</a></h1><p>While loops start with the <code class="inline-code">while</code> keyword, followed by a single
+sub-expression (the <em>condition</em>), and finally a <a href="#block-expressions">block</a>
+containing code to run whilst the condition evaluates to True:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-24')">Copy</a><code id="cb-24"><span class="kw-com">-- counts down from 100</span>
+<span class="kw-key">let</span> <span class="kw-var">n</span> = <span class="kw-val">100</span>
+<span class="kw-key">while</span> <span class="kw-var">n</span> > <span class="kw-val">0</span> {
+  <span class="kw-fun">show_message</span>(<span class="kw-var">n</span>)
+  <span class="kw-var">n</span> -= <span class="kw-val">1</span>
+}
+</code></pre><p><a href="#continue-expressions">Continue Expressions</a> and <a href="#break-expressions">Break Expressions</a>
+are also valid from within while loops, allowing for a loop iteration to be
+skipped using <code class="inline-code">continue</code> or to break out of the loop early using <code class="inline-code">break</code>.</p></section><section><h1 class="heading" id="with-loops"><a href="#with-loops">§</a> <strong>With Loops</strong><a href="#" class="heading-top">top ^</a></h1><p>With loops behave similarly to GML. They start with the <code class="inline-code">with</code> keyword, followed
+by a single sub-expression (the <em>context</em>), and finally a <a href="#block-expressions">block</a>
+containing code to run in that context. This basically modifies the value
+returned by <a href="#self-expressions">Self Expressions</a> to instead return the context:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-25')">Copy</a><code id="cb-25"><span class="kw-key">let</span> <span class="kw-var">vec</span> = { <span class="kw-var">x</span> : <span class="kw-val">1</span>, <span class="kw-var">y</span> : <span class="kw-val">2</span> }
+<span class="kw-key">with</span> <span class="kw-var">vec</span> {
+  <span class="kw-fun">show_message</span>(<span class="kw-val">self</span>.<span class="kw-var">x</span> * <span class="kw-val">self</span>.<span class="kw-var">y</span>) <span class="kw-com">-- 'self' here refers to the 'vec' struct</span>
+}
+</code></pre><p>Unlike GML, <strong>the <code class="inline-code">self</code> keyword is not optional</strong>.</p><p><a href="#continue-expressions">Continue Expressions</a> and <a href="#break-expressions">Break Expressions</a>
+are also valid from within while loops, allowing for a loop iteration to be
+skipped using <code class="inline-code">continue</code> or to break out of the loop early using <code class="inline-code">break</code>. These
+only really become useful when using an <a href="https://manual.gamemaker.io/monthly/en/Quick_Start_Guide/Objects_And_Instances.htm">GML object asset</a>
+as the context, as it will loop over every active instance of that object that
+exists in the current room.</p></section><section><h1 class="heading" id="continue-expressions"><a href="#continue-expressions">§</a> <strong>Continue Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>The <code class="inline-code">continue</code> expression will immediately jump to the start of the current
+<a href="#while-loops">While Loop</a> or <a href="#with-loops">With Loop</a>, entering the next
+iteration of the loop if one exists.</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-26')">Copy</a><code id="cb-26"><span class="kw-key">let</span> <span class="kw-var">n</span> = <span class="kw-val">10</span>
+<span class="kw-key">while</span> <span class="kw-var">n</span> > <span class="kw-val">0</span> {
+  <span class="kw-var">n</span> -= <span class="kw-val">1</span>
+  <span class="kw-key">continue</span> <span class="kw-com">-- will skip the remainder of the loop</span>
+  <span class="kw-var">n</span> += <span class="kw-val">1</span>   <span class="kw-com">-- this line will never be evaluated</span>
+}
+</code></pre></section><section><h1 class="heading" id="break-expressions"><a href="#break-expressions">§</a> <strong>Break Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>The <code class="inline-code">break</code> expression will immediately terminate the execution of the current
+<a href="#while-loops">While Loop</a> or <a href="#with-loops">With Loop</a>, skipping the rest of
+the current iteration.</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-27')">Copy</a><code id="cb-27"><span class="kw-key">let</span> <span class="kw-var">n</span> = <span class="kw-val">0</span>
+<span class="kw-key">while</span> <span class="kw-val">true</span> {
+  <span class="kw-var">n</span> += <span class="kw-val">1</span>
+  <span class="kw-key">if</span> <span class="kw-var">n</span> > <span class="kw-val">10</span> {
+    <span class="kw-com">-- break out of the loop when the number is greater than 10</span>
+    <span class="kw-key">break</span>
+  }
+}
+
+<span class="kw-fun">show_message</span>(<span class="kw-var">n</span>) <span class="kw-com">-- n = 11</span>
+</code></pre><p>Break expressions start with the <code class="inline-code">break</code> keyword, optionally followed by a
+single sub-expression. If this sub-expression is supplied then then it is used
+as the result of loop it broke out of:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-28')">Copy</a><code id="cb-28"><span class="kw-com">-- loop until some random number greater than 75 is generated, then</span>
+<span class="kw-com">-- store it inside of the 'random_result' variable</span>
+<span class="kw-key">let</span> <span class="kw-var">random_result</span> = <span class="kw-key">while</span> <span class="kw-val">true</span> {
+  <span class="kw-key">let</span> <span class="kw-var">n</span> = <span class="kw-fun">irandom_range</span>(<span class="kw-val">0</span>, <span class="kw-val">100</span>)
+  <span class="kw-key">if</span> <span class="kw-var">n</span> > <span class="kw-val">75</span> {
+    <span class="kw-key">break</span> <span class="kw-var">n</span>
+  }
+}
+</code></pre></section><section><h1 class="heading" id="block-expressions"><a href="#block-expressions">§</a> <strong>Block Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Blocks in Catspeak are made up of a sequence of <a href="./lan-statements.html">Statements</a>
+wrapped between <code class="inline-code">{</code> and <code class="inline-code">}</code>. Many expressions (such as <a href="#if-expressions">If Expressions</a>,
+<a href="#while-loops">While Loops</a>, and <a href="#function-expressions">Function Expressions</a>)
+use blocks for the purposes of control flow.</p><p>Block expressions start with the <code class="inline-code">do</code> keyword
+(<em>not to be confused with <code class="inline-code">do</code> loops from GML</em>) followed by a block:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-29')">Copy</a><code id="cb-29"><span class="kw-key">let</span> <span class="kw-var">r</span> = <span class="kw-key">do</span> {
+  <span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-val">1</span>
+  <span class="kw-key">let</span> <span class="kw-var">b</span> = <span class="kw-val">2</span>
+  <span class="kw-var">a</span> + <span class="kw-var">b</span> <span class="kw-com">-- a + b is used as the value of the whole block expression</span>
+}
+
+<span class="kw-com">-- r is 3 here, because a + b = 3</span>
+</code></pre><p>Each statement in a block is evaluated in sequence from top-to-bottom, with the
+last value (if one exists) being used as the result. If the last statement of
+a block expression is not an expression, then the result of the block is <code class="inline-code">undefined</code>.</p><p>Unlike other expressions which use blocks, block expressions have no control
+flow mechanism. In many cases, using a block expression or not has no real
+impact on the behaviour of the code:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-30')">Copy</a><code id="cb-30"><span class="kw-com">-- with a block expression</span>
+<span class="kw-key">do</span> {
+  <span class="kw-key">let</span> <span class="kw-var">message</span> = <span class="kw-val">"five pebbles"</span>
+  <span class="kw-fun">something</span>()
+  <span class="kw-fun">something_else</span>(<span class="kw-var">message</span>)
+}
+<span class="kw-fun">another_thing</span>()
+
+<span class="kw-com">-- without a block expression</span>
+<span class="kw-key">let</span> <span class="kw-var">message</span> = <span class="kw-val">"five pebbles"</span>
+<span class="kw-fun">something</span>()
+<span class="kw-fun">something_else</span>(<span class="kw-var">message</span>)
+<span class="kw-fun">another_thing</span>()
+</code></pre><p>However, reiterating what was said in the section on <a href="./lan-statements.html#let-statements">Let Statements</a>,
+all local variables defined within a block will become inaccessible after the
+block has ended. This is different from GML variables, whose definitions are
+hoisted.</p></section><section><h1 class="heading" id="function-expressions"><a href="#function-expressions">§</a> <strong>Function Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Function expressions start with the <code class="inline-code">fun</code> keyword, followed by an optional
+sequence of comma-separated identifiers (the <em>parameters</em>) between <code class="inline-code">(</code> and <code class="inline-code">)</code>,
+and finally a single <a href="#block-expressions">block</a> containing the <em>function body</em>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-31')">Copy</a><code id="cb-31"><span class="kw-key">let</span> <span class="kw-var">add</span> = <span class="kw-key">fun</span> (<span class="kw-var">a</span>, <span class="kw-var">b</span>) {
+  <span class="kw-key">return</span> <span class="kw-var">a</span> + <span class="kw-var">b</span>
+}
+
+<span class="kw-fun">show_message</span>(<span class="kw-fun">add</span>(<span class="kw-val">1</span>, <span class="kw-val">2</span>)) <span class="kw-com">-- prints '3'</span>
+</code></pre><p>Unlike GML, <strong>all functions in Catspeak are anonymous</strong>. There is no such thing
+as a "named function" (i.e. <code class="inline-code">function foo() { }</code> in GML).</p></section><section><h1 class="heading" id="return-expressions"><a href="#return-expressions">§</a> <strong>Return Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Return expressions start with the <code class="inline-code">return</code> keyword, optionally followed by a
+single sub-expression (the <em>return value</em>). A return expression will
+immediately terminate the current function call, using the return value as the
+result of the function call.</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-32')">Copy</a><code id="cb-32"><span class="kw-key">let</span> <span class="kw-var">max</span> = <span class="kw-key">fun</span> (<span class="kw-var">a</span>, <span class="kw-var">b</span>) {
+    <span class="kw-key">if</span> (<span class="kw-var">a</span> > <span class="kw-var">b</span>) {
+        <span class="kw-key">return</span> <span class="kw-var">a</span>
+    }
+    <span class="kw-key">return</span> <span class="kw-var">b</span>
+}
+
+<span class="kw-key">let</span> <span class="kw-var">max_of_12_9</span> = <span class="kw-fun">max</span>(<span class="kw-val">12</span>, <span class="kw-val">9</span>) <span class="kw-com">-- 12</span>
+<span class="kw-key">let</span> <span class="kw-var">max_of_5_8</span> = <span class="kw-fun">max</span>(<span class="kw-val">5</span>, <span class="kw-val">8</span>)   <span class="kw-com">-- 8</span>
+</code></pre><p>If no return value exists, then <code class="inline-code">undefined</code> is returned instead.</p></section><section><h1 class="heading" id="match-expressions"><a href="#match-expressions">§</a> <strong>Match Expressions</strong><a href="#" class="heading-top">top ^</a></h1><p>Match expressions start with the <code class="inline-code">match</code> keyword, followed by a
+single sub-expression (the <em>condition</em>), and then zero or more <em>match cases</em>
+wrapped between <code class="inline-code">{</code> and <code class="inline-code">}</code>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-33')">Copy</a><code id="cb-33"><span class="kw-key">let</span> <span class="kw-var">colour</span>
+<span class="kw-key">match</span> <span class="kw-var">player</span> {
+  <span class="kw-key">case</span> <span class="kw-val">"Dave"</span> { <span class="kw-var">colour</span> = <span class="kw-val">#e00707</span> }
+  <span class="kw-key">case</span> <span class="kw-val">"Rose"</span> { <span class="kw-var">colour</span> = <span class="kw-val">#b536da</span> }
+  <span class="kw-key">case</span> <span class="kw-val">"Dash"</span> { <span class="kw-var">colour</span> = <span class="kw-val">#f2a400</span> }
+  <span class="kw-key">case</span> <span class="kw-val">"Roxy"</span> { <span class="kw-var">colour</span> = <span class="kw-val">#ff6ff2</span> }
+  <span class="kw-key">else</span>        { <span class="kw-fun">show_message</span>(<span class="kw-val">"invalid player"</span>) }
+}
+</code></pre><p>A match case can be one of two things:</p><ul><li><p>A sequence of cases starting with the <code class="inline-code">case</code> keyword, followed by a single
+sub-expression representing the expected value of the match condition.</p></li><li><p>Or the <code class="inline-code">else</code> keyword, representing the <em>default case</em>.</p></li></ul><p>Every match case ends in a <a href="#block-expressions">block</a> containing code to run
+if that case is satisfies. The default case only runs its code if no other case
+is satisfied.</p><p>For most intents and purposes, match expressions are syntactic sugar for <a href="#if-expressions">If Expressions</a>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-34')">Copy</a><code id="cb-34"><span class="kw-com">-- match expression</span>
+<span class="kw-key">let</span> <span class="kw-var">result</span> = <span class="kw-key">match</span> <span class="kw-var">chr</span> {
+  <span class="kw-key">case</span> <span class="kw-val">'A'</span> { <span class="kw-fun">some_a</span>() }
+  <span class="kw-key">case</span> <span class="kw-val">'B'</span> { <span class="kw-fun">some_b</span>() }
+  <span class="kw-key">case</span> <span class="kw-val">'C'</span> { <span class="kw-fun">some_c</span>() }
+  <span class="kw-key">else</span>     { <span class="kw-fun">some_else</span>() }
+}
+
+<span class="kw-com">-- equivalent if expression</span>
+<span class="kw-key">let</span> <span class="kw-var">result</span> = <span class="kw-key">if</span> <span class="kw-var">chr</span> == <span class="kw-val">'A'</span> {
+  <span class="kw-fun">some_a</span>()
+} <span class="kw-key">else</span> <span class="kw-key">if</span> <span class="kw-var">chr</span> == <span class="kw-val">'B'</span> {
+  <span class="kw-fun">some_b</span>()
+} <span class="kw-key">else</span> <span class="kw-key">if</span> <span class="kw-var">chr</span> == <span class="kw-val">'C'</span> {
+  <span class="kw-fun">some_c</span>()
+} <span class="kw-key">else</span> {
+  <span class="kw-fun">some_else</span>()
+}
+</code></pre></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>

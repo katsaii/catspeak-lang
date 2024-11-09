@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="Documentation for the Catspeak programming language."><title>Catspeak Reference :: Overview of Language Reference</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lan-overview.html"><mark>Language Reference</mark></a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lan-overview.html"><mark>Overview</mark></a></li><li><a href="lan-lexical-grammar.html">Lexical Grammar</a></li><li><a href="lan-statements.html">Statements</a></li><li><a href="lan-expressions.html">Expressions</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#similarity-to-gml">Similarity to GML</a></li><li><a href="#pitfalls">Pitfalls</a></li></ul></aside><main><article><h1 class="chapter-title">Overview</h1><p><em>See the pages on <a href="./lan-lexical-grammar.html">Lexical Grammar</a>,
+<a href="./lan-statements.html">Statements</a>, and <a href="./lan-expressions.html">Expressions</a> for more in-depth information on the Catspeak language syntax.</em></p><section><h1 class="heading" id="similarity-to-gml"><a href="#similarity-to-gml">§</a> <strong>Similarity to GML</strong><a href="#" class="heading-top">top ^</a></h1><p>Catspeak is a simple imperative language with a vaguely similar syntax to
+GameMaker Language (GML) and JavaScript. Consider the following program written
+in GML to calculate the factorial of a number <code class="inline-code">n</code>:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-0')">Copy</a><code id="cb-0"><span class="kw-com">// GML CODE</span>
+<span class="kw-key">function</span> <span class="kw-fun">factorial</span>(<span class="kw-var">n</span>) {
+    <span class="kw-key">var</span> <span class="kw-var">m</span> = <span class="kw-val">1</span>;
+    <span class="kw-key">if</span> (<span class="kw-var">n</span> > <span class="kw-val">1</span>) {
+        <span class="kw-var">m</span> = <span class="kw-var">n</span> * <span class="kw-fun">factorial</span>(<span class="kw-var">n</span> - <span class="kw-val">1</span>);
+    }
+    <span class="kw-key">return</span> <span class="kw-var">m</span>;
+}
+
+<span class="kw-fun">factorial</span>(<span class="kw-val">5</span>); <span class="kw-com">// output: 120</span>
+</code></pre><p>The same code re-written in the Catspeak programming language looks like:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-1')">Copy</a><code id="cb-1"><span class="kw-com">-- CATSPEAK CODE</span>
+<span class="kw-var">factorial</span> = <span class="kw-key">fun</span> (<span class="kw-var">n</span>) {
+    <span class="kw-key">let</span> <span class="kw-var">m</span> = <span class="kw-val">1</span>
+    <span class="kw-key">if</span> (<span class="kw-var">n</span> > <span class="kw-val">1</span>) {
+        <span class="kw-var">m</span> = <span class="kw-var">n</span> * <span class="kw-fun">factorial</span>(<span class="kw-var">n</span> - <span class="kw-val">1</span>)
+    }
+    <span class="kw-key">return</span> <span class="kw-var">m</span>
+}
+
+<span class="kw-fun">factorial</span>(<span class="kw-val">5</span>) <span class="kw-com">-- output: 120</span>
+</code></pre><p>The "shape" of the code is similar to GML, but there are some immediately
+obvious differences here. For example: the <code class="inline-code">m</code> variable
+being declared using <code class="inline-code">let</code> instead of <code class="inline-code">var</code>; <code class="inline-code">fun</code> instead of <code class="inline-code">function</code>; and
+comments using <code class="inline-code">--</code> instead of <code class="inline-code">//</code>. All of these and more are covered in the
+<a href="#pitfalls">Pitfalls</a> section.</p></section><section><h1 class="heading" id="pitfalls"><a href="#pitfalls">§</a> <strong>Pitfalls</strong><a href="#" class="heading-top">top ^</a></h1><p>Catspeak is <strong>not</strong> GML, and so you should not assume it will behave
+identically to GML. This section lists the common differences between GML and
+the Catspeak programming language:</p><ul><li><p><strong>Variables</strong>:</p><ul><li><p>Local variables in Catspeak are <strong>declared using <code class="inline-code">let</code></strong>, not <code class="inline-code">var</code>.
+(See <a href="./lan-expressions.html#let-statements">Let Statements</a>)</p></li><li><p>Local variables and function definitions are <strong>not <a href="https://developer.mozilla.org/en-US/docs/Glossary/Hoisting">hoisted</a></strong>;
+that is, <em>using local variables and functions before they are defined</em>.
+(See <a href="./lan-expressions.html#let-statements">Let Statements</a> and <a href="./lan-expressions.html#function-expressions">Function Expressions</a>)</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-2')">Copy</a><code id="cb-2"><span class="kw-fun">show_mesage</span>(<span class="kw-var">my_var</span>) <span class="kw-com">-- does NOT print '2'</span>
+
+<span class="kw-key">let</span> <span class="kw-var">my_var</span> = <span class="kw-val">2</span>
+</code></pre></li><li><p>Local variables can <strong>only be used inside of the block they are defined in</strong>.
+(See <a href="./lan-expressions.html#let-statements">Let Statements</a>)</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-3')">Copy</a><code id="cb-3"><span class="kw-key">if</span> <span class="kw-var">condition</span> {
+   <span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-val">"hello chat"</span>
+}
+<span class="kw-key">return</span> <span class="kw-var">a</span> <span class="kw-com">-- does NOT refer to the local variable 'a' here</span>
+</code></pre></li><li><p><strong>Global variables are not accessible</strong> by default. There is no built-in
+<code class="inline-code">global</code> object, this must be explicitly exposed by the modding API.</p></li><li><p>To access instance variables you need to <strong>explicitly write <code class="inline-code">self</code></strong>.
+(See <a href="./lan-expressions.html#self-expressions">Self Expressions</a>)</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-4')">Copy</a><code id="cb-4"><span class="kw-key">let</span> <span class="kw-var">a</span> = <span class="kw-var">item</span>      <span class="kw-com">-- 'item' refers to a Catspeak variable here</span>
+<span class="kw-key">let</span> <span class="kw-var">b</span> = <span class="kw-val">self</span>.<span class="kw-var">item</span> <span class="kw-com">-- 'item' refers to a GML instance variable here</span>
+</code></pre></li></ul></li><li><p><strong>Syntax</strong>:</p><ul><li><p><code class="inline-code">++</code> and <code class="inline-code">--</code> are <strong>not valid operators</strong> use <code class="inline-code">i += 1</code> and <code class="inline-code">i -= 1</code> instead.
+(See <a href="./lan-lexical-grammar.html#operators">Operators</a>)</p></li><li><p>Catspeak reserves <strong><code class="inline-code">--</code> for comments</strong>.
+(See <a href="./lan-lexical-grammar.html#operators">Operators</a> and <a href="./lan-lexical-grammar.html#comments">Comments</a>)</p></li><li><p>Catspeak reserves <code class="inline-code">//</code> for <strong>integer division</strong>.
+(See <a href="./lan-lexical-grammar.html#operators">Operators</a> and <a href="./lan-lexical-grammar.html#comments">Comments</a>)</p></li><li><p>The ternary operator <strong><code class="inline-code">condition ? a : b</code> does not exist</strong> in Catspeak, instead
+the <a href="./lan-expressions.html#if-expressions">If Expression</a> should be used
+<code class="inline-code">if a > b { a } else { b }</code></p></li><li><p><strong><code class="inline-code">for</code>, <code class="inline-code">repeat</code>, and <code class="inline-code">do</code> loops do not exist</strong>. Instead you should use
+<a href="./lan-expressions.html#while-loops">While Loops</a>.</p></li><li><p><strong><code class="inline-code">switch</code> does not exist</strong>. Instead you should use <a href="./lan-expressions.html#while-loops">Match Expressions</a>.</p></li><li><p>There are <strong>no <code class="inline-code">[@</code> and <code class="inline-code">[$</code> accessors</strong>, both structs and arrays can be
+indexed using <code class="inline-code">a[i]</code>.
+(See <a href="./lan-expressions.html#accessor-expressions">Accessor Expressions</a>)</p></li><li><p>There are <strong>no <code class="inline-code">[#</code>, <code class="inline-code">[?</code>, and <code class="inline-code">[|</code> accessors</strong>. Data structures should use
+functions like <code class="inline-code">ds_list_get</code> and <code class="inline-code">ds_list_set</code>, if exposed by the modding
+API.</p></li></ul></li></ul></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="A brief overview of Catspeak."><title>Catspeak Reference :: Getting Started of Home</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html"><mark>Home</mark></a></li><li><a href="lan-overview.html">Language Reference</a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="hom-welcome.html">Welcome</a></li><li><a href="hom-getting-started.html"><mark>Getting Started</mark></a></li><li><a href="hom-catspeak-for-developers.html">Catspeak For Developers</a></li><li><a href="hom-catspeak-for-modders.html">Catspeak For Modders</a></li><li><a href="hom-license.html">License</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#installation">Installation</a></li><li><a href="#basic-usage">Basic Usage</a></li></ul></aside><main><article><h1 class="chapter-title">Getting Started</h1><section><h1 class="heading" id="installation"><a href="#installation">§</a> <strong>Installation</strong><a href="#" class="heading-top">top ^</a></h1><ul><li><p>Get a recent release of Catspeak from the <a href="https://github.com/katsaii/catspeak-lang/releases">GitHub releases page</a>.
+You should see a download for a file with the extension <code class="inline-code">.yymps</code>.</p></li><li><p>Open your project file in the GameMaker IDE.</p></li><li><p>Navigate to the toolbar at the top of the IDE and find "Tools". Click this
+and select "Import Local Package" from the drop-down menu.</p></li><li><p>Select the <code class="inline-code">.yymps</code> file you downloaded, and follow the wizard to import
+the Catspeak resources. If you're not sure what to import, click "Add All".</p></li></ul><p>Now you're setup, see the <a href="#basic-usage">Basic Usage</a> section for an
+introductory example, or read through the <a href="./hom-catspeak-for-developers.html">Catspeak for Developers</a>
+chapter for a full-fat overview.</p></section><section><h1 class="heading" id="basic-usage"><a href="#basic-usage">§</a> <strong>Basic Usage</strong><a href="#" class="heading-top">top ^</a></h1><p>A minimal working example of a function which returns a message:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-0')">Copy</a><code id="cb-0"><span class="kw-com">// parse Catspeak code</span>
+<span class="kw-key">var</span> <span class="kw-var">hir</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">parseString</span>(<span class="kw-val">@'
+  let catspeak = "Catspeak"
+
+  return "hello! from within " + catspeak
+'</span>);
+
+<span class="kw-com">// compile Catspeak code into a callable GML function</span>
+<span class="kw-key">var</span> <span class="kw-var">getMessage</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">compile</span>(<span class="kw-var">hir</span>);
+
+<span class="kw-com">// call the Catspeak code just like you would any other GML function!</span>
+<span class="kw-fun">show_message</span>(<span class="kw-fun">getMessage</span>());
+</code></pre><p>Create an object, then copy-and-paste this code into its create event to see
+magic happen.</p></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>
