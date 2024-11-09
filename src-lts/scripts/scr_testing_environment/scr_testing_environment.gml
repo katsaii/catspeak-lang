@@ -808,3 +808,15 @@ test_add(function() : Test("expose-everything-assets") constructor {
     assertEq(3, result.depth);
     instance_destroy(result);
 });
+
+test_add(function() : Test("layer-tilemap-create") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
+        return layer_tilemap_create("Instances", 0, 0, tm_unit_test, 2, 2);
+    ');
+    var fun = env.compile(ir);
+    var result = fun();
+    assert(layer_tilemap_exists("Instances", result));
+    layer_tilemap_destroy(result);
+});

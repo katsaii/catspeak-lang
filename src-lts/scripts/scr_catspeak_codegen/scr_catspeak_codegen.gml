@@ -1404,6 +1404,34 @@ function __catspeak_expr_op_2__() {
     return op(lhs_, rhs_);
 }
 
+function __catspeak_script_execute_ext_fixed(callee_, args_) {
+    // LTS has issues with calling functions that have many args, so fix that here
+    var n = array_length(args_);
+    switch (n) {
+        // triangle of doom gets a free pass on line length restrictions
+        // as a treat
+        // TODO :: slow as hell
+    case 0: return callee_();
+    case 1: return callee_(args_[0]);
+    case 2: return callee_(args_[0], args_[1]);
+    case 3: return callee_(args_[0], args_[1], args_[2]);
+    case 4: return callee_(args_[0], args_[1], args_[2], args_[3]);
+    case 5: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4]);
+    case 6: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5]);
+    case 7: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6]);
+    case 8: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7]);
+    case 9: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8]);
+    case 10: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9]);
+    case 11: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10]);
+    case 12: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11]);
+    case 13: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12]);
+    case 14: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13]);
+    case 15: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14]);
+    case 16: return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14], args_[15]);
+    }
+    return script_execute_ext(callee_, args_);
+}
+
 /// @ignore
 /// @return {Any}
 function __catspeak_expr_call_method__() {
@@ -1413,6 +1441,7 @@ function __catspeak_expr_call_method__() {
     var callee_;
     if (is_array(collection_)) {
         callee_ = collection_[key_];
+        collection_ = undefined;
     } else if (__catspeak_is_withable(collection_)) {
         callee_ = collection_[$ key_];
     } else {
@@ -1436,10 +1465,9 @@ function __catspeak_expr_call_method__() {
             i += 1;
         }
     }
-    var shared_ = shared;
     with (method_get_self(callee_) ?? collection_) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute_ext(calleeIdx, args_);
+        return __catspeak_script_execute_ext_fixed(calleeIdx, args_);
     }
 }
 
@@ -1469,7 +1497,7 @@ function __catspeak_expr_call__() {
         (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals))
     ) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute_ext(calleeIdx, args_);
+        return __catspeak_script_execute_ext_fixed(calleeIdx, args_);
     }
 }
 
@@ -1488,7 +1516,7 @@ function __catspeak_expr_call_0__() {
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx);
+        return calleeIdx();
     }
 }
 
@@ -1509,7 +1537,7 @@ function __catspeak_expr_call_1__() {
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1);
+        return calleeIdx(arg1);
     }
 }
 
@@ -1531,7 +1559,7 @@ function __catspeak_expr_call_2__() {
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2);
+        return calleeIdx(arg1, arg2);
     }
 }
 
@@ -1554,7 +1582,7 @@ function __catspeak_expr_call_3__() {
 	
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2, arg3);
+        return calleeIdx(arg1, arg2, arg3);
     }
 }
 
@@ -1578,7 +1606,7 @@ function __catspeak_expr_call_4__() {
 
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2, arg3, arg4);
+        return calleeIdx(arg1, arg2, arg3, arg4);
     }
 }
 
@@ -1603,7 +1631,7 @@ function __catspeak_expr_call_5__() {
 
     with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
-        return script_execute(calleeIdx, arg1, arg2, arg3, arg4, arg5);
+        return calleeIdx(arg1, arg2, arg3, arg4, arg5);
     }
 }
 
