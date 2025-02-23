@@ -48,7 +48,7 @@ test_add(function () : Test("env-self-inst") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString(@'self');
     var gmlFunc = env.compile(ir);
-    var inst = instance_create_depth(0, 0, 0, obj_unit_test_inst);
+    var inst = instance_create_depth(0, 0, 0, obj_testing_blank);
     gmlFunc.setSelf(inst);
     assertEq(catspeak_special_to_struct(inst), gmlFunc());
     instance_destroy(inst);
@@ -432,7 +432,7 @@ test_add(function () : Test("env-gml-function-by-substring-not-exist") construct
 
 test_add(function () : Test("env-object-index") constructor {
     try {
-        instance_create_depth(0, 0, 0, obj_unit_test_obj);
+        instance_create_depth(0, 0, 0, obj_testing_env_object_index);
     } catch (e) {
         fail(e.message);
     }
@@ -642,19 +642,19 @@ test_add(function() : Test("with-noone") constructor {
 
 test_add(function() : Test("with-inst") constructor {
     var env = new CatspeakEnvironment();
-    env.interface.exposeAsset("obj_unit_test_inst");
+    env.interface.exposeAsset("obj_testing_blank");
     env.interface.exposeFunctionByName(array_push);
     var ir = env.parseString(@'
         let arr = [];
         let n = 0;
-        with obj_unit_test_inst {
+        with obj_testing_blank {
             array_push(arr, self);
             n += 1;
         }
         return { arr, n };
     ');
-    var inst1 = instance_create_depth(0, 0, 0, obj_unit_test_inst);
-    var inst2 = instance_create_depth(0, 0, 0, obj_unit_test_inst);
+    var inst1 = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var inst2 = instance_create_depth(0, 0, 0, obj_testing_blank);
     var gmlFunc = env.compile(ir);
     var result = gmlFunc();
     assertTypeof(result, "struct");
@@ -797,7 +797,7 @@ test_add(function() : Test("expose-everything-assets") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
-        let inst = instance_create_depth(1, 2, 3, obj_unit_test_inst);
+        let inst = instance_create_depth(1, 2, 3, obj_testing_blank);
         return inst;
     ');
     var fun = env.compile(ir);
@@ -845,4 +845,9 @@ test_add(function() : Test("expose-everything-inst-deactivate") constructor {
         show_debug_message("--- END TEST ---")
     '));
     f();
+});
+
+test_add(function() : AsyncTest("moss-set-self") constructor {
+    var me = self;
+    instance_create_depth(0, 0, 0, obj_testing_moss_oinitial, { test : me });
 });

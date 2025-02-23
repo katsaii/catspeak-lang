@@ -1066,14 +1066,19 @@ function __catspeak_function__() {
     for(var argI = argument_count - 1; argI >= 0; argI -= 1) {
         args[@ argI] = argument[argI];	
     }
-    var value;
+    var value = undefined;
+    var throwValue = undefined;
+    var doThrowValue = false;
+    // the finally block doesn't execute sometimes if there's a `break`,
+    // `throw`, or `continue` in the try/catch blocks
     try {
         value = program();
     } catch (e) {
         if (e == global.__catspeakGmlReturnRef) {
             value = e[0];
         } else {
-            throw e;
+            throwValue = e;
+            doThrowValue = true;
         }
     } finally {
         if (isRecursing) {
@@ -1096,6 +1101,9 @@ function __catspeak_function__() {
             array_resize(args, 0);
             array_resize(args, argCount);
         }
+    }
+    if (doThrowValue) {
+        throw throwValue;
     }
     return value;
 }
@@ -1318,18 +1326,32 @@ function __catspeak_expr_loop_general__() {
 /// @return {Any}
 function __catspeak_expr_loop_with__() {
     var body_ = body;
+    var throwValue = undefined;
+    var doThrowValue = false;
+    var returnValue = undefined;
+    var doReturnValue = false;
     with (scope()) {
+        // the finally block doesn't execute sometimes if there's a `break`,
+        // `throw`, or `continue` in the try/catch blocks
         __CATSPEAK_BEGIN_SELF = self;
         try {
             body_();
         } catch (e) {
             if (e == global.__catspeakGmlBreakRef) {
-                return e[0];
+                returnValue = e[0];
+                doReturnValue = true;
             } else if (e != global.__catspeakGmlContinueRef) {
-                throw e;
+                throwValue = e;
+                doThrowValue = true;
             }
         }
         __CATSPEAK_END_SELF;
+        if (doThrowValue) {
+            throw throwValue;
+        }
+        if (doReturnValue) {
+            return returnValue;
+        }
     }
     return undefined;
 }

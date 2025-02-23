@@ -33,10 +33,17 @@ function Test(name) constructor {
     self.name = __cat(name);
     self.fails = [];
     self.automatic = true;
+    self.completed = false;
 
     catspeak_force_init();
 
+    hasFailed = function () { return array_length(fails) > 0 };
+
     complete = function () {
+        if (completed) {
+            show_message("test case already completed!");
+            return;
+        }
         var stats = test_stats();
         stats.totalActive -= 1;
         var passed = array_length(fails) < 1;
