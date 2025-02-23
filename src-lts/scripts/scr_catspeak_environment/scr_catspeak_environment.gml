@@ -1108,11 +1108,17 @@ function catspeak_method(self_, callee) {
     if (is_catspeak(callee)) {
         if (method_get_index(callee) == __catspeak_function_method__) {
             var methodData = method_get_self(callee);
+            if (self_ == undefined) {
+                return methodData.callee;
+            }
             return method({
                 callee : methodData.callee,
                 self_ : self_,
             }, __catspeak_function_method__);
         } else {
+            if (self_ == undefined) {
+                return callee;
+            }
             return method({
                 callee : callee,
                 self_ : self_,

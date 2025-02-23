@@ -874,3 +874,24 @@ test_add(function() : Test("get-self-method") constructor {
     var result = fun();
     assertEq(result[0], result[1]);
 });
+
+test_add(function() : Test("method-undefined") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        return fun { self };
+    ');
+    var fun = env.compile(ir);
+    var result = fun();
+    var s1 = { tag : "A" };
+    var s2 = { tag : "B" };
+    var f1 = catspeak_method(s1, result);
+    var f2 = catspeak_method(s2, result);
+    assertEq("A", f1().tag);
+    assertEq("B", f2().tag);
+    var f3 = catspeak_method(undefined, f1);
+    with ({ tag : "C" }) {
+        other.assertEq("C", catspeak_execute(f3).tag);
+    }
+    var f4 = catspeak_method(undefined, result);
+    assertEq("D", catspeak_execute_ext(f3, { tag : "D" }).tag);
+});
