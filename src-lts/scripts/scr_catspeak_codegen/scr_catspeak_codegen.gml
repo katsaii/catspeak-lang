@@ -1494,10 +1494,18 @@ function __catspeak_expr_call_method__() {
             i += 1;
         }
     }
+    var result = undefined;
+    // a weird sharp edge here means that `__CATSPEAK_BEGIN_SELF` needs
+    // to use `catspeak_get_self`, but the actual with loop needs to use
+    // `method_get_self` (see test "get-self-method")
+    __CATSPEAK_BEGIN_SELF = catspeak_get_self(callee_) ?? collection_;
     with (method_get_self(callee_) ?? collection_) {
         var calleeIdx = method_get_index(callee_);
-        return __catspeak_script_execute_ext_fixed(calleeIdx, args_);
+        result = __catspeak_script_execute_ext_fixed(calleeIdx, args_);
+        break;
     }
+    __CATSPEAK_END_SELF;
+    return result;
 }
 
 /// @ignore

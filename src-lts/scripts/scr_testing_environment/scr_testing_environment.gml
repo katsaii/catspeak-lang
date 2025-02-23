@@ -810,13 +810,14 @@ test_add(function() : Test("expose-everything-assets") constructor {
 });
 
 test_add(function() : Test("expose-everything-aaaaa") constructor {
-    Catspeak.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
-    var ir = Catspeak.parseString(@'
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
         var show = show_message;
         var show_async = show_message_async;
         return { show, show_async }
     ');
-    var fun = Catspeak.compile(ir);
+    var fun = env.compile(ir);
     var result = fun();
     assertEq(result.show, show_message);
     assertEq(result.show_async, show_message_async);
@@ -859,4 +860,17 @@ test_add(function() : Test("moss-set-self-2") constructor {
     var omain = instance_create_depth(0, 0, 0, obj_testing_blank);
     var oinitial = instance_create_depth(0, 0, 0, obj_testing_moss_2_oinitial);
     assertEq(["obj_testing_moss_2_omod", "obj_testing_moss_2_omod"], outputs);
+    instance_destroy(omain);
+    instance_destroy(oinitial);
+});
+
+test_add(function() : Test("get-self-method") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        let s = { get_self : fun() { self } };
+        return [s.get_self(), s]; -- should return true, but returns false instead
+    ');
+    var fun = env.compile(ir);
+    var result = fun();
+    assertEq(result[0], result[1]);
 });
