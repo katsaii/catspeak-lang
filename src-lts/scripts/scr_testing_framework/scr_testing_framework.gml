@@ -278,6 +278,14 @@ function __structuralEq(a, b, exact) {
             return false;
         }
         return __structuralEq(method_get_self(a), method_get_self(b), exact);
+    } else if (
+        is_method(a) && method_get_self(a) == undefined ||
+        is_method(b) && method_get_self(b) == undefined
+    ) {
+        var aId = is_method(a) ? method_get_index(a) : a;
+        var bId = is_method(b) ? method_get_index(b) : b;
+        return aId != undefined && bId != undefined &&
+                script_exists(aId) && script_exists(bId);
     }
     // array comparison
     if (is_array(a) && is_array(b)) {

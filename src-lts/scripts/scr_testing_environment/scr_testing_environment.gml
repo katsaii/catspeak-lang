@@ -812,11 +812,14 @@ test_add(function() : Test("expose-everything-assets") constructor {
 test_add(function() : Test("expose-everything-aaaaa") constructor {
     Catspeak.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = Catspeak.parseString(@'
-        show_message("Hiiii");
-        show_message_async("Hiiii 2");
+        var show = show_message;
+        var show_async = show_message_async;
+        return { show, show_async }
     ');
     var fun = Catspeak.compile(ir);
     var result = fun();
+    assertEq(result.show, show_message);
+    assertEq(result.show_async, show_message_async);
 });
 
 test_add(function() : Test("layer-tilemap-create") constructor {

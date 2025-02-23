@@ -11,6 +11,7 @@ FNAMES_PATH = "fnames-2024-2-0-163"
 
 blocklist = set([
     "argument",
+    "nameof",
     "gml_",
     "phy_",
     "physics_",
@@ -104,24 +105,40 @@ with open(codegen_path, "w", encoding="utf-8") as file:
         function __catspeak_get_gml_interface() {
             static db = undefined;
             if (db == undefined) {
+                skipped = false;
                 db = { };
+                with ({ }) { // protects from incorrectly reading a missing function from an instance variable
     """).strip())
+    def try_write(file, str):
+        file.write(f"\n            try {{ {str} }} catch (ce_) {{ skipped = true }}")
+    def try_write_prop(file, name, str):
+        file.write(f"\n            try {{")
+        file.write(f"\n                var gatekeeper = {name};")
+        file.write(f"\n                {str};")
+        file.write(f"\n            }} catch (ce_) {{ skipped = true }}")
     for symbol in functions:
-        writeln()
         if symbol == "method":
-            file.write(f"        db[$ \"method\"] = method(undefined, catspeak_method);")
+            try_write(file, f"db[$ \"method\"] = method(undefined, catspeak_method)")
         else:
-            file.write(f"        db[$ \"{symbol}\"] = method(undefined, {symbol});")
+            try_write(file, f"db[$ \"{symbol}\"] = method(undefined, {symbol})")
     for symbol in consts:
-        writeln()
-        file.write(f"        db[$ \"{symbol}\"] = {symbol};")
+        try_write(file, f"db[$ \"{symbol}\"] = {symbol}")
     for symbol in prop_get:
-        writeln()
-        file.write(f"        db[$ \"{symbol}_get\"] = method(undefined, function() {{ return {symbol} }});")
+        try_write_prop(file, symbol, f"db[$ \"{symbol}_get\"] = method(undefined, function() {{ return {symbol} }})")
     for symbol in prop_set:
-        writeln()
-        file.write(f"        db[$ \"{symbol}_set\"] = method(undefined, function(val) {{ {symbol} = val }});")
+        try_write_prop(file, symbol, f"db[$ \"{symbol}_set\"] = method(undefined, function(val) {{ {symbol} = val }})")
+    for symbol in prop_get_i:
+        try_write_prop(file, f"{symbol}[0]", f"db[$ \"{symbol}_get\"] = method(undefined, function(idx) {{ return {symbol}[idx] }})")
+    for symbol in prop_set_i:
+        try_write_prop(file, f"{symbol}[0]", f"db[$ \"{symbol}_set\"] = method(undefined, function(idx, val) {{ {symbol}[idx] = val }})")
     file.write(dedent("""
+                }
+                if (skipped) {
+                    __catspeak_error_silent(
+                        "some functions/constants in the GML interface were skipped\\n",
+                        "this may be because your GameMaker version is out of date, or missing them"
+                    );
+                }
             }
             return db;
         }
