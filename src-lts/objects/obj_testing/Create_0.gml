@@ -10,6 +10,18 @@
 #macro TESTING_COL_FAIL #CC4E67
 #macro TESTING_COL_FATAL #FF0000
 
+
+var env = new CatspeakEnvironment();
+env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+var f = env.compile(env.parseString(@'
+    show_debug_message("--- START TEST ---")
+    var inst = instance_create_depth(0, 0, 0, obj_testing_scratchpad)
+    instance_deactivate_object(inst)
+    instance_destroy(obj_testing_scratchpad)
+    show_debug_message("--- END TEST ---")
+'));
+f();
+
 show_debug_overlay(true);
 
 exampleCurrent = -1;

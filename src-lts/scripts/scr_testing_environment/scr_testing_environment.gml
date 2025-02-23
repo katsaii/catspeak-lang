@@ -809,6 +809,16 @@ test_add(function() : Test("expose-everything-assets") constructor {
     instance_destroy(result);
 });
 
+test_add(function() : Test("expose-everything-aaaaa") constructor {
+    Catspeak.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = Catspeak.parseString(@'
+        show_message("Hiiii");
+        show_message_async("Hiiii 2");
+    ');
+    var fun = Catspeak.compile(ir);
+    var result = fun();
+});
+
 test_add(function() : Test("layer-tilemap-create") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
@@ -819,4 +829,17 @@ test_add(function() : Test("layer-tilemap-create") constructor {
     var result = fun();
     assert(layer_tilemap_exists("Instances", result));
     layer_tilemap_destroy(result);
+});
+
+test_add(function() : Test("expose-everything-inst-deactivate") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var f = env.compile(env.parseString(@'
+        show_debug_message("--- START TEST ---")
+        var inst = instance_create_depth(0, 0, 0, obj_testing_scratchpad)
+        instance_deactivate_object(inst)
+        instance_destroy(obj_testing_scratchpad)
+        show_debug_message("--- END TEST ---")
+    '));
+    f();
 });

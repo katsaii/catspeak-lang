@@ -20,7 +20,7 @@ function __catspeak_get_gml_interface() {
         db[$ "is_int32"] = method(undefined, is_int32);
         db[$ "is_int64"] = method(undefined, is_int64);
         db[$ "is_ptr"] = method(undefined, is_ptr);
-        db[$ "is_vec3"] = method(undefined, is_vec3);
+        db[$ "is_vec3"] = method(undefined, is_vec3); // << delete this!!
         db[$ "is_vec4"] = method(undefined, is_vec4);
         db[$ "is_bool"] = method(undefined, is_bool);
         db[$ "is_nan"] = method(undefined, is_nan);

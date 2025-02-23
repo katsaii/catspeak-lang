@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "unf";
+var runExperiment = "moss";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -143,4 +143,22 @@ TEST_EXPERIMENT "env" {
         f.setSelf(self);
         f();
     }
+}
+
+TEST_EXPERIMENT "moss" {
+    var env = new CatspeakEnvironment();
+    var startParse = get_timer();
+    var ir = env.parseString(@'
+        do { let s = { get_self : fun() { self }, "hi" : "hello" };
+        s.get_self(); }
+    ');
+    var endParse = get_timer();
+    var startComp = get_timer();
+    var f = env.compile(ir);
+    var endComp = get_timer();
+    //show_message([
+    //    (endParse - startParse) / 1000000,
+    //    (endComp - startComp) / 1000000,
+    //]);
+    //show_message(f());
 }
