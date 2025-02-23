@@ -1733,6 +1733,8 @@ function __catspeak_expr_index_set__() {
     if (is_array(collection_)) {
         collection_[@ key_] = value_;
     } else if (__catspeak_is_withable(collection_)) {
+        // CATSPEAK CODEGEN MAGIC BEGIN =
+        // CATSPEAK CODEGEN MAGIC END =
         collection_[$ key_] = value_;
     } else {
         __catspeak_error_got(dbgError, collection_);
