@@ -12,3 +12,6 @@ if (!test.hasFailed()) {
     }
 }
 test.complete();
+
+instance_destroy();
+with (a) { instance_destroy() }

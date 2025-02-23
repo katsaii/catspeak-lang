@@ -186,12 +186,17 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @ignore
     static __setupCatspeakFunctionMethods = function (f) {
         f.setSelf = method(sharedData, function (selfInst) {
-            self_ = catspeak_special_to_struct(selfInst);
+            self_ = selfInst == undefined
+                    ? undefined
+                    : catspeak_special_to_struct(selfInst);
         });
         f.setGlobals = method(sharedData, function (globalInst) {
-            globals = catspeak_special_to_struct(globalInst);
+            var newGlobals = catspeak_special_to_struct(globalInst);
+            if (newGlobals != undefined) {
+                globals = newGlobals;
+            }
         });
-        f.getSelf = method(sharedData, function () { return self_ ?? globals });
+        f.getSelf = method(sharedData, function () { return self_ });
         f.getGlobals = method(sharedData, function () { return globals });
     };
 
@@ -1518,7 +1523,7 @@ function __catspeak_expr_call__() {
     }
     var shared_ = shared;
     with (method_get_self(callee_) ?? 
-        (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals))
+        (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals))
     ) {
         var calleeIdx = method_get_index(callee_);
         return __catspeak_script_execute_ext_fixed(calleeIdx, args_);
@@ -1538,7 +1543,7 @@ function __catspeak_expr_call_0__() {
         return callee_();
     }
 	
-    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+    with (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return calleeIdx();
     }
@@ -1559,7 +1564,7 @@ function __catspeak_expr_call_1__() {
         return callee_(arg1);
     }
 	
-    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+    with (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return calleeIdx(arg1);
     }
@@ -1581,7 +1586,7 @@ function __catspeak_expr_call_2__() {
         return callee_(arg1, arg2);
     }
 	
-    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+    with (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return calleeIdx(arg1, arg2);
     }
@@ -1604,7 +1609,7 @@ function __catspeak_expr_call_3__() {
         return callee_(arg1, arg2, arg3);
     }
 	
-    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+    with (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return calleeIdx(arg1, arg2, arg3);
     }
@@ -1628,7 +1633,7 @@ function __catspeak_expr_call_4__() {
         return callee_(arg1, arg2, arg3, arg4);
     }
 
-    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+    with (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return calleeIdx(arg1, arg2, arg3, arg4);
     }
@@ -1653,7 +1658,7 @@ function __catspeak_expr_call_5__() {
         return callee_(arg1, arg2, arg3, arg4, arg5);
     }
 
-    with (global.__catspeakGmlSelf ?? (shared_.self_ ?? shared_.globals)) {
+    with (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals)) {
         var calleeIdx = method_get_index(callee_);
         return calleeIdx(arg1, arg2, arg3, arg4, arg5);
     }
@@ -1928,7 +1933,7 @@ function __catspeak_expr_local_set_plus__() {
 function __catspeak_expr_self__() {
     // will either access a user-defined self instance, or the internal
     // global struct
-    return global.__catspeakGmlSelf ?? (self_ ?? globals);
+    return self_ ?? (global.__catspeakGmlSelf ?? globals);
 }
 
 /// @ignore

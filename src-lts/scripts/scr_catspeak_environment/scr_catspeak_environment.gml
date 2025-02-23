@@ -1137,6 +1137,10 @@ function catspeak_method(self_, callee) {
 /// @return {Any}
 function catspeak_get_self(callee) {
     if (is_catspeak(callee)) {
+        var getSelf_ = callee[$ "getSelf"];
+        if (getSelf_ != undefined) {
+            return getSelf_();
+        }
         var self_ = method_get_self(callee);
         return self_[$ "self_"]; 
     }

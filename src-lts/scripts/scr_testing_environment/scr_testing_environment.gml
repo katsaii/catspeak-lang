@@ -851,3 +851,12 @@ test_add(function() : AsyncTest("moss-set-self") constructor {
     var me = self;
     instance_create_depth(0, 0, 0, obj_testing_moss_oinitial, { test : me });
 });
+
+test_add(function() : Test("moss-set-self-2") constructor {
+    env = new CatspeakEnvironment();
+    outputs = [];
+    global.__testing_moss_2_test = self;
+    var omain = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var oinitial = instance_create_depth(0, 0, 0, obj_testing_moss_2_oinitial);
+    assertEq(["obj_testing_moss_2_omod", "obj_testing_moss_2_omod"], outputs);
+});

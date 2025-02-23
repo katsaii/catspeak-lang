@@ -43,6 +43,8 @@
     {"id":{"name":"scr_testing_parser_value","path":"scripts/scr_testing_parser_value/scr_testing_parser_value.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_parser","path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},"order":3,},
     {"id":{"name":"scr_testing_lexer_locale","path":"scripts/scr_testing_lexer_locale/scr_testing_lexer_locale.yy",},"order":5,},
+    {"id":{"name":"obj_testing_moss_2_omod","path":"objects/obj_testing_moss_2_omod/obj_testing_moss_2_omod.yy",},"order":14,},
+    {"id":{"name":"obj_testing_moss_2_oinitial","path":"objects/obj_testing_moss_2_oinitial/obj_testing_moss_2_oinitial.yy",},"order":13,},
     {"id":{"name":"scr_testing_codegen_value","path":"scripts/scr_testing_codegen_value/scr_testing_codegen_value.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_ir","path":"scripts/scr_catspeak_ir/scr_catspeak_ir.yy",},"order":1,},
     {"id":{"name":"obj_testing_example_base","path":"objects/obj_testing_example_base/obj_testing_example_base.yy",},"order":2,},
