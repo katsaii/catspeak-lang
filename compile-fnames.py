@@ -7,11 +7,15 @@ from textwrap import dedent
 import os
 import re
 
+FNAMES_PATH = "fnames-2024-2-0-163"
+
 blocklist = set([
     "argument",
     "gml_",
     "phy_",
     "physics_",
+    "rollback_",
+    "wallpaper_",
 ])
 def is_in_blocklist(symbol):
     global blocklist
@@ -25,16 +29,23 @@ consts = []
 functions = []
 prop_get = []
 prop_set = []
-with open("fnames-lts", "r", encoding="utf-8") as fnames:
+prop_get_i = []
+prop_set_i = []
+with open(FNAMES_PATH, "r", encoding="utf-8") as fnames:
     for line in fnames:
         symbol_data = line.strip()
         symbol = None
         modifiers = None
         is_function = False
+        is_index = False
         if match := re.search("^([A-Za-z0-9_]+)\([^\)]*\)(.*)", line):
             symbol = match[1]
             modifiers = match[2]
             is_function = True
+        elif match := re.search("^([A-Za-z0-9_]+)\[[^\]]*\](.*)", line):
+            symbol = match[1]
+            modifiers = match[2]
+            is_index = True
         elif match := re.search("^([A-Za-z0-9_]+)(.*)", line):
             symbol = match[1]
             modifiers = match[2]
@@ -47,14 +58,28 @@ with open("fnames-lts", "r", encoding="utf-8") as fnames:
                 "?" in modifiers or \
                 "%" in modifiers or \
                 "^" in modifiers:
+            # skip: 
+            #   @ = instance variable
+            #   & = obsolete
+            #   % = property
+            #   ? = struct variable
+            #   ^ = do not add to autocomplete
             continue
         if is_function:
             functions.append(symbol)
+        elif is_index:
+            prop_get_i.append(symbol)
+            if "*" in modifiers:
+                # * = readonly
+                continue
+            prop_set_i.append(symbol)
         elif "#" in modifiers:
+            # # = constant
             consts.append(symbol)
         else:
             prop_get.append(symbol)
             if "*" in modifiers:
+                # * = readonly
                 continue
             prop_set.append(symbol)
 
