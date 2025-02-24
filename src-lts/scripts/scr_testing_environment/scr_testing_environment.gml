@@ -627,6 +627,53 @@ test_add(function() : Test("with-struct") constructor {
     assertEq(1, result.a);
 }, IgnorePlatform.WIN_YYC);
 
+test_add(function() : Test("with-struct-other") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        let expect_other_ = self;
+        let expect_self_ = { a : 1 };
+        with expect_self_ {
+            return [expect_other_, other, expect_self_, self];
+        }
+    ');
+    var _func = engine.compile(ir);
+    var result = _func();
+    assertEq(result[0], result[1]);
+    assertEq(result[2], result[3]);
+}, IgnorePlatform.WIN_YYC);
+
+test_add(function() : Test("with-struct-other-double") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        let expect_other_ = { b : 12 };
+        let expect_self_ = { a : 1 };
+        with expect_other_ {
+        with expect_self_ {
+            return [expect_other_, other, expect_self_, self];
+        }
+        }
+    ');
+    var _func = engine.compile(ir);
+    var result = _func();
+    assertEq(result[0], result[1]);
+    assertEq(result[2], result[3]);
+}, IgnorePlatform.WIN_YYC);
+
+test_add(function() : Test("with-struct-other-method") constructor {
+    var engine = new CatspeakEnvironment();
+    var ir = engine.parseString(@'
+        let expect_other_ = { yeah : false };
+        let s = { send_it : fun () { return [self, other] } };
+        with expect_other_ {
+            return [expect_other_, s, s.send_it()];
+        }
+    ');
+    var _func = engine.compile(ir);
+    var result = _func();
+    assertEq(result[0], result[2][1]);
+    assertEq(result[1], result[2][0]);
+}, IgnorePlatform.WIN_YYC);
+
 test_add(function() : Test("with-noone") constructor {
     var engine = new CatspeakEnvironment();
     var ir = engine.parseString(@'

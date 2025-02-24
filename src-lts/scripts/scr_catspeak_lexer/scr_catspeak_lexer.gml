@@ -1067,6 +1067,7 @@ function __catspeak_keywords_create() {
     keywords[$ "new"] = CatspeakToken.NEW;
     keywords[$ "impl"] = CatspeakToken.IMPL;
     keywords[$ "self"] = CatspeakToken.SELF;
+    keywords[$ "other"] = CatspeakToken.OTHER;
     return keywords;
 }
 

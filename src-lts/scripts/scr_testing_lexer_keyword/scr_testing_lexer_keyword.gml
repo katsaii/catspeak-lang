@@ -92,3 +92,7 @@ test_add(function () : TestLexerToken("lexer-keyword-impl",
 test_add(function () : TestLexerToken("lexer-keyword-self",
     CatspeakToken.SELF, "self", "self"
 ) constructor { });
+
+test_add(function () : TestLexerToken("lexer-keyword-other",
+    CatspeakToken.OTHER, "other", "other"
+) constructor { });

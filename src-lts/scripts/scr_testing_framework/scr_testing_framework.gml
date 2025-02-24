@@ -53,7 +53,7 @@ function Test(name) constructor {
             msg += "PASSED";
         } else {
             stats.totalFailed += 1;
-            msg += "FAILED";
+            msg += "!!!!!!!!!!!!!!!!!!! FAILED !!!!!!!!!!!!!!!!!!!";
         }
         msg += " '" + name + "'";
         if (!passed) {

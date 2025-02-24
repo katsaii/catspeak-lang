@@ -617,6 +617,17 @@ function CatspeakIRBuilder() constructor {
         return __createTerm(CatspeakTerm.SELF, location, { });
     };
 
+    /// Creates an instruction for accessing the caller `other`.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createOther = function (location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.OTHER, location, { });
+    };
+
     /// Attempts to assign a right-hand-side value to a left-hand-side target.
     ///
     /// @remark
@@ -953,7 +964,8 @@ function __catspeak_term_is_pure(kind) {
             kind == CatspeakTerm.LOCAL ||
             kind == CatspeakTerm.GLOBAL ||
             kind == CatspeakTerm.FUNCTION ||
-            kind == CatspeakTerm.SELF;
+            kind == CatspeakTerm.SELF ||
+            kind == CatspeakTerm.OTHER;
 }
 
 /// @ignore
@@ -975,6 +987,8 @@ function __catspeak_term_get_terminal(term) {
         return term.name;
     } else if (term.type == CatspeakTerm.SELF) {
         return "self";
+    } else if (term.type == CatspeakTerm.OTHER) {
+        return "other";
     } else if (term.type == CatspeakTerm.VALUE) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -1017,6 +1031,7 @@ enum CatspeakTerm {
     PARAMS,
     PARAMS_COUNT,
     SELF,
+    OTHER,
     /// @ignore
     __SIZE__
 }

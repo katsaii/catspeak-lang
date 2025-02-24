@@ -565,6 +565,9 @@ function CatspeakParser(lexer, builder) constructor {
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
             return ir.createSelf(lexer.getLocation());
+        } else if (peeked == CatspeakToken.OTHER) {
+            lexer.next();
+            return ir.createOther(lexer.getLocation());
         } else {
             return __parseGrouping();
         }
