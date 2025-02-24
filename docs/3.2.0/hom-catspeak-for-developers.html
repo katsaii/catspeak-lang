@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="A brief overview of Catspeak."><title>Catspeak Reference :: Catspeak For Developers of Home</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html"><mark>Home</mark></a></li><li><a href="lan-overview.html">Language Reference</a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="hom-welcome.html">Welcome</a></li><li><a href="hom-getting-started.html">Getting Started</a></li><li><a href="hom-catspeak-for-developers.html"><mark>Catspeak For Developers</mark></a></li><li><a href="hom-catspeak-for-modders.html">Catspeak For Modders</a></li><li><a href="hom-license.html">License</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#parsing">Parsing</a></li><li><a href="#compiling">Compiling</a></li><li><a href="#executing">Executing</a></li><li><a href="#interfacing-with-gml">Interfacing with GML</a></li></ul></aside><main><article><h1 class="chapter-title">Catspeak For Developers</h1><p>Catspeak is the spiritual successor to the old GML function <code class="inline-code">execute_string</code>.
+This means that custom user code can be executed as a string by your game
+for modding support or a debug console. In nerdspeak: Catspeak is a compiler
+backend and virtual machine for executing arbitrary code at runtime.</p><p>Unlike <code class="inline-code">execute_string</code>, Catspeak is slightly more involved, requiring three
+separate steps:</p><ul><li><p><a href="#parsing">Parsing</a></p></li><li><p><a href="#compiling">Compiling</a></p></li><li><p><a href="#executing">Executing</a></p></li></ul><p>In order for your modders to access information about your game, you need to
+manually expose a modding API (covered briefly in the <a href="#interfacing-with-gml">Interfacing with GML</a>
+section). <em>Catspeak does not do this for you by default.</em> Further information
+about different methods to expose functions can be found in the <a href="./lib-struct-catspeakforeigninte+s.html">Library Reference</a>
+book.</p><p>If this busywork does not sound interesting to you, and you're the kind of
+developer who likes to cut corners, then you can <a href="./lib-struct-catspeakforeigninte+s.html#exposeeverythingidontcareifmod+s">throw caution to the wind</a>
+and include the following code in your project:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-0')">Copy</a><code id="cb-0"><span class="kw-typ">Catspeak</span>.<span class="kw-var">interface</span>.<span class="kw-var">exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis</span> = <span class="kw-val">true</span>;
+</code></pre><p>This will force Catspeak lift the veil safety and attempt to give modders access
+every intimate detail about your game. Don't say I didn't warn you.</p><section><h1 class="heading" id="parsing"><a href="#parsing">§</a> <strong>Parsing</strong><a href="#" class="heading-top">top ^</a></h1><p>Parsing is the first step. This involves taking the human-readable form of
+Catspeak source code, and converting it into an executable form. This can
+be done from a string or a UTF-8 encoded buffer.</p><p>Parsing code from a string using <code class="inline-code">Catspeak.parseString</code>:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-1')">Copy</a><code id="cb-1"><span class="kw-key">var</span> <span class="kw-var">hir</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">parseString</span>(<span class="kw-val">@'
+  let n = 0
+  while n <= 10 {
+    n += 1
+  }
+  return "blast off!"
+'</span>);
+</code></pre><p>Parsing code from a file called "my_mod.meow", using <code class="inline-code">Catspeak.parse</code>:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-2')">Copy</a><code id="cb-2"><span class="kw-key">var</span> <span class="kw-var">file</span> = <span class="kw-fun">buffer_load</span>(<span class="kw-val">"my_mod.meow"</span>);
+
+<span class="kw-key">var</span> <span class="kw-var">hir</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">parse</span>(<span class="kw-var">file</span>);
+
+<span class="kw-fun">buffer_delete</span>(<span class="kw-var">file</span>);
+</code></pre><p>The parser produces a <strong>hierarchical intermediate-representation</strong> (HIR),
+storing information like what functions are defined, where they are defined,
+how many variables are used, what functions are being called and when, etc.</p><p>This information is stored as a JSON object, so you can cache this to a file
+to avoid parsing large mods every time the game loads.</p></section><section><h1 class="heading" id="compiling"><a href="#compiling">§</a> <strong>Compiling</strong><a href="#" class="heading-top">top ^</a></h1><p>Compiling is the second step. This involves taking the executable form of a
+Catspeak program (the HIR obtained from <a href="#parsing">Parsing</a>) and transforms it
+into a callable GML function.</p><p>Compiling a <code class="inline-code">program</code> from the <code class="inline-code">hir</code> using <code class="inline-code">Catspeak.compile</code>:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-3')">Copy</a><code id="cb-3"><span class="kw-key">var</span> <span class="kw-var">program</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">compile</span>(<span class="kw-var">hir</span>);
+</code></pre></section><section><h1 class="heading" id="executing"><a href="#executing">§</a> <strong>Executing</strong><a href="#" class="heading-top">top ^</a></h1><p>Executing is the third and final step; this is the fun part. After compiling
+a program, it can be called like any ordinary GML function like:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-4')">Copy</a><code id="cb-4"><span class="kw-fun">program</span>();
+</code></pre><p>As many times as you want:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-5')">Copy</a><code id="cb-5"><span class="kw-fun">program</span>();
+<span class="kw-fun">program</span>();
+<span class="kw-fun">program</span>();
+<span class="kw-key">repeat</span> (<span class="kw-val">10</span>) {
+    <span class="kw-fun">program</span>();
+}
+</code></pre><p>When adding mod support, you should aim to pre-compile all of your mod scripts
+at the start of the game, and then reuse the compiled program during gameplay.
+Otherwise, your game may experience performance issues due to the slowness of
+parsing and compiling programs relative to execution.</p></section><section><h1 class="heading" id="interfacing-with-gml"><a href="#interfacing-with-gml">§</a> <strong>Interfacing with GML</strong><a href="#" class="heading-top">top ^</a></h1><p>You can expose additional functions, constants, and assets to Catspeak programs
+by using the methods on <code class="inline-code">Catspeak.interface</code>. For example, using the functions
+<code class="inline-code">exposeFunction</code>, <code class="inline-code">exposeConstant</code>, and <code class="inline-code">exposeAsset</code> to make <code class="inline-code">show_message</code>,
+<code class="inline-code">pi</code>, and <code class="inline-code">spr_player</code> available from within a Catspeak function:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-6')">Copy</a><code id="cb-6"><span class="kw-typ">Catspeak</span>.<span class="kw-var">interface</span>.<span class="kw-fun">exposeFunction</span>(<span class="kw-val">"show_message"</span>, <span class="kw-var">show_message</span>);
+<span class="kw-typ">Catspeak</span>.<span class="kw-var">interface</span>.<span class="kw-fun">exposeConstant</span>(<span class="kw-val">"math_pi"</span>, <span class="kw-var">pi</span>);
+<span class="kw-typ">Catspeak</span>.<span class="kw-var">interface</span>.<span class="kw-fun">exposeAsset</span>(<span class="kw-val">"sPlayer"</span>, <span class="kw-var">spr_player</span>);
+</code></pre><p>Then using these from within a custom Catspeak function, like:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-7')">Copy</a><code id="cb-7"><span class="kw-key">var</span> <span class="kw-var">hir</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">parseString</span>(<span class="kw-val">@'
+  let tau = math_pi * 2;
+  show_message([sPlayer, tau]);
+'</span>);
+<span class="kw-key">var</span> <span class="kw-var">program</span> = <span class="kw-typ">Catspeak</span>.<span class="kw-fun">compile</span>(<span class="kw-var">hir</span>);
+<span class="kw-fun">program</span>();
+</code></pre><p>This is necessary so that modders are sandboxed from each other, and don't have
+unchecked access to your entire game state. There are many other ways of
+exposing GML assets to Catspeak programs, see <a href="lib-struct-catspeakforeigninte+s.html">CatspeakForeignInterface</a></p></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>
