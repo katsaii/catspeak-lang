@@ -951,3 +951,32 @@ test_add(function() : Test("method-self-setSelf") constructor {
     assertEq(s1, catspeak_execute(f1));
     assertEq(s1, catspeak_execute_ext(f1, { }));
 });
+
+test_add(function() : Test("nineslice-vars") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
+        let _nineslice = sprite_nineslice_create();
+        _nineslice.enabled = 1;
+        _nineslice.left = 2;
+        _nineslice.right = 2;
+        _nineslice.top = 2;
+        _nineslice.bottom = 2;
+        _nineslice.tilemode = [1, 1, 1, 1, 0];
+        return _nineslice;
+    ');
+    var ns = (env.compile(ir))();
+    var nsStr = string(ns);
+    nsStr = string_replace(nsStr, "enabled", "##this");
+    nsStr = string_replace(nsStr, "left", "##sentence");
+    nsStr = string_replace(nsStr, "right", "##is");
+    nsStr = string_replace(nsStr, "top", "##false");
+    nsStr = string_replace(nsStr, "bottom", "##dontthinaboutit");
+    nsStr = string_replace(nsStr, "tilemode", "##true");
+    assertEq(string_pos("enabled", nsStr), 0);
+    assertEq(string_pos("left", nsStr), 0);
+    assertEq(string_pos("right", nsStr), 0);
+    assertEq(string_pos("top", nsStr), 0);
+    assertEq(string_pos("bottom", nsStr), 0);
+    assertEq(string_pos("tilemode", nsStr), 0);
+});
