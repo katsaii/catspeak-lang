@@ -148,7 +148,7 @@ def tokenise_meow(input_):
         catch finally throw new
     """.split())
     value_database = set("""
-        true false undefined self NaN infinity
+        true false undefined self other NaN infinity
     """.split())
     lex = Tokeniser(input_)
     while not lex.is_empty():

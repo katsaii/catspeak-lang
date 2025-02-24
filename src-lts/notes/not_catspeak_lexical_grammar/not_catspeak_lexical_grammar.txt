@@ -210,6 +210,7 @@ cannot be used as variables; these are:
  - `or`        See [Logical Expressions](./lan-expressions.html#logical-expressions).
  - `xor`       See [Logical Expressions](./lan-expressions.html#logical-expressions).
  - `do`        See [Block Expressions](./lan-expressions.html#block-expressions).
+ - `catch`     See [Catch Expressions](./lan-expressions.html#catch-expressions).
  - `if`        See [If Expressions](./lan-expressions.html#if-expressions).
  - `else`      See [If Expressions](./lan-expressions.html#if-expressions).
  - `while`     See [While Expressions](./lan-expressions.html#while-expressions).
@@ -223,9 +224,11 @@ cannot be used as variables; these are:
  - `break`     See [Break Expressions](./lan-expressions.html#break-expressions).
  - `continue`  See [Continue Expressions](./lan-expressions.html#continue-expressions).
  - `return`    See [Return Expressions](./lan-expressions.html#return-expressions).
+ - `throw`     See [Throw Expressions](./lan-expressions.html#throw-expressions).
  - `new`       See [New Expressions](./lan-expressions.html#new-expressions).
  - `impl`      Reserved in case of constructor functions.
  - `self`      See [Self Expressions](./lan-expressions.html#self-expressions).
+ - `other`     See [Other Expressions](./lan-expressions.html#other-expressions).
 
 If you ever need to use one of these keywords as a variable name, you should
 use [Raw Identifiers](#raw-identifiers) instead.

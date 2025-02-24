@@ -41,6 +41,27 @@ self.my_var -- this refers to an INSTANCE variable on self called 'my_var'
 -- they are NOT the same
 ```
 
+# Other Expressions
+
+`other` is a special built-in value similar to [Self](#self-expressions), except
+it refers to the **previous** context a piece of code is being executed in.
+
+The values of `self` and `other` get updated whenever a [With expression](#with-expressions)
+is used, or a method call `container.functionName()` is performed. _You cannot
+set the values of `self` and `other` directly._ (See the [GameMaker docs](https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Instance%20Keywords/self.htm)
+for more information.)
+
+```meow
+let s1 = { a : "hi" }
+let s2 = { b : "bye" }
+with s1 {
+  with s2 {
+    show_message(other) -- this will show { a : "hi" }
+    show_message(self)  -- this will show { b : "bye" }
+  }
+}
+```
+
 # Grouped Expressions
 
 Grouped expressions wrap a single sub-expression between `(` and `)`,
@@ -588,6 +609,53 @@ let max_of_5_8 = max(5, 8)   -- 8
 ```
 
 If no return value exists, then `undefined` is returned instead.
+
+# Catch Expressions
+
+Catch expressions are made up of a sub-expression, followed by the `catch`
+keyword, an (optional) identifier, and finally a single [block](#block-expressions)
+containing the code to run if an exception is caught.
+
+```meow
+-- GML-style try/catch (instead of `try`, use a `do` block)
+do {
+  something()
+} catch err {
+  show_debug_message("something went wrong!:")
+  show_debug_message(err.messaage)
+}
+```
+
+The identifier following the `catch` keyword is optional, and can be omitted if
+you don't need it:
+
+```meow
+-- if an exception occurs, use a default value instead
+let result = could_throw() catch { default }
+```
+
+# Throw Expressions
+
+The `throw` expression will immediately terminate the execution of the current
+function, unwinding the callstack until the exception is caught.
+
+```meow
+if a < b {
+  throw "a is less than b"
+}
+```
+
+Throw expressions start with the `throw` keyword, followed by a single
+sub-expression. If the exception is caught, then this expression will be
+passed to the associated [Catch expression](#catch-expressions) that caught it.
+
+```meow
+do {
+  throw "something"
+} catch ex {
+  show_message(ex) -- prints "something"
+}
+```
 
 # Match Expressions
 
