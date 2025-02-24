@@ -414,6 +414,25 @@ function CatspeakIRBuilder() constructor {
         return __createTerm(CatspeakTerm.CONTINUE, location, { });
     };
 
+    /// Emits the instruction to raise an exception a specified value.
+    ///
+    /// @param {Struct} value
+    ///   The instruction for the value to break with.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this value term.
+    ///
+    /// @return {Struct}
+    static createThrow = function (value, location=undefined) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("value", value);
+        }
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.THROW, location, {
+            value : value
+        });
+    };
+
     /// Emits the instruction to call a function with a set of arguments.
     ///
     /// @param {Struct} callee
@@ -1056,6 +1075,7 @@ enum CatspeakTerm {
     RETURN,
     BREAK,
     CONTINUE,
+    THROW,
     OP_BINARY,
     OP_UNARY,
     CALL,

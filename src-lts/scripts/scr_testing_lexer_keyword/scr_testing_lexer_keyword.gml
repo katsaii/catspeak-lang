@@ -73,6 +73,10 @@ test_add(function () : TestLexerToken("lexer-keyword-return",
     CatspeakToken.RETURN, "return", "return"
 ) constructor { });
 
+test_add(function () : TestLexerToken("lexer-keyword-throw",
+    CatspeakToken.THROW, "throw", "throw"
+) constructor { });
+
 test_add(function () : TestLexerToken("lexer-keyword-and",
     CatspeakToken.AND, "and", "and"
 ) constructor { });

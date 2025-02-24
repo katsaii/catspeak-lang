@@ -114,7 +114,8 @@ function CatspeakParser(lexer, builder) constructor {
             var value;
             if (
                 peeked == CatspeakToken.SEMICOLON ||
-                peeked == CatspeakToken.BRACE_RIGHT
+                peeked == CatspeakToken.BRACE_RIGHT ||
+                peeked == CatspeakToken.LET
             ) {
                 value = ir.createValue(undefined, lexer.getLocation());
             } else {
@@ -138,6 +139,11 @@ function CatspeakParser(lexer, builder) constructor {
                 value = __parseExpression();
             }
             return ir.createBreak(value, lexer.getLocation());
+        } else if (peeked == CatspeakToken.THROW) {
+            lexer.next();
+            peeked = lexer.peek();
+            var value = __parseExpression();
+            return ir.createThrow(value, lexer.getLocation());
         } else if (peeked == CatspeakToken.DO) {
             lexer.next();
             ir.pushBlock(true);

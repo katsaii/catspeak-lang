@@ -1085,11 +1085,11 @@ test_add(function() : Test("try-catch-4") constructor {
     assertEq("not poggers", result[1].message);
 });
 
-//test_add(function() : Test("try-catch-throw") constructor {
-//    var env = new CatspeakEnvironment();
-//    var ir = env.parseString(@'
-//        (throw "and then something...") catch ex { ex }
-//    ');
-//    var result = (env.compile(ir))();
-//    assertEq("and then something...", result);
-//});
+test_add(function() : Test("try-catch-throw") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        (throw "and then something...") catch ex { ex }
+    ');
+    var result = (env.compile(ir))();
+    assertEq("and then something...", result);
+});

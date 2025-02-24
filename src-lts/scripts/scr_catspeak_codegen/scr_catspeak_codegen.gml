@@ -558,6 +558,22 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
+    static __compileThrow = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "value", undefined
+            );
+        }
+        return method({
+            value : __compileTerm(ctx, term.value),
+        }, __catspeak_expr_throw__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
     static __compileOpUnary = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -995,6 +1011,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         db[@ CatspeakTerm.RETURN] = __compileReturn;
         db[@ CatspeakTerm.BREAK] = __compileBreak;
         db[@ CatspeakTerm.CONTINUE] = __compileContinue;
+        db[@ CatspeakTerm.THROW] = __compileThrow;
         db[@ CatspeakTerm.OP_BINARY] = __compileOpBinary;
         db[@ CatspeakTerm.OP_UNARY] = __compileOpUnary;
         db[@ CatspeakTerm.CALL] = __compileCall;
@@ -1462,6 +1479,12 @@ function __catspeak_expr_break__() {
 /// @return {Any}
 function __catspeak_expr_continue__() {
     throw global.__catspeakGmlContinueRef;
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_throw__() {
+    throw value();
 }
 
 /// @ignore
