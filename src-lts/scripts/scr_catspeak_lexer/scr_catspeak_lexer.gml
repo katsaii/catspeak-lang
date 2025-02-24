@@ -105,6 +105,8 @@ enum CatspeakToken {
     IF = 43,
     /// The `else` keyword.
     ELSE = 44,
+    /// The `catch` keyword.
+    CATCH = 66,
     /// The `while` keyword.
     WHILE = 45,
     /// The `for` keyword.
@@ -176,7 +178,7 @@ enum CatspeakToken {
     ///   a syntax error somewhere.
     OTHER = 64,
     /// @ignore
-    __SIZE__ = 66,
+    __SIZE__ = 67,
 }
 
 /// @ignore
@@ -1053,6 +1055,7 @@ function __catspeak_keywords_create() {
     keywords[$ "do"] = CatspeakToken.DO;
     keywords[$ "if"] = CatspeakToken.IF;
     keywords[$ "else"] = CatspeakToken.ELSE;
+    keywords[$ "catch"] = CatspeakToken.CATCH;
     keywords[$ "while"] = CatspeakToken.WHILE;
     keywords[$ "for"] = CatspeakToken.FOR;
     keywords[$ "loop"] = CatspeakToken.LOOP;

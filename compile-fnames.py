@@ -12,6 +12,8 @@ FNAMES_PATH = "fnames-2024-2-0-163"
 blocklist = set([
     "argument",
     "nameof",
+    "self",
+    "other",
     "gml_",
     "phy_",
     "physics_",
@@ -122,7 +124,10 @@ with open(codegen_path, "w", encoding="utf-8") as file:
         else:
             try_write(file, f"db[$ \"{symbol}\"] = method(undefined, {symbol})")
     for symbol in consts:
-        try_write(file, f"db[$ \"{symbol}\"] = {symbol}")
+        if symbol == "global":
+            try_write(file, f"db[$ \"global\"] = catspeak_special_to_struct(global)")
+        else:
+            try_write(file, f"db[$ \"{symbol}\"] = {symbol}")
     for symbol in prop_get:
         try_write_prop(file, symbol, f"db[$ \"{symbol}_get\"] = method(undefined, function() {{ return {symbol} }})")
     for symbol in prop_set:

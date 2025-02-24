@@ -388,6 +388,30 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @param {Struct} ctx
     /// @param {Struct} term
     /// @return {Function}
+    static __compileCatch = function (ctx, term) {
+        if (CATSPEAK_DEBUG_MODE) {
+            __catspeak_check_arg_struct("term", term,
+                "eager", undefined,
+                "lazy", undefined,
+                "localRef", undefined
+            );
+            __catspeak_check_arg_struct("term.localRef", term.localRef,
+                "idx", is_numeric
+            );
+        }        
+        return method({
+            eager : __compileTerm(ctx, term.eager),
+            lazy : __compileTerm(ctx, term.lazy),
+            locals : ctx.locals,
+            idx : term.localRef.idx,
+        }, __catspeak_expr_catch__);
+    };
+
+    /// @ignore
+    ///
+    /// @param {Struct} ctx
+    /// @param {Struct} term
+    /// @return {Function}
     static __compileLoop = function (ctx, term) {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg_struct("term", term,
@@ -964,6 +988,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         db[@ CatspeakTerm.STRUCT] = __compileStruct;
         db[@ CatspeakTerm.BLOCK] = __compileBlock;
         db[@ CatspeakTerm.IF] = __compileIf;
+        db[@ CatspeakTerm.CATCH] = __compileCatch;
         db[@ CatspeakTerm.LOOP] = __compileLoop;
         db[@ CatspeakTerm.WITH] = __compileWith;
         db[@ CatspeakTerm.MATCH] = __compileMatch;
@@ -1226,6 +1251,19 @@ function __catspeak_expr_if__() {
 /// @return {Any}
 function __catspeak_expr_if_else__() {
     return condition() ? ifTrue() : ifFalse();
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_catch__() {
+    var result;
+    try {
+        result = eager();
+    } catch (exValue) {
+        locals[@ idx] = exValue;
+        result = lazy();
+    }
+    return result;
 }
 
 /// @ignore

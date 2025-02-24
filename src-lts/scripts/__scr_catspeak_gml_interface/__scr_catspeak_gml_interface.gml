@@ -11,7 +11,7 @@
 function __catspeak_get_gml_interface() {
     static db = undefined;
     if (db == undefined) {
-        var skipped = false;
+        skipped = false;
         db = { };
         with ({ }) { // protects from incorrectly reading a missing function from an instance variable
             try { db[$ "is_real"] = method(undefined, is_real) } catch (ce_) { skipped = true }
@@ -1889,11 +1889,9 @@ function __catspeak_get_gml_interface() {
             try { db[$ "audio_bus_clear_emitters"] = method(undefined, audio_bus_clear_emitters) } catch (ce_) { skipped = true }
             try { db[$ "lin_to_db"] = method(undefined, lin_to_db) } catch (ce_) { skipped = true }
             try { db[$ "db_to_lin"] = method(undefined, db_to_lin) } catch (ce_) { skipped = true }
-            try { db[$ "self"] = self } catch (ce_) { skipped = true }
-            try { db[$ "other"] = other } catch (ce_) { skipped = true }
             try { db[$ "all"] = all } catch (ce_) { skipped = true }
             try { db[$ "noone"] = noone } catch (ce_) { skipped = true }
-            try { db[$ "global"] = global } catch (ce_) { skipped = true }
+            try { db[$ "global"] = catspeak_special_to_struct(global) } catch (ce_) { skipped = true }
             try { db[$ "undefined"] = undefined } catch (ce_) { skipped = true }
             try { db[$ "pointer_invalid"] = pointer_invalid } catch (ce_) { skipped = true }
             try { db[$ "pointer_null"] = pointer_null } catch (ce_) { skipped = true }
@@ -3017,8 +3015,8 @@ function __catspeak_get_gml_interface() {
         }
         if (skipped) {
             __catspeak_error_silent(
-                "SOME FUNCTIONS/CONSTANTS IN THE GML INTERFACE WERE SKIPPED",
-                " (this may be because your GameMaker version is out of date, or missing them)"
+                "some functions/constants in the GML interface were skipped\n",
+                "this may be because your GameMaker version is out of date, or missing them"
             );
         }
     }

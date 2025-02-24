@@ -1027,3 +1027,69 @@ test_add(function() : Test("nineslice-vars") constructor {
     assertEq(string_pos("bottom", nsStr), 0);
     assertEq(string_pos("tilemode", nsStr), 0);
 });
+
+test_add(function() : Test("try-catch") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        (1 + "hello") catch ex { "whoops" }
+    ');
+    var result = (env.compile(ir))();
+    assertEq("whoops", result);
+});
+
+test_add(function() : Test("try-catch-2") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        (2 + "bye") catch ex { ex }
+    ');
+    var result = (env.compile(ir))();
+    assertTypeof(result, "struct");
+    assert(variable_struct_exists(result, "stacktrace"));
+    assert(variable_struct_exists(result, "message"));
+    assert(variable_struct_exists(result, "script"));
+    assert(variable_struct_exists(result, "line"));
+    assertTypeof(result.stacktrace, "array");
+    assertTypeof(result.message, "string");
+    assertTypeof(result.script, "string");
+    assert(is_numeric(result.line));
+});
+
+test_add(function() : Test("try-catch-3") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        (3 + "hi again") catch ex {
+            [ex.stacktrace, ex.message, ex.script, ex.line]
+        }
+    ');
+    var result = (env.compile(ir))();
+    assertTypeof(result, "array");
+    assertTypeof(result[0], "array");
+    assertTypeof(result[1], "string");
+    assertTypeof(result[2], "string");
+    assert(is_numeric(result[3]));
+});
+
+test_add(function() : Test("try-catch-4") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
+        show_error("poggers") catch ex {
+            let oldMessage = ex.message;
+            ex.message = "not poggers";
+            [oldMessage, ex]
+        }
+    ');
+    var result = (env.compile(ir))();
+    assertTypeof(result, "array");
+    assertEq("poggers", result[0]);
+    assertEq("not poggers", result[1].message);
+});
+
+//test_add(function() : Test("try-catch-throw") constructor {
+//    var env = new CatspeakEnvironment();
+//    var ir = env.parseString(@'
+//        (throw "and then something...") catch ex { ex }
+//    ');
+//    var result = (env.compile(ir))();
+//    assertEq("and then something...", result);
+//});

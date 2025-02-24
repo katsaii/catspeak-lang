@@ -249,6 +249,31 @@ function CatspeakIRBuilder() constructor {
         });
     };
 
+    /// Creates an instruction for catching exceptions.
+    ///
+    /// @param {Struct} eager
+    ///   The term which evaluates immediately, maybe raising an exception.
+    ///
+    /// @param {Struct} lazy
+    ///   The term which evaluates if the first term is exceptional.
+    ///
+    /// @param {Struct} localRef
+    ///   The local variable to write the exception to.
+    ///   Can be `undefined` is no variable is needed/wanted.
+    ///
+    /// @param {Real} [location]
+    ///   The source location of this term.
+    ///
+    /// @return {Struct}
+    static createCatch = function (eager, lazy, localRef, location=undefined) {
+        // __createTerm() will do argument validation
+        return __createTerm(CatspeakTerm.CATCH, location, {
+            eager : eager,
+            lazy : lazy,
+            localRef : localRef,
+        });
+    };
+
     /// Emits the instruction for a generic loop. GML style `while`,
     /// `for`, and `do` loops can be implemented in terms of this function.
     ///
@@ -562,8 +587,14 @@ function CatspeakIRBuilder() constructor {
             }
             // constant folding
             var opFunc = __catspeak_operator_get_binary(operator);
-            lhs.value = opFunc(lhs.value, rhs.value);
-            return lhs;
+            try {
+                lhs.value = opFunc(lhs.value, rhs.value);
+                return lhs;
+            } catch (ex_) {
+                __catspeak_error_silent(__catspeak_location_show_ext(
+                    location, "failed to optimise binary expression"
+                ));
+            }
         }
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.OP_BINARY, location, {
@@ -596,8 +627,15 @@ function CatspeakIRBuilder() constructor {
             }
             // constant folding
             var opFunc = __catspeak_operator_get_unary(operator);
-            value.value = opFunc(value.value);
-            return value;
+            try {
+                value.value = opFunc(value.value);
+                return value;
+            } catch (ex_) {
+                // couldn't do it......................slime man
+                __catspeak_error_silent(__catspeak_location_show_ext(
+                    location, "failed to optimise unary expression"
+                ));
+            }
         }
         // __createTerm() will do argument validation
         return __createTerm(CatspeakTerm.OP_UNARY, location, {
@@ -1032,6 +1070,7 @@ enum CatspeakTerm {
     PARAMS_COUNT,
     SELF,
     OTHER,
+    CATCH,
     /// @ignore
     __SIZE__
 }

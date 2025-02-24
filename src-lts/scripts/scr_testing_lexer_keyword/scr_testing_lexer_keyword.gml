@@ -33,6 +33,10 @@ test_add(function () : TestLexerToken("lexer-keyword-else",
     CatspeakToken.ELSE, "else", "else"
 ) constructor { });
 
+test_add(function () : TestLexerToken("lexer-keyword-catch",
+    CatspeakToken.CATCH, "catch", "catch"
+) constructor { });
+
 test_add(function () : TestLexerToken("lexer-keyword-while",
     CatspeakToken.WHILE, "while", "while"
 ) constructor { });
