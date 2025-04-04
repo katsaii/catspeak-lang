@@ -27,6 +27,7 @@
     {"id":{"name":"scr_testing_environment","path":"scripts/scr_testing_environment/scr_testing_environment.yy",},"order":1,},
     {"id":{"name":"__scr_catspeak_gml_interface","path":"scripts/__scr_catspeak_gml_interface/__scr_catspeak_gml_interface.yy",},"order":6,},
     {"id":{"name":"scr_testing_codegen","path":"scripts/scr_testing_codegen/scr_testing_codegen.yy",},"order":0,},
+    {"id":{"name":"scr_catspeak_compatibility_v1","path":"scripts/scr_catspeak_compatibility_v1/scr_catspeak_compatibility_v1.yy",},"order":2,},
     {"id":{"name":"obj_testing_moss_omod","path":"objects/obj_testing_moss_omod/obj_testing_moss_omod.yy",},"order":11,},
     {"id":{"name":"obj_testing_scratchpad","path":"objects/obj_testing_scratchpad/obj_testing_scratchpad.yy",},"order":4,},
     {"id":{"name":"scr_testing_lexer_number","path":"scripts/scr_testing_lexer_number/scr_testing_lexer_number.yy",},"order":7,},

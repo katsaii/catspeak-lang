@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "moss";
+var runExperiment = "catch";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -161,4 +161,20 @@ TEST_EXPERIMENT "moss" {
     //    (endComp - startComp) / 1000000,
     //]);
     //show_message(f());
+}
+
+TEST_EXPERIMENT "catch" {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
+        -- GML-style try/catch (instead of `try`, use a `do` block)
+        (do { throw { message : "hi" } }) catch err {
+          show_message("something went wrong!:")
+          show_message(err.messaage)
+        }
+    ');
+    var a = 123;
+    var f = env.compile(ir);
+    show_message(f);
+    f();
 }
