@@ -12,7 +12,6 @@
     {"id":{"name":"scr_catspeak_presets","path":"scripts/scr_catspeak_presets/scr_catspeak_presets.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_codegen","path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},"order":2,},
-    {"id":{"name":"scr_catspeak_lang_lua","path":"scripts/scr_catspeak_lang_lua/scr_catspeak_lang_lua.yy",},"order":2,},
     {"id":{"name":"tm_unit_test","path":"tilesets/tm_unit_test/tm_unit_test.yy",},"order":8,},
     {"id":{"name":"scr_testing_scratchpad","path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},"order":3,},
     {"id":{"name":"scr_testing_lexer_config","path":"scripts/scr_testing_lexer_config/scr_testing_lexer_config.yy",},"order":1,},
