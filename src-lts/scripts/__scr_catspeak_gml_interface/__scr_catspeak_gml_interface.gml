@@ -2632,386 +2632,101 @@ function __catspeak_get_gml_interface() {
             try { db[$ "audio_bus_main"] = audio_bus_main } catch (ce_) { skipped = true }
             try { db[$ "AudioEffectType"] = AudioEffectType } catch (ce_) { skipped = true }
             try { db[$ "AudioLFOType"] = AudioLFOType } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_speed;
-                db[$ "room_speed_get"] = method(undefined, function() { return room_speed });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = fps;
-                db[$ "fps_get"] = method(undefined, function() { return fps });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = fps_real;
-                db[$ "fps_real_get"] = method(undefined, function() { return fps_real });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_time;
-                db[$ "current_time_get"] = method(undefined, function() { return current_time });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_year;
-                db[$ "current_year_get"] = method(undefined, function() { return current_year });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_month;
-                db[$ "current_month_get"] = method(undefined, function() { return current_month });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_day;
-                db[$ "current_day_get"] = method(undefined, function() { return current_day });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_weekday;
-                db[$ "current_weekday_get"] = method(undefined, function() { return current_weekday });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_hour;
-                db[$ "current_hour_get"] = method(undefined, function() { return current_hour });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_minute;
-                db[$ "current_minute_get"] = method(undefined, function() { return current_minute });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = current_second;
-                db[$ "current_second_get"] = method(undefined, function() { return current_second });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room;
-                db[$ "room_get"] = method(undefined, function() { return room });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_first;
-                db[$ "room_first_get"] = method(undefined, function() { return room_first });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_last;
-                db[$ "room_last_get"] = method(undefined, function() { return room_last });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_width;
-                db[$ "room_width_get"] = method(undefined, function() { return room_width });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_height;
-                db[$ "room_height_get"] = method(undefined, function() { return room_height });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_persistent;
-                db[$ "room_persistent_get"] = method(undefined, function() { return room_persistent });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = score;
-                db[$ "score_get"] = method(undefined, function() { return score });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = lives;
-                db[$ "lives_get"] = method(undefined, function() { return lives });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = health;
-                db[$ "health_get"] = method(undefined, function() { return health });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = event_type;
-                db[$ "event_type_get"] = method(undefined, function() { return event_type });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = event_number;
-                db[$ "event_number_get"] = method(undefined, function() { return event_number });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = event_object;
-                db[$ "event_object_get"] = method(undefined, function() { return event_object });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = event_action;
-                db[$ "event_action_get"] = method(undefined, function() { return event_action });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = application_surface;
-                db[$ "application_surface_get"] = method(undefined, function() { return application_surface });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = debug_mode;
-                db[$ "debug_mode_get"] = method(undefined, function() { return debug_mode });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = font_texture_page_size;
-                db[$ "font_texture_page_size_get"] = method(undefined, function() { return font_texture_page_size });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_key;
-                db[$ "keyboard_key_get"] = method(undefined, function() { return keyboard_key });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_lastkey;
-                db[$ "keyboard_lastkey_get"] = method(undefined, function() { return keyboard_lastkey });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_lastchar;
-                db[$ "keyboard_lastchar_get"] = method(undefined, function() { return keyboard_lastchar });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_string;
-                db[$ "keyboard_string_get"] = method(undefined, function() { return keyboard_string });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = mouse_x;
-                db[$ "mouse_x_get"] = method(undefined, function() { return mouse_x });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = mouse_y;
-                db[$ "mouse_y_get"] = method(undefined, function() { return mouse_y });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = mouse_button;
-                db[$ "mouse_button_get"] = method(undefined, function() { return mouse_button });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = mouse_lastbutton;
-                db[$ "mouse_lastbutton_get"] = method(undefined, function() { return mouse_lastbutton });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = cursor_sprite;
-                db[$ "cursor_sprite_get"] = method(undefined, function() { return cursor_sprite });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_colour;
-                db[$ "background_colour_get"] = method(undefined, function() { return background_colour });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_showcolour;
-                db[$ "background_showcolour_get"] = method(undefined, function() { return background_showcolour });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_color;
-                db[$ "background_color_get"] = method(undefined, function() { return background_color });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_showcolor;
-                db[$ "background_showcolor_get"] = method(undefined, function() { return background_showcolor });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_enabled;
-                db[$ "view_enabled_get"] = method(undefined, function() { return view_enabled });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_current;
-                db[$ "view_current_get"] = method(undefined, function() { return view_current });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = game_id;
-                db[$ "game_id_get"] = method(undefined, function() { return game_id });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = game_display_name;
-                db[$ "game_display_name_get"] = method(undefined, function() { return game_display_name });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = game_project_name;
-                db[$ "game_project_name_get"] = method(undefined, function() { return game_project_name });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = game_save_id;
-                db[$ "game_save_id_get"] = method(undefined, function() { return game_save_id });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = working_directory;
-                db[$ "working_directory_get"] = method(undefined, function() { return working_directory });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = temp_directory;
-                db[$ "temp_directory_get"] = method(undefined, function() { return temp_directory });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = cache_directory;
-                db[$ "cache_directory_get"] = method(undefined, function() { return cache_directory });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = program_directory;
-                db[$ "program_directory_get"] = method(undefined, function() { return program_directory });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = browser_width;
-                db[$ "browser_width_get"] = method(undefined, function() { return browser_width });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = browser_height;
-                db[$ "browser_height_get"] = method(undefined, function() { return browser_height });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = os_type;
-                db[$ "os_type_get"] = method(undefined, function() { return os_type });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = os_device;
-                db[$ "os_device_get"] = method(undefined, function() { return os_device });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = os_browser;
-                db[$ "os_browser_get"] = method(undefined, function() { return os_browser });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = os_version;
-                db[$ "os_version_get"] = method(undefined, function() { return os_version });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = display_aa;
-                db[$ "display_aa_get"] = method(undefined, function() { return display_aa });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = async_load;
-                db[$ "async_load_get"] = method(undefined, function() { return async_load });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = delta_time;
-                db[$ "delta_time_get"] = method(undefined, function() { return delta_time });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = webgl_enabled;
-                db[$ "webgl_enabled_get"] = method(undefined, function() { return webgl_enabled });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = event_data;
-                db[$ "event_data_get"] = method(undefined, function() { return event_data });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = iap_data;
-                db[$ "iap_data_get"] = method(undefined, function() { return iap_data });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_speed;
-                db[$ "room_speed_set"] = method(undefined, function(val) { room_speed = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room;
-                db[$ "room_set"] = method(undefined, function(val) { room = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = room_persistent;
-                db[$ "room_persistent_set"] = method(undefined, function(val) { room_persistent = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = score;
-                db[$ "score_set"] = method(undefined, function(val) { score = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = lives;
-                db[$ "lives_set"] = method(undefined, function(val) { lives = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = health;
-                db[$ "health_set"] = method(undefined, function(val) { health = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = font_texture_page_size;
-                db[$ "font_texture_page_size_set"] = method(undefined, function(val) { font_texture_page_size = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_key;
-                db[$ "keyboard_key_set"] = method(undefined, function(val) { keyboard_key = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_lastkey;
-                db[$ "keyboard_lastkey_set"] = method(undefined, function(val) { keyboard_lastkey = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_lastchar;
-                db[$ "keyboard_lastchar_set"] = method(undefined, function(val) { keyboard_lastchar = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = keyboard_string;
-                db[$ "keyboard_string_set"] = method(undefined, function(val) { keyboard_string = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = mouse_button;
-                db[$ "mouse_button_set"] = method(undefined, function(val) { mouse_button = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = mouse_lastbutton;
-                db[$ "mouse_lastbutton_set"] = method(undefined, function(val) { mouse_lastbutton = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = cursor_sprite;
-                db[$ "cursor_sprite_set"] = method(undefined, function(val) { cursor_sprite = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_colour;
-                db[$ "background_colour_set"] = method(undefined, function(val) { background_colour = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_showcolour;
-                db[$ "background_showcolour_set"] = method(undefined, function(val) { background_showcolour = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_color;
-                db[$ "background_color_set"] = method(undefined, function(val) { background_color = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = background_showcolor;
-                db[$ "background_showcolor_set"] = method(undefined, function(val) { background_showcolor = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_enabled;
-                db[$ "view_enabled_set"] = method(undefined, function(val) { view_enabled = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_visible[0];
-                db[$ "view_visible_get"] = method(undefined, function(idx) { return view_visible[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_xport[0];
-                db[$ "view_xport_get"] = method(undefined, function(idx) { return view_xport[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_yport[0];
-                db[$ "view_yport_get"] = method(undefined, function(idx) { return view_yport[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_wport[0];
-                db[$ "view_wport_get"] = method(undefined, function(idx) { return view_wport[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_hport[0];
-                db[$ "view_hport_get"] = method(undefined, function(idx) { return view_hport[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_surface_id[0];
-                db[$ "view_surface_id_get"] = method(undefined, function(idx) { return view_surface_id[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_camera[0];
-                db[$ "view_camera_get"] = method(undefined, function(idx) { return view_camera[idx] });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_visible[0];
-                db[$ "view_visible_set"] = method(undefined, function(idx, val) { view_visible[idx] = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_xport[0];
-                db[$ "view_xport_set"] = method(undefined, function(idx, val) { view_xport[idx] = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_yport[0];
-                db[$ "view_yport_set"] = method(undefined, function(idx, val) { view_yport[idx] = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_wport[0];
-                db[$ "view_wport_set"] = method(undefined, function(idx, val) { view_wport[idx] = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_hport[0];
-                db[$ "view_hport_set"] = method(undefined, function(idx, val) { view_hport[idx] = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_surface_id[0];
-                db[$ "view_surface_id_set"] = method(undefined, function(idx, val) { view_surface_id[idx] = val });
-            } catch (ce_) { skipped = true }
-            try {
-                var gatekeeper = view_camera[0];
-                db[$ "view_camera_set"] = method(undefined, function(idx, val) { view_camera[idx] = val });
-            } catch (ce_) { skipped = true }
+            try { db[$ "room_speed_get"] = method(undefined, function() { return room_speed }) } catch (ce_) { skipped = true }
+            try { db[$ "fps_get"] = method(undefined, function() { return fps }) } catch (ce_) { skipped = true }
+            try { db[$ "fps_real_get"] = method(undefined, function() { return fps_real }) } catch (ce_) { skipped = true }
+            try { db[$ "current_time_get"] = method(undefined, function() { return current_time }) } catch (ce_) { skipped = true }
+            try { db[$ "current_year_get"] = method(undefined, function() { return current_year }) } catch (ce_) { skipped = true }
+            try { db[$ "current_month_get"] = method(undefined, function() { return current_month }) } catch (ce_) { skipped = true }
+            try { db[$ "current_day_get"] = method(undefined, function() { return current_day }) } catch (ce_) { skipped = true }
+            try { db[$ "current_weekday_get"] = method(undefined, function() { return current_weekday }) } catch (ce_) { skipped = true }
+            try { db[$ "current_hour_get"] = method(undefined, function() { return current_hour }) } catch (ce_) { skipped = true }
+            try { db[$ "current_minute_get"] = method(undefined, function() { return current_minute }) } catch (ce_) { skipped = true }
+            try { db[$ "current_second_get"] = method(undefined, function() { return current_second }) } catch (ce_) { skipped = true }
+            try { db[$ "room_get"] = method(undefined, function() { return room }) } catch (ce_) { skipped = true }
+            try { db[$ "room_first_get"] = method(undefined, function() { return room_first }) } catch (ce_) { skipped = true }
+            try { db[$ "room_last_get"] = method(undefined, function() { return room_last }) } catch (ce_) { skipped = true }
+            try { db[$ "room_width_get"] = method(undefined, function() { return room_width }) } catch (ce_) { skipped = true }
+            try { db[$ "room_height_get"] = method(undefined, function() { return room_height }) } catch (ce_) { skipped = true }
+            try { db[$ "room_persistent_get"] = method(undefined, function() { return room_persistent }) } catch (ce_) { skipped = true }
+            try { db[$ "score_get"] = method(undefined, function() { return score }) } catch (ce_) { skipped = true }
+            try { db[$ "lives_get"] = method(undefined, function() { return lives }) } catch (ce_) { skipped = true }
+            try { db[$ "health_get"] = method(undefined, function() { return health }) } catch (ce_) { skipped = true }
+            try { db[$ "event_type_get"] = method(undefined, function() { return event_type }) } catch (ce_) { skipped = true }
+            try { db[$ "event_number_get"] = method(undefined, function() { return event_number }) } catch (ce_) { skipped = true }
+            try { db[$ "event_object_get"] = method(undefined, function() { return event_object }) } catch (ce_) { skipped = true }
+            try { db[$ "event_action_get"] = method(undefined, function() { return event_action }) } catch (ce_) { skipped = true }
+            try { db[$ "application_surface_get"] = method(undefined, function() { return application_surface }) } catch (ce_) { skipped = true }
+            try { db[$ "debug_mode_get"] = method(undefined, function() { return debug_mode }) } catch (ce_) { skipped = true }
+            try { db[$ "font_texture_page_size_get"] = method(undefined, function() { return font_texture_page_size }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_key_get"] = method(undefined, function() { return keyboard_key }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_lastkey_get"] = method(undefined, function() { return keyboard_lastkey }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_lastchar_get"] = method(undefined, function() { return keyboard_lastchar }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_string_get"] = method(undefined, function() { return keyboard_string }) } catch (ce_) { skipped = true }
+            try { db[$ "mouse_x_get"] = method(undefined, function() { return mouse_x }) } catch (ce_) { skipped = true }
+            try { db[$ "mouse_y_get"] = method(undefined, function() { return mouse_y }) } catch (ce_) { skipped = true }
+            try { db[$ "mouse_button_get"] = method(undefined, function() { return mouse_button }) } catch (ce_) { skipped = true }
+            try { db[$ "mouse_lastbutton_get"] = method(undefined, function() { return mouse_lastbutton }) } catch (ce_) { skipped = true }
+            try { db[$ "cursor_sprite_get"] = method(undefined, function() { return cursor_sprite }) } catch (ce_) { skipped = true }
+            try { db[$ "background_colour_get"] = method(undefined, function() { return background_colour }) } catch (ce_) { skipped = true }
+            try { db[$ "background_showcolour_get"] = method(undefined, function() { return background_showcolour }) } catch (ce_) { skipped = true }
+            try { db[$ "background_color_get"] = method(undefined, function() { return background_color }) } catch (ce_) { skipped = true }
+            try { db[$ "background_showcolor_get"] = method(undefined, function() { return background_showcolor }) } catch (ce_) { skipped = true }
+            try { db[$ "view_enabled_get"] = method(undefined, function() { return view_enabled }) } catch (ce_) { skipped = true }
+            try { db[$ "view_current_get"] = method(undefined, function() { return view_current }) } catch (ce_) { skipped = true }
+            try { db[$ "game_id_get"] = method(undefined, function() { return game_id }) } catch (ce_) { skipped = true }
+            try { db[$ "game_display_name_get"] = method(undefined, function() { return game_display_name }) } catch (ce_) { skipped = true }
+            try { db[$ "game_project_name_get"] = method(undefined, function() { return game_project_name }) } catch (ce_) { skipped = true }
+            try { db[$ "game_save_id_get"] = method(undefined, function() { return game_save_id }) } catch (ce_) { skipped = true }
+            try { db[$ "working_directory_get"] = method(undefined, function() { return working_directory }) } catch (ce_) { skipped = true }
+            try { db[$ "temp_directory_get"] = method(undefined, function() { return temp_directory }) } catch (ce_) { skipped = true }
+            try { db[$ "cache_directory_get"] = method(undefined, function() { return cache_directory }) } catch (ce_) { skipped = true }
+            try { db[$ "program_directory_get"] = method(undefined, function() { return program_directory }) } catch (ce_) { skipped = true }
+            try { db[$ "browser_width_get"] = method(undefined, function() { return browser_width }) } catch (ce_) { skipped = true }
+            try { db[$ "browser_height_get"] = method(undefined, function() { return browser_height }) } catch (ce_) { skipped = true }
+            try { db[$ "os_type_get"] = method(undefined, function() { return os_type }) } catch (ce_) { skipped = true }
+            try { db[$ "os_device_get"] = method(undefined, function() { return os_device }) } catch (ce_) { skipped = true }
+            try { db[$ "os_browser_get"] = method(undefined, function() { return os_browser }) } catch (ce_) { skipped = true }
+            try { db[$ "os_version_get"] = method(undefined, function() { return os_version }) } catch (ce_) { skipped = true }
+            try { db[$ "display_aa_get"] = method(undefined, function() { return display_aa }) } catch (ce_) { skipped = true }
+            try { db[$ "async_load_get"] = method(undefined, function() { return async_load }) } catch (ce_) { skipped = true }
+            try { db[$ "delta_time_get"] = method(undefined, function() { return delta_time }) } catch (ce_) { skipped = true }
+            try { db[$ "webgl_enabled_get"] = method(undefined, function() { return webgl_enabled }) } catch (ce_) { skipped = true }
+            try { db[$ "event_data_get"] = method(undefined, function() { return event_data }) } catch (ce_) { skipped = true }
+            try { db[$ "iap_data_get"] = method(undefined, function() { return iap_data }) } catch (ce_) { skipped = true }
+            try { db[$ "room_speed_set"] = method(undefined, function(val) { room_speed = val }) } catch (ce_) { skipped = true }
+            try { db[$ "room_set"] = method(undefined, function(val) { room = val }) } catch (ce_) { skipped = true }
+            try { db[$ "room_persistent_set"] = method(undefined, function(val) { room_persistent = val }) } catch (ce_) { skipped = true }
+            try { db[$ "score_set"] = method(undefined, function(val) { score = val }) } catch (ce_) { skipped = true }
+            try { db[$ "lives_set"] = method(undefined, function(val) { lives = val }) } catch (ce_) { skipped = true }
+            try { db[$ "health_set"] = method(undefined, function(val) { health = val }) } catch (ce_) { skipped = true }
+            try { db[$ "font_texture_page_size_set"] = method(undefined, function(val) { font_texture_page_size = val }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_key_set"] = method(undefined, function(val) { keyboard_key = val }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_lastkey_set"] = method(undefined, function(val) { keyboard_lastkey = val }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_lastchar_set"] = method(undefined, function(val) { keyboard_lastchar = val }) } catch (ce_) { skipped = true }
+            try { db[$ "keyboard_string_set"] = method(undefined, function(val) { keyboard_string = val }) } catch (ce_) { skipped = true }
+            try { db[$ "mouse_button_set"] = method(undefined, function(val) { mouse_button = val }) } catch (ce_) { skipped = true }
+            try { db[$ "mouse_lastbutton_set"] = method(undefined, function(val) { mouse_lastbutton = val }) } catch (ce_) { skipped = true }
+            try { db[$ "cursor_sprite_set"] = method(undefined, function(val) { cursor_sprite = val }) } catch (ce_) { skipped = true }
+            try { db[$ "background_colour_set"] = method(undefined, function(val) { background_colour = val }) } catch (ce_) { skipped = true }
+            try { db[$ "background_showcolour_set"] = method(undefined, function(val) { background_showcolour = val }) } catch (ce_) { skipped = true }
+            try { db[$ "background_color_set"] = method(undefined, function(val) { background_color = val }) } catch (ce_) { skipped = true }
+            try { db[$ "background_showcolor_set"] = method(undefined, function(val) { background_showcolor = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_enabled_set"] = method(undefined, function(val) { view_enabled = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_visible_get"] = method(undefined, function(idx) { return view_visible[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_xport_get"] = method(undefined, function(idx) { return view_xport[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_yport_get"] = method(undefined, function(idx) { return view_yport[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_wport_get"] = method(undefined, function(idx) { return view_wport[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_hport_get"] = method(undefined, function(idx) { return view_hport[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_surface_id_get"] = method(undefined, function(idx) { return view_surface_id[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_camera_get"] = method(undefined, function(idx) { return view_camera[idx] }) } catch (ce_) { skipped = true }
+            try { db[$ "view_visible_set"] = method(undefined, function(idx, val) { view_visible[idx] = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_xport_set"] = method(undefined, function(idx, val) { view_xport[idx] = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_yport_set"] = method(undefined, function(idx, val) { view_yport[idx] = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_wport_set"] = method(undefined, function(idx, val) { view_wport[idx] = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_hport_set"] = method(undefined, function(idx, val) { view_hport[idx] = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_surface_id_set"] = method(undefined, function(idx, val) { view_surface_id[idx] = val }) } catch (ce_) { skipped = true }
+            try { db[$ "view_camera_set"] = method(undefined, function(idx, val) { view_camera[idx] = val }) } catch (ce_) { skipped = true }
         }
         if (skipped) {
             __catspeak_error_silent(
