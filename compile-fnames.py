@@ -41,15 +41,15 @@ with open(FNAMES_PATH, "r", encoding="utf-8") as fnames:
         modifiers = None
         is_function = False
         is_index = False
-        if match := re.search("^([A-Za-z0-9_]+)\([^\)]*\)(.*)", line):
+        if match := re.search(r"^([A-Za-z0-9_]+)\([^\)]*\)(.*)", line):
             symbol = match[1]
             modifiers = match[2]
             is_function = True
-        elif match := re.search("^([A-Za-z0-9_]+)\[[^\]]*\](.*)", line):
+        elif match := re.search(r"^([A-Za-z0-9_]+)\[[^\]]*\](.*)", line):
             symbol = match[1]
             modifiers = match[2]
             is_index = True
-        elif match := re.search("^([A-Za-z0-9_]+)(.*)", line):
+        elif match := re.search(r"^([A-Za-z0-9_]+)(.*)", line):
             symbol = match[1]
             modifiers = match[2]
         else:
@@ -114,10 +114,11 @@ with open(codegen_path, "w", encoding="utf-8") as file:
     def try_write(file, str):
         file.write(f"\n            try {{ {str} }} catch (ce_) {{ skipped = true }}")
     def try_write_prop(file, name, str):
-        file.write(f"\n            try {{")
-        file.write(f"\n                var gatekeeper = {name};")
-        file.write(f"\n                {str};")
-        file.write(f"\n            }} catch (ce_) {{ skipped = true }}")
+        file.write(f"\n            try {{ {str} }} catch (ce_) {{ skipped = true }}")
+        # didn't work how i expected it to (LTS bug...)
+        #file.write(f"\n                var gatekeeper = {name};")
+        #file.write(f"\n                {str};")
+        #file.write(f"\n            }} catch (ce_) {{ skipped = true }}")
     for symbol in functions:
         if symbol == "method":
             try_write(file, f"db[$ \"method\"] = method(undefined, catspeak_method)")
