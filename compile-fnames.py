@@ -7,9 +7,7 @@ from textwrap import dedent
 import os
 import re
 
-FNAMES_PATH = "fnames-2024-2-0-163"
-
-blocklist = set([
+blocklist = [
     "argument",
     "nameof",
     "self",
@@ -19,7 +17,10 @@ blocklist = set([
     "physics_",
     "rollback_",
     "wallpaper_",
-])
+    # temp
+    "AudioEffectType",
+    "AudioLFOType",
+]
 def is_in_blocklist(symbol):
     global blocklist
     for item in blocklist:
@@ -27,72 +28,103 @@ def is_in_blocklist(symbol):
             return True
     return False
 
-# parse fnames
-consts = []
-functions = []
-prop_get = []
-prop_set = []
-prop_get_i = []
-prop_set_i = []
-with open(FNAMES_PATH, "r", encoding="utf-8") as fnames:
-    for line in fnames:
-        symbol_data = line.strip()
-        symbol = None
-        modifiers = None
-        is_function = False
-        is_index = False
-        if match := re.search(r"^([A-Za-z0-9_]+)\([^\)]*\)(.*)", line):
-            symbol = match[1]
-            modifiers = match[2]
-            is_function = True
-        elif match := re.search(r"^([A-Za-z0-9_]+)\[[^\]]*\](.*)", line):
-            symbol = match[1]
-            modifiers = match[2]
-            is_index = True
-        elif match := re.search(r"^([A-Za-z0-9_]+)(.*)", line):
-            symbol = match[1]
-            modifiers = match[2]
-        else:
-            continue
-        if is_in_blocklist(symbol):
-            continue
-        if "@" in modifiers or \
-                "&" in modifiers or \
-                "?" in modifiers or \
-                "%" in modifiers or \
-                "^" in modifiers:
-            # skip: 
-            #   @ = instance variable
-            #   & = obsolete
-            #   % = property
-            #   ? = struct variable
-            #   ^ = do not add to autocomplete
-            continue
-        if is_function:
-            functions.append(symbol)
-        elif is_index:
-            prop_get_i.append(symbol)
-            if "*" in modifiers:
-                # * = readonly
-                continue
-            prop_set_i.append(symbol)
-        elif "#" in modifiers:
-            # # = constant
-            consts.append(symbol)
-        else:
-            prop_get.append(symbol)
-            if "*" in modifiers:
-                # * = readonly
-                continue
-            prop_set.append(symbol)
+class FNamesDB:
+    NONE       = 0
+    FUNCTION   = 0b000001
+    CONST      = 0b000010
+    PROP_GET   = 0b000100
+    PROP_SET   = 0b001000
+    PROP_GET_I = 0b010000
+    PROP_SET_I = 0b100000
 
-# write to gml file
-codegen_path = Path("src-lts/scripts/__scr_catspeak_gml_interface/__scr_catspeak_gml_interface.gml")
-if not codegen_path.parent.exists():
-    os.makedirs(codegen_path.parent)
-with open(codegen_path, "w", encoding="utf-8") as file:
-    print(f"...writing '{codegen_path}'")
-    writeln = lambda: file.write("\n")
+    def __init__(self, path):
+        self.path = path
+        self.symbols = { }
+        # do parse
+        with open(self.path, "r", encoding="utf-8") as fnames:
+            for line in fnames:
+                symbol_data = line.strip()
+                symbol = None
+                modifiers = None
+                is_function = False
+                is_index = False
+                if match := re.search(r"^([A-Za-z0-9_]+)\([^\)]*\)(.*)", line):
+                    symbol = match[1]
+                    modifiers = match[2]
+                    is_function = True
+                elif match := re.search(r"^([A-Za-z0-9_]+)\[[^\]]*\](.*)", line):
+                    symbol = match[1]
+                    modifiers = match[2]
+                    is_index = True
+                elif match := re.search(r"^([A-Za-z0-9_]+)(.*)", line):
+                    symbol = match[1]
+                    modifiers = match[2]
+                else:
+                    continue
+                if is_in_blocklist(symbol):
+                    continue
+                if "@" in modifiers or \
+                        "&" in modifiers or \
+                        "?" in modifiers or \
+                        "%" in modifiers or \
+                        "^" in modifiers:
+                    # skip: 
+                    #   @ = instance variable
+                    #   & = obsolete
+                    #   % = property
+                    #   ? = struct variable
+                    #   ^ = do not add to autocomplete
+                    continue
+                flags = FNamesDB.NONE
+                if is_function:
+                    flags = flags | FNamesDB.FUNCTION
+                elif is_index:
+                    flags = flags | FNamesDB.PROP_GET_I
+                    if "*" in modifiers:
+                        # * = readonly
+                        pass
+                    else:
+                        flags = flags | FNamesDB.PROP_SET_I
+                elif "#" in modifiers:
+                    # # = constant
+                    flags = flags | FNamesDB.CONST
+                else:
+                    flags = flags | FNamesDB.PROP_GET
+                    if "*" in modifiers:
+                        # * = readonly
+                        pass
+                    else:
+                        flags = flags | FNamesDB.PROP_SET
+                self.symbols[symbol] = flags
+
+fnameses = [
+    FNamesDB("fnames-2022-lts"),
+    FNamesDB("fnames-2024-2-0-163"),
+]
+
+fnames_symbols = { }
+for fnames in fnameses:
+    print(str(fnames.symbols))
+    for (symbol, flags) in fnames.symbols.items():
+        (expect_flags, owners) = fnames_symbols.setdefault(symbol, (flags, []))
+        if expect_flags != flags:
+            raise Exception(f"flags for symbol {symbol} are different from what is expected! {flags} != {expect_flags}")
+        owners.append(fnames)
+
+fnames_complete = { }
+for (symbol, (flags, owners)) in fnames_symbols.items():
+    owners_key_arr = [x.path for x in owners]
+    owners_key_arr.sort()
+    owners_key = tuple(owners_key_arr)
+    fnames_complete_symbols = fnames_complete.setdefault(owners_key, [])
+    fnames_complete_symbols.append((symbol, flags))
+
+# write to GML file
+CODEGEN_PATH = Path("src-lts/scripts/__scr_catspeak_gml_interface/__scr_catspeak_gml_interface.gml")
+if not CODEGEN_PATH.parent.exists():
+    os.makedirs(CODEGEN_PATH.parent)
+with open(CODEGEN_PATH, "w", encoding="utf-8") as file:
+    print(f"...writing '{CODEGEN_PATH}'")
     file.write(dedent("""
         //! AUTO GENERATED, DON'T MODIFY THIS FILE
         //! DELETE THIS FILE IF YOU DO NOT USE
@@ -107,46 +139,38 @@ with open(codegen_path, "w", encoding="utf-8") as file:
         function __catspeak_get_gml_interface() {
             static db = undefined;
             if (db == undefined) {
-                skipped = false;
                 db = { };
                 with ({ }) { // protects from incorrectly reading a missing function from an instance variable
     """).strip())
-    def try_write(file, str):
-        file.write(f"\n            try {{ {str} }} catch (ce_) {{ skipped = true }}")
-    def try_write_prop(file, name, str):
-        file.write(f"\n            try {{ {str} }} catch (ce_) {{ skipped = true }}")
-        # didn't work how i expected it to (LTS bug...)
-        #file.write(f"\n                var gatekeeper = {name};")
-        #file.write(f"\n                {str};")
-        #file.write(f"\n            }} catch (ce_) {{ skipped = true }}")
-    for symbol in functions:
-        if symbol == "method":
-            try_write(file, f"db[$ \"method\"] = method(undefined, catspeak_method)")
-        else:
-            try_write(file, f"db[$ \"{symbol}\"] = method(undefined, {symbol})")
-    for symbol in consts:
-        if symbol == "global":
-            try_write(file, f"db[$ \"global\"] = catspeak_special_to_struct(global)")
-        else:
-            try_write(file, f"db[$ \"{symbol}\"] = {symbol}")
-    for symbol in prop_get:
-        try_write_prop(file, symbol, f"db[$ \"{symbol}_get\"] = method(undefined, function() {{ return {symbol} }})")
-    for symbol in prop_set:
-        try_write_prop(file, symbol, f"db[$ \"{symbol}_set\"] = method(undefined, function(val) {{ {symbol} = val }})")
-    for symbol in prop_get_i:
-        try_write_prop(file, f"{symbol}[0]", f"db[$ \"{symbol}_get\"] = method(undefined, function(idx) {{ return {symbol}[idx] }})")
-    for symbol in prop_set_i:
-        try_write_prop(file, f"{symbol}[0]", f"db[$ \"{symbol}_set\"] = method(undefined, function(idx, val) {{ {symbol}[idx] = val }})")
+    for (fnameses, symbols) in fnames_complete.items():
+        if len(symbols) < 1:
+            continue
+        file.write("\n            try {")
+        for (symbol, flags) in symbols:
+            if flags & FNamesDB.FUNCTION:
+                if symbol == "method":
+                    file.write(f"\n                db[$ \"method\"] = method(undefined, catspeak_method);")
+                else:
+                    file.write(f"\n                db[$ \"{symbol}\"] = method(undefined, {symbol});")
+            if flags & FNamesDB.CONST:
+                if symbol == "global":
+                    file.write(f"\n                db[$ \"global\"] = catspeak_special_to_struct(global);")
+                else:
+                    file.write(f"\n                db[$ \"{symbol}\"] = {symbol};")
+            if flags & FNamesDB.PROP_GET:
+                file.write(f"\n                db[$ \"{symbol}_get\"] = method(undefined, function () {{ return {symbol} }});")
+            if flags & FNamesDB.PROP_SET:
+                file.write(f"\n                db[$ \"{symbol}_set\"] = method(undefined, function (__val) {{ {symbol} = __val }});")
+            if flags & FNamesDB.PROP_GET_I:
+                file.write(f"\n                db[$ \"{symbol}_get\"] = method(undefined, function (__idx) {{ return {symbol}[__idx] }});")
+            if flags & FNamesDB.PROP_SET_I:
+                file.write(f"\n                db[$ \"{symbol}_set\"] = method(undefined, function (__idx, __val) {{ {symbol}[__idx] = __val }});")
+        file.write("\n            } catch (__err) {")
+        file.write(f"\n               __catspeak_error_silent(\"skipping GML API versions: {', '.join(fnameses)} (your GameMaker version may be out of date) reason: \", __err.message);")
+        file.write("\n            }")
     file.write(dedent("""
-                }
-                if (skipped) {
-                    __catspeak_error_silent(
-                        "some functions/constants in the GML interface were skipped\\n",
-                        "this may be because your GameMaker version is out of date, or missing them"
-                    );
                 }
             }
             return db;
         }
     """).rstrip())
-    writeln()
