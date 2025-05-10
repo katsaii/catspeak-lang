@@ -395,16 +395,25 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
                 "lazy", undefined,
                 "localRef", undefined
             );
-            __catspeak_check_arg_struct("term.localRef", term.localRef,
-                "idx", is_numeric
-            );
-        }        
-        return method({
-            eager : __compileTerm(ctx, term.eager),
-            lazy : __compileTerm(ctx, term.lazy),
-            locals : ctx.locals,
-            idx : term.localRef.idx,
-        }, __catspeak_expr_catch__);
+        }
+        if (term.localRef == undefined) {
+            return method({
+                eager : __compileTerm(ctx, term.eager),
+                lazy : __compileTerm(ctx, term.lazy),
+            }, __catspeak_expr_catch_simple__);
+        } else {
+            if (CATSPEAK_DEBUG_MODE) {
+                __catspeak_check_arg_struct("term.localRef", term.localRef,
+                    "idx", is_numeric
+                );
+            }
+            return method({
+                eager : __compileTerm(ctx, term.eager),
+                lazy : __compileTerm(ctx, term.lazy),
+                locals : ctx.locals,
+                idx : term.localRef.idx,
+            }, __catspeak_expr_catch__);
+        }
     };
 
     /// @ignore
@@ -1278,6 +1287,18 @@ function __catspeak_expr_catch__() {
         result = eager();
     } catch (exValue) {
         locals[@ idx] = exValue;
+        result = lazy();
+    }
+    return result;
+}
+
+/// @ignore
+/// @return {Any}
+function __catspeak_expr_catch_simple__() {
+    var result;
+    try {
+        result = eager();
+    } catch (exValue) {
         result = lazy();
     }
     return result;

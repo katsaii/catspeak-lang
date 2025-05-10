@@ -1093,3 +1093,50 @@ test_add(function() : Test("try-catch-throw") constructor {
     var result = (env.compile(ir))();
     assertEq("and then something...", result);
 });
+
+test_add(function() : Test("try-catch-throw-2") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        -- GML-style try/catch (instead of `try`, use a `do` block)
+        do {
+          throw { message : "hi" }
+        } catch err {
+          err.message
+        }
+    ');
+    var f = env.compile(ir);
+    assertEq(f(), "hi");
+});
+
+test_add(function() : Test("try-catch-throw-3") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        do {
+          throw "oops"
+        } catch err {
+          throw err + ", oops again"
+        } catch err { -- re-define error var
+          err
+        }
+    ');
+    var f = env.compile(ir);
+    assertEq(f(), "oops, oops again");
+});
+
+test_add(function() : Test("try-catch-simple") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        "a" - "b" catch { "c" }
+    ');
+    var f = env.compile(ir);
+    assertEq(f(), "c");
+});
+
+test_add(function() : Test("try-catch-simple-2") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        1 - 2 catch { 4 }
+    ');
+    var f = env.compile(ir);
+    assertEq(f(), -1);
+});

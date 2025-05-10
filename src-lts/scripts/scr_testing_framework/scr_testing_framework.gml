@@ -240,19 +240,19 @@ function test_run() {
         return;
     }
     var testFunc = ds_queue_dequeue(stats.testQueue);
-    //try {
+    try {
         test = new testFunc();
         if (test.automatic) {
             // otherwise `complete()` needs to be called manually
             test.complete();
         }
-    //} catch (e) {
-    //    stats.totalFatal += 1;
-    //    show_debug_message(
-    //        "encountered a fatal error when running one of the test cases:\n"
-    //        + __catspeak_string(e)
-    //    );
-    //}
+    } catch (e) {
+        stats.totalFatal += 1;
+        show_debug_message(
+            "encountered a fatal error when running one of the test cases:\n"
+            + __catspeak_string(e)
+        );
+    }
 }
 
 /// @ignore
