@@ -152,3 +152,5 @@ Display name: Catspeak &lt;major&gt;
 Version: &lt;major&gt;.&lt;minor&gt;.&lt;patch&gt; (see `CATSPEAK_VERSION` for what this should be)
 
 Package ID (Filename): catspeak_&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;
+
+**Do not include the `Testing`, `Catspeak Docs`, and `Catspeak Compatibility` groups.**

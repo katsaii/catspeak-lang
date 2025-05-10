@@ -332,7 +332,7 @@ function __catspeak_location_show_ext(location, filepath) {
     var msg = __catspeak_location_show(location, filepath);
     if (argument_count > 2) {
         msg += " -- ";
-        for (var i = 1; i < argument_count; i += 1) {
+        for (var i = 2; i < argument_count; i += 1) {
             msg += __catspeak_string(argument[i]);
         }
     }
