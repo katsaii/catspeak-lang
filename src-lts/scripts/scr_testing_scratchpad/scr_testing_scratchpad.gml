@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = undefined;
+var runExperiment = "err";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -181,4 +181,16 @@ TEST_EXPERIMENT "catch" {
     var a = 123;
     var f = env.compile(ir);
     f();
+}
+
+TEST_EXPERIMENT "err" {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var ir = env.parseString(@'
+        let n = 1;
+        --let n = 2;
+        return ("a" - "b")
+    ', "testfile.meow");
+    var f = env.compile(ir);
+    show_message(f());
 }

@@ -22,8 +22,11 @@ function CatspeakASGBuilder() : CatspeakIRBuilder() constructor { }
 /// programs. The preferred method of creating correctly formed, and
 /// optimised Catspeak IR.
 ///
+/// @param {String} [filepath]
+///   Associates this Catspeak IR with a filename.
+///
 /// @experimental
-function CatspeakIRBuilder() constructor {
+function CatspeakIRBuilder(filepath=undefined) constructor {
     /// @ignore
     self.functions = [];
     /// @ignore
@@ -34,12 +37,17 @@ function CatspeakIRBuilder() constructor {
     self.functionScopesTop = -1;
     /// @ignore
     self.currFunctionScope = undefined;
+    /// The filepath associated with this IR.
+    ///
+    /// @return {String}
+    self.filepath = filepath;
 
     /// Returns the underlying representation of this builder.
     ///
     /// @return {Struct}
     static get = function () {
         return {
+            filepath : filepath,
             functions : functions,
             entryPoints : topLevelFunctions,
         };
@@ -611,7 +619,7 @@ function CatspeakIRBuilder() constructor {
                 return lhs;
             } catch (ex_) {
                 __catspeak_error_silent(__catspeak_location_show_ext(
-                    location, "failed to optimise binary expression"
+                    location, filepath, "failed to optimise binary expression"
                 ));
             }
         }
@@ -652,7 +660,7 @@ function CatspeakIRBuilder() constructor {
             } catch (ex_) {
                 // couldn't do it......................slime man
                 __catspeak_error_silent(__catspeak_location_show_ext(
-                    location, "failed to optimise unary expression"
+                    location, filepath, "failed to optimise unary expression"
                 ));
             }
         }
@@ -783,7 +791,7 @@ function CatspeakIRBuilder() constructor {
         var scope = block.locals;
         if (ds_map_exists(scope, name)) {
             __catspeak_error(
-                __catspeak_location_show(location),
+                __catspeak_location_show(location, filepath),
                 " -- a local variable with the name '", name, "' is already ",
                 "defined in this scope"
             );
