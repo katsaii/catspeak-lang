@@ -1130,7 +1130,6 @@ function catspeak_method(self_, callee) {
 
 /// Returns the 'self' of the current method, either by returning the correct Catspeak scope
 /// or the exposed GML method scope (if any)
-/// 
 ///
 /// @remark
 ///   Preferred over 'method_get_self', otherwise you risk breaking your compiled
@@ -1150,13 +1149,11 @@ function catspeak_get_self(callee) {
         var self_ = method_get_self(callee);
         return self_[$ "self_"]; 
     }
-    
     return method_get_self(callee);
 }
 
 /// Returns the 'index' of the current method, either by returning the compiled 
 /// Catspeak function or the exposed GML function as a method bound to `undefined`
-/// 
 ///
 /// @remark
 ///   Preferred over 'method_get_index', otherwise you risk breaking your compiled
@@ -1172,7 +1169,6 @@ function catspeak_get_index(callee) {
         var self_ = method_get_self(callee);
         return self_[$ "callee"] ?? callee;
     }
-    
     return method(undefined, callee);
 }
 
