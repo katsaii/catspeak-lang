@@ -1205,3 +1205,40 @@ test_add(function() : Test("exploit-obj-bad") constructor {
     instance_destroy(inst);
 });
 */
+
+test_add(function() : Test("with-inst-destroy") constructor {
+    var env = new CatspeakEnvironment();
+    env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
+    var inst1 = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var inst2 = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var inst3 = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var inst4 = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var inst5 = instance_create_depth(0, 0, 0, obj_testing_blank);
+    var ir = env.parseString(@'
+        with obj_testing_blank {
+            instance_destroy(self);
+        }
+    ');
+    var f = env.compile(ir);
+    f();
+    assert(!instance_exists(inst1));
+    assert(!instance_exists(inst2));
+    assert(!instance_exists(inst3));
+    assert(!instance_exists(inst4));
+    assert(!instance_exists(inst5));
+    if (instance_exists(inst1)) {
+        instance_destroy(inst1);
+    }
+    if (instance_exists(inst2)) {
+        instance_destroy(inst2);
+    }
+    if (instance_exists(inst3)) {
+        instance_destroy(inst3);
+    }
+    if (instance_exists(inst4)) {
+        instance_destroy(inst4);
+    }
+    if (instance_exists(inst5)) {
+        instance_destroy(inst5);
+    }
+});
