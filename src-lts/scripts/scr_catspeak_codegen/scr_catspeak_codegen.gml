@@ -493,6 +493,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         return method({
             scope : __compileTerm(ctx, term.scope),
             body : __compileTerm(ctx, term.body),
+            dbgError : __dbgTerm(term.scope, "is not valid in 'with' contexts")
         }, __catspeak_expr_loop_with__);
     };
 
@@ -1416,12 +1417,20 @@ function __catspeak_expr_loop_general__() {
 /// @ignore
 /// @return {Any}
 function __catspeak_expr_loop_with__() {
+    var scope_ = scope();
+    if (scope_ == noone) {
+        return undefined;
+    }
     var body_ = body;
     var throwValue = undefined;
     var doThrowValue = false;
     var returnValue = undefined;
     var doReturnValue = false;
-    with (scope()) {
+    if (!__catspeak_is_withable(scope_)) {
+        __catspeak_error(dbgError, ": ", scope_);
+        return undefined;
+    }
+    with (scope_) {
         // the finally block doesn't execute sometimes if there's a `break`,
         // `throw`, or `continue` in the try/catch blocks
         __CATSPEAK_BEGIN_SELF = self;
