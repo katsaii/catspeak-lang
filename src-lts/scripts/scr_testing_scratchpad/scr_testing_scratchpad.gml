@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "err";
+var runExperiment = undefined;
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
