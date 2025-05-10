@@ -307,8 +307,14 @@ function catspeak_location_get_column(location) {
 /// @ignore
 ///
 /// @param {Real} pos
-function __catspeak_location_show(location) {
-    var msg = "in a file";
+/// @param {String} filepath
+function __catspeak_location_show(location, filepath) {
+    var msg = "in ";
+    if (filepath != undefined) {
+        msg += string(filepath);
+    } else {
+        msg += "a file";
+    }
     if (location != undefined) {
         msg += " at (line " + 
                 __catspeak_string(catspeak_location_get_row(location)) +
@@ -322,9 +328,9 @@ function __catspeak_location_show(location) {
 /// @ignore
 ///
 /// @param {Real} pos
-function __catspeak_location_show_ext(location) {
-    var msg = __catspeak_location_show(location);
-    if (argument_count > 1) {
+function __catspeak_location_show_ext(location, filepath) {
+    var msg = __catspeak_location_show(location, filepath);
+    if (argument_count > 2) {
         msg += " -- ";
         for (var i = 1; i < argument_count; i += 1) {
             msg += __catspeak_string(argument[i]);

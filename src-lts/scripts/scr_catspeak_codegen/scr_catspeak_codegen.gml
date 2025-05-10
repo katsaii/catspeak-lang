@@ -92,6 +92,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     /// @ignore
     self.functions = ir.functions;
     /// @ignore
+    self.filepath = ir[$ "filepath"]; // like this for compatibility with old versions
+    /// @ignore
     self.sharedData = {
         globals : { },
         self_ : undefined,
@@ -221,7 +223,8 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             locals : array_create(func.localCount),
             argCount : func.argCount,
             args : array_create(func.argCount),
-            currentArgCount: 0,
+            currentArgCount : 0,
+            filepath : filepath,
         };
         ctx.program = __compileTerm(ctx, func.root);
         if (__catspeak_term_is_pure(func.root.type)) {
@@ -808,7 +811,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             if (__exists(name)) {
                 // cannot assign to interface values
                 __catspeak_error(
-                    __catspeak_location_show(target.dbg),
+                    __catspeak_location_show(target.dbg, filepath),
                     " -- invalid assignment target, ",
                     "cannot assign to built-in function or constant"
                 );
@@ -827,7 +830,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
                 );
             }
             __catspeak_error(
-                __catspeak_location_show(target.dbg),
+                __catspeak_location_show(target.dbg, filepath),
                 " -- invalid assignment target, ",
                 "must be an identifier or accessor expression"
             );
@@ -1093,7 +1096,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             );
         }
         var terminalName = __catspeak_term_get_terminal(term);
-        return "runtime error " + __catspeak_location_show_ext(term.dbg,
+        return "runtime error " + __catspeak_location_show_ext(term.dbg, filepath,
             __catspeak_is_nullish(terminalName)
                     ? "value"
                     : "variable '" + terminalName + "'",
@@ -1170,6 +1173,17 @@ function __catspeak_function__() {
         }
     }
     if (doThrowValue) {
+        if (filepath != undefined && is_struct(throwValue)) {
+            var catspeakErr = "CATSPEAK ERROR " + __catspeak_location_show(undefined, filepath);
+            if (variable_struct_exists(throwValue, "message")) {
+                // add where the error occurred (really bad implementation, might be good enough for now)
+                throwValue.message = catspeakErr + ": " + throwValue.message;
+            }
+            if (variable_struct_exists(throwValue, "longMessage")) {
+                // add where the error occurred (really bad implementation, might be good enough for now)
+                throwValue.longMessage += "\n-----\n" + catspeakErr + "\n";
+            }
+        }
         throw throwValue;
     }
     return value;

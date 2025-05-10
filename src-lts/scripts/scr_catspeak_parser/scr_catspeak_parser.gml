@@ -689,7 +689,7 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @param {String} ...
     static __ex = function () {
-        var dbg = __catspeak_location_show(lexer.getLocation()) + " when parsing";
+        var dbg = __catspeak_location_show(lexer.getLocation(), ir.filepath) + " when parsing";
         if (argument_count < 1) {
             __catspeak_error(dbg);
         } else {
