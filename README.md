@@ -28,6 +28,8 @@ by compiling and executing **arbitrary user code** from files or text prompt.
 _Developed and maintained by [Katsaii](https://www.katsaii.com/)._  
 _Logo design by [Mashmerlow](https://mashmerlow.github.io/)._  
 
+Homepage: https://www.katsaii.com/catspeak-lang/
+
 ## Overview
 
 The spiritual successor to the long dead `execute_string` function...
