@@ -104,7 +104,6 @@ fnameses = [
 
 fnames_symbols = { }
 for fnames in fnameses:
-    print(str(fnames.symbols))
     for (symbol, flags) in fnames.symbols.items():
         (expect_flags, owners) = fnames_symbols.setdefault(symbol, (flags, []))
         if expect_flags != flags:
@@ -148,8 +147,13 @@ with open(CODEGEN_PATH, "w", encoding="utf-8") as file:
         file.write("\n            try {")
         for (symbol, flags) in symbols:
             if flags & FNamesDB.FUNCTION:
-                if symbol == "method":
-                    file.write(f"\n                db[$ \"method\"] = method(undefined, catspeak_method);")
+                func_subs = {
+                    "method" : "catspeak_method",
+                    "method_get_self" : "catspeak_get_self",
+                    "method_get_index" : "catspeak_get_index",
+                }
+                if symbol in func_subs:
+                    file.write(f"\n                db[$ \"{symbol}\"] = method(undefined, {func_subs[symbol]});")
                 else:
                     file.write(f"\n                db[$ \"{symbol}\"] = method(undefined, {symbol});")
             if flags & FNamesDB.CONST:

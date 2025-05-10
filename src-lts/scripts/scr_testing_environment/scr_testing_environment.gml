@@ -1171,3 +1171,37 @@ test_add(function() : Test("exploit-global-with") constructor {
         fail();
     } catch (ex) { }
 });
+
+// not sure how to handle these cases right now (have to wait until LTS has asset refs)
+/*
+test_add(function() : Test("exploit-obj-good") constructor {
+    var env = new CatspeakEnvironment();
+    var magicNumber = obj_testing_blank;
+    var inst = instance_create_depth(0, 0, 0, magicNumber);
+    env.interface.exposeConstant("magic_number", magicNumber);
+    var ir = env.parseString(@'
+        with magic_number {
+            self.msg = "#cool"
+        }
+    ');
+    var f = env.compile(ir);
+    f();
+    assertEq(inst.msg, "#cool");
+    instance_destroy(inst);
+});
+
+test_add(function() : Test("exploit-obj-bad") constructor {
+    var env = new CatspeakEnvironment();
+    var magicNumber = obj_testing_blank;
+    var inst = instance_create_depth(0, 0, 0, magicNumber);
+    // simulates a modder fabricating an instance/object/asset ref
+    var ir = env.parseString("with " + string(magicNumber) + " { self.msg = \"#owned\" }");
+    var f = env.compile(ir);
+    try {
+        f();
+        assertNeq(inst.msg, "#owned");
+        fail();
+    } catch (ex) { }
+    instance_destroy(inst);
+});
+*/
