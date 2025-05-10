@@ -57,7 +57,7 @@ function Test(name) constructor {
         }
         msg += " '" + name + "'";
         if (!passed) {
-            msg += " [";
+            msg += " [ ------------------------------------------------------------------------------ (o_o)/ hi!";
             for (var i = 0; i < array_length(fails); i += 1) {
                 msg += __cat("\n  ", fails[i]);
             }
