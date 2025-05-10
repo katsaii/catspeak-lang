@@ -1,0 +1,2 @@
+attrs==19.3.0
+mistletoe-ebp==0.10.0

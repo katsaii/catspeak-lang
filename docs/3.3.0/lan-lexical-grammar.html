@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+    AUTOMATICALLY GENERATED USING THE CATSPEAK BOOK GENERATOR:
+    https://github.com/katsaii/catspeak-lang
+--><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Katsaii"><meta name="description" content="Documentation for the Catspeak programming language."><title>Catspeak Reference :: Lexical Grammar of Language Reference</title><link rel="stylesheet" href="./style.css"><script>function copyToClipboard(id) {
+    let e = document.getElementById(id);
+    navigator.clipboard.writeText(e.textContent);
+}</script><noscript><style>a.code-copy { display : none }</style></noscript></head><body><header><h1>Catspeak Reference</h1><nav><ul><li><a href="hom-welcome.html">Home</a></li><li><a href="lan-overview.html"><mark>Language Reference</mark></a></li><li><a href="lib-init.html">Library Reference</a></li></ul></nav><hr></header><article id="chapter-content"><aside id="chapters"><h2>Chapters</h2><ul><li><a href="lan-overview.html">Overview</a></li><li><a href="lan-lexical-grammar.html"><mark>Lexical Grammar</mark></a></li><li><a href="lan-statements.html">Statements</a></li><li><a href="lan-expressions.html">Expressions</a></li></ul></aside><aside id="contents"><h2>Contents</h2><ul><li><a href="#whitespace">Whitespace</a></li><li><a href="#comments">Comments</a></li><li><a href="#numbers">Numbers</a></li><li><a href="#colour-codes">Colour Codes</a></li><li><a href="#character-literals">Character Literals</a></li><li><a href="#strings">Strings</a></li><li><a href="#identifiers">Identifiers</a></li><li><a href="#keywords">Keywords</a></li><li><a href="#operators">Operators</a></li></ul></aside><main><article><h1 class="chapter-title">Lexical Grammar</h1><p>Catspeak source code is stored as a sequence of Unicode characters using
+UTF-8 encoding. This means that most text rendered in the GameMaker IDE or
+an external text editor will be interpreted as individual characters. Unicode
+character clusters (such as skin tone emojis) are an exception to this, and
+are instead interpreted as multiple characters, depending on the size of the
+cluster.</p><p>In order for the computer to understand what these characters mean, they first
+need to be transformed into larger groups of characters called <a href="https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization">tokens</a>.
+The following sections will cover what each of these tokens are, and how they
+are parsed.</p><section><h1 class="heading" id="whitespace"><a href="#whitespace">§</a> <strong>Whitespace</strong><a href="#" class="heading-top">top ^</a></h1><p>For the most part Catspeak is whitespace insensitive, ignoring any of the
+following characters:</p><ul><li><p><strong>Character tabulation</strong> <code class="inline-code">'\t'</code> (U+0009)</p></li><li><p><strong>Line feed</strong>            <code class="inline-code">'\n'</code> (U+000A)</p></li><li><p><strong>Line tabulation</strong>      <code class="inline-code">'\v'</code> (U+000B)</p></li><li><p><strong>Form feed</strong>            <code class="inline-code">'\f'</code> (U+000C)</p></li><li><p><strong>Carriage return</strong>      <code class="inline-code">'\r'</code> (U+000D)</p></li><li><p><strong>Space</strong>                       (U+0020)</p></li><li><p><strong>Next Line</strong>                   (U+0085)</p></li></ul><p><a href="#comments">Comments</a> are also ignored by the Catspeak parser.</p></section><section><h1 class="heading" id="comments"><a href="#comments">§</a> <strong>Comments</strong><a href="#" class="heading-top">top ^</a></h1><p>Comments in Catspeak are prefixed by <code class="inline-code">--</code>. This will ignore all of the
+characters following it until a new line is reached:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-0')">Copy</a><code id="cb-0"><span class="kw-com">-- this is a Catspeak comment!</span>
+</code></pre><p><em>(Catspeak reserves the <code class="inline-code">//</code> syntax for integer division. See the section on
+<a href="#operators">Operators</a> for more information.)</em></p><p>Unlike GML, the Catspeak programming language <strong>does not</strong> include multi-line
+comments. Use multiple comments instead:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-1')">Copy</a><code id="cb-1"><span class="kw-com">-- comment</span>
+<span class="kw-com">-- split</span>
+<span class="kw-com">-- over multiple</span>
+<span class="kw-com">-- lines</span>
+<span class="kw-com">--</span>
+<span class="kw-com">-- ~(￣▽￣)~*</span>
+</code></pre></section><section><h1 class="heading" id="numbers"><a href="#numbers">§</a> <strong>Numbers</strong><a href="#" class="heading-top">top ^</a></h1><p>Simple numbers like <code class="inline-code">123</code> are a sequence of ASCII digits (0&#8209;9),
+optionally separated by a single decimal point <code class="inline-code">3.1415</code>.</p><p>Catspeak also supports writing numbers in <a href="https://en.wikipedia.org/wiki/Binary_number">binary</a>
+or <a href="https://en.wikipedia.org/wiki/Hexadecimal">hexadecimal</a> notation, by
+prefixing the number literal with either <code class="inline-code">0b</code> or <code class="inline-code">0x</code>. For example, the binary
+representation of the number 10 is <code class="inline-code">0b1010</code>, and its hexadecimal representation
+is <code class="inline-code">0xA</code>. <em>Catspeak also supports CSS-style colour literals by prefixing a
+number with <code class="inline-code">#</code> instead of <code class="inline-code">0x</code>. See the <a href="#colour-codes">Colour Codes</a> section
+for more information.</em></p><p>Numbers may also contain underscores <code class="inline-code">_</code> to improve readability. For example,
+<code class="inline-code">1_000</code> is the same as <code class="inline-code">1000</code>, and <code class="inline-code">0b0111_1000</code> is the same as <code class="inline-code">0b01111000</code>.</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-2')">Copy</a><code id="cb-2"><span class="kw-val">1_000_000</span>   <span class="kw-com">-- integer number</span>
+<span class="kw-val">6.2831</span>      <span class="kw-com">-- fractional number</span>
+<span class="kw-val">0b0110</span>      <span class="kw-com">-- binary number</span>
+<span class="kw-val">0xDEAD_BEEF</span> <span class="kw-com">-- hexadecimal number</span>
+</code></pre></section><section><h1 class="heading" id="colour-codes"><a href="#colour-codes">§</a> <strong>Colour Codes</strong><a href="#" class="heading-top">top ^</a></h1><p>Just like <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Drawing/Colour_And_Alpha/Colour_And_Alpha.htm#hex_colours">GameMaker Language</a> (GML)
+and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/hex-color">CSS</a>, Catspeak
+supports colour codes by typing a <code class="inline-code">#</code> symbol, followed by three, four, six, or
+eight <a href="https://en.wikipedia.org/wiki/Hexadecimal">hexadecimal</a> digits which
+express the colour:</p><p><em>(<code class="inline-code">RR</code> is the red colour channel value, written in hexadecimal; <code class="inline-code">GG</code> is the
+green colour channel, <code class="inline-code">BB</code> is the blue colour channel, and <code class="inline-code">AA</code> is the (optional)
+alpha colour channel.)</em></p><ul><li><p><code class="inline-code">#RGB</code>
+Three-value colour syntax: same as <code class="inline-code">#RRGGBB</code>.</p></li><li><p><code class="inline-code">#RGBA</code>
+Four-value colour syntax: same as <code class="inline-code">#RRGGBBAA</code>, includes an alpha channel.</p></li><li><p><code class="inline-code">#RRGGBB</code>
+Six-value colour syntax: creates an RGB colour from the red, green, and blue
+colour values.</p></li><li><p><code class="inline-code">#RRGGBBAA</code>
+Eight-value colour syntax: creates an RGBA colour with transparency from the
+red, green, blue, and alpha colour values.</p></li></ul><p>If a colour channel is only one character wide <code class="inline-code">R</code>, then it is repeated as <code class="inline-code">RR</code>.
+For example, the colour <code class="inline-code">#1AF</code> is the same as the colour <code class="inline-code">#11AAFF</code>.</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-3')">Copy</a><code id="cb-3"><span class="kw-val">#A83256</span> <span class="kw-com">-- represents the colour rbg(168, 50, 86)</span>
+<span class="kw-val">#FAE</span>    <span class="kw-com">-- represents the colour rbg(255, 170, 238)</span>
+<span class="kw-val">#FFAAEE</span> <span class="kw-com">-- ALSO represents the colour rbg(255, 170, 238)</span>
+</code></pre></section><section><h1 class="heading" id="character-literals"><a href="#character-literals">§</a> <strong>Character Literals</strong><a href="#" class="heading-top">top ^</a></h1><p>A common pattern in GML is to use <code class="inline-code">ord("A")</code> for keyboard input, for example:</p><pre class="code-block" lang="gml"><div class="code-triangle"></div><div class="code-title">GameMaker Language (.gml)</div><a class="code-copy" onclick="copyToClipboard('cb-4')">Copy</a><code id="cb-4"><span class="kw-key">if</span> (<span class="kw-fun">keyboard_check</span>(<span class="kw-fun">ord</span>(<span class="kw-val">"A"</span>))) {
+  <span class="kw-fun">do_stuff</span>();
+}
+</code></pre><p>Catspeak has a special syntax for <code class="inline-code">ord("A")</code> in the form of character literals
+<code class="inline-code">'A'</code>. These are a single UTF-8 encoded character surrounded by apostrophes <code class="inline-code">'</code>.</p><p>Character literals are converted into numbers by the Catspeak programming language,
+and as a result you can do arithmetic on them:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-5')">Copy</a><code id="cb-5"><span class="kw-val">'A'</span> + <span class="kw-val">1</span> == <span class="kw-val">'B'</span> <span class="kw-com">-- since 'A' == 65, 'B' == 66, and 65 + 1 == 66</span>
+</code></pre><p>This allows the previous GML code to be written as</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-6')">Copy</a><code id="cb-6"><span class="kw-key">if</span> <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'A'</span>) {
+  <span class="kw-fun">do_stuff</span>()
+}
+</code></pre><p>in Catspeak.</p></section><section><h1 class="heading" id="strings"><a href="#strings">§</a> <strong>Strings</strong><a href="#" class="heading-top">top ^</a></h1><p>There are two types of string literal in Catspeak. The most common is a sequence
+of characters starting and ending in double quotes (<code class="inline-code">"</code>):</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-7')">Copy</a><code id="cb-7"><span class="kw-key">let</span> <span class="kw-var">hi</span> = <span class="kw-val">"hello world"</span>
+</code></pre><p>This type of string allows the following escape sequences to be used:</p><ul><li><p><code class="inline-code">\"</code> Quotation mark</p></li><li><p><code class="inline-code">\</code>  Escape new line</p></li><li><p><code class="inline-code">\\</code> Backslash</p></li><li><p><code class="inline-code">\t</code> Character tabulation</p></li><li><p><code class="inline-code">\n</code> Line feed</p></li><li><p><code class="inline-code">\v</code> Line tabulation</p></li><li><p><code class="inline-code">\f</code> Form feed</p></li><li><p><code class="inline-code">\r</code> Carriage return</p></li></ul><p>The other type of string is the <strong>raw string</strong>. <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm#h2">Similarly to GML</a>,
+a raw string is prefixed by the address symbol <code class="inline-code">@</code>, and does not interpret any
+of the previously mentioned escape sequences:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-8')">Copy</a><code id="cb-8"><span class="kw-key">let</span> <span class="kw-var">hi_again</span> = <span class="kw-val">@"\hello\"</span> <span class="kw-com">-- \h and \" here are not escape sequences</span>
+</code></pre><p>All strings in Catspeak can be multi-line.</p></section><section><h1 class="heading" id="identifiers"><a href="#identifiers">§</a> <strong>Identifiers</strong><a href="#" class="heading-top">top ^</a></h1><p>Mostly used for variable names; identifiers start with either a letter
+(A&#8209;Z or a&#8209;z) or an underscore (<code class="inline-code">_</code>), followed by a sequence of other
+letters, numbers, or underscores.</p><p>Examples of valid identifiers are:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-9')">Copy</a><code id="cb-9"><span class="kw-var">bag_pipes</span>
+<span class="kw-var">oneShot</span>
+<span class="kw-var">__IMPALA_666__</span>
+<span class="kw-var">abc123XYZ</span>
+</code></pre><p>Normal identifiers <strong>can not</strong> start with numbers, e.g. <code class="inline-code">1st</code> is not a valid
+identifier. In this case, you can use <strong>raw identifiers</strong>:</p><pre class="code-block" lang="meow"><div class="code-triangle"></div><div class="code-title">Catspeak (.meow)</div><a class="code-copy" onclick="copyToClipboard('cb-10')">Copy</a><code id="cb-10"><span class="kw-key">let</span> <span class="kw-var">`1st-of-march`</span> = <span class="kw-val">"2022-03-01"</span>
+</code></pre><p>Where raw identifiers start and end with a backtick symbol (<code class="inline-code">`</code>).
+<code class="inline-code">1st-of-march</code> may not be a valid identifier, but it is a valid raw identifier.</p><p>You can use any non-whitespace, non-backtick character between the backticks
+when writing a raw identifier.</p></section><section><h1 class="heading" id="keywords"><a href="#keywords">§</a> <strong>Keywords</strong><a href="#" class="heading-top">top ^</a></h1><p>Keywords are special identifiers which are reserved for use by Catspeak, and
+cannot be used as variables; these are:</p><ul><li><p><code class="inline-code">true</code>      Evaluates to boolean True.</p></li><li><p><code class="inline-code">false</code>     Evaluates to boolean False.</p></li><li><p><code class="inline-code">undefined</code> GameMaker <code class="inline-code">undefined</code>.</p></li><li><p><code class="inline-code">infinity</code>  Floating-point positive infinity.</p></li><li><p><code class="inline-code">NaN</code>       Floating-point NaN.</p></li><li><p><code class="inline-code">and</code>       See <a href="./lan-expressions.html#logical-expressions">Logical Expressions</a>.</p></li><li><p><code class="inline-code">or</code>        See <a href="./lan-expressions.html#logical-expressions">Logical Expressions</a>.</p></li><li><p><code class="inline-code">xor</code>       See <a href="./lan-expressions.html#logical-expressions">Logical Expressions</a>.</p></li><li><p><code class="inline-code">do</code>        See <a href="./lan-expressions.html#block-expressions">Block Expressions</a>.</p></li><li><p><code class="inline-code">catch</code>     See <a href="./lan-expressions.html#catch-expressions">Catch Expressions</a>.</p></li><li><p><code class="inline-code">if</code>        See <a href="./lan-expressions.html#if-expressions">If Expressions</a>.</p></li><li><p><code class="inline-code">else</code>      See <a href="./lan-expressions.html#if-expressions">If Expressions</a>.</p></li><li><p><code class="inline-code">while</code>     See <a href="./lan-expressions.html#while-expressions">While Expressions</a>.</p></li><li><p><code class="inline-code">for</code>       Reserved in case of <code class="inline-code">for</code> loops.</p></li><li><p><code class="inline-code">loop</code>      Reserved in case of infinite loops.</p></li><li><p><code class="inline-code">with</code>      See <a href="./lan-expressions.html#with-expressions">With Expressions</a>.</p></li><li><p><code class="inline-code">match</code>     See <a href="./lan-expressions.html#match-expressions">Match Expressions</a>.</p></li><li><p><code class="inline-code">let</code>       See <a href="./lan-statements.html#let-statements">Let Statements</a>.</p></li><li><p><code class="inline-code">fun</code>       See <a href="./lan-expressions.html#function-expressions">Function Expressions</a>.</p></li><li><p><code class="inline-code">params</code>    Reserved in case of spread operator.</p></li><li><p><code class="inline-code">break</code>     See <a href="./lan-expressions.html#break-expressions">Break Expressions</a>.</p></li><li><p><code class="inline-code">continue</code>  See <a href="./lan-expressions.html#continue-expressions">Continue Expressions</a>.</p></li><li><p><code class="inline-code">return</code>    See <a href="./lan-expressions.html#return-expressions">Return Expressions</a>.</p></li><li><p><code class="inline-code">throw</code>     See <a href="./lan-expressions.html#throw-expressions">Throw Expressions</a>.</p></li><li><p><code class="inline-code">new</code>       See <a href="./lan-expressions.html#new-expressions">New Expressions</a>.</p></li><li><p><code class="inline-code">impl</code>      Reserved in case of constructor functions.</p></li><li><p><code class="inline-code">self</code>      See <a href="./lan-expressions.html#self-expressions">Self Expressions</a>.</p></li><li><p><code class="inline-code">other</code>     See <a href="./lan-expressions.html#other-expressions">Other Expressions</a>.</p></li></ul><p>If you ever need to use one of these keywords as a variable name, you should
+use <a href="#raw-identifiers">Raw Identifiers</a> instead.</p></section><section><h1 class="heading" id="operators"><a href="#operators">§</a> <strong>Operators</strong><a href="#" class="heading-top">top ^</a></h1><p>Catspeak shares many operators with GML, but there are some differences. Below
+is a table of all operators, organised from highest-to-lowest <a href="https://en.wikipedia.org/wiki/Order_of_operations">precedence</a>
+(which operators are evaluated first when there are no parenthesis); including
+information about each operators <a href="https://en.wikipedia.org/wiki/Operator_associativity">associativity</a>,
+usage, and syntax:</p><div class="responsive-overflow">
+  <table>
+    <tr>
+      <th>Precedence</th>
+      <th>Operator</th>
+      <th>Description</th>
+      <th>Associativity</th>
+    </tr>
+    <tr>
+      <td><b>12<b></td>
+      <td>
+          <code>(a)</code><br>
+          <code>[a,&nbsp;...]</code><br>
+          <code>{&nbsp;k&nbsp;:&nbsp;v,&nbsp;...&nbsp;}</code><br>
+      </td>
+      <td>
+          <a href="./lan-expressions.html#grouped-expressions">Grouping</a><br>
+          <a href="./lan-expressions.html#array-expressions">Array initialisation</a><br>
+          <a href="./lan-expressions.html#struct-expressions">Struct/object initialisation</a>
+      </td>
+      <td>N/a</td>
+    </tr>
+    <tr>
+      <td><b>11<b></td>
+      <td>
+          <code>a(...)</code><br>
+          <code>new&nbsp;a(...)</code><br>
+          <code>a.b</code><br>
+          <code>a[i]</code>
+      </td>
+      <td>
+          <a href="./lan-expressions.html#call-expressions">Function call</a><br>
+          <a href="./lan-expressions.html#call-expressions">Constructor function call</a><br>
+          <a href="./lan-expressions.html#accessor-expressions">Member access</a><br>
+          <a href="./lan-expressions.html#accessor-expressions">Collection indexing</a> (computed member access)<br>
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-unary">
+      <td><b>10</b> <a href="./lan-expressions.html#unary-operators">Unary</a></td>
+      <td>
+          <code>!a</code><br>
+          <code>~a</code><br>
+          <code>-a</code><br>
+          <code>+a</code>
+      </td>
+      <td>
+          Logical <b>NOT</b><br>
+          Bitwise <b>NOT</b><br>
+          Unary minus (negation)<br>
+          Unary plus
+      </td>
+      <td>N/a</td>
+    </tr>
+    <tr id="op-mult">
+      <td><b>9</b> <a href="./lan-expressions.html#multiplicative-operators">Multiplicative</a></td>
+      <td>
+          <code>a&nbsp;*&nbsp;b</code><br>
+          <code>a&nbsp;/&nbsp;b</code><br>
+          <code>a&nbsp;//&nbsp;b</code><br>
+          <code>a&nbsp;%&nbsp;b</code>
+      </td>
+      <td>
+          Multiplication<br>
+          Division<br>
+          Integer division<br>
+          Remainder
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-add">
+      <td><b>8</b> <a href="./lan-expressions.html#additive-operators">Additive</a></td>
+      <td><code>a&nbsp;+&nbsp;b</code><br><code>a&nbsp;-&nbsp;b</code></td>
+      <td>Addition<br>Subtraction</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-bitwise">
+      <td><b>7</b> <a href="./lan-expressions.html#bitwise-operators">Bitwise</a></td>
+      <td>
+          <code>a&nbsp;&amp;&nbsp;b</code><br>
+          <code>a&nbsp;|&nbsp;b</code><br>
+          <code>a&nbsp;^&nbsp;b</code><br>
+          <code>a&nbsp;&lt;&lt;&nbsp;b</code><br>
+          <code>a&nbsp;&gt;&gt;&nbsp;b</code>
+      </td>
+      <td>
+          Bitwise <b>AND</b><br>
+          Bitwise <b>OR</b><br>
+          Bitwise <b>XOR</b><br>
+          Bitwise left shift<br>
+          Bitwise right shift
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-relation">
+      <td><b>6</b> <a href="./lan-expressions.html#relational-operators">Relational</a></td>
+      <td>
+          <code>a&nbsp;&lt;&nbsp;b</code><br>
+          <code>a&nbsp;&lt;=&nbsp;b</code><br>
+          <code>a&nbsp;&gt;&nbsp;b</code><br>
+          <code>a&nbsp;&gt;=&nbsp;b</code>
+      </td>
+      <td>
+          Relational less-than &lt;<br>
+          Relational less-than-or-equal ≤<br>
+          Relational greater-than &gt;<br>
+          Relational greater-than-or-equal ≥
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-equal">
+      <td><b>5</b> <a href="./lan-expressions.html#equality-operators">Equality</a></td>
+      <td><code>a&nbsp;==&nbsp;b</code><br><code>a&nbsp;!=&nbsp;b</code></td>
+      <td>Equality =<br>Inequality ≠</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-pipe">
+      <td><b>4</b> <a href="./lan-expressions.html#pipe-operators">Pipe</a></td>
+      <td><code>a&nbsp;&lt;|&nbsp;b</code><br><code>a&nbsp;|&gt;&nbsp;b</code></td>
+      <td>Left pipe<br>Right pipe</td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-logical">
+      <td><b>3</b> <a href="./lan-expressions.html#logical-operators">Logical</a></td>
+      <td><code>a&nbsp;and&nbsp;b</code></td>
+      <td>Logical <b>AND</b></td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr>
+      <td><b>2</b> <a href="./lan-expressions.html#logical-operators">Logical</a></td>
+      <td>
+          <code>a&nbsp;or&nbsp;b</code><br>
+          <code>a&nbsp;xor&nbsp;b</code>
+      </td>
+      <td>
+          Logical <b>OR</b><br>
+          Logical <b>XOR</b>
+      </td>
+      <td>Left&#8209;to&#8209;right&nbsp;→</td>
+    </tr>
+    <tr id="op-assign">
+      <td><b>1</b> <a href="./lan-expressions.html#assignment-operators">Assignment</a></td>
+      <td>
+          <code>a&nbsp;=&nbsp;b</code><br>
+          <code>a&nbsp;*=&nbsp;b</code><br>
+          <code>a&nbsp;/=&nbsp;b</code><br>
+          <code>a&nbsp;-=&nbsp;b</code><br>
+          <code>a&nbsp;+=&nbsp;b</code>
+      </td>
+      <td>
+          Direct assignment<br>
+          Multiplication assignment<br>
+          Division assignment<br>
+          Subtraction assignment<br>
+          Addition assignment
+      </td>
+      <td>Right&#8209;to&#8209;left&nbsp;←</td>
+    </tr>
+    <tr>
+      <td><b>0</b></td>
+      <td>N/a</td>
+      <td>
+        Control flow (e.g.
+          <a href="./lan-expressions.html#return-expressions"><code>return</code></a>,
+          <a href="./lan-expressions.html#if-expressions"><code>if</code></a>, and
+          <a href="./lan-expressions.html#while-expressions"><code>while</code></a>)
+      </td>
+      <td>N/a</td>
+    </tr>
+  </table>
+</div></section></article></main></article><footer><hr><article><em id="brand">Built using Catlog, the <a href="https://www.katsaii.com/catspeak-lang/">Catspeak</a> book generator.</em></article><article></article></footer></body></html>

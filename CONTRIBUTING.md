@@ -121,13 +121,21 @@ documentation. These are:
 
 0. (prerequisite) Make sure Mistletoe EBP in installed:
    ```sh
+   python -m venv env
+   source env/bin/activate
    pip install mistletoe-ebp
+   ```
+   or
+   ```sh
+   python -m venv env
+   source env/bin/activate
+   pip install -r requirements.txt
    ```
    more info: https://mistletoe-ebp.readthedocs.io/en/latest/using/intro.html#installation
 1. Open a new terminal window.
 2. Navigate to the root directory of this repo, you should see a directory named
    `docs-gen`.
-3. Run
+3. Activate the virtual environment (`source env/bin/activate`) and then run
    ```sh
    python ./docs-gen/build-docs.py
    ```
