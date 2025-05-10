@@ -345,9 +345,13 @@ function __catspeak_is_withable(val) {
     if (is_struct(val) || val == self || val == other) {
         return true;
     }
+    if (is_numeric(val) && val < 0) {
+        return false; // prevent accessing special instances like -5 or -3
+    }
     var isInst = false;
     try {
-        isInst = !object_exists(val) && instance_exists(val);
+        //isInst = !object_exists(val) && instance_exists(val);
+        isInst = object_exists(val) || instance_exists(val);
     } catch (_) { }
     return isInst;
 }

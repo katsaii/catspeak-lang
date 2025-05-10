@@ -1140,3 +1140,34 @@ test_add(function() : Test("try-catch-simple-2") constructor {
     var f = env.compile(ir);
     assertEq(f(), -1);
 });
+
+test_add(function() : Test("exploit-global") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        let glb = -5;
+        return glb["__catspeak__"];
+    ');
+    var f = env.compile(ir);
+    try {
+        var ohNo = f();
+        assertEq(ohNo, undefined);
+        fail();
+    } catch (ex) { }
+});
+
+test_add(function() : Test("exploit-global-with") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        let glb = -5;
+        with glb {
+            return self;
+        }
+        return "nothing";
+    ');
+    var f = env.compile(ir);
+    try {
+        var ohNo = f();
+        assertEq(ohNo, "nothing");
+        fail();
+    } catch (ex) { }
+});
