@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catch";
+var runExperiment = undefined;
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -168,13 +168,17 @@ TEST_EXPERIMENT "catch" {
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
         -- GML-style try/catch (instead of `try`, use a `do` block)
-        (do { throw { message : "hi" } }) catch err {
+        do {
+          throw { message : "hi" }
+        } catch err {
           show_message("something went wrong!:")
-          show_message(err.messaage)
+          show_message(err.message)
+          throw "propagate error"
+        } catch err { -- re-define error val
+          show_message(err)
         }
     ');
     var a = 123;
     var f = env.compile(ir);
-    show_message(f);
     f();
 }
