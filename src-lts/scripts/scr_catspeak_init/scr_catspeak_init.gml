@@ -63,7 +63,7 @@
 /// Updated before every new release.
 ///
 /// @return {String}
-#macro CATSPEAK_VERSION "3.2.0"
+#macro CATSPEAK_VERSION "3.2.1"
 
 /// Determines whether sanity checks and unsafe developer features are enabled
 /// at runtime.
