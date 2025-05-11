@@ -6,6 +6,6 @@
   "isCompatibility": false,
   "parent": {
     "name": "compiler",
-    "path": "folders/Catspeak/compiler.yy",
+    "path": "folders/Catspeak 3/compiler.yy",
   },
 }

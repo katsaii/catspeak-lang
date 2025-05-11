@@ -5,7 +5,7 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Catspeak",
-    "path": "folders/Catspeak.yy",
+    "name": "Catspeak 3",
+    "path": "folders/Catspeak 3.yy",
   },
 }

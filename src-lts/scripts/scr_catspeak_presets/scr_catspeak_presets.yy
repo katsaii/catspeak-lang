@@ -6,6 +6,6 @@
   "isCompatibility": false,
   "parent": {
     "name": "runtime",
-    "path": "folders/Catspeak/runtime.yy",
+    "path": "folders/Catspeak 3/runtime.yy",
   },
 }
