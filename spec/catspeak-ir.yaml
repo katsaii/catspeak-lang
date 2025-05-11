@@ -1,0 +1,12 @@
+terms:
+  value:
+    desc: "get a constant value"
+    args:
+      v:
+        desc: "the constant to emit"
+  return:
+    desc: "return a value from the current function"
+    args:
+      v:
+        desc: "the term to return the result of"
+        default: "undefined"
