@@ -6,7 +6,7 @@ import common
 
 spec_path = "spec/catspeak-ir.yaml"
 spec = common.load_yaml(spec_path)
-script_header = common.get_header(spec_path, "spec/build-ir.py")
+script_header = common.get_header(spec_path, __file__)
 script = common.SimpleStringBuilder(script_header)
 
 script.writedoc("""
@@ -21,8 +21,19 @@ spec_header = spec["header"]
 spec_instrs = spec["instrs"]
 
 # build IR enum
-script.writedoc("""
+script.writedoc(f"""
     The type of Catspeak IR instruction.
+
+    Catspeak stores cartridge code in reverse-polish notation, where each
+    instruction may push (or pop) intermediate values onto a virtual stack.
+
+    Depending on the export, this may literally be a stack--such as with a
+    so-called "stack machine" VM. Other times the "stack" may be an abstraction,
+    such as with the GML export, where Catspeak cartridges are transformed into
+    recursive GML function calls. (This ends up being faster for reasons I won't
+    detail here.)
+
+    Each instruction may also be associated with zero or many static parameters.
 """, common.COMMENT_DOC)
 script.writeln("enum CatspeakCartInst {")
 with script.indent():
@@ -95,7 +106,9 @@ with script.indent():
         /// @ignore
         self.buff = undefined;
         /// @ignore
-        self.refCountOffset = undefined;
+        self.finalised = true;
+        /// @ignore
+        self.programLengthRef = undefined;
     """)
 
     # set the IR target
@@ -107,6 +120,7 @@ with script.indent():
     with script.indent():
         script.writedoc("""
             buff = undefined;
+            finalised = true;
             refCountOffset = undefined;
             __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
             __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
@@ -118,12 +132,33 @@ with script.indent():
             header_type = header_item["type"]
             ir_type_write(script, "buff_", header_type, ir_type_coerce(header_type, header_value))
         script.writedoc(f"""
-            // pointer to number of local vars
-            refCountOffset = buffer_tell(buff_);
+            // store how many bytes the final program code is
+            // (doesn't include metadata or header)
+            programLengthRef = buffer_tell(buff_);
             buffer_write(buff_, buffer_u32, 0);
             buff = buff_;
+            finalised = false;
         """);
     script.writeln("}")
+
+    # finalise the IR target
+    script.writeln()
+    script.writedoc("""
+        TODO
+    """, common.COMMENT_DOC)
+    script.writeln("static finaliseTarget = function () {")
+    with script.indent():
+        script.writedoc("""
+            var buff_ = buff;
+            buff = undefined;
+            finalised = true;
+        """)
+        assert_cart_exists(script, "buff_")
+        script.writedoc("""
+        """)
+    script.writeln("};")
+
+    # metadata setters
 
     # allocate references
     script.writeln()
@@ -148,18 +183,20 @@ with script.indent():
             script.writedoc(instr_desc, common.COMMENT_DOC)
         script.write(f"static emit{common.case_camel_upper(instr_name)} = function (")
         if "args" in instr:
-            script.write(", ".join(instr["args"]))
+            script.write(", ".join(arg["name"] for arg in instr["args"]))
         script.write(") {")
         script.writeln()
         with script.indent():
             script.writeln("var buff_ = buff;")
             assert_cart_exists(script, "buff_")
             if "args" in instr:
-                for arg_name, arg in instr["args"].items():
+                for arg in instr["args"]:
+                    arg_name = arg["name"]
                     ir_type_check(script, arg["type"], arg_name)
             ir_type_write(script, "buff_", spec_instrs["type"], f"CatspeakCartInst.{common.case_snake_upper(instr_name)}")
             if "args" in instr:
-                for arg_name, arg in instr["args"].items():
+                for arg in instr["args"]:
+                    arg_name = arg["name"]
                     ir_type_write(script, "buff_", arg["type"], arg_name)
         script.writeln("};")
 script.writeln("}")
@@ -221,7 +258,7 @@ with script.indent():
             }}
             buff = buff_;
         """);
-    script.writeln("}")
+    script.writeln("};")
 
     # chunk reader
     script.writeln("")
@@ -257,7 +294,8 @@ with script.indent():
         with script.indent():
             if "args" in instr:
                 script.writeln("var buff_ = buff;")
-                for arg_name, arg in instr["args"].items():
+                for arg in instr["args"]:
+                    arg_name = arg["name"]
                     script.writeln(f"var {arg_name};")
                     ir_type_read(script, "buff_", arg["type"], arg_name)
             script.writedoc(f"""
@@ -267,7 +305,7 @@ with script.indent():
             with script.indent():
                 script.write("handler(")
                 if "args" in instr:
-                    script.write(", ".join(instr["args"]))
+                    script.write(", ".join(arg["name"] for arg in instr["args"]))
                 script.writeln(");")
             script.writeln("}")
         script.writeln("};")
@@ -289,37 +327,4 @@ with script.indent():
     script.writeln("}")
 script.writeln("}")
 
-# disassembler
-script.writeln()
-script.writedoc("""
-    TODO
-""", common.COMMENT_DOC)
-script.writeln("function __CatspeakDisassembler() : CatspeakCartReader() constructor {")
-with script.indent():
-    script.writedoc("""
-        self.str = undefined;
-        self.__handleHeader__ = function (refCount) {
-            str = "[main, refs=" + string(refCount) + "]\\nfun ():";
-        };
-    """)
-    for instr in spec_instrs["set"]:
-        instr_name = instr["name"]
-        script.write(f"self.__handle{common.case_camel_upper(instr_name)}__ = function (")
-        if "args" in instr:
-            script.write(", ".join(instr["args"]))
-        script.writeln(") {")
-        with script.indent():
-            script.writeln(f"str += \"\\n  {common.case_snake_upper(instr_name)}\";")
-            if "args" in instr:
-                for arg_name in instr["args"]:
-                    script.writeln(f"str += \"  \" + string({arg_name});")
-        script.writeln("};")
-script.writeln("}")
-
-debug = False
-if debug:
-    print(script)
-else:
-    ir_path = "src-lts/scripts/scr_catspeak_cartridge/scr_catspeak_cartridge.gml"
-    with open(ir_path, "w", encoding="utf-8") as file:
-        file.write(str(script))
+common.save_gml(script, "src-lts/scripts/scr_catspeak_cartridge/scr_catspeak_cartridge.gml")

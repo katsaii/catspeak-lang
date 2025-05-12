@@ -10,6 +10,17 @@
 //! and loaded from a file, or treated like a "ROM" or "cartridge".
 
 /// The type of Catspeak IR instruction.
+/// 
+/// Catspeak stores cartridge code in reverse-polish notation, where each
+/// instruction may push (or pop) intermediate values onto a virtual stack.
+/// 
+/// Depending on the export, this may literally be a stack--such as with a
+/// so-called "stack machine" VM. Other times the "stack" may be an abstraction,
+/// such as with the GML export, where Catspeak cartridges are transformed into
+/// recursive GML function calls. (This ends up being faster for reasons I won't
+/// detail here.)
+/// 
+/// Each instruction may also be associated with zero or many static parameters.
 enum CatspeakCartInst {
     /// Push a numeric constant onto the stack.
     CONST_NUMBER = 0,
@@ -48,6 +59,15 @@ function CatspeakCartWriter() constructor {
     }
 
     /// TODO
+    static finaliseTarget = function () {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
+            "no cartridge loaded"
+        );
+        buff = undefined;
+    }
+
+    /// TODO
     static allocRef = function () {
         var refIdx = buffer_peek(buff, refCountOffset, buffer_u32);
         buffer_poke(buff, refCountOffset, buffer_u32, refIdx + 1);
@@ -55,36 +75,36 @@ function CatspeakCartWriter() constructor {
     };
 
     /// Emit an instruction to push a numeric constant onto the stack.
-    static emitConstNumber = function (v) {
+    static emitConstNumber = function (n) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
             "no cartridge loaded"
         );
-        __catspeak_assert(is_numeric(v), "expected type of f64");
+        __catspeak_assert(is_numeric(n), "expected type of f64");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_NUMBER);
-        buffer_write(buff_, buffer_f64, v);
+        buffer_write(buff_, buffer_f64, n);
     };
 
     /// Emit an instruction to push a boolean constant onto the stack.
-    static emitConstBool = function (v) {
+    static emitConstBool = function (condition) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
             "no cartridge loaded"
         );
-        __catspeak_assert(is_numeric(v), "expected type of u8");
+        __catspeak_assert(is_numeric(condition), "expected type of u8");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_BOOL);
-        buffer_write(buff_, buffer_u8, v);
+        buffer_write(buff_, buffer_u8, condition);
     };
 
     /// Emit an instruction to push a string constant onto the stack.
-    static emitConstString = function (v) {
+    static emitConstString = function (string_) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
             "no cartridge loaded"
         );
-        __catspeak_assert(is_string(v), "expected type of string");
+        __catspeak_assert(is_string(string_), "expected type of string");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_STRING);
-        buffer_write(buff_, buffer_string, v);
+        buffer_write(buff_, buffer_string, string_);
     };
 
     /// Emit an instruction to pop the top value off of the stack, and return it from the current function.
@@ -155,11 +175,11 @@ function CatspeakCartReader() constructor {
     /// @ignore
     static __readConstNumber = function () {
         var buff_ = buff;
-        var v;
-        v = buffer_read(buff_, buffer_f64);
+        var n;
+        n = buffer_read(buff_, buffer_f64);
         var handler = __handleConstNumber__;
         if (handler != undefined) {
-            handler(v);
+            handler(n);
         }
     };
 
@@ -169,11 +189,11 @@ function CatspeakCartReader() constructor {
     /// @ignore
     static __readConstBool = function () {
         var buff_ = buff;
-        var v;
-        v = buffer_read(buff_, buffer_u8);
+        var condition;
+        condition = buffer_read(buff_, buffer_u8);
         var handler = __handleConstBool__;
         if (handler != undefined) {
-            handler(v);
+            handler(condition);
         }
     };
 
@@ -183,11 +203,11 @@ function CatspeakCartReader() constructor {
     /// @ignore
     static __readConstString = function () {
         var buff_ = buff;
-        var v;
-        v = buffer_read(buff_, buffer_string);
+        var string_;
+        string_ = buffer_read(buff_, buffer_string);
         var handler = __handleConstString__;
         if (handler != undefined) {
-            handler(v);
+            handler(string_);
         }
     };
 
@@ -211,27 +231,4 @@ function CatspeakCartReader() constructor {
         __readerLookup[@ CatspeakCartInst.CONST_STRING] = __readConstString;
         __readerLookup[@ CatspeakCartInst.RETURN] = __readReturn;
     }
-}
-
-/// TODO
-function __CatspeakDisassembler() : CatspeakCartReader() constructor {
-    self.str = undefined;
-    self.__handleHeader__ = function (refCount) {
-        str = "[main, refs=" + string(refCount) + "]\nfun ():";
-    };
-    self.__handleConstNumber__ = function (v) {
-        str += "\n  CONST_NUMBER";
-        str += "  " + string(v);
-    };
-    self.__handleConstBool__ = function (v) {
-        str += "\n  CONST_BOOL";
-        str += "  " + string(v);
-    };
-    self.__handleConstString__ = function (v) {
-        str += "\n  CONST_STRING";
-        str += "  " + string(v);
-    };
-    self.__handleReturn__ = function () {
-        str += "\n  RETURN";
-    };
 }

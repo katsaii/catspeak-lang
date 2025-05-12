@@ -8,6 +8,24 @@ header:
   - name: "cartridge version"
     value: 1
     type: u8
+  - name: "finalised"
+    value-good: 1
+    value-bad: 0
+    type: u8
+
+offsets:
+  type: u32
+  list: ["meta", "instrs"]
+
+meta:
+  - name: "filepath"
+    type: string
+  - name: "reg"
+    many: true
+  - name: "global"
+    many: true
+    type: string
+
 instrs:
   type: u8
   set:
@@ -15,21 +33,21 @@ instrs:
       desc: "push a numeric constant onto the stack"
       repr: 0x00
       args:
-        v:
+        - name: "n"
           desc: "the number to emit"
           type: f64
     - name: "const bool"
       desc: "push a boolean constant onto the stack"
       repr: 0x01
       args:
-        v:
+        - name: "condition"
           desc: "the bool to emit"
           type: u8
     - name: "const string"
       desc: "push a string constant onto the stack"
       repr: 0x02
       args:
-        v:
+        - name: "string_"
           desc: "the string to emit"
           type: string
     - name: "return"

@@ -10,10 +10,18 @@ def load_yaml(path):
     with open(path, encoding="utf-8") as stream:
         return yaml.safe_load(stream)
 
+DEBUG_MODE = False
+def save_gml(script, path):
+    if DEBUG_MODE:
+        print(script)
+    else:
+        with open(path, "w", encoding="utf-8") as file:
+            file.write(str(script))
+
 GITHUB_URL = "https://github.com/katsaii/catspeak-lang/blob/main/"
 def get_path(path):
     if os.path.isfile(path):
-        return GITHUB_URL + path
+        return GITHUB_URL + os.path.relpath(path)
     else:
         return path
 
