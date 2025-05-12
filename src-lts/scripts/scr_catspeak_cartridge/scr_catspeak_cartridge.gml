@@ -5,12 +5,12 @@
 
 //# feather use syntax-errors
 
-//! Responsible for the reading and writing of Catspeak HIR (Hierarchial
-//! Intermediate Representation). HIR is a binary format that can be saved
+//! Responsible for the reading and writing of Catspeak IR (Intermediate
+//! Representation). Catspeak IR is a binary format that can be saved
 //! and loaded from a file, or treated like a "ROM" or "cartridge".
 
-/// The type of Catspeak HIR instruction.
-enum CatspeakHIRInst {
+/// The type of Catspeak IR instruction.
+enum CatspeakCartInst {
     /// Push a numeric constant onto the stack.
     CONST_NUMBER = 0,
     /// Push a boolean constant onto the stack.
@@ -24,7 +24,7 @@ enum CatspeakHIRInst {
 }
 
 /// TODO
-function CatspeakHIRWriter() constructor {
+function CatspeakCartWriter() constructor {
     /// @ignore
     self.buff = undefined;
     /// @ignore
@@ -36,7 +36,7 @@ function CatspeakHIRWriter() constructor {
         refCountOffset = undefined;
         __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
         __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
-            "HIR requires a grow buffer (buffer_grow)"
+            "IR requires a grow buffer (buffer_grow)"
         );
         buffer_write(buff_, buffer_u32, 13063246);
         buffer_write(buff_, buffer_string, @'CATSPEAK CART');
@@ -56,33 +56,49 @@ function CatspeakHIRWriter() constructor {
 
     /// Emit an instruction to push a numeric constant onto the stack.
     static emitConstNumber = function (v) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
+            "no cartridge loaded"
+        );
         __catspeak_assert(is_numeric(v), "expected type of f64");
-        buffer_write(buff, buffer_u8, CatspeakHIRInst.CONST_NUMBER);
-        buffer_write(buff, buffer_f64, v);
+        buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_NUMBER);
+        buffer_write(buff_, buffer_f64, v);
     };
 
     /// Emit an instruction to push a boolean constant onto the stack.
     static emitConstBool = function (v) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
+            "no cartridge loaded"
+        );
         __catspeak_assert(is_numeric(v), "expected type of u8");
-        buffer_write(buff, buffer_u8, CatspeakHIRInst.CONST_BOOL);
-        buffer_write(buff, buffer_u8, v);
+        buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_BOOL);
+        buffer_write(buff_, buffer_u8, v);
     };
 
     /// Emit an instruction to push a string constant onto the stack.
     static emitConstString = function (v) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
+            "no cartridge loaded"
+        );
         __catspeak_assert(is_string(v), "expected type of string");
-        buffer_write(buff, buffer_u8, CatspeakHIRInst.CONST_STRING);
-        buffer_write(buff, buffer_string, v);
+        buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_STRING);
+        buffer_write(buff_, buffer_string, v);
     };
 
     /// Emit an instruction to pop the top value off of the stack, and return it from the current function.
     static emitReturn = function () {
-        buffer_write(buff, buffer_u8, CatspeakHIRInst.RETURN);
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
+            "no cartridge loaded"
+        );
+        buffer_write(buff_, buffer_u8, CatspeakCartInst.RETURN);
     };
 }
 
 /// TODO
-function CatspeakHIRReader() constructor {
+function CatspeakCartReader() constructor {
     /// @ignore
     self.buff = undefined;
 
@@ -105,7 +121,7 @@ function CatspeakHIRReader() constructor {
             hCartridgeTitle == @'CATSPEAK CART' &&
             hCartridgeVersion == 1
         ) {
-            // successfully loaded HIR
+            // successfully loaded IR
             var refCount = buffer_read(buff_, buffer_u32);
             var handler = __handleHeader__;
             if (handler != undefined) {
@@ -120,8 +136,13 @@ function CatspeakHIRReader() constructor {
 
     /// TODO
     static readChunk = function () {
-        var instType = buffer_read(buff, buffer_u8);
-        __catspeak_assert(instType >= 0 && instType < CatspeakHIRInst.__SIZE__,
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_),
+            "no cartridge loaded"
+        );
+        var instType;
+        instType = buffer_read(buff_, buffer_u8);
+        __catspeak_assert(instType >= 0 && instType < CatspeakCartInst.__SIZE__,
             "invalid cartridge instruction"
         );
         var instReader = __readerLookup[instType];
@@ -133,8 +154,9 @@ function CatspeakHIRReader() constructor {
 
     /// @ignore
     static __readConstNumber = function () {
+        var buff_ = buff;
         var v;
-        v = buffer_read(buff, buffer_f64);
+        v = buffer_read(buff_, buffer_f64);
         var handler = __handleConstNumber__;
         if (handler != undefined) {
             handler(v);
@@ -146,8 +168,9 @@ function CatspeakHIRReader() constructor {
 
     /// @ignore
     static __readConstBool = function () {
+        var buff_ = buff;
         var v;
-        v = buffer_read(buff, buffer_u8);
+        v = buffer_read(buff_, buffer_u8);
         var handler = __handleConstBool__;
         if (handler != undefined) {
             handler(v);
@@ -159,8 +182,9 @@ function CatspeakHIRReader() constructor {
 
     /// @ignore
     static __readConstString = function () {
+        var buff_ = buff;
         var v;
-        v = buffer_read(buff, buffer_string);
+        v = buffer_read(buff_, buffer_string);
         var handler = __handleConstString__;
         if (handler != undefined) {
             handler(v);
@@ -179,18 +203,18 @@ function CatspeakHIRReader() constructor {
     };
 
     /// @ignore
-    static __readerLookup = (function () {
-        var lookupDB = array_create(CatspeakHIRInst.__SIZE__);
-        lookupDB[@ CatspeakHIRInst.CONST_NUMBER] = __readConstNumber;
-        lookupDB[@ CatspeakHIRInst.CONST_BOOL] = __readConstBool;
-        lookupDB[@ CatspeakHIRInst.CONST_STRING] = __readConstString;
-        lookupDB[@ CatspeakHIRInst.RETURN] = __readReturn;
-        return lookupDB;
-    })();
+    static __readerLookup = undefined;
+    if (__readerLookup == undefined) {
+        __readerLookup = array_create(CatspeakCartInst.__SIZE__);
+        __readerLookup[@ CatspeakCartInst.CONST_NUMBER] = __readConstNumber;
+        __readerLookup[@ CatspeakCartInst.CONST_BOOL] = __readConstBool;
+        __readerLookup[@ CatspeakCartInst.CONST_STRING] = __readConstString;
+        __readerLookup[@ CatspeakCartInst.RETURN] = __readReturn;
+    }
 }
 
 /// TODO
-function __CatspeakDisassembler() : CatspeakHIRReader() constructor {
+function __CatspeakDisassembler() : CatspeakCartReader() constructor {
     self.str = undefined;
     self.__handleHeader__ = function (refCount) {
         str = "[main, refs=" + string(refCount) + "]\nfun ():";

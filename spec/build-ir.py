@@ -10,8 +10,8 @@ script_header = common.get_header(spec_path, "spec/build-ir.py")
 script = common.SimpleStringBuilder(script_header)
 
 script.writedoc("""
-    Responsible for the reading and writing of Catspeak HIR (Hierarchial
-    Intermediate Representation). HIR is a binary format that can be saved
+    Responsible for the reading and writing of Catspeak IR (Intermediate
+    Representation). Catspeak IR is a binary format that can be saved
     and loaded from a file, or treated like a "ROM" or "cartridge".
 """, common.COMMENT_BANGDOC)
 script.writeln()
@@ -22,9 +22,9 @@ spec_instrs = spec["instrs"]
 
 # build IR enum
 script.writedoc("""
-    The type of Catspeak HIR instruction.
+    The type of Catspeak IR instruction.
 """, common.COMMENT_DOC)
-script.writeln("enum CatspeakHIRInst {")
+script.writeln("enum CatspeakCartInst {")
 with script.indent():
     for instr in spec_instrs["set"]:
         instr_name = instr["name"]
@@ -78,11 +78,18 @@ def ir_type_read(writer, buff_name, type_name, var_name):
         case "string": return do_read("buffer_string", var_name)
     raise Exception(f"unknown type '{type_name}'")
 
+def assert_cart_exists(writer, buff_name):
+    writer.writedoc(f"""
+        __catspeak_assert({buff_name} != undefined && buffer_exists({buff_name}),
+            "no cartridge loaded"
+        );
+    """)
+
 # build IR writer
 script.writedoc("""
     TODO
 """, common.COMMENT_DOC)
-script.writeln("function CatspeakHIRWriter() constructor {")
+script.writeln("function CatspeakCartWriter() constructor {")
 with script.indent():
     script.writedoc("""
         /// @ignore
@@ -103,7 +110,7 @@ with script.indent():
             refCountOffset = undefined;
             __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
             __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
-                "HIR requires a grow buffer (buffer_grow)"
+                "IR requires a grow buffer (buffer_grow)"
             );
         """)
         for header_item in spec_header:
@@ -145,15 +152,15 @@ with script.indent():
         script.write(") {")
         script.writeln()
         with script.indent():
+            script.writeln("var buff_ = buff;")
+            assert_cart_exists(script, "buff_")
             if "args" in instr:
                 for arg_name, arg in instr["args"].items():
                     ir_type_check(script, arg["type"], arg_name)
-            script.writedoc(f"""
-                buffer_write(buff, buffer_u8, CatspeakHIRInst.{common.case_snake_upper(instr_name)});
-            """);
+            ir_type_write(script, "buff_", spec_instrs["type"], f"CatspeakCartInst.{common.case_snake_upper(instr_name)}")
             if "args" in instr:
                 for arg_name, arg in instr["args"].items():
-                    ir_type_write(script, "buff", arg["type"], arg_name)
+                    ir_type_write(script, "buff_", arg["type"], arg_name)
         script.writeln("};")
 script.writeln("}")
 
@@ -162,7 +169,7 @@ script.writeln()
 script.writedoc("""
     TODO
 """, common.COMMENT_DOC)
-script.writeln("function CatspeakHIRReader() constructor {")
+script.writeln("function CatspeakCartReader() constructor {")
 with script.indent():
     script.writedoc("""
         /// @ignore
@@ -202,7 +209,7 @@ with script.indent():
         script.writeln()
         script.writedoc(f"""
             ) {{
-                // successfully loaded HIR
+                // successfully loaded IR
                 var refCount = buffer_read(buff_, buffer_u32);
                 var handler = __handleHeader__;
                 if (handler != undefined) {{
@@ -221,9 +228,12 @@ with script.indent():
     script.writedoc("TODO", common.COMMENT_DOC)
     script.writeln("static readChunk = function () {")
     with script.indent():
+        script.writeln("var buff_ = buff;")
+        assert_cart_exists(script, "buff_")
+        script.writeln("var instType;")
+        ir_type_read(script, "buff_", spec_instrs["type"], "instType")
         script.writedoc("""
-            var instType = buffer_read(buff, buffer_u8);
-            __catspeak_assert(instType >= 0 && instType < CatspeakHIRInst.__SIZE__,
+            __catspeak_assert(instType >= 0 && instType < CatspeakCartInst.__SIZE__,
                 "invalid cartridge instruction"
             );
             var instReader = __readerLookup[instType];
@@ -246,9 +256,10 @@ with script.indent():
         script.writeln()
         with script.indent():
             if "args" in instr:
+                script.writeln("var buff_ = buff;")
                 for arg_name, arg in instr["args"].items():
                     script.writeln(f"var {arg_name};")
-                    ir_type_read(script, "buff", arg["type"], arg_name)
+                    ir_type_read(script, "buff_", arg["type"], arg_name)
             script.writedoc(f"""
                 var handler = {instr_handler_name};
                 if (handler != undefined) {{
@@ -264,16 +275,18 @@ with script.indent():
     # instruction readers lookup table
     script.writeln()
     script.writedoc("@ignore", common.COMMENT_DOC)
-    script.writeln(f"static __readerLookup = (function () {{")
+    script.writedoc("""
+        static __readerLookup = undefined;
+        if (__readerLookup == undefined) {
+    """)
     with script.indent():
-        script.writeln("var lookupDB = array_create(CatspeakHIRInst.__SIZE__);")
+        script.writeln("__readerLookup = array_create(CatspeakCartInst.__SIZE__);")
         for instr in spec_instrs["set"]:
             instr_name = instr["name"]
             instr_name_camel = common.case_camel_upper(instr_name)
             instr_name_snake = common.case_snake_upper(instr_name)
-            script.writeln(f"lookupDB[@ CatspeakHIRInst.{instr_name_snake}] = __read{instr_name_camel};")
-        script.writeln("return lookupDB;")
-    script.writeln("})();")
+            script.writeln(f"__readerLookup[@ CatspeakCartInst.{instr_name_snake}] = __read{instr_name_camel};")
+    script.writeln("}")
 script.writeln("}")
 
 # disassembler
@@ -281,7 +294,7 @@ script.writeln()
 script.writedoc("""
     TODO
 """, common.COMMENT_DOC)
-script.writeln("function __CatspeakDisassembler() : CatspeakHIRReader() constructor {")
+script.writeln("function __CatspeakDisassembler() : CatspeakCartReader() constructor {")
 with script.indent():
     script.writedoc("""
         self.str = undefined;
