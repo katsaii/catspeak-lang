@@ -1,29 +1,37 @@
 header:
-  # the colour of Wanda, if you know you know
-  magic-number: 0xC7544E
-  cart-title: "Catspeak Cartridge v1"
-terms:
-  const number:
-    desc: "push a numeric constant onto the stack"
-    repr: 0x00
-    args:
-      v:
-        desc: "the number to emit"
-        type: number
-  const bool:
-    desc: "push a boolean constant onto the stack"
-    repr: 0x01
-    args:
-      v:
-        desc: "the bool to emit"
-        type: bool
-  const string:
-    desc: "push a string constant onto the stack"
-    repr: 0x02
-    args:
-      v:
-        desc: "the string to emit"
-        type: string
-  return:
-    desc: "pop the top value off of the stack, and return it from the current function"
-    repr: 0x03
+  - name: "magic number"
+    value: 0xC7544E # the colour of Wanda, if you know you know
+    type: u32
+  - name: "cartridge title"
+    value: "CATSPEAK CART"
+    type: string
+  - name: "cartridge version"
+    value: 1
+    type: u8
+instrs:
+  type: u8
+  set:
+    - name: "const number"
+      desc: "push a numeric constant onto the stack"
+      repr: 0x00
+      args:
+        v:
+          desc: "the number to emit"
+          type: f64
+    - name: "const bool"
+      desc: "push a boolean constant onto the stack"
+      repr: 0x01
+      args:
+        v:
+          desc: "the bool to emit"
+          type: u8
+    - name: "const string"
+      desc: "push a string constant onto the stack"
+      repr: 0x02
+      args:
+        v:
+          desc: "the string to emit"
+          type: string
+    - name: "return"
+      desc: "pop the top value off of the stack, and return it from the current function"
+      repr: 0x03

@@ -16,18 +16,23 @@ script.writedoc("""
 """, common.COMMENT_BANGDOC)
 script.writeln()
 
+# IR sections
+spec_header = spec["header"]
+spec_instrs = spec["instrs"]
+
 # build IR enum
 script.writedoc("""
     The type of Catspeak HIR instruction.
 """, common.COMMENT_DOC)
 script.writeln("enum CatspeakHIRInst {")
 with script.indent():
-    for term_name, term in spec["terms"].items():
-        term_desc = common.case_sentence(term["desc"])
-        term_repr = f" = {term["repr"]}" if "repr" in term else ""
-        if term_desc:
-            script.writedoc(term_desc, common.COMMENT_DOC)
-        script.writeln(f"{common.case_snake_upper(term_name)}{term_repr},")
+    for instr in spec_instrs["set"]:
+        instr_name = instr["name"]
+        instr_desc = common.case_sentence(instr["desc"])
+        instr_repr = f" = {instr["repr"]}" if "repr" in instr else ""
+        if instr_desc:
+            script.writedoc(instr_desc, common.COMMENT_DOC)
+        script.writeln(f"{common.case_snake_upper(instr_name)}{instr_repr},")
     script.writedoc("""
         /// @ignore
         __SIZE__,
@@ -35,34 +40,43 @@ with script.indent():
 script.writeln("}")
 script.writeln()
 
-# IR header
-spec_header = spec["header"]
-spec_header_magicnum = spec_header["magic-number"]
-spec_header_title = spec_header["cart-title"]
+def ir_type_coerce(type_name, value):
+    match type_name:
+        case "i32" | "u32" | "f64" | "u8":
+            return value
+        case "string": return f"@'{value}'"
+    raise Exception(f"unknown type '{type_name}'")
 
 def ir_type_check(writer, type_name, var_name):
     def do_assert(condition):
         writer.writeln(f"__catspeak_assert({condition}, \"expected type of {type_name}\");")
     match type_name:
-        case "number": do_assert(f"is_numeric({var_name})")
-        case "bool": do_assert(f"is_numeric({var_name})")
-        case "string": do_assert(f"is_string({var_name})")
+        case "i32" | "u32" | "f64" | "u8":
+            return do_assert(f"is_numeric({var_name})")
+        case "string": return do_assert(f"is_string({var_name})")
+    raise Exception(f"unknown type '{type_name}'")
 
-def ir_type_write(writer, type_name, var_name):
+def ir_type_write(writer, buff_name, type_name, var_name):
     def do_write(buff_type, value):
-        writer.writeln(f"buffer_write(buff, {buff_type}, {value});")
+        writer.writeln(f"buffer_write({buff_name}, {buff_type}, {value});")
     match type_name:
-        case "number": do_write("buffer_f64", var_name)
-        case "bool": do_write("buffer_u8", var_name)
-        case "string": do_write("buffer_string", var_name)
+        case "i32": return do_write("buffer_i32", var_name)
+        case "u32": return do_write("buffer_u32", var_name)
+        case "f64": return do_write("buffer_f64", var_name)
+        case "u8": return do_write("buffer_u8", var_name)
+        case "string": return do_write("buffer_string", var_name)
+    raise Exception(f"unknown type '{type_name}'")
 
-def ir_type_read(writer, type_name, var_name):
+def ir_type_read(writer, buff_name, type_name, var_name):
     def do_read(buff_type, value):
-        writer.writeln(f"{value} = buffer_read(buff, {buff_type});")
+        writer.writeln(f"{value} = buffer_read({buff_name}, {buff_type});")
     match type_name:
-        case "number": do_read("buffer_f64", f"var {var_name}")
-        case "bool": do_read("buffer_u8", f"var {var_name}")
-        case "string": do_read("buffer_string", f"var {var_name}")
+        case "i32": return do_read("buffer_i32", var_name)
+        case "u32": return do_read("buffer_u32", var_name)
+        case "f64": return do_read("buffer_f64", var_name)
+        case "u8": return do_read("buffer_u8", var_name)
+        case "string": return do_read("buffer_string", var_name)
+    raise Exception(f"unknown type '{type_name}'")
 
 # build IR writer
 script.writedoc("""
@@ -84,38 +98,22 @@ with script.indent():
     """, common.COMMENT_DOC)
     script.writeln("static setTarget = function (buff_) {")
     with script.indent():
-        script.writedoc(f"""
+        script.writedoc("""
             buff = undefined;
             refCountOffset = undefined;
             __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
             __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
                 "HIR requires a grow buffer (buffer_grow)"
             );
-            var buffOffset = buffer_tell(buff_);
-            var headNum = {spec_header_magicnum};
-            var headTitle = @'{spec_header_title}';
-            var loadBuff = false;
-            try {{
-                loadBuff = (
-                    buffer_read(buff_, buffer_u32) == headNum &&
-                    buffer_read(buff_, buffer_string) == headTitle
-                );
-            }} catch (ex) {{
-                __catspeak_error_silent("failed to read buffer header:\\n", ex.message);
-            }}
-            if (loadBuff) {{
-                // patch existing HIR file
-                refCountOffset = buffer_tell(buff_);
-                __catspeak_error_unimplemented("patching HIR");
-            }} else {{
-                // new HIR file
-                buffer_seek(buff_, buffer_seek_start, buffOffset);
-                buffer_write(buff_, buffer_u32, headNum);
-                buffer_write(buff_, buffer_string, headTitle);
-                // pointer to number of local vars
-                refCountOffset = buffer_tell(buff_);
-                buffer_write(buff_, buffer_u32, 0);
-            }}
+        """)
+        for header_item in spec_header:
+            header_value = header_item["value"]
+            header_type = header_item["type"]
+            ir_type_write(script, "buff_", header_type, ir_type_coerce(header_type, header_value))
+        script.writedoc(f"""
+            // pointer to number of local vars
+            refCountOffset = buffer_tell(buff_);
+            buffer_write(buff_, buffer_u32, 0);
             buff = buff_;
         """);
     script.writeln("}")
@@ -135,26 +133,27 @@ with script.indent():
     script.writeln("};")
 
     # instruction writers
-    for term_name, term in spec["terms"].items():
+    for instr in spec_instrs["set"]:
+        instr_name = instr["name"]
         script.writeln()
-        if "desc" in term:
-            term_desc = "Emit an instruction to " + term["desc"] + "."
-            script.writedoc(term_desc, common.COMMENT_DOC)
-        script.write(f"static emit{common.case_camel_upper(term_name)} = function (")
-        if "args" in term:
-            script.write(", ".join(term["args"]))
+        if "desc" in instr:
+            instr_desc = "Emit an instruction to " + instr["desc"] + "."
+            script.writedoc(instr_desc, common.COMMENT_DOC)
+        script.write(f"static emit{common.case_camel_upper(instr_name)} = function (")
+        if "args" in instr:
+            script.write(", ".join(instr["args"]))
         script.write(") {")
         script.writeln()
         with script.indent():
-            if "args" in term:
-                for arg_name, arg in term["args"].items():
+            if "args" in instr:
+                for arg_name, arg in instr["args"].items():
                     ir_type_check(script, arg["type"], arg_name)
             script.writedoc(f"""
-                buffer_write(buff, buffer_u8, CatspeakHIRInst.{common.case_snake_upper(term_name)});
+                buffer_write(buff, buffer_u8, CatspeakHIRInst.{common.case_snake_upper(instr_name)});
             """);
-            if "args" in term:
-                for arg_name, arg in term["args"].items():
-                    ir_type_write(script, arg["type"], arg_name)
+            if "args" in instr:
+                for arg_name, arg in instr["args"].items():
+                    ir_type_write(script, "buff", arg["type"], arg_name)
         script.writeln("};")
 script.writeln("}")
 
@@ -180,14 +179,28 @@ with script.indent():
     """, common.COMMENT_DOC)
     script.writeln("static setTarget = function (buff_) {")
     with script.indent():
-        script.writedoc(f"""
+        script.writedoc("""
             buff = undefined;
             __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
-            var headNum = {spec_header_magicnum};
-            var headTitle = @'{spec_header_title}';
-            if (
-                buffer_read(buff_, buffer_u32) == headNum &&
-                buffer_read(buff_, buffer_string) == headTitle
+            var startOffset = buffer_tell(buff_);
+        """)
+        for header_item in spec_header:
+            header_name = "h" + common.case_camel_upper(header_item["name"])
+            header_type = header_item["type"]
+            script.writeln(f"var {header_name};")
+            ir_type_read(script, "buff_", header_type, header_name)
+        script.write("if (")
+        first = True
+        for header_item in spec_header:
+            header_name = "h" + common.case_camel_upper(header_item["name"])
+            header_value = ir_type_coerce(header_item["type"], header_item["value"])
+            if not first:
+                script.write(" &&")
+            first = False
+            script.writeln()
+            script.write(f"    {header_name} == {header_value}")
+        script.writeln()
+        script.writedoc(f"""
             ) {{
                 // successfully loaded HIR
                 var refCount = buffer_read(buff_, buffer_u32);
@@ -196,6 +209,7 @@ with script.indent():
                     handler(refCount);
                 }}
             }} else {{
+                buffer_seek(buff_, buffer_seek_start, startOffset);
                 __catspeak_error("failed to read Catspeak cartridge, it may be corrupted");
             }}
             buff = buff_;
@@ -218,29 +232,31 @@ with script.indent():
     script.writeln("};")
 
     # instruction readers
-    for term_name, term in spec["terms"].items():
-        term_name_camel = common.case_camel_upper(term_name)
-        term_handler_name = f"__handle{term_name_camel}__"
-        term_reader_name = f"__read{term_name_camel}"
+    for instr in spec_instrs["set"]:
+        instr_name = instr["name"]
+        instr_name_camel = common.case_camel_upper(instr_name)
+        instr_handler_name = f"__handle{instr_name_camel}__"
+        instr_reader_name = f"__read{instr_name_camel}"
         script.writeln()
         script.writedoc("TODO", common.COMMENT_DOC)
-        script.writeln(f"self.{term_handler_name} = undefined;")
+        script.writeln(f"self.{instr_handler_name} = undefined;")
         script.writeln()
         script.writedoc("@ignore", common.COMMENT_DOC)
-        script.write(f"static {term_reader_name} = function () {{")
+        script.write(f"static {instr_reader_name} = function () {{")
         script.writeln()
         with script.indent():
-            if "args" in term:
-                for arg_name, arg in term["args"].items():
-                    ir_type_read(script, arg["type"], arg_name)
+            if "args" in instr:
+                for arg_name, arg in instr["args"].items():
+                    script.writeln(f"var {arg_name};")
+                    ir_type_read(script, "buff", arg["type"], arg_name)
             script.writedoc(f"""
-                var handler = {term_handler_name};
+                var handler = {instr_handler_name};
                 if (handler != undefined) {{
             """)
             with script.indent():
                 script.write("handler(")
-                if "args" in term:
-                    script.write(", ".join(term["args"]))
+                if "args" in instr:
+                    script.write(", ".join(instr["args"]))
                 script.writeln(");")
             script.writeln("}")
         script.writeln("};")
@@ -251,10 +267,11 @@ with script.indent():
     script.writeln(f"static __readerLookup = (function () {{")
     with script.indent():
         script.writeln("var lookupDB = array_create(CatspeakHIRInst.__SIZE__);")
-        for term_name, term in spec["terms"].items():
-            term_name_camel = common.case_camel_upper(term_name)
-            term_name_snake = common.case_snake_upper(term_name)
-            script.writeln(f"lookupDB[@ CatspeakHIRInst.{term_name_snake}] = __read{term_name_camel};")
+        for instr in spec_instrs["set"]:
+            instr_name = instr["name"]
+            instr_name_camel = common.case_camel_upper(instr_name)
+            instr_name_snake = common.case_snake_upper(instr_name)
+            script.writeln(f"lookupDB[@ CatspeakHIRInst.{instr_name_snake}] = __read{instr_name_camel};")
         script.writeln("return lookupDB;")
     script.writeln("})();")
 script.writeln("}")
@@ -272,15 +289,16 @@ with script.indent():
             str = "[main, refs=" + string(refCount) + "]\\nfun ():";
         };
     """)
-    for term_name, term in spec["terms"].items():
-        script.write(f"self.__handle{common.case_camel_upper(term_name)}__ = function (")
-        if "args" in term:
-            script.write(", ".join(term["args"]))
+    for instr in spec_instrs["set"]:
+        instr_name = instr["name"]
+        script.write(f"self.__handle{common.case_camel_upper(instr_name)}__ = function (")
+        if "args" in instr:
+            script.write(", ".join(instr["args"]))
         script.writeln(") {")
         with script.indent():
-            script.writeln(f"str += \"\\n  {common.case_snake_upper(term_name)}\";")
-            if "args" in term:
-                for arg_name in term["args"]:
+            script.writeln(f"str += \"\\n  {common.case_snake_upper(instr_name)}\";")
+            if "args" in instr:
+                for arg_name in instr["args"]:
                     script.writeln(f"str += \"  \" + string({arg_name});")
         script.writeln("};")
 script.writeln("}")

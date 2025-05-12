@@ -56,8 +56,12 @@ class SimpleStringBuilder:
         self.handle_indent()
         self.content += f"{value}"
 
-    def writeln(self, value=""): 
-        self.write(f"{value}\n")
+    def writeln(self, value=""):
+        if value:
+            self.write(f"{value}\n")
+        else:
+            # skip indent
+            self.content += "\n"
         self.do_indent = True
 
     def writedoc(self, value, prefix=""):
