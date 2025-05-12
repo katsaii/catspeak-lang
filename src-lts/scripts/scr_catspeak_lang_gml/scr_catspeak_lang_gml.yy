@@ -5,7 +5,7 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Catspeak Languages",
-    "path": "folders/Catspeak Languages.yy",
+    "name": "language-gml",
+    "path": "folders/Catspeak Plugins/language-gml.yy",
   },
 }

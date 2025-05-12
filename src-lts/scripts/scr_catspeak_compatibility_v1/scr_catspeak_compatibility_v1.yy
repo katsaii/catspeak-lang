@@ -5,7 +5,7 @@
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Catspeak Compatibility",
-    "path": "folders/Catspeak Compatibility.yy",
+    "name": "compatibility",
+    "path": "folders/Catspeak Plugins/compatibility.yy",
   },
 }
