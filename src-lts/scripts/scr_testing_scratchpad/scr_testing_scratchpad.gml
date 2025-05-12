@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = undefined;
+var runExperiment = "catspeak4";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -193,4 +193,18 @@ TEST_EXPERIMENT "err" {
     ', "testfile.meow");
     var f = env.compile(ir);
     show_message(f());
+}
+
+TEST_EXPERIMENT "catspeak4" {
+    var buff = buffer_create(1, buffer_grow, 1);
+    var writer = new CatspeakHIRWriter();
+    writer.setTarget(buff);
+    writer.emitConstString("hello youtube");
+    writer.emitReturn();
+    var reader = new __CatspeakDisassembler();
+    buffer_seek(buff, buffer_seek_start, 0);
+    reader.setTarget(buff);
+    reader.readChunk();//const
+    reader.readChunk();//return
+    show_message(reader.str);
 }

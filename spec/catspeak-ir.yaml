@@ -1,12 +1,29 @@
+header:
+  # the colour of Wanda, if you know you know
+  magic-number: 0xC7544E
+  cart-title: "Catspeak Cartridge v1"
 terms:
-  value:
-    desc: "get a constant value"
+  const number:
+    desc: "push a numeric constant onto the stack"
+    repr: 0x00
     args:
       v:
-        desc: "the constant to emit"
+        desc: "the number to emit"
+        type: number
+  const bool:
+    desc: "push a boolean constant onto the stack"
+    repr: 0x01
+    args:
+      v:
+        desc: "the bool to emit"
+        type: bool
+  const string:
+    desc: "push a string constant onto the stack"
+    repr: 0x02
+    args:
+      v:
+        desc: "the string to emit"
+        type: string
   return:
-    desc: "return a value from the current function"
-    args:
-      v:
-        desc: "the term to return the result of"
-        default: "undefined"
+    desc: "pop the top value off of the stack, and return it from the current function"
+    repr: 0x03
