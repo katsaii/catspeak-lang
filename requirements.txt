@@ -1,3 +1,5 @@
 attrs==19.3.0
+Jinja2==3.1.6
+MarkupSafe==3.0.2
 mistletoe-ebp==0.10.0
 PyYAML==6.0.2

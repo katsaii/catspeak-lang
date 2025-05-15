@@ -1,6 +1,8 @@
-# takes the `fnames-lts` file, parses it, and then generates code so the
-# compiler can expose all standard library functions, constants, and properties
-# to Catspeak programs
+"""
+takes the `fnames-lts` file, parses it, and then generates code so the
+compiler can expose all standard library functions, constants, and properties
+to Catspeak programs
+"""
 
 from pathlib import Path
 from textwrap import dedent

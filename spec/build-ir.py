@@ -18,6 +18,7 @@ script.writeln()
 
 # IR sections
 spec_header = spec["header"]
+spec_meta = spec["meta"]
 spec_instrs = spec["instrs"]
 
 # build IR enum
@@ -67,9 +68,12 @@ def ir_type_check(writer, type_name, var_name):
         case "string": return do_assert(f"is_string({var_name})")
     raise Exception(f"unknown type '{type_name}'")
 
-def ir_type_write(writer, buff_name, type_name, var_name):
+def ir_type_write(writer, buff_name, type_name, var_name, offset=None):
     def do_write(buff_type, value):
-        writer.writeln(f"buffer_write({buff_name}, {buff_type}, {value});")
+        if offset:
+            writer.writeln(f"buffer_poke({buff_name}, {offset}, {buff_type}, {value});")
+        else:
+            writer.writeln(f"buffer_write({buff_name}, {buff_type}, {value});")
     match type_name:
         case "i32": return do_write("buffer_i32", var_name)
         case "u32": return do_write("buffer_u32", var_name)
@@ -89,6 +93,14 @@ def ir_type_read(writer, buff_name, type_name, var_name):
         case "string": return do_read("buffer_string", var_name)
     raise Exception(f"unknown type '{type_name}'")
 
+def ir_type_default(type_name):
+    match type_name:
+        case "i32": return "0"
+        case "u32": return "0"
+        case "f64": return "0"
+        case "u8": return "0"
+        case "string": return "\"\""
+
 def assert_cart_exists(writer, buff_name):
     writer.writedoc(f"""
         __catspeak_assert({buff_name} != undefined && buffer_exists({buff_name}),
@@ -105,10 +117,6 @@ with script.indent():
     script.writedoc("""
         /// @ignore
         self.buff = undefined;
-        /// @ignore
-        self.finalised = true;
-        /// @ignore
-        self.programLengthRef = undefined;
     """)
 
     # set the IR target
@@ -120,8 +128,6 @@ with script.indent():
     with script.indent():
         script.writedoc("""
             buff = undefined;
-            finalised = true;
-            refCountOffset = undefined;
             __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
             __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
                 "IR requires a grow buffer (buffer_grow)"
@@ -131,14 +137,26 @@ with script.indent():
             header_value = header_item["value"]
             header_type = header_item["type"]
             ir_type_write(script, "buff_", header_type, ir_type_coerce(header_type, header_value))
+        ir_type_write(script, "buff_", spec["meta-offset"], 0)
         script.writedoc(f"""
-            // store how many bytes the final program code is
-            // (doesn't include metadata or header)
-            programLengthRef = buffer_tell(buff_);
-            buffer_write(buff_, buffer_u32, 0);
-            buff = buff_;
-            finalised = false;
-        """);
+            /// @ignore
+            self.refMeta = buffer_tell(buff_);
+        """)
+        ir_type_write(script, "buff_", spec["instrs-offset"], 0)
+        for meta_item in spec_meta:
+            meta_name = f"meta{common.case_camel_upper(meta_item['name'])}"
+            if "many" in meta_item:
+                # array of values
+                if "type" in meta_item:
+                    value = "[]"
+                else:
+                    value = "0"
+            else:
+                # normal value
+                value = "undefined"
+            script.writedoc("@ignore", common.COMMENT_DOC)
+            script.writeln(f"self.{meta_name} = {value};")
+        script.writeln("buff = buff_;")
     script.writeln("}")
 
     # finalise the IR target
@@ -151,14 +169,28 @@ with script.indent():
         script.writedoc("""
             var buff_ = buff;
             buff = undefined;
-            finalised = true;
         """)
         assert_cart_exists(script, "buff_")
-        script.writedoc("""
-        """)
+        ir_type_write(script, "buff_", spec["meta-offset"], "buffer_tell(buff_) - refMeta", "refMeta")
     script.writeln("};")
 
     # metadata setters
+    for meta_item in spec_meta:
+        meta_name = common.case_camel_upper(meta_item['name'])
+        meta_desc = "TODO"
+        script.writedoc(meta_desc, common.COMMENT_DOC)
+        if "many" in meta_item:
+            # array of values
+            if "type" in meta_item:
+                value = "[]"
+            else:
+                value = "0"
+        else:
+            # normal value
+            script.writeln(f"static set{metaName} = function (v) {{")
+            with script.indent():
+                script.
+            script.writeln("};")
 
     # allocate references
     script.writeln()

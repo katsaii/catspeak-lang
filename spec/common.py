@@ -10,7 +10,7 @@ def load_yaml(path):
     with open(path, encoding="utf-8") as stream:
         return yaml.safe_load(stream)
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 def save_gml(script, path):
     if DEBUG_MODE:
         print(script)

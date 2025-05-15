@@ -8,24 +8,18 @@ header:
   - name: "cartridge version"
     value: 1
     type: u8
-  - name: "finalised"
-    value-good: 1
-    value-bad: 0
-    type: u8
 
-offsets:
-  type: u32
-  list: ["meta", "instrs"]
-
+meta-offset: u32
 meta:
   - name: "filepath"
     type: string
   - name: "reg"
-    many: true
+    many: u32
   - name: "global"
-    many: true
+    many: u32
     type: string
 
+instrs-offset: u32
 instrs:
   type: u8
   set:
