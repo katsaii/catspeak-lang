@@ -1,6 +1,6 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/catspeak-ir.yaml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/def-catspeak-ir.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/build-ir-gml.py
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_cartridge.gml
 

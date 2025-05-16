@@ -1,5 +1,5 @@
 """
-builds the Catspeak IR compiler from the catspeak-ir.yaml file
+builds the Catspeak IR compiler from the def-catspeak-ir.yaml file
 """
 
 import common
@@ -11,7 +11,7 @@ scripts = [
     "scr_catspeak_disassembler",
 ]
 
-spec_path = "spec/catspeak-ir.yaml"
+spec_path = "spec/def-catspeak-ir.yaml"
 spec = common.load_yaml(spec_path)
 
 def ir_unknown_type(type_name):

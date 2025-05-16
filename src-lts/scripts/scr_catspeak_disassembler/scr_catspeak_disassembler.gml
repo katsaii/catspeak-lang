@@ -1,6 +1,6 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/catspeak-ir.yaml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/def-catspeak-ir.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/build-ir-gml.py
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_disassembler.gml
 
@@ -27,24 +27,24 @@ function __CatspeakCartDisassembler() : CatspeakCartReader() constructor {
     self.indent = "\n  ";
     self.__handleMeta__ = function (filepath_, reg_, global_) {
         asmStr = ""
-        asmStr += "[filepath=" + string(filepath_) + "]\n";
-        asmStr += "[reg=" + string(reg_) + "]\n";
-        asmStr += "[global=" + string(global_) + "]\n";
-        asmStr += "fun ():";
+        asmStr += "#[filepath=" + string(filepath_) + "]\n";
+        asmStr += "#[reg=" + string(reg_) + "]\n";
+        asmStr += "#[global=" + string(global_) + "]\n";
+        asmStr += "fun () do";
     };
     self.__handleConstNumber__ = function (n) {
-        asmStr += indent + "CONST_NUMBER";
+        asmStr += indent + "get_n";
         asmStr += "    " + string(n);
     };
     self.__handleConstBool__ = function (condition) {
-        asmStr += indent + "CONST_BOOL";
+        asmStr += indent + "get_b";
         asmStr += "    " + string(condition);
     };
     self.__handleConstString__ = function (string_) {
-        asmStr += indent + "CONST_STRING";
+        asmStr += indent + "get_s";
         asmStr += "    " + string(string_);
     };
     self.__handleReturn__ = function () {
-        asmStr += indent + "RETURN";
+        asmStr += indent + "ret";
     };
 }

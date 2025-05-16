@@ -27,14 +27,14 @@ function __CatspeakCartDisassembler() : CatspeakCartReader() constructor {
 {% for item in meta %}
         asmStr += "#[{{ item['name'] }}=" + string({{ gml_name(item['name']) }}) + "]\n";
 {% endfor %}
-        asmStr += "fun ():";
+        asmStr += "fun () do";
     };
 {% for instr in instrs["set"] %}
 {%  set name_handler = "__handle" + case_camel_upper(instr["name"]) + "__" %}
-{%  set name_enum = case_snake_upper(instr["name"]) %}
+{%  set name_instr = instr["name-short"] %}
 {%  set instr_args = instr.get("args", []) %}
     self.{{ name_handler }} = function ({{ map(fn_field("name"), instr_args) | join(", ") }}) {
-        asmStr += indent + "{{ name_enum }}";
+        asmStr += indent + "{{ name_instr }}";
 {%  for arg in instr_args %}
         asmStr += "    " + string({{ arg["name"] }});
 {%  endfor %}

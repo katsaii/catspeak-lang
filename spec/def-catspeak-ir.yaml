@@ -23,6 +23,7 @@ instrs:
   type: u8
   set:
     - name: "const number"
+      name-short: "get_n"
       desc: "push a numeric constant onto the stack"
       repr: 0x00
       args:
@@ -30,6 +31,7 @@ instrs:
           desc: "the number to emit"
           type: f64
     - name: "const bool"
+      name-short: "get_b"
       desc: "push a boolean constant onto the stack"
       repr: 0x01
       args:
@@ -37,6 +39,7 @@ instrs:
           desc: "the bool to emit"
           type: u8
     - name: "const string"
+      name-short: "get_s"
       desc: "push a string constant onto the stack"
       repr: 0x02
       args:
@@ -44,5 +47,6 @@ instrs:
           desc: "the string to emit"
           type: string
     - name: "return"
+      name-short: "ret"
       desc: "pop the top value off of the stack, and return it from the current function"
       repr: 0x03
