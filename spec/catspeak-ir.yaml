@@ -19,7 +19,6 @@ meta:
     many: u32
     type: string
 
-instrs-offset: u32
 instrs:
   type: u8
   set:

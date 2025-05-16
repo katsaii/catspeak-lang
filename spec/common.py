@@ -10,6 +10,10 @@ def load_yaml(path):
     with open(path, encoding="utf-8") as stream:
         return yaml.safe_load(stream)
 
+def load_file(path):
+    with open(path, "r", encoding="utf-8") as file:
+        return file.read()
+
 DEBUG_MODE = True
 def save_gml(script, path):
     if DEBUG_MODE:
@@ -38,7 +42,6 @@ def get_header(*paths):
         header += "// see:\n"
         for path in paths:
             header += f"//  - {get_path(path)}\n"
-    header += "\n//# feather use syntax-errors\n\n"
     return header
 
 class WithHandler:
@@ -105,3 +108,12 @@ def case_camel_upper(ident):
 def case_sentence(ident):
     ident = case_capitalise(ident)
     return ident + "." if ident else ident
+
+def get_jinja2_funcs(dest_globals, *funcs):
+    dest_globals["case_snake"] = case_snake
+    dest_globals["case_snake_upper"] = case_snake_upper
+    dest_globals["case_capitalise"] = case_capitalise
+    dest_globals["case_camel_upper"] = case_camel_upper
+    dest_globals["case_sentence"] = case_sentence
+    for func in funcs:
+        dest_globals[func.__name__] = func
