@@ -51,6 +51,9 @@ def ir_assert_type(type_name, var_name):
 def fn_field(field_name):
     return lambda x: x[field_name]
 
+def gml_name(name):
+    return f"{name}_"
+
 env = jinja2.Environment(trim_blocks=True, lstrip_blocks=True) #autoescape=True
 env_interface = { "spec": spec }
 common.get_jinja2_funcs(env.globals, *[
@@ -60,10 +63,11 @@ common.get_jinja2_funcs(env.globals, *[
     ir_assert_cart_exists,
     ir_assert_type,
     fn_field,
+    gml_name,
     map
 ])
 
-debug = True
+debug = False
 for script in scripts:
     script_path_src = f"spec/template/{script}.gml"
     script_path_dest = f"src-lts/scripts/{script}/{script}.gml"
@@ -75,3 +79,6 @@ for script in scripts:
         print(f"   dest: {script_path_dest}")
         print(f"content: \n")
         print(temp_script)
+    else:
+        print(f"writing: {script_path_dest}")
+        common.save_file(script_path_dest, temp_script)

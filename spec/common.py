@@ -14,13 +14,9 @@ def load_file(path):
     with open(path, "r", encoding="utf-8") as file:
         return file.read()
 
-DEBUG_MODE = True
-def save_gml(script, path):
-    if DEBUG_MODE:
-        print(script)
-    else:
-        with open(path, "w", encoding="utf-8") as file:
-            file.write(str(script))
+def save_file(path, script):
+    with open(path, "w", encoding="utf-8") as file:
+        file.write(str(script))
 
 GITHUB_URL = "https://github.com/katsaii/catspeak-lang/blob/main/"
 def get_path(path):
