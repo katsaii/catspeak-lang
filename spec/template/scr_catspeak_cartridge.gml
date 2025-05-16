@@ -91,13 +91,20 @@ function CatspeakCartWriter(buff_) constructor {
     /// {{ case_sentence(instr["desc"]) }}
 {%  for arg in func_args %}
     ///
+{%   if "default" in arg %}
+    /// @param {{ ir_type_as_feather_type(arg["type"]) }} [{{ arg["name"]}}]
+{%   else %}
     /// @param {{ ir_type_as_feather_type(arg["type"]) }} {{ arg["name"]}}
-    ///     {{ case_sentence(arg["desc"]) }} 
+{%   endif %}
+    ///     {{ case_sentence(arg["desc"]) }}
 {%  endfor %}
     static {{ name_func }} = function ({{ map(fn_field("name"), func_args) | join(", ") }}) {
         var buff_ = buff;
         {{ ir_assert_cart_exists("buff_") }}
 {%  for arg in func_args %}
+{%   if "default" in arg %}
+        {{ arg["name"] }} ??= {{ arg["default"] }};
+{%   endif %}
         {{ ir_assert_type(arg["type"], arg["name"]) }}
 {%  endfor %}
         buffer_write(buff_, buffer_{{ instrs["type"] }}, {{ name_enum }});
@@ -114,7 +121,9 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
 {% for instr in instrs["set"] %}
 {%  set name_handler = "handle" + case_camel_upper(instr["name"]) %}
-    __catspeak_assert(is_method(visitor_[$ "{{ name_handler }}"]), "visitor is missing a handler for '{{ name_handler }}'");
+    __catspeak_assert(is_method(visitor_[$ "{{ name_handler }}"]),
+        "visitor is missing a handler for '{{ name_handler }}'"
+    );
 {% endfor %}
     var failedMessage = undefined;
     try {
@@ -159,9 +168,8 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     self.buff = buff_;
     /// @ignore
     self.visitor = visitor_;
-    var handler = visitor_.handleMeta;
-    if (handler != undefined) {
-        handler({{ map(gml_name, map(fn_field("name"), meta)) | join(", ") }});
+    if (visitor_.handleMeta != undefined) {
+        visitor_.handleMeta({{ map(gml_name, map(fn_field("name"), meta)) | join(", ") }});
     }
 
     /// TODO
@@ -195,9 +203,9 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         var {{ arg["name"] }} = buffer_read(buff_, buffer_{{ arg["type"] }});
 {%   endfor %}
 {%  endif %}
-        var handler = visitor.{{ name_handler }};
-        if (handler != undefined) {
-            handler({{ map(fn_field("name"), func_args) | join(", ") }});
+        var visitor_ = visitor;
+        if (visitor_.{{ name_handler }} != undefined) {
+            visitor_.{{ name_handler }}({{ map(fn_field("name"), func_args) | join(", ") }});
         }
     };
 {% endfor %}

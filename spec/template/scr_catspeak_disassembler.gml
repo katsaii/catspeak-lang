@@ -25,9 +25,13 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
+    /// @ignore
     self.asmStr = undefined;
+    /// @ignore
     self.indent = "\n  ";
-    self.handleMeta = function ({{ map(gml_name, map(fn_field("name"), meta) ) | join(", ") }}) {
+
+    /// @ignore
+    static handleMeta = function ({{ map(gml_name, map(fn_field("name"), meta) ) | join(", ") }}) {
         asmStr = ""
 {% for item in meta %}
         asmStr += "#[{{ item['name'] }}=" + string({{ gml_name(item['name']) }}) + "]\n";
@@ -38,10 +42,14 @@ function __CatspeakCartDisassembler() constructor {
 {%  set name_handler = "handle" + case_camel_upper(instr["name"]) %}
 {%  set name_instr = instr["name-short"] %}
 {%  set instr_args = instr.get("args", []) %}
-    self.{{ name_handler }} = function ({{ map(fn_field("name"), instr_args) | join(", ") }}) {
+
+    /// @ignore
+    static {{ name_handler }} = function ({{ map(fn_field("name"), instr_args) | join(", ") }}) {
         asmStr += indent + "{{ name_instr }}";
 {%  for arg in instr_args %}
+{%   if arg["name"] != "location" %}
         asmStr += "    " + string({{ arg["name"] }});
+{%   endif %}
 {%  endfor %}
     };
 {% endfor %}

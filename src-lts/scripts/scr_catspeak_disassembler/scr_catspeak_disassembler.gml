@@ -28,28 +28,40 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
+    /// @ignore
     self.asmStr = undefined;
+    /// @ignore
     self.indent = "\n  ";
-    self.handleMeta = function (filepath_, reg_, global_) {
+
+    /// @ignore
+    static handleMeta = function (filepath_, reg_, global_) {
         asmStr = ""
         asmStr += "#[filepath=" + string(filepath_) + "]\n";
         asmStr += "#[reg=" + string(reg_) + "]\n";
         asmStr += "#[global=" + string(global_) + "]\n";
         asmStr += "fun () do";
     };
-    self.handleConstNumber = function (n) {
+
+    /// @ignore
+    static handleConstNumber = function (n, location) {
         asmStr += indent + "get_n";
         asmStr += "    " + string(n);
     };
-    self.handleConstBool = function (condition) {
+
+    /// @ignore
+    static handleConstBool = function (condition, location) {
         asmStr += indent + "get_b";
         asmStr += "    " + string(condition);
     };
-    self.handleConstString = function (string_) {
+
+    /// @ignore
+    static handleConstString = function (string_, location) {
         asmStr += indent + "get_s";
         asmStr += "    " + string(string_);
     };
-    self.handleReturn = function () {
+
+    /// @ignore
+    static handleReturn = function (location) {
         asmStr += indent + "ret";
     };
 }

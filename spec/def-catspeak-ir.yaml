@@ -22,6 +22,7 @@ meta:
 instrs:
   type: u8
   set:
+
     - name: "const number"
       name-short: "get_n"
       desc: "push a numeric constant onto the stack"
@@ -30,6 +31,11 @@ instrs:
         - name: "n"
           desc: "the number to emit"
           type: f64
+        - name: "location"
+          desc: "the approximate location of this instruction in the source code"
+          type: u32
+          default: CATSPEAK_NOLOCATION
+
     - name: "const bool"
       name-short: "get_b"
       desc: "push a boolean constant onto the stack"
@@ -38,6 +44,11 @@ instrs:
         - name: "condition"
           desc: "the bool to emit"
           type: u8
+        - name: "location"
+          desc: "the approximate location of this instruction in the source code"
+          type: u32
+          default: CATSPEAK_NOLOCATION
+
     - name: "const string"
       name-short: "get_s"
       desc: "push a string constant onto the stack"
@@ -46,7 +57,17 @@ instrs:
         - name: "string_"
           desc: "the string to emit"
           type: string
+        - name: "location"
+          desc: "the approximate location of this instruction in the source code"
+          type: u32
+          default: CATSPEAK_NOLOCATION
+
     - name: "return"
       name-short: "ret"
       desc: "pop the top value off of the stack, and return it from the current function"
       repr: 0x03
+      args:
+        - name: "location"
+          desc: "the approximate location of this instruction in the source code"
+          type: u32
+          default: CATSPEAK_NOLOCATION

@@ -75,44 +75,68 @@ function CatspeakCartWriter(buff_) constructor {
     /// Push a numeric constant onto the stack.
     ///
     /// @param {Real} n
-    ///     The number to emit. 
-    static emitConstNumber = function (n) {
+    ///     The number to emit.
+    ///
+    /// @param {Real} [location]
+    ///     The approximate location of this instruction in the source code.
+    static emitConstNumber = function (n, location) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(n), "expected type of f64");
+        location ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(location), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_NUMBER);
         buffer_write(buff_, buffer_f64, n);
+        buffer_write(buff_, buffer_u32, location);
     };
 
     /// Push a boolean constant onto the stack.
     ///
     /// @param {Real} condition
-    ///     The bool to emit. 
-    static emitConstBool = function (condition) {
+    ///     The bool to emit.
+    ///
+    /// @param {Real} [location]
+    ///     The approximate location of this instruction in the source code.
+    static emitConstBool = function (condition, location) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(condition), "expected type of u8");
+        location ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(location), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_BOOL);
         buffer_write(buff_, buffer_u8, condition);
+        buffer_write(buff_, buffer_u32, location);
     };
 
     /// Push a string constant onto the stack.
     ///
     /// @param {String} string_
-    ///     The string to emit. 
-    static emitConstString = function (string_) {
+    ///     The string to emit.
+    ///
+    /// @param {Real} [location]
+    ///     The approximate location of this instruction in the source code.
+    static emitConstString = function (string_, location) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_string(string_), "expected type of string");
+        location ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(location), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.CONST_STRING);
         buffer_write(buff_, buffer_string, string_);
+        buffer_write(buff_, buffer_u32, location);
     };
 
     /// Pop the top value off of the stack, and return it from the current function.
-    static emitReturn = function () {
+    ///
+    /// @param {Real} [location]
+    ///     The approximate location of this instruction in the source code.
+    static emitReturn = function (location) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        location ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(location), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakCartInst.RETURN);
+        buffer_write(buff_, buffer_u32, location);
     };
 }
 
@@ -120,10 +144,18 @@ function CatspeakCartWriter(buff_) constructor {
 function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
     __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
-    __catspeak_assert(is_method(visitor_[$ "handleConstNumber"]), "visitor is missing a handler for 'handleConstNumber'");
-    __catspeak_assert(is_method(visitor_[$ "handleConstBool"]), "visitor is missing a handler for 'handleConstBool'");
-    __catspeak_assert(is_method(visitor_[$ "handleConstString"]), "visitor is missing a handler for 'handleConstString'");
-    __catspeak_assert(is_method(visitor_[$ "handleReturn"]), "visitor is missing a handler for 'handleReturn'");
+    __catspeak_assert(is_method(visitor_[$ "handleConstNumber"]),
+        "visitor is missing a handler for 'handleConstNumber'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleConstBool"]),
+        "visitor is missing a handler for 'handleConstBool'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleConstString"]),
+        "visitor is missing a handler for 'handleConstString'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleReturn"]),
+        "visitor is missing a handler for 'handleReturn'"
+    );
     var failedMessage = undefined;
     try {
         if (buffer_read(buff_, buffer_u32) != 13063246) {
@@ -162,9 +194,8 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     self.buff = buff_;
     /// @ignore
     self.visitor = visitor_;
-    var handler = visitor_.handleMeta;
-    if (handler != undefined) {
-        handler(filepath_, reg_, global_);
+    if (visitor_.handleMeta != undefined) {
+        visitor_.handleMeta(filepath_, reg_, global_);
     }
 
     /// TODO
@@ -189,9 +220,10 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     static __readConstNumber = function () {
         var buff_ = buff;
         var n = buffer_read(buff_, buffer_f64);
-        var handler = visitor.handleConstNumber;
-        if (handler != undefined) {
-            handler(n);
+        var location = buffer_read(buff_, buffer_u32);
+        var visitor_ = visitor;
+        if (visitor_.handleConstNumber != undefined) {
+            visitor_.handleConstNumber(n, location);
         }
     };
 
@@ -199,9 +231,10 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     static __readConstBool = function () {
         var buff_ = buff;
         var condition = buffer_read(buff_, buffer_u8);
-        var handler = visitor.handleConstBool;
-        if (handler != undefined) {
-            handler(condition);
+        var location = buffer_read(buff_, buffer_u32);
+        var visitor_ = visitor;
+        if (visitor_.handleConstBool != undefined) {
+            visitor_.handleConstBool(condition, location);
         }
     };
 
@@ -209,17 +242,20 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     static __readConstString = function () {
         var buff_ = buff;
         var string_ = buffer_read(buff_, buffer_string);
-        var handler = visitor.handleConstString;
-        if (handler != undefined) {
-            handler(string_);
+        var location = buffer_read(buff_, buffer_u32);
+        var visitor_ = visitor;
+        if (visitor_.handleConstString != undefined) {
+            visitor_.handleConstString(string_, location);
         }
     };
 
     /// @ignore
     static __readReturn = function () {
-        var handler = visitor.handleReturn;
-        if (handler != undefined) {
-            handler();
+        var buff_ = buff;
+        var location = buffer_read(buff_, buffer_u32);
+        var visitor_ = visitor;
+        if (visitor_.handleReturn != undefined) {
+            visitor_.handleReturn(location);
         }
     };
 
