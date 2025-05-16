@@ -201,10 +201,7 @@ TEST_EXPERIMENT "catspeak4" {
     writer.setTarget(buff);
     writer.emitConstString("hello youtube");
     writer.emitReturn();
-    var reader = new __CatspeakCartDisassembler();
+    writer.finaliseTarget();
     buffer_seek(buff, buffer_seek_start, 0);
-    reader.setTarget(buff);
-    reader.readChunk();//const
-    reader.readChunk();//return
-    show_message(reader.str);
+    show_message(catspeak_cart_disassemble(buff));
 }

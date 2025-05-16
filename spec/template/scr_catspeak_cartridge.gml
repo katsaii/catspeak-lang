@@ -44,8 +44,8 @@ function CatspeakCartWriter() constructor {
 {% for item in header %}
         buffer_write(buff_, buffer_{{ item["type"] }}, {{ ir_type_as_gml_literal(item["type"], item["value"]) }});
 {% endfor %}
-        buffer_write(buff_, buffer_{{ spec["meta-offset"] }}, 0);
         refMeta = buffer_tell(buff_);
+        buffer_write(buff_, buffer_{{ spec["meta-offset"] }}, 0);
 {% for item in meta %}
 {%  set name = "meta" + case_camel_upper(item["name"]) %}
 {%  if "many" in item %}
@@ -66,7 +66,7 @@ function CatspeakCartWriter() constructor {
         var buff_ = buff;
         buff = undefined;
         {{ ir_assert_cart_exists("buff_") }}
-        buffer_poke(buff_, refMeta, buffer_{{ spec["meta-offset"] }}, buffer_tell() - refMeta);
+        buffer_poke(buff_, refMeta, buffer_{{ spec["meta-offset"] }}, buffer_tell(buff_) - refMeta);
 {% for item in meta %}
 {%  set name = "meta" + case_camel_upper(item["name"]) %}
 {%  if "many" in item %}
@@ -135,9 +135,9 @@ function CatspeakCartReader() constructor {
         if (failedMessage != undefined) {
             __catspeak_error(failedMessage);
         }
-        refMeta = buffer_read(buff_, buffer_{{ spec["meta-offset"] }});
-        refMeta += buffer_tell();
-        refInstrs = buffer_tell();
+        refMeta = buffer_tell(buff_);
+        refMeta += buffer_read(buff_, buffer_{{ spec["meta-offset"] }});
+        refInstrs = buffer_tell(buff_);
         buffer_seek(buff_, buffer_seek_start, refMeta);
 {% for item in meta %}
 {%  set name = gml_name(item["name"]) %}
@@ -155,7 +155,7 @@ function CatspeakCartReader() constructor {
         var {{ name }} = buffer_read(buff_, buffer_{{ item["type"] }});
 {%  endif %}
 {% endfor %}
-        refEndOfFile = buffer_tell();
+        refEndOfFile = buffer_tell(buff_);
         // rewind back to instructions
         buffer_seek(buff_, buffer_seek_start, refInstrs);
         buff = buff_;
@@ -169,7 +169,7 @@ function CatspeakCartReader() constructor {
     static readInstr = function () {
         var buff_ = buff;
         {{ ir_assert_cart_exists("buff_") }}
-        if (buffer_tell() >= refMeta) {
+        if (buffer_tell(buff_) >= refMeta) {
             // we've reached the end
             buffer_seek(buff_, buffer_seek_start, refEndOfFile);
             return false;

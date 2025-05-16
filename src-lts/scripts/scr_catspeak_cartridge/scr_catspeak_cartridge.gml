@@ -50,8 +50,8 @@ function CatspeakCartWriter() constructor {
         buffer_write(buff_, buffer_u32, 13063246);
         buffer_write(buff_, buffer_string, @'CATSPEAK CART');
         buffer_write(buff_, buffer_u8, 1);
-        buffer_write(buff_, buffer_u32, 0);
         refMeta = buffer_tell(buff_);
+        buffer_write(buff_, buffer_u32, 0);
         metaFilepath = "";
         metaReg = 0;
         metaGlobal = [];
@@ -63,7 +63,7 @@ function CatspeakCartWriter() constructor {
         var buff_ = buff;
         buff = undefined;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
-        buffer_poke(buff_, refMeta, buffer_u32, buffer_tell() - refMeta);
+        buffer_poke(buff_, refMeta, buffer_u32, buffer_tell(buff_) - refMeta);
         buffer_write(buff_, buffer_string, metaFilepath);
         buffer_write(buff_, buffer_u32, metaReg);
         var metaGlobal_ = metaGlobal;
@@ -147,9 +147,9 @@ function CatspeakCartReader() constructor {
         if (failedMessage != undefined) {
             __catspeak_error(failedMessage);
         }
-        refMeta = buffer_read(buff_, buffer_u32);
-        refMeta += buffer_tell();
-        refInstrs = buffer_tell();
+        refMeta = buffer_tell(buff_);
+        refMeta += buffer_read(buff_, buffer_u32);
+        refInstrs = buffer_tell(buff_);
         buffer_seek(buff_, buffer_seek_start, refMeta);
         var filepath_ = buffer_read(buff_, buffer_string);
         var reg_ = buffer_read(buff_, buffer_u32);
@@ -158,7 +158,7 @@ function CatspeakCartReader() constructor {
         for (var i = global_N - 1; i >= 0; i -= 1) {
             global_[@ i] = buffer_read(buff_, buffer_string);
         }
-        refEndOfFile = buffer_tell();
+        refEndOfFile = buffer_tell(buff_);
         // rewind back to instructions
         buffer_seek(buff_, buffer_seek_start, refInstrs);
         buff = buff_;
@@ -172,7 +172,7 @@ function CatspeakCartReader() constructor {
     static readInstr = function () {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
-        if (buffer_tell() >= refMeta) {
+        if (buffer_tell(buff_) >= refMeta) {
             // we've reached the end
             buffer_seek(buff_, buffer_seek_start, refEndOfFile);
             return false;

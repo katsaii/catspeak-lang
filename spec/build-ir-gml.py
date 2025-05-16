@@ -7,7 +7,8 @@ import jinja2
 from pathlib import Path
 
 scripts = [
-    "scr_catspeak_cartridge"
+    "scr_catspeak_cartridge",
+    "scr_catspeak_disassembler",
 ]
 
 spec_path = "spec/catspeak-ir.yaml"
