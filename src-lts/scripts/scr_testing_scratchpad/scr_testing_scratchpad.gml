@@ -197,11 +197,10 @@ TEST_EXPERIMENT "err" {
 
 TEST_EXPERIMENT "catspeak4" {
     var buff = buffer_create(1, buffer_grow, 1);
-    var writer = new CatspeakCartWriter();
-    writer.setTarget(buff);
+    var writer = new CatspeakCartWriter(buff);
     writer.emitConstString("hello youtube");
     writer.emitReturn();
-    writer.finaliseTarget();
+    writer.finalise();
     buffer_seek(buff, buffer_seek_start, 0);
     show_message(catspeak_cart_disassemble(buff));
 }

@@ -36,30 +36,28 @@ enum CatspeakCartInst {
 }
 
 /// TODO
-function CatspeakCartWriter() constructor {
+function CatspeakCartWriter(buff_) constructor {
+    __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
+        "IR requires a grow buffer (buffer_grow)"
+    );
+    buffer_write(buff_, buffer_u32, 13063246);
+    buffer_write(buff_, buffer_string, @'CATSPEAK CART');
+    buffer_write(buff_, buffer_u8, 1);
     /// @ignore
-    self.buff = undefined;
+    self.refMeta = buffer_tell(buff_);
+    buffer_write(buff_, buffer_u32, 0);
+    /// @ignore
+    self.metaFilepath = "";
+    /// @ignore
+    self.metaReg = 0;
+    /// @ignore
+    self.metaGlobal = [];
+    /// @ignore
+    self.buff = buff_;
 
     /// TODO
-    static setTarget = function (buff_) {
-        buff = undefined;
-        __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
-        __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
-            "IR requires a grow buffer (buffer_grow)"
-        );
-        buffer_write(buff_, buffer_u32, 13063246);
-        buffer_write(buff_, buffer_string, @'CATSPEAK CART');
-        buffer_write(buff_, buffer_u8, 1);
-        refMeta = buffer_tell(buff_);
-        buffer_write(buff_, buffer_u32, 0);
-        metaFilepath = "";
-        metaReg = 0;
-        metaGlobal = [];
-        buff = buff_;
-    };
-
-    /// TODO
-    static finaliseTarget = function () {
+    static finalise = function () {
         var buff_ = buff;
         buff = undefined;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
@@ -119,53 +117,54 @@ function CatspeakCartWriter() constructor {
 }
 
 /// TODO
-function CatspeakCartReader() constructor {
+function CatspeakCartReader(buff_, visitor_) constructor {
+    __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
+    __catspeak_assert(is_method(visitor_[$ "handleConstNumber"]), "visitor is missing a handler for 'handleConstNumber'");
+    __catspeak_assert(is_method(visitor_[$ "handleConstBool"]), "visitor is missing a handler for 'handleConstBool'");
+    __catspeak_assert(is_method(visitor_[$ "handleConstString"]), "visitor is missing a handler for 'handleConstString'");
+    __catspeak_assert(is_method(visitor_[$ "handleReturn"]), "visitor is missing a handler for 'handleReturn'");
+    var failedMessage = undefined;
+    try {
+        if (buffer_read(buff_, buffer_u32) != 13063246) {
+            failedMessage = "failed to read Catspeak cartridge: '13063246' (u32) missing from header";
+        }
+        if (buffer_read(buff_, buffer_string) != @'CATSPEAK CART') {
+            failedMessage = "failed to read Catspeak cartridge: 'CATSPEAK CART' (string) missing from header";
+        }
+        if (buffer_read(buff_, buffer_u8) != 1) {
+            failedMessage = "failed to read Catspeak cartridge: '1' (u8) missing from header";
+        }
+    } catch (ex_) {
+        __catspeak_error("error occurred when trying to read Catspeak cartridge: ", ex_.message);
+    }
+    if (failedMessage != undefined) {
+        __catspeak_error(failedMessage);
+    }
     /// @ignore
-    self.buff = undefined;
-
-    /// TODO
-    self.__handleMeta__ = undefined;
-
-    /// TODO
-    static setTarget = function (buff_) {
-        buff = undefined;
-        __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
-        var failedMessage = undefined;
-        try {
-            if (buffer_read(buff_, buffer_u32) != 13063246) {
-                failedMessage = "failed to read Catspeak cartridge: '13063246' (u32) missing from header";
-            }
-            if (buffer_read(buff_, buffer_string) != @'CATSPEAK CART') {
-                failedMessage = "failed to read Catspeak cartridge: 'CATSPEAK CART' (string) missing from header";
-            }
-            if (buffer_read(buff_, buffer_u8) != 1) {
-                failedMessage = "failed to read Catspeak cartridge: '1' (u8) missing from header";
-            }
-        } catch (ex_) {
-            __catspeak_error("error occurred when trying to read Catspeak cartridge: ", ex_.message);
-        }
-        if (failedMessage != undefined) {
-            __catspeak_error(failedMessage);
-        }
-        refMeta = buffer_tell(buff_);
-        refMeta += buffer_read(buff_, buffer_u32);
-        refInstrs = buffer_tell(buff_);
-        buffer_seek(buff_, buffer_seek_start, refMeta);
-        var filepath_ = buffer_read(buff_, buffer_string);
-        var reg_ = buffer_read(buff_, buffer_u32);
-        var global_N = buffer_read(buff_, buffer_u32);
-        var global_ = array_create(global_N);
-        for (var i = global_N - 1; i >= 0; i -= 1) {
-            global_[@ i] = buffer_read(buff_, buffer_string);
-        }
-        refEndOfFile = buffer_tell(buff_);
-        // rewind back to instructions
-        buffer_seek(buff_, buffer_seek_start, refInstrs);
-        buff = buff_;
-        var handler = __handleMeta__;
-        if (handler != undefined) {
-            handler(filepath_, reg_, global_);
-        }
+    self.refMeta = buffer_tell(buff_);
+    self.refMeta += buffer_read(buff_, buffer_u32);
+    /// @ignore
+    self.refInstrs = buffer_tell(buff_);
+    buffer_seek(buff_, buffer_seek_start, self.refMeta);
+    var filepath_ = buffer_read(buff_, buffer_string);
+    var reg_ = buffer_read(buff_, buffer_u32);
+    var global_N = buffer_read(buff_, buffer_u32);
+    var global_ = array_create(global_N);
+    for (var i = global_N - 1; i >= 0; i -= 1) {
+        global_[@ i] = buffer_read(buff_, buffer_string);
+    }
+    /// @ignore
+    self.refEndOfFile = buffer_tell(buff_);
+    // rewind back to instructions
+    buffer_seek(buff_, buffer_seek_start, self.refInstrs);
+    /// @ignore
+    self.buff = buff_;
+    /// @ignore
+    self.visitor = visitor_;
+    var handler = visitor_.handleMeta;
+    if (handler != undefined) {
+        handler(filepath_, reg_, global_);
     }
 
     /// TODO
@@ -186,51 +185,39 @@ function CatspeakCartReader() constructor {
         return true;
     };
 
-    /// TODO
-    self.__handleConstNumber__ = undefined;
-
     /// @ignore
     static __readConstNumber = function () {
         var buff_ = buff;
         var n = buffer_read(buff_, buffer_f64);
-        var handler = __handleConstNumber__;
+        var handler = visitor.handleConstNumber;
         if (handler != undefined) {
             handler(n);
         }
     };
 
-    /// TODO
-    self.__handleConstBool__ = undefined;
-
     /// @ignore
     static __readConstBool = function () {
         var buff_ = buff;
         var condition = buffer_read(buff_, buffer_u8);
-        var handler = __handleConstBool__;
+        var handler = visitor.handleConstBool;
         if (handler != undefined) {
             handler(condition);
         }
     };
 
-    /// TODO
-    self.__handleConstString__ = undefined;
-
     /// @ignore
     static __readConstString = function () {
         var buff_ = buff;
         var string_ = buffer_read(buff_, buffer_string);
-        var handler = __handleConstString__;
+        var handler = visitor.handleConstString;
         if (handler != undefined) {
             handler(string_);
         }
     };
 
-    /// TODO
-    self.__handleReturn__ = undefined;
-
     /// @ignore
     static __readReturn = function () {
-        var handler = __handleReturn__;
+        var handler = visitor.handleReturn;
         if (handler != undefined) {
             handler();
         }

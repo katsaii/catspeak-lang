@@ -12,39 +12,44 @@
 /// TODO
 function catspeak_cart_disassemble(buff, offset = undefined) {
     static disassembler = new __CatspeakCartDisassembler();
-    disassembler.setTarget(buff);
+    var buffStart = buffer_tell(buff);
+    if (offset != undefined) {
+        buffer_seek(buff, buffer_seek_start, offset);
+    }
+    var reader = new CatspeakCartReader(buff, disassembler);
     do {
-        var moreRemains = disassembler.readInstr();
+        var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var disassembly = disassembler.asmStr;
     disassembler.asmStr = undefined;
+    buffer_seek(buff, buffer_seek_start, buffStart);
     return disassembly;
 }
 
 /// @ignore
-function __CatspeakCartDisassembler() : CatspeakCartReader() constructor {
+function __CatspeakCartDisassembler() constructor {
     self.asmStr = undefined;
     self.indent = "\n  ";
-    self.__handleMeta__ = function (filepath_, reg_, global_) {
+    self.handleMeta = function (filepath_, reg_, global_) {
         asmStr = ""
         asmStr += "#[filepath=" + string(filepath_) + "]\n";
         asmStr += "#[reg=" + string(reg_) + "]\n";
         asmStr += "#[global=" + string(global_) + "]\n";
         asmStr += "fun () do";
     };
-    self.__handleConstNumber__ = function (n) {
+    self.handleConstNumber = function (n) {
         asmStr += indent + "get_n";
         asmStr += "    " + string(n);
     };
-    self.__handleConstBool__ = function (condition) {
+    self.handleConstBool = function (condition) {
         asmStr += indent + "get_b";
         asmStr += "    " + string(condition);
     };
-    self.__handleConstString__ = function (string_) {
+    self.handleConstString = function (string_) {
         asmStr += indent + "get_s";
         asmStr += "    " + string(string_);
     };
-    self.__handleReturn__ = function () {
+    self.handleReturn = function () {
         asmStr += indent + "ret";
     };
 }

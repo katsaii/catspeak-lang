@@ -9,20 +9,25 @@
 /// TODO
 function catspeak_cart_disassemble(buff, offset = undefined) {
     static disassembler = new __CatspeakCartDisassembler();
-    disassembler.setTarget(buff);
+    var buffStart = buffer_tell(buff);
+    if (offset != undefined) {
+        buffer_seek(buff, buffer_seek_start, offset);
+    }
+    var reader = new CatspeakCartReader(buff, disassembler);
     do {
-        var moreRemains = disassembler.readInstr();
+        var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var disassembly = disassembler.asmStr;
     disassembler.asmStr = undefined;
+    buffer_seek(buff, buffer_seek_start, buffStart);
     return disassembly;
 }
 
 /// @ignore
-function __CatspeakCartDisassembler() : CatspeakCartReader() constructor {
+function __CatspeakCartDisassembler() constructor {
     self.asmStr = undefined;
     self.indent = "\n  ";
-    self.__handleMeta__ = function ({{ map(gml_name, map(fn_field("name"), meta) ) | join(", ") }}) {
+    self.handleMeta = function ({{ map(gml_name, map(fn_field("name"), meta) ) | join(", ") }}) {
         asmStr = ""
 {% for item in meta %}
         asmStr += "#[{{ item['name'] }}=" + string({{ gml_name(item['name']) }}) + "]\n";
@@ -30,7 +35,7 @@ function __CatspeakCartDisassembler() : CatspeakCartReader() constructor {
         asmStr += "fun () do";
     };
 {% for instr in instrs["set"] %}
-{%  set name_handler = "__handle" + case_camel_upper(instr["name"]) + "__" %}
+{%  set name_handler = "handle" + case_camel_upper(instr["name"]) %}
 {%  set name_instr = instr["name-short"] %}
 {%  set instr_args = instr.get("args", []) %}
     self.{{ name_handler }} = function ({{ map(fn_field("name"), instr_args) | join(", ") }}) {

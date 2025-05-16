@@ -30,39 +30,37 @@ enum CatspeakCartInst {
 }
 
 /// TODO
-function CatspeakCartWriter() constructor {
-    /// @ignore
-    self.buff = undefined;
-
-    /// TODO
-    static setTarget = function (buff_) {
-        buff = undefined;
-        __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
-        __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
-            "IR requires a grow buffer (buffer_grow)"
-        );
+function CatspeakCartWriter(buff_) constructor {
+    __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
+        "IR requires a grow buffer (buffer_grow)"
+    );
 {% for item in header %}
-        buffer_write(buff_, buffer_{{ item["type"] }}, {{ ir_type_as_gml_literal(item["type"], item["value"]) }});
+    buffer_write(buff_, buffer_{{ item["type"] }}, {{ ir_type_as_gml_literal(item["type"], item["value"]) }});
 {% endfor %}
-        refMeta = buffer_tell(buff_);
-        buffer_write(buff_, buffer_{{ spec["meta-offset"] }}, 0);
+    /// @ignore
+    self.refMeta = buffer_tell(buff_);
+    buffer_write(buff_, buffer_{{ spec["meta-offset"] }}, 0);
 {% for item in meta %}
 {%  set name = "meta" + case_camel_upper(item["name"]) %}
 {%  if "many" in item %}
 {%   if "type" in item %}
-        {{ name }} = [];
+    /// @ignore
+    self.{{ name }} = [];
 {%   else %}
-        {{ name }} = {{ ir_type_default(item["many"]) }};
+    /// @ignore
+    self.{{ name }} = {{ ir_type_default(item["many"]) }};
 {%   endif %}
 {%  else %}
-        {{ name }} = {{ ir_type_default(item["type"]) }};
+    /// @ignore
+    self.{{ name }} = {{ ir_type_default(item["type"]) }};
 {%  endif %}
 {% endfor %}
-        buff = buff_;
-    };
+    /// @ignore
+    self.buff = buff_;
 
     /// TODO
-    static finaliseTarget = function () {
+    static finalise = function () {
         var buff_ = buff;
         buff = undefined;
         {{ ir_assert_cart_exists("buff_") }}
@@ -111,58 +109,59 @@ function CatspeakCartWriter() constructor {
 }
 
 /// TODO
-function CatspeakCartReader() constructor {
-    /// @ignore
-    self.buff = undefined;
-
-    /// TODO
-    self.__handleMeta__ = undefined;
-
-    /// TODO
-    static setTarget = function (buff_) {
-        buff = undefined;
-        __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
-        var failedMessage = undefined;
-        try {
-{% for item in header %}
-            if (buffer_read(buff_, buffer_{{ item["type"] }}) != {{ ir_type_as_gml_literal(item["type"], item["value"]) }}) {
-                failedMessage = "failed to read Catspeak cartridge: '{{ item['value'] }}' ({{ item['type'] }}) missing from header";
-            }
+function CatspeakCartReader(buff_, visitor_) constructor {
+    __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
+{% for instr in instrs["set"] %}
+{%  set name_handler = "handle" + case_camel_upper(instr["name"]) %}
+    __catspeak_assert(is_method(visitor_[$ "{{ name_handler }}"]), "visitor is missing a handler for '{{ name_handler }}'");
 {% endfor %}
-        } catch (ex_) {
-            __catspeak_error("error occurred when trying to read Catspeak cartridge: ", ex_.message);
+    var failedMessage = undefined;
+    try {
+{% for item in header %}
+        if (buffer_read(buff_, buffer_{{ item["type"] }}) != {{ ir_type_as_gml_literal(item["type"], item["value"]) }}) {
+            failedMessage = "failed to read Catspeak cartridge: '{{ item['value'] }}' ({{ item['type'] }}) missing from header";
         }
-        if (failedMessage != undefined) {
-            __catspeak_error(failedMessage);
-        }
-        refMeta = buffer_tell(buff_);
-        refMeta += buffer_read(buff_, buffer_{{ spec["meta-offset"] }});
-        refInstrs = buffer_tell(buff_);
-        buffer_seek(buff_, buffer_seek_start, refMeta);
+{% endfor %}
+    } catch (ex_) {
+        __catspeak_error("error occurred when trying to read Catspeak cartridge: ", ex_.message);
+    }
+    if (failedMessage != undefined) {
+        __catspeak_error(failedMessage);
+    }
+    /// @ignore
+    self.refMeta = buffer_tell(buff_);
+    self.refMeta += buffer_read(buff_, buffer_{{ spec["meta-offset"] }});
+    /// @ignore
+    self.refInstrs = buffer_tell(buff_);
+    buffer_seek(buff_, buffer_seek_start, self.refMeta);
 {% for item in meta %}
 {%  set name = gml_name(item["name"]) %}
 {%  if "many" in item %}
 {%   if "type" in item %}
-        var {{ name }}N = buffer_read(buff_, buffer_{{ item["many"] }});
-        var {{ name }} = array_create({{ name }}N);
-        for (var i = {{ name }}N - 1; i >= 0; i -= 1) {
-            {{ name }}[@ i] = buffer_read(buff_, buffer_{{ item["type"] }});
-        }
+    var {{ name }}N = buffer_read(buff_, buffer_{{ item["many"] }});
+    var {{ name }} = array_create({{ name }}N);
+    for (var i = {{ name }}N - 1; i >= 0; i -= 1) {
+        {{ name }}[@ i] = buffer_read(buff_, buffer_{{ item["type"] }});
+    }
 {%   else %}
-        var {{ name }} = buffer_read(buff_, buffer_{{ item["many"] }});
+    var {{ name }} = buffer_read(buff_, buffer_{{ item["many"] }});
 {%   endif %}
 {%  else %}
-        var {{ name }} = buffer_read(buff_, buffer_{{ item["type"] }});
+    var {{ name }} = buffer_read(buff_, buffer_{{ item["type"] }});
 {%  endif %}
 {% endfor %}
-        refEndOfFile = buffer_tell(buff_);
-        // rewind back to instructions
-        buffer_seek(buff_, buffer_seek_start, refInstrs);
-        buff = buff_;
-        var handler = __handleMeta__;
-        if (handler != undefined) {
-            handler({{ map(gml_name, map(fn_field("name"), meta)) | join(", ") }});
-        }
+    /// @ignore
+    self.refEndOfFile = buffer_tell(buff_);
+    // rewind back to instructions
+    buffer_seek(buff_, buffer_seek_start, self.refInstrs);
+    /// @ignore
+    self.buff = buff_;
+    /// @ignore
+    self.visitor = visitor_;
+    var handler = visitor_.handleMeta;
+    if (handler != undefined) {
+        handler({{ map(gml_name, map(fn_field("name"), meta)) | join(", ") }});
     }
 
     /// TODO
@@ -183,13 +182,10 @@ function CatspeakCartReader() constructor {
         return true;
     };
 {% for instr in instrs["set"] %}
-{%  set name_handler = "__handle" + case_camel_upper(instr["name"]) + "__" %}
+{%  set name_handler = "handle" + case_camel_upper(instr["name"]) %}
 {%  set name_func = "__read" + case_camel_upper(instr["name"]) %}
 {%  set name_enum = "CatspeakCartInst." + case_snake_upper(instr["name"]) %}
 {%  set func_args = instr.get("args", []) %}
-
-    /// TODO
-    self.{{- name_handler }} = undefined;
 
     /// @ignore
     static {{ name_func }} = function () {
@@ -199,7 +195,7 @@ function CatspeakCartReader() constructor {
         var {{ arg["name"] }} = buffer_read(buff_, buffer_{{ arg["type"] }});
 {%   endfor %}
 {%  endif %}
-        var handler = {{ name_handler }};
+        var handler = visitor.{{ name_handler }};
         if (handler != undefined) {
             handler({{ map(fn_field("name"), func_args) | join(", ") }});
         }
