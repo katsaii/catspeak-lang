@@ -1,13 +1,40 @@
-header:
-  - name: "magic number"
+# Catspeak cartridge layout
+# =========================
+
+common:
+  dbg: u32    #< The type used for debug info.
+  instr: u8   #< The type used for instruction tags.
+
+# The header comes first. In the order they are defined below, these values are
+# written to the start of the buffer.
+
+head-order: [signal, title, version]
+head:
+  signal:
     value: 0xC7544E # the colour of Wanda, if you know you know
     type: u32
-  - name: "cartridge title"
+  title:
     value: "CATSPEAK CART"
     type: string
-  - name: "cartridge version"
+  version:
     value: 1
     type: u8
+
+# Directly after the header begins the program code. This will always start
+# with the main function definition. In the order they are defined below, space
+# is reserved within the buffer.
+
+func-order: [offset, locals, params]
+func:
+  # Relative to the start of the buffer, points to the end of the function.
+  offset: u32
+  locals: u32 #< The max number of local variables this function can have.
+  params: u32 #< The number of named parameters this function has.
+
+# After the header, an offset of type common:type-offset is written. This offset
+# points to a location (relative to the start of the buffer) where additional
+# metadata is stored.
+
 
 meta-offset: u32
 meta:

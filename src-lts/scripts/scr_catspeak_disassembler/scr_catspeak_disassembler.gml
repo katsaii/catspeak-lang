@@ -34,10 +34,9 @@ function __CatspeakCartDisassembler() constructor {
     self.indent = "\n  ";
 
     /// @ignore
-    static handleMeta = function (filepath_, reg_, global_) {
+    static handleMeta = function (filepath_, global_) {
         asmStr = ""
         asmStr += "#[filepath=" + string(filepath_) + "]\n";
-        asmStr += "#[reg=" + string(reg_) + "]\n";
         asmStr += "#[global=" + string(global_) + "]\n";
         asmStr += "fun () do";
     };

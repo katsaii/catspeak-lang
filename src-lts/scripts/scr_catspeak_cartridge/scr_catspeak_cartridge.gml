@@ -50,8 +50,6 @@ function CatspeakCartWriter(buff_) constructor {
     /// @ignore
     self.metaFilepath = "";
     /// @ignore
-    self.metaReg = 0;
-    /// @ignore
     self.metaGlobal = [];
     /// @ignore
     self.buff = buff_;
@@ -63,7 +61,6 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         buffer_poke(buff_, refMeta, buffer_u32, buffer_tell(buff_) - refMeta);
         buffer_write(buff_, buffer_string, metaFilepath);
-        buffer_write(buff_, buffer_u32, metaReg);
         var metaGlobal_ = metaGlobal;
         var metaGlobalN = array_length(metaGlobal_);
         buffer_write(buff_, buffer_u32, metaGlobalN);
@@ -180,7 +177,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     self.refInstrs = buffer_tell(buff_);
     buffer_seek(buff_, buffer_seek_start, self.refMeta);
     var filepath_ = buffer_read(buff_, buffer_string);
-    var reg_ = buffer_read(buff_, buffer_u32);
     var global_N = buffer_read(buff_, buffer_u32);
     var global_ = array_create(global_N);
     for (var i = global_N - 1; i >= 0; i -= 1) {
@@ -195,7 +191,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     /// @ignore
     self.visitor = visitor_;
     if (visitor_.handleMeta != undefined) {
-        visitor_.handleMeta(filepath_, reg_, global_);
+        visitor_.handleMeta(filepath_, global_);
     }
 
     /// TODO
