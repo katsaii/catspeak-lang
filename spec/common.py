@@ -184,6 +184,10 @@ def gml_func_args(args):
     return ", ".join(map(gml_func_arg, args))
 
 @jinja2_export
+def gml_func_args_var_ref(args, prefix = "v"):
+    return ", ".join(gml_var_ref(arg, prefix) for arg in args)
+
+@jinja2_export
 def util_enum(collection, idx):
     iter_ = collection[idx]
     iter_order = collection.get(f"{idx}-order")
@@ -197,8 +201,8 @@ def util_enum(collection, idx):
     return gen
 
 @jinja2_export
-def util_op_index(field_name):
-    return lambda x: x[field_name]
+def util_op_index(idx):
+    return lambda x: x[idx]
 
 # compat
 
