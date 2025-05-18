@@ -3,10 +3,14 @@
 
 //# feather use syntax-errors
 
-{% set meta = spec["meta"] -%}
-{% set instrs = spec["instrs"] -%}
-
-/// TODO
+/// Disassembles a supplied Catspeak cartridge into a string.
+///
+/// @experimental
+///
+/// @warning
+///   This should only be used for debug purposes.
+///
+/// @returns {String}
 function catspeak_cart_disassemble(buff, offset = undefined) {
     static disassembler = new __CatspeakCartDisassembler();
     var buffStart = buffer_tell(buff);
@@ -18,7 +22,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var disassembly = disassembler.asmStr;
-    disassembler.asmStr = undefined;
+    disassembler.asmStr = "";
     buffer_seek(buff, buffer_seek_start, buffStart);
     return disassembly;
 }
@@ -26,31 +30,37 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
-    self.asmStr = undefined;
-    /// @ignore
-    self.indent = "\n  ";
+    asmStr = "";
+{% for section_name, section in ir_enumerate(ir, "data") %}
+{%  set section_handler = gml_var_ref(section_name, "handle") %}
 
     /// @ignore
-    static handleMeta = function ({{ map(gml_name, map(fn_field("name"), meta) ) | join(", ") }}) {
-        asmStr = ""
-{% for item in meta %}
-        asmStr += "#[{{ item['name'] }}=" + string({{ gml_name(item['name']) }}) + "]\n";
-{% endfor %}
-        asmStr += "fun () do";
+{%  if section_name == "func" %}
+{%   set funcvar_args = map(fn_field(0), ir_enumerate(ir["data"], "func")) %}
+    static {{ section_handler }} = function (idx, {{ gml_func_args_var_ref(funcvar_args, None) }}) {
+        // TODO
     };
-{% for instr in instrs["set"] %}
-{%  set name_handler = "handle" + case_camel_upper(instr["name"]) %}
-{%  set name_instr = instr["name-short"] %}
-{%  set instr_args = instr.get("args", []) %}
+{%  endif %}
+{%  if section_name == "meta" %}
+{%   set metavar_args = map(fn_field(0), ir_enumerate(ir["data"], "meta")) %}
+    static {{ section_handler }} = function (idx, {{ gml_func_args_var_ref(metavar_args, None) }}) {
+        // TODO
+    };
+{%  endif %}
+{% endfor %}
+{% for _, instr in ir_enumerate(ir, "instr") %}
+{%  set instr_handler = gml_var_ref(instr["name"], "handleInstr") %}
+{%  set instr_name = instr['name-short'] or instr['name'] %}
+{%  set instrarg_args = map(fn_field("name"), instr["args"]) %}
 
     /// @ignore
-    static {{ name_handler }} = function ({{ map(fn_field("name"), instr_args) | join(", ") }}) {
-        asmStr += indent + "{{ name_instr }}";
-{%  for arg in instr_args %}
-{%   if arg["name"] != "location" %}
-        asmStr += "    " + string({{ arg["name"] }});
-{%   endif %}
-{%  endfor %}
+    static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, "arg") }}) {
+        asmStr += "  {{ instr_name }}";
+{% for arg in instr["args"] %}
+{%  set arg_name = gml_var_ref(arg["name"], "arg") %}
+        asmStr += "  " + string({{ arg_name }});
+        asmStr += "\n"
+{% endfor %}
     };
 {% endfor %}
 }

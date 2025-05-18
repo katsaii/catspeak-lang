@@ -5,7 +5,7 @@
 /// @ignore
 ///
 /// @return {Real}
-#macro __CATSPEAK_LOCATION_ROW_MASK 0x000FFFFF
+#macro __CATSPEAK_LOCATION_LINE_MASK 0x000FFFFF
 
 /// 0b11111111111100000000000000000000
 ///
@@ -18,7 +18,7 @@
 ///
 /// @return {Real}
 #macro CATSPEAK_NOLOCATION \
-        (__CATSPEAK_LOCATION_ROW_MASK | __CATSPEAK_LOCATION_COLUMN_MASK)
+        (__CATSPEAK_LOCATION_LINE_MASK | __CATSPEAK_LOCATION_COLUMN_MASK)
 
 /// When compiling programs, diagnostic information can be added into
 /// the generated IR. This information (such as the line and column numbers
@@ -60,7 +60,7 @@ function catspeak_location_create(row, column) {
     gml_pragma("forceinline");
     __catspeak_check_arg_size_bits("row", row, 20);
     __catspeak_check_arg_size_bits("column", column, 12);
-    var bitsRow = row & __CATSPEAK_LOCATION_ROW_MASK;
+    var bitsRow = row & __CATSPEAK_LOCATION_LINE_MASK;
     var bitsCol = (column << 20) & __CATSPEAK_LOCATION_COLUMN_MASK;
     return bitsRow | bitsCol;
 }
@@ -77,7 +77,7 @@ function catspeak_location_create(row, column) {
 function catspeak_location_get_line(location) {
     gml_pragma("forceinline");
     __catspeak_check_arg_size_bits("location", location, 32);
-    return location & __CATSPEAK_LOCATION_ROW_MASK;
+    return location & __CATSPEAK_LOCATION_LINE_MASK;
 }
 
 /// Gets the column component of a Catspeak source location. This is stored

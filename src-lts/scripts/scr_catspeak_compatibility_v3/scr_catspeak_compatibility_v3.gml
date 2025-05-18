@@ -8,7 +8,8 @@
 /// @ignore
 /// @deprecated {4.0.0}
 function __catspeak_location_show(location, filepath) {
-    catspeak_location_show(location, filepath);
+    gml_pragma("forceinline");
+    return catspeak_location_show(location, filepath);
 }
 
 /// @ignore
@@ -38,6 +39,5 @@ function __catspeak_location_show_ext(location, filepath) {
 /// @returns {Real}
 function catspeak_location_get_row(location) {
     gml_pragma("forceinline");
-    __catspeak_check_arg_size_bits("location", location, 32);
-    return location & __CATSPEAK_LOCATION_ROW_MASK;
+    return catspeak_location_get_line(location);
 }

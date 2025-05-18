@@ -18,6 +18,8 @@
 /// detail here.)
 /// 
 /// Each instruction may also be associated with zero or many static parameters.
+///
+/// @experimental
 enum CatspeakInstr {
     /// @ignore
     END_OF_PROGRAM = 0,
@@ -33,6 +35,8 @@ enum CatspeakInstr {
 }
 
 /// Handles the creation of Catspeak cartridges.
+///
+/// @experimental
 ///
 /// @param {Id.Buffer} buff_
 ///   The buffer to write the cartridge to. Must be a `buffer_grow` type buffer
@@ -101,6 +105,7 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         buff = undefined;
         {{ ir_assert_cart_exists("buff_") }}
+        var fvTop_ = fvTop;
         __catspeak_assert(fvTop_ < 0.5,
             "'.beginFunction' called with no associated '.endFunction' call"
         );
@@ -114,12 +119,11 @@ function CatspeakCartWriter(buff_) constructor {
 {%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
 {%    set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
 {%    set funcvar_bufftype = gml_type_buffer(funcvar["type"]) %}
-        buffer_write(buff_, {{ funcvar_bufftype }}, funcvar_ref);
+        buffer_write(buff_, {{ funcvar_bufftype }}, {{ funcvar_ref }});
 {%   endfor %}
         var fvI = 0;
-        var fvTop_ = fvTop;
         var fvFuncs_ = fvFuncs;
-        while (i < fvTop_) {
+        while (fvI < fvTop_) {
 {%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
 {%    set funcvar_bufftype = gml_type_buffer(funcvar["type"]) %}
             buffer_write(buff_, {{ funcvar_bufftype }}, fvFuncs_[fvI]);
@@ -193,7 +197,7 @@ function CatspeakCartWriter(buff_) constructor {
     };
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_func = gml_var_ref(instr["name"], "emit") %}
-{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name"]) %}
+{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
 
     /// {{ case_sentence(instr["desc"]) }}
 {%  for arg in instr["args"] %}
@@ -225,6 +229,8 @@ function CatspeakCartWriter(buff_) constructor {
 
 /// Handles the parsing of Catspeak cartridges.
 ///
+/// @experimental
+///
 /// @remark
 ///   Immediately reads and calls the handlers for the "data" section of the
 ///   Catspeak cartridge.
@@ -251,7 +257,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         "visitor is missing a handler for '{{ name_handler }}'"
     );
 {% endfor %}
-    var buffStart = buffer_tell(buff_);
+    {{ gml_chunk_head("buff_") }}
     var failedMessage = undefined;
     try {
 {% for head_name, head in ir_enumerate(ir, "head") %}
@@ -271,7 +277,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
 {%  set chunk_ref = gml_chunk_ref(chunk_name) %}
 {%  set chunk_bufftype = gml_type_buffer(chunk_type) %}
     /// @ignore
-    {{ chunk_ref }} = buffer_read(buff_, {{ chunk_bufftype }}, 0);
+    {{ chunk_ref }} = buffer_read(buff_, {{ chunk_bufftype }});
 {% endfor %}
     {{ gml_chunk_seek(ir, "data", "buff_") }}
 {% for section_name, section in ir_enumerate(ir, "data") %}
@@ -340,7 +346,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_handler = gml_var_ref(instr["name"], "handleInstr") %}
 {%  set instr_reader = gml_var_ref(instr["name"], "__read") %}
-{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name"]) %}
+{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
 
     /// @ignore
     static {{ instr_reader }} = function () {
@@ -363,7 +369,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         __readerLookup = array_create(CatspeakInstr.__SIZE__, undefined);
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_reader = gml_var_ref(instr["name"], "__read") %}
-{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name"]) %}
+{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
         __readerLookup[@ {{ instr_enum }}] = {{ instr_reader }};
 {% endfor %}
     }

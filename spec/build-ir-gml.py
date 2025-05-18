@@ -8,7 +8,7 @@ from pathlib import Path
 
 scripts = [
     "scr_catspeak_cartridge",
-    #"scr_catspeak_disassembler",
+    "scr_catspeak_disassembler",
     #"scr_catspeak_gengml",
 ]
 
@@ -20,7 +20,7 @@ env_interface = { "ir": ir }
 for func in common.JINJA2_FUNCS:
     env.globals[func.__name__] = func
 
-debug = True
+debug = False
 for script in scripts:
     script_path_src = f"spec/template/{script}.gml"
     script_path_dest = f"src-lts/scripts/{script}/{script}.gml"

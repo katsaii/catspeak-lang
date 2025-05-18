@@ -9,7 +9,12 @@
 
 //# feather use syntax-errors
 
-/// TODO
+/// Disassembles a supplied Catspeak cartridge into a string.
+///
+/// @warning
+///   This should only be used for debug purposes.
+///
+/// @returns {String}
 function catspeak_cart_disassemble(buff, offset = undefined) {
     static disassembler = new __CatspeakCartDisassembler();
     var buffStart = buffer_tell(buff);
@@ -21,7 +26,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var disassembly = disassembler.asmStr;
-    disassembler.asmStr = undefined;
+    disassembler.asmStr = "";
     buffer_seek(buff, buffer_seek_start, buffStart);
     return disassembly;
 }
@@ -29,38 +34,41 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
-    self.asmStr = undefined;
-    /// @ignore
-    self.indent = "\n  ";
+    asmStr = "";
 
     /// @ignore
-    static handleMeta = function (filepath_, global_) {
-        asmStr = ""
-        asmStr += "#[filepath=" + string(filepath_) + "]\n";
-        asmStr += "#[global=" + string(global_) + "]\n";
-        asmStr += "fun () do";
+    static handleFunc = function (idx, locals) {
+        // TODO
     };
 
     /// @ignore
-    static handleConstNumber = function (n, location) {
-        asmStr += indent + "get_n";
-        asmStr += "    " + string(n);
+    static handleMeta = function (idx, path, author) {
+        // TODO
     };
 
     /// @ignore
-    static handleConstBool = function (condition, location) {
-        asmStr += indent + "get_b";
-        asmStr += "    " + string(condition);
+    static handleInstrConstNumber = function (argN) {
+        asmStr += "  get_n";
+        asmStr += "  " + string(argN);
+        asmStr += "\n"
     };
 
     /// @ignore
-    static handleConstString = function (string_, location) {
-        asmStr += indent + "get_s";
-        asmStr += "    " + string(string_);
+    static handleInstrConstBool = function (argCondition) {
+        asmStr += "  get_b";
+        asmStr += "  " + string(argCondition);
+        asmStr += "\n"
     };
 
     /// @ignore
-    static handleReturn = function (location) {
-        asmStr += indent + "ret";
+    static handleInstrConstString = function (argString_) {
+        asmStr += "  get_s";
+        asmStr += "  " + string(argString_);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrReturn = function () {
+        asmStr += "  ret";
     };
 }
