@@ -160,10 +160,7 @@ function __catspeak_gml_exec_get_error(exec) {
 function __catspeak_instr_{{ case_snake(instr_name) }}__() {
     // {{ instr["desc"] }}
 {%  if "comptime" in instr %}
-{%   for stackarg in instr["stackargs"] %}
-    var {{ stackarg["name"] }} = self.{{ stackarg["name"] }}();
-{%   endfor %}
-    return {{ instr["comptime"] }};
+    return {{ gml_instr_get_comptime_vm(instr) }};
 {%  elif instr_name == "ret" %}
     var returnBox = __catspeak_gml_exec_get_return();
     returnBox[@ 0] = result();

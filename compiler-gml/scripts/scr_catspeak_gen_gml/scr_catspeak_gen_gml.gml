@@ -125,6 +125,22 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
+    static handleInstrIfThenElse = function (dbg) {
+        // unpack stack args in reverse order
+        var if_false = popValue();
+        var if_true = popValue();
+        var condition = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            condition : condition,
+            if_true : if_true,
+            if_false : if_false,
+        }, __catspeak_instr_ifte__);
+        pushValue(exec);
+    };
+
+    /// @ignore
     static handleInstrReturn = function (dbg) {
         // unpack stack args in reverse order
         var result = popValue();
@@ -133,6 +149,76 @@ function CatspeakCodegenGML() constructor {
             dbg : dbg,
             result : result,
         }, __catspeak_instr_ret__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrRemainder = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_rem__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrMultiply = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_mult__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrDivide = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_div__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrDivideInt = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_idiv__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrSubtract = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_sub__);
         pushValue(exec);
     };
 
@@ -147,6 +233,226 @@ function CatspeakCodegenGML() constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_add__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrEqual = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_eq__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrNotEqual = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_neq__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrGreaterThan = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_gt__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrGreaterThanOrEqualTo = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_geq__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrLessThan = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_lt__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrLessThanOrEqualTo = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_leq__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrNot = function (dbg) {
+        // unpack stack args in reverse order
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_not__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrAnd = function (dbg) {
+        // unpack stack args in reverse order
+        var lazy = popValue();
+        var eager = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            eager : eager,
+            lazy : lazy,
+        }, __catspeak_instr_and__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrOr = function (dbg) {
+        // unpack stack args in reverse order
+        var lazy = popValue();
+        var eager = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            eager : eager,
+            lazy : lazy,
+        }, __catspeak_instr_or__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrXor = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_xor__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseNot = function (dbg) {
+        // unpack stack args in reverse order
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_bnot__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseAnd = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_band__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseOr = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_bor__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseXor = function (dbg) {
+        // unpack stack args in reverse order
+        var rhs = popValue();
+        var lhs = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            lhs : lhs,
+            rhs : rhs,
+        }, __catspeak_instr_bxor__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseShiftRight = function (dbg) {
+        // unpack stack args in reverse order
+        var amount = popValue();
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            value : value,
+            amount : amount,
+        }, __catspeak_instr_rshift__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseShiftLeft = function (dbg) {
+        // unpack stack args in reverse order
+        var amount = popValue();
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            value : value,
+            amount : amount,
+        }, __catspeak_instr_lshift__);
         pushValue(exec);
     };
 }
@@ -194,6 +500,12 @@ function __catspeak_instr_get_s__() {
 }
 
 /// @ignore
+function __catspeak_instr_ifte__() {
+    // evaluates one of two expressions, depending on whether a condition is true or false
+    return condition() ? if_true() : if_false();
+}
+
+/// @ignore
 function __catspeak_instr_ret__() {
     // return a value from the current function
     var returnBox = __catspeak_gml_exec_get_return();
@@ -202,9 +514,133 @@ function __catspeak_instr_ret__() {
 }
 
 /// @ignore
+function __catspeak_instr_rem__() {
+    // calculate the remainder of two values
+    return lhs() % rhs();
+}
+
+/// @ignore
+function __catspeak_instr_mult__() {
+    // calculate the product of two values
+    return lhs() * rhs();
+}
+
+/// @ignore
+function __catspeak_instr_div__() {
+    // calculate the division of two values
+    return lhs() / rhs();
+}
+
+/// @ignore
+function __catspeak_instr_idiv__() {
+    // calculate the integer division of two values
+    return lhs() div rhs();
+}
+
+/// @ignore
+function __catspeak_instr_sub__() {
+    // calculate the difference of two values
+    return lhs() - rhs();
+}
+
+/// @ignore
 function __catspeak_instr_add__() {
     // calculate the sum of two values
-    var lhs = self.lhs();
-    var rhs = self.rhs();
-    return lhs + rhs;
+    return lhs() + rhs();
+}
+
+/// @ignore
+function __catspeak_instr_eq__() {
+    // check whether two values are equal
+    return lhs() == rhs();
+}
+
+/// @ignore
+function __catspeak_instr_neq__() {
+    // check whether two values are NOT equal
+    return lhs() != rhs();
+}
+
+/// @ignore
+function __catspeak_instr_gt__() {
+    // check whether a value is greater than another
+    return lhs() > rhs();
+}
+
+/// @ignore
+function __catspeak_instr_geq__() {
+    // check whether a value is greater than or equal to another
+    return lhs() >= rhs();
+}
+
+/// @ignore
+function __catspeak_instr_lt__() {
+    // check whether a value is less than another
+    return lhs() < rhs();
+}
+
+/// @ignore
+function __catspeak_instr_leq__() {
+    // check whether a value is less than or equal to another
+    return lhs() <= rhs();
+}
+
+/// @ignore
+function __catspeak_instr_not__() {
+    // calculate the logical negation of a value
+    return !value();
+}
+
+/// @ignore
+function __catspeak_instr_and__() {
+    // calculate the logical AND of two values
+    return eager() && lazy();
+}
+
+/// @ignore
+function __catspeak_instr_or__() {
+    // calculate the logical OR of two values
+    return eager() || lazy();
+}
+
+/// @ignore
+function __catspeak_instr_xor__() {
+    // calculate the logical XOR of two values
+    return lhs() ^^ rhs();
+}
+
+/// @ignore
+function __catspeak_instr_bnot__() {
+    // calculate the bitwise negation of a value
+    return ~value();
+}
+
+/// @ignore
+function __catspeak_instr_band__() {
+    // calculate the bitwise AND of two values
+    return lhs() & rhs();
+}
+
+/// @ignore
+function __catspeak_instr_bor__() {
+    // calculate the bitwise OR of two values
+    return lhs() | rhs();
+}
+
+/// @ignore
+function __catspeak_instr_bxor__() {
+    // calculate the bitwise XOR of two values
+    return lhs() ^ rhs();
+}
+
+/// @ignore
+function __catspeak_instr_rshift__() {
+    // calculate the bitwise right shift of two values
+    return value() >> amount();
+}
+
+/// @ignore
+function __catspeak_instr_lshift__() {
+    // calculate the bitwise left shift of two values
+    return value() << amount();
 }

@@ -31,7 +31,7 @@ enum CatspeakInstr {
     {{ instr_name }} = {{ instr_repr }},
 {% endfor %}
     /// @ignore
-    __SIZE__,
+    __SIZE__ = {{ max(map(util_op_index("repr"), ir["instr"])) + 1 }},
 }
 
 /// Handles the creation of Catspeak cartridges.
@@ -213,9 +213,6 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         {{ ir_assert_cart_exists("buff_") }}
 {%  for arg in instr["args"] %}
-{%   if "default" in arg %}
-        {{ arg["name"] }} ??= {{ arg["default"] }};
-{%   endif %}
         {{ ir_assert_type(arg["type"], arg["name"]) }}
 {%  endfor %}
         buffer_write(buff_, {{ instr_opcode_bufftype }}, {{ instr_enum }});

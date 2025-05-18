@@ -17,13 +17,22 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
     if (offset != undefined) {
         buffer_seek(buff, buffer_seek_start, offset);
     }
-    var reader = new CatspeakCartReader(buff, disassembler);
-    do {
-        var moreRemains = reader.readInstr();
-    } until (!moreRemains);
-    var disassembly = disassembler.asmStr;
-    disassembler.asmStr = undefined;
-    buffer_seek(buff, buffer_seek_start, buffStart);
+    var disassembly
+    try {
+        var reader = new CatspeakCartReader(buff, disassembler);
+        do {
+            var moreRemains = reader.readInstr();
+        } until (!moreRemains);
+        disassembly = disassembler.asmStr;
+    } catch (err_) {
+        __catspeak_error(
+            "failed to disassemble cartridge: ", err_.message, "\n",
+            "partial disassembly:\n", disassembler.asmStr
+        );
+    } finally {
+        disassembler.asmStr = undefined;
+        buffer_seek(buff, buffer_seek_start, buffStart);
+    }
     return disassembly;
 }
 

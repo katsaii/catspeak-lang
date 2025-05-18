@@ -198,13 +198,17 @@ TEST_EXPERIMENT "err" {
 TEST_EXPERIMENT "catspeak4" {
     var buff = buffer_create(1, buffer_grow, 1);
     var writer = new CatspeakCartWriter(buff);
+    writer.emitConstBool(false);
     writer.emitConstString("hello |");
     writer.emitConstString(" youtube");
     writer.emitAdd();
-    //writer.emitReturn();
+    writer.emitConstNumber(5);
+    writer.emitConstNumber(8);
+    writer.emitSubtract();
+    writer.emitIfThenElse();
     writer.finalise();
     buffer_seek(buff, buffer_seek_start, 0);
-    //show_message(catspeak_cart_disassemble(buff));
+    show_message(catspeak_cart_disassemble(buff));
     buffer_seek(buff, buffer_seek_start, 0);
     var codegen = new CatspeakCodegenGML();
     var reader = new CatspeakCartReader(buff, codegen);

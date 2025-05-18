@@ -23,13 +23,22 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
     if (offset != undefined) {
         buffer_seek(buff, buffer_seek_start, offset);
     }
-    var reader = new CatspeakCartReader(buff, disassembler);
-    do {
-        var moreRemains = reader.readInstr();
-    } until (!moreRemains);
-    var disassembly = disassembler.asmStr;
-    disassembler.asmStr = undefined;
-    buffer_seek(buff, buffer_seek_start, buffStart);
+    var disassembly
+    try {
+        var reader = new CatspeakCartReader(buff, disassembler);
+        do {
+            var moreRemains = reader.readInstr();
+        } until (!moreRemains);
+        disassembly = disassembler.asmStr;
+    } catch (err_) {
+        __catspeak_error(
+            "failed to disassemble cartridge: ", err_.message, "\n",
+            "partial disassembly:\n", disassembler.asmStr
+        );
+    } finally {
+        disassembler.asmStr = undefined;
+        buffer_seek(buff, buffer_seek_start, buffStart);
+    }
     return disassembly;
 }
 
@@ -76,14 +85,146 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrIfThenElse = function (dbg) {
+        asmStr += "  ifte";
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrReturn = function (dbg) {
         asmStr += "  ret";
         asmStr += "\n"
     };
 
     /// @ignore
+    static handleInstrRemainder = function (dbg) {
+        asmStr += "  rem";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrMultiply = function (dbg) {
+        asmStr += "  mult";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrDivide = function (dbg) {
+        asmStr += "  div";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrDivideInt = function (dbg) {
+        asmStr += "  idiv";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrSubtract = function (dbg) {
+        asmStr += "  sub";
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrAdd = function (dbg) {
         asmStr += "  add";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrEqual = function (dbg) {
+        asmStr += "  eq";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrNotEqual = function (dbg) {
+        asmStr += "  neq";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrGreaterThan = function (dbg) {
+        asmStr += "  gt";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrGreaterThanOrEqualTo = function (dbg) {
+        asmStr += "  geq";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrLessThan = function (dbg) {
+        asmStr += "  lt";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrLessThanOrEqualTo = function (dbg) {
+        asmStr += "  leq";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrNot = function (dbg) {
+        asmStr += "  not";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrAnd = function (dbg) {
+        asmStr += "  and";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrOr = function (dbg) {
+        asmStr += "  or";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrXor = function (dbg) {
+        asmStr += "  xor";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrBitwiseNot = function (dbg) {
+        asmStr += "  bnot";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrBitwiseAnd = function (dbg) {
+        asmStr += "  band";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrBitwiseOr = function (dbg) {
+        asmStr += "  bor";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrBitwiseXor = function (dbg) {
+        asmStr += "  bxor";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrBitwiseShiftRight = function (dbg) {
+        asmStr += "  rshift";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrBitwiseShiftLeft = function (dbg) {
+        asmStr += "  lshift";
         asmStr += "\n"
     };
 }

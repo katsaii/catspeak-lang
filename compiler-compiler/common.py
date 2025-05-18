@@ -11,7 +11,26 @@ from textwrap import dedent
 
 def file_load_yaml(path):
     with open(path, "r", encoding="utf-8") as file:
-        return yaml.safe_load(file)
+        ir_spec = yaml.safe_load(file)
+        # post-process
+        ir_commonargs = ir_spec.get("instr-commonargs") or []
+        ir_instrs = ir_spec.get("instr") or []
+        ir_instrs_seen_reprs = { }
+        for instr in ir_instrs:
+            # check all repr fields are unique
+            instr_repr = instr["repr"]
+            instr_name = instr["name"]
+            if instr_repr in ir_instrs_seen_reprs:
+                instr_name_conflict = ir_instrs_seen_reprs[instr_repr]
+                raise Exception(f"instruction '{instr_name}' and '{instr_name_conflict}' both have the same representation: {instr_repr}")
+            else:
+                ir_instrs_seen_reprs[instr_repr] = instr_name
+            # patch common args
+            if ir_commonargs:
+                if "args" not in instr:
+                    instr["args"] = []
+                instr["args"].extend(ir_commonargs)
+        return ir_spec
 
 def file_load(path):
     with open(path, "r", encoding="utf-8") as file:
@@ -41,7 +60,7 @@ def get_generated_header(*paths):
 # jinja library
 
 JINJA2_FUNCS = [
-    map
+    map, max, min,
 ]
 
 def jinja2_export(func):
@@ -186,6 +205,17 @@ def gml_func_args(args):
 @jinja2_export
 def gml_func_args_var_ref(args, prefix = "v"):
     return ", ".join(gml_var_ref(arg, prefix) for arg in args)
+
+@jinja2_export
+def gml_instr_get_comptime_vm(instr):
+    comptime_str = instr["comptime"]
+    for arg in (instr.get("args") or []):
+        arg_name = arg["name"]
+        comptime_str = comptime_str.replace(f"${arg_name}$", arg_name)
+    for arg in (instr.get("stackargs") or []):
+        arg_name = arg["name"]
+        comptime_str = comptime_str.replace(f"${arg_name}$", f"{arg_name}()")
+    return comptime_str
 
 @jinja2_export
 def util_enum(collection, idx):
