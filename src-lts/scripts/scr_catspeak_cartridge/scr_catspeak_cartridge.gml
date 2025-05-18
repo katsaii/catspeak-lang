@@ -23,6 +23,8 @@
 /// detail here.)
 /// 
 /// Each instruction may also be associated with zero or many static parameters.
+///
+/// @experimental
 enum CatspeakInstr {
     /// @ignore
     END_OF_PROGRAM = 0,
@@ -39,6 +41,8 @@ enum CatspeakInstr {
 }
 
 /// Handles the creation of Catspeak cartridges.
+///
+/// @experimental
 ///
 /// @param {Id.Buffer} buff_
 ///   The buffer to write the cartridge to. Must be a `buffer_grow` type buffer
@@ -156,47 +160,73 @@ function CatspeakCartWriter(buff_) constructor {
     ///
     /// @param {Real} n
     ///     The number to emit.
-    static emitConstNumber = function (n) {
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitConstNumber = function (n, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(n), "expected type of f64");
+        dbg ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_N);
         buffer_write(buff_, buffer_f64, n);
+        buffer_write(buff_, buffer_u32, dbg);
     };
 
     /// Push a boolean constant onto the stack.
     ///
     /// @param {Real} condition
     ///     The bool to emit.
-    static emitConstBool = function (condition) {
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the bool in the source code.
+    static emitConstBool = function (condition, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(condition), "expected type of u8");
+        dbg ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_B);
         buffer_write(buff_, buffer_u8, condition);
+        buffer_write(buff_, buffer_u32, dbg);
     };
 
     /// Push a string constant onto the stack.
     ///
     /// @param {String} string_
     ///     The string to emit.
-    static emitConstString = function (string_) {
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the string in the source code.
+    static emitConstString = function (string_, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_string(string_), "expected type of string");
+        dbg ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_S);
         buffer_write(buff_, buffer_string, string_);
+        buffer_write(buff_, buffer_u32, dbg);
     };
 
     /// Pop the top value off of the stack, and return it from the current function.
-    static emitReturn = function () {
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the `return` keyword in the source code.
+    static emitReturn = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        dbg ??= CATSPEAK_NOLOCATION;
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.RET);
+        buffer_write(buff_, buffer_u32, dbg);
     };
 }
 
 /// Handles the parsing of Catspeak cartridges.
+///
+/// @experimental
 ///
 /// @remark
 ///   Immediately reads and calls the handlers for the "data" section of the
@@ -302,26 +332,31 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     static __readConstNumber = function () {
         var buff_ = buff;
         var argN = buffer_read(buff_, buffer_f64);
-        visitor.handleInstrConstNumber(argN);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrConstNumber(argN, argDbg);
     };
 
     /// @ignore
     static __readConstBool = function () {
         var buff_ = buff;
         var argCondition = buffer_read(buff_, buffer_u8);
-        visitor.handleInstrConstBool(argCondition);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrConstBool(argCondition, argDbg);
     };
 
     /// @ignore
     static __readConstString = function () {
         var buff_ = buff;
         var argString_ = buffer_read(buff_, buffer_string);
-        visitor.handleInstrConstString(argString_);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrConstString(argString_, argDbg);
     };
 
     /// @ignore
     static __readReturn = function () {
-        visitor.handleInstrReturn();
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrReturn(argDbg);
     };
 
     /// @ignore

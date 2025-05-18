@@ -11,6 +11,8 @@
 
 /// Disassembles a supplied Catspeak cartridge into a string.
 ///
+/// @experimental
+///
 /// @warning
 ///   This should only be used for debug purposes.
 ///
@@ -47,28 +49,29 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleInstrConstNumber = function (argN) {
+    static handleInstrConstNumber = function (argN, argDbg) {
         asmStr += "  get_n";
         asmStr += "  " + string(argN);
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrConstBool = function (argCondition) {
+    static handleInstrConstBool = function (argCondition, argDbg) {
         asmStr += "  get_b";
         asmStr += "  " + string(argCondition);
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrConstString = function (argString_) {
+    static handleInstrConstString = function (argString_, argDbg) {
         asmStr += "  get_s";
         asmStr += "  " + string(argString_);
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrReturn = function () {
+    static handleInstrReturn = function (argDbg) {
         asmStr += "  ret";
+        asmStr += "\n"
     };
 }

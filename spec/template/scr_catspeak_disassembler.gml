@@ -57,10 +57,12 @@ function __CatspeakCartDisassembler() constructor {
     static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, "arg") }}) {
         asmStr += "  {{ instr_name }}";
 {% for arg in instr["args"] %}
-{%  set arg_name = gml_var_ref(arg["name"], "arg") %}
+{%  if arg["name"] != "dbg" %}
+{%   set arg_name = gml_var_ref(arg["name"], "arg") %}
         asmStr += "  " + string({{ arg_name }});
-        asmStr += "\n"
+{%  endif %}
 {% endfor %}
+        asmStr += "\n"
     };
 {% endfor %}
 }

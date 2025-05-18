@@ -31,14 +31,12 @@ chunk:
 
 # The program section contains the executable code, encoded in reverse-polish
 # notation. Each instruction is prefixed with an instruction opcode followed by
-# diagnostic information, and finally any operands associated with the
-# instruction.
+# any operands associated with the instruction.
 #
 # Although each instruction is of variable length, the complete program code
 # is null-terminated.
 
 instr-opcode: u8 #< The underlying type used for instruction opcodes.
-instr-dbg: u32   #< The approximate location of an instruction in the source code.
 instr:
 
 # - name: "example"                     #< The name of the instruction.
@@ -61,6 +59,10 @@ instr:
       - name: "n"
         desc: "the number to emit"
         type: f64
+      - name: "dbg"
+        desc: "the approximate location of the number in the source code"
+        type: u32
+        default: CATSPEAK_NOLOCATION
 
   - name: "const bool"
     name-short: "get_b"
@@ -70,6 +72,10 @@ instr:
       - name: "condition"
         desc: "the bool to emit"
         type: u8
+      - name: "dbg"
+        desc: "the approximate location of the bool in the source code"
+        type: u32
+        default: CATSPEAK_NOLOCATION
 
   - name: "const string"
     name-short: "get_s"
@@ -79,11 +85,20 @@ instr:
       - name: "string_"
         desc: "the string to emit"
         type: string
+      - name: "dbg"
+        desc: "the approximate location of the string in the source code"
+        type: u32
+        default: CATSPEAK_NOLOCATION
 
   - name: "return"
     name-short: "ret"
     desc: "pop the top value off of the stack, and return it from the current function"
     repr: 0x04
+    args:
+      - name: "dbg"
+        desc: "the approximate location of the `return` keyword in the source code"
+        type: u32
+        default: CATSPEAK_NOLOCATION
     stackargs:
       - name: "value"
         desc: "the value to return"
