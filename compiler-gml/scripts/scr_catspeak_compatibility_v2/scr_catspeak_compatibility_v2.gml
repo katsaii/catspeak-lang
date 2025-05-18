@@ -209,7 +209,7 @@ function catspeak_compile_string(src) {
 ///   The source code to convert into a buffer.
 ///
 /// @return {Id.Buffer}
-function catspeak_create_buffer_from_string(src) {
+function catspeak_create_buffer_from_string_v2(src) {
     __catspeak_error_deprecated("catspeak_create_buffer_from_string");
     var capacity = string_byte_length(src);
     var buff = buffer_create(capacity, buffer_fixed, 1);

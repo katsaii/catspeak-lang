@@ -195,18 +195,6 @@ function __catspeak_is_token(val) {
     );
 }
 
-/// @ignore
-///
-/// @param {String} src
-/// @return {Id.Buffer}
-function __catspeak_create_buffer_from_string(src) {
-    var capacity = string_byte_length(src);
-    var buff = buffer_create(capacity, buffer_fixed, 1);
-    buffer_write(buff, buffer_text, src);
-    buffer_seek(buff, buffer_seek_start, 0);
-    return buff;
-}
-
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses Catspeak.
 ///

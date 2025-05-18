@@ -82,8 +82,7 @@
 /// Indicates a lack of location in a source file.
 ///
 /// @return {Real}
-#macro CATSPEAK_NOLOCATION \
-        (__CATSPEAK_LOCATION_LINE_MASK | __CATSPEAK_LOCATION_COLUMN_MASK)
+#macro CATSPEAK_NOLOCATION 0
 
 /// When compiling programs, diagnostic information can be added into
 /// the generated IR. This information (such as the line and column numbers
@@ -125,9 +124,13 @@ function catspeak_location_create(line, column) {
     gml_pragma("forceinline");
     __catspeak_assert(is_numeric(line), "invalid line number");
     __catspeak_assert(is_numeric(column), "invalid column number");
-    var bitsRow = clamp(line, 0, __CATSPEAK_LOCATION_LINE_MASK);
-    var bitsCol = clamp(column, 0, __CATSPEAK_LOCATION_COLUMN_MASK >> 20) << 20;
-    return bitsRow | bitsCol;
+    if (line < 0 || line > __CATSPEAK_LOCATION_LINE_MASK) {
+        return CATSPEAK_NOLOCATION;
+    }
+    if (column < 0 || column > (__CATSPEAK_LOCATION_COLUMN_MASK >> 20)) {
+        return CATSPEAK_NOLOCATION;
+    }
+    return line | (column << 20);
 }
 
 /// Gets the line component of a Catspeak source location. This is stored as a
@@ -193,14 +196,14 @@ function catspeak_location_get_column(location) {
 ///   at the given path does not need to exist.
 ///
 /// @returns {String}
-function catspeak_location_show(location, filepath) {
+function catspeak_location_show(location = CATSPEAK_NOLOCATION, filepath = "") {
     var msg = "in ";
-    if (filepath != undefined && filepath != "") {
+    if (filepath != "") {
         msg += string(filepath);
     } else {
         msg += "a file";
     }
-    if (location != undefined && location != CATSPEAK_NOLOCATION) {
+    if (location != CATSPEAK_NOLOCATION) {
         msg += " at (line " + string(catspeak_location_get_row(location));
         msg += ", column " + string(catspeak_location_get_column(location)) + ")";
     }

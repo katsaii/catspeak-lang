@@ -43,9 +43,8 @@ enum CatspeakInstr {
 ///   with an alignment of 1.
 function CatspeakCartWriter(buff_) constructor {
     __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
-    __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_),
-        "Catspeak cartridges require a grow buffer (buffer_grow)"
-    );
+    __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_), "requires a grow buffer (buffer_grow)");
+    __catspeak_assert_eq(1, buffer_get_alignment(buff_), "requires a buffer with alignment 1");
     {{ gml_chunk_head("buff_") }}
 {% for head_name, head in ir_enumerate(ir, "head") %}
 {%  set head_bufftype = gml_type_buffer(head["type"]) %}
@@ -241,6 +240,7 @@ function CatspeakCartWriter(buff_) constructor {
 ///   - TODO
 function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert_eq(1, buffer_get_alignment(buff_), "require a buffer with alignment 1");
     __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set name_handler = gml_var_ref(instr["name"], "handleInstr") %}

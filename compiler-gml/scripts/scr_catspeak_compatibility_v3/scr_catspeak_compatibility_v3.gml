@@ -29,6 +29,17 @@
 #macro CATSPEAK_DEBUG_MODE true
 
 /// @ignore
+///
+/// @deprecated {4.0.0}
+///
+/// @param {String} src
+/// @return {Id.Buffer}
+function __catspeak_create_buffer_from_string(src) {
+    return catspeak_util_buffer_create_from_string(src);
+}
+
+/// @ignore
+///
 /// @deprecated {4.0.0}
 function __catspeak_location_show(location, filepath) {
     gml_pragma("forceinline");
@@ -36,6 +47,7 @@ function __catspeak_location_show(location, filepath) {
 }
 
 /// @ignore
+///
 /// @deprecated {4.0.0}
 function __catspeak_location_show_ext(location, filepath) {
     var msg = __catspeak_location_show(location, filepath);
@@ -95,9 +107,9 @@ function catspeak_collect() {
 /// to be collected as well. Once "owner" gets collected by the garbage
 /// collector, any resources it owns will eventually get collected as well.
 ///
-/// @deprecated {4.0.0}
-///
 /// @ignore
+///
+/// @deprecated {4.0.0}
 ///
 /// @param {Struct} owner
 /// @param {Struct} adapter

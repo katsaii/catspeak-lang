@@ -1,4 +1,3 @@
-
 function CatspeakCtx() constructor {
     self.parserType = undefined;
     self.codegenType = undefined;
