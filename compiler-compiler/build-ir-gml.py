@@ -12,7 +12,7 @@ scripts = [
     "scr_catspeak_gen_gml",
 ]
 
-ir_path = "spec/def-catspeak-ir.yaml"
+ir_path = "compiler-compiler/def-catspeak-ir.yaml"
 ir = common.file_load_yaml(ir_path)
 
 env = jinja2.Environment(trim_blocks=True, lstrip_blocks=True) #autoescape=True
@@ -22,8 +22,8 @@ for func in common.JINJA2_FUNCS:
 
 debug = False
 for script in scripts:
-    script_path_src = f"spec/template/{script}.gml"
-    script_path_dest = f"src-lts/scripts/{script}/{script}.gml"
+    script_path_src = f"compiler-compiler/template/{script}.gml"
+    script_path_dest = f"compiler-gml/scripts/{script}/{script}.gml"
     temp_header = common.get_generated_header(
         ir_path, __file__, script_path_src
     )

@@ -4,11 +4,11 @@ import catlog.catlog as cl
 from pathlib import Path
 
 def parse_gml_module(name):
-    fullpath = name if Path(name).is_file() else f"./src-lts/scripts/{name}/{name}.gml"
+    fullpath = name if Path(name).is_file() else f"./compiler-gml/scripts/{name}/{name}.gml"
     return cl.gml.parse_module(fullpath)
 
 def parse_md_chapter(name):
-    fullpath = name if Path(name).is_file() else f"./src-lts/notes/{name}/{name}.txt"
+    fullpath = name if Path(name).is_file() else f"./compiler-gml/notes/{name}/{name}.txt"
     return cl.md.parse_chapter(fullpath)
 
 init_module = parse_gml_module("scr_catspeak_init")

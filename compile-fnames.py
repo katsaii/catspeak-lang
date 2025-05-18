@@ -121,7 +121,7 @@ for (symbol, (flags, owners)) in fnames_symbols.items():
     fnames_complete_symbols.append((symbol, flags))
 
 # write to GML file
-CODEGEN_PATH = Path("src-lts/scripts/__scr_catspeak_gml_interface/__scr_catspeak_gml_interface.gml")
+CODEGEN_PATH = Path("compiler-gml/scripts/__scr_catspeak_gml_interface/__scr_catspeak_gml_interface.gml")
 if not CODEGEN_PATH.parent.exists():
     os.makedirs(CODEGEN_PATH.parent)
 with open(CODEGEN_PATH, "w", encoding="utf-8") as file:

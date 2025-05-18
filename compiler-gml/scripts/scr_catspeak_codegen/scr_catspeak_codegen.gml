@@ -46,12 +46,6 @@ function is_catspeak(value) {
     return string_starts_with(scrName, "__catspeak_");
 }
 
-/// The number of microseconds before a Catspeak program times out. The
-/// default is 1 second.
-///
-/// @return {Real}
-#macro CATSPEAK_TIMEOUT 1000
-
 /// @ignore
 ///
 /// @param {Real} t

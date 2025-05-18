@@ -15,7 +15,7 @@ For more information, read the guidelines supplied by [GitHub](https://docs.gith
 
 If you want to test the project on another version, call either the
 `./copy-project.bat` or `./copy-project.sh` command. This will duplicate the
-`src-lts` directory onto the `./bin` folder, allowing you to make destructive
+`compiler-gml` directory onto the `./bin` folder, allowing you to make destructive
 changes to the source code without the GameMaker IDE freaking out and modifying
 all of the project `.yy` and `.yyp` files.
 

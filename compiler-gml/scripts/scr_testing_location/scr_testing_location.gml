@@ -19,6 +19,8 @@ test_add(function () : Test("location-3") constructor {
     assertEq(4096 - 1, catspeak_location_get_column(pos));
 });
 
+// location exceptions are no longer a thing, they should now default to `CATSPEAK_NOLOCATION`
+/*
 test_add(function () : Test("location-negative-row") constructor {
     if (!CATSPEAK_DEBUG_MODE) {
         return;
@@ -66,3 +68,4 @@ test_add(function () : Test("location-negative-column-2") constructor {
     }
     fail("expected to error when the column number is < 0");
 }, IgnorePlatform.HTML5);
+*/

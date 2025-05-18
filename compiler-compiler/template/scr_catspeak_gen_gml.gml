@@ -1,12 +1,12 @@
-// AUTO GENERATED, DO NOT MODIFY THIS FILE
-// see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/def-catspeak-ir.yaml
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_gen_gml.gml
-
 //! TODO
 
 //# feather use syntax-errors
+
+/// The number of microseconds before a Catspeak program times out. The
+/// default is 1 second.
+///
+/// @return {Real}
+#macro CATSPEAK_TIMEOUT 1000
 
 /// TODO
 function CatspeakCodegenGML() constructor {
@@ -58,20 +58,33 @@ function CatspeakCodegenGML() constructor {
         ctx = undefined;
         inProgress = false;
     };
+{% for section_name, section in ir_enumerate(ir, "data") %}
+{%  set section_handler = gml_var_ref(section_name, "handle") %}
 
     /// @ignore
-    static handleFunc = function (idx, locals) {
+{%  if section_name == "func" %}
+{%   set funcvar_args = map(fn_field(0), ir_enumerate(ir["data"], "func")) %}
+    static {{ section_handler }} = function (idx, {{ gml_func_args_var_ref(funcvar_args, None) }}) {
         funcData[@ idx] = {
-            locals : locals
+{%   for arg_name, _ in ir_enumerate(ir["data"], "func") %}
+{%    set arg_varname = gml_var_ref(arg_name, None) %}
+            {{ arg_varname }} : {{ arg_varname }}
+{%   endfor %}
         };
     };
-
-    /// @ignore
-    static handleMeta = function (path, author) {
+{%  endif %}
+{%  if section_name == "meta" %}
+{%   set metavar_args = map(fn_field(0), ir_enumerate(ir["data"], "meta")) %}
+    static {{ section_handler }} = function ({{ gml_func_args_var_ref(metavar_args, None) }}) {
         var ctx_ = ctx;
-        ctx_.metaPath = path;
-        ctx_.metaAuthor = author;
+{%   for meta_name, _ in ir_enumerate(ir["data"], "meta") %}
+{%    set meta_varname = gml_var_ref(meta_name, "meta") %}
+{%    set meta_argname = gml_var_ref(meta_name, None) %}
+        ctx_.{{ meta_varname }} = {{ meta_argname }};
+{%   endfor %}
     };
+{%  endif %}
+{% endfor %}
 
     /// @ignore
     static pushValue = function (v) {
@@ -87,62 +100,34 @@ function CatspeakCodegenGML() constructor {
         stackTop -= 1;
         return v;
     };
+{% for _, instr in ir_enumerate(ir, "instr") %}
+{%  set instr_handler = gml_var_ref(instr["name"], "handleInstr") %}
+{%  set instr_name = instr['name-short'] or instr['name'] %}
+{%  set instrarg_args = map(fn_field("name"), instr["args"]) %}
 
     /// @ignore
-    static handleInstrConstNumber = function (value, dbg) {
-        var exec = method({
-            ctx : ctx,
-            value : value,
-            dbg : dbg,
-        }, __catspeak_instr_get_n__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrConstBool = function (value, dbg) {
-        var exec = method({
-            ctx : ctx,
-            value : value,
-            dbg : dbg,
-        }, __catspeak_instr_get_b__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrConstString = function (value, dbg) {
-        var exec = method({
-            ctx : ctx,
-            value : value,
-            dbg : dbg,
-        }, __catspeak_instr_get_s__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrReturn = function (dbg) {
+    static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, None) }}) {
+{% if instr["stackargs"] %}
         // unpack stack args in reverse order
-        var result = popValue();
+{%  for stackarg in instr["stackargs"][::-1] %}
+{%   set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+        var {{ stackarg_name }} = popValue();
+{%  endfor %}
+{% endif %}
         var exec = method({
             ctx : ctx,
-            dbg : dbg,
-            result : result,
-        }, __catspeak_instr_ret__);
+{% for arg in instr["args"] %}
+{%  set arg_name = gml_var_ref(arg["name"], None) %}
+            {{ arg_name }} : {{ arg_name }},
+{% endfor %}
+{% for stackarg in instr["stackargs"] %}
+{%  set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+            {{ stackarg_name }} : {{ stackarg_name }},
+{% endfor %}
+        }, __catspeak_instr_{{ case_snake(instr_name) }}__);
         pushValue(exec);
     };
-
-    /// @ignore
-    static handleInstrAdd = function (dbg) {
-        // unpack stack args in reverse order
-        var rhs = popValue();
-        var lhs = popValue();
-        var exec = method({
-            ctx : ctx,
-            dbg : dbg,
-            lhs : lhs,
-            rhs : rhs,
-        }, __catspeak_instr_add__);
-        pushValue(exec);
-    };
+{% endfor %}
 }
 
 /// @ignore
@@ -168,37 +153,23 @@ function __catspeak_gml_exec_get_error(exec) {
     var closure_ = method_get_self(exec);
     return catspeak_location_show(closure_[$ "dbg"], closure_.ctx[$ "filename"]);
 }
+{% for _, instr in ir_enumerate(ir, "instr") %}
+{%  set instr_name = instr['name-short'] or instr['name'] %}
 
 /// @ignore
-function __catspeak_instr_get_n__() {
-    // get a numeric constant
-    return value;
-}
-
-/// @ignore
-function __catspeak_instr_get_b__() {
-    // get a boolean constant
-    return value;
-}
-
-/// @ignore
-function __catspeak_instr_get_s__() {
-    // get a string constant
-    return value;
-}
-
-/// @ignore
-function __catspeak_instr_ret__() {
-    // return a value from the current function
+function __catspeak_instr_{{ case_snake(instr_name) }}__() {
+    // {{ instr["desc"] }}
+{%  if "comptime" in instr %}
+{%   for stackarg in instr["stackargs"] %}
+    var {{ stackarg["name"] }} = self.{{ stackarg["name"] }}();
+{%   endfor %}
+    return {{ instr["comptime"] }};
+{%  elif instr_name == "ret" %}
     var returnBox = __catspeak_gml_exec_get_return();
     returnBox[@ 0] = result();
     throw returnBox;
+{%  else %}
+    // TODO
+{%  endif %}
 }
-
-/// @ignore
-function __catspeak_instr_add__() {
-    // calculate the sum of two values
-    var lhs = self.lhs();
-    var rhs = self.rhs();
-    return lhs + rhs;
-}
+{% endfor %}

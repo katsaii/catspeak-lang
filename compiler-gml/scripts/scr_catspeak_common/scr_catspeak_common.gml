@@ -1,3 +1,68 @@
+//! ```txt
+//!      _             _                                                       
+//!     |  `.       .'  |                   _                             _    
+//!     |    \_..._/    |                  | |                           | |   
+//!    /    _       _    \     |\_/|  __ _ | |_  ___  _ __    ___   __ _ | | __
+//! `-|    / \     / \    |-'  / __| / _` || __|/ __|| '_ \  / _ \ / _` || |/ /
+//! --|    | |     | |    |-- | (__ | (_| || |_ \__ \| |_) ||  __/| (_| ||   < 
+//!  .'\   \_/ _._ \_/   /`.   \___| \__,_| \__||___/| .__/  \___| \__,_||_|\_\
+//!     `~..______    .~'                       _____| |   by: katsaii         
+//!               `.  |                        / ._____/ logo: mashmerlow      
+//!                 `.|                        \_)                             
+//! ```
+//!
+//! Catspeak is the spiritual successor to the long dead `execute_string`
+//! function from GameMaker 8.1, but on overdrive.
+//!
+//! Use the built-in Catspeak scripting language to expose **safe** and
+//! **sandboxed** modding APIs within GameMaker projects, or bootstrap your own
+//! domain-specific languages and development tools using the back-end code
+//! generation tools offered by Catspeak.
+//!
+//! This top-level module contains common metadata and utility functions used
+//! throughout the Catspeak codebase.
+//!
+//! @example
+//!   Compile performant scripts from plain-text...
+//!   ```gml
+//!   // run Catspeak code
+//!   var globals = Catspeak.run(@'
+//!     get_message = fun () {
+//!       let catspeak = "Catspeak"
+//!
+//!       return "hello! from within " + catspeak
+//!     }
+//!   ');
+//!
+//!   // call Catspeak code directly from GML!
+//!   show_message(globals.get_message());
+//!   ```
+//!   ...**without** giving modders unrestricted access to your sensitive game
+//!   code:
+//!   ```gml
+//!   var cartridge = Catspeak.build(@'
+//!     game_end(); -- heheheh, my mod will make your game close >:3
+//!   ');
+//!
+//!   // calling `badMod` will throw an error instead
+//!   // of calling the `game_end` function
+//!   try {
+//!     Catspeak.run(cartridge);
+//!   } catch (e) {
+//!     show_message("a mod did something bad!");
+//!   }
+//!   ```
+
+//# feather use syntax-errors
+
+/// The Catspeak runtime version, as a string, in the
+/// [MAJOR.MINOR.PATCH](https://semver.org/) format.
+///
+/// Updated before every new release.
+///
+/// @return {String}
+#macro CATSPEAK_VERSION "3.3.0"
+
 #region LOCATION
 
 /// 0b00000000000011111111111111111111
@@ -44,11 +109,11 @@
 ///
 /// @remark
 ///   Because of this, the maximum line number is 1,048,576 and the maximum
-///   column number is 4,096. Any line/column counts beyond this will raise
-///   an exception in debug mode, and just be garbage data in release mode.
+///   column number is 4,096. Any line/column counts beyond this will 
+///   be truncated to `CATSPEAK_NOLOCATION`
 ///
-/// @param {Real} row
-///   The row number of the source location.
+/// @param {Real} line
+///   The line number of the source location.
 ///
 /// @param {Real} column
 ///   The column number of the source location. This is the number of
@@ -56,12 +121,12 @@
 ///   tabs are considered a single column, not 2, 4, 8, etc. columns.
 ///
 /// @return {Real}
-function catspeak_location_create(row, column) {
+function catspeak_location_create(line, column) {
     gml_pragma("forceinline");
-    __catspeak_check_arg_size_bits("row", row, 20);
-    __catspeak_check_arg_size_bits("column", column, 12);
-    var bitsRow = row & __CATSPEAK_LOCATION_LINE_MASK;
-    var bitsCol = (column << 20) & __CATSPEAK_LOCATION_COLUMN_MASK;
+    __catspeak_assert(is_numeric(line), "invalid line number");
+    __catspeak_assert(is_numeric(column), "invalid column number");
+    var bitsRow = clamp(line, 0, __CATSPEAK_LOCATION_LINE_MASK);
+    var bitsCol = clamp(column, 0, __CATSPEAK_LOCATION_COLUMN_MASK >> 20) << 20;
     return bitsRow | bitsCol;
 }
 
@@ -76,7 +141,7 @@ function catspeak_location_create(row, column) {
 /// @returns {Real}
 function catspeak_location_get_line(location) {
     gml_pragma("forceinline");
-    __catspeak_check_arg_size_bits("location", location, 32);
+    __catspeak_assert(is_numeric(location), "invalid location");
     return location & __CATSPEAK_LOCATION_LINE_MASK;
 }
 
@@ -91,7 +156,7 @@ function catspeak_location_get_line(location) {
 /// @returns {Real}
 function catspeak_location_get_column(location) {
     gml_pragma("forceinline");
-    __catspeak_check_arg_size_bits("location", location, 32);
+    __catspeak_assert(is_numeric(location), "invalid location");
     return (location & __CATSPEAK_LOCATION_COLUMN_MASK) >> 20;
 }
 
