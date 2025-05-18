@@ -14,6 +14,24 @@ scripts = [
 
 ir_path = "compiler-compiler/def-catspeak-ir.yaml"
 ir = common.file_load_yaml(ir_path)
+# post-process
+ir_commonargs = ir.get("instr-commonargs") or []
+ir_instrs = ir.get("instr") or []
+ir_instrs_seen_reprs = { }
+for instr in ir_instrs:
+    # check all repr fields are unique
+    instr_repr = instr["repr"]
+    instr_name = instr["name"]
+    if instr_repr in ir_instrs_seen_reprs:
+        instr_name_conflict = ir_instrs_seen_reprs[instr_repr]
+        raise Exception(f"instruction '{instr_name}' and '{instr_name_conflict}' both have the same representation: {instr_repr}")
+    else:
+        ir_instrs_seen_reprs[instr_repr] = instr_name
+    # patch common args
+    if ir_commonargs:
+        if "args" not in instr:
+            instr["args"] = []
+        instr["args"].extend(ir_commonargs)
 
 env = jinja2.Environment(trim_blocks=True, lstrip_blocks=True) #autoescape=True
 env_interface = { "ir": ir }

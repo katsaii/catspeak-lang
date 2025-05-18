@@ -11,26 +11,7 @@ from textwrap import dedent
 
 def file_load_yaml(path):
     with open(path, "r", encoding="utf-8") as file:
-        ir_spec = yaml.safe_load(file)
-        # post-process
-        ir_commonargs = ir_spec.get("instr-commonargs") or []
-        ir_instrs = ir_spec.get("instr") or []
-        ir_instrs_seen_reprs = { }
-        for instr in ir_instrs:
-            # check all repr fields are unique
-            instr_repr = instr["repr"]
-            instr_name = instr["name"]
-            if instr_repr in ir_instrs_seen_reprs:
-                instr_name_conflict = ir_instrs_seen_reprs[instr_repr]
-                raise Exception(f"instruction '{instr_name}' and '{instr_name_conflict}' both have the same representation: {instr_repr}")
-            else:
-                ir_instrs_seen_reprs[instr_repr] = instr_name
-            # patch common args
-            if ir_commonargs:
-                if "args" not in instr:
-                    instr["args"] = []
-                instr["args"].extend(ir_commonargs)
-        return ir_spec
+        return yaml.safe_load(file)
 
 def file_load(path):
     with open(path, "r", encoding="utf-8") as file:

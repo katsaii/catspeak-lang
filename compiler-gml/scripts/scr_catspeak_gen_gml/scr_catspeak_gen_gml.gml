@@ -56,6 +56,7 @@ function CatspeakCodegenGML() constructor {
             callee_ : undefined, // current function
             self_ : undefined,
             other_ : undefined,
+            entry : undefined,
         };
     };
 
