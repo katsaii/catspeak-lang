@@ -2,7 +2,7 @@
 // see:
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/def-catspeak-ir.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_gengml.gml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_gen_gml.gml
 
 //! TODO
 

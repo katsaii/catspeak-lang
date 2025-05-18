@@ -2,7 +2,7 @@
 // see:
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/def-catspeak-ir.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/spec/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_cartridge.gml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/spec/template/scr_catspeak_cart.gml
 
 //! Responsible for the reading and writing of Catspeak IR (Intermediate
 //! Representation). Catspeak IR is a binary format that can be saved
