@@ -130,12 +130,12 @@ function catspeak_location_get_column(location) {
 /// @returns {String}
 function catspeak_location_show(location, filepath) {
     var msg = "in ";
-    if (filepath != undefined) {
+    if (filepath != undefined && filepath != "") {
         msg += string(filepath);
     } else {
         msg += "a file";
     }
-    if (location != undefined) {
+    if (location != undefined && location != CATSPEAK_NOLOCATION) {
         msg += " at (line " + string(catspeak_location_get_row(location));
         msg += ", column " + string(catspeak_location_get_column(location)) + ")";
     }

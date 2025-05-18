@@ -257,6 +257,12 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         "visitor is missing a handler for '{{ name_handler }}'"
     );
 {% endfor %}
+    __catspeak_assert(is_method(visitor_[$ "handleInit"]),
+        "visitor is missing a handler for 'handleInit'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleDeinit"]),
+        "visitor is missing a handler for 'handleDeinit'"
+    );
     {{ gml_chunk_head("buff_") }}
     var failedMessage = undefined;
     try {
@@ -273,6 +279,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     if (failedMessage != undefined) {
         __catspeak_error(failedMessage);
     }
+    visitor_.handleInit();
 {% for chunk_name, chunk_type in ir_enumerate(ir, "chunk") %}
 {%  set chunk_ref = gml_chunk_ref(chunk_name) %}
 {%  set chunk_bufftype = gml_type_buffer(chunk_type) %}
@@ -334,6 +341,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
             // we've reached the end
             buff = undefined;
             {{ gml_chunk_seek(ir, "end", "buff_") }}
+            visitor.handleDeinit();
             return false;
         }
         __catspeak_assert(instrType >= 0 && instrType < CatspeakInstr.__SIZE__,

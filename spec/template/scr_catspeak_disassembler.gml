@@ -22,7 +22,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var disassembly = disassembler.asmStr;
-    disassembler.asmStr = "";
+    disassembler.asmStr = undefined;
     buffer_seek(buff, buffer_seek_start, buffStart);
     return disassembly;
 }
@@ -30,7 +30,13 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
-    asmStr = "";
+    static handleInit = function () {
+        /// @ignore
+        asmStr = "";
+    };
+
+    /// @ignore
+    static handleDeinit = function () { };
 {% for section_name, section in ir_enumerate(ir, "data") %}
 {%  set section_handler = gml_var_ref(section_name, "handle") %}
 
@@ -43,7 +49,7 @@ function __CatspeakCartDisassembler() constructor {
 {%  endif %}
 {%  if section_name == "meta" %}
 {%   set metavar_args = map(fn_field(0), ir_enumerate(ir["data"], "meta")) %}
-    static {{ section_handler }} = function (idx, {{ gml_func_args_var_ref(metavar_args, None) }}) {
+    static {{ section_handler }} = function ({{ gml_func_args_var_ref(metavar_args, None) }}) {
         // TODO
     };
 {%  endif %}
@@ -54,11 +60,11 @@ function __CatspeakCartDisassembler() constructor {
 {%  set instrarg_args = map(fn_field("name"), instr["args"]) %}
 
     /// @ignore
-    static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, "arg") }}) {
+    static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, None) }}) {
         asmStr += "  {{ instr_name }}";
 {% for arg in instr["args"] %}
 {%  if arg["name"] != "dbg" %}
-{%   set arg_name = gml_var_ref(arg["name"], "arg") %}
+{%   set arg_name = gml_var_ref(arg["name"], None) %}
         asmStr += "  " + string({{ arg_name }});
 {%  endif %}
 {% endfor %}

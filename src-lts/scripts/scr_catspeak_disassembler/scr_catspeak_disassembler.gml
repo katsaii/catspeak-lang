@@ -28,7 +28,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var disassembly = disassembler.asmStr;
-    disassembler.asmStr = "";
+    disassembler.asmStr = undefined;
     buffer_seek(buff, buffer_seek_start, buffStart);
     return disassembly;
 }
@@ -36,7 +36,13 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
-    asmStr = "";
+    static handleInit = function () {
+        /// @ignore
+        asmStr = "";
+    };
+
+    /// @ignore
+    static handleDeinit = function () { };
 
     /// @ignore
     static handleFunc = function (idx, locals) {
@@ -44,34 +50,40 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleMeta = function (idx, path, author) {
+    static handleMeta = function (path, author) {
         // TODO
     };
 
     /// @ignore
-    static handleInstrConstNumber = function (argN, argDbg) {
+    static handleInstrConstNumber = function (value, dbg) {
         asmStr += "  get_n";
-        asmStr += "  " + string(argN);
+        asmStr += "  " + string(value);
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrConstBool = function (argCondition, argDbg) {
+    static handleInstrConstBool = function (value, dbg) {
         asmStr += "  get_b";
-        asmStr += "  " + string(argCondition);
+        asmStr += "  " + string(value);
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrConstString = function (argString_, argDbg) {
+    static handleInstrConstString = function (value, dbg) {
         asmStr += "  get_s";
-        asmStr += "  " + string(argString_);
+        asmStr += "  " + string(value);
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrReturn = function (argDbg) {
+    static handleInstrReturn = function (dbg) {
         asmStr += "  ret";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrAdd = function (dbg) {
+        asmStr += "  add";
         asmStr += "\n"
     };
 }

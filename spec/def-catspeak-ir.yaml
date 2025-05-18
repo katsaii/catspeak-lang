@@ -8,7 +8,7 @@ head-order: [signal, title, version]
 head:
   signal:
     value-unfinished: 0x5B7859 #< The colour of Forest, if you know you know.
-    value: 0xC7544E            #< The colour of Wanda, if you know you know.
+    value: 0xC7544E            #< The colour of Wanda,  if you know you know.
     type: u32
   title:
     value: "CATSPEAK CART"
@@ -49,50 +49,57 @@ instr:
 #       type: u8                                    #< Operand type.
 #   stackargs:
 #     - name: "m" #< Pop value off the stack, and associate it with a name.
-#       desc: "the number of additional hoops to jump through" 
+#       desc: "the number of additional hoops to jump through"
+#   simple: true
 
   - name: "const number"
     name-short: "get_n"
-    desc: "push a numeric constant onto the stack"
+    desc: "get a numeric constant"
     repr: 0x01
     args:
-      - name: "n"
+      - name: "value"
         desc: "the number to emit"
         type: f64
       - name: "dbg"
         desc: "the approximate location of the number in the source code"
         type: u32
         default: CATSPEAK_NOLOCATION
+    simple: true
+    comptime: value
 
   - name: "const bool"
     name-short: "get_b"
-    desc: "push a boolean constant onto the stack"
+    desc: "get a boolean constant"
     repr: 0x02
     args:
-      - name: "condition"
+      - name: "value"
         desc: "the bool to emit"
         type: u8
       - name: "dbg"
         desc: "the approximate location of the bool in the source code"
         type: u32
         default: CATSPEAK_NOLOCATION
+    simple: true
+    comptime: value
 
   - name: "const string"
     name-short: "get_s"
-    desc: "push a string constant onto the stack"
+    desc: "get a string constant"
     repr: 0x03
     args:
-      - name: "string_"
+      - name: "value"
         desc: "the string to emit"
         type: string
       - name: "dbg"
         desc: "the approximate location of the string in the source code"
         type: u32
         default: CATSPEAK_NOLOCATION
+    simple: true
+    comptime: value
 
   - name: "return"
     name-short: "ret"
-    desc: "pop the top value off of the stack, and return it from the current function"
+    desc: "return a value from the current function"
     repr: 0x04
     args:
       - name: "dbg"
@@ -100,8 +107,24 @@ instr:
         type: u32
         default: CATSPEAK_NOLOCATION
     stackargs:
-      - name: "value"
+      - name: "result"
         desc: "the value to return"
+
+  - name: "add"
+    desc: "calculate the sum of two values"
+    repr: 0x04
+    args:
+      - name: "dbg"
+        desc: "the approximate location of the expression in the source code"
+        type: u32
+        default: CATSPEAK_NOLOCATION
+    stackargs:
+      - name: "lhs"
+        desc: "the left-hand-side value of the sum"
+      - name: "rhs"
+        desc: "the right-hand-side value of the sum"
+    simple: true
+    comptime: lhs + rhs
 
 # The data section stores a variety of information. Most importantly, it stores
 # information about the main function (and function literals), such as how
