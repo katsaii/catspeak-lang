@@ -97,6 +97,24 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrBreak = function (dbg) {
+        asmStr += "  brk";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrContinue = function (dbg) {
+        asmStr += "  cont";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrThrow = function (dbg) {
+        asmStr += "  thrw";
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrRemainder = function (dbg) {
         asmStr += "  rem";
         asmStr += "\n"
@@ -127,8 +145,20 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrNegative = function (dbg) {
+        asmStr += "  neg";
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrAdd = function (dbg) {
         asmStr += "  add";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrPositive = function (dbg) {
+        asmStr += "  pos";
         asmStr += "\n"
     };
 

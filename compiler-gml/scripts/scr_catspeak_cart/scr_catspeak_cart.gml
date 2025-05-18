@@ -38,6 +38,12 @@ enum CatspeakInstr {
     IFTE = 28,
     /// Return a value from the current function.
     RET = 4,
+    /// Break out of the current loop, returning a value as the result of the loop.
+    BRK = 29,
+    /// Continue to the next iteration of the current loop.
+    CONT = 30,
+    /// Throw a value as an exception.
+    THRW = 31,
     /// Calculate the remainder of two values.
     REM = 6,
     /// Calculate the product of two values.
@@ -48,8 +54,12 @@ enum CatspeakInstr {
     IDIV = 9,
     /// Calculate the difference of two values.
     SUB = 10,
+    /// Calculate the negative of a value.
+    NEG = 32,
     /// Calculate the sum of two values.
     ADD = 5,
+    /// Calculate the positive of a value.
+    POS = 33,
     /// Check whether two values are equal.
     EQ = 11,
     /// Check whether two values are NOT equal.
@@ -83,7 +93,7 @@ enum CatspeakInstr {
     /// Calculate the bitwise left shift of two values.
     LSHIFT = 26,
     /// @ignore
-    __SIZE__ = 29,
+    __SIZE__ = 34,
 }
 
 /// Handles the creation of Catspeak cartridges.
@@ -277,6 +287,42 @@ function CatspeakCartWriter(buff_) constructor {
         buffer_write(buff_, buffer_u32, dbg);
     };
 
+    /// Break out of the current loop, returning a value as the result of the loop.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitBreak = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.BRK);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Continue to the next iteration of the current loop.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitContinue = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.CONT);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Throw a value as an exception.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitThrow = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.THRW);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
     /// Calculate the remainder of two values.
     ///
     /// @param {Real} [dbg]
@@ -337,6 +383,18 @@ function CatspeakCartWriter(buff_) constructor {
         buffer_write(buff_, buffer_u32, dbg);
     };
 
+    /// Calculate the negative of a value.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitNegative = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.NEG);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
     /// Calculate the sum of two values.
     ///
     /// @param {Real} [dbg]
@@ -346,6 +404,18 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.ADD);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Calculate the positive of a value.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitPositive = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.POS);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -575,6 +645,15 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(is_method(visitor_[$ "handleInstrReturn"]),
         "visitor is missing a handler for 'handleInstrReturn'"
     );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrBreak"]),
+        "visitor is missing a handler for 'handleInstrBreak'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrContinue"]),
+        "visitor is missing a handler for 'handleInstrContinue'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrThrow"]),
+        "visitor is missing a handler for 'handleInstrThrow'"
+    );
     __catspeak_assert(is_method(visitor_[$ "handleInstrRemainder"]),
         "visitor is missing a handler for 'handleInstrRemainder'"
     );
@@ -590,8 +669,14 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(is_method(visitor_[$ "handleInstrSubtract"]),
         "visitor is missing a handler for 'handleInstrSubtract'"
     );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrNegative"]),
+        "visitor is missing a handler for 'handleInstrNegative'"
+    );
     __catspeak_assert(is_method(visitor_[$ "handleInstrAdd"]),
         "visitor is missing a handler for 'handleInstrAdd'"
+    );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrPositive"]),
+        "visitor is missing a handler for 'handleInstrPositive'"
     );
     __catspeak_assert(is_method(visitor_[$ "handleInstrEqual"]),
         "visitor is missing a handler for 'handleInstrEqual'"
@@ -762,6 +847,27 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     };
 
     /// @ignore
+    static __readBreak = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrBreak(argDbg);
+    };
+
+    /// @ignore
+    static __readContinue = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrContinue(argDbg);
+    };
+
+    /// @ignore
+    static __readThrow = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrThrow(argDbg);
+    };
+
+    /// @ignore
     static __readRemainder = function () {
         var buff_ = buff;
         var argDbg = buffer_read(buff_, buffer_u32);
@@ -797,10 +903,24 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     };
 
     /// @ignore
+    static __readNegative = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrNegative(argDbg);
+    };
+
+    /// @ignore
     static __readAdd = function () {
         var buff_ = buff;
         var argDbg = buffer_read(buff_, buffer_u32);
         visitor.handleInstrAdd(argDbg);
+    };
+
+    /// @ignore
+    static __readPositive = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrPositive(argDbg);
     };
 
     /// @ignore
@@ -924,12 +1044,17 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         __readerLookup[@ CatspeakInstr.GET_S] = __readConstString;
         __readerLookup[@ CatspeakInstr.IFTE] = __readIfThenElse;
         __readerLookup[@ CatspeakInstr.RET] = __readReturn;
+        __readerLookup[@ CatspeakInstr.BRK] = __readBreak;
+        __readerLookup[@ CatspeakInstr.CONT] = __readContinue;
+        __readerLookup[@ CatspeakInstr.THRW] = __readThrow;
         __readerLookup[@ CatspeakInstr.REM] = __readRemainder;
         __readerLookup[@ CatspeakInstr.MULT] = __readMultiply;
         __readerLookup[@ CatspeakInstr.DIV] = __readDivide;
         __readerLookup[@ CatspeakInstr.IDIV] = __readDivideInt;
         __readerLookup[@ CatspeakInstr.SUB] = __readSubtract;
+        __readerLookup[@ CatspeakInstr.NEG] = __readNegative;
         __readerLookup[@ CatspeakInstr.ADD] = __readAdd;
+        __readerLookup[@ CatspeakInstr.POS] = __readPositive;
         __readerLookup[@ CatspeakInstr.EQ] = __readEqual;
         __readerLookup[@ CatspeakInstr.NEQ] = __readNotEqual;
         __readerLookup[@ CatspeakInstr.GT] = __readGreaterThan;

@@ -153,6 +153,39 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
+    static handleInstrBreak = function (dbg) {
+        // unpack stack args in reverse order
+        var result = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            result : result,
+        }, __catspeak_instr_brk__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrContinue = function (dbg) {
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+        }, __catspeak_instr_cont__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrThrow = function (dbg) {
+        // unpack stack args in reverse order
+        var result = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            result : result,
+        }, __catspeak_instr_thrw__);
+        pushValue(exec);
+    };
+
+    /// @ignore
     static handleInstrRemainder = function (dbg) {
         // unpack stack args in reverse order
         var rhs = popValue();
@@ -223,6 +256,18 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
+    static handleInstrNegative = function (dbg) {
+        // unpack stack args in reverse order
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_neg__);
+        pushValue(exec);
+    };
+
+    /// @ignore
     static handleInstrAdd = function (dbg) {
         // unpack stack args in reverse order
         var rhs = popValue();
@@ -233,6 +278,18 @@ function CatspeakCodegenGML() constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_add__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrPositive = function (dbg) {
+        // unpack stack args in reverse order
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_pos__);
         pushValue(exec);
     };
 
@@ -514,6 +571,26 @@ function __catspeak_instr_ret__() {
 }
 
 /// @ignore
+function __catspeak_instr_brk__() {
+    // break out of the current loop, returning a value as the result of the loop
+    var breakBox = __catspeak_gml_exec_get_break();
+    breakBox[@ 0] = result();
+    throw breakBox;
+}
+
+/// @ignore
+function __catspeak_instr_cont__() {
+    // continue to the next iteration of the current loop
+    throw __catspeak_gml_exec_get_continue();
+}
+
+/// @ignore
+function __catspeak_instr_thrw__() {
+    // throw a value as an exception
+    throw result();
+}
+
+/// @ignore
 function __catspeak_instr_rem__() {
     // calculate the remainder of two values
     return lhs() % rhs();
@@ -544,9 +621,21 @@ function __catspeak_instr_sub__() {
 }
 
 /// @ignore
+function __catspeak_instr_neg__() {
+    // calculate the negative of a value
+    return -value();
+}
+
+/// @ignore
 function __catspeak_instr_add__() {
     // calculate the sum of two values
     return lhs() + rhs();
+}
+
+/// @ignore
+function __catspeak_instr_pos__() {
+    // calculate the positive of a value
+    return +value();
 }
 
 /// @ignore

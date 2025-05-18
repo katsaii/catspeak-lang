@@ -165,6 +165,14 @@ function __catspeak_instr_{{ case_snake(instr_name) }}__() {
     var returnBox = __catspeak_gml_exec_get_return();
     returnBox[@ 0] = result();
     throw returnBox;
+{%  elif instr_name == "brk" %}
+    var breakBox = __catspeak_gml_exec_get_break();
+    breakBox[@ 0] = result();
+    throw breakBox;
+{%  elif instr_name == "cont" %}
+    throw __catspeak_gml_exec_get_continue();
+{%  elif instr_name == "thrw" %}
+    throw result();
 {%  else %}
     // TODO
 {%  endif %}

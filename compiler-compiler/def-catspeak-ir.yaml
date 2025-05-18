@@ -116,7 +116,31 @@ instr:
     stackargs:
       - name: result
         desc: "the value to return"
-    complex: "requires access to the callstack, may also raise an exception"
+    complex: "requires access to the callstack and global state, implementation may also raise an exception for control-flow"
+
+  - name: "break"
+    name-short: brk
+    desc: "break out of the current loop, returning a value as the result of the loop"
+    repr: 0x1D
+    stackargs:
+      - name: result
+        desc: "the value to return from the loop"
+    complex: "requires access to global state, implementation may also raise an exception for control-flow"
+
+  - name: "continue"
+    name-short: cont
+    desc: "continue to the next iteration of the current loop"
+    repr: 0x1E
+    complex: "requires access to global state, implementation may also raise an exception for control-flow"
+
+  - name: "throw"
+    name-short: thrw
+    desc: "throw a value as an exception"
+    repr: 0x1F
+    stackargs:
+      - name: result
+        desc: "the exception value to throw"
+    complex: "requires access to global state, implementation may also raise an exception for control-flow"
 
   - name: "remainder"
     name-short: rem
@@ -173,6 +197,15 @@ instr:
         desc: "the value to subtract"
     comptime: $lhs$ - $rhs$
 
+  - name: "negative"
+    name-short: neg
+    desc: "calculate the negative of a value"
+    repr: 0x20
+    stackargs:
+      - name: value
+        desc: "the value to subtract from 0"
+    comptime: -$value$
+
   - name: "add"
     desc: "calculate the sum of two values"
     repr: 0x05
@@ -182,6 +215,15 @@ instr:
       - name: rhs
         desc: "the right-hand-side value of the sum"
     comptime: $lhs$ + $rhs$
+
+  - name: "positive"
+    name-short: pos
+    desc: "calculate the positive of a value"
+    repr: 0x21
+    stackargs:
+      - name: value
+        desc: "the value to add to 0"
+    comptime: +$value$
 
   - name: "equal"
     name-short: eq
