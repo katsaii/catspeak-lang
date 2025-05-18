@@ -61,7 +61,7 @@
 /// Updated before every new release.
 ///
 /// @return {String}
-#macro CATSPEAK_VERSION "3.3.0"
+#macro CATSPEAK_VERSION "4.0.0"
 
 #region LOCATION
 

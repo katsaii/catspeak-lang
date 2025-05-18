@@ -1172,18 +1172,18 @@ enum CatspeakAssign {
 
 /// @ignore
 ///
-/// @param {Enum.CatspeakToken} token
+/// @param {Enum.CatspeakTokenV3} token
 /// @return {Enum.CatspeakOperator}
 function __catspeak_operator_from_token(token) {
-    return token - CatspeakToken.__OP_BEGIN__ - 1;
+    return token - CatspeakTokenV3.__OP_BEGIN__ - 1;
 }
 
 /// @ignore
 ///
-/// @param {Enum.CatspeakToken} token
+/// @param {Enum.CatspeakTokenV3} token
 /// @return {Enum.CatspeakAssign}
 function __catspeak_operator_assign_from_token(token) {
-    return token - CatspeakToken.__OP_ASSIGN_BEGIN__ - 1;
+    return token - CatspeakTokenV3.__OP_ASSIGN_BEGIN__ - 1;
 }
 
 /// @ignore

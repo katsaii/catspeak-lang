@@ -6,15 +6,15 @@
 
 /// A token in Catspeak is a series of characters with meaning, usually
 /// separated by whitespace. These meanings are represented by unique
-/// elements of the `CatspeakToken` enum.
+/// elements of the `CatspeakTokenV3` enum.
 ///
 /// @example
 ///   Some examples of tokens in Catspeak, and their meanings:
-///   - `if`   (is a `CatspeakToken.IF`)
-///   - `else` (is a `CatspeakToken.ELSE`)
-///   - `12.3` (is a `CatspeakToken.VALUE`)
-///   - `+`    (is a `CatspeakToken.PLUS`)
-enum CatspeakToken {
+///   - `if`   (is a `CatspeakTokenV3.IF`)
+///   - `else` (is a `CatspeakTokenV3.ELSE`)
+///   - `12.3` (is a `CatspeakTokenV3.VALUE`)
+///   - `+`    (is a `CatspeakTokenV3.PLUS`)
+enum CatspeakTokenV3 {
     /// The `(` character.
     PAREN_LEFT = 0,
     /// The `)` character.
@@ -191,7 +191,7 @@ function __catspeak_is_token(val) {
     // that they've used one of the enum types instead of a
     // random ass value
     return is_numeric(val) && (
-        val >= 0 && val < CatspeakToken.__SIZE__
+        val >= 0 && val < CatspeakTokenV3.__SIZE__
     );
 }
 
@@ -216,7 +216,7 @@ function __catspeak_is_token(val) {
 /// @param {Struct} [keywords]
 ///   A struct whose keys map to the corresponding Catspeak tokens they
 ///   represent. Defaults to the vanilla set of Catspeak keywords.
-function CatspeakLexer(
+function CatspeakLexerV3(
     buff, offset=0, size=infinity, keywords=undefined
 ) constructor {
     if (CATSPEAK_DEBUG_MODE) {
@@ -375,7 +375,7 @@ function CatspeakLexer(
     /// the `next` or `nextWithWhitespace` methods.
     ///
     /// @example
-    ///   Prints the string content of the first `CatspeakToken` emitted by a
+    ///   Prints the string content of the first `CatspeakTokenV3` emitted by a
     ///   lexer.
     ///
     ///   ```gml
@@ -396,7 +396,7 @@ function CatspeakLexer(
         var keyword = keywords[$ str];
         if (CATSPEAK_DEBUG_MODE && keyword != undefined) {
             __catspeak_check_arg(
-                    "keyword", keyword, __catspeak_is_token, "CatspeakToken");
+                    "keyword", keyword, __catspeak_is_token, "CatspeakTokenV3");
         }
         return keyword;
     };
@@ -426,7 +426,7 @@ function CatspeakLexer(
         return catspeak_location_create(row, column);
     };
 
-    /// Advances the lexer and returns the next type of `CatspeakToken`. This
+    /// Advances the lexer and returns the next type of `CatspeakTokenV3`. This
     /// includes additional whitespace and comment tokens.
     ///
     /// @remark
@@ -438,23 +438,23 @@ function CatspeakLexer(
     ///   printing each non-whitespace token out as a debug message.
     ///
     ///   ```gml
-    ///   var lexer = new CatspeakLexer(buff);
+    ///   var lexer = new CatspeakLexerV3(buff);
     ///   do {
     ///     var token = lexer.nextWithWhitespace();
-    ///     if (token != CatspeakToken.WHITESPACE) {
+    ///     if (token != CatspeakTokenV3.WHITESPACE) {
     ///       show_debug_message(lexer.getLexeme());
     ///     }
-    ///   } until (token == CatspeakToken.EOF);
+    ///   } until (token == CatspeakTokenV3.EOF);
     ///   ```
     ///
-    /// @return {Enum.CatspeakToken}
+    /// @return {Enum.CatspeakTokenV3}
     static nextWithWhitespace = function () {
         __clearLexeme();
         if (charNext == 0) {
-            return CatspeakToken.EOF;
+            return CatspeakTokenV3.EOF;
         }
         __advance();
-        var token = CatspeakToken.OTHER;
+        var token = CatspeakTokenV3.OTHER;
         var charCurr_ = charCurr; // micro-optimisation, locals are faster
         if (charCurr_ >= 0 && charCurr_ < __CATSPEAK_CODEPAGE_SIZE) {
             token = global.__catspeakChar2Token[charCurr_];
@@ -466,7 +466,7 @@ function CatspeakLexer(
             // strings
             var isRaw = charCurr_ == ord("@");
             if (isRaw) {
-                token = CatspeakToken.VALUE; // since `@` is an operator
+                token = CatspeakTokenV3.VALUE; // since `@` is an operator
                 __advance();
             }
             var skipNextChar = false;
@@ -508,104 +508,104 @@ function CatspeakLexer(
         } else if (__catspeak_char_is_operator(charCurr_)) {
             // operators
             switch (charCurr) {
-            case ord(";"): token = CatspeakToken.SEMICOLON; break;
-            case ord(":"): token = CatspeakToken.COLON; break;
-            case ord(","): token = CatspeakToken.COMMA; break;
-            case ord("."): token = CatspeakToken.DOT; break;
+            case ord(";"): token = CatspeakTokenV3.SEMICOLON; break;
+            case ord(":"): token = CatspeakTokenV3.COLON; break;
+            case ord(","): token = CatspeakTokenV3.COMMA; break;
+            case ord("."): token = CatspeakTokenV3.DOT; break;
             case ord("="):
                 if (charNext == ord("=")) { // ==
                     __advance();
-                    token = CatspeakToken.EQUAL;
+                    token = CatspeakTokenV3.EQUAL;
                 } else { // =
-                    token = CatspeakToken.ASSIGN;
+                    token = CatspeakTokenV3.ASSIGN;
                 }
                 break;
             case ord("*"):
                 if (charNext == ord("=")) { // *=
                     __advance();
-                    token = CatspeakToken.ASSIGN_MULTIPLY;
+                    token = CatspeakTokenV3.ASSIGN_MULTIPLY;
                 } else { // *
-                    token = CatspeakToken.MULTIPLY;
+                    token = CatspeakTokenV3.MULTIPLY;
                 }
                 break;
             case ord("/"):
                 if (charNext == ord("=")) { // /=
                     __advance();
-                    token = CatspeakToken.ASSIGN_DIVIDE;
+                    token = CatspeakTokenV3.ASSIGN_DIVIDE;
                 } else if (charNext == ord("/")) { // //
                     __advance();
-                    token = CatspeakToken.DIVIDE_INT;
+                    token = CatspeakTokenV3.DIVIDE_INT;
                 } else { // /
-                    token = CatspeakToken.DIVIDE;
+                    token = CatspeakTokenV3.DIVIDE;
                 }
                 break;
-            case ord("%"): token = CatspeakToken.REMAINDER; break;
+            case ord("%"): token = CatspeakTokenV3.REMAINDER; break;
             case ord("+"):
                 if (charNext == ord("=")) { // +=
                     __advance();
-                    token = CatspeakToken.ASSIGN_PLUS;
+                    token = CatspeakTokenV3.ASSIGN_PLUS;
                 } else { // +
-                    token = CatspeakToken.PLUS;
+                    token = CatspeakTokenV3.PLUS;
                 }
                 break;
             case ord("-"):
                 if (charNext == ord("=")) { // -=
                     __advance();
-                    token = CatspeakToken.ASSIGN_SUBTRACT;
+                    token = CatspeakTokenV3.ASSIGN_SUBTRACT;
                 } else if (charNext == ord("-")) { // --
                     __advance();
-                    token = CatspeakToken.COMMENT;
+                    token = CatspeakTokenV3.COMMENT;
                 } else { // -
-                    token = CatspeakToken.SUBTRACT;
+                    token = CatspeakTokenV3.SUBTRACT;
                 }
                 break;
             case ord("!"):
                 if (charNext == ord("=")) { // !=
                     __advance();
-                    token = CatspeakToken.NOT_EQUAL;
+                    token = CatspeakTokenV3.NOT_EQUAL;
                 } else { // !
-                    token = CatspeakToken.NOT;
+                    token = CatspeakTokenV3.NOT;
                 }
                 break;
             case ord(">"):
                 if (charNext == ord("=")) { // >=
                     __advance();
-                    token = CatspeakToken.GREATER_EQUAL;
+                    token = CatspeakTokenV3.GREATER_EQUAL;
                 } else if (charNext == ord(">")) { // >>
                     __advance();
-                    token = CatspeakToken.SHIFT_RIGHT;
+                    token = CatspeakTokenV3.SHIFT_RIGHT;
                 } else { // >
-                    token = CatspeakToken.GREATER;
+                    token = CatspeakTokenV3.GREATER;
                 }
                 break;
             case ord("<"):
                 if (charNext == ord("=")) { // <=
                     __advance();
-                    token = CatspeakToken.LESS_EQUAL;
+                    token = CatspeakTokenV3.LESS_EQUAL;
                 } else if (charNext == ord("|")) { // <|
                     __advance();
-                    token = CatspeakToken.PIPE_LEFT;
+                    token = CatspeakTokenV3.PIPE_LEFT;
                 } else if (charNext == ord("<")) { // <<
                     __advance();
-                    token = CatspeakToken.SHIFT_LEFT;
+                    token = CatspeakTokenV3.SHIFT_LEFT;
                 } else { // >
-                    token = CatspeakToken.LESS;
+                    token = CatspeakTokenV3.LESS;
                 }
                 break;
-            case ord("~"): token = CatspeakToken.BITWISE_NOT; break;
-            case ord("&"): token = CatspeakToken.BITWISE_AND; break;
-            case ord("^"): token = CatspeakToken.BITWISE_XOR; break;
+            case ord("~"): token = CatspeakTokenV3.BITWISE_NOT; break;
+            case ord("&"): token = CatspeakTokenV3.BITWISE_AND; break;
+            case ord("^"): token = CatspeakTokenV3.BITWISE_XOR; break;
             case ord("|"):
                 if (charNext == ord(">")) { // |>
                     __advance();
-                    token = CatspeakToken.PIPE_RIGHT;
+                    token = CatspeakTokenV3.PIPE_RIGHT;
                 } else { // |
-                    token = CatspeakToken.BITWISE_OR;
+                    token = CatspeakTokenV3.BITWISE_OR;
                 }
                 break;
             }
             // comment
-            if (token == CatspeakToken.COMMENT) {
+            if (token == CatspeakTokenV3.COMMENT) {
                 // consume the comment
                 lexeme = undefined; // since the lexeme is now invalid
                                     // we have more work to do
@@ -638,7 +638,7 @@ function CatspeakLexer(
             if (charNext == ord("`")) {
                 __advance();
             }
-        } else if (token == CatspeakToken.IDENT) {
+        } else if (token == CatspeakTokenV3.IDENT) {
             // alphanumeric identifiers
             while (__catspeak_char_is_alphanumeric(charNext)) {
                 __advance();
@@ -649,23 +649,23 @@ function CatspeakLexer(
             if (keyword != undefined) {
                 token = keyword;
             } else if (lexeme_ == "true") {
-                token = CatspeakToken.VALUE;
+                token = CatspeakTokenV3.VALUE;
                 value = true;
                 hasValue = true;
             } else if (lexeme_ == "false") {
-                token = CatspeakToken.VALUE;
+                token = CatspeakTokenV3.VALUE;
                 value = false;
                 hasValue = true;
             } else if (lexeme_ == "undefined") {
-                token = CatspeakToken.VALUE;
+                token = CatspeakTokenV3.VALUE;
                 value = undefined;
                 hasValue = true;
             } else if (lexeme_ == "NaN") {
-                token = CatspeakToken.VALUE;
+                token = CatspeakTokenV3.VALUE;
                 value = NaN;
                 hasValue = true;
             } else if (lexeme_ == "infinity") {
-                token = CatspeakToken.VALUE;
+                token = CatspeakTokenV3.VALUE;
                 value = infinity;
                 hasValue = true;
             }
@@ -734,7 +734,7 @@ function CatspeakLexer(
             hasValue = true;
         } else if (charCurr_ == ord("#")) {
             // colour literals
-            token = CatspeakToken.VALUE;
+            token = CatspeakTokenV3.VALUE;
             var digitStack = ds_stack_create();
             while (true) {
                 var charNext_ = charNext;
@@ -791,12 +791,12 @@ function CatspeakLexer(
                 cR = cR | (ds_stack_pop(digitStack) << 4);
             } else {
                 // invalid
-                token = CatspeakToken.OTHER;
+                token = CatspeakTokenV3.OTHER;
             }
             ds_stack_destroy(digitStack);
             value = cR | (cG << 8) | (cB << 16) | (cA << 24);
             hasValue = true;
-        } else if (token == CatspeakToken.VALUE) {
+        } else if (token == CatspeakTokenV3.VALUE) {
             // numeric literals
             var hasUnderscores = false;
             var hasDecimal = false;
@@ -824,7 +824,7 @@ function CatspeakLexer(
         return token;
     };
 
-    /// Advances the lexer and returns the next `CatspeakToken`, ignoring any
+    /// Advances the lexer and returns the next `CatspeakTokenV3`, ignoring any
     /// comments, whitespace, and line continuations.
     ///
     /// @remark
@@ -836,14 +836,14 @@ function CatspeakLexer(
     ///   printing each token out as a debug message.
     ///
     ///   ```gml
-    ///   var lexer = new CatspeakLexer(buff);
+    ///   var lexer = new CatspeakLexerV3(buff);
     ///   do {
     ///     var token = lexer.next();
     ///     show_debug_message(lexer.getLexeme());
-    ///   } until (token == CatspeakToken.EOF);
+    ///   } until (token == CatspeakTokenV3.EOF);
     ///   ```
     ///
-    /// @return {Enum.CatspeakToken}
+    /// @return {Enum.CatspeakTokenV3}
     static next = function () {
         if (peeked != undefined) {
             var token = peeked;
@@ -852,8 +852,8 @@ function CatspeakLexer(
         }
         while (true) {
             var token = nextWithWhitespace();
-            if (token == CatspeakToken.WHITESPACE
-                    || token == CatspeakToken.COMMENT) {
+            if (token == CatspeakTokenV3.WHITESPACE
+                    || token == CatspeakTokenV3.COMMENT) {
                 continue;
             }
             return token;
@@ -867,14 +867,14 @@ function CatspeakLexer(
     ///   printing each token out as a debug message.
     ///
     ///   ```gml
-    ///   var lexer = new CatspeakLexer(buff);
-    ///   while (lexer.peek() != CatspeakToken.EOF) {
+    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   while (lexer.peek() != CatspeakTokenV3.EOF) {
     ///     lexer.next();
     ///     show_debug_message(lexer.getLexeme());
     ///   }
     ///   ```
     ///
-    /// @return {Enum.CatspeakToken}
+    /// @return {Enum.CatspeakTokenV3}
     static peek = function () {
         peeked ??= next();
         return peeked;
@@ -986,7 +986,7 @@ function __catspeak_codepage_set(code) {
 
 /// @ignore
 function __catspeak_init_lexer_codepage() {
-    var page = array_create(__CATSPEAK_CODEPAGE_SIZE, CatspeakToken.OTHER);
+    var page = array_create(__CATSPEAK_CODEPAGE_SIZE, CatspeakTokenV3.OTHER);
     for (var code = 0; code < __CATSPEAK_CODEPAGE_SIZE; code += 1) {
         var tokenType;
         if (__catspeak_codepage_set(code,
@@ -998,34 +998,34 @@ function __catspeak_init_lexer_codepage() {
             0x20, // SPACE                (' ')
             0x85  // NEXT LINE
         )) {
-            tokenType = CatspeakToken.WHITESPACE;
+            tokenType = CatspeakTokenV3.WHITESPACE;
         } else if (
             __catspeak_codepage_range(code, "a", "z") ||
             __catspeak_codepage_range(code, "A", "Z") ||
             __catspeak_codepage_set(code, "_", "`") // identifier literals
         ) {
-            tokenType = CatspeakToken.IDENT;
+            tokenType = CatspeakTokenV3.IDENT;
         } else if (
             __catspeak_codepage_range(code, "0", "9") ||
             __catspeak_codepage_set(code, "'") // character literals
         ) {
-            tokenType = CatspeakToken.VALUE;
+            tokenType = CatspeakTokenV3.VALUE;
         } else if (__catspeak_codepage_set(code, "\"")) {
-            tokenType = CatspeakToken.VALUE;
+            tokenType = CatspeakTokenV3.VALUE;
         } else if (__catspeak_codepage_set(code, "(")) {
-            tokenType = CatspeakToken.PAREN_LEFT;
+            tokenType = CatspeakTokenV3.PAREN_LEFT;
         } else if (__catspeak_codepage_set(code, ")")) {
-            tokenType = CatspeakToken.PAREN_RIGHT;
+            tokenType = CatspeakTokenV3.PAREN_RIGHT;
         } else if (__catspeak_codepage_set(code, "[")) {
-            tokenType = CatspeakToken.BOX_LEFT;
+            tokenType = CatspeakTokenV3.BOX_LEFT;
         } else if (__catspeak_codepage_set(code, "]")) {
-            tokenType = CatspeakToken.BOX_RIGHT;
+            tokenType = CatspeakTokenV3.BOX_RIGHT;
         } else if (__catspeak_codepage_set(code, "{")) {
-            tokenType = CatspeakToken.BRACE_LEFT;
+            tokenType = CatspeakTokenV3.BRACE_LEFT;
         } else if (__catspeak_codepage_set(code, "}")) {
-            tokenType = CatspeakToken.BRACE_RIGHT;
+            tokenType = CatspeakTokenV3.BRACE_RIGHT;
         } else if (__catspeak_codepage_set(code, ",")) {
-            tokenType = CatspeakToken.COMMA;
+            tokenType = CatspeakTokenV3.COMMA;
         } else {
             continue;
         }
@@ -1039,29 +1039,29 @@ function __catspeak_init_lexer_codepage() {
 /// @return {Struct}
 function __catspeak_keywords_create() {
     var keywords = { };
-    keywords[$ "and"] = CatspeakToken.AND;
-    keywords[$ "or"] = CatspeakToken.OR;
-    keywords[$ "xor"] = CatspeakToken.XOR;
-    keywords[$ "do"] = CatspeakToken.DO;
-    keywords[$ "if"] = CatspeakToken.IF;
-    keywords[$ "else"] = CatspeakToken.ELSE;
-    keywords[$ "catch"] = CatspeakToken.CATCH;
-    keywords[$ "while"] = CatspeakToken.WHILE;
-    keywords[$ "for"] = CatspeakToken.FOR;
-    keywords[$ "loop"] = CatspeakToken.LOOP;
-    keywords[$ "with"] = CatspeakToken.WITH;
-    keywords[$ "match"] = CatspeakToken.MATCH;
-    keywords[$ "let"] = CatspeakToken.LET;
-    keywords[$ "fun"] = CatspeakToken.FUN;
-    keywords[$ "params"] = CatspeakToken.PARAMS;
-    keywords[$ "break"] = CatspeakToken.BREAK;
-    keywords[$ "continue"] = CatspeakToken.CONTINUE;
-    keywords[$ "return"] = CatspeakToken.RETURN;
-    keywords[$ "throw"] = CatspeakToken.THROW;
-    keywords[$ "new"] = CatspeakToken.NEW;
-    keywords[$ "impl"] = CatspeakToken.IMPL;
-    keywords[$ "self"] = CatspeakToken.SELF;
-    keywords[$ "other"] = CatspeakToken.OTHER;
+    keywords[$ "and"] = CatspeakTokenV3.AND;
+    keywords[$ "or"] = CatspeakTokenV3.OR;
+    keywords[$ "xor"] = CatspeakTokenV3.XOR;
+    keywords[$ "do"] = CatspeakTokenV3.DO;
+    keywords[$ "if"] = CatspeakTokenV3.IF;
+    keywords[$ "else"] = CatspeakTokenV3.ELSE;
+    keywords[$ "catch"] = CatspeakTokenV3.CATCH;
+    keywords[$ "while"] = CatspeakTokenV3.WHILE;
+    keywords[$ "for"] = CatspeakTokenV3.FOR;
+    keywords[$ "loop"] = CatspeakTokenV3.LOOP;
+    keywords[$ "with"] = CatspeakTokenV3.WITH;
+    keywords[$ "match"] = CatspeakTokenV3.MATCH;
+    keywords[$ "let"] = CatspeakTokenV3.LET;
+    keywords[$ "fun"] = CatspeakTokenV3.FUN;
+    keywords[$ "params"] = CatspeakTokenV3.PARAMS;
+    keywords[$ "break"] = CatspeakTokenV3.BREAK;
+    keywords[$ "continue"] = CatspeakTokenV3.CONTINUE;
+    keywords[$ "return"] = CatspeakTokenV3.RETURN;
+    keywords[$ "throw"] = CatspeakTokenV3.THROW;
+    keywords[$ "new"] = CatspeakTokenV3.NEW;
+    keywords[$ "impl"] = CatspeakTokenV3.IMPL;
+    keywords[$ "self"] = CatspeakTokenV3.SELF;
+    keywords[$ "other"] = CatspeakTokenV3.OTHER;
     return keywords;
 }
 
@@ -1091,14 +1091,14 @@ function __catspeak_keywords_rename(keywords, currentName, newName) {
 ///   be used for debugging purposes.
 ///
 /// @param {Struct} keywords
-/// @param {Enum.CatspeakToken} token
+/// @param {Enum.CatspeakTokenV3} token
 ///
 /// @return {String}
 function __catspeak_keywords_find_name(keywords, token) {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_arg("keywords", keywords, is_struct);
         __catspeak_check_arg(
-                "token", token, __catspeak_is_token, "CatspeakToken");
+                "token", token, __catspeak_is_token, "CatspeakTokenV3");
     }
     var variables = variable_struct_get_names(keywords);
     var variableCount = array_length(variables);
@@ -1128,13 +1128,13 @@ function __catspeak_init_lexer_keywords() {
 
 //# feather use syntax-errors
 
-/// Consumes tokens produced by a `CatspeakLexer`, transforming the program
+/// Consumes tokens produced by a `CatspeakLexerV3`, transforming the program
 /// they represent into Catspeak IR. This Catspeak IR can be further compiled
 /// down into a callable GML function using `CatspeakGMLCompiler`.
 ///
 /// @experimental
 ///
-/// @param {Struct.CatspeakLexer} lexer
+/// @param {Struct.CatspeakLexerV3} lexer
 ///   The lexer to consume tokens from.
 ///
 /// @param {Struct.CatspeakIRBuilder} builder
@@ -1142,7 +1142,7 @@ function __catspeak_init_lexer_keywords() {
 function CatspeakParser(lexer, builder) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_arg_struct_instanceof(
-                "lexer", lexer, "CatspeakLexer");
+                "lexer", lexer, "CatspeakLexerV3");
         __catspeak_check_arg_struct_instanceof(
                 "builder", builder, "CatspeakIRBuilder");
     }
@@ -1173,7 +1173,7 @@ function CatspeakParser(lexer, builder) constructor {
     ///   `true` if there is still more data left to parse, and `false`
     ///   if the parser has reached the end of the file.
     static update = function () {
-        if (lexer.peek() == CatspeakToken.EOF) {
+        if (lexer.peek() == CatspeakTokenV3.EOF) {
             if (!finalised) {
                 ir.popFunction();
                 finalised = true;
@@ -1193,18 +1193,18 @@ function CatspeakParser(lexer, builder) constructor {
     static __parseStatement = function () {
         var result;
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.SEMICOLON) {
+        if (peeked == CatspeakTokenV3.SEMICOLON) {
             lexer.next();
             return;
-        } else if (peeked == CatspeakToken.LET) {
+        } else if (peeked == CatspeakTokenV3.LET) {
             lexer.next();
-            if (lexer.next() != CatspeakToken.IDENT) {
+            if (lexer.next() != CatspeakTokenV3.IDENT) {
                 __ex("expected identifier after 'let' keyword");
             }
             var localName = lexer.getValue();
             var location = lexer.getLocation();
             var valueTerm;
-            if (lexer.peek() == CatspeakToken.ASSIGN) {
+            if (lexer.peek() == CatspeakTokenV3.ASSIGN) {
                 lexer.next();
                 valueTerm = __parseExpression();
             } else {
@@ -1228,38 +1228,38 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseExpression = function () {
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.RETURN) {
+        if (peeked == CatspeakTokenV3.RETURN) {
             lexer.next();
             peeked = lexer.peek();
             var value;
             if (
-                peeked == CatspeakToken.SEMICOLON ||
-                peeked == CatspeakToken.BRACE_RIGHT ||
-                peeked == CatspeakToken.LET
+                peeked == CatspeakTokenV3.SEMICOLON ||
+                peeked == CatspeakTokenV3.BRACE_RIGHT ||
+                peeked == CatspeakTokenV3.LET
             ) {
                 value = ir.createValue(undefined, lexer.getLocation());
             } else {
                 value = __parseExpression();
             }
             return ir.createReturn(value, lexer.getLocation());
-        } else if (peeked == CatspeakToken.CONTINUE) {
+        } else if (peeked == CatspeakTokenV3.CONTINUE) {
             lexer.next();
             return ir.createContinue(lexer.getLocation());
-        } else if (peeked == CatspeakToken.BREAK) {
+        } else if (peeked == CatspeakTokenV3.BREAK) {
             lexer.next();
             peeked = lexer.peek();
             var value;
             if (
-                peeked == CatspeakToken.SEMICOLON ||
-                peeked == CatspeakToken.BRACE_RIGHT ||
-                peeked == CatspeakToken.LET
+                peeked == CatspeakTokenV3.SEMICOLON ||
+                peeked == CatspeakTokenV3.BRACE_RIGHT ||
+                peeked == CatspeakTokenV3.LET
             ) {
                 value = ir.createValue(undefined, lexer.getLocation());
             } else {
                 value = __parseExpression();
             }
             return ir.createBreak(value, lexer.getLocation());
-        } else if (peeked == CatspeakToken.THROW) {
+        } else if (peeked == CatspeakTokenV3.THROW) {
             lexer.next();
             peeked = lexer.peek();
             var value = __parseExpression();
@@ -1276,11 +1276,11 @@ function CatspeakParser(lexer, builder) constructor {
         var lhs = __parseCatch();
         var peeked = lexer.peek();
         if (
-            peeked == CatspeakToken.ASSIGN ||
-            peeked == CatspeakToken.ASSIGN_MULTIPLY ||
-            peeked == CatspeakToken.ASSIGN_DIVIDE ||
-            peeked == CatspeakToken.ASSIGN_SUBTRACT ||
-            peeked == CatspeakToken.ASSIGN_PLUS
+            peeked == CatspeakTokenV3.ASSIGN ||
+            peeked == CatspeakTokenV3.ASSIGN_MULTIPLY ||
+            peeked == CatspeakTokenV3.ASSIGN_DIVIDE ||
+            peeked == CatspeakTokenV3.ASSIGN_SUBTRACT ||
+            peeked == CatspeakTokenV3.ASSIGN_PLUS
         ) {
             lexer.next();
             var assignType = __catspeak_operator_assign_from_token(peeked);
@@ -1300,11 +1300,11 @@ function CatspeakParser(lexer, builder) constructor {
     static __parseCatch = function () {
         var result = __parseExpressionBlock();
         while (true) {
-            if (lexer.peek() == CatspeakToken.CATCH) {
+            if (lexer.peek() == CatspeakTokenV3.CATCH) {
                 lexer.next();
                 ir.pushBlock();
                 var localRef = undefined;
-                if (lexer.peek() == CatspeakToken.IDENT) {
+                if (lexer.peek() == CatspeakTokenV3.IDENT) {
                     lexer.next();
                     var localName = lexer.getValue();
                     localRef = ir.allocLocal(localName, lexer.getLocation());
@@ -1323,22 +1323,22 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseExpressionBlock = function () {
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.DO) {
+        if (peeked == CatspeakTokenV3.DO) {
             lexer.next();
             ir.pushBlock(true);
             __parseStatements("do");
             return ir.popBlock();
-        } else if (peeked == CatspeakToken.IF) {
+        } else if (peeked == CatspeakTokenV3.IF) {
             lexer.next();
             var condition = __parseCondition();
             ir.pushBlock();
             __parseStatements("if")
             var ifTrue = ir.popBlock();
             var ifFalse;
-            if (lexer.peek() == CatspeakToken.ELSE) {
+            if (lexer.peek() == CatspeakTokenV3.ELSE) {
                 lexer.next();
                 ir.pushBlock();
-                if (lexer.peek() == CatspeakToken.IF) {
+                if (lexer.peek() == CatspeakTokenV3.IF) {
                     // for `else if` support
                     var elseIf = __parseExpression();
                     ir.createStatement(elseIf);
@@ -1350,42 +1350,42 @@ function CatspeakParser(lexer, builder) constructor {
                 ifFalse = ir.createValue(undefined, lexer.getLocation());
             }
             return ir.createIf(condition, ifTrue, ifFalse, lexer.getLocation());
-        } else if (peeked == CatspeakToken.WHILE) {
+        } else if (peeked == CatspeakTokenV3.WHILE) {
             lexer.next();
             var condition = __parseCondition();
             ir.pushBlock();
             __parseStatements("while");
             var body = ir.popBlock();
             return ir.createWhile(condition, body, lexer.getLocation());
-        } else if (peeked == CatspeakToken.WITH) {
+        } else if (peeked == CatspeakTokenV3.WITH) {
             lexer.next();
             var scope = __parseCondition();
             ir.pushBlock();
             __parseStatements("with");
             var body = ir.popBlock();
             return ir.createWith(scope, body, lexer.getLocation());
-        } else if (peeked == CatspeakToken.MATCH) {
+        } else if (peeked == CatspeakTokenV3.MATCH) {
             lexer.next();
             var value = __parseExpression();
             var conditions = __parseMatchArms();
             return ir.createMatch(value, conditions, lexer.getLocation());
-        } else if (peeked == CatspeakToken.FUN) {
+        } else if (peeked == CatspeakTokenV3.FUN) {
             lexer.next();
             ir.pushFunction();
-            if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
-                if (lexer.next() != CatspeakToken.PAREN_LEFT) {
+            if (lexer.peek() != CatspeakTokenV3.BRACE_LEFT) {
+                if (lexer.next() != CatspeakTokenV3.PAREN_LEFT) {
                     __ex("expected opening '(' after 'fun' keyword");
                 }
-                while (__isNot(CatspeakToken.PAREN_RIGHT)) {
-                    if (lexer.next() != CatspeakToken.IDENT) {
+                while (__isNot(CatspeakTokenV3.PAREN_RIGHT)) {
+                    if (lexer.next() != CatspeakTokenV3.IDENT) {
                         __ex("expected identifier in function arguments");
                     }
                     ir.allocArg(lexer.getValue(), lexer.getLocation());
-                    if (lexer.peek() == CatspeakToken.COMMA) {
+                    if (lexer.peek() == CatspeakTokenV3.COMMA) {
                         lexer.next();
                     }
                 }
-                if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                if (lexer.next() != CatspeakTokenV3.PAREN_RIGHT) {
                     __ex("expected closing ')' after function arguments");
                 }
             }
@@ -1401,13 +1401,13 @@ function CatspeakParser(lexer, builder) constructor {
     /// @param {String} keyword
     /// @return {Struct}
     static __parseStatements = function (keyword) {
-        if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+        if (lexer.next() != CatspeakTokenV3.BRACE_LEFT) {
             __ex("expected opening '{' at the start of '", keyword, "' block");
         }
-        while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+        while (__isNot(CatspeakTokenV3.BRACE_RIGHT)) {
             __parseStatement();
         }
-        if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+        if (lexer.next() != CatspeakTokenV3.BRACE_RIGHT) {
             __ex("expected closing '}' after '", keyword, "' block");
         }
     };
@@ -1426,12 +1426,12 @@ function CatspeakParser(lexer, builder) constructor {
         var result = __parseOpLogicalAND();
         while (true) {
             var peeked = lexer.peek();
-            if (peeked == CatspeakToken.OR) {
+            if (peeked == CatspeakTokenV3.OR) {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpLogicalAND();
                 result = ir.createOr(lhs, rhs, lexer.getLocation());
-            } else if (peeked == CatspeakToken.XOR) {
+            } else if (peeked == CatspeakTokenV3.XOR) {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpLogicalAND();
@@ -1449,7 +1449,7 @@ function CatspeakParser(lexer, builder) constructor {
         var result = __parseOpPipe();
         while (true) {
             var peeked = lexer.peek();
-            if (peeked == CatspeakToken.AND) {
+            if (peeked == CatspeakTokenV3.AND) {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpPipe();
@@ -1467,12 +1467,12 @@ function CatspeakParser(lexer, builder) constructor {
         var result = __parseOpEquality();
         while (true) {
             var peeked = lexer.peek();
-            if (peeked == CatspeakToken.PIPE_RIGHT) {
+            if (peeked == CatspeakTokenV3.PIPE_RIGHT) {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpEquality();
                 result = ir.createCall(rhs, [lhs], lexer.getLocation());
-            } else if (peeked == CatspeakToken.PIPE_LEFT) {
+            } else if (peeked == CatspeakTokenV3.PIPE_LEFT) {
                 lexer.next();
                 var lhs = result;
                 var rhs = __parseOpEquality();
@@ -1491,8 +1491,8 @@ function CatspeakParser(lexer, builder) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (
-                peeked == CatspeakToken.EQUAL ||
-                peeked == CatspeakToken.NOT_EQUAL
+                peeked == CatspeakTokenV3.EQUAL ||
+                peeked == CatspeakTokenV3.NOT_EQUAL
             ) {
                 lexer.next();
                 var op = __catspeak_operator_from_token(peeked);
@@ -1513,10 +1513,10 @@ function CatspeakParser(lexer, builder) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (
-                peeked == CatspeakToken.LESS ||
-                peeked == CatspeakToken.LESS_EQUAL ||
-                peeked == CatspeakToken.GREATER ||
-                peeked == CatspeakToken.GREATER_EQUAL
+                peeked == CatspeakTokenV3.LESS ||
+                peeked == CatspeakTokenV3.LESS_EQUAL ||
+                peeked == CatspeakTokenV3.GREATER ||
+                peeked == CatspeakTokenV3.GREATER_EQUAL
             ) {
                 lexer.next();
                 var op = __catspeak_operator_from_token(peeked);
@@ -1538,11 +1538,11 @@ function CatspeakParser(lexer, builder) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (
-                peeked == CatspeakToken.BITWISE_AND ||
-                peeked == CatspeakToken.BITWISE_XOR ||
-                peeked == CatspeakToken.BITWISE_OR ||
-                peeked == CatspeakToken.SHIFT_LEFT ||
-                peeked == CatspeakToken.SHIFT_RIGHT
+                peeked == CatspeakTokenV3.BITWISE_AND ||
+                peeked == CatspeakTokenV3.BITWISE_XOR ||
+                peeked == CatspeakTokenV3.BITWISE_OR ||
+                peeked == CatspeakTokenV3.SHIFT_LEFT ||
+                peeked == CatspeakTokenV3.SHIFT_RIGHT
             ) {
                 lexer.next();
                 var op = __catspeak_operator_from_token(peeked);
@@ -1563,8 +1563,8 @@ function CatspeakParser(lexer, builder) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (
-                peeked == CatspeakToken.PLUS ||
-                peeked == CatspeakToken.SUBTRACT
+                peeked == CatspeakTokenV3.PLUS ||
+                peeked == CatspeakTokenV3.SUBTRACT
             ) {
                 lexer.next();
                 var op = __catspeak_operator_from_token(peeked);
@@ -1585,10 +1585,10 @@ function CatspeakParser(lexer, builder) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (
-                peeked == CatspeakToken.MULTIPLY ||
-                peeked == CatspeakToken.DIVIDE ||
-                peeked == CatspeakToken.DIVIDE_INT ||
-                peeked == CatspeakToken.REMAINDER
+                peeked == CatspeakTokenV3.MULTIPLY ||
+                peeked == CatspeakTokenV3.DIVIDE ||
+                peeked == CatspeakTokenV3.DIVIDE_INT ||
+                peeked == CatspeakTokenV3.REMAINDER
             ) {
                 lexer.next();
                 var op = __catspeak_operator_from_token(peeked);
@@ -1607,16 +1607,16 @@ function CatspeakParser(lexer, builder) constructor {
     static __parseOpUnary = function () {
         var peeked = lexer.peek();
         if (
-            peeked == CatspeakToken.NOT ||
-            peeked == CatspeakToken.BITWISE_NOT ||
-            peeked == CatspeakToken.SUBTRACT ||
-            peeked == CatspeakToken.PLUS
+            peeked == CatspeakTokenV3.NOT ||
+            peeked == CatspeakTokenV3.BITWISE_NOT ||
+            peeked == CatspeakTokenV3.SUBTRACT ||
+            peeked == CatspeakTokenV3.PLUS
         ) {
             lexer.next();
             var op = __catspeak_operator_from_token(peeked);
             var value = __parseIndex();
             return ir.createUnary(op, value, lexer.getLocation());
-        //} else if (peeked == CatspeakToken.COLON) {
+        //} else if (peeked == CatspeakTokenV3.COLON) {
         //    // `:property` syntax
         //    lexer.next();
         //    return ir.createProperty(__parseTerminal(), lexer.getLocation());
@@ -1629,14 +1629,14 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Array}
     static __parseMatchArms = function () {
-        if (lexer.next() != CatspeakToken.BRACE_LEFT) {
+        if (lexer.next() != CatspeakTokenV3.BRACE_LEFT) {
             __ex("expected opening '{' before 'match' arms");
         }
         var conditions = [];
-        while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+        while (__isNot(CatspeakTokenV3.BRACE_RIGHT)) {
             var value;
             var prefix = lexer.next();
-            if (prefix == CatspeakToken.ELSE) {
+            if (prefix == CatspeakTokenV3.ELSE) {
                 value = undefined;
             } else if (lexer.getLexeme() != "case") {
                 __ex("expected 'case' keyword before non-default match arm");
@@ -1648,7 +1648,7 @@ function CatspeakParser(lexer, builder) constructor {
             var result = ir.popBlock();
             array_push(conditions, [value, result]);
         }
-        if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+        if (lexer.next() != CatspeakTokenV3.BRACE_RIGHT) {
             __ex("expected closing '}' after 'match' arm");
         }
         return conditions;
@@ -1658,44 +1658,44 @@ function CatspeakParser(lexer, builder) constructor {
     ///
     /// @return {Struct}
     static __parseIndex = function () {
-        var callNew = lexer.peek() == CatspeakToken.NEW;
+        var callNew = lexer.peek() == CatspeakTokenV3.NEW;
         if (callNew) {
             lexer.next();
         }
         var result = __parseTerminal();
         while (true) {
             var peeked = lexer.peek();
-            if (peeked == CatspeakToken.PAREN_LEFT) {
+            if (peeked == CatspeakTokenV3.PAREN_LEFT) {
                 // function call syntax
                 lexer.next();
                 var args = [];
-                while (__isNot(CatspeakToken.PAREN_RIGHT)) {
+                while (__isNot(CatspeakTokenV3.PAREN_RIGHT)) {
                     array_push(args, __parseExpression());
-                    if (lexer.peek() == CatspeakToken.COMMA) {
+                    if (lexer.peek() == CatspeakTokenV3.COMMA) {
                         lexer.next();
                     }
                 }
-                if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+                if (lexer.next() != CatspeakTokenV3.PAREN_RIGHT) {
                     __ex("expected closing ')' after function arguments");
                 }
                 result = callNew
                         ? ir.createCallNew(result, args, lexer.getLocation())
                         : ir.createCall(result, args, lexer.getLocation());
                 callNew = false;
-            } else if (peeked == CatspeakToken.BOX_LEFT) {
+            } else if (peeked == CatspeakTokenV3.BOX_LEFT) {
                 // accessor syntax
                 lexer.next();
                 var collection = result;
                 var key = __parseExpression();
-                if (lexer.next() != CatspeakToken.BOX_RIGHT) {
+                if (lexer.next() != CatspeakTokenV3.BOX_RIGHT) {
                     __ex("expected closing ']' after accessor expression");
                 }
                 result = ir.createAccessor(collection, key, lexer.getLocation());
-            } else if (peeked == CatspeakToken.DOT) {
+            } else if (peeked == CatspeakTokenV3.DOT) {
                 // dot accessor syntax
                 lexer.next();
                 var collection = result;
-                if (lexer.next() != CatspeakToken.IDENT) {
+                if (lexer.next() != CatspeakTokenV3.IDENT) {
                     __ex("expected identifier after '.' operator");
                 }
                 var key = ir.createValue(lexer.getValue(), lexer.getLocation());
@@ -1716,16 +1716,16 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseTerminal = function () {
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.VALUE) {
+        if (peeked == CatspeakTokenV3.VALUE) {
             lexer.next();
             return ir.createValue(lexer.getValue(), lexer.getLocation());
-        } else if (peeked == CatspeakToken.IDENT) {
+        } else if (peeked == CatspeakTokenV3.IDENT) {
             lexer.next();
             return ir.createGet(lexer.getValue(), lexer.getLocation());
-        } else if (peeked == CatspeakToken.SELF) {
+        } else if (peeked == CatspeakTokenV3.SELF) {
             lexer.next();
             return ir.createSelf(lexer.getLocation());
-        } else if (peeked == CatspeakToken.OTHER) {
+        } else if (peeked == CatspeakTokenV3.OTHER) {
             lexer.next();
             return ir.createOther(lexer.getLocation());
         } else {
@@ -1738,52 +1738,52 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {Struct}
     static __parseGrouping = function () {
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.PAREN_LEFT) {
+        if (peeked == CatspeakTokenV3.PAREN_LEFT) {
             lexer.next();
             var inner = __parseExpression();
-            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+            if (lexer.next() != CatspeakTokenV3.PAREN_RIGHT) {
                 __ex("expected closing ')' after group expression");
             }
             return inner;
-        } else if (peeked == CatspeakToken.BOX_LEFT) {
+        } else if (peeked == CatspeakTokenV3.BOX_LEFT) {
             lexer.next();
             var values = [];
-            while (__isNot(CatspeakToken.BOX_RIGHT)) {
+            while (__isNot(CatspeakTokenV3.BOX_RIGHT)) {
                 array_push(values, __parseExpression());
-                if (lexer.peek() == CatspeakToken.COMMA) {
+                if (lexer.peek() == CatspeakTokenV3.COMMA) {
                     lexer.next();
                 }
             }
-            if (lexer.next() != CatspeakToken.BOX_RIGHT) {
+            if (lexer.next() != CatspeakTokenV3.BOX_RIGHT) {
                 __ex("expected closing ']' after array literal");
             }
             return ir.createArray(values, lexer.getLocation());
-        } else if (peeked == CatspeakToken.BRACE_LEFT) {
+        } else if (peeked == CatspeakTokenV3.BRACE_LEFT) {
             lexer.next();
             var values = [];
-            while (__isNot(CatspeakToken.BRACE_RIGHT)) {
+            while (__isNot(CatspeakTokenV3.BRACE_RIGHT)) {
                 var key;
                 var keyToken = lexer.next();
-                if (keyToken == CatspeakToken.BOX_LEFT) {
+                if (keyToken == CatspeakTokenV3.BOX_LEFT) {
                     key = __parseExpression();
-                    if (lexer.next() != CatspeakToken.BOX_RIGHT) {
+                    if (lexer.next() != CatspeakTokenV3.BOX_RIGHT) {
                         __ex(
                             "expected closing ']' after computed struct key"
                         );
                     }
                 } else if (
-                    keyToken == CatspeakToken.IDENT ||
-                    keyToken == CatspeakToken.VALUE
+                    keyToken == CatspeakTokenV3.IDENT ||
+                    keyToken == CatspeakTokenV3.VALUE
                 ) {
                     key = ir.createValue(lexer.getValue(), lexer.getLocation());
                 } else {
                     __ex("expected identifier or value as struct key");
                 }
                 var value;
-                if (lexer.peek() == CatspeakToken.COLON) {
+                if (lexer.peek() == CatspeakTokenV3.COLON) {
                     lexer.next();
                     value = __parseExpression();
-                } else if (keyToken == CatspeakToken.IDENT) {
+                } else if (keyToken == CatspeakTokenV3.IDENT) {
                     value = ir.createGet(key.value, lexer.getLocation());
                 } else {
                     __ex(
@@ -1791,12 +1791,12 @@ function CatspeakParser(lexer, builder) constructor {
                         "of struct literal"
                     );
                 }
-                if (lexer.peek() == CatspeakToken.COMMA) {
+                if (lexer.peek() == CatspeakTokenV3.COMMA) {
                     lexer.next();
                 }
                 array_push(values, key, value);
             }
-            if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
+            if (lexer.next() != CatspeakTokenV3.BRACE_RIGHT) {
                 __ex("expected closing '}' after struct literal");
             }
             return ir.createStruct(values, lexer.getLocation());
@@ -1826,9 +1826,9 @@ function CatspeakParser(lexer, builder) constructor {
     /// @return {String}
     static __tokenDebug = function () {
         var peeked = lexer.peek();
-        if (peeked == CatspeakToken.EOF) {
+        if (peeked == CatspeakTokenV3.EOF) {
             return "end of file";
-        } else if (peeked == CatspeakToken.SEMICOLON) {
+        } else if (peeked == CatspeakTokenV3.SEMICOLON) {
             return "line break ';'";
         }
         return "token '" + lexer.getLexeme() + "' (" + string(peeked) + ")";
@@ -1836,19 +1836,19 @@ function CatspeakParser(lexer, builder) constructor {
 
     /// @ignore
     ///
-    /// @param {Enum.CatspeakToken} expect
+    /// @param {Enum.CatspeakTokenV3} expect
     /// @return {Bool}
     static __isNot = function (expect) {
         var peeked = lexer.peek();
-        return peeked != expect && peeked != CatspeakToken.EOF;
+        return peeked != expect && peeked != CatspeakTokenV3.EOF;
     };
 
     /// @ignore
     ///
-    /// @param {Enum.CatspeakToken} expect
+    /// @param {Enum.CatspeakTokenV3} expect
     /// @return {Bool}
     static __is = function (expect) {
         var peeked = lexer.peek();
-        return peeked == expect && peeked != CatspeakToken.EOF;
+        return peeked == expect && peeked != CatspeakTokenV3.EOF;
     };
 }

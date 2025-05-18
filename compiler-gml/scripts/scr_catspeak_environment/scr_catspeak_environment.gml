@@ -525,12 +525,12 @@ function CatspeakEnvironment() constructor {
     /// @ignore
     self.sharedGlobal = undefined;
     /// The tokeniser to use for this Catspeak environment. Defaults to
-    /// `CatspeakLexer`.
+    /// `CatspeakLexerV3`.
     ///
     /// @experimental
     ///
     /// @return {Function}
-    self.lexerType = CatspeakLexer;
+    self.lexerType = CatspeakLexerV3;
     /// The parser to use for this Catspeak environment. Defaults to
     /// `CatspeakParser`.
     ///
@@ -791,9 +791,9 @@ function CatspeakEnvironment() constructor {
     ///   The name of the keyword to add.
     ///   E.g. `"otherwise"`
     ///
-    /// @param {Enum.CatspeakToken} token
+    /// @param {Enum.CatspeakTokenV3} token
     ///   The token this keyword should represent.
-    ///   E.g. `CatspeakToken.ELSE`
+    ///   E.g. `CatspeakTokenV3.ELSE`
     ///
     /// @param {Any} ...
     ///   Additional arguments in the same name-value format.

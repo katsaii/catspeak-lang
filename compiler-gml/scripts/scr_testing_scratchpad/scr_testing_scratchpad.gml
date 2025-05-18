@@ -12,18 +12,9 @@ catspeak_force_init();
 var runExperiment = "catspeak4";
 #macro TEST_EXPERIMENT if runExperiment ==
 
-Catspeak.enableSharedGlobal(true);
-Catspeak.interface.exposeFunctionByName(show_message);
-
-var program1 = Catspeak.compile(Catspeak.parseString(@'secret = "hello chat"'));
-var program2 = Catspeak.compile(Catspeak.parseString(@'show_message(secret)'));
-
-program1();
-program2(); // hello chat
-
 TEST_EXPERIMENT "lexer" {
     var buff = __catspeak_create_buffer_from_string(@'1 2._ 3._4_ 5_6_7__');
-    var lexer = new CatspeakLexer(buff);
+    var lexer = new CatspeakLexerV3(buff);
     lexer.nextWithWhitespace(); // 1
     show_message([lexer.getLexeme(), lexer.getValue()]);
     lexer.nextWithWhitespace(); // whitespace
@@ -39,7 +30,7 @@ TEST_EXPERIMENT "lexer" {
 
 TEST_EXPERIMENT "parser" {
     var buff = __catspeak_create_buffer_from_string(@'123_4.5');
-    var lexer = new CatspeakLexer(buff);
+    var lexer = new CatspeakLexerV3(buff);
     var builder = new CatspeakIRBuilder();
     var parser = new CatspeakParser(lexer, builder);
     parser.parseExpression();

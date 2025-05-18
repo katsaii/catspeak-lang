@@ -5,13 +5,13 @@ test_add(function () : Test("env-tokenise") constructor {
     var env = new CatspeakEnvironment();
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = env.tokenise(buff);
-    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("hello", lexer.getLexeme());
-    assertEq(CatspeakToken.DOT, lexer.next());
+    assertEq(CatspeakTokenV3.DOT, lexer.next());
     assertEq(".", lexer.getLexeme());
-    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("world", lexer.getLexeme());
-    assertEq(CatspeakToken.EOF, lexer.next());
+    assertEq(CatspeakTokenV3.EOF, lexer.next());
     buffer_delete(buff);
 });
 
@@ -19,13 +19,13 @@ test_add(function () : Test("env-tokenise-2") constructor {
     var env = new CatspeakEnvironment();
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = env.tokenise(buff, 3, 5);
-    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("lo", lexer.getLexeme());
-    assertEq(CatspeakToken.DOT, lexer.next());
+    assertEq(CatspeakTokenV3.DOT, lexer.next());
     assertEq(".", lexer.getLexeme());
-    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("wo", lexer.getLexeme());
-    assertEq(CatspeakToken.EOF, lexer.next());
+    assertEq(CatspeakTokenV3.EOF, lexer.next());
     buffer_delete(buff);
 });
 
@@ -34,13 +34,13 @@ test_add(function () : Test("env-tokenise-keywords") constructor {
     env.renameKeyword("while", "world");
     var buff = __catspeak_create_buffer_from_string(@'hello.world');
     var lexer = env.tokenise(buff);
-    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("hello", lexer.getLexeme());
-    assertEq(CatspeakToken.DOT, lexer.next());
+    assertEq(CatspeakTokenV3.DOT, lexer.next());
     assertEq(".", lexer.getLexeme());
-    assertEq(CatspeakToken.WHILE, lexer.next());
+    assertEq(CatspeakTokenV3.WHILE, lexer.next());
     assertEq("world", lexer.getLexeme());
-    assertEq(CatspeakToken.EOF, lexer.next());
+    assertEq(CatspeakTokenV3.EOF, lexer.next());
     buffer_delete(buff);
 });
 
@@ -79,7 +79,7 @@ test_add(function () : Test("env-delete-keyword") constructor {
     env.removeKeyword("fun");
     var buff = __catspeak_create_buffer_from_string("fun");
     var lexer = env.tokenise(buff);
-    assertEq(CatspeakToken.IDENT, lexer.next());
+    assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("fun", lexer.getLexeme());
     assertEq("fun", lexer.getValue());
     buffer_delete(buff);

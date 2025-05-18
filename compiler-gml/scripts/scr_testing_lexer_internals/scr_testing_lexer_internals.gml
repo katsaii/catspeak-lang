@@ -3,14 +3,14 @@
 
 test_add(function () : Test("lexer-internals-empty") constructor {
     var buff = __catspeak_create_buffer_from_string(@'');
-    var lexer = new CatspeakLexer(buff);
+    var lexer = new CatspeakLexerV3(buff);
     assertEq("", lexer.getLexeme());
     buffer_delete(buff);
 });
 
 test_add(function () : Test("lexer-internals-ascii") constructor {
     var buff = __catspeak_create_buffer_from_string(@'let a = 1;');
-    var lexer = new CatspeakLexer(buff);
+    var lexer = new CatspeakLexerV3(buff);
     lexer.__advance(); // l
     lexer.__advance(); // e
     lexer.__advance(); // t
@@ -33,7 +33,7 @@ test_add(function () : Test("lexer-internals-ascii") constructor {
 
 test_add(function () : Test("lexer-internals-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字');
-    var lexer = new CatspeakLexer(buff);
+    var lexer = new CatspeakLexerV3(buff);
     lexer.__advance(); // 🙀
     lexer.__advance(); // 會
     lexer.__advance(); // 意

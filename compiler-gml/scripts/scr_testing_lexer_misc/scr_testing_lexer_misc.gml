@@ -3,24 +3,24 @@
 
 test_add(function () : Test("lexer-misc-unicode") constructor {
     var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
-    var lexer = new CatspeakLexer(buff);
+    var lexer = new CatspeakLexerV3(buff);
     // other
-    assertEq(CatspeakToken.OTHER, lexer.nextWithWhitespace());
+    assertEq(CatspeakTokenV3.OTHER, lexer.nextWithWhitespace());
     assertEq("🙀", lexer.getLexeme());
     // other
-    assertEq(CatspeakToken.OTHER, lexer.nextWithWhitespace());
+    assertEq(CatspeakTokenV3.OTHER, lexer.nextWithWhitespace());
     assertEq("會", lexer.getLexeme());
     // other
-    assertEq(CatspeakToken.OTHER, lexer.nextWithWhitespace());
+    assertEq(CatspeakTokenV3.OTHER, lexer.nextWithWhitespace());
     assertEq("意", lexer.getLexeme());
     // other
-    assertEq(CatspeakToken.OTHER, lexer.nextWithWhitespace());
+    assertEq(CatspeakTokenV3.OTHER, lexer.nextWithWhitespace());
     assertEq("字", lexer.getLexeme());
     // whitespace
-    assertEq(CatspeakToken.WHITESPACE, lexer.nextWithWhitespace());
+    assertEq(CatspeakTokenV3.WHITESPACE, lexer.nextWithWhitespace());
     assertEq(" ", lexer.getLexeme());
     // identifier
-    assertEq(CatspeakToken.IDENT, lexer.nextWithWhitespace());
+    assertEq(CatspeakTokenV3.IDENT, lexer.nextWithWhitespace());
     assertEq("abcde1", lexer.getLexeme());
     buffer_delete(buff);
 }, IgnorePlatform.HTML5);
@@ -29,20 +29,20 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example",
     "return (fun (a, b) { a + b })"
 ) constructor {
     checkTokens(
-        CatspeakToken.RETURN,
-        CatspeakToken.PAREN_LEFT,
-        CatspeakToken.FUN,
-        CatspeakToken.PAREN_LEFT,
-        CatspeakToken.IDENT,
-        CatspeakToken.COMMA,
-        CatspeakToken.IDENT,
-        CatspeakToken.PAREN_RIGHT,
-        CatspeakToken.BRACE_LEFT,
-        CatspeakToken.IDENT,
-        CatspeakToken.PLUS,
-        CatspeakToken.IDENT,
-        CatspeakToken.BRACE_RIGHT,
-        CatspeakToken.PAREN_RIGHT
+        CatspeakTokenV3.RETURN,
+        CatspeakTokenV3.PAREN_LEFT,
+        CatspeakTokenV3.FUN,
+        CatspeakTokenV3.PAREN_LEFT,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.COMMA,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.PAREN_RIGHT,
+        CatspeakTokenV3.BRACE_LEFT,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.PLUS,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.BRACE_RIGHT,
+        CatspeakTokenV3.PAREN_RIGHT
     )
 });
 
@@ -58,30 +58,30 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example-2",
     '
 ) constructor {
     checkTokens(
-        CatspeakToken.IDENT,
-        CatspeakToken.ASSIGN,
-        CatspeakToken.VALUE,
-        CatspeakToken.IDENT,
-        CatspeakToken.ASSIGN,
-        CatspeakToken.VALUE,
-        CatspeakToken.WHILE,
-        CatspeakToken.PAREN_LEFT,
-        CatspeakToken.IDENT,
-        CatspeakToken.LESS,
-        CatspeakToken.IDENT,
-        CatspeakToken.PAREN_RIGHT,
-        CatspeakToken.BRACE_LEFT,
-        CatspeakToken.IDENT,
-        CatspeakToken.PAREN_LEFT,
-        CatspeakToken.PAREN_RIGHT,
-        CatspeakToken.IDENT,
-        CatspeakToken.ASSIGN,
-        CatspeakToken.IDENT,
-        CatspeakToken.PLUS,
-        CatspeakToken.VALUE,
-        CatspeakToken.BRACE_RIGHT,
-        CatspeakToken.RETURN,
-        CatspeakToken.IDENT,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.ASSIGN,
+        CatspeakTokenV3.VALUE,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.ASSIGN,
+        CatspeakTokenV3.VALUE,
+        CatspeakTokenV3.WHILE,
+        CatspeakTokenV3.PAREN_LEFT,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.LESS,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.PAREN_RIGHT,
+        CatspeakTokenV3.BRACE_LEFT,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.PAREN_LEFT,
+        CatspeakTokenV3.PAREN_RIGHT,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.ASSIGN,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.PLUS,
+        CatspeakTokenV3.VALUE,
+        CatspeakTokenV3.BRACE_RIGHT,
+        CatspeakTokenV3.RETURN,
+        CatspeakTokenV3.IDENT,
     )
 });
 
@@ -101,17 +101,17 @@ test_add(function () : TestLexerTokenStream("lexer-misc-example-3",
     '
 ) constructor {
     checkTokens(
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.IDENT,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON,
-        CatspeakToken.SEMICOLON
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.IDENT,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON,
+        CatspeakTokenV3.SEMICOLON
     )
 });

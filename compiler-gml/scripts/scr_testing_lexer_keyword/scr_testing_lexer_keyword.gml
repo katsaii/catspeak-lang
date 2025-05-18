@@ -2,105 +2,105 @@
 //# feather use syntax-errors
 
 test_add(function () : TestLexerToken("lexer-keyword-comment",
-    CatspeakToken.COMMENT, "--", "--"
+    CatspeakTokenV3.COMMENT, "--", "--"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-assign",
-    CatspeakToken.ASSIGN, "=", "="
+    CatspeakTokenV3.ASSIGN, "=", "="
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-colon",
-    CatspeakToken.COLON, ":", ":"
+    CatspeakTokenV3.COLON, ":", ":"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-break-line",
-    CatspeakToken.SEMICOLON, ";", ";"
+    CatspeakTokenV3.SEMICOLON, ";", ";"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-dot",
-    CatspeakToken.DOT, ".", "."
+    CatspeakTokenV3.DOT, ".", "."
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-do",
-    CatspeakToken.DO, "do", "do"
+    CatspeakTokenV3.DO, "do", "do"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-if",
-    CatspeakToken.IF, "if", "if"
+    CatspeakTokenV3.IF, "if", "if"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-else",
-    CatspeakToken.ELSE, "else", "else"
+    CatspeakTokenV3.ELSE, "else", "else"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-catch",
-    CatspeakToken.CATCH, "catch", "catch"
+    CatspeakTokenV3.CATCH, "catch", "catch"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-while",
-    CatspeakToken.WHILE, "while", "while"
+    CatspeakTokenV3.WHILE, "while", "while"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-for",
-    CatspeakToken.FOR, "for", "for"
+    CatspeakTokenV3.FOR, "for", "for"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-loop",
-    CatspeakToken.LOOP, "loop", "loop"
+    CatspeakTokenV3.LOOP, "loop", "loop"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-match",
-    CatspeakToken.MATCH, "match", "match"
+    CatspeakTokenV3.MATCH, "match", "match"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-let",
-    CatspeakToken.LET, "let", "let"
+    CatspeakTokenV3.LET, "let", "let"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-fun",
-    CatspeakToken.FUN, "fun", "fun"
+    CatspeakTokenV3.FUN, "fun", "fun"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-break",
-    CatspeakToken.BREAK, "break", "break"
+    CatspeakTokenV3.BREAK, "break", "break"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-continue",
-    CatspeakToken.CONTINUE, "continue", "continue"
+    CatspeakTokenV3.CONTINUE, "continue", "continue"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-return",
-    CatspeakToken.RETURN, "return", "return"
+    CatspeakTokenV3.RETURN, "return", "return"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-throw",
-    CatspeakToken.THROW, "throw", "throw"
+    CatspeakTokenV3.THROW, "throw", "throw"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-and",
-    CatspeakToken.AND, "and", "and"
+    CatspeakTokenV3.AND, "and", "and"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-or",
-    CatspeakToken.OR, "or", "or"
+    CatspeakTokenV3.OR, "or", "or"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-xor",
-    CatspeakToken.XOR, "xor", "xor"
+    CatspeakTokenV3.XOR, "xor", "xor"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-new",
-    CatspeakToken.NEW, "new", "new"
+    CatspeakTokenV3.NEW, "new", "new"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-impl",
-    CatspeakToken.IMPL, "impl", "impl"
+    CatspeakTokenV3.IMPL, "impl", "impl"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-self",
-    CatspeakToken.SELF, "self", "self"
+    CatspeakTokenV3.SELF, "self", "self"
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-other",
-    CatspeakToken.OTHER, "other", "other"
+    CatspeakTokenV3.OTHER, "other", "other"
 ) constructor { });
