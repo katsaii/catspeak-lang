@@ -115,6 +115,12 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrClosure = function (dbg) {
+        asmStr += "  fclo";
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrRemainder = function (dbg) {
         asmStr += "  rem";
         asmStr += "\n"

@@ -39,7 +39,7 @@ function is_catspeak(value) {
         return false;
     }
     var scr = method_get_index(value);
-    if (scr == __catspeak_function__) {
+    if (scr == __catspeak_function_v3__) {
         return true;
     }
     var scrName = script_get_name(scr);
@@ -226,7 +226,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             // use the fast path
             return ctx.program;
         }
-        return method(ctx, __catspeak_function__);
+        return method(ctx, __catspeak_function_v3__);
     };
 
     /// @ignore
@@ -1101,7 +1101,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
 
 /// @ignore
 /// @return {Any}
-function __catspeak_function__() {
+function __catspeak_function_v3__() {
     var isRecursing = callTime >= 0;
     var localCount = array_length(locals);
     if (isRecursing) {

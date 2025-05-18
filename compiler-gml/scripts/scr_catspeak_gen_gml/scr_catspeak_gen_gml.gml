@@ -51,11 +51,11 @@ function CatspeakCodegenGML() constructor {
         stackTop = -1;
         array_resize(funcData, 0);
         ctx = {
+            callTime : -1,
             globals : globals ?? { },
             callee_ : undefined, // current function
             self_ : undefined,
             other_ : undefined,
-            entry : undefined,
         };
     };
 
@@ -142,7 +142,6 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrReturn = function (dbg) {
-        // unpack stack args in reverse order
         var result = popValue();
         var exec = method({
             ctx : ctx,
@@ -154,7 +153,6 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrBreak = function (dbg) {
-        // unpack stack args in reverse order
         var result = popValue();
         var exec = method({
             ctx : ctx,
@@ -175,13 +173,23 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrThrow = function (dbg) {
-        // unpack stack args in reverse order
         var result = popValue();
         var exec = method({
             ctx : ctx,
             dbg : dbg,
             result : result,
         }, __catspeak_instr_thrw__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrClosure = function (dbg) {
+        var body = popValue();
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+            body : body,
+        }, __catspeak_instr_fclo__);
         pushValue(exec);
     };
 
@@ -257,7 +265,6 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrNegative = function (dbg) {
-        // unpack stack args in reverse order
         var value = popValue();
         var exec = method({
             ctx : ctx,
@@ -283,7 +290,6 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrPositive = function (dbg) {
-        // unpack stack args in reverse order
         var value = popValue();
         var exec = method({
             ctx : ctx,
@@ -379,7 +385,6 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrNot = function (dbg) {
-        // unpack stack args in reverse order
         var value = popValue();
         var exec = method({
             ctx : ctx,
@@ -433,7 +438,6 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrBitwiseNot = function (dbg) {
-        // unpack stack args in reverse order
         var value = popValue();
         var exec = method({
             ctx : ctx,
@@ -591,6 +595,12 @@ function __catspeak_instr_thrw__() {
 }
 
 /// @ignore
+function __catspeak_instr_fclo__() {
+    // builds a function closure, updating any upvalues if they exist
+    return __catspeak_create_function(ctx, body, dbg);
+}
+
+/// @ignore
 function __catspeak_instr_rem__() {
     // calculate the remainder of two values
     return lhs() % rhs();
@@ -732,4 +742,77 @@ function __catspeak_instr_rshift__() {
 function __catspeak_instr_lshift__() {
     // calculate the bitwise left shift of two values
     return value() << amount();
+}
+
+/// @ignore
+function __catspeak_create_function(ctx, body, dbg = CATSPEAK_NOLOCATION) {
+    return method({
+        ctx : ctx,
+        body : body,
+        dbg : dbg,
+    }, __catspeak_function__);
+}
+
+/// @ignore
+function __catspeak_function__() {
+    var returnValue = body();
+    /* TODO: repurpose
+    if (doThrowValue) {
+        if (is_struct(throwValue)) {
+            var catspeakErr = "CATSPEAK RUNTIME ERROR -- " +
+                    __catspeak_gml_exec_get_error(body);
+            if (variable_struct_exists(throwValue, "message")) {
+                // add where the error occurred (really bad implementation, might be good enough for now)
+                throwValue.message = catspeakErr + ": " + throwValue.message;
+            }
+            if (variable_struct_exists(throwValue, "longMessage")) {
+                // add where the error occurred (really bad implementation, might be good enough for now)
+                throwValue.longMessage += "\n-----\n" + catspeakErr + "\n";
+            }
+        }
+        throw throwValue;
+    }
+    */
+    return returnValue;
+}
+
+/// @ignore
+function __catspeak_catch_return__() {
+    var returnValue = undefined;
+    try {
+        returnValue = body();
+    } catch (err_) {
+        if (err_ == __catspeak_gml_exec_get_return()) {
+            returnValue = err_[0];
+        } else {
+            throw err_;
+        }
+    }
+    return returnValue;
+}
+
+/// @ignore
+function __catspeak_catch_break__() {
+    var returnValue = undefined;
+    try {
+        returnValue = body();
+    } catch (err_) {
+        if (err_ == __catspeak_gml_exec_get_break()) {
+            returnValue = err_[0];
+        } else {
+            throw err_;
+        }
+    }
+    return returnValue;
+}
+
+/// @ignore
+function __catspeak_catch_continue__() {
+    try {
+        body();
+    } catch (err_) {
+        if (err_ != __catspeak_gml_exec_get_continue()) {
+            throw err_;
+        }
+    }
 }

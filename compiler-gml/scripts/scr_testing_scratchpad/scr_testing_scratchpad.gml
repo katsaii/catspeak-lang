@@ -206,6 +206,7 @@ TEST_EXPERIMENT "catspeak4" {
     writer.emitConstNumber(8);
     writer.emitSubtract();
     writer.emitIfThenElse();
+    writer.emitClosure();
     writer.finalise();
     buffer_seek(buff, buffer_seek_start, 0);
     show_message(catspeak_cart_disassemble(buff));
@@ -216,6 +217,25 @@ TEST_EXPERIMENT "catspeak4" {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var program = codegen.getProgram();
-    show_message(program);
-    show_message(program());
+    //show_message(program);
+    var result = program();
+    //show_message(result);
+    result()
+/*
+    __gc_force_init();
+    GC_START;
+    var runTime = 120;
+    var frame = 0;
+    var countTotal_ = 0;
+    while (frame < runTime) {
+    var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
+    while (get_timer() < expectTime) {
+        result();
+        countTotal_ += 1;
+    }
+    frame +=1;
+    }
+    GC_LOG;
+    show_message("Catspeak avg. n = " + string(countTotal_ / runTime));
+*/
 }

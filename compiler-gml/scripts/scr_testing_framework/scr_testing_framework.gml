@@ -358,3 +358,21 @@ function __structuralEq(a, b, exact) {
     // not equal
     return false;
 };
+
+// from: https://gist.github.com/tinkerer-red/5a99956bf20f34ec8c894a57643ed057
+#region GC Timer Internals
+    //Beta IDE v2023.600.0.368 Beta Runtime v2023.600.0.387
+    // as of now, this number is 2 but might change in the future so best to calculate it on build, note this is not needed just increases accuracy
+function __gc_force_init() {
+    static init = false;
+    if init { return }
+    //forget the initial count as it builds new internals on first call
+    if (os_browser == browser_not_a_browser) gc_get_stats().num_objects_in_generation[0]
+    //find out the offset from simply running the function
+    var __gc_start = (os_browser != browser_not_a_browser) ? 0 : gc_get_stats().num_objects_in_generation[0]
+    global.__gc_log_offset = (os_browser != browser_not_a_browser) ? 0 : gc_get_stats().num_objects_in_generation[0]-__gc_start;
+    init = true;
+}
+#endregion
+#macro GC_START var __gc_start = (os_browser != browser_not_a_browser) ? 0 : gc_get_stats().num_objects_in_generation[0]
+#macro GC_LOG show_debug_message("::GC_LOG:: Newly Created Garbage : "+string( (os_browser != browser_not_a_browser) ? "<<Garbage Detection not possible on Browser>>" : gc_get_stats().num_objects_in_generation[0] -__gc_start - global.__gc_log_offset))

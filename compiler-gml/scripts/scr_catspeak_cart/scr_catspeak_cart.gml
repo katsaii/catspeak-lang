@@ -44,6 +44,8 @@ enum CatspeakInstr {
     CONT = 30,
     /// Throw a value as an exception.
     THRW = 31,
+    /// Builds a function closure, updating any upvalues if they exist.
+    FCLO = 34,
     /// Calculate the remainder of two values.
     REM = 6,
     /// Calculate the product of two values.
@@ -93,7 +95,7 @@ enum CatspeakInstr {
     /// Calculate the bitwise left shift of two values.
     LSHIFT = 26,
     /// @ignore
-    __SIZE__ = 34,
+    __SIZE__ = 35,
 }
 
 /// Handles the creation of Catspeak cartridges.
@@ -320,6 +322,18 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.THRW);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Builds a function closure, updating any upvalues if they exist.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitClosure = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.FCLO);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -654,6 +668,9 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(is_method(visitor_[$ "handleInstrThrow"]),
         "visitor is missing a handler for 'handleInstrThrow'"
     );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrClosure"]),
+        "visitor is missing a handler for 'handleInstrClosure'"
+    );
     __catspeak_assert(is_method(visitor_[$ "handleInstrRemainder"]),
         "visitor is missing a handler for 'handleInstrRemainder'"
     );
@@ -868,6 +885,13 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     };
 
     /// @ignore
+    static __readClosure = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrClosure(argDbg);
+    };
+
+    /// @ignore
     static __readRemainder = function () {
         var buff_ = buff;
         var argDbg = buffer_read(buff_, buffer_u32);
@@ -1047,6 +1071,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         __readerLookup[@ CatspeakInstr.BRK] = __readBreak;
         __readerLookup[@ CatspeakInstr.CONT] = __readContinue;
         __readerLookup[@ CatspeakInstr.THRW] = __readThrow;
+        __readerLookup[@ CatspeakInstr.FCLO] = __readClosure;
         __readerLookup[@ CatspeakInstr.REM] = __readRemainder;
         __readerLookup[@ CatspeakInstr.MULT] = __readMultiply;
         __readerLookup[@ CatspeakInstr.DIV] = __readDivide;

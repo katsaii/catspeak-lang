@@ -45,6 +45,7 @@ function CatspeakCodegenGML() constructor {
         stackTop = -1;
         array_resize(funcData, 0);
         ctx = {
+            callTime : -1,
             globals : globals ?? { },
             callee_ : undefined, // current function
             self_ : undefined,
@@ -108,7 +109,9 @@ function CatspeakCodegenGML() constructor {
     /// @ignore
     static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, None) }}) {
 {% if instr["stackargs"] %}
+{%  if len(instr["stackargs"]) > 1 %}
         // unpack stack args in reverse order
+{%  endif %}
 {%  for stackarg in instr["stackargs"][::-1] %}
 {%   set stackarg_name = gml_var_ref(stackarg["name"], None) %}
         var {{ stackarg_name }} = popValue();
@@ -173,8 +176,83 @@ function __catspeak_instr_{{ case_snake(instr_name) }}__() {
     throw __catspeak_gml_exec_get_continue();
 {%  elif instr_name == "thrw" %}
     throw result();
+{%  elif instr_name == "fclo" %}
+    return __catspeak_create_function(ctx, body, dbg);
 {%  else %}
     // TODO
 {%  endif %}
 }
 {% endfor %}
+
+/// @ignore
+function __catspeak_create_function(ctx, body, dbg = CATSPEAK_NOLOCATION) {
+    return method({
+        ctx : ctx,
+        body : body,
+        dbg : dbg,
+    }, __catspeak_function__);
+}
+
+/// @ignore
+function __catspeak_function__() {
+    var returnValue = body();
+    /* TODO: repurpose
+    if (doThrowValue) {
+        if (is_struct(throwValue)) {
+            var catspeakErr = "CATSPEAK RUNTIME ERROR -- " +
+                    __catspeak_gml_exec_get_error(body);
+            if (variable_struct_exists(throwValue, "message")) {
+                // add where the error occurred (really bad implementation, might be good enough for now)
+                throwValue.message = catspeakErr + ": " + throwValue.message;
+            }
+            if (variable_struct_exists(throwValue, "longMessage")) {
+                // add where the error occurred (really bad implementation, might be good enough for now)
+                throwValue.longMessage += "\n-----\n" + catspeakErr + "\n";
+            }
+        }
+        throw throwValue;
+    }
+    */
+    return returnValue;
+}
+
+/// @ignore
+function __catspeak_catch_return__() {
+    var returnValue = undefined;
+    try {
+        returnValue = body();
+    } catch (err_) {
+        if (err_ == __catspeak_gml_exec_get_return()) {
+            returnValue = err_[0];
+        } else {
+            throw err_;
+        }
+    }
+    return returnValue;
+}
+
+/// @ignore
+function __catspeak_catch_break__() {
+    var returnValue = undefined;
+    try {
+        returnValue = body();
+    } catch (err_) {
+        if (err_ == __catspeak_gml_exec_get_break()) {
+            returnValue = err_[0];
+        } else {
+            throw err_;
+        }
+    }
+    return returnValue;
+}
+
+/// @ignore
+function __catspeak_catch_continue__() {
+    try {
+        body();
+    } catch (err_) {
+        if (err_ != __catspeak_gml_exec_get_continue()) {
+            throw err_;
+        }
+    }
+}

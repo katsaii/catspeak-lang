@@ -60,7 +60,7 @@ def get_generated_header(*paths):
 # jinja library
 
 JINJA2_FUNCS = [
-    map, max, min,
+    map, max, min, len,
 ]
 
 def jinja2_export(func):

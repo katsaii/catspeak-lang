@@ -142,6 +142,15 @@ instr:
         desc: "the exception value to throw"
     complex: "requires access to global state, implementation may also raise an exception for control-flow"
 
+  - name: "closure"
+    name-short: fclo
+    desc: "builds a function closure, updating any upvalues if they exist"
+    repr: 0x22
+    stackargs:
+      - name: body
+        desc: "the body of the function expression to execute when called"
+    complex: "requires access to global state"
+
   - name: "remainder"
     name-short: rem
     desc: "calculate the remainder of two values"
