@@ -66,6 +66,10 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     lexemeStartPos = catspeak_location_create(line, column);
     /// @ignore
     lexeme = undefined;
+    /// Whether this scanner has reached the end of its input.
+    ///
+    /// @return {Bool}
+    isEndOfFile = false;
     /// The current character in the buffer.
     ///
     /// @return {Real}
@@ -79,7 +83,9 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
 
     /// @ignore
     static __nextChar = function () {
-        if (buffOffset >= buffSize) {
+        var isEndOfFile_ = buffOffset >= buffSize || isEndOfFile;
+        if (isEndOfFile_) {
+            isEndOfFile = true;
             return 0;
         }
         var byte = buffer_peek(buff, buffOffset, buffer_u8);
@@ -125,10 +131,13 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
         return utf8Value;
     };
 
-    /// Advances the scanner to the next UTF8 encoded char.
+    /// Advances the scanner to the next UTF8 encoded char, returning the
+    /// number of bytes since the start of the lexeme.
     ///
     /// Also updates line and column information, as well as the current lexeme
     /// span.
+    ///
+    /// @return {Real}
     static advanceChar = function () {
         lexemeEnd = buffOffset;
         var charNext_ = charNext;
@@ -146,6 +155,7 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
         // actually update chars now
         charCurr = charNext_;
         charNext = __nextChar();
+        return lexemeEnd - lexemeStart;
     };
 
     /// Clears the current lexeme span.

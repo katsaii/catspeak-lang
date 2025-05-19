@@ -106,16 +106,6 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
-    static handleInstrConstBool = function (value, dbg) {
-        var exec = method({
-            ctx : ctx,
-            value : value,
-            dbg : dbg,
-        }, __catspeak_instr_get_b__);
-        pushValue(exec);
-    };
-
-    /// @ignore
     static handleInstrConstString = function (value, dbg) {
         var exec = method({
             ctx : ctx,
@@ -546,12 +536,6 @@ function __catspeak_gml_exec_get_error(exec) {
 /// @ignore
 function __catspeak_instr_get_n__() {
     // get a numeric constant
-    return value;
-}
-
-/// @ignore
-function __catspeak_instr_get_b__() {
-    // get a boolean constant
     return value;
 }
 

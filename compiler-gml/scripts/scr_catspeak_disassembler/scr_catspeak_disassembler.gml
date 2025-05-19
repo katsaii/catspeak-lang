@@ -71,13 +71,6 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleInstrConstBool = function (value, dbg) {
-        asmStr += "  get_b";
-        asmStr += "  " + string(value);
-        asmStr += "\n"
-    };
-
-    /// @ignore
     static handleInstrConstString = function (value, dbg) {
         asmStr += "  get_s";
         asmStr += "  " + string(value);

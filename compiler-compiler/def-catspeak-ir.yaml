@@ -67,16 +67,6 @@ instr:
         type: f64
     comptime: $value$
 
-  - name: "const bool"
-    name-short: get_b
-    desc: "get a boolean constant"
-    repr: 0x02
-    args:
-      - name: value
-        desc: "the bool to emit"
-        type: u8
-    comptime: $value$
-
   - name: "const string"
     name-short: get_s
     desc: "get a string constant"

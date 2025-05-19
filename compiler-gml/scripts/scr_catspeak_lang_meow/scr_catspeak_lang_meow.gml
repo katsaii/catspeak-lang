@@ -5,6 +5,20 @@
 
 //# feather use syntax-errors
 
+var buff = catspeak_util_buffer_create_from_string(@'
+    let `abcdef$` = @"this is a test script ""but do quotes work?"""
+    "normal string, no escapes"
+    "normal string, yes\tescapes \"\n"
+');
+var lexer = new CatspeakLexer(buff);
+while lexer.nextWithWhitespace() != CatspeakToken.EOF {
+    var lexeme = lexer.getLexeme();
+    var value = lexer.getValue();
+    value = is_string(value) ? value : string(value);
+    show_debug_message("token: '" + lexeme + "' = " + value);
+}
+show_message("see output");
+
 /// A token in Catspeak is a series of characters with meaning, usually
 /// separated by whitespace. These meanings are represented by unique
 /// elements of the `CatspeakToken` enum.
@@ -251,13 +265,11 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
     static nextWithWhitespace = function () {
         clearLexeme();
         hasValue = false;
-        // the next char is the current char after `advanceChar` is called
-        // don't think too hard about it
-        var charCurr_ = charNext;
-        if (charCurr_ == 0) {
-            return CatspeakTokenV3.EOF;
+        if (isEndOfFile) {
+            return CatspeakToken.EOF;
         }
         advanceChar();
+        var charCurr_ = charCurr;
         var token = charCurr_ < 0xFF ? __asciiCodepage[charCurr_] : CatspeakToken.ERROR;
         var sublexer = __lexerLookup[token];
         if (sublexer != undefined) {
@@ -268,35 +280,33 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
 
     /// @ignore
     static __completeWhitespace = function () {
-        var charNext_ = charNext;
-        while (charNext_ != 0 && __catspeak_char_is_whitespace(charNext_)) {
+        while (__catspeak_char_is_whitespace(charNext)) {
             advanceChar();
-            charNext_ = charNext;
         }
     };
 
     /// @ignore
     static __completeIdent = function () {
-        var charNext_ = charNext;
         if (charCurr == ord("`")) {
             // raw identifiers
-            if (charNext_ == ord("`")) { // empty raw string
+            if (charNext == ord("`")) { // empty raw string
                 return CatspeakToken.ERROR;
             }
-            while (charNext_ != 0 && !__catspeak_char_is_whitespace(charNext_)) {
+            while (
+                !isEndOfFile && charNext != ord("`") &&
+                !__catspeak_char_is_whitespace(charNext)
+            ) {
                 advanceChar();
-                charNext_ = charNext;
             }
-            if (charNext_ != ord("`")) { // unterminated raw string
+            if (charNext != ord("`")) { // unterminated raw string
                 return CatspeakToken.ERROR;
             }
             advanceChar();
             value = getLexeme(1, 1); // trim off the backticks ``
             hasValue = true;
         } else {
-            while (__catspeak_char_is_alphanum(charNext_)) {
+            while (__catspeak_char_is_alphanum(charNext)) {
                 advanceChar();
-                charNext_ = charNext;
             }
             value = getLexeme();
             hasValue = true;
@@ -352,31 +362,65 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
 
     /// @ignore
     static __completeString = function () {
-        var charNext_ = charNext;
         if (charCurr == ord("@")) {
-            if (charNext_ != ord("\"")) { // malformed verbatim string
+            if (charNext != ord("\"")) { // malformed verbatim string
                 return CatspeakToken.ERROR;
             }
-            // TODO
-            if (charNext_ != ord("\"")) { // unterminated verbatim string
-                return CatspeakToken.ERROR;
-            }
-            value = getLexeme(2, 1); // trim off the quotes @""
-            hasValue = true;
             advanceChar();
+            value = "";
+            var lexemeOffset = 2;
+            while (!isEndOfFile) {
+                if (charNext == ord("\"")) {
+                    value += getLexeme(lexemeOffset); // trim off the quotes
+                    lexemeOffset = advanceChar();
+                    if (charNext != ord("\"")) {
+                        hasValue = true;
+                        break;
+                    }
+                    // juxtaposed verbatim strings escape quotes @"""" == "\""
+                }
+                advanceChar();
+            }
+            if (!hasValue) { // unterminated verbatim string
+                return CatspeakToken.ERROR;
+            }
         } else {
             // plain ol' strings
-            while (charNext_ != 0 && !__catspeak_char_is_whitespace(charNext_)) {
+            value = "";
+            var lexemeOffset = 1;
+            while (!isEndOfFile) {
+                var charNext_ = charNext;
+                if (charNext_ == ord("\\")) {
+                    // process escapes
+                    value += getLexeme(lexemeOffset);
+                    lexemeOffset = advanceChar();
+                    charNext_ = charNext;
+                    if (__catspeak_char_is_whitespace(charNext_)) {
+                        // remove whitespace
+                        lexemeOffset = advanceChar();
+                        while (__catspeak_char_is_whitespace(charNext)) {
+                            lexemeOffset = advanceChar();
+                        }
+                        continue;
+                    } else if (charNext_ < 0xFF) {
+                        var replacement = __escapes[charNext_];
+                        if (replacement != undefined) {
+                            value += replacement;
+                            lexemeOffset = advanceChar();
+                            continue;
+                        }
+                    }
+                } else if (charNext_ == ord("\"")) {
+                    value += getLexeme(lexemeOffset); // trim off the quotes
+                    lexemeOffset = advanceChar();
+                    hasValue = true;
+                    break;
+                }
                 advanceChar();
-                charNext_ = charNext;
             }
-            // TODO
-            if (charNext_ != ord("\"")) { // unterminated string
+            if (!hasValue) { // unterminated string
                 return CatspeakToken.ERROR;
             }
-            value = getLexeme(1, 1); // trim off the quotes ""
-            hasValue = true;
-            advanceChar();
         }
     };
 
@@ -432,8 +476,13 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
             return CatspeakToken.ASSIGN_SUBTRACT;
         } else if (charNext_ == ord("-")) {
             // comments
-            advanceChar();
-            // TODO
+            do {
+                advanceChar();
+            } until (
+                isEndOfFile ||
+                charNext == ord("\n") ||
+                charNext == ord("\r")
+            );
         }
     };
 
@@ -572,6 +621,17 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
         __literals[$ "false"] = false;
         __literals[$ "NaN"] = NaN;
         __literals[$ "infinity"] = infinity;
+    }
+
+    /// @ignore
+    static __escapes = undefined;
+    if (__escapes == undefined) {
+        __escapes = array_create(0xFF, undefined);
+        __escapes[@ ord("t")] = "\t";
+        __escapes[@ ord("n")] = "\n";
+        __escapes[@ ord("v")] = "\v";
+        __escapes[@ ord("f")] = "\f";
+        __escapes[@ ord("r")] = "\r";
     }
 
     /// @ignore
