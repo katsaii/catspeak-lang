@@ -19,6 +19,7 @@ enum CatspeakToken {
     /// End of the file.
     EOF = 0,
     COLON,
+    COLON_COLON,
     COMMA,
     ARROW,
     /// @ignore
@@ -180,4 +181,492 @@ enum CatspeakToken {
     ERROR,
     /// @ignore
     __SIZE__,
+}
+
+/// Responsible for tokenising the contents of a GML buffer. This can be used
+/// for syntax highlighting in a programming game which uses Catspeak.
+///
+/// @warning
+///   The lexer does not take ownership of its buffer, so you must make sure
+///   to delete the buffer once the lexer is complete. Failure to do this will
+///   result in leaking memory.
+///
+/// @param {Id.Buffer} buff
+///   The ID of the GML buffer to use.
+///
+/// @param {Real} [offset]
+///   The offset in the buffer to start parsing from. Defaults to 0.
+///
+/// @param {Real} [size]
+///   The length of the buffer input. Any characters beyond this limit
+///   will be treated as the end of the file. Defaults to `infinity`.
+function CatspeakLexer(buff, offset = undefined, size = undefined)
+        : CatspeakUTF8Scanner(buff, offset, size) constructor {
+    /// @ignore
+    value = undefined;
+    /// @ignore
+    hasValue = false;
+    /// @ignore
+    peeked = undefined;
+
+    /// Returns the actual value representation of the most recent token
+    /// emitted by the `next` or `nextWithWhitespace` methods.
+    ///
+    /// @remark
+    ///   Unlike `getLexeme` this value is not always a string. For numeric
+    ///   literals, the value will be converted into an integer or real.
+    ///
+    /// @return {Any}
+    static getValue = function () {
+        if (hasValue) {
+            return value;
+        }
+        value = getLexeme();
+        hasValue = true;
+        return value;
+    };
+
+    /// Advances the lexer and returns the next type of `CatspeakToken`. This
+    /// includes additional whitespace and comment tokens.
+    ///
+    /// @remark
+    ///   To get the string content of the token, you should use the
+    ///   `getLexeme` method.
+    ///
+    /// @example
+    ///   Iterates through all tokens of a buffer containing Catspeak code,
+    ///   printing each non-whitespace token out as a debug message.
+    ///
+    ///   ```gml
+    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   do {
+    ///     var token = lexer.nextWithWhitespace();
+    ///     if (token != CatspeakToken.WHITESPACE) {
+    ///       show_debug_message(lexer.getLexeme());
+    ///     }
+    ///   } until (token == CatspeakToken.EOF);
+    ///   ```
+    ///
+    /// @return {Enum.CatspeakToken}
+    static nextWithWhitespace = function () {
+        clearLexeme();
+        hasValue = false;
+        // the next char is the current char after `advanceChar` is called
+        // don't think too hard about it
+        var charCurr_ = charNext;
+        if (charCurr_ == 0) {
+            return CatspeakTokenV3.EOF;
+        }
+        advanceChar();
+        var token = charCurr_ < 0xFF ? __asciiCodepage[charCurr_] : CatspeakToken.ERROR;
+        var sublexer = __lexerLookup[token];
+        if (sublexer != undefined) {
+            token = sublexer() ?? token;
+        }
+        return token;
+    };
+
+    /// @ignore
+    static __completeWhitespace = function () {
+        var charNext_ = charNext;
+        while (charNext_ != 0 && __catspeak_char_is_whitespace(charNext_)) {
+            advanceChar();
+            charNext_ = charNext;
+        }
+    };
+
+    /// @ignore
+    static __completeIdent = function () {
+        var charNext_ = charNext;
+        if (charCurr == ord("`")) {
+            // raw identifiers
+            if (charNext_ == ord("`")) { // empty raw string
+                return CatspeakToken.ERROR;
+            }
+            while (charNext_ != 0 && !__catspeak_char_is_whitespace(charNext_)) {
+                advanceChar();
+                charNext_ = charNext;
+            }
+            if (charNext_ != ord("`")) { // unterminated raw string
+                return CatspeakToken.ERROR;
+            }
+            advanceChar();
+            value = getLexeme(1, 1); // trim off the backticks ``
+            hasValue = true;
+        } else {
+            while (__catspeak_char_is_alphanum(charNext_)) {
+                advanceChar();
+                charNext_ = charNext;
+            }
+            value = getLexeme();
+            hasValue = true;
+            var keyword = __keywords[$ value];
+            if (keyword != undefined) {
+                return keyword;
+            }
+            var literal = __literals[$ value];
+            if (literal != undefined) {
+                value = literal;
+                return CatspeakToken.NUMBER;
+            }
+            if (value == "undefined") {
+                value = undefined;
+                return CatspeakToken.UNDEFINED;
+            }
+        }
+    };
+
+    /// @ignore
+    static __completeNumber = function () {
+        var charCurr_ = charCurr;
+        var charNext_ = charNext;
+        if (charCurr_ == ord("'")) {
+            // char literals
+            advanceChar();
+            if (charNext != ord("'")) { // unterminated char literal
+                return CatspeakToken.ERROR;
+            }
+            advanceChar();
+            value = charNext_;
+            hasValue = true;
+        } else if (charCurr_ == ord("#")) {
+            // colour literals
+            // TODO
+        } else if (
+            charCurr_ == ord("0") &&
+            (charNext_ == ord("b") || charNext_ == ord("B"))
+        ) {
+            // binary literals
+            // TODO
+        } else if (
+            charCurr_ == ord("0") &&
+            (charNext_ == ord("x") || charNext_ == ord("X"))
+        ) {
+            // hex literals
+            // TODO
+        } else {
+            // plain ol' numbers
+            // TODO
+        }
+    };
+
+    /// @ignore
+    static __completeString = function () {
+        var charNext_ = charNext;
+        if (charCurr == ord("@")) {
+            if (charNext_ != ord("\"")) { // malformed verbatim string
+                return CatspeakToken.ERROR;
+            }
+            // TODO
+            if (charNext_ != ord("\"")) { // unterminated verbatim string
+                return CatspeakToken.ERROR;
+            }
+            value = getLexeme(2, 1); // trim off the quotes @""
+            hasValue = true;
+            advanceChar();
+        } else {
+            // plain ol' strings
+            while (charNext_ != 0 && !__catspeak_char_is_whitespace(charNext_)) {
+                advanceChar();
+                charNext_ = charNext;
+            }
+            // TODO
+            if (charNext_ != ord("\"")) { // unterminated string
+                return CatspeakToken.ERROR;
+            }
+            value = getLexeme(1, 1); // trim off the quotes ""
+            hasValue = true;
+            advanceChar();
+        }
+    };
+
+    /// @ignore
+    static __completeColon = function () {
+        if (charNext == ord(":")) {
+            advanceChar();
+            return CatspeakToken.COLON_COLON;
+        }
+    };
+
+    /// @ignore
+    static __completeAssign = function () {
+        if (charNext == ord("=")) {
+            advanceChar();
+            return CatspeakToken.EQUAL;
+        }
+    };
+
+    /// @ignore
+    static __completeMultiply = function () {
+        if (charNext == ord("=")) {
+            advanceChar();
+            return CatspeakToken.ASSIGN_MULTIPLY;
+        }
+    };
+
+    /// @ignore
+    static __completeDivide = function () {
+        var charNext_ = charNext;
+        if (charNext_ == ord("=")) {
+            advanceChar();
+            return CatspeakToken.ASSIGN_DIVIDE;
+        } else if (charNext_ == ord("/")) {
+            advanceChar();
+            return CatspeakToken.DIVIDE_INT;
+        }
+    };
+
+    /// @ignore
+    static __completePlus = function () {
+        if (charNext == ord("=")) {
+            advanceChar();
+            return CatspeakToken.ASSIGN_PLUS;
+        }
+    };
+
+    /// @ignore
+    static __completeSubtract = function () {
+        var charNext_ = charNext;
+        if (charNext_ == ord("=")) {
+            advanceChar();
+            return CatspeakToken.ASSIGN_SUBTRACT;
+        } else if (charNext_ == ord("-")) {
+            // comments
+            advanceChar();
+            // TODO
+        }
+    };
+
+    /// @ignore
+    static __completeNot = function () {
+        if (charNext == ord("=")) {
+            advanceChar();
+            return CatspeakToken.NOT_EQUAL;
+        }
+    };
+
+    /// @ignore
+    static __completeGreater = function () {
+        var charNext_ = charNext;
+        if (charNext_ == ord("=")) {
+            advanceChar();
+            return CatspeakToken.GREATER_EQUAL;
+        } else if (charNext_ == ord(">")) {
+            advanceChar();
+            return CatspeakToken.SHIFT_RIGHT;
+        }
+    };
+
+    /// @ignore
+    static __completeLess = function () {
+        var charNext_ = charNext;
+        if (charNext_ == ord("=")) {
+            advanceChar();
+            return CatspeakToken.LESS_EQUAL;
+        } else if (charNext_ == ord("<")) {
+            advanceChar();
+            return CatspeakToken.SHIFT_LEFT;
+        } else if (charNext_ == ord("|")) {
+            advanceChar();
+            return CatspeakToken.PIPE_LEFT;
+        }
+    };
+
+    /// @ignore
+    static __completeBitwiseOr = function () {
+        if (charNext == ord(">")) {
+            advanceChar();
+            return CatspeakToken.PIPE_RIGHT;
+        }
+    };
+
+    /// Advances the lexer and returns the next `CatspeakToken`, ignoring any
+    /// comments, whitespace, and line continuations.
+    ///
+    /// @remark
+    ///   To get the string content of the token, you should use the
+    ///   `getLexeme` method.
+    ///
+    /// @example
+    ///   Iterates through all tokens of a buffer containing Catspeak code,
+    ///   printing each token out as a debug message.
+    ///
+    ///   ```gml
+    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   do {
+    ///     var token = lexer.next();
+    ///     show_debug_message(lexer.getLexeme());
+    ///   } until (token == CatspeakToken.EOF);
+    ///   ```
+    ///
+    /// @return {Enum.CatspeakToken}
+    static next = function () {
+        if (peeked != undefined) {
+            var token = peeked;
+            peeked = undefined;
+            return token;
+        }
+        while (true) {
+            var token = nextWithWhitespace();
+            if (token == CatspeakToken.WHITESPACE
+                    || token == CatspeakToken.COMMENT) {
+                continue;
+            }
+            return token;
+        }
+    };
+
+    /// Peeks at the next non-whitespace character without advancing the lexer.
+    ///
+    /// @example
+    ///   Iterates through all tokens of a buffer containing Catspeak code,
+    ///   printing each token out as a debug message.
+    ///
+    ///   ```gml
+    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   while (lexer.peek() != CatspeakToken.EOF) {
+    ///     lexer.next();
+    ///     show_debug_message(lexer.getLexeme());
+    ///   }
+    ///   ```
+    ///
+    /// @return {Enum.CatspeakToken}
+    static peek = function () {
+        peeked ??= next();
+        return peeked;
+    };
+
+    /// @ignore
+    static __keywords = undefined;
+    if (__keywords == undefined) {
+        __keywords = { };
+        __keywords[$ "self"] = CatspeakToken.SELF;
+        __keywords[$ "other"] = CatspeakToken.OTHER;
+        __keywords[$ "params"] = CatspeakToken.PARAMS;
+        __keywords[$ "and"] = CatspeakToken.AND;
+        __keywords[$ "or"] = CatspeakToken.OR;
+        __keywords[$ "xor"] = CatspeakToken.XOR;
+        __keywords[$ "do"] = CatspeakToken.DO;
+        __keywords[$ "if"] = CatspeakToken.IF;
+        __keywords[$ "else"] = CatspeakToken.ELSE;
+        __keywords[$ "while"] = CatspeakToken.WHILE;
+        __keywords[$ "for"] = CatspeakToken.FOR;
+        __keywords[$ "loop"] = CatspeakToken.LOOP;
+        __keywords[$ "with"] = CatspeakToken.WITH;
+        __keywords[$ "match"] = CatspeakToken.MATCH;
+        __keywords[$ "fun"] = CatspeakToken.FUN;
+        __keywords[$ "impl"] = CatspeakToken.IMPL;
+        __keywords[$ "catch"] = CatspeakToken.CATCH;
+        __keywords[$ "return"] = CatspeakToken.RETURN;
+        __keywords[$ "continue"] = CatspeakToken.CONTINUE;
+        __keywords[$ "break"] = CatspeakToken.BREAK;
+        __keywords[$ "throw"] = CatspeakToken.THROW;
+        __keywords[$ "let"] = CatspeakToken.LET;
+    }
+
+    /// @ignore
+    static __literals = undefined;
+    if (__literals == undefined) {
+        __literals = { };
+        __literals[$ "true"] = true;
+        __literals[$ "false"] = false;
+        __literals[$ "NaN"] = NaN;
+        __literals[$ "infinity"] = infinity;
+    }
+
+    /// @ignore
+    static __asciiCodepage = undefined;
+    if (__asciiCodepage == undefined) {
+        __asciiCodepage = array_create(0xFF, CatspeakToken.ERROR);
+        for (var char_ = array_length(__asciiCodepage) - 1; char_ >= 0; char_ -= 1) {
+            var charToken;
+            if (__catspeak_char_is_whitespace(char_)) {
+                charToken = CatspeakToken.WHITESPACE;
+            } else if (
+                __catspeak_char_is_alphanum(char_) ||
+                char_ == ord("`") // raw identifiers
+            ) {
+                charToken = CatspeakToken.IDENT;
+            } else if (
+                char_ >= ord("0") && char_ <= ord("9") ||
+                char_ == ord("'") || // character literals
+                char_ == ord("#")    // colour literals
+            ) {
+                charToken = CatspeakToken.NUMBER;
+            } else if (char_ == ord("\"") || char_ == ord("@")) {
+                charToken = CatspeakToken.STRING;
+            } else {
+                continue;
+            }
+            __asciiCodepage[@ char_] = charToken;
+        }
+        __asciiCodepage[@ ord("(")] = CatspeakToken.PAREN_LEFT;
+        __asciiCodepage[@ ord(")")] = CatspeakToken.PAREN_RIGHT;
+        __asciiCodepage[@ ord("[")] = CatspeakToken.BOX_LEFT;
+        __asciiCodepage[@ ord("]")] = CatspeakToken.BOX_RIGHT;
+        __asciiCodepage[@ ord("{")] = CatspeakToken.BRACE_LEFT;
+        __asciiCodepage[@ ord("}")] = CatspeakToken.BRACE_RIGHT;
+        __asciiCodepage[@ ord(";")] = CatspeakToken.SEMICOLON;
+        __asciiCodepage[@ ord(":")] = CatspeakToken.COLON;
+        __asciiCodepage[@ ord(",")] = CatspeakToken.COMMA;
+        __asciiCodepage[@ ord(".")] = CatspeakToken.DOT;
+        __asciiCodepage[@ ord("=")] = CatspeakToken.ASSIGN;
+        __asciiCodepage[@ ord("*")] = CatspeakToken.MULTIPLY;
+        __asciiCodepage[@ ord("/")] = CatspeakToken.DIVIDE;
+        __asciiCodepage[@ ord("%")] = CatspeakToken.REMAINDER;
+        __asciiCodepage[@ ord("+")] = CatspeakToken.PLUS;
+        __asciiCodepage[@ ord("-")] = CatspeakToken.SUBTRACT;
+        __asciiCodepage[@ ord("!")] = CatspeakToken.NOT;
+        __asciiCodepage[@ ord(">")] = CatspeakToken.GREATER;
+        __asciiCodepage[@ ord("<")] = CatspeakToken.LESS;
+        __asciiCodepage[@ ord("~")] = CatspeakToken.BITWISE_NOT;
+        __asciiCodepage[@ ord("&")] = CatspeakToken.BITWISE_AND;
+        __asciiCodepage[@ ord("^")] = CatspeakToken.BITWISE_XOR;
+        __asciiCodepage[@ ord("|")] = CatspeakToken.BITWISE_OR;
+    }
+
+    /// @ignore
+    static __lexerLookup = undefined;
+    if (__lexerLookup == undefined) {
+        __lexerLookup = array_create(CatspeakToken.__SIZE__, undefined);
+        __lexerLookup[@ CatspeakToken.WHITESPACE] = __completeWhitespace;
+        __lexerLookup[@ CatspeakToken.IDENT] = __completeIdent;
+        __lexerLookup[@ CatspeakToken.NUMBER] = __completeNumber;
+        __lexerLookup[@ CatspeakToken.STRING] = __completeString;
+        __lexerLookup[@ CatspeakToken.COLON] = __completeColon;
+        __lexerLookup[@ CatspeakToken.ASSIGN] = __completeAssign;
+        __lexerLookup[@ CatspeakToken.MULTIPLY] = __completeMultiply;
+        __lexerLookup[@ CatspeakToken.DIVIDE] = __completeDivide;
+        __lexerLookup[@ CatspeakToken.PLUS] = __completePlus;
+        __lexerLookup[@ CatspeakToken.SUBTRACT] = __completeSubtract;
+        __lexerLookup[@ CatspeakToken.NOT] = __completeNot;
+        __lexerLookup[@ CatspeakToken.GREATER] = __completeGreater;
+        __lexerLookup[@ CatspeakToken.LESS] = __completeLess;
+        __lexerLookup[@ CatspeakToken.BITWISE_OR] = __completeBitwiseOr;
+    }
+}
+
+/// @ignore
+function __catspeak_char_is_whitespace(char_) {
+    gml_pragma("forceinline");
+    return (
+        // CHARACTER TABULATION ('\t') = 0x09
+        // LINE FEED            ('\n') = 0x0A
+        // LINE TABULATION      ('\v') = 0x0B
+        // FORM FEED            ('\f') = 0x0C
+        // CARRIAGE RETURN      ('\r') = 0x0D
+        char_ >= 0x09 && char_ <= 0x0D ||
+        char_ == 0x20 || // SPACE (' ')
+        char_ == 0x85    // NEXT LINE
+    );
+}
+
+/// @ignore
+function __catspeak_char_is_alphanum(char_) {
+    gml_pragma("forceinline");
+    return (
+        char_ >= ord("a") && char_ <= ord("z") ||
+        char_ >= ord("Z") && char_ <= ord("Z") ||
+        char_ == ord("_")
+    );
 }

@@ -8,6 +8,10 @@ if (gmlFunc == undefined) {
 if (frame < runTime) {
     var countTotal_ = countTotal;
 
+    //var t = get_timer();
+    //gmlFunc();
+    //show_message(get_timer() - t);
+
     var expectTime = get_timer() + game_get_speed(gamespeed_microseconds);
     while (get_timer() < expectTime) {
         gmlFunc();

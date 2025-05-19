@@ -952,12 +952,6 @@ function __catspeak_char_is_operator(char) {
 }
 
 /// @ignore
-function __catspeak_char_is_whitespace(char) {
-    gml_pragma("forceinline");
-    return char >= 0x09 && char <= 0x0D || char == 0x20 || char == 0x85;
-}
-
-/// @ignore
 function __catspeak_codepage_value(code) {
     gml_pragma("forceinline");
     return is_string(code) ? ord(code) : code;

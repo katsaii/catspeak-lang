@@ -78,8 +78,6 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     charNext = __nextChar();
 
     /// @ignore
-    ///
-    /// @return {Real}
     static __nextChar = function () {
         if (buffOffset >= buffSize) {
             return 0;
@@ -158,9 +156,6 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     };
 
     /// @ignore
-    ///
-    /// @param {Real} start
-    /// @param {Real} end_
     static __slice = function (start, end_) {
         var buff_ = buff;
         // don't read outside bounds of `buffSize`
@@ -197,10 +192,26 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     ///   show_debug_message(scanner.getLexeme());
     ///   ```
     ///
+    /// @warning
+    ///   Passing incorrect values for `trimStart` and `trimEnd` may cause
+    ///   incorrect string rendering if the trimmed bytes made up the start
+    ///   or end of a unicode codepoint. Take care when using this function,
+    ///   and only trim characters you are certain are ASCII.
+    ///
+    /// @param {Real} [trimStart]
+    ///   The number of bytes to trim from the left-hand-side of the lexeme.
+    ///
+    /// @param {Real} [trimEnd]
+    ///   The number of bytes to trim from the right-hand-side of the lexeme.
+    ///
     /// @return {String}
-    static getLexeme = function () {
-        lexeme ??= __slice(lexemeStart, lexemeEnd);
-        return lexeme;
+    static getLexeme = function (trimStart = 0, trimEnd = 0) {
+        if (trimStart == 0 && trimEnd == 0) {
+            lexeme ??= __slice(lexemeStart, lexemeEnd);
+            return lexeme;
+        } else {
+            return __slice(lexemeStart + trimStart, lexemeEnd - trimEnd);
+        }
     };
 
     /// Returns the location information of the current scanned span.
