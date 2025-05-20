@@ -1,23 +1,11 @@
-//! "Meow" is the code name for the Catspeak programming language, loosely
-//! inspired by syntax from JavaScript, GML, and Rust.
+//! "Meow" is the code name for the built-in Catspeak programming language,
+//! loosely inspired by syntax from JavaScript, GML, and Rust.
 //!
-//! This module contains the parser for this language.
+//! This module contains the lexer for this language, responsible for
+//! converting source code from individual characters into clusters of
+//! characters called [tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization).
 
 //# feather use syntax-errors
-
-var buff = catspeak_util_buffer_create_from_string(@'
-    let `abcdef$` = @"this is a test script ""but do quotes work?"""
-    "normal string, no escapes"
-    "normal string, yes\tescapes \"\n"
-');
-var lexer = new CatspeakLexer(buff);
-while lexer.nextWithWhitespace() != CatspeakToken.EOF {
-    var lexeme = lexer.getLexeme();
-    var value = lexer.getValue();
-    value = is_string(value) ? value : string(value);
-    show_debug_message("token: '" + lexeme + "' = " + value);
-}
-show_message("see output");
 
 /// A token in Catspeak is a series of characters with meaning, usually
 /// separated by whitespace. These meanings are represented by unique
@@ -341,22 +329,156 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
             hasValue = true;
         } else if (charCurr_ == ord("#")) {
             // colour literals
-            // TODO
+            if (!__catspeak_char_is_digit_hex(charNext)) {
+                // colour literals must start with a digit
+                return CatspeakToken.ERROR;
+            }
+            var digitStack = ds_stack_create();
+            while (!isEndOfFile) {
+                if (__catspeak_char_is_digit_hex(charNext)) {
+                    ds_stack_push(digitStack, __catspeak_char_hex_to_dec(charNext));
+                    advanceChar();
+                } else if (charNext == ord("_")) {
+                    advanceChar();
+                } else {
+                    break;
+                }
+            }
+            var digitCount = ds_stack_size(digitStack);
+            var cR = 0;
+            var cG = 0;
+            var cB = 0;
+            var cA = 0;
+            if (digitCount == 3) {
+                // #RGB
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (cB << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (cG << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (cR << 4);
+            } else if (digitCount == 4) {
+                // #RGBA
+                cA = ds_stack_pop(digitStack);
+                cA = cA | (cA << 4);
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (cB << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (cG << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (cR << 4);
+            } else if (digitCount == 6) {
+                // #RRGGBB
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (ds_stack_pop(digitStack) << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (ds_stack_pop(digitStack) << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (ds_stack_pop(digitStack) << 4);
+            } else if (digitCount == 8) {
+                // #RRGGBBAA
+                cA = ds_stack_pop(digitStack);
+                cA = cA | (ds_stack_pop(digitStack) << 4);
+                cB = ds_stack_pop(digitStack);
+                cB = cB | (ds_stack_pop(digitStack) << 4);
+                cG = ds_stack_pop(digitStack);
+                cG = cG | (ds_stack_pop(digitStack) << 4);
+                cR = ds_stack_pop(digitStack);
+                cR = cR | (ds_stack_pop(digitStack) << 4);
+            } else {
+                // invalid format
+                return CatspeakToken.ERROR;
+            }
+            ds_stack_destroy(digitStack);
+            value = cR | (cG << 8) | (cB << 16) | (cA << 24);
+            hasValue = true;
         } else if (
             charCurr_ == ord("0") &&
             (charNext_ == ord("b") || charNext_ == ord("B"))
         ) {
             // binary literals
-            // TODO
+            advanceChar();
+            if (!__catspeak_char_is_digit_binary(charNext)) {
+                // binary literals must start with a digit
+                return CatspeakToken.ERROR;
+            }
+            var digitStack = ds_stack_create();
+            while (!isEndOfFile) {
+                if (__catspeak_char_is_digit_binary(charNext)) {
+                    ds_stack_push(digitStack, __catspeak_char_binary_to_dec(charNext));
+                    advanceChar();
+                } else if (charNext == ord("_")) {
+                    advanceChar();
+                } else {
+                    break;
+                }
+            }
+            value = 0;
+            var pow = 0;
+            while (!ds_stack_empty(digitStack)) {
+                value += power(2, pow) * ds_stack_pop(digitStack);
+                pow += 1;
+            }
+            ds_stack_destroy(digitStack);
+            hasValue = true;
         } else if (
             charCurr_ == ord("0") &&
             (charNext_ == ord("x") || charNext_ == ord("X"))
         ) {
             // hex literals
-            // TODO
+            // TODO :: some way to avoid code duplication between all these digit parsers
+            advanceChar();
+            if (!__catspeak_char_is_digit_hex(charNext)) {
+                // binary literals must start with a digit
+                return CatspeakToken.ERROR;
+            }
+            var digitStack = ds_stack_create();
+            while (!isEndOfFile) {
+                if (__catspeak_char_is_digit_hex(charNext)) {
+                    ds_stack_push(digitStack, __catspeak_char_hex_to_dec(charNext));
+                    advanceChar();
+                } else if (charNext == ord("_")) {
+                    advanceChar();
+                } else {
+                    break;
+                }
+            }
+            value = 0;
+            var pow = 0;
+            while (!ds_stack_empty(digitStack)) {
+                value += power(16, pow) * ds_stack_pop(digitStack);
+                pow += 1;
+            }
+            ds_stack_destroy(digitStack);
+            hasValue = true;
         } else {
             // plain ol' numbers
-            // TODO
+            var digits = "";
+            var lexemeOffset = 0;
+            var hasDecimal = false;
+            while (!isEndOfFile) {
+                if (__catspeak_char_is_digit(charNext)) {
+                    advanceChar();
+                } else if (charNext == ord("_")) {
+                    digits += getLexeme(lexemeOffset);
+                    lexemeOffset = advanceChar();
+                    if (!__catspeak_char_is_digit(charNext)) {
+                        // numeric literals should not end with an underscore
+                        return CatspeakToken.ERROR;
+                    }
+                } else if (!hasDecimal && charNext == ord(".")) {
+                    advanceChar();
+                    hasDecimal = true;
+                    if (!__catspeak_char_is_digit(charNext)) {
+                        return CatspeakToken.ERROR;
+                    }
+                } else {
+                    digits += getLexeme(lexemeOffset);
+                    break;
+                }
+            }
+            value = real(digits);
+            hasValue = true;
         }
     };
 
@@ -643,7 +765,7 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
             if (__catspeak_char_is_whitespace(char_)) {
                 charToken = CatspeakToken.WHITESPACE;
             } else if (
-                __catspeak_char_is_alphanum(char_) ||
+                __catspeak_char_is_alpha(char_) ||
                 char_ == ord("`") // raw identifiers
             ) {
                 charToken = CatspeakToken.IDENT;
@@ -722,11 +844,57 @@ function __catspeak_char_is_whitespace(char_) {
 }
 
 /// @ignore
-function __catspeak_char_is_alphanum(char_) {
+function __catspeak_char_is_alpha(char_) {
     gml_pragma("forceinline");
     return (
         char_ >= ord("a") && char_ <= ord("z") ||
-        char_ >= ord("Z") && char_ <= ord("Z") ||
+        char_ >= ord("A") && char_ <= ord("Z") ||
         char_ == ord("_")
     );
+}
+
+/// @ignore
+function __catspeak_char_is_alphanum(char_) {
+    gml_pragma("forceinline");
+    return (
+        __catspeak_char_is_alpha(char_) ||
+        __catspeak_char_is_digit(char_)
+    );
+}
+
+/// @ignore
+function __catspeak_char_is_digit(char_) {
+    gml_pragma("forceinline");
+    return char_ >= ord("0") && char_ <= ord("9");
+}
+
+/// @ignore
+function __catspeak_char_is_digit_binary(char_) {
+    gml_pragma("forceinline");
+    return char_ == ord("0") || char_ == ord("1");
+}
+
+/// @ignore
+function __catspeak_char_binary_to_dec(char_) {
+    gml_pragma("forceinline");
+    return char_ == ord("0") ? 0 : 1;
+}
+
+/// @ignore
+function __catspeak_char_is_digit_hex(char_) {
+    gml_pragma("forceinline");
+    return char_ >= ord("a") && char_ <= ord("f") ||
+            char_ >= ord("A") && char_ <= ord("F") ||
+            char_ >= ord("0") && char_ <= ord("9");
+}
+
+/// @ignore
+function __catspeak_char_hex_to_dec(char_) {
+    if (char_ >= ord("0") && char_ <= ord("9")) {
+        return char_ - ord("0");
+    }
+    if (char_ >= ord("a") && char_ <= ord("f")) {
+        return char_ - ord("a") + 10;
+    }
+    return char_ - ord("A") + 10;
 }

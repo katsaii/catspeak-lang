@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4";
+var runExperiment = "catspeak4-lex";// "catspeak4";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -238,4 +238,25 @@ TEST_EXPERIMENT "catspeak4" {
     GC_LOG;
     show_message("Catspeak avg. n = " + string(countTotal_ / runTime));
 */
+}
+
+TEST_EXPERIMENT "catspeak4-lex" {
+    var buff = catspeak_util_buffer_create_from_string(@'
+        let `abcdef$` = @"this is a test script ""but do quotes work?"""
+        "normal string, no escapes"
+        "normal string, yes\tescapes \"\n"
+        let aaah = _abc123
+        return #FF02_Aa12--#FF02__Aa12
+        
+        while 1234.5678_1415 { 12_3
+        0b1010010_100101101
+        0XFF00FF
+    ');
+    var lexer = new CatspeakLexer(buff);
+    while lexer.nextWithWhitespace() != CatspeakToken.EOF {
+        var lexeme = lexer.getLexeme();
+        var value = lexer.getValue();
+        show_debug_message("token: '" + lexeme + "' = " + string(value) + " (" + typeof(value) + ")");
+    }
+    show_message("see output");
 }

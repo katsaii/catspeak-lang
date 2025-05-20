@@ -139,6 +139,7 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     ///
     /// @return {Real}
     static advanceChar = function () {
+        lexeme = undefined;
         lexemeEnd = buffOffset;
         var charNext_ = charNext;
         if (charNext_ == ord("\r")) {

@@ -896,49 +896,12 @@ function __catspeak_init_lexer() {
 }
 
 /// @ignore
-function __catspeak_char_is_digit(char) {
-    gml_pragma("forceinline");
-    return char >= ord("0") && char <= ord("9");
-}
-
-/// @ignore
-function __catspeak_char_is_digit_binary(char) {
-    gml_pragma("forceinline");
-    return char == ord("0") || char == ord("1");
-}
-
-/// @ignore
-function __catspeak_char_binary_to_dec(char) {
-    gml_pragma("forceinline");
-    return char == ord("0") ? 0 : 1;
-}
-
-/// @ignore
-function __catspeak_char_is_digit_hex(char) {
-    gml_pragma("forceinline");
-    return char >= ord("a") && char <= ord("f") ||
-            char >= ord("A") && char <= ord("F") ||
-            char >= ord("0") && char <= ord("9");
-}
-
-/// @ignore
-function __catspeak_char_hex_to_dec(char) {
-    if (char >= ord("0") && char <= ord("9")) {
-        return char - ord("0");
-    }
-    if (char >= ord("a") && char <= ord("f")) {
-        return char - ord("a") + 10;
-    }
-    return char - ord("A") + 10;
-}
-
-/// @ignore
+///
+/// @deprecated {4.0.0}
+///   Use `__catspeak_char_is_alphanum` instead.
 function __catspeak_char_is_alphanumeric(char) {
     gml_pragma("forceinline");
-    return char >= ord("a") && char <= ord("z") ||
-            char >= ord("A") && char <= ord("Z") ||
-            char >= ord("0") && char <= ord("9") ||
-            char == ord("_");
+    return __catspeak_char_is_alphanum(char);
 }
 
 /// @ignore
