@@ -11,7 +11,6 @@
     {"id":{"name":"scr_catspeak_lang_gml","path":"scripts/scr_catspeak_lang_gml/scr_catspeak_lang_gml.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_scan","path":"scripts/scr_catspeak_scan/scr_catspeak_scan.yy",},"order":4,},
     {"id":{"name":"scr_testing_lexer","path":"scripts/scr_testing_lexer/scr_testing_lexer.yy",},"order":0,},
-    {"id":{"name":"scr_catspeak_presets","path":"scripts/scr_catspeak_presets/scr_catspeak_presets.yy",},"order":1,},
     {"id":{"name":"scr_catspeak_codegen","path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},"order":0,},
     {"id":{"name":"tm_unit_test","path":"tilesets/tm_unit_test/tm_unit_test.yy",},"order":8,},
     {"id":{"name":"scr_catspeak_common","path":"scripts/scr_catspeak_common/scr_catspeak_common.yy",},"order":2,},
@@ -23,7 +22,6 @@
     {"id":{"name":"scr_catspeak_cart","path":"scripts/scr_catspeak_cart/scr_catspeak_cart.yy",},"order":1,},
     {"id":{"name":"not_catspeak_getting_started","path":"notes/not_catspeak_getting_started/not_catspeak_getting_started.yy",},"order":1,},
     {"id":{"name":"not_catspeak_expressions","path":"notes/not_catspeak_expressions/not_catspeak_expressions.yy",},"order":3,},
-    {"id":{"name":"scr_catspeak_init","path":"scripts/scr_catspeak_init/scr_catspeak_init.yy",},"order":3,},
     {"id":{"name":"not_catspeak_lexical_grammar","path":"notes/not_catspeak_lexical_grammar/not_catspeak_lexical_grammar.yy",},"order":2,},
     {"id":{"name":"scr_testing_lexer_ident","path":"scripts/scr_testing_lexer_ident/scr_testing_lexer_ident.yy",},"order":2,},
     {"id":{"name":"scr_testing_lexer_whitespace","path":"scripts/scr_testing_lexer_whitespace/scr_testing_lexer_whitespace.yy",},"order":10,},
@@ -96,7 +94,6 @@
   "Folders": [
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak 3","folderPath":"folders/Catspeak 3.yy","order":0,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"compiler","folderPath":"folders/Catspeak 3/compiler.yy","order":0,},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"runtime","folderPath":"folders/Catspeak 3/runtime.yy","order":1,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Docs","folderPath":"folders/Catspeak Docs.yy","order":4,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"catspeak","folderPath":"folders/Catspeak Docs/catspeak.yy","order":2,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Plugins","folderPath":"folders/Catspeak Plugins.yy","order":6,},
