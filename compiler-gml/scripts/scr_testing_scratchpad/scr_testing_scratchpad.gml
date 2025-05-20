@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4-lex";// "catspeak4";
+var runExperiment = undefined;// "catspeak4-lex";// "catspeak4";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -251,6 +251,7 @@ TEST_EXPERIMENT "catspeak4-lex" {
         while 1234.5678_1415 { 12_3
         0b1010010_100101101
         0XFF00FF
+        :3
     ');
     var lexer = new CatspeakLexer(buff);
     while lexer.nextWithWhitespace() != CatspeakToken.EOF {
@@ -258,5 +259,5 @@ TEST_EXPERIMENT "catspeak4-lex" {
         var value = lexer.getValue();
         show_debug_message("token: '" + lexeme + "' = " + string(value) + " (" + typeof(value) + ")");
     }
-    show_message("see output");
+    //show_message("see output");
 }

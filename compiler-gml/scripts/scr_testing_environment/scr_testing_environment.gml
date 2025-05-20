@@ -262,9 +262,11 @@ test_add(function () : Test("global-custom-presets") constructor {
 test_add(function () : Test("env-properties") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeDynamicConstant("some_property", function () { return 620 });
-    var f = env.compile(env.parseString(@'
+    var ir_= env.parseString(@'
         return some_property + 2 * some_property
-    '));
+    ');
+    var ir_s = json_stringify(ir_);
+    var f = env.compile(ir_);
     assertEq(620 + 2 * 620, f());
 });
 
@@ -455,7 +457,7 @@ test_add(function () : Test("env-else-if") constructor {
     }
 });
 
-test_add_force(function () : Test(
+test_add(function () : Test(
     "engine-else-if-multiple-statements"
 ) constructor {
     var engine = new CatspeakEnvironment();
@@ -474,7 +476,7 @@ test_add_force(function () : Test(
     assertEq("good", result);
 });
 
-test_add_force(function () : Test(
+test_add(function () : Test(
     "dynamic-constants"
 ) constructor {
     var engine = new CatspeakEnvironment();

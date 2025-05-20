@@ -25,15 +25,15 @@ test_add(function () : TestLexerToken("lexer-tokens-ident-literal-3",
     CatspeakTokenV3.IDENT, "`1_+_2_=_?`", "1_+_2_=_?"
 ) constructor { });
 
-test_add(function () : TestLexerToken("lexer-tokens-ident-literal-malformed",
+test_add(function () : TestLexerTokenNegative("lexer-tokens-ident-literal-malformed",
     CatspeakTokenV3.IDENT, "`🙀abc", "🙀abc"
 ) constructor { }, IgnorePlatform.HTML5);
 
-test_add(function () : TestLexerToken("lexer-tokens-ident-literal-malformed-2",
+test_add(function () : TestLexerTokenNegative("lexer-tokens-ident-literal-malformed-2",
     CatspeakTokenV3.IDENT, "`>>=", ">>="
 ) constructor { });
 
-test_add(function () : TestLexerToken("lexer-tokens-ident-literal-malformed-3",
+test_add(function () : TestLexerTokenNegative("lexer-tokens-ident-literal-malformed-3",
     CatspeakTokenV3.IDENT, "`1_+_2_=_?", "1_+_2_=_?"
 ) constructor { });
 

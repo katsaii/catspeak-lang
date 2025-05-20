@@ -344,6 +344,10 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
                     break;
                 }
             }
+            if (charCurr == ord("_")) {
+                // binary literals must not end with an underscore
+                return CatspeakToken.ERROR;
+            }
             var digitCount = ds_stack_size(digitStack);
             var cR = 0;
             var cG = 0;
@@ -413,6 +417,10 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
                     break;
                 }
             }
+            if (charCurr == ord("_")) {
+                // binary literals must not end with an underscore
+                return CatspeakToken.ERROR;
+            }
             value = 0;
             var pow = 0;
             while (!ds_stack_empty(digitStack)) {
@@ -443,6 +451,10 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
                     break;
                 }
             }
+            if (charCurr == ord("_")) {
+                // binary literals must not end with an underscore
+                return CatspeakToken.ERROR;
+            }
             value = 0;
             var pow = 0;
             while (!ds_stack_empty(digitStack)) {
@@ -460,23 +472,31 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
                 if (__catspeak_char_is_digit(charNext)) {
                     advanceChar();
                 } else if (charNext == ord("_")) {
-                    digits += getLexeme(lexemeOffset);
-                    lexemeOffset = advanceChar();
-                    if (!__catspeak_char_is_digit(charNext)) {
-                        // numeric literals should not end with an underscore
+                    if (charCurr == ord(".")) {
+                        // literals must not have an underscore besides a decimal points
                         return CatspeakToken.ERROR;
                     }
+                    digits += getLexeme(lexemeOffset);
+                    lexemeOffset = advanceChar();
                 } else if (!hasDecimal && charNext == ord(".")) {
+                    if (charCurr == ord("_")) {
+                        // literals must not have an underscore besides a decimal points
+                        return CatspeakToken.ERROR;
+                    }
                     advanceChar();
                     hasDecimal = true;
                     if (!__catspeak_char_is_digit(charNext)) {
                         return CatspeakToken.ERROR;
                     }
                 } else {
-                    digits += getLexeme(lexemeOffset);
                     break;
                 }
             }
+            if (charCurr == ord("_")) {
+                // literals must not end with an underscore
+                return CatspeakToken.ERROR;
+            }
+            digits += getLexeme(lexemeOffset);
             value = real(digits);
             hasValue = true;
         }
@@ -605,6 +625,7 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
                 charNext == ord("\n") ||
                 charNext == ord("\r")
             );
+            return CatspeakToken.COMMENT;
         }
     };
 
@@ -726,6 +747,7 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
         __keywords[$ "with"] = CatspeakToken.WITH;
         __keywords[$ "match"] = CatspeakToken.MATCH;
         __keywords[$ "fun"] = CatspeakToken.FUN;
+        __keywords[$ "new"] = CatspeakToken.NEW;
         __keywords[$ "impl"] = CatspeakToken.IMPL;
         __keywords[$ "catch"] = CatspeakToken.CATCH;
         __keywords[$ "return"] = CatspeakToken.RETURN;

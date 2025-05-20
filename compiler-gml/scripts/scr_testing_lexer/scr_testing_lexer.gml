@@ -19,7 +19,7 @@ function TestLexerTokenStream(name, src) : Test(name) constructor {
     };
 }
 
-function TestLexerToken(name, token, src, value) : Test(name) constructor {
+function TestLexerToken(name, token, src, value, negative = false) : Test(name, negative) constructor {
     var buff = __catspeak_create_buffer_from_string(src);
     var lexer = new CatspeakLexerV3(buff);
     assertEq(token, lexer.nextWithWhitespace());
@@ -28,6 +28,8 @@ function TestLexerToken(name, token, src, value) : Test(name) constructor {
     assertEq(CatspeakTokenV3.EOF, lexer.nextWithWhitespace());
     buffer_delete(buff);
 }
+
+function TestLexerTokenNegative(name, token, src, value) : TestLexerToken(name, token, src, value, true) constructor { }
 
 function TestLexerUTF8(name, src) : Test(name) constructor {
     var buff = __catspeak_create_buffer_from_string(src);

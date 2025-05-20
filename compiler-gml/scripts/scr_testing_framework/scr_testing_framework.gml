@@ -25,8 +25,12 @@ function test_stats() {
     return stats;
 }
 
-function Test(name) constructor {
-    show_debug_message("RUNNING TEST " + string(name));
+#macro TEST_SHOW_PASSED false
+
+function Test(name, negative) constructor {
+    if (TEST_SHOW_PASSED) {
+        show_debug_message("RUNNING TEST " + string(name));
+    }
 
     var stats = test_stats();
     self.number = stats.n; stats.n += 1;
@@ -34,6 +38,7 @@ function Test(name) constructor {
     self.fails = [];
     self.automatic = true;
     self.completed = false;
+    self.negative = negative;
 
     catspeak_force_init();
 
@@ -46,7 +51,7 @@ function Test(name) constructor {
         }
         var stats = test_stats();
         stats.totalActive -= 1;
-        var passed = array_length(fails) < 1;
+        var passed = negative ? array_length(fails) > 0 : array_length(fails) < 1;
         var msg = " ---===--- test ";
         msg += "#" + string(number) + " ";
         if (passed) {
@@ -62,6 +67,9 @@ function Test(name) constructor {
                 msg += __cat("\n  ", fails[i]);
             }
             msg += "\n]";
+        }
+        if (passed && !TEST_SHOW_PASSED) {
+            return;
         }
         show_debug_message(msg);
     };

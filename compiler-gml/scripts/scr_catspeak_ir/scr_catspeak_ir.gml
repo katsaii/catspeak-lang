@@ -1175,7 +1175,28 @@ enum CatspeakAssign {
 /// @param {Enum.CatspeakTokenV3} token
 /// @return {Enum.CatspeakOperator}
 function __catspeak_operator_from_token(token) {
-    return token - CatspeakTokenV3.__OP_BEGIN__ - 1;
+    switch (token) {
+        case CatspeakTokenV3.REMAINDER: return CatspeakOperator.REMAINDER;
+        case CatspeakTokenV3.MULTIPLY: return CatspeakOperator.MULTIPLY;
+        case CatspeakTokenV3.DIVIDE: return CatspeakOperator.DIVIDE;
+        case CatspeakTokenV3.DIVIDE_INT: return CatspeakOperator.DIVIDE_INT;
+        case CatspeakTokenV3.SUBTRACT: return CatspeakOperator.SUBTRACT;
+        case CatspeakTokenV3.PLUS: return CatspeakOperator.PLUS;
+        case CatspeakTokenV3.EQUAL: return CatspeakOperator.EQUAL;
+        case CatspeakTokenV3.NOT_EQUAL: return CatspeakOperator.NOT_EQUAL;
+        case CatspeakTokenV3.GREATER: return CatspeakOperator.GREATER;
+        case CatspeakTokenV3.GREATER_EQUAL: return CatspeakOperator.GREATER_EQUAL;
+        case CatspeakTokenV3.LESS: return CatspeakOperator.LESS;
+        case CatspeakTokenV3.LESS_EQUAL: return CatspeakOperator.LESS_EQUAL;
+        case CatspeakTokenV3.NOT: return CatspeakOperator.NOT;
+        case CatspeakTokenV3.BITWISE_NOT: return CatspeakOperator.BITWISE_NOT;
+        case CatspeakTokenV3.SHIFT_RIGHT: return CatspeakOperator.SHIFT_RIGHT;
+        case CatspeakTokenV3.SHIFT_LEFT: return CatspeakOperator.SHIFT_LEFT;
+        case CatspeakTokenV3.BITWISE_AND: return CatspeakOperator.BITWISE_AND;
+        case CatspeakTokenV3.BITWISE_XOR: return CatspeakOperator.BITWISE_XOR;
+        case CatspeakTokenV3.BITWISE_OR: return CatspeakOperator.BITWISE_OR;
+        case CatspeakTokenV3.XOR: return CatspeakOperator.XOR;
+    }
 }
 
 /// @ignore
@@ -1183,7 +1204,13 @@ function __catspeak_operator_from_token(token) {
 /// @param {Enum.CatspeakTokenV3} token
 /// @return {Enum.CatspeakAssign}
 function __catspeak_operator_assign_from_token(token) {
-    return token - CatspeakTokenV3.__OP_ASSIGN_BEGIN__ - 1;
+    switch (token) {
+        case CatspeakTokenV3.ASSIGN: return CatspeakAssign.VANILLA;
+        case CatspeakTokenV3.ASSIGN_MULTIPLY: return CatspeakAssign.MULTIPLY;
+        case CatspeakTokenV3.ASSIGN_DIVIDE: return CatspeakAssign.DIVIDE;
+        case CatspeakTokenV3.ASSIGN_SUBTRACT: return CatspeakAssign.SUBTRACT;
+        case CatspeakTokenV3.ASSIGN_PLUS: return CatspeakAssign.PLUS;
+    }
 }
 
 /// @ignore
