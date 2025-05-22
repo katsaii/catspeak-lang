@@ -77,6 +77,12 @@ instr:
         type: string
     comptime: $value$
 
+  - name: "const undefined"
+    name-short: get_u
+    desc: "get the undefined constant"
+    repr: 0x23
+    comptime: undefined
+
 #  - name: "block"
 #    name-short: pop_n
 #    desc: "evaluates n-many expressions, implicitly returning the final expression"

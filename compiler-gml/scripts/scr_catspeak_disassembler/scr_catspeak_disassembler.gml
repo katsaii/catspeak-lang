@@ -76,6 +76,12 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrConstUndefined = function (dbg) {
+        asmStr += "  get_u";
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrIfThenElse = function (dbg) {
         asmStr += "  ifte";
         asmStr += "\n"

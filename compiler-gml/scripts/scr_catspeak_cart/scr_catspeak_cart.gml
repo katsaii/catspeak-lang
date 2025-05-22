@@ -32,6 +32,8 @@ enum CatspeakInstr {
     GET_N = 1,
     /// Get a string constant.
     GET_S = 3,
+    /// Get the undefined constant.
+    GET_U = 35,
     /// Evaluates one of two expressions, depending on whether a condition is true or false.
     IFTE = 28,
     /// Return a value from the current function.
@@ -93,7 +95,7 @@ enum CatspeakInstr {
     /// Calculate the bitwise left shift of two values.
     LSHIFT = 26,
     /// @ignore
-    __SIZE__ = 35,
+    __SIZE__ = 36,
 }
 
 /// Handles the creation of Catspeak cartridges.
@@ -181,6 +183,18 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_S);
         buffer_write(buff_, buffer_string, value);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Get the undefined constant.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitConstUndefined = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(dbg), "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.GET_U);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -570,6 +584,9 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(is_method(visitor_[$ "handleInstrConstString"]),
         "visitor is missing a handler for 'handleInstrConstString'"
     );
+    __catspeak_assert(is_method(visitor_[$ "handleInstrConstUndefined"]),
+        "visitor is missing a handler for 'handleInstrConstUndefined'"
+    );
     __catspeak_assert(is_method(visitor_[$ "handleInstrIfThenElse"]),
         "visitor is missing a handler for 'handleInstrIfThenElse'"
     );
@@ -745,6 +762,13 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         var argValue = buffer_read(buff_, buffer_string);
         var argDbg = buffer_read(buff_, buffer_u32);
         visitor.handleInstrConstString(argValue, argDbg);
+    };
+
+    /// @ignore
+    static __readConstUndefined = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrConstUndefined(argDbg);
     };
 
     /// @ignore
@@ -963,6 +987,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         __readerLookup = array_create(CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ CatspeakInstr.GET_N] = __readConstNumber;
         __readerLookup[@ CatspeakInstr.GET_S] = __readConstString;
+        __readerLookup[@ CatspeakInstr.GET_U] = __readConstUndefined;
         __readerLookup[@ CatspeakInstr.IFTE] = __readIfThenElse;
         __readerLookup[@ CatspeakInstr.RET] = __readReturn;
         __readerLookup[@ CatspeakInstr.BRK] = __readBreak;

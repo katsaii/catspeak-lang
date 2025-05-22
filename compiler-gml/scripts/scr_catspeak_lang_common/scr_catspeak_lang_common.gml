@@ -285,6 +285,7 @@ function CatspeakScopeStack(cart_) constructor {
     /// cartridge.
     static endFunction = function () {
         __catspeak_assert(funcTop > 0.1, "function stack underflow");
+        __endBlock(false);
         var func = funcs[funcTop];
         funcTop -= 1;
         cart.emitClosure();
@@ -301,7 +302,7 @@ function CatspeakScopeStack(cart_) constructor {
                 locals : undefined,
                 stmtCount : 0,
             };
-            func[@ func.blockTop] = block;
+            func.blocks[@ func.blockTop] = block;
         } else {
             block = func.blocks[func.blockTop];
             block.localCount = 0;
@@ -312,18 +313,25 @@ function CatspeakScopeStack(cart_) constructor {
     /// Prepares a new statement to be written to the current block.
     static prepareStatement = function () {
         var func = funcs[funcTop];
-        var block = func.block[func.blockTop];
+        var block = func.blocks[func.blockTop];
         block.stmtCount += 1;
+    };
+
+    /// @ignore
+    static __endBlock = function (assert = true) {
+        var func = funcs[funcTop];
+        if (assert) {
+            __catspeak_assert(func.blockTop > 0.1, "block stack underflow");
+        }
+        var block = func.blocks[func.blockTop];
+        func.blockTop -= 1;
+        func.localTop -= block.localCount;
     };
 
     /// Ends the current block scope, writing its instruction to the supplied
     /// cartridge.
     static endBlock = function () {
-        var func = funcs[funcTop];
-        __catspeak_assert(func.blockTop > 0.1, "block stack underflow");
-        var block = func.block[func.blockTop];
-        func.blockTop -= 1;
-        func.localTop -= block.localCount;
+        __endBlock();
     };
 
     /// Allocate space for a new local variable, returning `true` if the local
@@ -336,7 +344,7 @@ function CatspeakScopeStack(cart_) constructor {
     /// @returns {Bool}
     static allocLocal = function (name) {
         var func = funcs[funcTop];
-        var block = func.block[func.blockTop];
+        var block = func.blocks[func.blockTop];
         block.locals ??= { };
         if (variable_struct_exists(block.locals, name)) {
             return false;

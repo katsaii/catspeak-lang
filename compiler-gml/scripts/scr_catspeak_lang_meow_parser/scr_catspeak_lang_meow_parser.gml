@@ -36,9 +36,12 @@ function CatspeakParser(cart_, buff, offset = undefined, size = undefined) const
     /// @ignore
     cart = cart_;
     /// @ignore
+    scope = new CatspeakScopeStack(cart_);
+    /// @ignore
     lexer = new CatspeakLexer(buff, offset, size);
     /// @ignore
     finalised = false;
+    scope.beginFunction();
 
     /// Parses single a top-level statement, adding any relevant parse
     /// information to the cartridge.
@@ -60,6 +63,7 @@ function CatspeakParser(cart_, buff, offset = undefined, size = undefined) const
     static parseOnce = function () {
         __catspeak_assert(!finalised, "attempting to update parser after it has been finalised");
         if (lexer.peek() == CatspeakToken.EOF) {
+            scope.endFunction();
             cart.finalise();
             finalised = true;
             return false;
@@ -78,6 +82,7 @@ function CatspeakParser(cart_, buff, offset = undefined, size = undefined) const
             lexer.next();
             // TODO
         } else {
+            scope.prepareStatement();
             __parseExpression();
         }
     };

@@ -107,6 +107,15 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
+    static handleInstrConstUndefined = function (dbg) {
+        var exec = method({
+            ctx : ctx,
+            dbg : dbg,
+        }, __catspeak_instr_get_u__);
+        pushValue(exec);
+    };
+
+    /// @ignore
     static handleInstrIfThenElse = function (dbg) {
         // unpack stack args in reverse order
         var if_false = popValue();
@@ -534,6 +543,12 @@ function __catspeak_instr_get_n__() {
 function __catspeak_instr_get_s__() {
     // get a string constant
     return value;
+}
+
+/// @ignore
+function __catspeak_instr_get_u__() {
+    // get the undefined constant
+    return undefined;
 }
 
 /// @ignore
