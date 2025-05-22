@@ -269,10 +269,20 @@ TEST_EXPERIMENT "catspeak4-parse" {
     ');
     var buffCart = buffer_create(1, buffer_grow, 1);
     var cart = new CatspeakCartWriter(buffCart);
+    // do parse
     var parser = new CatspeakParser(cart, buff);
     do {
         var moreRemains = parser.parseOnce();
     } until (!moreRemains);
     buffer_seek(buffCart, buffer_seek_start, 0);
     show_message(catspeak_cart_disassemble(buffCart));
+    // do codegen
+    buffer_seek(buffCart, buffer_seek_start, 0);
+    var codegen = new CatspeakCodegenGML();
+    var reader = new CatspeakCartReader(buffCart, codegen);
+    do {
+        var moreRemains = reader.readInstr();
+    } until (!moreRemains);
+    var program = codegen.getProgram();
+    show_message(program());
 }

@@ -41,7 +41,6 @@ function CatspeakCodegenGML() constructor {
         array_resize(stack, 0);
         /// @ignore
         stackTop = -1;
-        array_resize(funcData, 0);
         ctx = {
             callTime : -1,
             globals : globals ?? { },

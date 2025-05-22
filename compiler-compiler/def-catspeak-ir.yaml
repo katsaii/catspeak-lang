@@ -83,14 +83,14 @@ instr:
     repr: 0x23
     comptime: undefined
 
-#  - name: "block"
-#    name-short: pop_n
-#    desc: "evaluates n-many expressions, implicitly returning the final expression"
-#    repr: 0x1B
-#    args:
-#      - name: n
-#        desc: "the number of expressions to evaluate"
-#        type: u32
+  - name: "block"
+    name-short: pop_n
+    desc: "evaluates n-many expressions, implicitly returning the final expression"
+    repr: 0x1B
+    args:
+      - name: n
+        desc: "the number of expressions to evaluate"
+        type: u32
 
   - name: "if then else"
     name-short: ifte
@@ -145,6 +145,52 @@ instr:
     stackargs:
       - name: body
         desc: "the body of the function expression to execute when called"
+    complex: "requires access to global state"
+
+  - name: "get local"
+    name-short: get_l
+    desc: "gets the value of a local variable with this id"
+    repr: 0x24
+    args:
+      - name: idx
+        desc: "the id of the local variable to get the value of"
+        type: u32
+    complex: "requires access to global state"
+
+  - name: "set local"
+    name-short: set_l
+    desc: "sets the value of a local variable with this id"
+    repr: 0x25
+    args:
+      - name: idx
+        desc: "the id of the local variable to set the value of"
+        type: u32
+    stackargs:
+      - name: value
+        desc: "value to assign to this local variable"
+    complex: "requires access to global state"
+
+  - name: "get global"
+    name-short: get_g
+    desc: "gets the value of a global variable with this name"
+    repr: 0x26
+    args:
+      - name: name
+        desc: "the name of the global variable to get the value of"
+        type: string
+    complex: "requires access to global state"
+
+  - name: "set global"
+    name-short: set_g
+    desc: "sets the value of a global variable with this name"
+    repr: 0x27
+    args:
+      - name: name
+        desc: "the name of the global variable to set the value of"
+        type: string
+    stackargs:
+      - name: value
+        desc: "value to assign to this global variable"
     complex: "requires access to global state"
 
   - name: "remainder"

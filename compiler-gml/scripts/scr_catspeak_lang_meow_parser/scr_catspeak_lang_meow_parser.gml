@@ -107,7 +107,7 @@ function CatspeakParser(cart_, buff, offset = undefined, size = undefined) const
             //cart.emitConstUndefined(lexer.getLocation());
         } else if (peeked == CatspeakToken.IDENT) {
             lexer.next();
-            //cart.emitGetLocal(lexer.getValue(), lexer.getLocation());
+            scope.emitGet(lexer.getValue(), lexer.getLocation());
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
             //cart.emitSelf(lexer.getLocation());

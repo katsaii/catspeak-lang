@@ -47,7 +47,6 @@ function CatspeakCodegenGML() constructor {
         array_resize(stack, 0);
         /// @ignore
         stackTop = -1;
-        array_resize(funcData, 0);
         ctx = {
             callTime : -1,
             globals : globals ?? { },
@@ -112,6 +111,16 @@ function CatspeakCodegenGML() constructor {
             ctx : ctx,
             dbg : dbg,
         }, __catspeak_instr_get_u__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrBlock = function (n, dbg) {
+        var exec = method({
+            ctx : ctx,
+            n : n,
+            dbg : dbg,
+        }, __catspeak_instr_pop_n__);
         pushValue(exec);
     };
 
@@ -181,6 +190,50 @@ function CatspeakCodegenGML() constructor {
             dbg : dbg,
             body : body,
         }, __catspeak_instr_fclo__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrGetLocal = function (idx, dbg) {
+        var exec = method({
+            ctx : ctx,
+            idx : idx,
+            dbg : dbg,
+        }, __catspeak_instr_get_l__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrSetLocal = function (idx, dbg) {
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            idx : idx,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_set_l__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrGetGlobal = function (name, dbg) {
+        var exec = method({
+            ctx : ctx,
+            name : name,
+            dbg : dbg,
+        }, __catspeak_instr_get_g__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrSetGlobal = function (name, dbg) {
+        var value = popValue();
+        var exec = method({
+            ctx : ctx,
+            name : name,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_set_g__);
         pushValue(exec);
     };
 
@@ -552,6 +605,12 @@ function __catspeak_instr_get_u__() {
 }
 
 /// @ignore
+function __catspeak_instr_pop_n__() {
+    // evaluates n-many expressions, implicitly returning the final expression
+    // TODO
+}
+
+/// @ignore
 function __catspeak_instr_ifte__() {
     // evaluates one of two expressions, depending on whether a condition is true or false
     return condition() ? if_true() : if_false();
@@ -589,6 +648,30 @@ function __catspeak_instr_thrw__() {
 function __catspeak_instr_fclo__() {
     // builds a function closure, updating any upvalues if they exist
     return __catspeak_create_function(ctx, body, dbg);
+}
+
+/// @ignore
+function __catspeak_instr_get_l__() {
+    // gets the value of a local variable with this id
+    // TODO
+}
+
+/// @ignore
+function __catspeak_instr_set_l__() {
+    // sets the value of a local variable with this id
+    // TODO
+}
+
+/// @ignore
+function __catspeak_instr_get_g__() {
+    // gets the value of a global variable with this name
+    // TODO
+}
+
+/// @ignore
+function __catspeak_instr_set_g__() {
+    // sets the value of a global variable with this name
+    // TODO
 }
 
 /// @ignore

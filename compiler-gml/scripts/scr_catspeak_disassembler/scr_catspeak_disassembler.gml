@@ -82,6 +82,13 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrBlock = function (n, dbg) {
+        asmStr += "  pop_n";
+        asmStr += "  " + string(n);
+        asmStr += "\n"
+    };
+
+    /// @ignore
     static handleInstrIfThenElse = function (dbg) {
         asmStr += "  ifte";
         asmStr += "\n"
@@ -114,6 +121,34 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrClosure = function (dbg) {
         asmStr += "  fclo";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrGetLocal = function (idx, dbg) {
+        asmStr += "  get_l";
+        asmStr += "  " + string(idx);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrSetLocal = function (idx, dbg) {
+        asmStr += "  set_l";
+        asmStr += "  " + string(idx);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrGetGlobal = function (name, dbg) {
+        asmStr += "  get_g";
+        asmStr += "  " + string(name);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrSetGlobal = function (name, dbg) {
+        asmStr += "  set_g";
+        asmStr += "  " + string(name);
         asmStr += "\n"
     };
 

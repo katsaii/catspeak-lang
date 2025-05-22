@@ -256,28 +256,33 @@ function CatspeakScopeStack(cart_) constructor {
     funcTop = -1;
     /// @ignore
     funcs = array_create(8);
+    /// @ignore
+    func = undefined;
+    /// @ignore
+    block = undefined;
     array_resize(funcs, 0);
     beginFunction();
 
     /// Begins a new function scope.
     static beginFunction = function () {
-        var func;
+        var func_;
         funcTop += 1;
         if (funcTop >= array_length(funcs)) {
-            func = {
+            func_ = {
                 localCount : 0,
                 localTop : 0,
                 blockTop : -1,
                 blocks : array_create(8),
             };
-            array_resize(func.blocks, 0);
-            funcs[@ funcTop] = func;
+            array_resize(func_.blocks, 0);
+            funcs[@ funcTop] = func_;
         } else {
-            func = funcs[funcTop];
-            func.localCount = 0;
-            func.localTop = 0;
-            func.blockTop = -1;
+            func_ = funcs[funcTop];
+            func_.localCount = 0;
+            func_.localTop = 0;
+            func_.blockTop = -1;
         }
+        func = func_;
         beginBlock();
     };
 
@@ -286,46 +291,50 @@ function CatspeakScopeStack(cart_) constructor {
     static endFunction = function () {
         __catspeak_assert(funcTop > 0.1, "function stack underflow");
         __endBlock(false);
-        var func = funcs[funcTop];
         funcTop -= 1;
+        func = funcs[funcTop];
+        block = func.blocks[func.blockTop];
         cart.emitClosure();
     };
 
     /// Begins a new block scope.
     static beginBlock = function () {
-        var func = funcs[funcTop];
-        func.blockTop += 1;
-        var block;
-        if (func.blockTop >= array_length(func.blocks)) {
-            block = {
+        var func_ = func;
+        func_.blockTop += 1;
+        var block_;
+        if (func_.blockTop >= array_length(func_.blocks)) {
+            block_ = {
                 localCount : 0,
                 locals : undefined,
                 stmtCount : 0,
             };
-            func.blocks[@ func.blockTop] = block;
+            func_.blocks[@ func_.blockTop] = block_;
         } else {
-            block = func.blocks[func.blockTop];
-            block.localCount = 0;
-            block.locals = undefined;
+            block_ = func_.blocks[func_.blockTop];
+            block_.localCount = 0;
+            block_.locals = undefined;
         }
+        block = block_;
     };
 
     /// Prepares a new statement to be written to the current block.
     static prepareStatement = function () {
-        var func = funcs[funcTop];
-        var block = func.blocks[func.blockTop];
         block.stmtCount += 1;
     };
 
     /// @ignore
     static __endBlock = function (assert = true) {
-        var func = funcs[funcTop];
+        var block_ = block;
+        var func_ = func;
         if (assert) {
-            __catspeak_assert(func.blockTop > 0.1, "block stack underflow");
+            __catspeak_assert(func_.blockTop > 0.1, "block stack underflow");
         }
-        var block = func.blocks[func.blockTop];
-        func.blockTop -= 1;
-        func.localTop -= block.localCount;
+        func_.localTop -= block.localCount;
+        func_.blockTop -= 1;
+        if (assert) {
+            block = func_.blocks[func_.blockTop];
+        }
+        cart.emitBlock(block.stmtCount);
     };
 
     /// Ends the current block scope, writing its instruction to the supplied
@@ -343,21 +352,73 @@ function CatspeakScopeStack(cart_) constructor {
     ///
     /// @returns {Bool}
     static allocLocal = function (name) {
-        var func = funcs[funcTop];
-        var block = func.blocks[func.blockTop];
-        block.locals ??= { };
-        if (variable_struct_exists(block.locals, name)) {
+        var block_ = block;
+        block_.locals ??= { };
+        if (variable_struct_exists(block_.locals, name)) {
             return false;
         }
-        block.locals[$ name] = func.localTop;
-        block.localCount += 1;
-        func.localCount += 1;
-        func.localTop += 1;
+        var func_ = func;
+        block_.locals[$ name] = func_.localTop;
+        block_.localCount += 1;
+        func_.localCount += 1;
+        func_.localTop += 1;
         return true;
     };
 
     /// Emit an instruction to get a variable with a given name.
-    static emitGet = function (name) {
-        // TODO
+    ///
+    /// @param {String} name
+    ///   The name of the variable to search for.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitGet = function (name, dbg = CATSPEAK_NOLOCATION) {
+        var func_ = func;
+        for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
+            // find local variables
+            var block_ = func_.blocks[iBlock];
+            var localVarIdx = block_.locals[$ name];
+            if (localVarIdx != undefined) {
+                cart.emitGetLocal(localVarIdx, dbg);
+                return;
+            }
+        }
+        for (var iFunc = funcTop - 1; iFunc >= 1; iFunc -= 1) {
+            var func_ = funcs[iFunc];
+            for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
+                // find upvalues
+                // TODO
+            }
+        }
+        cart.emitGetGlobal(name, dbg);
+    };
+
+    /// Emit an instruction to assign a value to a variable with a
+    /// given name.
+    ///
+    /// @param {String} name
+    ///   The name of the variable to search for.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitSet = function (name, dbg = CATSPEAK_NOLOCATION) {
+        var func_ = func;
+        for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
+            // find local variables
+            var block_ = func_.blocks[iBlock];
+            var localVarIdx = block_.locals[$ name];
+            if (localVarIdx != undefined) {
+                cart.emitSetLocal(localVarIdx, dbg);
+                return;
+            }
+        }
+        for (var iFunc = funcTop - 1; iFunc >= 1; iFunc -= 1) {
+            var func_ = funcs[iFunc];
+            for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
+                // find upvalues
+                // TODO
+            }
+        }
+        cart.emitSetGlobal(name, dbg);
     };
 }
