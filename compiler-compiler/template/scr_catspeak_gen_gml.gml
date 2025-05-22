@@ -100,7 +100,15 @@ function CatspeakCodegenGML() constructor {
 {%  endif %}
 {%  for stackarg in instr["stackargs"][::-1] %}
 {%   set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+{%   if "many" in stackarg %}
+{%    set many_name = gml_var_ref(stackarg["many"], None) %}
+        var {{ stackarg_name }} = array_create({{ many_name }});
+        for (var i = {{ many_name }} - 1; i >= 0; i -= 1) {
+            {{ stackarg_name }}[@ i] = popValue();
+        }
+{%   else %}
         var {{ stackarg_name }} = popValue();
+{%   endif %}
 {%  endfor %}
 {% endif %}
         var exec = method({
@@ -144,44 +152,93 @@ function __catspeak_gml_exec_get_error(exec) {
 }
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_name = instr['name-short'] or instr['name'] %}
+{%  if "comptime" in instr %}
 
 /// @ignore
 function __catspeak_instr_{{ case_snake(instr_name) }}__() {
-    // {{ instr["desc"] }}
-{%  if "comptime" in instr %}
     return {{ gml_instr_get_comptime_vm(instr) }};
-{%  elif instr_name == "ret" %}
-    var returnBox = __catspeak_gml_exec_get_return();
-    returnBox[@ 0] = result();
-    throw returnBox;
-{%  elif instr_name == "brk" %}
-    var breakBox = __catspeak_gml_exec_get_break();
-    breakBox[@ 0] = result();
-    throw breakBox;
-{%  elif instr_name == "cont" %}
-    throw __catspeak_gml_exec_get_continue();
-{%  elif instr_name == "thrw" %}
-    throw result();
-{%  elif instr_name == "fclo" %}
-    return __catspeak_create_function(ctx, body, dbg);
-{%  else %}
-    // TODO
-{%  endif %}
 }
+{%  endif %}
 {% endfor %}
 
 /// @ignore
-function __catspeak_create_function(ctx, body, dbg = CATSPEAK_NOLOCATION) {
+function __catspeak_instr_ret__() {
+    var returnBox = __catspeak_gml_exec_get_return();
+    returnBox[@ 0] = result();
+    throw returnBox;
+}
+
+/// @ignore
+function __catspeak_instr_brk__() {
+    var breakBox = __catspeak_gml_exec_get_break();
+    breakBox[@ 0] = result();
+    throw breakBox;
+}
+
+/// @ignore
+function __catspeak_instr_cont__() {
+    throw __catspeak_gml_exec_get_continue();
+}
+
+/// @ignore
+function __catspeak_instr_thrw__() {
+    throw result();
+}
+
+/// @ignore
+function __catspeak_instr_fclo__() {
+    return __catspeak_create_function(ctx, body, locals, dbg);
+}
+
+/// @ignore
+function __catspeak_instr_pop_n__() {
+    var values_ = values;
+    var n_ = n - 1;
+    for (var i = 0; i < n_; i += 1) {
+        var value = values_[i];
+        value();
+    }
+    var result = values_[n_];
+    return result();
+}
+
+/// @ignore
+function __catspeak_instr_get_l__() {
+    return ctx.callee_.locals[idx];
+}
+
+/// @ignore
+function __catspeak_instr_set_l__() {
+    ctx.callee_.locals[idx] = value();
+}
+
+/// @ignore
+function __catspeak_instr_get_g__() {
+    return ctx.globals[$ name];
+}
+
+/// @ignore
+function __catspeak_instr_set_g__() {
+    ctx.globals[$ name] = value();
+}
+
+/// @ignore
+function __catspeak_create_function(ctx, body, locals, dbg) {
     return method({
         ctx : ctx,
         body : body,
+        locals : array_create(locals),
         dbg : dbg,
     }, __catspeak_function__);
 }
 
 /// @ignore
 function __catspeak_function__() {
+    var ctx_ = ctx;
+    var prevCallee = ctx_.callee_;
+    ctx_.callee_ = self;
     var returnValue = body();
+    ctx_.callee_ = prevCallee;
     /* TODO: repurpose
     if (doThrowValue) {
         if (is_struct(throwValue)) {

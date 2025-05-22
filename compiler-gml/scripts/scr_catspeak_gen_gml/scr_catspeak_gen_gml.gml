@@ -116,10 +116,15 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static handleInstrBlock = function (n, dbg) {
+        var values = array_create(n);
+        for (var i = n - 1; i >= 0; i -= 1) {
+            values[@ i] = popValue();
+        }
         var exec = method({
             ctx : ctx,
             n : n,
             dbg : dbg,
+            values : values,
         }, __catspeak_instr_pop_n__);
         pushValue(exec);
     };
@@ -183,10 +188,11 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
-    static handleInstrClosure = function (dbg) {
+    static handleInstrClosure = function (locals, dbg) {
         var body = popValue();
         var exec = method({
             ctx : ctx,
+            locals : locals,
             dbg : dbg,
             body : body,
         }, __catspeak_instr_fclo__);
@@ -588,37 +594,146 @@ function __catspeak_gml_exec_get_error(exec) {
 
 /// @ignore
 function __catspeak_instr_get_n__() {
-    // get a numeric constant
     return value;
 }
 
 /// @ignore
 function __catspeak_instr_get_s__() {
-    // get a string constant
     return value;
 }
 
 /// @ignore
 function __catspeak_instr_get_u__() {
-    // get the undefined constant
     return undefined;
 }
 
 /// @ignore
-function __catspeak_instr_pop_n__() {
-    // evaluates n-many expressions, implicitly returning the final expression
-    // TODO
-}
-
-/// @ignore
 function __catspeak_instr_ifte__() {
-    // evaluates one of two expressions, depending on whether a condition is true or false
     return condition() ? if_true() : if_false();
 }
 
 /// @ignore
+function __catspeak_instr_rem__() {
+    return lhs() % rhs();
+}
+
+/// @ignore
+function __catspeak_instr_mult__() {
+    return lhs() * rhs();
+}
+
+/// @ignore
+function __catspeak_instr_div__() {
+    return lhs() / rhs();
+}
+
+/// @ignore
+function __catspeak_instr_idiv__() {
+    return lhs() div rhs();
+}
+
+/// @ignore
+function __catspeak_instr_sub__() {
+    return lhs() - rhs();
+}
+
+/// @ignore
+function __catspeak_instr_neg__() {
+    return -value();
+}
+
+/// @ignore
+function __catspeak_instr_add__() {
+    return lhs() + rhs();
+}
+
+/// @ignore
+function __catspeak_instr_pos__() {
+    return +value();
+}
+
+/// @ignore
+function __catspeak_instr_eq__() {
+    return lhs() == rhs();
+}
+
+/// @ignore
+function __catspeak_instr_neq__() {
+    return lhs() != rhs();
+}
+
+/// @ignore
+function __catspeak_instr_gt__() {
+    return lhs() > rhs();
+}
+
+/// @ignore
+function __catspeak_instr_geq__() {
+    return lhs() >= rhs();
+}
+
+/// @ignore
+function __catspeak_instr_lt__() {
+    return lhs() < rhs();
+}
+
+/// @ignore
+function __catspeak_instr_leq__() {
+    return lhs() <= rhs();
+}
+
+/// @ignore
+function __catspeak_instr_not__() {
+    return !value();
+}
+
+/// @ignore
+function __catspeak_instr_and__() {
+    return eager() && lazy();
+}
+
+/// @ignore
+function __catspeak_instr_or__() {
+    return eager() || lazy();
+}
+
+/// @ignore
+function __catspeak_instr_xor__() {
+    return lhs() ^^ rhs();
+}
+
+/// @ignore
+function __catspeak_instr_bnot__() {
+    return ~value();
+}
+
+/// @ignore
+function __catspeak_instr_band__() {
+    return lhs() & rhs();
+}
+
+/// @ignore
+function __catspeak_instr_bor__() {
+    return lhs() | rhs();
+}
+
+/// @ignore
+function __catspeak_instr_bxor__() {
+    return lhs() ^ rhs();
+}
+
+/// @ignore
+function __catspeak_instr_rshift__() {
+    return value() >> amount();
+}
+
+/// @ignore
+function __catspeak_instr_lshift__() {
+    return value() << amount();
+}
+
+/// @ignore
 function __catspeak_instr_ret__() {
-    // return a value from the current function
     var returnBox = __catspeak_gml_exec_get_return();
     returnBox[@ 0] = result();
     throw returnBox;
@@ -626,7 +741,6 @@ function __catspeak_instr_ret__() {
 
 /// @ignore
 function __catspeak_instr_brk__() {
-    // break out of the current loop, returning a value as the result of the loop
     var breakBox = __catspeak_gml_exec_get_break();
     breakBox[@ 0] = result();
     throw breakBox;
@@ -634,202 +748,68 @@ function __catspeak_instr_brk__() {
 
 /// @ignore
 function __catspeak_instr_cont__() {
-    // continue to the next iteration of the current loop
     throw __catspeak_gml_exec_get_continue();
 }
 
 /// @ignore
 function __catspeak_instr_thrw__() {
-    // throw a value as an exception
     throw result();
 }
 
 /// @ignore
 function __catspeak_instr_fclo__() {
-    // builds a function closure, updating any upvalues if they exist
-    return __catspeak_create_function(ctx, body, dbg);
+    return __catspeak_create_function(ctx, body, locals, dbg);
+}
+
+/// @ignore
+function __catspeak_instr_pop_n__() {
+    var values_ = values;
+    var n_ = n - 1;
+    for (var i = 0; i < n_; i += 1) {
+        var value = values_[i];
+        value();
+    }
+    var result = values_[n_];
+    return result();
 }
 
 /// @ignore
 function __catspeak_instr_get_l__() {
-    // gets the value of a local variable with this id
-    // TODO
+    return ctx.callee_.locals[idx];
 }
 
 /// @ignore
 function __catspeak_instr_set_l__() {
-    // sets the value of a local variable with this id
-    // TODO
+    ctx.callee_.locals[idx] = value();
 }
 
 /// @ignore
 function __catspeak_instr_get_g__() {
-    // gets the value of a global variable with this name
-    // TODO
+    return ctx.globals[$ name];
 }
 
 /// @ignore
 function __catspeak_instr_set_g__() {
-    // sets the value of a global variable with this name
-    // TODO
+    ctx.globals[$ name] = value();
 }
 
 /// @ignore
-function __catspeak_instr_rem__() {
-    // calculate the remainder of two values
-    return lhs() % rhs();
-}
-
-/// @ignore
-function __catspeak_instr_mult__() {
-    // calculate the product of two values
-    return lhs() * rhs();
-}
-
-/// @ignore
-function __catspeak_instr_div__() {
-    // calculate the division of two values
-    return lhs() / rhs();
-}
-
-/// @ignore
-function __catspeak_instr_idiv__() {
-    // calculate the integer division of two values
-    return lhs() div rhs();
-}
-
-/// @ignore
-function __catspeak_instr_sub__() {
-    // calculate the difference of two values
-    return lhs() - rhs();
-}
-
-/// @ignore
-function __catspeak_instr_neg__() {
-    // calculate the negative of a value
-    return -value();
-}
-
-/// @ignore
-function __catspeak_instr_add__() {
-    // calculate the sum of two values
-    return lhs() + rhs();
-}
-
-/// @ignore
-function __catspeak_instr_pos__() {
-    // calculate the positive of a value
-    return +value();
-}
-
-/// @ignore
-function __catspeak_instr_eq__() {
-    // check whether two values are equal
-    return lhs() == rhs();
-}
-
-/// @ignore
-function __catspeak_instr_neq__() {
-    // check whether two values are NOT equal
-    return lhs() != rhs();
-}
-
-/// @ignore
-function __catspeak_instr_gt__() {
-    // check whether a value is greater than another
-    return lhs() > rhs();
-}
-
-/// @ignore
-function __catspeak_instr_geq__() {
-    // check whether a value is greater than or equal to another
-    return lhs() >= rhs();
-}
-
-/// @ignore
-function __catspeak_instr_lt__() {
-    // check whether a value is less than another
-    return lhs() < rhs();
-}
-
-/// @ignore
-function __catspeak_instr_leq__() {
-    // check whether a value is less than or equal to another
-    return lhs() <= rhs();
-}
-
-/// @ignore
-function __catspeak_instr_not__() {
-    // calculate the logical negation of a value
-    return !value();
-}
-
-/// @ignore
-function __catspeak_instr_and__() {
-    // calculate the logical AND of two values
-    return eager() && lazy();
-}
-
-/// @ignore
-function __catspeak_instr_or__() {
-    // calculate the logical OR of two values
-    return eager() || lazy();
-}
-
-/// @ignore
-function __catspeak_instr_xor__() {
-    // calculate the logical XOR of two values
-    return lhs() ^^ rhs();
-}
-
-/// @ignore
-function __catspeak_instr_bnot__() {
-    // calculate the bitwise negation of a value
-    return ~value();
-}
-
-/// @ignore
-function __catspeak_instr_band__() {
-    // calculate the bitwise AND of two values
-    return lhs() & rhs();
-}
-
-/// @ignore
-function __catspeak_instr_bor__() {
-    // calculate the bitwise OR of two values
-    return lhs() | rhs();
-}
-
-/// @ignore
-function __catspeak_instr_bxor__() {
-    // calculate the bitwise XOR of two values
-    return lhs() ^ rhs();
-}
-
-/// @ignore
-function __catspeak_instr_rshift__() {
-    // calculate the bitwise right shift of two values
-    return value() >> amount();
-}
-
-/// @ignore
-function __catspeak_instr_lshift__() {
-    // calculate the bitwise left shift of two values
-    return value() << amount();
-}
-
-/// @ignore
-function __catspeak_create_function(ctx, body, dbg = CATSPEAK_NOLOCATION) {
+function __catspeak_create_function(ctx, body, locals, dbg) {
     return method({
         ctx : ctx,
         body : body,
+        locals : array_create(locals),
         dbg : dbg,
     }, __catspeak_function__);
 }
 
 /// @ignore
 function __catspeak_function__() {
+    var ctx_ = ctx;
+    var prevCallee = ctx_.callee_;
+    ctx_.callee_ = self;
     var returnValue = body();
+    ctx_.callee_ = prevCallee;
     /* TODO: repurpose
     if (doThrowValue) {
         if (is_struct(throwValue)) {

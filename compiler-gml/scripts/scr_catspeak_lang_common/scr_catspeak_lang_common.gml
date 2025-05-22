@@ -291,10 +291,10 @@ function CatspeakScopeStack(cart_) constructor {
     static endFunction = function () {
         __catspeak_assert(funcTop > 0.1, "function stack underflow");
         __endBlock(false);
+        cart.emitClosure(func.localCount);
         funcTop -= 1;
         func = funcs[funcTop];
         block = func.blocks[func.blockTop];
-        cart.emitClosure();
     };
 
     /// Begins a new block scope.
@@ -377,6 +377,9 @@ function CatspeakScopeStack(cart_) constructor {
         for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
             // find local variables
             var block_ = func_.blocks[iBlock];
+            if (block_.locals == undefined) {
+                continue;
+            }
             var localVarIdx = block_.locals[$ name];
             if (localVarIdx != undefined) {
                 cart.emitGetLocal(localVarIdx, dbg);

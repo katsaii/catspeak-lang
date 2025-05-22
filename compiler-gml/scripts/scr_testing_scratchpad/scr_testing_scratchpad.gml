@@ -265,7 +265,7 @@ TEST_EXPERIMENT "catspeak4-lex" {
 TEST_EXPERIMENT "catspeak4-parse" {
     var buff = catspeak_util_buffer_create_from_string(@'
         "hello youtube"
-
+        a
     ');
     var buffCart = buffer_create(1, buffer_grow, 1);
     var cart = new CatspeakCartWriter(buffCart);
@@ -284,5 +284,6 @@ TEST_EXPERIMENT "catspeak4-parse" {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
     var program = codegen.getProgram();
+    program = program();
     show_message(program());
 }

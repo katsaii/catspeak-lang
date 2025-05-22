@@ -287,13 +287,18 @@ function CatspeakCartWriter(buff_) constructor {
 
     /// Builds a function closure, updating any upvalues if they exist.
     ///
+    /// @param {Real} locals
+    ///     The number of local variables this function has allocated.
+    ///
     /// @param {Real} [dbg]
     ///     The approximate location of the number in the source code.
-    static emitClosure = function (dbg = CATSPEAK_NOLOCATION) {
+    static emitClosure = function (locals, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(is_numeric(locals), "expected type of u32");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.FCLO);
+        buffer_write(buff_, buffer_u32, locals);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -927,8 +932,9 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     /// @ignore
     static __readClosure = function () {
         var buff_ = buff;
+        var argLocals = buffer_read(buff_, buffer_u32);
         var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrClosure(argDbg);
+        visitor.handleInstrClosure(argLocals, argDbg);
     };
 
     /// @ignore
