@@ -398,17 +398,8 @@ instr:
 #
 # In the order defined below, these are:
 
-data-order: [func, meta]
+data-order: [meta]
 data:
-
-  # The entry-point function must always be written to index [0].
-  func-order: [locals]
-  func-count: u32 #< The number of functions allocated, directly followed by...
-  func:           #< `func-count`-many functions in the following layout:
-    locals:
-      name: "local variable"
-      desc: "the max number of local variables this function can have"
-      type: u32
 
   meta-order: [path, author]
   meta:

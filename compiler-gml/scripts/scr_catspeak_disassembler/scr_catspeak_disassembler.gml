@@ -45,6 +45,9 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
+    asmStr = undefined;
+
+    /// @ignore
     static handleInit = function () {
         /// @ignore
         asmStr = "";
@@ -52,11 +55,6 @@ function __CatspeakCartDisassembler() constructor {
 
     /// @ignore
     static handleDeinit = function () { };
-
-    /// @ignore
-    static handleFunc = function (idx, locals) {
-        // TODO
-    };
 
     /// @ignore
     static handleMeta = function (path, author) {

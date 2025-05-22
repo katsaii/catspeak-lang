@@ -25,7 +25,7 @@
 ///
 /// @param {Struct.CatspeakIRBuilder} builder
 ///   The Catspeak IR builder to write the program to.
-function CatspeakParser(lexer, builder) constructor {
+function CatspeakParserV3(lexer, builder) constructor {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_arg_struct_instanceof(
                 "lexer", lexer, "CatspeakLexerV3");
@@ -44,11 +44,11 @@ function CatspeakParser(lexer, builder) constructor {
     /// any relevant parse information to the supplied IR.
     ///
     /// @example
-    ///   Creates a new `CatspeakParser` from the variables `lexer` and
+    ///   Creates a new `CatspeakParserV3` from the variables `lexer` and
     ///   `builder`, then loops until there is nothing left to parse.
     ///
     ///   ```gml
-    ///   var parser = new CatspeakParser(lexer, builder);
+    ///   var parser = new CatspeakParserV3(lexer, builder);
     ///   var moreToParse;
     ///   do {
     ///       moreToParse = parser.update();

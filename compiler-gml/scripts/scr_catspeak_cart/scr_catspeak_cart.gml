@@ -123,16 +123,6 @@ function CatspeakCartWriter(buff_) constructor {
     chunkEnd = buffer_tell(buff_);
     buffer_write(buff_, buffer_u32, 0);
     buffer_poke(buff_, chunkInstr, buffer_u32, buffer_tell(buff_) - cartStart); // patch instr
-    /// @ignore
-    fvLocals = 0;
-    /// @ignore
-    fvStack = array_create(8);
-    /// @ignore
-    fvTop = 0;
-    /// @ignore
-    fvFuncs = [];
-    /// @ignore
-    fvFuncsCount = 1;
     /// The path to the file containing source code for this Cartridge.
     ///
     /// @returns {String}
@@ -151,64 +141,13 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         buff = undefined;
         __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
-        var fvTop_ = fvTop;
-        __catspeak_assert(fvTop_ < 0.5,
-            "'.beginFunction' called with no associated '.endFunction' call"
-        );
         buffer_write(buff_, buffer_u8, CatspeakInstr.END_OF_PROGRAM);
         buffer_poke(buff_, chunkData, buffer_u32, buffer_tell(buff_) - cartStart); // patch data
-        // write func data
-        buffer_write(buff_, buffer_u32, fvFuncsCount);
-        buffer_write(buff_, buffer_u32, fvLocals);
-        var fvI = 0;
-        var fvFuncs_ = fvFuncs;
-        while (fvI < fvTop_) {
-            buffer_write(buff_, buffer_u32, fvFuncs_[fvI]);
-            fvI += 1;
-        }
         // write meta data
         buffer_write(buff_, buffer_string, path);
         buffer_write(buff_, buffer_string, author);
         buffer_poke(buff_, chunkEnd, buffer_u32, buffer_tell(buff_) - cartStart); // patch end
         buffer_poke(buff_, hSignal, buffer_u32, 13063246); // patch signal header
-    };
-
-    /// Begins a new Catspeak function scope.
-    static beginFunction = function () {
-        __catspeak_assert(buff != undefined && buffer_exists(buff), "no cartridge loaded");
-        var fvTop_ = fvTop;
-        var fvStack_ = fvStack;
-        fvStack_[@ fvTop_] = fvLocals;
-        fvTop_ += 1;
-        fvTop = fvTop_;
-    };
-
-    /// Ends the current Catspeak function scope, returning its id.
-    ///
-    /// @returns {Real}
-    static endFunction = function () {
-        __catspeak_assert(buff != undefined && buffer_exists(buff), "no cartridge loaded");
-        var fvTop_ = fvTop;
-        __catspeak_assert(fvTop_ > 0.5, "function stack underflow");
-        var fvFuncs_ = fvFuncs;
-        var fvStack_ = fvStack;
-        array_push(fvFuncs_, fvLocals);
-        fvLocals = fvStack_[fvTop_];
-        fvTop_ -= 1;
-        fvTop = fvTop_;
-        var functionIdx = fvFuncsCount;
-        fvFuncsCount += 1;
-        return functionIdx;
-    };
-
-    /// Allocate space for a new local variable, returning its id.
-    ///
-    /// @returns {Real}
-    static allocLocal = function () {
-        __catspeak_assert(buff != undefined && buffer_exists(buff), "no cartridge loaded");
-        var localIdx = fvLocals;
-        fvLocals += 1;
-        return localIdx;
     };
 
     /// Get a numeric constant.
@@ -721,9 +660,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert(is_method(visitor_[$ "handleInstrBitwiseShiftLeft"]),
         "visitor is missing a handler for 'handleInstrBitwiseShiftLeft'"
     );
-    __catspeak_assert(is_method(visitor_[$ "handleFunc"]),
-        "visitor is missing a handler for 'handleFunc'"
-    );
     __catspeak_assert(is_method(visitor_[$ "handleMeta"]),
         "visitor is missing a handler for 'handleMeta'"
     );
@@ -759,14 +695,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     /// @ignore
     chunkEnd = buffer_read(buff_, buffer_u32);
     buffer_seek(buff_, buffer_seek_start, cartStart + chunkData); // seek data
-    // read func data
-    var fvFuncCount = buffer_read(buff_, buffer_u32);
-    var fvLocals = buffer_read(buff_, buffer_u32);
-    visitor_.handleFunc(0, fvLocals);
-    for (var i = 1; i < fvFuncCount; i += 1) {
-        fvLocals = buffer_read(buff_, buffer_u32);
-        visitor_.handleFunc(fvI, fvLocals);
-    }
     // read meta data
     var metaPath = buffer_read(buff_, buffer_string);
     var metaAuthor = buffer_read(buff_, buffer_string);

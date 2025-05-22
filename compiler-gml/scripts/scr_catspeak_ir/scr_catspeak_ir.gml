@@ -5,7 +5,7 @@
 //!
 //! Everything in Catspeak IR is an expression which can return a result.
 //!
-//! Mostly used internally by `CatspeakParser`, but could be used yourself
+//! Mostly used internally by `CatspeakParserV3`, but could be used yourself
 //! to build your own programs from your own domain-specific language and
 //! then compile it down further to be a callable GML function using
 //! `CatspeakGMLCompiler`.

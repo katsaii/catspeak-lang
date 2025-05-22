@@ -19,8 +19,6 @@ function CatspeakCodegenGML() constructor {
     /// @ignore
     stack = array_create(32);
     /// @ignore
-    funcData = array_create(4);
-    /// @ignore
     globals = undefined;
     /// @ignore
     ctx = undefined;
@@ -64,13 +62,6 @@ function CatspeakCodegenGML() constructor {
     static handleDeinit = function () {
         ctx = undefined;
         inProgress = false;
-    };
-
-    /// @ignore
-    static handleFunc = function (idx, locals) {
-        funcData[@ idx] = {
-            locals : locals
-        };
     };
 
     /// @ignore

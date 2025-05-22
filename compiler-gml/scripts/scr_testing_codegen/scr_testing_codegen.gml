@@ -5,7 +5,7 @@ function TestCodegenGML(name, src) : Test(name) constructor {
     var buff = __catspeak_create_buffer_from_string(src);
     var lexer = new CatspeakLexerV3(buff);
     var builder = new CatspeakIRBuilder();
-    var parser = new CatspeakParser(lexer, builder);
+    var parser = new CatspeakParserV3(lexer, builder);
     var moreToParse;
     do {
         moreToParse = parser.update();

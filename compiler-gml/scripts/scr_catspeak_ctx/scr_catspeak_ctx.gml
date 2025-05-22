@@ -21,7 +21,7 @@ function CatspeakCtx() constructor {
     //   dest? : buffer
     //   destOffset? : int
     //   destLength? : int
-    //   parserType : CatspeakParser
+    //   parserType : CatspeakParserV3
     //   flags : CatspeakBuildFlags
     // }
     static build = function (buildArgs) { };

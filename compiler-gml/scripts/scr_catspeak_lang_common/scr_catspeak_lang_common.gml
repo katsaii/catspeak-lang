@@ -1,15 +1,16 @@
-//! Common language abstraction for implementing lexers. Exposes utility
-//! scanners that keep track of lexeme offsets, line and column numbers,
-//! and character look-ahead.
+//! Common language abstractions for implementing new language front-ends.
 //!
 //! @remark
 //!   If you're not writing your own language front-end, then you can
-//!   ignore this entire page!
+//!   ignore this entire page! If you don't know what that means, then you
+//!   can also ignore this page!
 
 //# feather use syntax-errors
 
 /// A utility function that can be used to convert a string into a
 /// Catspeak-compatible source buffer.
+///
+/// @experimental
 ///
 /// @param {String} src
 ///   The string to transform into a buffer.
@@ -23,7 +24,10 @@ function catspeak_util_buffer_create_from_string(src) {
     return buff;
 }
 
-/// Traverses the UTF8 codepoints of a GML buffer.
+/// Traverses the UTF8 codepoints of a GML buffer. Keeps track of lexemes,
+/// line/column numbers, and a single character look-ahead.
+///
+/// @experimental
 ///
 /// @warning
 ///   The scanner does not take ownership of its buffer, so you must make sure
@@ -237,5 +241,115 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     /// @return {Real}
     static getLocationStart = function () {
         return lexemeStartPos;
+    };
+}
+
+/// TODO
+///
+/// @param {Struct.CatspeakCartWriter} cart_
+///   The cartridge to modify.
+function CatspeakScopeStack(cart_) constructor {
+    __catspeak_assert_eq(instanceof(cart_), "CatspeakCartWriter", "invalid cartridge");
+    /// @ignore
+    cart = cart_;
+    /// @ignore
+    funcTop = -1;
+    /// @ignore
+    funcs = array_create(8);
+    array_resize(funcs, 0);
+    beginFunction();
+
+    /// Begins a new function scope.
+    static beginFunction = function () {
+        var func;
+        funcTop += 1;
+        if (funcTop >= array_length(funcs)) {
+            func = {
+                localCount : 0,
+                localTop : 0,
+                blockTop : -1,
+                blocks : array_create(8),
+            };
+            array_resize(func.blocks, 0);
+            funcs[@ funcTop] = func;
+        } else {
+            func = funcs[funcTop];
+            func.localCount = 0;
+            func.localTop = 0;
+            func.blockTop = -1;
+        }
+        beginBlock();
+    };
+
+    /// Ends the current function scope, writing its instruction to the supplied
+    /// cartridge.
+    static endFunction = function () {
+        __catspeak_assert(funcTop > 0.1, "function stack underflow");
+        var func = funcs[funcTop];
+        funcTop -= 1;
+        cart.emitClosure();
+    };
+
+    /// Begins a new block scope.
+    static beginBlock = function () {
+        var func = funcs[funcTop];
+        func.blockTop += 1;
+        var block;
+        if (func.blockTop >= array_length(func.blocks)) {
+            block = {
+                localCount : 0,
+                locals : undefined,
+                stmtCount : 0,
+            };
+            func[@ func.blockTop] = block;
+        } else {
+            block = func.blocks[func.blockTop];
+            block.localCount = 0;
+            block.locals = undefined;
+        }
+    };
+
+    /// Prepares a new statement to be written to the current block.
+    static prepareStatement = function () {
+        var func = funcs[funcTop];
+        var block = func.block[func.blockTop];
+        block.stmtCount += 1;
+    };
+
+    /// Ends the current block scope, writing its instruction to the supplied
+    /// cartridge.
+    static endBlock = function () {
+        var func = funcs[funcTop];
+        __catspeak_assert(func.blockTop > 0.1, "block stack underflow");
+        var block = func.block[func.blockTop];
+        func.blockTop -= 1;
+        func.localTop -= block.localCount;
+    };
+
+    /// Allocate space for a new local variable, returning `true` if the local
+    /// variable was allocataed, or `false` if a local variable with that name
+    /// already exists in the current block.
+    ///
+    /// @param {String} name
+    ///   The name of the local variable to define in this block.
+    ///
+    /// @returns {Bool}
+    static allocLocal = function (name) {
+        var func = funcs[funcTop];
+        var block = func.block[func.blockTop];
+        block.locals ??= { };
+        if (variable_struct_exists(block.locals, name)) {
+            return false;
+        }
+        block.locals[$ name] = func.localTop;
+        block.localCount += 1;
+        func.localCount += 1;
+        func.localTop += 1;
+        return true;
+    };
+
+    /// Emit an instruction to get a variable with a given name.
+    static emitGet = function (name) {
+        // TODO
     };
 }

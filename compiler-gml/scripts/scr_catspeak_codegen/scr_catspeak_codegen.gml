@@ -1,6 +1,6 @@
 //! Responsible for the code generation stage of the Catspeak compiler.
 //!
-//! This stage converts Catspeak IR, produced by `CatspeakParser` or
+//! This stage converts Catspeak IR, produced by `CatspeakParserV3` or
 //! `CatspeakIRBuilder`, into various lower-level formats. The most
 //! interesting of these formats is the conversion of Catspeak programs into
 //! native GML functions.

@@ -1,15 +1,17 @@
 //! "Meow" is the code name for the built-in Catspeak programming language,
 //! loosely inspired by syntax from JavaScript, GML, and Rust.
 //!
-//! This module contains the lexer for this language, responsible for
-//! converting source code from individual characters into clusters of
-//! characters called [tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization).
+//! This module contains the lexer for Catspeak, responsible for converting
+//! source code from individual characters into clusters of characters called
+//! [tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization).
 
 //# feather use syntax-errors
 
 /// A token in Catspeak is a series of characters with meaning, usually
 /// separated by whitespace. These meanings are represented by unique
 /// elements of the `CatspeakToken` enum.
+///
+/// @experimental
 ///
 /// @example
 ///   Some examples of tokens in Catspeak, and their meanings:
@@ -187,6 +189,8 @@ enum CatspeakToken {
 
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses Catspeak.
+///
+/// @experimental
 ///
 /// @warning
 ///   The lexer does not take ownership of its buffer, so you must make sure

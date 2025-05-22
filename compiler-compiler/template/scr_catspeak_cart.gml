@@ -65,22 +65,6 @@ function CatspeakCartWriter(buff_) constructor {
 {% endfor %}
     {{ gml_chunk_patch(ir, "instr", "buff_") }}
 {% for section_name, section in ir_enumerate(ir, "data") %}
-{%  if section_name == "func" %}
-{%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%    set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
-{%    set funcvar_value = gml_literal_default(funcvar["type"]) %}
-    /// @ignore
-    {{ funcvar_ref }} = {{ funcvar_value }};
-{%   endfor %}
-    /// @ignore
-    fvStack = array_create(8);
-    /// @ignore
-    fvTop = 0;
-    /// @ignore
-    fvFuncs = [];
-    /// @ignore
-    fvFuncsCount = 1;
-{%  endif %}
 {%  if section_name == "meta" %}
 {%   for meta_name, meta in ir_enumerate(ir["data"], "meta") %}
 {%    set meta_ref = gml_var_ref(meta_name, None) %}
@@ -104,32 +88,9 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         buff = undefined;
         {{ ir_assert_cart_exists("buff_") }}
-        var fvTop_ = fvTop;
-        __catspeak_assert(fvTop_ < 0.5,
-            "'.beginFunction' called with no associated '.endFunction' call"
-        );
         buffer_write(buff_, {{ instr_opcode_bufftype }}, CatspeakInstr.END_OF_PROGRAM);
         {{ gml_chunk_patch(ir, "data", "buff_") }}
 {% for section_name, section in ir_enumerate(ir, "data") %}
-{%  if section_name == "func" %}
-        // write func data
-{%   set func_count_bufftype = gml_type_buffer(ir["data"]["func-count"]) %}
-        buffer_write(buff_, {{ func_count_bufftype }}, fvFuncsCount);
-{%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%    set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
-{%    set funcvar_bufftype = gml_type_buffer(funcvar["type"]) %}
-        buffer_write(buff_, {{ funcvar_bufftype }}, {{ funcvar_ref }});
-{%   endfor %}
-        var fvI = 0;
-        var fvFuncs_ = fvFuncs;
-        while (fvI < fvTop_) {
-{%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%    set funcvar_bufftype = gml_type_buffer(funcvar["type"]) %}
-            buffer_write(buff_, {{ funcvar_bufftype }}, fvFuncs_[fvI]);
-            fvI += 1;
-{%   endfor %}
-        }
-{%  endif %}
 {%  if section_name == "meta" %}
         // write meta data
 {%   for meta_name, meta in ir_enumerate(ir["data"], "meta") %}
@@ -148,51 +109,6 @@ function CatspeakCartWriter(buff_) constructor {
         buffer_poke(buff_, {{ head_varname }}, {{ head_bufftype }}, {{ head_value }}); // patch {{ head_name }} header
 {%  endif %}
 {% endfor %}
-    };
-
-    /// Begins a new Catspeak function scope.
-    static beginFunction = function () {
-        {{ ir_assert_cart_exists("buff") }}
-        var fvTop_ = fvTop;
-        var fvStack_ = fvStack;
-{% for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%  set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
-{%  set funcvar_value = gml_literal_default(funcvar["type"]) %}
-        fvStack_[@ fvTop_] = {{ funcvar_ref }};
-        fvTop_ += 1;
-{% endfor %}
-        fvTop = fvTop_;
-    };
-
-    /// Ends the current Catspeak function scope, returning its id.
-    ///
-    /// @returns {Real}
-    static endFunction = function () {
-        {{ ir_assert_cart_exists("buff") }}
-        var fvTop_ = fvTop;
-        __catspeak_assert(fvTop_ > 0.5, "function stack underflow");
-        var fvFuncs_ = fvFuncs;
-        var fvStack_ = fvStack;
-{% for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%  set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
-        array_push(fvFuncs_, {{ funcvar_ref }});
-        {{ funcvar_ref }} = fvStack_[fvTop_];
-        fvTop_ -= 1;
-{% endfor %}
-        fvTop = fvTop_;
-        var functionIdx = fvFuncsCount;
-        fvFuncsCount += 1;
-        return functionIdx;
-    };
-
-    /// Allocate space for a new local variable, returning its id.
-    ///
-    /// @returns {Real}
-    static allocLocal = function () {
-        {{ ir_assert_cart_exists("buff") }}
-        var localIdx = fvLocals;
-        fvLocals += 1;
-        return localIdx;
     };
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_func = gml_var_ref(instr["name"], "emit") %}
@@ -285,27 +201,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
 {% endfor %}
     {{ gml_chunk_seek(ir, "data", "buff_") }}
 {% for section_name, section in ir_enumerate(ir, "data") %}
-{%  if section_name == "func" %}
-    // read func data
-{%   set func_count_bufftype = gml_type_buffer(ir["data"]["func-count"]) %}
-    var fvFuncCount = buffer_read(buff_, {{ func_count_bufftype }});
-{%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%    set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
-{%    set funcvar_bufftype = gml_type_buffer(funcvar["type"]) %}
-    var {{ funcvar_ref }} = buffer_read(buff_, {{ funcvar_bufftype }});
-{%   endfor %}
-{%  set funcvar_args = map(fn_field(0), ir_enumerate(ir["data"], "func")) %}
-    visitor_.handleFunc(0, {{ gml_func_args_var_ref(funcvar_args, "fv") }});
-    for (var i = 1; i < fvFuncCount; i += 1) {
-{%   for funcvar_name, funcvar in ir_enumerate(ir["data"], "func") %}
-{%    set funcvar_ref = gml_var_ref(funcvar_name, "fv") %}
-{%    set funcvar_bufftype = gml_type_buffer(funcvar["type"]) %}
-        {{ funcvar_ref }} = buffer_read(buff_, {{ funcvar_bufftype }});
-{%   endfor %}
-{%   set funcvar_args = map(fn_field(0), ir_enumerate(ir["data"], "func")) %}
-        visitor_.handleFunc(fvI, {{ gml_func_args_var_ref(funcvar_args, "fv") }});
-    }
-{%  endif %}
 {%  if section_name == "meta" %}
     // read meta data
 {%   for meta_name, meta in ir_enumerate(ir["data"], "meta") %}

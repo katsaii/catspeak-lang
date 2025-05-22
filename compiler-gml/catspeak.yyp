@@ -9,7 +9,7 @@
     {"id":{"name":"scr_testing_lexer_keyword","path":"scripts/scr_testing_lexer_keyword/scr_testing_lexer_keyword.yy",},"order":4,},
     {"id":{"name":"not_catspeak_catspeak_for_modders","path":"notes/not_catspeak_catspeak_for_modders/not_catspeak_catspeak_for_modders.yy",},"order":4,},
     {"id":{"name":"scr_catspeak_lang_gml","path":"scripts/scr_catspeak_lang_gml/scr_catspeak_lang_gml.yy",},"order":1,},
-    {"id":{"name":"scr_catspeak_scan","path":"scripts/scr_catspeak_scan/scr_catspeak_scan.yy",},"order":4,},
+    {"id":{"name":"scr_catspeak_lang_common","path":"scripts/scr_catspeak_lang_common/scr_catspeak_lang_common.yy",},"order":4,},
     {"id":{"name":"scr_testing_lexer","path":"scripts/scr_testing_lexer/scr_testing_lexer.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_codegen","path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},"order":0,},
     {"id":{"name":"tm_unit_test","path":"tilesets/tm_unit_test/tm_unit_test.yy",},"order":8,},

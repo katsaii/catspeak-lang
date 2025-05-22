@@ -39,6 +39,9 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
+    asmStr = undefined;
+
+    /// @ignore
     static handleInit = function () {
         /// @ignore
         asmStr = "";
@@ -50,12 +53,6 @@ function __CatspeakCartDisassembler() constructor {
 {%  set section_handler = gml_var_ref(section_name, "handle") %}
 
     /// @ignore
-{%  if section_name == "func" %}
-{%   set funcvar_args = map(fn_field(0), ir_enumerate(ir["data"], "func")) %}
-    static {{ section_handler }} = function (idx, {{ gml_func_args_var_ref(funcvar_args, None) }}) {
-        // TODO
-    };
-{%  endif %}
 {%  if section_name == "meta" %}
 {%   set metavar_args = map(fn_field(0), ir_enumerate(ir["data"], "meta")) %}
     static {{ section_handler }} = function ({{ gml_func_args_var_ref(metavar_args, None) }}) {

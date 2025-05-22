@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = undefined;// "catspeak4-lex";// "catspeak4";
+var runExperiment = "catspeak4-parse";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "lexer" {
@@ -32,7 +32,7 @@ TEST_EXPERIMENT "parser" {
     var buff = __catspeak_create_buffer_from_string(@'123_4.5');
     var lexer = new CatspeakLexerV3(buff);
     var builder = new CatspeakIRBuilder();
-    var parser = new CatspeakParser(lexer, builder);
+    var parser = new CatspeakParserV3(lexer, builder);
     parser.parseExpression();
     show_message(builder.get());
 }
@@ -260,4 +260,19 @@ TEST_EXPERIMENT "catspeak4-lex" {
         show_debug_message("token: '" + lexeme + "' = " + string(value) + " (" + typeof(value) + ")");
     }
     //show_message("see output");
+}
+
+TEST_EXPERIMENT "catspeak4-parse" {
+    var buff = catspeak_util_buffer_create_from_string(@'
+        "hello youtube"
+
+    ');
+    var buffCart = buffer_create(1, buffer_grow, 1);
+    var cart = new CatspeakCartWriter(buffCart);
+    var parser = new CatspeakParser(cart, buff);
+    do {
+        var moreRemains = parser.parseOnce();
+    } until (!moreRemains);
+    buffer_seek(buffCart, buffer_seek_start, 0);
+    show_message(catspeak_cart_disassemble(buffCart));
 }

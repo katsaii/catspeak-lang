@@ -13,8 +13,6 @@ function CatspeakCodegenGML() constructor {
     /// @ignore
     stack = array_create(32);
     /// @ignore
-    funcData = array_create(4);
-    /// @ignore
     globals = undefined;
     /// @ignore
     ctx = undefined;
@@ -63,17 +61,6 @@ function CatspeakCodegenGML() constructor {
 {%  set section_handler = gml_var_ref(section_name, "handle") %}
 
     /// @ignore
-{%  if section_name == "func" %}
-{%   set funcvar_args = map(fn_field(0), ir_enumerate(ir["data"], "func")) %}
-    static {{ section_handler }} = function (idx, {{ gml_func_args_var_ref(funcvar_args, None) }}) {
-        funcData[@ idx] = {
-{%   for arg_name, _ in ir_enumerate(ir["data"], "func") %}
-{%    set arg_varname = gml_var_ref(arg_name, None) %}
-            {{ arg_varname }} : {{ arg_varname }}
-{%   endfor %}
-        };
-    };
-{%  endif %}
 {%  if section_name == "meta" %}
 {%   set metavar_args = map(fn_field(0), ir_enumerate(ir["data"], "meta")) %}
     static {{ section_handler }} = function ({{ gml_func_args_var_ref(metavar_args, None) }}) {

@@ -532,12 +532,12 @@ function CatspeakEnvironment() constructor {
     /// @return {Function}
     self.lexerType = CatspeakLexerV3;
     /// The parser to use for this Catspeak environment. Defaults to
-    /// `CatspeakParser`.
+    /// `CatspeakParserV3`.
     ///
     /// @experimental
     ///
     /// @return {Function}
-    self.parserType = CatspeakParser;
+    self.parserType = CatspeakParserV3;
     /// The code generator to use for this Catspeak environment. Defaults to
     /// `CatspeakGMLCompiler`.
     ///
