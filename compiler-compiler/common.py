@@ -128,7 +128,7 @@ def gml_type_buffer(type_name):
 
 @jinja2_export
 def gml_assert_cart(buff_name):
-    return f"__catspeak_assert(__catspeak_buffer_exists({buff_name}), \"no cartridge loaded\");"
+    return f"__catspeak_assert(__catspeak_is_buffer({buff_name}), \"no cartridge loaded\");"
 
 @jinja2_export
 def gml_assert_type(type_name, var_name):

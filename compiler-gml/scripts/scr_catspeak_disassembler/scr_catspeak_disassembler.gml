@@ -18,6 +18,7 @@
 ///
 /// @returns {String}
 function catspeak_cart_disassemble(buff, offset = undefined) {
+    
     static disassembler = new __CatspeakCartDisassembler();
     var buffStart = buffer_tell(buff);
     if (offset != undefined) {
@@ -31,7 +32,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
         } until (!moreRemains);
         disassembly = disassembler.asmStr;
     } catch (err_) {
-        __catspeak_error_v3(
+        __catspeak_error(
             "failed to disassemble cartridge: ", err_.message, "\n",
             "partial disassembly:\n", disassembler.asmStr
         );

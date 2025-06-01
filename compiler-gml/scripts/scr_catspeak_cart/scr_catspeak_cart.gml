@@ -116,7 +116,7 @@ enum CatspeakInstr {
 ///   The buffer to write the cartridge to. Must be a `buffer_grow` type buffer
 ///   with an alignment of 1.
 function CatspeakCartWriter(buff_) constructor {
-    __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert(__catspeak_is_buffer(buff_), "buffer doesn't exist");
     __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_), "requires a grow buffer (buffer_grow)");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "requires a buffer with alignment 1");
     cartStart = buffer_tell(buff_);
@@ -152,7 +152,7 @@ function CatspeakCartWriter(buff_) constructor {
     static finalise = function () {
         var buff_ = buff;
         buff = undefined;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         buffer_write(buff_, buffer_u8, CatspeakInstr.END_OF_PROGRAM);
         buffer_poke(buff_, chunkData, buffer_u32, buffer_tell(buff_) - cartStart); // patch data
         // write meta data
@@ -171,7 +171,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitConstNumber = function (value, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(value), "expected type of f64");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_N);
@@ -188,7 +188,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitConstString = function (value, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_string(value), "expected type of string");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_S);
@@ -202,7 +202,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitConstUndefined = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_U);
         buffer_write(buff_, buffer_u32, dbg);
@@ -217,7 +217,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBlock = function (n, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(n), "expected type of u32");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.POP_N);
@@ -231,7 +231,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitIfThenElse = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.IFTE);
         buffer_write(buff_, buffer_u32, dbg);
@@ -243,7 +243,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitReturn = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.RET);
         buffer_write(buff_, buffer_u32, dbg);
@@ -255,7 +255,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBreak = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.BRK);
         buffer_write(buff_, buffer_u32, dbg);
@@ -267,7 +267,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitContinue = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.CONT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -279,7 +279,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitThrow = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.THRW);
         buffer_write(buff_, buffer_u32, dbg);
@@ -294,7 +294,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitClosure = function (locals, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(locals), "expected type of u32");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.FCLO);
@@ -311,7 +311,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitGetLocal = function (idx, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(idx), "expected type of u32");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_L);
@@ -328,7 +328,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitSetLocal = function (idx, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(idx), "expected type of u32");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.SET_L);
@@ -345,7 +345,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitGetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_string(name), "expected type of string");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_G);
@@ -362,7 +362,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitSetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_string(name), "expected type of string");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.SET_G);
@@ -376,7 +376,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitRemainder = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.REM);
         buffer_write(buff_, buffer_u32, dbg);
@@ -388,7 +388,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitMultiply = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.MULT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -400,7 +400,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitDivide = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.DIV);
         buffer_write(buff_, buffer_u32, dbg);
@@ -412,7 +412,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitDivideInt = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.IDIV);
         buffer_write(buff_, buffer_u32, dbg);
@@ -424,7 +424,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitSubtract = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.SUB);
         buffer_write(buff_, buffer_u32, dbg);
@@ -436,7 +436,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitNegative = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.NEG);
         buffer_write(buff_, buffer_u32, dbg);
@@ -448,7 +448,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitAdd = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.ADD);
         buffer_write(buff_, buffer_u32, dbg);
@@ -460,7 +460,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitPositive = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.POS);
         buffer_write(buff_, buffer_u32, dbg);
@@ -472,7 +472,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitEqual = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.EQ);
         buffer_write(buff_, buffer_u32, dbg);
@@ -484,7 +484,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitNotEqual = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.NEQ);
         buffer_write(buff_, buffer_u32, dbg);
@@ -496,7 +496,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitGreaterThan = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -508,7 +508,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitGreaterThanOrEqualTo = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.GEQ);
         buffer_write(buff_, buffer_u32, dbg);
@@ -520,7 +520,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitLessThan = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.LT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -532,7 +532,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitLessThanOrEqualTo = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.LEQ);
         buffer_write(buff_, buffer_u32, dbg);
@@ -544,7 +544,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitNot = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.NOT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -556,7 +556,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitAnd = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.AND);
         buffer_write(buff_, buffer_u32, dbg);
@@ -568,7 +568,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitOr = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.OR);
         buffer_write(buff_, buffer_u32, dbg);
@@ -580,7 +580,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitXor = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.XOR);
         buffer_write(buff_, buffer_u32, dbg);
@@ -592,7 +592,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBitwiseNot = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.BNOT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -604,7 +604,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBitwiseAnd = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.BAND);
         buffer_write(buff_, buffer_u32, dbg);
@@ -616,7 +616,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBitwiseOr = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.BOR);
         buffer_write(buff_, buffer_u32, dbg);
@@ -628,7 +628,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBitwiseXor = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.BXOR);
         buffer_write(buff_, buffer_u32, dbg);
@@ -640,7 +640,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBitwiseShiftRight = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.RSHIFT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -652,7 +652,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///     The approximate location of the number in the source code.
     static emitBitwiseShiftLeft = function (dbg = CATSPEAK_NOLOCATION) {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         __catspeak_assert(is_numeric(dbg), "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.LSHIFT);
         buffer_write(buff_, buffer_u32, dbg);
@@ -675,7 +675,7 @@ function CatspeakCartWriter(buff_) constructor {
 ///
 ///   - TODO
 function CatspeakCartReader(buff_, visitor_) constructor {
-    __catspeak_assert(buffer_exists(buff_), "buffer doesn't exist");
+    __catspeak_assert(__catspeak_is_buffer(buff_), "buffer doesn't exist");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "require a buffer with alignment 1");
     __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
     __catspeak_assert(is_method(visitor_[$ "handleInstrConstNumber"]),
@@ -814,10 +814,10 @@ function CatspeakCartReader(buff_, visitor_) constructor {
             failedMessage = "failed to read Catspeak cartridge: '1' (u8) missing from header";
         }
     } catch (ex_) {
-        __catspeak_error_v3("error occurred when trying to read Catspeak cartridge: ", ex_.message);
+        __catspeak_error("error occurred when trying to read Catspeak cartridge: ", ex_.message);
     }
     if (failedMessage != undefined) {
-        __catspeak_error_v3(failedMessage);
+        __catspeak_error(failedMessage);
     }
     visitor_.handleInit();
     /// @ignore
@@ -846,7 +846,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     /// @return {Bool}
     static readInstr = function () {
         var buff_ = buff;
-        __catspeak_assert(buff_ != undefined && buffer_exists(buff_), "no cartridge loaded");
+        __catspeak_assert(__catspeak_is_buffer(buff_), "no cartridge loaded");
         var instrType = buffer_read(buff_, buffer_u8);
         if (instrType == CatspeakInstr.END_OF_PROGRAM) {
             // we've reached the end

@@ -15,11 +15,11 @@
 #macro CATSPEAK_TIMEOUT 1000
 
 /// TODO
-function CatspeakCodegenGML(globals_ = undefined) constructor {
+function CatspeakCodegenGML() constructor {
     /// @ignore
     stack = array_create(32);
     /// @ignore
-    globals = globals_ ?? { };
+    globals = undefined;
     /// @ignore
     ctx = undefined;
     /// @ignore
