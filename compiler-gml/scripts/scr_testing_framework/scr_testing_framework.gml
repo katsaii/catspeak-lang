@@ -258,7 +258,7 @@ function test_run() {
         stats.totalFatal += 1;
         show_debug_message(
             "encountered a fatal error when running one of the test cases:\n"
-            + __catspeak_string(e)
+            + string(e)
         );
     }
 }

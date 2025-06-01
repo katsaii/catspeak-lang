@@ -814,10 +814,10 @@ function CatspeakCartReader(buff_, visitor_) constructor {
             failedMessage = "failed to read Catspeak cartridge: '1' (u8) missing from header";
         }
     } catch (ex_) {
-        __catspeak_error("error occurred when trying to read Catspeak cartridge: ", ex_.message);
+        __catspeak_error_v3("error occurred when trying to read Catspeak cartridge: ", ex_.message);
     }
     if (failedMessage != undefined) {
-        __catspeak_error(failedMessage);
+        __catspeak_error_v3(failedMessage);
     }
     visitor_.handleInit();
     /// @ignore

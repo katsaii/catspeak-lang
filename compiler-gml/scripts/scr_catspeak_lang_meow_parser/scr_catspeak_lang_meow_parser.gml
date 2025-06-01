@@ -155,7 +155,7 @@ function CatspeakParser(cart_, buff, offset = undefined, size = undefined) const
 
     /// @ignore
     static __ex = function (msg = "no message") {
-        __catspeak_error(
+        __catspeak_error_v3(
             catspeak_location_show(lexer.getLocationStart(), cart.path) + " during parsing",
             msg, ", got", __token
         );

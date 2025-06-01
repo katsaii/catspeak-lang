@@ -12,6 +12,7 @@
 ///
 /// @returns {String}
 function catspeak_cart_disassemble(buff, offset = undefined) {
+    
     static disassembler = new __CatspeakCartDisassembler();
     var buffStart = buffer_tell(buff);
     if (offset != undefined) {

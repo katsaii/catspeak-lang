@@ -101,7 +101,7 @@ function CatspeakIRBuilder(filepath=undefined) constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("values", values, is_array);
             if (array_length(values) % 2 == 1) {
-                __catspeak_error(
+                __catspeak_error_v3(
                     "expected arg 'values' to be an array with an even ",
                     "number of elements, got ", array_length(values)
                 );
@@ -618,7 +618,7 @@ function CatspeakIRBuilder(filepath=undefined) constructor {
                 lhs.value = opFunc(lhs.value, rhs.value);
                 return lhs;
             } catch (ex_) {
-                __catspeak_error_silent(__catspeak_location_show_ext(
+                __catspeak_error_v3_silent(__catspeak_location_show_ext(
                     location, filepath, "failed to optimise binary expression"
                 ));
             }
@@ -659,7 +659,7 @@ function CatspeakIRBuilder(filepath=undefined) constructor {
                 return value;
             } catch (ex_) {
                 // couldn't do it......................slime man
-                __catspeak_error_silent(__catspeak_location_show_ext(
+                __catspeak_error_v3_silent(__catspeak_location_show_ext(
                     location, filepath, "failed to optimise unary expression"
                 ));
             }
@@ -790,7 +790,7 @@ function CatspeakIRBuilder(filepath=undefined) constructor {
         var block = currFunctionScope.blocks[| currFunctionScope.blocksTop];
         var scope = block.locals;
         if (ds_map_exists(scope, name)) {
-            __catspeak_error(
+            __catspeak_error_v3(
                 __catspeak_location_show(location, filepath),
                 " -- a local variable with the name '", name, "' is already ",
                 "defined in this scope"
@@ -856,7 +856,7 @@ function CatspeakIRBuilder(filepath=undefined) constructor {
         // __createTerm() will do argument validation
         var local = allocLocal(name, location);
         if (currFunctionScope.argCount != local.idx) {
-            __catspeak_error(
+            __catspeak_error_v3(
                 "must allocate all function arguments before ",
                 "allocating any local variables"
             );
@@ -1220,7 +1220,7 @@ function __catspeak_operator_assign_from_token(token) {
 function __catspeak_operator_get_binary(op) {
     var opFunc = global.__catspeakBinOps[op];
     if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(opFunc)) {
-        __catspeak_error_bug();
+        __catspeak_error_v3_bug();
     }
     return opFunc;
 }
@@ -1232,7 +1232,7 @@ function __catspeak_operator_get_binary(op) {
 function __catspeak_operator_get_unary(op) {
     var opFunc = global.__catspeakUnaryOps[op];
     if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(opFunc)) {
-        __catspeak_error_bug();
+        __catspeak_error_v3_bug();
     }
     return opFunc;
 }

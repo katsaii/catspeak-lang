@@ -95,7 +95,7 @@ function CatspeakForeignInterface() constructor {
                     return asset;
                 }
             } catch (_) {
-                __catspeak_error_silent("GML interface not included, defaulting to `undefined`");
+                __catspeak_error_v3_silent("GML interface not included, defaulting to `undefined`");
             }
         }
         return undefined;
@@ -139,7 +139,7 @@ function CatspeakForeignInterface() constructor {
                 var db = __catspeak_get_gml_interface();
                 return variable_struct_exists(db, name) || asset_get_index(name) != -1;
             } catch (_) {
-                __catspeak_error_silent("GML interface not included, defaulting to `false`");
+                __catspeak_error_v3_silent("GML interface not included, defaulting to `false`");
             }
         }
         return false;
@@ -317,7 +317,7 @@ function CatspeakForeignInterface() constructor {
                     }
                 }
                 if (func == undefined) {
-                    __catspeak_error("function with the name '", name, "' cannot be found");
+                    __catspeak_error_v3("function with the name '", name, "' cannot be found");
                 }
             } else {
                 name = __catspeak_infer_function_name(func);
@@ -462,7 +462,7 @@ function CatspeakForeignInterface() constructor {
                     }
                 }
                 if (func == undefined) {
-                    __catspeak_error("method with the name '", name, "' cannot be found");
+                    __catspeak_error_v3("method with the name '", name, "' cannot be found");
                 }
             } else {
                 name = __catspeak_infer_function_name(func);
@@ -486,7 +486,7 @@ function CatspeakForeignInterface() constructor {
             var type = asset_get_type(name);
             // validate that it's an actual GM Asset
             if (value == -1) {
-                __catspeak_error(
+                __catspeak_error_v3(
                     "invalid GMAsset: got '", value, "' from '", name, "'"
                 );
             }
@@ -714,7 +714,7 @@ function CatspeakEnvironment() constructor {
     ///   The length of the buffer input. Any characters beyond this limit
     ///   will be treated as the end of the file. Defaults to `infinity`.
     static parseAsync = function (buff, offset=undefined, size=undefined) {
-        __catspeak_error_unimplemented("async-parsing");
+        __catspeak_error_v3_unimplemented("async-parsing");
     };
 
     /// Compiles Catspeak IR into its final representation.
@@ -967,7 +967,7 @@ function catspeak_special_to_struct(gmlSpecial) {
             return self;
         }
     }
-    __catspeak_error_silent(
+    __catspeak_error_v3_silent(
         "could not convert special GML value '", gmlSpecial, "' ",
         "into a valid Catspeak representation"
     );

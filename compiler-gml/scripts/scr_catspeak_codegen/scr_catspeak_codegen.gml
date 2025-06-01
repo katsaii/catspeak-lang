@@ -52,7 +52,7 @@ function is_catspeak(value) {
 function __catspeak_timeout_check(t) {
     gml_pragma("forceinline");
     if (current_time - t > CATSPEAK_TIMEOUT) {
-        __catspeak_error(
+        __catspeak_error_v3(
             "process exceeded allowed time of ", CATSPEAK_TIMEOUT, " ms"
         );
     }
@@ -151,7 +151,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
     ///   to compile, or `undefined` if there is still more left to compile.
     static update = function () {
         if (CATSPEAK_DEBUG_MODE && finalised) {
-            __catspeak_error(
+            __catspeak_error_v3(
                 "attempting to update gml compiler after it has been finalised"
             );
         }
@@ -804,7 +804,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
             var name = target.name;
             if (__exists(name)) {
                 // cannot assign to interface values
-                __catspeak_error(
+                __catspeak_error_v3(
                     __catspeak_location_show(target.dbg, filepath),
                     " -- invalid assignment target, ",
                     "cannot assign to built-in function or constant"
@@ -823,7 +823,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
                     "dbg", undefined
                 );
             }
-            __catspeak_error(
+            __catspeak_error_v3(
                 __catspeak_location_show(target.dbg, filepath),
                 " -- invalid assignment target, ",
                 "must be an identifier or accessor expression"
@@ -998,7 +998,7 @@ function CatspeakGMLCompiler(ir, interface=undefined) constructor {
         }
         var prod = __productionLookup[term.type];
         if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(prod)) {
-            __catspeak_error_bug();
+            __catspeak_error_v3_bug();
         }
         return prod(ctx, term);
     };
@@ -1435,7 +1435,7 @@ function __catspeak_expr_loop_with__() {
     var returnValue = undefined;
     var doReturnValue = false;
     if (!__catspeak_is_withable(scope_)) {
-        __catspeak_error(dbgError, ": ", scope_);
+        __catspeak_error_v3(dbgError, ": ", scope_);
         return undefined;
     }
     with (scope_) {
@@ -1584,10 +1584,10 @@ function __catspeak_expr_call_method__() {
         callee_ = collection_[$ key_];
     } else {
         // TODO :: bad error message
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var args_;
     { //var args_ = array_map(args, function(f) { return f() });
@@ -1622,7 +1622,7 @@ function __catspeak_expr_call_method__() {
 function __catspeak_expr_call__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var args_;
     { //var args_ = array_map(args, function(f) { return f() });
@@ -1652,7 +1652,7 @@ function __catspeak_expr_call__() {
 function __catspeak_expr_call_0__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var shared_ = shared;
 	
@@ -1671,7 +1671,7 @@ function __catspeak_expr_call_0__() {
 function __catspeak_expr_call_1__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var values_ = args;
     var arg1 = values_[0]();
@@ -1692,7 +1692,7 @@ function __catspeak_expr_call_1__() {
 function __catspeak_expr_call_2__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var values_ = args;
     var arg1 = values_[0]();
@@ -1714,7 +1714,7 @@ function __catspeak_expr_call_2__() {
 function __catspeak_expr_call_3__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var values_ = args;
     var arg1 = values_[0]();
@@ -1737,7 +1737,7 @@ function __catspeak_expr_call_3__() {
 function __catspeak_expr_call_4__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var values_ = args;
     var arg1 = values_[0]();
@@ -1761,7 +1761,7 @@ function __catspeak_expr_call_4__() {
 function __catspeak_expr_call_5__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     var values_ = args;
     var arg1 = values_[0]();
@@ -1788,7 +1788,7 @@ function __catspeak_expr_call_5__() {
 function __catspeak_expr_call_new__() {
     var callee_ = callee();
     if (!is_method(callee_)) {
-        __catspeak_error_got(dbgError, callee_);
+        __catspeak_error_v3_got(dbgError, callee_);
     }
     // TODO :: optimise :: SUPER SLOW, DO THIS AT COMPILE TIME
     var args_ = args;
@@ -1813,7 +1813,7 @@ function __catspeak_expr_call_new__() {
     case 15: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11](), args_[12](), args_[13](), args_[14]());
     case 16: return new callee_(args_[0](), args_[1](), args_[2](), args_[3](), args_[4](), args_[5](), args_[6](), args_[7](), args_[8](), args_[9](), args_[10](), args_[11](), args_[12](), args_[13](), args_[14](), args_[15]());
     default:
-        __catspeak_error_got(
+        __catspeak_error_v3_got(
             "cannot exceed 16 arguments in 'new' expression"
         );
     }
@@ -1829,7 +1829,7 @@ function __catspeak_expr_index_get__() {
     } else if (__catspeak_is_withable(collection_)) {
         return collection_[$ key_];
     } else {
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
 }
 
@@ -1849,7 +1849,7 @@ function __catspeak_expr_index_set__() {
         }
         collection_[$ key_] = value_;
     } else {
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
 }
 
@@ -1869,7 +1869,7 @@ function __catspeak_expr_index_set_mult__() {
         }
         collection_[$ key_] *= value_;
     } else {
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
 }
 
@@ -1889,7 +1889,7 @@ function __catspeak_expr_index_set_div__() {
         }
         collection_[$ key_] /= value_;
     } else {
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
 }
 
@@ -1909,7 +1909,7 @@ function __catspeak_expr_index_set_sub__() {
         }
         collection_[$ key_] -= value_;
     } else {
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
 }
 
@@ -1929,7 +1929,7 @@ function __catspeak_expr_index_set_plus__() {
         }
         collection_[$ key_] += value_;
     } else {
-        __catspeak_error_got(dbgError, collection_);
+        __catspeak_error_v3_got(dbgError, collection_);
     }
 }
 
@@ -1938,7 +1938,7 @@ function __catspeak_expr_index_set_plus__() {
 function __catspeak_expr_property_get__() {
     var property_ = property();
     if (!is_method(property_)) {
-        __catspeak_error_got(dbgError, property_);
+        __catspeak_error_v3_got(dbgError, property_);
     }
     return property_();
 }
@@ -1949,7 +1949,7 @@ function __catspeak_expr_property_set__() {
     var property_ = property();
     var value_ = value();
     if (!is_method(property_)) {
-        __catspeak_error_got(dbgError, property_);
+        __catspeak_error_v3_got(dbgError, property_);
     }
     return property_(value_);
 }
@@ -1960,7 +1960,7 @@ function __catspeak_expr_property_set_mult__() {
     var property_ = property();
     var value_ = value();
     if (!is_method(property_)) {
-        __catspeak_error_got(dbgError, property_);
+        __catspeak_error_v3_got(dbgError, property_);
     }
     return property_(property_() * value_);
 }
@@ -1971,7 +1971,7 @@ function __catspeak_expr_property_set_div__() {
     var property_ = property();
     var value_ = value();
     if (!is_method(property_)) {
-        __catspeak_error_got(dbgError, property_);
+        __catspeak_error_v3_got(dbgError, property_);
     }
     return property_(property_() / value_);
 }
@@ -1982,7 +1982,7 @@ function __catspeak_expr_property_set_sub__() {
     var property_ = property();
     var value_ = value();
     if (!is_method(property_)) {
-        __catspeak_error_got(dbgError, property_);
+        __catspeak_error_v3_got(dbgError, property_);
     }
     return property_(property_() - value_);
 }
@@ -1993,7 +1993,7 @@ function __catspeak_expr_property_set_plus__() {
     var property_ = property();
     var value_ = value();
     if (!is_method(property_)) {
-        __catspeak_error_got(dbgError, property_);
+        __catspeak_error_v3_got(dbgError, property_);
     }
     return property_(property_() + value_);
 }

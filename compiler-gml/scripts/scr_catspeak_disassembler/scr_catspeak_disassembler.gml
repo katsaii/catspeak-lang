@@ -31,7 +31,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
         } until (!moreRemains);
         disassembly = disassembler.asmStr;
     } catch (err_) {
-        __catspeak_error(
+        __catspeak_error_v3(
             "failed to disassemble cartridge: ", err_.message, "\n",
             "partial disassembly:\n", disassembler.asmStr
         );

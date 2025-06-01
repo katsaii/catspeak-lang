@@ -2546,7 +2546,7 @@ function __catspeak_get_gml_interface() {
                 db[$ "call_later"] = method(undefined, call_later);
                 db[$ "call_cancel"] = method(undefined, call_cancel);
             } catch (__err) {
-               __catspeak_error_silent("skipping GML API versions: fnames-2022-lts, fnames-2024-2-0-163 (your GameMaker version may be out of date) reason: ", __err.message);
+               __catspeak_error_v3_silent("skipping GML API versions: fnames-2022-lts, fnames-2024-2-0-163 (your GameMaker version may be out of date) reason: ", __err.message);
             }
             try {
                 db[$ "is_vec3"] = method(undefined, is_vec3);
@@ -2558,7 +2558,7 @@ function __catspeak_get_gml_interface() {
                 db[$ "cloud_string_save"] = method(undefined, cloud_string_save);
                 db[$ "cloud_synchronise"] = method(undefined, cloud_synchronise);
             } catch (__err) {
-               __catspeak_error_silent("skipping GML API versions: fnames-2022-lts (your GameMaker version may be out of date) reason: ", __err.message);
+               __catspeak_error_v3_silent("skipping GML API versions: fnames-2022-lts (your GameMaker version may be out of date) reason: ", __err.message);
             }
             try {
                 db[$ "GM_is_sandboxed"] = GM_is_sandboxed;
@@ -2741,7 +2741,7 @@ function __catspeak_get_gml_interface() {
                 db[$ "lin_to_db"] = method(undefined, lin_to_db);
                 db[$ "db_to_lin"] = method(undefined, db_to_lin);
             } catch (__err) {
-               __catspeak_error_silent("skipping GML API versions: fnames-2024-2-0-163 (your GameMaker version may be out of date) reason: ", __err.message);
+               __catspeak_error_v3_silent("skipping GML API versions: fnames-2024-2-0-163 (your GameMaker version may be out of date) reason: ", __err.message);
             }
         }
     }

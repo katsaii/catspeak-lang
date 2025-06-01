@@ -67,7 +67,7 @@ function CatspeakParserV3(lexer, builder) constructor {
             return false;
         }
         if (CATSPEAK_DEBUG_MODE && finalised) {
-            __catspeak_error(
+            __catspeak_error_v3(
                 "attempting to update parser after it has been finalised"
             );
         }
@@ -703,13 +703,13 @@ function CatspeakParserV3(lexer, builder) constructor {
     static __ex = function () {
         var dbg = __catspeak_location_show(lexer.getLocation(), ir.filepath) + " when parsing";
         if (argument_count < 1) {
-            __catspeak_error(dbg);
+            __catspeak_error_v3(dbg);
         } else {
             var msg = "";
             for (var i = 0; i < argument_count; i += 1) {
                 msg += __catspeak_string(argument[i]);
             }
-            __catspeak_error(dbg, " -- ", msg, ", got ", __tokenDebug());
+            __catspeak_error_v3(dbg, " -- ", msg, ", got ", __tokenDebug());
         }
     };
 

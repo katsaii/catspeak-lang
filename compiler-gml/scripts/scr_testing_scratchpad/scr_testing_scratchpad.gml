@@ -9,8 +9,16 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4-parse";
+var runExperiment = "catspeak4-ctx";
 #macro TEST_EXPERIMENT if runExperiment ==
+
+TEST_EXPERIMENT "catspeak4-ctx" {
+    var ctx = new CatspeakCtx();
+    ctx.parserType = CatspeakParser;
+    show_message(ctx.build({
+        src: "string"
+    }));
+}
 
 TEST_EXPERIMENT "lexer" {
     var buff = __catspeak_create_buffer_from_string(@'1 2._ 3._4_ 5_6_7__');

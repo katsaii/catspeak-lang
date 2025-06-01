@@ -91,6 +91,15 @@ function __catspeak_location_show(location, filepath) {
     return catspeak_location_show(location, filepath);
 }
 
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_string(val) {
+    gml_pragma("forceinline");
+    return is_string(val) ? val : string(val);
+}
+
 /// @ignore
 ///
 /// @deprecated {4.0.0}
@@ -313,7 +322,7 @@ function __catspeak_keywords_create() {
 function __catspeak_keywords_rename(keywords, currentName, newName) {
     if (!variable_struct_exists(keywords, currentName)) {
         if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_error_silent(
+            __catspeak_error_v3_silent(
                 "no keyword with the name '", currentName, "' exists"
             );
         }
@@ -640,7 +649,7 @@ enum CatspeakPreset {
 function __catspeak_preset_get(preset) {
     var presetFunc = global.__catspeakPresets[? preset];
     if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(presetFunc)) {
-        __catspeak_error(
+        __catspeak_error_v3(
             "a Catspeak preset with the key '",
             preset, "' does not exist, make sure the preset exists in the ",
             "`CatspeakPreset` enum"
@@ -1135,7 +1144,7 @@ function catspeak_preset_add(key, callback) {
     }
     var presets = global.__catspeakPresets;
     if (ds_map_exists(presets, key)) {
-       __catspeak_error("a preset with the key '", key, "' already exists");
+       __catspeak_error_v3("a preset with the key '", key, "' already exists");
     }
     presets[? key] = callback;
 }
@@ -1156,4 +1165,177 @@ function __catspeak_init_presets() {
     catspeak_preset_add(CatspeakPreset.DRAW, __catspeak_preset_draw);
     catspeak_preset_add(CatspeakPreset.RANDOM, __catspeak_preset_random);
     catspeak_preset_add(CatspeakPreset.UNSAFE, __catspeak_preset_unsafe);
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_error_v3() {
+    var msg = "Catspeak v" + CATSPEAK_VERSION + " (compatibility)";
+    if (argument_count > 0) {
+        msg += ": ";
+        for (var i = 0; i < argument_count; i += 1) {
+            msg += string(argument[i]);
+        }
+    }
+    show_error(msg, false);
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_error_v3_silent() {
+    var msg = "Catspeak v" + CATSPEAK_VERSION + " (compatibility)";
+    if (argument_count > 0) {
+        msg += ": ";
+        for (var i = 0; i < argument_count; i += 1) {
+            msg += string(argument[i]);
+        }
+    }
+    show_debug_message(msg);
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_error_v3_got(msg, got) {
+    var gotStr;
+    if (is_numeric(got)) {
+        gotStr = string(got);
+    } else if (is_string(got) && string_length(got) < 16) {
+        gotStr = got;
+    } else {
+        gotStr = typeof(got);
+    }
+    __catspeak_error_v3(msg, ", got '", gotStr, "'");
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_error_v3_deprecated(name, alternative=undefined) {
+    if (__catspeak_is_nullish(alternative)) {
+        __catspeak_error_v3_silent("'", name, "' isn't supported anymore");
+    } else {
+        __catspeak_error_v3_silent(
+            "'", name, "' isn't supported anymore",
+            ", use '", alternative, "' instead"
+        );
+    }
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_init() {
+    gml_pragma("forceinline");
+    if (catspeak_force_init()) {
+        __catspeak_error_v3(
+            "Catspeak was not initialised at this point, make sure to call ",
+            "'catspeak_force_init' at the start of your code if you are ",
+            "using Catspeak inside of a script resource"
+        );
+    }
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_arg(name, val, func, typeName=undefined) {
+    if (func(val)) {
+        return;
+    }
+    typeName ??= __catspeak_infer_type_from_predicate(func);
+    __catspeak_error_v3(
+        "expected argument '", name, "' to be of type '", typeName, "'",
+        ", but got '", typeof(val), "' instead"
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_arg_optional(name, val, func, typeName=undefined) {
+    if (val == undefined) {
+        return;
+    }
+    return __catspeak_check_arg(name, val, func, typeName);
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_arg_not(name, val, func, typeName=undefined) {
+    if (!func(val)) {
+        return;
+    }
+    typeName ??= __catspeak_infer_type_from_predicate(func);
+    __catspeak_error_v3(
+        "expected argument '", name,
+        "' to be any type EXCEPT of type '", typeName, "'"
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_arg_struct(name, val) {
+    __catspeak_check_arg(name, val, is_struct);
+    for (var i = 2; i < argument_count; i += 2) {
+        var varName = argument[i];
+        var varFunc = argument[i + 1];
+        if (!variable_struct_exists(val, varName)) {
+            __catspeak_error_v3(
+                "expected struct argument '", name,
+                "' to contain a variable '", varName, "'"
+            );
+        }
+        if (varFunc != undefined) {
+            __catspeak_check_arg(
+                    name + "." + varName, val[$ varName], varFunc);
+        }
+    }
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_arg_struct_instanceof(name, val, expect) {
+    __catspeak_check_arg(name, val, is_struct);
+    var actual = instanceof(val);
+    if (actual != expect) {
+        __catspeak_error_v3(
+            "expected struct argument '", name, "' to be an instance of '",
+            expect, "', but got '", actual, "'"
+        );
+    }
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_arg_size_bits(name, val, size) {
+    gml_pragma("forceinline");
+    __catspeak_check_arg(name, val, is_numeric);
+    if (val < 0) {
+        __catspeak_error_v3("argument '", name, "' must not be negative, got", val);
+    }
+    if (val >= power(2, size)) {
+        __catspeak_error_v3(
+            "argument '", name, "' is too large (", val,
+            ") it must fit within ", size, " bits"
+        );
+    }
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_global_exists(name) {
+    gml_pragma("forceinline");
+    if (!variable_global_exists(name)) {
+        __catspeak_error_v3(
+            "global variable '", name, "' does not exist"
+        );
+    }
 }

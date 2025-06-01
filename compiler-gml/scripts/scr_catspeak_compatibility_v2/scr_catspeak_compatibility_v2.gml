@@ -14,7 +14,7 @@
 ///
 /// @return {Struct}
 function catspeak_config() {
-    __catspeak_error_deprecated("catspeak_config");
+    __catspeak_error_v3_deprecated("catspeak_config");
     catspeak_force_init();
     var config = global.__catspeakConfig;
     if (argument_count > 0 && is_struct(argument[0])) {
@@ -47,7 +47,7 @@ function catspeak_config() {
 ///   The remaining key-value pairs to add, in the same pattern as the two
 ///   previous arguments.
 function catspeak_add_function() {
-    __catspeak_error_deprecated("catspeak_add_function", "Catspeak.addFunction");
+    __catspeak_error_v3_deprecated("catspeak_add_function", "Catspeak.addFunction");
     catspeak_force_init();
     for (var i = 0; i < argument_count; i += 2) {
         Catspeak.addFunction(argument[i + 0], argument[i + 1]);
@@ -72,7 +72,7 @@ function catspeak_add_function() {
 ///   The remaining key-value pairs to add, in the same pattern as the two
 ///   previous arguments.
 function catspeak_add_constant() {
-    __catspeak_error_deprecated("catspeak_add_function", "Catspeak.addConstant");
+    __catspeak_error_v3_deprecated("catspeak_add_function", "Catspeak.addConstant");
     catspeak_force_init();
     for (var i = 0; i < argument_count; i += 2) {
         Catspeak.addConstant(argument[i + 0], argument[i + 1]);
@@ -94,7 +94,7 @@ function catspeak_add_constant() {
 ///
 /// @return {Struct.Future}
 function catspeak_execute_v2(scr, args) {
-    __catspeak_error_deprecated("catspeak_execute");
+    __catspeak_error_v3_deprecated("catspeak_execute");
     static noArgs = [];
     var args_ = args ?? noArgs;
     var argo = 0;
@@ -122,7 +122,7 @@ function catspeak_execute_v2(scr, args) {
 ///
 /// @return {Function}
 function catspeak_session_extern(scr) {
-    __catspeak_error_deprecated("catspeak_session_extern");
+    __catspeak_error_v3_deprecated("catspeak_session_extern");
     return catspeak_into_gml_function(scr);
 }
 
@@ -137,7 +137,7 @@ function catspeak_session_extern(scr) {
 ///
 /// @return {Function}
 function catspeak_into_gml_function(scr) {
-    __catspeak_error_deprecated("catspeak_into_gml_function");
+    __catspeak_error_v3_deprecated("catspeak_into_gml_function");
     return scr;
 }
 
@@ -164,7 +164,7 @@ function catspeak_into_gml_function(scr) {
 ///
 /// @return {Struct.CatspeakProcess}
 function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) {
-    __catspeak_error_deprecated("catspeak_compile_buffer", "Catspeak.parse");
+    __catspeak_error_v3_deprecated("catspeak_compile_buffer", "Catspeak.parse");
     var ret;
     try {
         var f = Catspeak.compile(Catspeak.parse(buff, offset, size));
@@ -192,7 +192,7 @@ function catspeak_compile_buffer(buff, consume=false, offset=0, size=undefined) 
 ///
 /// @return {Struct.CatspeakProcess}
 function catspeak_compile_string(src) {
-    __catspeak_error_deprecated("catspeak_compile_buffer", "Catspeak.parseString");
+    __catspeak_error_v3_deprecated("catspeak_compile_buffer", "Catspeak.parseString");
     try {
         var f = Catspeak.compile(Catspeak.parseString(src));
         return future_ok(f);
@@ -210,7 +210,7 @@ function catspeak_compile_string(src) {
 ///
 /// @return {Id.Buffer}
 function catspeak_create_buffer_from_string_v2(src) {
-    __catspeak_error_deprecated("catspeak_create_buffer_from_string");
+    __catspeak_error_v3_deprecated("catspeak_create_buffer_from_string");
     var capacity = string_byte_length(src);
     var buff = buffer_create(capacity, buffer_fixed, 1);
     buffer_write(buff, buffer_text, src);
