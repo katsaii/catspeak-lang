@@ -42,7 +42,7 @@ enum CatspeakInstr {
 ///   The buffer to write the cartridge to. Must be a `buffer_grow` type buffer
 ///   with an alignment of 1.
 function CatspeakCartWriter(buff_) constructor {
-    __catspeak_assert(__catspeak_is_buffer(buff_), "buffer doesn't exist");
+    __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "buffer doesn't exist");
     __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_), "requires a grow buffer (buffer_grow)");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "requires a buffer with alignment 1");
     {{ gml_chunk_head("buff_") }}
@@ -155,25 +155,25 @@ function CatspeakCartWriter(buff_) constructor {
 ///
 ///   - TODO
 function CatspeakCartReader(buff_, visitor_) constructor {
-    __catspeak_assert(__catspeak_is_buffer(buff_), "buffer doesn't exist");
+    __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "buffer doesn't exist");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "require a buffer with alignment 1");
-    __catspeak_assert(is_struct(visitor_), "visitor must be a struct");
+    __catspeak_assert_typeof(visitor_, is_struct, "visitor must be a struct");
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set name_handler = gml_var_ref(instr["name"], "handleInstr") %}
-    __catspeak_assert(is_method(visitor_[$ "{{ name_handler }}"]),
+    __catspeak_assert_typeof(visitor_[$ "{{ name_handler }}"], __catspeak_is_callable,
         "visitor is missing a handler for '{{ name_handler }}'"
     );
 {% endfor %}
 {% for section_name, section in ir_enumerate(ir, "data") %}
 {%  set name_handler = gml_var_ref(section_name, "handle") %}
-    __catspeak_assert(is_method(visitor_[$ "{{ name_handler }}"]),
+    __catspeak_assert_typeof(visitor_[$ "{{ name_handler }}"], __catspeak_is_callable,
         "visitor is missing a handler for '{{ name_handler }}'"
     );
 {% endfor %}
-    __catspeak_assert(is_method(visitor_[$ "handleInit"]),
+    __catspeak_assert_typeof(visitor_[$ "handleInit"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInit'"
     );
-    __catspeak_assert(is_method(visitor_[$ "handleDeinit"]),
+    __catspeak_assert_typeof(visitor_[$ "handleDeinit"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleDeinit'"
     );
     {{ gml_chunk_head("buff_") }}

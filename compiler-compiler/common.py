@@ -128,17 +128,17 @@ def gml_type_buffer(type_name):
 
 @jinja2_export
 def gml_assert_cart(buff_name):
-    return f"__catspeak_assert(__catspeak_is_buffer({buff_name}), \"no cartridge loaded\");"
+    return f"__catspeak_assert_typeof({buff_name}, __catspeak_is_buffer, \"no cartridge loaded\");"
 
 @jinja2_export
 def gml_assert_type(type_name, var_name):
     match type_name:
         case "i32" | "u32" | "f64" | "u8":
-            condition = f"is_numeric({var_name})"
+            predicate = "is_numeric"
         case "string":
-            condition = f"is_string({var_name})"
+            predicate = "is_string"
         case t: ir_unknown_type(t)
-    return f"__catspeak_assert({condition}, \"expected type of {type_name}\");"
+    return f"__catspeak_assert_typeof({var_name}, {predicate}, \"expected type of {type_name}\");"
 
 @jinja2_export
 def gml_chunk_ref(name):

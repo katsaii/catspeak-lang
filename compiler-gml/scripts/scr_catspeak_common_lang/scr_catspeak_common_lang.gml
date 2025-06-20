@@ -48,8 +48,8 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     __catspeak_assert_eq(1, buffer_get_alignment(buff_),
         "requires a buffer with alignment 1"
     );
-    __catspeak_assert(is_numeric(offset), "offset must be a number");
-    __catspeak_assert(is_numeric(size), "size must be a number");
+    __catspeak_assert_typeof(offset, is_numeric, "offset must be a number");
+    __catspeak_assert_typeof(size, is_numeric, "size must be a number");
     /// @ignore
     buff = buff_;
     /// @ignore

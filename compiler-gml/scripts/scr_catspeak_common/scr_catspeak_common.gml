@@ -122,8 +122,8 @@
 /// @return {Real}
 function catspeak_location_create(line, column) {
     gml_pragma("forceinline");
-    __catspeak_assert(is_numeric(line), "invalid line number");
-    __catspeak_assert(is_numeric(column), "invalid column number");
+    __catspeak_assert_typeof(line, is_numeric, "invalid line number");
+    __catspeak_assert_typeof(columnm, is_numeric, "invalid column number");
     if (line < 0 || line > __CATSPEAK_LOCATION_LINE_MASK) {
         return CATSPEAK_NOLOCATION;
     }
@@ -144,7 +144,7 @@ function catspeak_location_create(line, column) {
 /// @returns {Real}
 function catspeak_location_get_line(location) {
     gml_pragma("forceinline");
-    __catspeak_assert(is_numeric(location), "invalid location");
+    __catspeak_assert_typeof(location, is_numeric, "invalid location");
     return location & __CATSPEAK_LOCATION_LINE_MASK;
 }
 
@@ -159,7 +159,7 @@ function catspeak_location_get_line(location) {
 /// @returns {Real}
 function catspeak_location_get_column(location) {
     gml_pragma("forceinline");
-    __catspeak_assert(is_numeric(location), "invalid location");
+    __catspeak_assert_typeof(location, is_numeric, "invalid location");
     return (location & __CATSPEAK_LOCATION_COLUMN_MASK) >> 20;
 }
 
