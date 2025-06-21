@@ -38,7 +38,8 @@ function CatspeakCodegenGML() constructor {
         __catspeak_assert_eq(stackTop, 0,
             "error occurred during compilation, values still remaining on the stack"
         );
-        return popValue();
+        var programValue = popValue();
+        return programValue(); // unwrap the program
     };
 
     /// @ignore

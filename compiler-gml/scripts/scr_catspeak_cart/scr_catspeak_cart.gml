@@ -119,7 +119,9 @@ function CatspeakCartWriter(buff_) constructor {
     __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "buffer doesn't exist");
     __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_), "requires a grow buffer (buffer_grow)");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "requires a buffer with alignment 1");
+    /// @ignore
     cartStart = buffer_tell(buff_);
+    /// @ignore
     hSignal = buffer_tell(buff_);
     // (signal will be patched to 13063246 when finalised)
     buffer_write(buff_, buffer_u32, 5994585); // signal header
@@ -801,6 +803,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert_typeof(visitor_[$ "handleDeinit"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleDeinit'"
     );
+    /// @ignore
     cartStart = buffer_tell(buff_);
     var failedMessage = undefined;
     try {

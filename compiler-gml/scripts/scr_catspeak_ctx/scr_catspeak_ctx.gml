@@ -48,6 +48,12 @@ function CatspeakCtx() constructor {
 
 enum CatspeakBuildFlags {
     NONE = 0,
+    KEEP_PATH = (1 << 0),
+    KEEP_AUTHOR = (1 << 1),
+    KEEP_SRC = (1 << 2),
+    KEEP_SRC_BUFFER = (1 << 3),
+    KEEP_CARTRIDGE = (1 << 4),
+    KEEP_ENTRYPOINT = (1 << 5),
 }
 
 /*
@@ -177,20 +183,33 @@ function CatspeakModule(ctx_, buildArgs) constructor {
         if (!completed) {
             failed = true;
         }
-        path = undefined;
-        author = undefined;
-        src = undefined;
-        if (srcBuffIsOwned && __catspeak_is_buffer(srcBuff)) {
-            buffer_delete(srcBuff);
-            srcBuffIsOwned = false;
-            srcBuff = undefined;
+        var flags_ = flags;
+        if ((flags_ & CatspeakBuildFlags.KEEP_PATH) == 0) {
+            path = undefined;
         }
-        if (cartIsOwned && __catspeak_is_buffer(cart)) {
-            buffer_delete(cart);
-            cartIsOwned = false;
-            cart = undefined;
+        if ((flags_ & CatspeakBuildFlags.KEEP_AUTHOR) == 0) {
+            author = undefined;
         }
-        entry = undefined;
+        if ((flags_ & CatspeakBuildFlags.KEEP_SRC) == 0) {
+            src = undefined;
+        }
+        if ((flags_ & CatspeakBuildFlags.KEEP_SRC_BUFFER) == 0) {
+            if (srcBuffIsOwned && __catspeak_is_buffer(srcBuff)) {
+                buffer_delete(srcBuff);
+                srcBuffIsOwned = false;
+                srcBuff = undefined;
+            }
+        }
+        if ((flags_ & CatspeakBuildFlags.KEEP_CARTRIDGE) == 0) {
+            if (cartIsOwned && __catspeak_is_buffer(cart)) {
+                buffer_delete(cart);
+                cartIsOwned = false;
+                cart = undefined;
+            }
+        }
+        if ((flags_ & CatspeakBuildFlags.KEEP_ENTRYPOINT) == 0) {
+            entry = undefined;
+        }
         parser = undefined;
         codegen = undefined;
         cartReader = undefined;
@@ -267,9 +286,6 @@ function CatspeakModule(ctx_, buildArgs) constructor {
     /// @ignore
     static __taskCompileDependencies = function (timeLimit) {
         __catspeak_assert(cart != undefined);
-        buffer_seek(cart, buffer_seek_start, cartOffset ?? 0);
-        
-    show_message(catspeak_cart_disassemble(cart));
         buffer_seek(cart, buffer_seek_start, cartOffset ?? 0); // rewind
         return true; // TODO
     };

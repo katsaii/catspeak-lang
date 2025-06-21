@@ -16,8 +16,11 @@ TEST_EXPERIMENT "catspeak4-ctx" {
     var ctx = new CatspeakCtx();
     ctx.parserType = CatspeakParser;
     var module = ctx.run({
-        src: "string"
+        src : @'"simple"',
+        flags : CatspeakBuildFlags.KEEP_CARTRIDGE,
     });
+    buffer_seek(module.cart, buffer_seek_start, 0);
+    show_message(catspeak_cart_disassemble(module.cart));
     show_message(module.result);
 }
 

@@ -298,6 +298,12 @@ function CatspeakScopeStack(cart_) constructor {
         block = func.blocks[func.blockTop];
     };
 
+    /// Returns the number of local variables allocated in the current function scope.
+    static getLocalCount = function () {
+        __catspeak_assert(func != undefined);
+        return func.localCount;
+    };
+
     /// Begins a new block scope.
     static beginBlock = function () {
         var func_ = func;
