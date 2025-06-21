@@ -123,7 +123,7 @@
 function catspeak_location_create(line, column) {
     gml_pragma("forceinline");
     __catspeak_assert_typeof(line, is_numeric, "invalid line number");
-    __catspeak_assert_typeof(columnm, is_numeric, "invalid column number");
+    __catspeak_assert_typeof(column, is_numeric, "invalid column number");
     if (line < 0 || line > __CATSPEAK_LOCATION_LINE_MASK) {
         return CATSPEAK_NOLOCATION;
     }

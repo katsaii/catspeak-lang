@@ -1,11 +1,156 @@
-
-enum CatspeakBuildFlags {
+enum CatspeakFlags {
     NONE = 0,
 }
 
-enum CatspeakRunFlags {
-    NONE = 0,
+function CatspeakCtx__NEW() constructor {
+    parserType = undefined;
+    codegenType = CatspeakCodegenGML;
+
+    fileHandler = undefined;
+    exceptionHandler = undefined;
+
+    flags = CatspeakFlags.NONE;
+
+    // the public global variables, used by top-level scripts
+    globals = { };
+
+    // maps from packages/filepaths -> IR or compiled entry points + globals
+    modules = { };
+
+    // uses parserType, fileHandler, codegenType, globals
+    //
+    // args : {
+    //   path : string
+    //   src : string | buffer
+    //   srcOffset? : int
+    //   srcLength? : int
+    //   cart : buffer
+    //   cartOffset? : int
+    //   globals : struct
+    //   flags : CatspeakFlags
+    // } <: buildArgs
+    //
+    // return CatspeakModule | undefined
+    static run = function (args) {
+        __catspeak_error_unimplemented("running");
+    };
+
+    // uses parserType, fileHandler, codegenType, globals, asyncHandler
+    //
+    // runArgs : (see above)
+    // onComplete : function (module : CatspeakModule | undefined) -> nothing
+    static runAsync = function (args, onComplete) {
+        __catspeak_assert_typeof(onComplete, __catspeak_is_callable);
+        __catspeak_error_unimplemented("async running");
+    };
 }
+
+/*
+- run test.meow
+  - if the program already exists, return it
+  - build test.meow
+    - if the IR already exists, return it
+    - convert to IR
+  - find dependencies from IR
+    - for each dependency
+      - run dependency
+        - if the program already exists, return it
+        - build dependency
+          - if the IR already exists, return it
+          - convert to IR
+        - find dependencies from IR
+          - [...]
+  - use dependencies to set globals during codegen
+  - perform codegen
+*/
+
+enum CatspeakModuleStatus {
+    // no progress has been made (yet)
+    IDLE                     = 0,
+    // things failed!
+    FAILED                   = (1 << 0),
+    // got the source buffer
+    GOT_BUFF_SOURCE          = (1 << 1),
+    // parsed the source buffer
+    DID_PARSE                = (1 << 2),
+    // got the cartridge
+    GOT_BUFF_CART            = (1 << 3),
+    // got the cartridge dependencies
+    GOT_DEPENDENCIES         = (1 << 4),
+    // compiled the dependencies
+    DID_COMPILE_DEPENDENCIES = (1 << 5),
+    // compiled the cartridge
+    DID_COMPILE              = (1 << 6),
+    // ran the main entry point
+    DID_RUN                  = (1 << 7),
+}
+
+function CatspeakModule() constructor {
+    // stage 0 (metadata)
+    src = undefined;
+    filepath = undefined;
+    author = undefined;
+
+    // stage 1 (build)
+    ir = undefined;
+
+    // stage 2 (compile + run)
+    entry = undefined;
+    result = undefined;
+    globals = undefined;
+
+    status = CatspeakModuleStatus.IDLE;
+
+    static await_ = function (timeLimit = infinity) {
+        if ((status & CatspeakModuleStatus.FAILED) != 0) {
+            // build failed, oops!
+            return true;
+        }
+        if ((status & CatspeakModuleStatus.DID_PARSE) == 0) {
+            // we need to prepare the source buffer for parsing
+            // typically this involves converting a string to a buffer, but may
+            // also include searching for a file in the OS file system
+            return false;
+        }
+        if ((status & CatspeakModuleStatus.DID_PARSE) == 0) {
+            // we need to parse the source buffer
+            return false;
+        }
+        return true;
+    };
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// old tests
 
 function CatspeakCtx() constructor {
     parserType = undefined;
@@ -21,6 +166,13 @@ function CatspeakCtx() constructor {
 
     // maps from packages/filepaths -> IR or compiled entry points + globals
     modules = { };
+
+    /// @ignore
+    buildTasks = [];
+    /// @ignore
+    runTasks = [];
+
+    
 
     /// @ignore
     static __buildCommon = function (buildArgs) {
