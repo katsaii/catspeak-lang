@@ -277,6 +277,18 @@ function __catspeak_assert_typeof(value, predicate, message_ = undefined) {
 }
 
 /// @ignore
+function __catspeak_assert_instanceof(value, constructor_, message_ = undefined) {
+    gml_pragma("forceinline");
+    if (!is_struct(value) || instanceof(value) != script_get_name(constructor_)) {
+        __catspeak_error(__catspeak_cat(
+            message_ ?? "invalid type",
+            " (expected instance of ", script_get_name(constructor_),
+            ", got ",  __catspeak_repr(value), ")"
+        ));
+    }
+}
+
+/// @ignore
 function __catspeak_assert_typeof_optional(value, predicate, message_ = undefined) {
     gml_pragma("forceinline");
     if (value != undefined) {
@@ -354,7 +366,8 @@ function __catspeak_error_bug() {
 function __catspeak_cat() {
     var msg = "";
     for (var i = 0; i < argument_count; i += 1) {
-        msg += string(argument[i]);
+        var arg_ = argument[i];
+        msg += is_string(arg_) ? arg_ : string(arg_);
     }
     return msg;
 }

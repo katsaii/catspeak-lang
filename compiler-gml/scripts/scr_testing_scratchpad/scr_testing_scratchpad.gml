@@ -15,9 +15,10 @@ var runExperiment = "catspeak4-ctx";
 TEST_EXPERIMENT "catspeak4-ctx" {
     var ctx = new CatspeakCtx();
     ctx.parserType = CatspeakParser;
-    show_message(ctx.build({
+    var module = ctx.run({
         src: "string"
-    }));
+    });
+    show_message(module.result);
 }
 
 TEST_EXPERIMENT "lexer" {

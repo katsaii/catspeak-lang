@@ -50,6 +50,7 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     );
     __catspeak_assert_typeof(offset, is_numeric, "offset must be a number");
     __catspeak_assert_typeof(size, is_numeric, "size must be a number");
+
     /// @ignore
     buff = buff_;
     /// @ignore
@@ -249,7 +250,7 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
 /// @param {Struct.CatspeakCartWriter} cart_
 ///   The cartridge to modify.
 function CatspeakScopeStack(cart_) constructor {
-    __catspeak_assert_eq(instanceof(cart_), "CatspeakCartWriter", "invalid cartridge");
+    __catspeak_assert_instanceof(cart_, CatspeakCartWriter);
     /// @ignore
     cart = cart_;
     /// @ignore

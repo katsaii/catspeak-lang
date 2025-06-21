@@ -1,15 +1,11 @@
-enum CatspeakFlags {
-    NONE = 0,
-}
-
-function CatspeakCtx__NEW() constructor {
+function CatspeakCtx() constructor {
     parserType = undefined;
     codegenType = CatspeakCodegenGML;
 
     fileHandler = undefined;
     exceptionHandler = undefined;
 
-    flags = CatspeakFlags.NONE;
+    flags = CatspeakBuildFlags.NONE;
 
     // the public global variables, used by top-level scripts
     globals = { };
@@ -27,22 +23,31 @@ function CatspeakCtx__NEW() constructor {
     //   cart : buffer
     //   cartOffset? : int
     //   globals : struct
-    //   flags : CatspeakFlags
+    //   flags : CatspeakBuildFlags
     // } <: buildArgs
     //
-    // return CatspeakModule | undefined
-    static run = function (args) {
-        __catspeak_error_unimplemented("running");
+    // return CatspeakModule
+    static run = function (buildArgs) {
+        var module = new CatspeakModule(self, buildArgs);
+        var runFinished;
+        do {
+            runFinished = module.await_();
+        } until (runFinished);
+        return module;
     };
 
     // uses parserType, fileHandler, codegenType, globals, asyncHandler
     //
     // runArgs : (see above)
-    // onComplete : function (module : CatspeakModule | undefined) -> nothing
-    static runAsync = function (args, onComplete) {
+    // onComplete : function (module : CatspeakModule) -> nothing
+    static runAsync = function (args, onSuccess, onFailure) {
         __catspeak_assert_typeof(onComplete, __catspeak_is_callable);
         __catspeak_error_unimplemented("async running");
     };
+}
+
+enum CatspeakBuildFlags {
+    NONE = 0,
 }
 
 /*
@@ -64,366 +69,260 @@ function CatspeakCtx__NEW() constructor {
   - perform codegen
 */
 
-enum CatspeakModuleStatus {
-    // no progress has been made (yet)
-    IDLE                     = 0,
-    // things failed!
-    FAILED                   = (1 << 0),
-    // got the source buffer
-    GOT_BUFF_SOURCE          = (1 << 1),
-    // parsed the source buffer
-    DID_PARSE                = (1 << 2),
-    // got the cartridge
-    GOT_BUFF_CART            = (1 << 3),
-    // got the cartridge dependencies
-    GOT_DEPENDENCIES         = (1 << 4),
-    // compiled the dependencies
-    DID_COMPILE_DEPENDENCIES = (1 << 5),
-    // compiled the cartridge
-    DID_COMPILE              = (1 << 6),
-    // ran the main entry point
-    DID_RUN                  = (1 << 7),
-}
-
-function CatspeakModule() constructor {
-    // stage 0 (metadata)
-    src = undefined;
-    filepath = undefined;
-    author = undefined;
-
-    // stage 1 (build)
-    ir = undefined;
-
-    // stage 2 (compile + run)
+function CatspeakModule(ctx_, buildArgs) constructor {
+    var buildArgsIsStruct = is_struct(buildArgs);
+    var buildArgsIsString = is_string(buildArgs);
+    var buildArgsIsBuffer = __catspeak_is_buffer(buildArgs);
+    var buildArgsIsCart = false;
+    __catspeak_assert(
+        buildArgsIsStruct || buildArgsIsString || buildArgsIsBuffer,
+        "buildArgs must be a string, buffer, or GML struct"
+    );
+    var flags_ = undefined;
+    var globals_ = undefined;
+    if (buildArgsIsStruct) {
+        flags_ = buildArgs[$ "flags"];
+        globals_ = buildArgs[$ "globals"];
+    }
+    var path_ = undefined;
+    var author_ = undefined;
+    var src_ = undefined;
+    if (buildArgsIsString) {
+        src_ = buildArgs;
+    } else if (buildArgsIsStruct) {
+        path_ = buildArgs[$ "path"];
+        author_ = buildArgs[$ "author"];
+        src_ = buildArgs[$ "src"];
+        if (__catspeak_is_buffer(src_)) {
+            src_ = undefined;
+        }
+    }
+    var srcBuff_ = undefined;
+    var srcOffset_ = undefined;
+    var srcLength_ = undefined;
+    if (buildArgsIsBuffer && !buildArgsIsCart) {
+        srcBuff_ = buildArgs;
+    } else if (buildArgsIsStruct) {
+        srcBuff_ = buildArgs[$ "src"];
+        if (is_string(srcBuff_)) {
+            srcBuff_ = undefined;
+        }
+        srcOffset_ = buildArgs[$ "srcOffset"];
+        srcLength_ = buildArgs[$ "srcLength"];
+    }
+    var cart_ = undefined;
+    var cartOffset_ = undefined;
+    if (buildArgsIsBuffer && buildArgsIsCart) {
+        cart_ = buildArgs;
+    } else if (buildArgsIsStruct) {
+        cart_ = buildArgs[$ "cart"];
+        cartOffset_ = buildArgs[$ "cartOffset"];
+    }
+    /// TODO
+    ctx = ctx_;
+    __catspeak_assert_instanceof(ctx, CatspeakCtx);
+    /// TODO
+    flags = flags_ ?? ctx.flags;
+    __catspeak_assert_typeof(flags, is_numeric, "flags must be a number");
+    /// TODO
+    globals = globals_ ?? { };
+    __catspeak_assert_typeof(globals, is_struct, "globals must be a struct");
+    /// TODO
+    path = path_;
+    __catspeak_assert_typeof_optional(path, is_string, "path must be a string");
+    /// TODO
+    author = author_;
+    __catspeak_assert_typeof_optional(author, is_string, "author must be a string");
+    /// TODO
+    src = src_;
+    __catspeak_assert_typeof_optional(src, is_string, "src must be a string");
+    /// TODO
+    srcBuff = srcBuff_;
+    __catspeak_assert_typeof_optional(srcBuff, __catspeak_is_buffer, "src must be a buffer");
+    /// TODO
+    srcOffset = srcOffset_;
+    __catspeak_assert_typeof_optional(srcOffset, is_numeric, "srcOffset must be a number");
+    /// TODO
+    srcLength = srcLength_;
+    __catspeak_assert_typeof_optional(srcLength, is_numeric, "srcLength must be a number");
+    /// TODO
+    cart = cart_;
+    __catspeak_assert_typeof_optional(cart, __catspeak_is_buffer, "cart must be a buffer");
+    /// TODO
+    cartOffset = cartOffset_;
+    __catspeak_assert_typeof_optional(cartOffset, is_numeric, "cartOffset must be a number");
+    /// TODO
     entry = undefined;
+    /// TODO
     result = undefined;
-    globals = undefined;
+    /// TODO
+    completed = false;
+    /// TODO
+    failed = false;
+    /// @ignore
+    currentTaskIdx = 0;
+    /// @ignore
+    srcBuffIsOwned = false;
+    /// @ignore
+    cartIsOwned = false;
+    /// @ignore
+    parser = undefined;
+    /// @ignore
+    codegen = undefined;
+    /// @ignore
+    cartReader = undefined;
 
-    status = CatspeakModuleStatus.IDLE;
-
+    /// TODO
+    static cleanup = function () {
+        if (!completed) {
+            failed = true;
+        }
+        path = undefined;
+        author = undefined;
+        src = undefined;
+        if (srcBuffIsOwned && __catspeak_is_buffer(srcBuff)) {
+            buffer_delete(srcBuff);
+            srcBuffIsOwned = false;
+            srcBuff = undefined;
+        }
+        if (cartIsOwned && __catspeak_is_buffer(cart)) {
+            buffer_delete(cart);
+            cartIsOwned = false;
+            cart = undefined;
+        }
+        entry = undefined;
+        parser = undefined;
+        codegen = undefined;
+        cartReader = undefined;
+    };
+    
+    /// TODO
     static await_ = function (timeLimit = infinity) {
-        if ((status & CatspeakModuleStatus.FAILED) != 0) {
-            // build failed, oops!
+        __catspeak_assert(!failed, "build failed");
+        __catspeak_assert(!completed, "build already completed");
+        var currentTask = __tasks[currentTaskIdx];
+        do {
+            if (currentTask == undefined) {
+                completed = true;
+                cleanup(); // MUST be called after `completed` is set to `true`
+                return true;
+            }
+            failed = true;
+            if (currentTask(timeLimit)) {
+                currentTaskIdx += 1;
+                currentTask = __tasks[currentTaskIdx];
+            }
+            failed = false;
+        } until (get_timer() > timeLimit);
+        return false;
+    };
+
+    /// @ignore
+    static __taskPrepareSourceBuffer = function (timeLimit) {
+        if (srcBuff != undefined || cart != undefined) {
+            // source buffer or cartridge already exists
             return true;
         }
-        if ((status & CatspeakModuleStatus.DID_PARSE) == 0) {
-            // we need to prepare the source buffer for parsing
-            // typically this involves converting a string to a buffer, but may
-            // also include searching for a file in the OS file system
-            return false;
+        if (src != undefined) {
+            // create from string
+            srcBuffIsOwned = true;
+            srcBuff = catspeak_util_buffer_create_from_string(src);
+            return true;
         }
-        if ((status & CatspeakModuleStatus.DID_PARSE) == 0) {
-            // we need to parse the source buffer
-            return false;
+        if (path != undefined) {
+            // create from file
+            //if (file_exists(path)) {
+            //    srcBuff = buffer_load(path);
+            //}
+            __catspeak_error_unimplemented("file parsing");
         }
+        __catspeak_error_bug();
+    };
+
+    /// @ignore
+    static __taskParseCartridge = function (timeLimit) {
+        if (cart != undefined) {
+            // cartridge already exists
+            return true;
+        }
+        // create from source
+        if (parser == undefined) {
+            var parserType = ctx.parserType;
+            __catspeak_assert(srcBuff != undefined);
+            __catspeak_assert(cart == undefined);
+            __catspeak_assert(cartOffset == undefined, "got cartOffset, but missing cart");
+            __catspeak_assert(parserType != undefined, "invalid parser");
+            cartIsOwned = true;
+            cart = buffer_create(1, buffer_grow, 1);
+            var cartWriter = new CatspeakCartWriter(cart);
+            parser = new parserType(cartWriter, srcBuff, srcOffset, srcLength);
+        }
+        var continueParsing;
+        do {
+            continueParsing = parser.parseOnce();
+        } until (!continueParsing || get_timer() > timeLimit);
+        return !continueParsing;
+    };
+
+    /// @ignore
+    static __taskCompileDependencies = function (timeLimit) {
+        __catspeak_assert(cart != undefined);
+        buffer_seek(cart, buffer_seek_start, cartOffset ?? 0);
+        
+    show_message(catspeak_cart_disassemble(cart));
+        buffer_seek(cart, buffer_seek_start, cartOffset ?? 0); // rewind
+        return true; // TODO
+    };
+
+    /// @ignore
+    static __taskCompile = function (timeLimit) {
+        __catspeak_assert(cart != undefined);
+        if (codegen == undefined) {
+            var codegenType = ctx.codegenType;
+            __catspeak_assert(codegenType != undefined, "invalid code generator");
+            codegen = new codegenType();
+            cartReader = new CatspeakCartReader(cart, codegen);
+        }
+        var continueCodegen;
+        do {
+            var continueCodegen = cartReader.readInstr();
+        } until (!continueCodegen);
+        return !continueCodegen;
+    };
+
+    /// @ignore
+    static __taskRunEntrypoint = function (timeLimit) {
+        __catspeak_assert(codegen != undefined);
+        var entry_ = codegen.getProgram();
+        var result_ = undefined;
+        var globals_ = globals;
+        with (globals_) {
+            with (globals_) {
+                result_ = catspeak_execute(entry_);
+            }
+        }
+        entry = entry_;
+        result = result_;
         return true;
     };
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// old tests
-
-function CatspeakCtx() constructor {
-    parserType = undefined;
-    codegenType = CatspeakCodegenGML;
-
-    fileHandler = undefined;
-    exceptionHandler = undefined;
-
-    flags = CatspeakBuildFlags.NONE | CatspeakRunFlags.NONE;
-
-    // the public global variables, used by top-level scripts
-    globals = { };
-
-    // maps from packages/filepaths -> IR or compiled entry points + globals
-    modules = { };
-
     /// @ignore
-    buildTasks = [];
-    /// @ignore
-    runTasks = [];
-
-    
-
-    /// @ignore
-    static __buildCommon = function (buildArgs) {
-        // process build args
-        var path = undefined;
-        var author = undefined;
-        var src = buildArgs;
-        var srcOffset = undefined;
-        var srcLength = undefined;
-        var cartBuff = undefined;
-        var parserType_ = parserType;
-        var flags_ = flags;
-        if (is_struct(buildArgs)) {
-            // complex case
-            path = buildArgs[$ "path"];
-            author = buildArgs[$ "author"];
-            src = __catspeak_assert_get(buildArgs, "src");
-            srcOffset = buildArgs[$ "srcOffset"];
-            srcLength = buildArgs[$ "srcLength"];
-            cartBuff = buildArgs[$ "cart"];
-            parserType_ = buildArgs[$ "parserType"] ?? parserType_;
-            flags_ = buildArgs[$ "flags"] ?? flags_;
-            __catspeak_assert_typeof_optional(path, is_string);
-            __catspeak_assert_typeof_optional(author, is_string);
-            __catspeak_assert_typeof_optional(srcOffset, is_numeric);
-            __catspeak_assert_typeof_optional(srcLength, is_numeric);
-            __catspeak_assert_typeof_optional(cartBuff, __catspeak_is_buffer);
-        }
-        __catspeak_assert_typeof(parserType_, __catspeak_is_callable);
-        __catspeak_assert_typeof(flags_, is_numeric);
-        // create the source buffer if it doesn't exist
-        var srcBuffOwned = false;
-        var srcBuff = src;
-        if (is_string(src)) {
-            srcBuff = catspeak_util_buffer_create_from_string(src);
-            srcBuffOwned = true;
-        } else {
-            __catspeak_assert_typeof(srcBuff, __catspeak_is_buffer);
-        }
-        // create the cartridge buffer if it doesn't exist
-        var cartBuffOwned = false;
-        if (cartBuff == undefined) {
-            cartBuff = buffer_create(1, buffer_grow, 1);
-            cartBuffOwned = true;
-        }
-        var cartBuffStart = buffer_tell(cartBuff);
-        // initialise the parser
-        var failed = true;
-        var throwValue = undefined;
-        var srcParser;
-        try {
-            var cartWriter = new CatspeakCartWriter(cartBuff);
-            if (path != undefined) { cartWriter.path = path }
-            if (author != undefined) { cartWriter.author = author }
-            srcParser = new parserType_(cartWriter, srcBuff, srcOffset, srcLength);
-            __catspeak_assert_typeof(
-                __catspeak_assert_get(srcParser, "parseOnce"),
-                __catspeak_is_callable
-            );
-            failed = false;
-        } catch (ex_) {
-            throwValue = ex_;
-        } finally {
-            if (failed) {
-                if (srcBuffOwned) {
-                    buffer_delete(srcBuff);
-                }
-                if (cartBuffOwned) {
-                    buffer_delete(cartBuff);
-                } else {
-                    buffer_seek(cartBuff, buffer_seek_start, cartBuffStart);
-                }
-            }
-        }
-        if (failed) {
-            if (exceptionHandler == undefined) {
-                throw throwValue;
-            } else {
-                __catspeak_assert_typeof(exceptionHandler, __catspeak_is_callable);
-                exceptionHandler(throwValue);
-                return undefined;
-            }
-        }
-        // spawn a build task
-        return new __CatspeakTaskBuild(
-            self, srcParser,
-            srcBuff, srcBuffOwned,
-            cartBuff, cartBuffOwned, cartBuffStart
-        );
-    };
-
-    // uses parserType, fileHandler
-    //
-    // buildArgs : {
-    //   path : string
-    //   src : string | buffer
-    //   srcOffset? : int
-    //   srcLength? : int
-    //   cart? : buffer
-    //   parserType : CatspeakParser
-    //   flags : CatspeakBuildFlags
-    // }
-    static build = function (buildArgs) {
-        var task = __buildCommon(buildArgs);
-        if (task == undefined) {
-            return undefined;
-        }
-        do {
-            var more = task.__awaitOnce();
-        } until (!more);
-        return task.__complete();
-    };
-
-    // uses parserType, fileHandler, asyncHandler
-    //
-    // buildArgs : (see above)
-    // onComplete : function (cart : buffer | undefined) -> nothing
-    static buildAsync = function (buildArgs, onComplete) {
-        __catspeak_assert_typeof(onComplete, __catspeak_is_callable);
-        __catspeak_error_unimplemented("async building");
+    static __taskCleanup = function (timeLimit) {
+        cleanup();
+        return true;
     };
 
     /// @ignore
-    static __runCommon = function (runArgs) {
-        // process run args
-        var cartBuff = runArgs;
-        var codegenType_ = codegenType;
-        var flags_ = flags;
-        if (is_struct(runArgs)) {
-            // complex case
-            cartBuff = buildArgs[$ "cart"];
-            codegenType_ = buildArgs[$ "codegenType"] ?? codegenType_;
-            flags_ = buildArgs[$ "flags"] ?? flags_;
-        }
-        __catspeak_assert_typeof(cartBuff, __catspeak_is_buffer);
-        __catspeak_assert_typeof(codegenType_, __catspeak_is_callable);
-        __catspeak_assert_typeof(flags_, is_numeric);
-        var cartBuffStart = buffer_tell(cartBuff);
-        // initialise the code generator
-        var failed = true;
-        var throwValue = undefined;
-        var cartCodegen;
-        // blruh...
-    };
-
-    // uses parserType, fileHandler, codegenType, globals
-    //
-    // runArgs : {
-    //   codegenType : CatspeakCodegen
-    //   globals : struct
-    //   flags : CatspeakRunFlags
-    // } <: buildArgs
-    static run = function (runArgs) {
-        var task = __runCommon(runArgs);
-        if (task == undefined) {
-            return undefined;
-        }
-        do {
-            var more = task.__awaitOnce();
-        } until (!more);
-        return task.__complete();
-    };
-
-    // uses parserType, fileHandler, codegenType, globals, asyncHandler
-    //
-    // runArgs : (see above)
-    // onComplete : function (module : struct | undefined) -> nothing
-    static runAsync = function (runArgs, onComplete) {
-        __catspeak_assert_typeof(onComplete, __catspeak_is_callable);
-        __catspeak_error_unimplemented("async running");
-    };
-}
-
-/// @ignore
-function __CatspeakTaskBuild(ctx_, parser_, src_, srcOwned_, cart_, cartOwned_, cartStart_) constructor {
-    /// @ignore
-    ctx = ctx_;
-    /// @ignore
-    parser = parser_;
-    /// @ignore
-    src = src_;
-    /// @ignore
-    srcOwned = srcOwned_;
-    /// @ignore
-    cart = cart_;
-    /// @ignore
-    cartOwned = cartOwned_;
-    /// @ignore
-    cartStart = cartStart_;
-    /// @ignore
-    completed = false;
-
-    /// @ignore
-    static __awaitOnce = function () {
-        var failed = true;
-        var throwValue = undefined;
-        var moreToParse = false;
-        try {
-            moreToParse = parser.parseOnce();
-            failed = false;
-        } catch (ex_) {
-            throwValue = ex_;
-        } finally {
-            if (srcOwned) {
-                buffer_delete(src);
-            }
-            if (failed && cartOwned) {
-                buffer_delete(cart);
-            } else {
-                buffer_seek(cart, buffer_seek_start, cartStart);
-            }
-        }
-        if (failed) {
-            cart = undefined;
-            if (ctx.exceptionHandler == undefined) {
-                throw throwValue;
-            } else {
-                __catspeak_assert_typeof(ctx.exceptionHandler, __catspeak_is_callable);
-                ctx.exceptionHandler(throwValue);
-                moreToParse = false;
-            }
-        }
-        if (!moreToParse) {
-            completed = true;
-        }
-        return moreToParse;
-    };
-
-    /// @ignore
-    static __complete = function () {
-        __catspeak_assert(completed, "build task not completed");
-        return cart;
-    };
-}
-
-/// @ignore
-function __CatspeakTaskRun(ctx_, codegen_, cart_, cartOwned_, cartStart_) constructor {
-    /// @ignore
-    ctx = ctx_;
-    /// @ignore
-    codegen = codegen_;
-    /// @ignore
-    completed = false;
-
-    /// @ignore
-    static __awaitOnce = function () {
-        
-    };
-
-    /// @ignore
-    static __complete = function () {
-        __catspeak_assert(completed, "run task not completed");
-    };
+    static __tasks = undefined;
+    if (__tasks == undefined) {
+        __tasks = [
+            __taskPrepareSourceBuffer,
+            __taskParseCartridge,
+            __taskCompileDependencies,
+            __taskCompile,
+            __taskRunEntrypoint,
+            __taskCleanup,
+        ];
+        array_push(__tasks, undefined);
+    }
 }

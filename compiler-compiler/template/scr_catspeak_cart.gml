@@ -45,12 +45,14 @@ function CatspeakCartWriter(buff_) constructor {
     __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "buffer doesn't exist");
     __catspeak_assert_eq(buffer_grow, buffer_get_type(buff_), "requires a grow buffer (buffer_grow)");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "requires a buffer with alignment 1");
+    /// @ignore
     {{ gml_chunk_head("buff_") }}
 {% for head_name, head in ir_enumerate(ir, "head") %}
 {%  set head_bufftype = gml_type_buffer(head["type"]) %}
 {%  set head_value = ir_type_as_gml_literal(head["type"], head["value-unfinished"] or head["value"]) %}
 {%  if "value-unfinished" in head %}
 {%   set head_varname = gml_var_ref(head_name, "h") %}
+    /// @ignore
     {{ head_varname }} = buffer_tell(buff_);
     // ({{ head_name }} will be patched to {{ head["value"] }} when finalised)
 {%  endif %}
@@ -176,6 +178,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert_typeof(visitor_[$ "handleDeinit"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleDeinit'"
     );
+    /// @ignore
     {{ gml_chunk_head("buff_") }}
     var failedMessage = undefined;
     try {
