@@ -30,10 +30,10 @@ enum CatspeakInstr {
     END_OF_PROGRAM = 0,
     /// Return a value from the current function.
     RET = 4,
-    /// Break out of the current loop, returning a value as the result of the loop.
-    BRK = 29,
     /// Continue to the next iteration of the current loop.
     CONT = 30,
+    /// Break out of the current loop, returning a value as the result of the loop.
+    BRK = 29,
     /// Throw a value as an exception.
     THRW = 31,
     /// Evaluates n-many expressions, implicitly returning the final expression.
@@ -176,18 +176,6 @@ function CatspeakCartWriter(buff_) constructor {
         buffer_write(buff_, buffer_u32, dbg);
     };
 
-    /// Break out of the current loop, returning a value as the result of the loop.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitBreak = function (dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        buffer_write(buff_, buffer_u8, CatspeakInstr.BRK);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
     /// Continue to the next iteration of the current loop.
     ///
     /// @param {Real} [dbg]
@@ -197,6 +185,18 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.CONT);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Break out of the current loop, returning a value as the result of the loop.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitBreak = function (dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.BRK);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -229,7 +229,6 @@ function CatspeakCartWriter(buff_) constructor {
             return;
         }
         if (n == 1) {
-            emitNulls(dbg);
             return;
         }
         __catspeak_assert(n > 0, "n must be greater than 0");
@@ -692,11 +691,11 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert_typeof(visitor_[$ "handleInstrReturn"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrReturn'"
     );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrBreak"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrBreak'"
-    );
     __catspeak_assert_typeof(visitor_[$ "handleInstrContinue"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrContinue'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrBreak"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrBreak'"
     );
     __catspeak_assert_typeof(visitor_[$ "handleInstrThrow"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrThrow'"
@@ -883,17 +882,17 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     };
 
     /// @ignore
-    static __readBreak = function () {
-        var buff_ = buff;
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrBreak(argDbg);
-    };
-
-    /// @ignore
     static __readContinue = function () {
         var buff_ = buff;
         var argDbg = buffer_read(buff_, buffer_u32);
         visitor.handleInstrContinue(argDbg);
+    };
+
+    /// @ignore
+    static __readBreak = function () {
+        var buff_ = buff;
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrBreak(argDbg);
     };
 
     /// @ignore
@@ -1154,8 +1153,8 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ CatspeakInstr.RET] = __readReturn;
-        __readerLookup[@ CatspeakInstr.BRK] = __readBreak;
         __readerLookup[@ CatspeakInstr.CONT] = __readContinue;
+        __readerLookup[@ CatspeakInstr.BRK] = __readBreak;
         __readerLookup[@ CatspeakInstr.THRW] = __readThrow;
         __readerLookup[@ CatspeakInstr.SEQ] = __readSequence;
         __readerLookup[@ CatspeakInstr.IFTE] = __readIfThenElse;

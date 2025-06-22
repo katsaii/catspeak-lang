@@ -65,6 +65,11 @@ instr:
       - name: result
         desc: "the value to return"
 
+  - name: "continue"
+    name-short: cont
+    desc: "continue to the next iteration of the current loop"
+    repr: 0x1E
+
   - name: "break"
     name-short: brk
     desc: "break out of the current loop, returning a value as the result of the loop"
@@ -72,11 +77,6 @@ instr:
     stackargs:
       - name: result
         desc: "the value to return from the loop"
-
-  - name: "continue"
-    name-short: cont
-    desc: "continue to the next iteration of the current loop"
-    repr: 0x1E
 
   - name: "throw"
     name-short: thrw
@@ -109,7 +109,7 @@ instr:
       - condition: n == 0
         instr: "const undefined"
       - condition: n == 1
-        instr: nulls
+        instr: null
 
   - name: "if then else"
     name-short: ifte

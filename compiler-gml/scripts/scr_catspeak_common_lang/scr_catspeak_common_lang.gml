@@ -290,9 +290,10 @@ function CatspeakScopeStack(cartWriter_) constructor {
     /// Ends the current function scope, writing its instruction to the supplied
     /// cartridge.
     static endFunction = function () {
+        var func_ = func;
         __catspeak_assert(funcTop > 0.1, "function stack underflow");
         __endBlock(false);
-        cartWriter.emitClosure(func.localCount);
+        cartWriter.emitClosure(func_.localCount);
         funcTop -= 1;
         func = funcs[funcTop];
         block = func.blocks[func.blockTop];

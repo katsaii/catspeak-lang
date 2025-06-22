@@ -19,7 +19,7 @@ TEST_EXPERIMENT "catspeak4-ctx" {
         src : @'
             do {
                 do {
-                    4
+                    return 4
                     abc
                 }
                 1 + 2

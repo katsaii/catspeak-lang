@@ -99,6 +99,16 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
+    static handleInstrContinue = function (dbg) {
+        var exec;
+        exec = method({
+            ctx : ctx,
+            dbg : dbg,
+        }, __catspeak_instr_cont__);
+        pushValue(exec);
+    };
+
+    /// @ignore
     static handleInstrBreak = function (dbg) {
         var exec;
         var result = popValue();
@@ -107,16 +117,6 @@ function CatspeakCodegenGML() constructor {
             dbg : dbg,
             result : result,
         }, __catspeak_instr_brk__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrContinue = function (dbg) {
-        var exec;
-        exec = method({
-            ctx : ctx,
-            dbg : dbg,
-        }, __catspeak_instr_cont__);
         pushValue(exec);
     };
 

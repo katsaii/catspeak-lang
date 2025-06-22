@@ -68,14 +68,14 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleInstrBreak = function (dbg) {
-        asmStr += "  brk";
+    static handleInstrContinue = function (dbg) {
+        asmStr += "  cont";
         asmStr += "\n"
     };
 
     /// @ignore
-    static handleInstrContinue = function (dbg) {
-        asmStr += "  cont";
+    static handleInstrBreak = function (dbg) {
+        asmStr += "  brk";
         asmStr += "\n"
     };
 

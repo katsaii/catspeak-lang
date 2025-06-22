@@ -6,27 +6,15 @@
 //# feather use syntax-errors
 
 /// @ignore
-function __catspeak_gml_exec_get_return() {
-    static special = [undefined];
-    return special;
-}
-
-/// @ignore
-function __catspeak_gml_exec_get_break() {
-    static special = [undefined];
-    return special;
-}
-
-/// @ignore
-function __catspeak_gml_exec_get_continue() {
-    static special = [];
-    return special;
-}
-
-/// @ignore
 function __catspeak_gml_exec_get_error(exec) {
     var closure_ = method_get_self(exec);
     return catspeak_location_show(closure_[$ "dbg"], closure_.ctx[$ "filename"]);
+}
+
+/// @ignore
+function __catspeak_gml_exec_get_return() {
+    static special = [undefined];
+    return special;
 }
 
 /// @ignore
@@ -37,10 +25,9 @@ function __catspeak_instr_ret__() {
 }
 
 /// @ignore
-function __catspeak_instr_brk__() {
-    var breakBox = __catspeak_gml_exec_get_break();
-    breakBox[@ 0] = result();
-    throw breakBox;
+function __catspeak_gml_exec_get_continue() {
+    static special = [];
+    return special;
 }
 
 /// @ignore
@@ -49,18 +36,21 @@ function __catspeak_instr_cont__() {
 }
 
 /// @ignore
-function __catspeak_instr_thrw__() {
-    throw result();
+function __catspeak_gml_exec_get_break() {
+    static special = [undefined];
+    return special;
 }
 
 /// @ignore
-function __catspeak_instr_fclo__() {
-    return method({
-        ctx : ctx,
-        body : body,
-        locals : array_create(locals),
-        dbg : dbg,
-    }, __catspeak_function__);
+function __catspeak_instr_brk__() {
+    var breakBox = __catspeak_gml_exec_get_break();
+    breakBox[@ 0] = result();
+    throw breakBox;
+}
+
+/// @ignore
+function __catspeak_instr_thrw__() {
+    throw result();
 }
 
 /// @ignore
@@ -110,23 +100,36 @@ function __catspeak_instr_seq__() {
 }
 
 /// @ignore
-function __catspeak_instr_get_l__() {
-    return ctx.callee_.locals[idx];
+function __catspeak_instr_fclo__() {
+    var body_ = body;
+    if (true) {
+        body_ = method({
+            ctx : ctx,
+            body : body_,
+            dbg : dbg,
+        }, __catspeak_catch_return__);
+    }
+    return method({
+        ctx : ctx,
+        body : body_,
+        locals : array_create(locals),
+        dbg : dbg,
+    }, __catspeak_function__);
 }
 
 /// @ignore
-function __catspeak_instr_set_l__() {
-    ctx.callee_.locals[idx] = value();
-}
-
-/// @ignore
-function __catspeak_instr_get_g__() {
-    return ctx.globals[$ name];
-}
-
-/// @ignore
-function __catspeak_instr_set_g__() {
-    ctx.globals[$ name] = value();
+function __catspeak_catch_return__() {
+    var returnValue = undefined;
+    try {
+        returnValue = body();
+    } catch (err_) {
+        if (err_ == __catspeak_gml_exec_get_return()) {
+            returnValue = err_[0];
+        } else {
+            throw err_;
+        }
+    }
+    return returnValue;
 }
 
 /// @ignore
@@ -157,18 +160,23 @@ function __catspeak_function__() {
 }
 
 /// @ignore
-function __catspeak_catch_return__() {
-    var returnValue = undefined;
-    try {
-        returnValue = body();
-    } catch (err_) {
-        if (err_ == __catspeak_gml_exec_get_return()) {
-            returnValue = err_[0];
-        } else {
-            throw err_;
-        }
-    }
-    return returnValue;
+function __catspeak_instr_get_l__() {
+    return ctx.callee_.locals[idx];
+}
+
+/// @ignore
+function __catspeak_instr_set_l__() {
+    ctx.callee_.locals[idx] = value();
+}
+
+/// @ignore
+function __catspeak_instr_get_g__() {
+    return ctx.globals[$ name];
+}
+
+/// @ignore
+function __catspeak_instr_set_g__() {
+    ctx.globals[$ name] = value();
 }
 
 /// @ignore

@@ -103,8 +103,47 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
 
     /// @ignore
     static __parseExpression = function () {
-        // TODO
-        __parseAssign();
+        var peeked = lexer.peek();
+        if (
+            peeked > CatspeakToken.__EXPR_BEGIN__ &&
+            peeked < CatspeakToken.__EXPR_END__
+        ) {
+            lexer.next();
+            if (peeked == CatspeakToken.RETURN) {
+                peeked = lexer.peek();
+                if (
+                    peeked == CatspeakToken.SEMICOLON ||
+                    peeked == CatspeakToken.BRACE_RIGHT ||
+                    peeked == CatspeakToken.LET
+                ) {
+                    cartWriter.emitConstUndefined(lexer.getLocation());
+                } else {
+                    __parseExpression();
+                }
+                cartWriter.emitReturn(lexer.getLocation());
+            } else if (peeked == CatspeakToken.CONTINUE) {
+                cartWriter.emitContinue(lexer.getLocation());
+            } else if (peeked == CatspeakToken.BREAK) {
+                peeked = lexer.peek();
+                if (
+                    peeked == CatspeakToken.SEMICOLON ||
+                    peeked == CatspeakToken.BRACE_RIGHT ||
+                    peeked == CatspeakToken.LET
+                ) {
+                    cartWriter.emitConstUndefined(lexer.getLocation());
+                } else {
+                    __parseExpression();
+                }
+                cartWriter.emitBreak(lexer.getLocation());
+            } else if (peeked == CatspeakToken.THROW) {
+                __parseExpression();
+                cartWriter.emitBreak(lexer.getLocation());
+            } else {
+                __catspeak_error_bug();
+            }
+        } else {
+            __parseAssign();
+        }
     };
 
     /// @ignore
