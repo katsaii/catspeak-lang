@@ -10,6 +10,7 @@ scripts = [
     "scr_catspeak_cart",
     "scr_catspeak_disassembler",
     "scr_catspeak_gen_gml",
+    "__scr_catspeak_instrs_generated",
 ]
 
 ir_path = "compiler-compiler/def-catspeak-ir.yaml"

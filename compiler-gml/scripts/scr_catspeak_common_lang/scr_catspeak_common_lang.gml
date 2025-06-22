@@ -247,12 +247,12 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
 
 /// TODO
 ///
-/// @param {Struct.CatspeakCartWriter} cart_
+/// @param {Struct.CatspeakCartWriter} cartWriter_
 ///   The cartridge to modify.
-function CatspeakScopeStack(cart_) constructor {
-    __catspeak_assert_instanceof(cart_, CatspeakCartWriter);
+function CatspeakScopeStack(cartWriter_) constructor {
+    __catspeak_assert_instanceof(cartWriter_, CatspeakCartWriter);
     /// @ignore
-    cart = cart_;
+    cartWriter = cartWriter_;
     /// @ignore
     funcTop = -1;
     /// @ignore
@@ -292,7 +292,7 @@ function CatspeakScopeStack(cart_) constructor {
     static endFunction = function () {
         __catspeak_assert(funcTop > 0.1, "function stack underflow");
         __endBlock(false);
-        cart.emitClosure(func.localCount);
+        cartWriter.emitClosure(func.localCount);
         funcTop -= 1;
         func = funcs[funcTop];
         block = func.blocks[func.blockTop];
@@ -341,7 +341,7 @@ function CatspeakScopeStack(cart_) constructor {
         if (assert) {
             block = func_.blocks[func_.blockTop];
         }
-        cart.emitBlock(block.stmtCount);
+        cartWriter.emitSequence(block_.stmtCount);
     };
 
     /// Ends the current block scope, writing its instruction to the supplied
@@ -389,7 +389,7 @@ function CatspeakScopeStack(cart_) constructor {
             }
             var localVarIdx = block_.locals[$ name];
             if (localVarIdx != undefined) {
-                cart.emitGetLocal(localVarIdx, dbg);
+                cartWriter.emitGetLocal(localVarIdx, dbg);
                 return;
             }
         }
@@ -400,7 +400,7 @@ function CatspeakScopeStack(cart_) constructor {
                 // TODO
             }
         }
-        cart.emitGetGlobal(name, dbg);
+        cartWriter.emitGetGlobal(name, dbg);
     };
 
     /// Emit an instruction to assign a value to a variable with a
@@ -418,7 +418,7 @@ function CatspeakScopeStack(cart_) constructor {
             var block_ = func_.blocks[iBlock];
             var localVarIdx = block_.locals[$ name];
             if (localVarIdx != undefined) {
-                cart.emitSetLocal(localVarIdx, dbg);
+                cartWriter.emitSetLocal(localVarIdx, dbg);
                 return;
             }
         }
@@ -429,6 +429,6 @@ function CatspeakScopeStack(cart_) constructor {
                 // TODO
             }
         }
-        cart.emitSetGlobal(name, dbg);
+        cartWriter.emitSetGlobal(name, dbg);
     };
 }

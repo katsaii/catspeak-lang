@@ -402,7 +402,7 @@ enum CatspeakTokenV3 {
     /// The `/=` operator.
     ASSIGN_DIVIDE = CatspeakToken.ASSIGN_DIVIDE,
     /// The `-=` operator.
-    ASSIGN_SUBTRACT = CatspeakToken.ASSIGN_SUBTRACT,
+    ASSIGN_SUBTRACT = CatspeakToken.ASSIGN_MINUS,
     /// The `+=` operator.
     ASSIGN_PLUS = CatspeakToken.ASSIGN_PLUS,
     /// @ignore
@@ -416,7 +416,7 @@ enum CatspeakTokenV3 {
     /// The integer division `//` operator.
     DIVIDE_INT = CatspeakToken.DIVIDE_INT,
     /// The `-` operator.
-    SUBTRACT = CatspeakToken.SUBTRACT,
+    SUBTRACT = CatspeakToken.MINUS,
     /// The `+` operator.
     PLUS = CatspeakToken.PLUS,
     /// The relational `==` operator.

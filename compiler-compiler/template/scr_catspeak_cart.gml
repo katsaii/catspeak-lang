@@ -126,11 +126,24 @@ function CatspeakCartWriter(buff_) constructor {
 {%   endif %}
     ///     {{ case_sentence(arg["desc"]) }}
 {%  endfor %}
-    static {{ instr_func }} = function ({{ gml_func_args(instr["args"]) }}) {
+    static {{ instr_func }} = function ({{ gml_func_args(instr["args"], None) }}) {
         var buff_ = buff;
         {{ ir_assert_cart_exists("buff_") }}
 {%  for arg in instr["args"] %}
         {{ ir_assert_type(arg["type"], arg["name"]) }}
+{%  endfor %}
+{%  for shortcut in instr["shortcuts"] %}
+        if ({{ shortcut["condition"] }}) {
+{%   if shortcut["instr"] %}
+{%    set instr_func_shortcut = gml_var_ref(shortcut["instr"], "emit") %}
+{%    set shortcut_args = map(fn_field("name"), util_join_lists(shortcut["args"], ir["instr-commonargs"])) %}
+            {{ instr_func_shortcut }}({{ gml_func_args_var_ref(shortcut_args, None) }});
+{%   endif %}
+            return;
+        }
+{%  endfor %}
+{%  for assert_ in instr["asserts"] %}
+        __catspeak_assert({{ assert_["condition"] }}, "{{ assert_['desc'] }}");
 {%  endfor %}
         buffer_write(buff_, {{ instr_opcode_bufftype }}, {{ instr_enum }});
 {%  for arg in instr["args"] %}

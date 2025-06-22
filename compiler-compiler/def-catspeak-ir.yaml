@@ -7,8 +7,8 @@
 head-order: [signal, title, version]
 head:
   signal:
-    value-unfinished: 0x5B7859 #< The colour of Forest, if you know you know.
-    value: 0xC7544E            #< The colour of Wanda,  if you know you know.
+    value-unfinished: 0xC7544E #< The colour of Wanda,  if you know you know.
+    value: 0x5B7859            #< The colour of Forest, if you know you know.
     type: u32
   title:
     value: "CATSPEAK CART"
@@ -37,7 +37,7 @@ chunk:
 # is null-terminated.
 
 instr-opcode: u8  #< The underlying type used for instruction opcodes.
-instr-commonargs: #< Any arguments common between all instructions
+instr-commonargs: #< Any arguments common between all instructions.
   - name: dbg
     desc: "the approximate location of the number in the source code"
     type: u32
@@ -57,44 +57,59 @@ instr:
 #       desc: "the number of additional hoops to jump through"
 #   simple: true
 
-  - name: "const number"
-    name-short: get_n
-    desc: "get a numeric constant"
-    repr: 0x01
-    args:
-      - name: value
-        desc: "the number to emit"
-        type: f64
-    comptime: $value$
+  - name: "return"
+    name-short: ret
+    desc: "return a value from the current function"
+    repr: 0x04
+    stackargs:
+      - name: result
+        desc: "the value to return"
 
-  - name: "const string"
-    name-short: get_s
-    desc: "get a string constant"
-    repr: 0x03
-    args:
-      - name: value
-        desc: "the string to emit"
-        type: string
-    comptime: $value$
+  - name: "break"
+    name-short: brk
+    desc: "break out of the current loop, returning a value as the result of the loop"
+    repr: 0x1D
+    stackargs:
+      - name: result
+        desc: "the value to return from the loop"
 
-  - name: "const undefined"
-    name-short: get_u
-    desc: "get the undefined constant"
-    repr: 0x23
-    comptime: undefined
+  - name: "continue"
+    name-short: cont
+    desc: "continue to the next iteration of the current loop"
+    repr: 0x1E
 
-  - name: "block"
-    name-short: pop_n
+  - name: "throw"
+    name-short: thrw
+    desc: "throw a value as an exception"
+    repr: 0x1F
+    stackargs:
+      - name: result
+        desc: "the exception value to throw"
+
+  - name: "sequence"
+    name-short: seq
     desc: "evaluates n-many expressions, implicitly returning the final expression"
+          # dev note: behaves similar to comma expressions in JavaScript
     repr: 0x1B
     args:
       - name: n
-        desc: "the number of expressions to evaluate"
+        desc: "the number of expressions to evaluate, must be greater than 0"
         type: u32
     stackargs:
-      - name: values
-        desc: "the code to run sequentially"
-        many: n
+      - name: stmts
+        desc: "the computations to run to calculate the result"
+        many: n - 1
+        many-inline: 5
+      - name: result
+        desc: "the result of the computation"
+    asserts:
+      - condition: n > 0
+        desc: "n must be greater than 0"
+    shortcuts:
+      - condition: n == 0
+        instr: "const undefined"
+      - condition: n == 1
+        instr: nulls
 
   - name: "if then else"
     name-short: ifte
@@ -109,39 +124,6 @@ instr:
         desc: "the code to run if the condition evaluates to false"
     comptime: "$condition$ ? $if_true$ : $if_false$"
 
-  - name: "return"
-    name-short: ret
-    desc: "return a value from the current function"
-    repr: 0x04
-    stackargs:
-      - name: result
-        desc: "the value to return"
-    complex: "requires access to the callstack and global state, implementation may also raise an exception for control-flow"
-
-  - name: "break"
-    name-short: brk
-    desc: "break out of the current loop, returning a value as the result of the loop"
-    repr: 0x1D
-    stackargs:
-      - name: result
-        desc: "the value to return from the loop"
-    complex: "requires access to global state, implementation may also raise an exception for control-flow"
-
-  - name: "continue"
-    name-short: cont
-    desc: "continue to the next iteration of the current loop"
-    repr: 0x1E
-    complex: "requires access to global state, implementation may also raise an exception for control-flow"
-
-  - name: "throw"
-    name-short: thrw
-    desc: "throw a value as an exception"
-    repr: 0x1F
-    stackargs:
-      - name: result
-        desc: "the exception value to throw"
-    complex: "requires access to global state, implementation may also raise an exception for control-flow"
-
   - name: "closure"
     name-short: fclo
     desc: "builds a function closure, updating any upvalues if they exist"
@@ -153,136 +135,37 @@ instr:
     stackargs:
       - name: body
         desc: "the body of the function expression to execute when called"
-    complex: "requires access to global state"
+    precalc-if: "true"
 
-  - name: "get local"
-    name-short: get_l
-    desc: "gets the value of a local variable with this id"
-    repr: 0x24
-    args:
-      - name: idx
-        desc: "the id of the local variable to get the value of"
-        type: u32
-    complex: "requires access to global state"
-
-  - name: "set local"
-    name-short: set_l
-    desc: "sets the value of a local variable with this id"
-    repr: 0x25
-    args:
-      - name: idx
-        desc: "the id of the local variable to set the value of"
-        type: u32
+  - name: "or"
+    desc: "calculate the logical OR of two values"
+    repr: 0x13
     stackargs:
-      - name: value
-        desc: "value to assign to this local variable"
-    complex: "requires access to global state"
+      - name: eager
+        desc: "the left-hand-side value of the expression"
+      - name: lazy
+        desc: "the right-hand-side value of the expression, only evaluated if `eager` is falsy"
+    comptime: $eager$ || $lazy$
 
-  - name: "get global"
-    name-short: get_g
-    desc: "gets the value of a global variable with this name"
-    repr: 0x26
-    args:
-      - name: name
-        desc: "the name of the global variable to get the value of"
-        type: string
-    complex: "requires access to global state"
-
-  - name: "set global"
-    name-short: set_g
-    desc: "sets the value of a global variable with this name"
-    repr: 0x27
-    args:
-      - name: name
-        desc: "the name of the global variable to set the value of"
-        type: string
-    stackargs:
-      - name: value
-        desc: "value to assign to this global variable"
-    complex: "requires access to global state"
-
-  - name: "remainder"
-    name-short: rem
-    desc: "calculate the remainder of two values"
-    repr: 0x06
+  - name: "xor"
+    desc: "calculate the logical XOR of two values"
+    repr: 0x14
     stackargs:
       - name: lhs
-        desc: "the dividend"
+        desc: "the left-hand-side value of the expression"
       - name: rhs
-        desc: "the divisor"
-    comptime: $lhs$ % $rhs$
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ ^^ $rhs$
 
-  - name: "multiply"
-    name-short: mult
-    desc: "calculate the product of two values"
-    repr: 0x07
+  - name: "and"
+    desc: "calculate the logical AND of two values"
+    repr: 0x12
     stackargs:
-      - name: lhs
-        desc: "the left-hand-side value of the product"
-      - name: rhs
-        desc: "the right-hand-side value of the product"
-    comptime: $lhs$ * $rhs$
-
-  - name: "divide"
-    name-short: div
-    desc: "calculate the division of two values"
-    repr: 0x08
-    stackargs:
-      - name: lhs
-        desc: "the dividend"
-      - name: rhs
-        desc: "the divisor"
-    comptime: $lhs$ / $rhs$
-
-  - name: "divide int"
-    name-short: idiv
-    desc: "calculate the integer division of two values"
-    repr: 0x09
-    stackargs:
-      - name: lhs
-        desc: "the dividend"
-      - name: rhs
-        desc: "the divisor"
-    comptime: $lhs$ div $rhs$
-
-  - name: "subtract"
-    name-short: sub
-    desc: "calculate the difference of two values"
-    repr: 0x0A
-    stackargs:
-      - name: lhs
-        desc: "the value to subtract from"
-      - name: rhs
-        desc: "the value to subtract"
-    comptime: $lhs$ - $rhs$
-
-  - name: "negative"
-    name-short: neg
-    desc: "calculate the negative of a value"
-    repr: 0x20
-    stackargs:
-      - name: value
-        desc: "the value to subtract from 0"
-    comptime: -$value$
-
-  - name: "add"
-    desc: "calculate the sum of two values"
-    repr: 0x05
-    stackargs:
-      - name: lhs
-        desc: "the left-hand-side value of the sum"
-      - name: rhs
-        desc: "the right-hand-side value of the sum"
-    comptime: $lhs$ + $rhs$
-
-  - name: "positive"
-    name-short: pos
-    desc: "calculate the positive of a value"
-    repr: 0x21
-    stackargs:
-      - name: value
-        desc: "the value to add to 0"
-    comptime: +$value$
+      - name: eager
+        desc: "the left-hand-side value of the expression"
+      - name: lazy
+        desc: "the right-hand-side value of the expression, only evaluated if `eager` is truthy"
+    comptime: $eager$ && $lazy$
 
   - name: "equal"
     name-short: eq
@@ -306,28 +189,6 @@ instr:
         desc: "the right-hand-side value of the equality"
     comptime: $lhs$ != $rhs$
 
-  - name: "greater than"
-    name-short: gt
-    desc: "check whether a value is greater than another"
-    repr: 0x0D
-    stackargs:
-      - name: lhs
-        desc: "the left-hand-side value of the inequality"
-      - name: rhs
-        desc: "the right-hand-side value of the inequality"
-    comptime: $lhs$ > $rhs$
-
-  - name: "greater than or equal to"
-    name-short: geq
-    desc: "check whether a value is greater than or equal to another"
-    repr: 0x0E
-    stackargs:
-      - name: lhs
-        desc: "the left-hand-side value of the inequality"
-      - name: rhs
-        desc: "the right-hand-side value of the inequality"
-    comptime: $lhs$ >= $rhs$
-
   - name: "less than"
     name-short: lt
     desc: "check whether a value is less than another"
@@ -350,52 +211,27 @@ instr:
         desc: "the right-hand-side value of the inequality"
     comptime: $lhs$ <= $rhs$
 
-  - name: "not"
-    desc: "calculate the logical negation of a value"
-    repr: 0x11
-    stackargs:
-      - name: value
-        desc: "the value to negate"
-    comptime: "!$value$"
-
-  - name: "and"
-    desc: "calculate the logical AND of two values"
-    repr: 0x12
-    stackargs:
-      - name: eager
-        desc: "the left-hand-side value of the expression"
-      - name: lazy
-        desc: "the right-hand-side value of the expression, only evaluated if `eager` is truthy"
-    comptime: $eager$ && $lazy$
-
-  - name: "or"
-    desc: "calculate the logical OR of two values"
-    repr: 0x13
-    stackargs:
-      - name: eager
-        desc: "the left-hand-side value of the expression"
-      - name: lazy
-        desc: "the right-hand-side value of the expression, only evaluated if `eager` is falsy"
-    comptime: $eager$ || $lazy$
-
-  - name: "xor"
-    desc: "calculate the logical XOR of two values"
-    repr: 0x14
+  - name: "greater than"
+    name-short: gt
+    desc: "check whether a value is greater than another"
+    repr: 0x0D
     stackargs:
       - name: lhs
-        desc: "the left-hand-side value of the expression"
+        desc: "the left-hand-side value of the inequality"
       - name: rhs
-        desc: "the right-hand-side value of the expression"
-    comptime: $lhs$ ^^ $rhs$
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ > $rhs$
 
-  - name: "bitwise not"
-    name-short: bnot
-    desc: "calculate the bitwise negation of a value"
-    repr: 0x15
+  - name: "greater than or equal to"
+    name-short: geq
+    desc: "check whether a value is greater than or equal to another"
+    repr: 0x0E
     stackargs:
-      - name: value
-        desc: "the value to bitwise negate"
-    comptime: ~$value$
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ >= $rhs$
 
   - name: "bitwise and"
     name-short: band
@@ -430,6 +266,17 @@ instr:
         desc: "the right-hand-side value of the expression"
     comptime: $lhs$ ^ $rhs$
 
+  - name: "bitwise shift left"
+    name-short: lshift
+    desc: "calculate the bitwise left shift of two values"
+    repr: 0x1A
+    stackargs:
+      - name: value
+        desc: "the value to shift"
+      - name: amount
+        desc: "the amount of bits to shift left by"
+    comptime: $value$ << $amount$
+
   - name: "bitwise shift right"
     name-short: rshift
     desc: "calculate the bitwise right shift of two values"
@@ -441,16 +288,173 @@ instr:
         desc: "the amount of bits to shift right by"
     comptime: $value$ >> $amount$
 
-  - name: "bitwise shift left"
-    name-short: lshift
-    desc: "calculate the bitwise left shift of two values"
-    repr: 0x1A
+  - name: "add"
+    desc: "calculate the sum of two values"
+    repr: 0x05
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the sum"
+      - name: rhs
+        desc: "the right-hand-side value of the sum"
+    comptime: $lhs$ + $rhs$
+
+  - name: "subtract"
+    name-short: sub
+    desc: "calculate the difference of two values"
+    repr: 0x0A
+    stackargs:
+      - name: lhs
+        desc: "the value to subtract from"
+      - name: rhs
+        desc: "the value to subtract"
+    comptime: $lhs$ - $rhs$
+
+  - name: "multiply"
+    name-short: mult
+    desc: "calculate the product of two values"
+    repr: 0x07
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the product"
+      - name: rhs
+        desc: "the right-hand-side value of the product"
+    comptime: $lhs$ * $rhs$
+
+  - name: "divide"
+    name-short: div
+    desc: "calculate the division of two values"
+    repr: 0x08
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ / $rhs$
+
+  - name: "divide int"
+    name-short: idiv
+    desc: "calculate the integer division of two values"
+    repr: 0x09
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ div $rhs$
+
+  - name: "remainder"
+    name-short: rem
+    desc: "calculate the remainder of two values"
+    repr: 0x06
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ % $rhs$
+
+  - name: "positive"
+    name-short: pos
+    desc: "calculate the positive of a value"
+    repr: 0x21
     stackargs:
       - name: value
-        desc: "the value to shift"
-      - name: amount
-        desc: "the amount of bits to shift left by"
-    comptime: $value$ << $amount$
+        desc: "the value to add to 0"
+    comptime: +$value$
+
+  - name: "negative"
+    name-short: neg
+    desc: "calculate the negative of a value"
+    repr: 0x20
+    stackargs:
+      - name: value
+        desc: "the value to subtract from 0"
+    comptime: -$value$
+
+  - name: "not"
+    desc: "calculate the logical negation of a value"
+    repr: 0x11
+    stackargs:
+      - name: value
+        desc: "the value to negate"
+    comptime: "!$value$"
+
+  - name: "bitwise not"
+    name-short: bnot
+    desc: "calculate the bitwise negation of a value"
+    repr: 0x15
+    stackargs:
+      - name: value
+        desc: "the value to bitwise negate"
+    comptime: ~$value$
+
+  - name: "const number"
+    name-short: get_n
+    desc: "get a numeric constant"
+    repr: 0x01
+    args:
+      - name: value
+        desc: "the number to emit"
+        type: f64
+    comptime: $value$
+
+  - name: "const string"
+    name-short: get_s
+    desc: "get a string constant"
+    repr: 0x03
+    args:
+      - name: value
+        desc: "the string to emit"
+        type: string
+    comptime: $value$
+
+  - name: "const undefined"
+    name-short: get_u
+    desc: "get the undefined constant"
+    repr: 0x23
+    comptime: undefined
+
+  - name: "get local"
+    name-short: get_l
+    desc: "gets the value of a local variable with this id"
+    repr: 0x24
+    args:
+      - name: idx
+        desc: "the id of the local variable to get the value of"
+        type: u32
+
+  - name: "set local"
+    name-short: set_l
+    desc: "sets the value of a local variable with this id"
+    repr: 0x25
+    args:
+      - name: idx
+        desc: "the id of the local variable to set the value of"
+        type: u32
+    stackargs:
+      - name: value
+        desc: "value to assign to this local variable"
+
+  - name: "get global"
+    name-short: get_g
+    desc: "gets the value of a global variable with this name"
+    repr: 0x26
+    args:
+      - name: name
+        desc: "the name of the global variable to get the value of"
+        type: string
+
+  - name: "set global"
+    name-short: set_g
+    desc: "sets the value of a global variable with this name"
+    repr: 0x27
+    args:
+      - name: name
+        desc: "the name of the global variable to set the value of"
+        type: string
+    stackargs:
+      - name: value
+        desc: "value to assign to this global variable"
 
 # The data section stores a variety of information. Most importantly, it stores
 # information about the main function (and function literals), such as how

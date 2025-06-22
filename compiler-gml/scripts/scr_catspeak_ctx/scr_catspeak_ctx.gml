@@ -214,7 +214,7 @@ function CatspeakModule(ctx_, buildArgs) constructor {
         codegen = undefined;
         cartReader = undefined;
     };
-    
+
     /// TODO
     static await_ = function (timeLimit = infinity) {
         __catspeak_assert(!failed, "build failed");

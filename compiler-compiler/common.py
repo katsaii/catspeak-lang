@@ -173,15 +173,15 @@ def gml_var_ref(name, prefix = "v"):
     return prefix + case_camel_upper(name)
 
 @jinja2_export
-def gml_func_arg(arg):
-    arg_str = gml_var_ref(arg["name"], None)
+def gml_func_arg(arg, prefix = "v"):
+    arg_str = gml_var_ref(arg["name"], prefix)
     if "default" in arg:
         arg_str += f" = {arg['default']}"
     return arg_str
 
 @jinja2_export
-def gml_func_args(args):
-    return ", ".join(map(gml_func_arg, args))
+def gml_func_args(args, prefix = "v"):
+    return ", ".join(gml_func_arg(arg, prefix) for arg in args)
 
 @jinja2_export
 def gml_func_args_var_ref(args, prefix = "v"):
@@ -214,6 +214,14 @@ def util_enum(collection, idx):
 @jinja2_export
 def util_op_index(idx):
     return lambda x: x[idx]
+
+@jinja2_export
+def util_join_lists(*xss):
+    return [x for xs in xss for x in xs]
+
+@jinja2_export
+def util_print(value):
+    print(repr(value))
 
 # compat
 

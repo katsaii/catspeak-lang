@@ -1,5 +1,5 @@
 //! "Meow" is the code name for the built-in Catspeak programming language,
-//! loosely inspired by syntax from JavaScript, GML, and Rust.
+//! loosely inspired by syntax from JavaScript, GML, and others.
 //!
 //! This module contains the lexer for Catspeak, responsible for converting
 //! source code from individual characters into clusters of characters called
@@ -81,7 +81,7 @@ enum CatspeakToken {
     __OP_UNARY_BEGIN__,
     /// @ignore
     __OP_ADD_BEGIN__,
-    SUBTRACT,
+    MINUS,
     PLUS,
     /// @ignore
     __OP_ADD_END__,
@@ -155,7 +155,7 @@ enum CatspeakToken {
     ASSIGN,
     ASSIGN_MULTIPLY,
     ASSIGN_DIVIDE,
-    ASSIGN_SUBTRACT,
+    ASSIGN_MINUS,
     ASSIGN_PLUS,
     /// @ignore
     __OP_ASSIGN_END__,
@@ -615,11 +615,11 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
     };
 
     /// @ignore
-    static __completeSubtract = function () {
+    static __completeMinus = function () {
         var charNext_ = charNext;
         if (charNext_ == ord("=")) {
             advanceChar();
-            return CatspeakToken.ASSIGN_SUBTRACT;
+            return CatspeakToken.ASSIGN_MINUS;
         } else if (charNext_ == ord("-")) {
             // comments
             do {
@@ -823,7 +823,7 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
         __asciiCodepage[@ ord("/")] = CatspeakToken.DIVIDE;
         __asciiCodepage[@ ord("%")] = CatspeakToken.REMAINDER;
         __asciiCodepage[@ ord("+")] = CatspeakToken.PLUS;
-        __asciiCodepage[@ ord("-")] = CatspeakToken.SUBTRACT;
+        __asciiCodepage[@ ord("-")] = CatspeakToken.MINUS;
         __asciiCodepage[@ ord("!")] = CatspeakToken.NOT;
         __asciiCodepage[@ ord(">")] = CatspeakToken.GREATER;
         __asciiCodepage[@ ord("<")] = CatspeakToken.LESS;
@@ -846,7 +846,7 @@ function CatspeakLexer(buff, offset = undefined, size = undefined)
         __lexerLookup[@ CatspeakToken.MULTIPLY] = __completeMultiply;
         __lexerLookup[@ CatspeakToken.DIVIDE] = __completeDivide;
         __lexerLookup[@ CatspeakToken.PLUS] = __completePlus;
-        __lexerLookup[@ CatspeakToken.SUBTRACT] = __completeSubtract;
+        __lexerLookup[@ CatspeakToken.MINUS] = __completeMinus;
         __lexerLookup[@ CatspeakToken.NOT] = __completeNot;
         __lexerLookup[@ CatspeakToken.GREATER] = __completeGreater;
         __lexerLookup[@ CatspeakToken.LESS] = __completeLess;

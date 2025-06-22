@@ -29,7 +29,7 @@ function CatspeakCodegenGML() constructor {
     static getProgram = function () {
         __catspeak_assert(stackTop != -1, "no cartridge loaded");
         __catspeak_assert(!inProgress, "compilation is still in progress");
-        __catspeak_assert_eq(stackTop, 0,
+        __catspeak_assert_eq(0, stackTop,
             "error occurred during compilation, values still remaining on the stack"
         );
         var programValue = popValue();
@@ -95,208 +95,73 @@ function CatspeakCodegenGML() constructor {
 
     /// @ignore
     static {{ instr_handler }} = function ({{ gml_func_args_var_ref(instrarg_args, None) }}) {
-{% if instr["stackargs"] %}
-{%  if len(instr["stackargs"]) > 1 %}
+        var exec;
+{%  if instr["stackargs"] %}
+{%   if len(instr["stackargs"]) > 1 %}
         // unpack stack args in reverse order
-{%  endif %}
-{%  for stackarg in instr["stackargs"][::-1] %}
-{%   set stackarg_name = gml_var_ref(stackarg["name"], None) %}
-{%   if "many" in stackarg %}
-{%    set many_name = gml_var_ref(stackarg["many"], None) %}
-        var {{ stackarg_name }} = array_create({{ many_name }});
-        for (var i = {{ many_name }} - 1; i >= 0; i -= 1) {
+{%   endif %}
+{%   for stackarg in instr["stackargs"][::-1] %}
+{%    set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+{%    if "many" in stackarg %}
+{%     set many_name = stackarg["many"] %}
+        var {{ stackarg_name }}N = {{ many_name }};
+        var {{ stackarg_name }} = array_create({{ stackarg_name }}N);
+        for (var i = {{ stackarg_name }}N - 1; i >= 0; i -= 1) {
             {{ stackarg_name }}[@ i] = popValue();
         }
-{%   else %}
+{%    else %}
         var {{ stackarg_name }} = popValue();
-{%   endif %}
-{%  endfor %}
-{% endif %}
-        var exec = method({
+{%    endif %}
+{%   endfor %}
+{%   for stackarg in instr["stackargs"][::-1] %}
+{%    set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+{%    if "many-inline" in stackarg %}
+{%     for stackarg_i in range(0, stackarg["many-inline"]) %}
+        if ({{ stackarg_name }}N == {{ stackarg_i }}) {
+            exec = method({
+                ctx : ctx,
+{%      for arg in instr["args"] %}
+{%       set arg_name = gml_var_ref(arg["name"], None) %}
+                {{ arg_name }} : {{ arg_name }},
+{%      endfor %}
+{%      for stackarg2 in instr["stackargs"] %}
+{%       set stackarg_name2 = gml_var_ref(stackarg2["name"], None) %}
+{%       if stackarg_name2 != stackarg_name %}
+                {{ stackarg_name2 }} : {{ stackarg_name2 }},
+{%       else %}
+{%        for stackarg_i2 in range(0, stackarg_i) %}
+                {{ stackarg_name }}{{ stackarg_i2 }} : {{ stackarg_name }}[{{ stackarg_i2 }}],
+{%        endfor %}
+{%       endif %}
+{%      endfor %}
+            }, __catspeak_instr_{{ case_snake(instr_name) }}_{{ stackarg_name }}_{{ stackarg_i }}__);
+        } else
+{%     endfor %}
+{%    endif %}
+{%   endfor %}
+{%  endif %}
+        exec = method({
             ctx : ctx,
-{% for arg in instr["args"] %}
-{%  set arg_name = gml_var_ref(arg["name"], None) %}
+{%  for arg in instr["args"] %}
+{%   set arg_name = gml_var_ref(arg["name"], None) %}
             {{ arg_name }} : {{ arg_name }},
-{% endfor %}
-{% for stackarg in instr["stackargs"] %}
-{%  set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+{%  endfor %}
+{%  for stackarg in instr["stackargs"] %}
+{%   set stackarg_name = gml_var_ref(stackarg["name"], None) %}
             {{ stackarg_name }} : {{ stackarg_name }},
-{% endfor %}
+{%  endfor %}
         }, __catspeak_instr_{{ case_snake(instr_name) }}__);
+{%  if "precalc-if" in instr %}
+        if ({{ instr["precalc-if"] }}) {
+            // pre-calculate the expression
+            var execValue_ = exec();
+            exec = method({
+                ctx : ctx,
+                value : execValue_,
+            }, __catspeak_const_value__);
+        }
+{%  endif %}
         pushValue(exec);
     };
 {% endfor %}
-}
-
-/// @ignore
-function __catspeak_gml_exec_get_return() {
-    static special = [undefined];
-    return special;
-}
-
-/// @ignore
-function __catspeak_gml_exec_get_break() {
-    static special = [undefined];
-    return special;
-}
-
-/// @ignore
-function __catspeak_gml_exec_get_continue() {
-    static special = [];
-    return special;
-}
-
-/// @ignore
-function __catspeak_gml_exec_get_error(exec) {
-    var closure_ = method_get_self(exec);
-    return catspeak_location_show(closure_[$ "dbg"], closure_.ctx[$ "filename"]);
-}
-{% for _, instr in ir_enumerate(ir, "instr") %}
-{%  set instr_name = instr['name-short'] or instr['name'] %}
-{%  if "comptime" in instr %}
-
-/// @ignore
-function __catspeak_instr_{{ case_snake(instr_name) }}__() {
-    return {{ gml_instr_get_comptime_vm(instr) }};
-}
-{%  endif %}
-{% endfor %}
-
-/// @ignore
-function __catspeak_instr_ret__() {
-    var returnBox = __catspeak_gml_exec_get_return();
-    returnBox[@ 0] = result();
-    throw returnBox;
-}
-
-/// @ignore
-function __catspeak_instr_brk__() {
-    var breakBox = __catspeak_gml_exec_get_break();
-    breakBox[@ 0] = result();
-    throw breakBox;
-}
-
-/// @ignore
-function __catspeak_instr_cont__() {
-    throw __catspeak_gml_exec_get_continue();
-}
-
-/// @ignore
-function __catspeak_instr_thrw__() {
-    throw result();
-}
-
-/// @ignore
-function __catspeak_instr_fclo__() {
-    return __catspeak_create_function(ctx, body, locals, dbg);
-}
-
-/// @ignore
-function __catspeak_instr_pop_n__() {
-    var values_ = values;
-    var n_ = n - 1;
-    for (var i = 0; i < n_; i += 1) {
-        var value = values_[i];
-        value();
-    }
-    var result = values_[n_];
-    return result();
-}
-
-/// @ignore
-function __catspeak_instr_get_l__() {
-    return ctx.callee_.locals[idx];
-}
-
-/// @ignore
-function __catspeak_instr_set_l__() {
-    ctx.callee_.locals[idx] = value();
-}
-
-/// @ignore
-function __catspeak_instr_get_g__() {
-    return ctx.globals[$ name];
-}
-
-/// @ignore
-function __catspeak_instr_set_g__() {
-    ctx.globals[$ name] = value();
-}
-
-/// @ignore
-function __catspeak_create_function(ctx, body, locals, dbg) {
-    return method({
-        ctx : ctx,
-        body : body,
-        locals : array_create(locals),
-        dbg : dbg,
-    }, __catspeak_function__);
-}
-
-/// @ignore
-function __catspeak_function__() {
-    var ctx_ = ctx;
-    var prevCallee = ctx_.callee_;
-    ctx_.callee_ = self;
-    var returnValue = body();
-    ctx_.callee_ = prevCallee;
-    /* TODO: repurpose
-    if (doThrowValue) {
-        if (is_struct(throwValue)) {
-            var catspeakErr = "CATSPEAK RUNTIME ERROR -- " +
-                    __catspeak_gml_exec_get_error(body);
-            if (variable_struct_exists(throwValue, "message")) {
-                // add where the error occurred (really bad implementation, might be good enough for now)
-                throwValue.message = catspeakErr + ": " + throwValue.message;
-            }
-            if (variable_struct_exists(throwValue, "longMessage")) {
-                // add where the error occurred (really bad implementation, might be good enough for now)
-                throwValue.longMessage += "\n-----\n" + catspeakErr + "\n";
-            }
-        }
-        throw throwValue;
-    }
-    */
-    return returnValue;
-}
-
-/// @ignore
-function __catspeak_catch_return__() {
-    var returnValue = undefined;
-    try {
-        returnValue = body();
-    } catch (err_) {
-        if (err_ == __catspeak_gml_exec_get_return()) {
-            returnValue = err_[0];
-        } else {
-            throw err_;
-        }
-    }
-    return returnValue;
-}
-
-/// @ignore
-function __catspeak_catch_break__() {
-    var returnValue = undefined;
-    try {
-        returnValue = body();
-    } catch (err_) {
-        if (err_ == __catspeak_gml_exec_get_break()) {
-            returnValue = err_[0];
-        } else {
-            throw err_;
-        }
-    }
-    return returnValue;
-}
-
-/// @ignore
-function __catspeak_catch_continue__() {
-    try {
-        body();
-    } catch (err_) {
-        if (err_ != __catspeak_gml_exec_get_continue()) {
-            throw err_;
-        }
-    }
 }
