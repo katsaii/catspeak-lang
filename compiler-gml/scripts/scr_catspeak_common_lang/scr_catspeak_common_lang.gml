@@ -274,6 +274,7 @@ function CatspeakScopeStack(cartWriter_) constructor {
                 localTop : 0,
                 blockTop : -1,
                 blocks : array_create(8),
+                returnCount : 0,
             };
             array_resize(func_.blocks, 0);
             funcs[@ funcTop] = func_;
@@ -282,18 +283,28 @@ function CatspeakScopeStack(cartWriter_) constructor {
             func_.localCount = 0;
             func_.localTop = 0;
             func_.blockTop = -1;
+            func_.returnCount = 0;
         }
         func = func_;
         beginBlock();
     };
 
+    /// TODO
+    static emitReturn = function (dbg = undefined) {
+        cartWriter.emitUnwind(0, dbg);
+        func.returnCount += 1;
+    };
+
     /// Ends the current function scope, writing its instruction to the supplied
     /// cartridge.
-    static endFunction = function () {
+    static endFunction = function (dbg = undefined) {
         var func_ = func;
         __catspeak_assert(funcTop > 0.1, "function stack underflow");
-        __endBlock(false);
-        cartWriter.emitClosure(func_.localCount);
+        __endBlock(dbg, false);
+        if (func_.returnCount > 0) {
+            cartWriter.emitCatchUnwind(0, dbg);
+        }
+        cartWriter.emitClosure(func_.localCount, dbg);
         funcTop -= 1;
         func = funcs[funcTop];
         block = func.blocks[func.blockTop];
@@ -303,6 +314,16 @@ function CatspeakScopeStack(cartWriter_) constructor {
     static getLocalCount = function () {
         __catspeak_assert(func != undefined);
         return func.localCount;
+    };
+
+    /// TODO
+    static emitContinue = function (dbg = undefined) {
+        cartWriter.emitUnwind(1, dbg);
+    };
+
+    /// TODO
+    static emitBreak = function (dbg = undefined) {
+        cartWriter.emitUnwind(2, dbg);
     };
 
     /// Begins a new block scope.
@@ -331,7 +352,7 @@ function CatspeakScopeStack(cartWriter_) constructor {
     };
 
     /// @ignore
-    static __endBlock = function (assert = true) {
+    static __endBlock = function (dbg, assert = true) {
         var block_ = block;
         var func_ = func;
         if (assert) {
@@ -342,13 +363,13 @@ function CatspeakScopeStack(cartWriter_) constructor {
         if (assert) {
             block = func_.blocks[func_.blockTop];
         }
-        cartWriter.emitSequence(block_.stmtCount);
+        cartWriter.emitSequence(block_.stmtCount, dbg);
     };
 
     /// Ends the current block scope, writing its instruction to the supplied
     /// cartridge.
-    static endBlock = function () {
-        __endBlock();
+    static endBlock = function (dbg = undefined) {
+        __endBlock(dbg);
     };
 
     /// Allocate space for a new local variable, returning `true` if the local

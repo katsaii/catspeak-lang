@@ -87,40 +87,6 @@ function CatspeakCodegenGML() constructor {
     };
 
     /// @ignore
-    static handleInstrReturn = function (dbg) {
-        var exec;
-        var result = popValue();
-        exec = method({
-            ctx : ctx,
-            dbg : dbg,
-            result : result,
-        }, __catspeak_instr_ret__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrContinue = function (dbg) {
-        var exec;
-        exec = method({
-            ctx : ctx,
-            dbg : dbg,
-        }, __catspeak_instr_cont__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrBreak = function (dbg) {
-        var exec;
-        var result = popValue();
-        exec = method({
-            ctx : ctx,
-            dbg : dbg,
-            result : result,
-        }, __catspeak_instr_brk__);
-        pushValue(exec);
-    };
-
-    /// @ignore
     static handleInstrThrow = function (dbg) {
         var exec;
         var result = popValue();
@@ -129,6 +95,48 @@ function CatspeakCodegenGML() constructor {
             dbg : dbg,
             result : result,
         }, __catspeak_instr_thrw__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrCatch = function (idx, dbg) {
+        var exec;
+        // unpack stack args in reverse order
+        var lazy = popValue();
+        var eager = popValue();
+        exec = method({
+            ctx : ctx,
+            idx : idx,
+            dbg : dbg,
+            eager : eager,
+            lazy : lazy,
+        }, __catspeak_instr_cat__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrUnwind = function (label, dbg) {
+        var exec;
+        var result = popValue();
+        exec = method({
+            ctx : ctx,
+            label : label,
+            dbg : dbg,
+            result : result,
+        }, __catspeak_instr_uwnd__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrCatchUnwind = function (label, dbg) {
+        var exec;
+        var body = popValue();
+        exec = method({
+            ctx : ctx,
+            label : label,
+            dbg : dbg,
+            body : body,
+        }, __catspeak_instr_cat_uwnd__);
         pushValue(exec);
     };
 

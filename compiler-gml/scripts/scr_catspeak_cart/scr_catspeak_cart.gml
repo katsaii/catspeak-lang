@@ -28,14 +28,14 @@
 enum CatspeakInstr {
     /// @ignore
     END_OF_PROGRAM = 0,
-    /// Return a value from the current function.
-    RET = 4,
-    /// Continue to the next iteration of the current loop.
-    CONT = 30,
-    /// Break out of the current loop, returning a value as the result of the loop.
-    BRK = 29,
     /// Throw a value as an exception.
     THRW = 31,
+    /// Catch an exception.
+    CAT = 42,
+    /// Throw a value to the first unwind block with the same id.
+    UWND = 40,
+    /// Catch a labelled value thrown by the `uwnd` instruction.
+    CAT_UWND = 41,
     /// Evaluates n-many expressions, implicitly returning the final expression.
     SEQ = 27,
     /// Evaluates one of two expressions, depending on whether a condition is true or false.
@@ -105,7 +105,7 @@ enum CatspeakInstr {
     /// Sets the value of a global variable with this name.
     SET_G = 39,
     /// @ignore
-    __SIZE__ = 40,
+    __SIZE__ = 43,
 }
 
 /// Handles the creation of Catspeak cartridges.
@@ -164,42 +164,6 @@ function CatspeakCartWriter(buff_) constructor {
         buffer_poke(buff_, hSignal, buffer_u32, 5994585); // patch signal header
     };
 
-    /// Return a value from the current function.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitReturn = function (dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        buffer_write(buff_, buffer_u8, CatspeakInstr.RET);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
-    /// Continue to the next iteration of the current loop.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitContinue = function (dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        buffer_write(buff_, buffer_u8, CatspeakInstr.CONT);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
-    /// Break out of the current loop, returning a value as the result of the loop.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitBreak = function (dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        buffer_write(buff_, buffer_u8, CatspeakInstr.BRK);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
     /// Throw a value as an exception.
     ///
     /// @param {Real} [dbg]
@@ -209,6 +173,57 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         buffer_write(buff_, buffer_u8, CatspeakInstr.THRW);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Catch an exception.
+    ///
+    /// @param {Real} idx
+    ///     The id of the local variable to assign the exception value to.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitCatch = function (idx, dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.CAT);
+        buffer_write(buff_, buffer_u32, idx);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Throw a value to the first unwind block with the same id.
+    ///
+    /// @param {Real} label
+    ///     The id of the label to unwind to.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitUnwind = function (label, dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(label, is_numeric, "expected type of u32");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.UWND);
+        buffer_write(buff_, buffer_u32, label);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Catch a labelled value thrown by the `uwnd` instruction.
+    ///
+    /// @param {Real} label
+    ///     The id of the label to catch values of.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitCatchUnwind = function (label, dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(label, is_numeric, "expected type of u32");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        buffer_write(buff_, buffer_u8, CatspeakInstr.CAT_UWND);
+        buffer_write(buff_, buffer_u32, label);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -688,17 +703,17 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "buffer doesn't exist");
     __catspeak_assert_eq(1, buffer_get_alignment(buff_), "require a buffer with alignment 1");
     __catspeak_assert_typeof(visitor_, is_struct, "visitor must be a struct");
-    __catspeak_assert_typeof(visitor_[$ "handleInstrReturn"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrReturn'"
-    );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrContinue"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrContinue'"
-    );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrBreak"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrBreak'"
-    );
     __catspeak_assert_typeof(visitor_[$ "handleInstrThrow"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrThrow'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrCatch"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrCatch'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrUnwind"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrUnwind'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrCatchUnwind"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrCatchUnwind'"
     );
     __catspeak_assert_typeof(visitor_[$ "handleInstrSequence"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrSequence'"
@@ -875,31 +890,34 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     };
 
     /// @ignore
-    static __readReturn = function () {
-        var buff_ = buff;
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrReturn(argDbg);
-    };
-
-    /// @ignore
-    static __readContinue = function () {
-        var buff_ = buff;
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrContinue(argDbg);
-    };
-
-    /// @ignore
-    static __readBreak = function () {
-        var buff_ = buff;
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrBreak(argDbg);
-    };
-
-    /// @ignore
     static __readThrow = function () {
         var buff_ = buff;
         var argDbg = buffer_read(buff_, buffer_u32);
         visitor.handleInstrThrow(argDbg);
+    };
+
+    /// @ignore
+    static __readCatch = function () {
+        var buff_ = buff;
+        var argIdx = buffer_read(buff_, buffer_u32);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrCatch(argIdx, argDbg);
+    };
+
+    /// @ignore
+    static __readUnwind = function () {
+        var buff_ = buff;
+        var argLabel = buffer_read(buff_, buffer_u32);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrUnwind(argLabel, argDbg);
+    };
+
+    /// @ignore
+    static __readCatchUnwind = function () {
+        var buff_ = buff;
+        var argLabel = buffer_read(buff_, buffer_u32);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrCatchUnwind(argLabel, argDbg);
     };
 
     /// @ignore
@@ -1152,10 +1170,10 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     static __readerLookup = undefined;
     if (__readerLookup == undefined) {
         __readerLookup = array_create(CatspeakInstr.__SIZE__, undefined);
-        __readerLookup[@ CatspeakInstr.RET] = __readReturn;
-        __readerLookup[@ CatspeakInstr.CONT] = __readContinue;
-        __readerLookup[@ CatspeakInstr.BRK] = __readBreak;
         __readerLookup[@ CatspeakInstr.THRW] = __readThrow;
+        __readerLookup[@ CatspeakInstr.CAT] = __readCatch;
+        __readerLookup[@ CatspeakInstr.UWND] = __readUnwind;
+        __readerLookup[@ CatspeakInstr.CAT_UWND] = __readCatchUnwind;
         __readerLookup[@ CatspeakInstr.SEQ] = __readSequence;
         __readerLookup[@ CatspeakInstr.IFTE] = __readIfThenElse;
         __readerLookup[@ CatspeakInstr.FCLO] = __readClosure;

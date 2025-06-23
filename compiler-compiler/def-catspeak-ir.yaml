@@ -57,27 +57,6 @@ instr:
 #       desc: "the number of additional hoops to jump through"
 #   simple: true
 
-  - name: "return"
-    name-short: ret
-    desc: "return a value from the current function"
-    repr: 0x04
-    stackargs:
-      - name: result
-        desc: "the value to return"
-
-  - name: "continue"
-    name-short: cont
-    desc: "continue to the next iteration of the current loop"
-    repr: 0x1E
-
-  - name: "break"
-    name-short: brk
-    desc: "break out of the current loop, returning a value as the result of the loop"
-    repr: 0x1D
-    stackargs:
-      - name: result
-        desc: "the value to return from the loop"
-
   - name: "throw"
     name-short: thrw
     desc: "throw a value as an exception"
@@ -85,6 +64,44 @@ instr:
     stackargs:
       - name: result
         desc: "the exception value to throw"
+
+  - name: "catch"
+    name-short: cat
+    desc: "catch an exception"
+    repr: 0x2A
+    args:
+      - name: idx
+        desc: "the id of the local variable to assign the exception value to"
+        type: u32
+    stackargs:
+      - name: eager
+        desc: "the body of the code which may raise an exception"
+      - name: lazy
+        desc: "the body of the code which handles the exception"
+
+  - name: "unwind"
+    name-short: uwnd
+    desc: "throw a value to the first unwind block with the same id"
+    repr: 0x28
+    args:
+      - name: label
+        desc: "the id of the label to unwind to"
+        type: u32
+    stackargs:
+      - name: result
+        desc: "the value to unwind"
+
+  - name: "catch unwind"
+    name-short: cat_uwnd
+    desc: "catch a labelled value thrown by the `uwnd` instruction"
+    repr: 0x29
+    args:
+      - name: label
+        desc: "the id of the label to catch values of"
+        type: u32
+    stackargs:
+      - name: body
+        desc: "the body of the code which may unwind"
 
   - name: "sequence"
     name-short: seq

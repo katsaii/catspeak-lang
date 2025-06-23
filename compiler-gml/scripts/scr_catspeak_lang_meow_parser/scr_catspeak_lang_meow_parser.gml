@@ -120,9 +120,9 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
                 } else {
                     __parseExpression();
                 }
-                cartWriter.emitReturn(lexer.getLocation());
+                scope.emitReturn(lexer.getLocation());
             } else if (peeked == CatspeakToken.CONTINUE) {
-                cartWriter.emitContinue(lexer.getLocation());
+                scope.emitContinue(lexer.getLocation());
             } else if (peeked == CatspeakToken.BREAK) {
                 peeked = lexer.peek();
                 if (
@@ -134,10 +134,10 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
                 } else {
                     __parseExpression();
                 }
-                cartWriter.emitBreak(lexer.getLocation());
+                scope.emitBreak(lexer.getLocation());
             } else if (peeked == CatspeakToken.THROW) {
                 __parseExpression();
-                cartWriter.emitBreak(lexer.getLocation());
+                cartWriter.emitThrow(lexer.getLocation());
             } else {
                 __catspeak_error_bug();
             }

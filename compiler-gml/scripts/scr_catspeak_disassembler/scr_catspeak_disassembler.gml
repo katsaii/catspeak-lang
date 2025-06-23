@@ -62,26 +62,29 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleInstrReturn = function (dbg) {
-        asmStr += "  ret";
-        asmStr += "\n"
-    };
-
-    /// @ignore
-    static handleInstrContinue = function (dbg) {
-        asmStr += "  cont";
-        asmStr += "\n"
-    };
-
-    /// @ignore
-    static handleInstrBreak = function (dbg) {
-        asmStr += "  brk";
-        asmStr += "\n"
-    };
-
-    /// @ignore
     static handleInstrThrow = function (dbg) {
         asmStr += "  thrw";
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrCatch = function (idx, dbg) {
+        asmStr += "  cat";
+        asmStr += "  " + string(idx);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrUnwind = function (label, dbg) {
+        asmStr += "  uwnd";
+        asmStr += "  " + string(label);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrCatchUnwind = function (label, dbg) {
+        asmStr += "  cat_uwnd";
+        asmStr += "  " + string(label);
         asmStr += "\n"
     };
 
