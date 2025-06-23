@@ -1,38 +1,21 @@
 //! Responsible for the reading and writing of Catspeak IR (Intermediate
 //! Representation). Catspeak IR is a binary format that can be saved
 //! and loaded from a file, or treated like a "ROM" or "cartridge".
+//!
+//! Cartridge code is stored in reverse-polish notation, where each
+//! instruction may push (or pop) intermediate values onto a virtual stack.
+//!
+//! Depending on the export, this may literally be a stack--such as with a
+//! so-called "stack machine" VM. Other times the "stack" may be an abstraction,
+//! such as with the GML export, where Catspeak cartridges are transformed into
+//! recursive GML function calls. (This ends up being faster for reasons I won't
+//! detail here.)
+//!
+//! Each instruction may also be associated with zero or many static parameters.
 
 //# feather use syntax-errors
 
-{% set instr_opcode_bufftype = gml_type_buffer(ir["instr-opcode"]) %}
-
-/// The type of Catspeak IR instruction.
-/// 
-/// Catspeak stores cartridge code in reverse-polish notation, where each
-/// instruction may push (or pop) intermediate values onto a virtual stack.
-/// 
-/// Depending on the export, this may literally be a stack--such as with a
-/// so-called "stack machine" VM. Other times the "stack" may be an abstraction,
-/// such as with the GML export, where Catspeak cartridges are transformed into
-/// recursive GML function calls. (This ends up being faster for reasons I won't
-/// detail here.)
-/// 
-/// Each instruction may also be associated with zero or many static parameters.
-///
-/// @experimental
-enum CatspeakInstr {
-    /// @ignore
-    END_OF_PROGRAM = 0,
-{% for _, instr in ir_enumerate(ir, "instr") %}
-{%  set instr_name = case_snake_upper(instr["name-short"] or instr["name"]) %}
-{%  set instr_repr = instr["repr"] %}
-{%  set instr_desc = case_sentence(instr["desc"]) %}
-    /// {{ instr_desc }}
-    {{ instr_name }} = {{ instr_repr }},
-{% endfor %}
-    /// @ignore
-    __SIZE__ = {{ max(map(util_op_index("repr"), ir["instr"])) + 1 }},
-}
+{% set instr_opcode_bufftype = gml_type_buffer(ir["instr-opcode"]) -%}
 
 /// Handles the creation of Catspeak cartridges.
 ///
@@ -86,36 +69,26 @@ function CatspeakCartWriter(buff_) constructor {
     exprStack = array_create(32); // stores type info used for optimisations
     /// @ignore
     exprStackTop = 0;
-    /// @ignore
-    unreachableCount = 0;
-
-    /// Returns whether the top expression in the stack never returns a value.
-    ///
-    /// This can be used to perform optimisations, such as dead-code elimination.
-    ///
-    /// @return {Bool}
-    static peekNoreturn = function () {
-        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 1] : false;
-    };
 
     /// Returns the current value of the top in the stack.
     ///
-    /// This can be used to perform optimisations, such as constant folding.
+    /// @remark
+    ///   This can be used to perform optimisations, such as constant folding.
     ///
     /// @return {Any}
     static peekValue = function () {
-        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 0] : undefined;
+        return exprStackTop > 0 ? exprStack[exprStackTop - 2] : undefined;
     };
 
-    /// TODO
-    static beginUnreachable = function () {
-        unreachableCount += 1;
-    };
-
-    /// TODO
-    static endUnreachable = function () {
-        __catspeak_assert(unreachableCount > 0);
-        unreachableCount -= 1;
+    /// Returns the number of values currently pushed onto to the stack.
+    ///
+    /// @remark
+    ///   This can be used to automatically figure out how many parameters an
+    ///   instruction needs.
+    ///
+    /// @return {Any}
+    static peekValueCount = function () {
+        return exprStackTop div 2;
     };
 
     /// Finalises the creation of this Catspeak cartridge. Assumes the program
@@ -126,7 +99,7 @@ function CatspeakCartWriter(buff_) constructor {
         buff = undefined;
         __catspeak_assert_eq(2, exprStackTop, "expression stack unbalanced (did you call finalise too early?)");
         {{ ir_assert_cart_exists("buff_") }}
-        buffer_write(buff_, {{ instr_opcode_bufftype }}, CatspeakInstr.END_OF_PROGRAM);
+        buffer_write(buff_, {{ instr_opcode_bufftype }}, __CatspeakInstr.END_OF_PROGRAM);
         {{ gml_chunk_patch(ir, "data", "buff_") }}
 {% for section_name, section in ir_enumerate(ir, "data") %}
 {%  if section_name == "meta" %}
@@ -150,7 +123,7 @@ function CatspeakCartWriter(buff_) constructor {
     };
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_func = gml_var_ref(instr["name"], "emit") %}
-{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
+{%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
 
     /// {{ case_sentence(instr["desc"]) }}
 {%  for arg in instr["args"] %}
@@ -168,9 +141,6 @@ function CatspeakCartWriter(buff_) constructor {
 {%  for arg in instr["args"] %}
         {{ ir_assert_type(arg["type"], arg["name"]) }}
 {%  endfor %}
-        if (unreachableCount > 0) { // we're done here
-            return;
-        }
 {%  for shortcut in instr["shortcuts"] %}
         if ({{ shortcut["condition"] }}) {
 {%   if shortcut["instr"] %}
@@ -186,39 +156,20 @@ function CatspeakCartWriter(buff_) constructor {
 {%  endfor %}
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-{%  set ns = namespace(count="0", noreturn=instr["noreturn"]) %}
+{%  set ns_expr = namespace(count=0, count_many="") %}
 {%  if "stackargs" in instr %}
 {%   for stackarg in instr["stackargs"][::-1] %}
-{%    set stackarg_name = gml_var_ref(stackarg["name"], None) %}
 {%    if "many" in stackarg %}
-{%     set ns.count = ns.count + " + 2 * (" + stackarg["many"] + ")" %}
+{%     set ns_expr.count_many = ns_expr.count_many + " + (" + stackarg["many"] + ")" %}
 {%    else %}
-{%     set ns.count = ns.count + " + 2" %}
-{%    endif %}
-{%    set stackarg_name_template = "$" + stackarg_name + "$" %}
-{%    if stackarg_name_template in ns.noreturn %}
-        // propagate "noreturn" state from {{ stackarg_name }} arg
-{%     if "many" in stackarg %}
-{%      set is_and = (stackarg_name_template + "&&*") in ns.noreturn %}
-{%      set op_ = "&&" if is_and else "||" %}
-{%      set op_init = "true" if is_and else "false" %}
-        var {{ stackarg_name }}Idx = exprStackTop_ - ({{ ns.count }});
-        var {{ stackarg_name }}Nr = {{ op_init }};
-        for (var i = ({{ stackarg["many"] }}) - 1; i >= 0; i -= 1) {
-            {{ stackarg_name }}Nr = {{ stackarg_name }}Nr {{ op_ }} exprStack_[@ {{ stackarg_name }}Idx + 2 * i + 1];
-        }
-{%      set ns.noreturn = util_replace(ns.noreturn, stackarg_name_template + op_ + "*", stackarg_name + "Nr") %}
-{%     else %}
-        var {{ stackarg_name }}Idx = exprStackTop_ - ({{ ns.count }});
-        var {{ stackarg_name }}Nr = exprStack_[@ {{ stackarg_name }}Idx + 1];
-{%      set ns.noreturn = util_replace(ns.noreturn, stackarg_name_template, stackarg_name + "Nr") %}
-{%     endif %}
+{%     set ns_expr.count = ns_expr.count + 1 %}
 {%    endif %}
 {%   endfor %}
 {%  endif %}
-        exprStackTop_ -= ({{ ns.count }});
+        exprStackTop_ -= 2 * ({{ ns_expr.count }}{{ ns_expr.count_many }});
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = {{ ns.noreturn }};
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, {{ instr_opcode_bufftype }}, {{ instr_enum }});
 {%  for arg in instr["args"] %}
@@ -320,14 +271,14 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         var buff_ = buff;
         {{ ir_assert_cart_exists("buff_") }}
         var instrType = buffer_read(buff_, {{ instr_opcode_bufftype }});
-        if (instrType == CatspeakInstr.END_OF_PROGRAM) {
+        if (instrType == __CatspeakInstr.END_OF_PROGRAM) {
             // we've reached the end
             buff = undefined;
             {{ gml_chunk_seek(ir, "end", "buff_") }}
             visitor.handleDeinit();
             return false;
         }
-        __catspeak_assert(instrType >= 0 && instrType < CatspeakInstr.__SIZE__,
+        __catspeak_assert(instrType >= 0 && instrType < __CatspeakInstr.__SIZE__,
             "invalid cartridge instruction"
         );
         var instrReader = __readerLookup[instrType];
@@ -337,7 +288,7 @@ function CatspeakCartReader(buff_, visitor_) constructor {
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_handler = gml_var_ref(instr["name"], "handleInstr") %}
 {%  set instr_reader = gml_var_ref(instr["name"], "__read") %}
-{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
+{%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
 
     /// @ignore
     static {{ instr_reader }} = function () {
@@ -357,11 +308,23 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     /// @ignore
     static __readerLookup = undefined;
     if (__readerLookup == undefined) {
-        __readerLookup = array_create(CatspeakInstr.__SIZE__, undefined);
+        __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
 {% for _, instr in ir_enumerate(ir, "instr") %}
 {%  set instr_reader = gml_var_ref(instr["name"], "__read") %}
-{%  set instr_enum = "CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
+{%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr["name-short"] or instr["name"]) %}
         __readerLookup[@ {{ instr_enum }}] = {{ instr_reader }};
 {% endfor %}
     }
+}
+
+/// @ignore
+enum __CatspeakInstr {
+    END_OF_PROGRAM = 0,
+{% for _, instr in ir_enumerate(ir, "instr") %}
+{%  set instr_name = case_snake_upper(instr["name-short"] or instr["name"]) %}
+{%  set instr_repr = instr["repr"] %}
+{%  set instr_desc = case_sentence(instr["desc"]) %}
+    {{ instr_name }} = {{ instr_repr }},
+{% endfor %}
+    __SIZE__ = {{ max(map(util_op_index("repr"), ir["instr"])) + 1 }},
 }

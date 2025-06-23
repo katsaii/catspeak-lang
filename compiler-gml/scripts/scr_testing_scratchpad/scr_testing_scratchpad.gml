@@ -19,10 +19,10 @@ TEST_EXPERIMENT "catspeak4-ctx" {
         src : @'
             do {
                 do {
+                    some
                     return 4
-                    abc
+                    
                 }
-                1 + 2
             }
         ',
         flags : CatspeakBuildFlags.KEEP_CARTRIDGE,

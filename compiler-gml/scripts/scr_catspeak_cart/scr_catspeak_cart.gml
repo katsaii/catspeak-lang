@@ -7,106 +7,19 @@
 //! Responsible for the reading and writing of Catspeak IR (Intermediate
 //! Representation). Catspeak IR is a binary format that can be saved
 //! and loaded from a file, or treated like a "ROM" or "cartridge".
+//!
+//! Cartridge code is stored in reverse-polish notation, where each
+//! instruction may push (or pop) intermediate values onto a virtual stack.
+//!
+//! Depending on the export, this may literally be a stack--such as with a
+//! so-called "stack machine" VM. Other times the "stack" may be an abstraction,
+//! such as with the GML export, where Catspeak cartridges are transformed into
+//! recursive GML function calls. (This ends up being faster for reasons I won't
+//! detail here.)
+//!
+//! Each instruction may also be associated with zero or many static parameters.
 
 //# feather use syntax-errors
-
-
-/// The type of Catspeak IR instruction.
-/// 
-/// Catspeak stores cartridge code in reverse-polish notation, where each
-/// instruction may push (or pop) intermediate values onto a virtual stack.
-/// 
-/// Depending on the export, this may literally be a stack--such as with a
-/// so-called "stack machine" VM. Other times the "stack" may be an abstraction,
-/// such as with the GML export, where Catspeak cartridges are transformed into
-/// recursive GML function calls. (This ends up being faster for reasons I won't
-/// detail here.)
-/// 
-/// Each instruction may also be associated with zero or many static parameters.
-///
-/// @experimental
-enum CatspeakInstr {
-    /// @ignore
-    END_OF_PROGRAM = 0,
-    /// Throw a value as an exception.
-    THRW = 31,
-    /// Catch an exception.
-    CAT = 42,
-    /// Throw a value to the first unwind block with the same id.
-    UWND = 40,
-    /// Catch a labelled value thrown by the `uwnd` instruction.
-    CAT_UWND = 41,
-    /// Evaluates n-many expressions, implicitly returning the final expression.
-    SEQ = 27,
-    /// Evaluates one of two expressions, depending on whether a condition is true or false.
-    IFTE = 28,
-    /// Builds a function closure, updating any upvalues if they exist.
-    FCLO = 34,
-    /// Calculate the logical OR of two values.
-    OR = 19,
-    /// Calculate the logical XOR of two values.
-    XOR = 20,
-    /// Calculate the logical AND of two values.
-    AND = 18,
-    /// Check whether two values are equal.
-    EQ = 11,
-    /// Check whether two values are NOT equal.
-    NEQ = 12,
-    /// Check whether a value is less than another.
-    LT = 15,
-    /// Check whether a value is less than or equal to another.
-    LEQ = 16,
-    /// Check whether a value is greater than another.
-    GT = 13,
-    /// Check whether a value is greater than or equal to another.
-    GEQ = 14,
-    /// Calculate the bitwise AND of two values.
-    BAND = 22,
-    /// Calculate the bitwise OR of two values.
-    BOR = 23,
-    /// Calculate the bitwise XOR of two values.
-    BXOR = 24,
-    /// Calculate the bitwise left shift of two values.
-    LSHIFT = 26,
-    /// Calculate the bitwise right shift of two values.
-    RSHIFT = 25,
-    /// Calculate the sum of two values.
-    ADD = 5,
-    /// Calculate the difference of two values.
-    SUB = 10,
-    /// Calculate the product of two values.
-    MULT = 7,
-    /// Calculate the division of two values.
-    DIV = 8,
-    /// Calculate the integer division of two values.
-    IDIV = 9,
-    /// Calculate the remainder of two values.
-    REM = 6,
-    /// Calculate the positive of a value.
-    POS = 33,
-    /// Calculate the negative of a value.
-    NEG = 32,
-    /// Calculate the logical negation of a value.
-    NOT = 17,
-    /// Calculate the bitwise negation of a value.
-    BNOT = 21,
-    /// Get a numeric constant.
-    GET_N = 1,
-    /// Get a string constant.
-    GET_S = 3,
-    /// Get the undefined constant.
-    GET_U = 35,
-    /// Gets the value of a local variable with this id.
-    GET_L = 36,
-    /// Sets the value of a local variable with this id.
-    SET_L = 37,
-    /// Gets the value of a global variable with this name.
-    GET_G = 38,
-    /// Sets the value of a global variable with this name.
-    SET_G = 39,
-    /// @ignore
-    __SIZE__ = 43,
-}
 
 /// Handles the creation of Catspeak cartridges.
 ///
@@ -152,22 +65,25 @@ function CatspeakCartWriter(buff_) constructor {
     /// @ignore
     exprStackTop = 0;
 
-    /// Returns whether the top expression in the stack never returns a value.
-    ///
-    /// This can be used to perform optimisations, such as dead-code elimination.
-    ///
-    /// @return {Bool}
-    static peekNoreturn = function () {
-        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 1] : false;
-    };
-
     /// Returns the current value of the top in the stack.
     ///
-    /// This can be used to perform optimisations, such as constant folding.
+    /// @remark
+    ///   This can be used to perform optimisations, such as constant folding.
     ///
     /// @return {Any}
     static peekValue = function () {
-        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 0] : undefined;
+        return exprStackTop > 0 ? exprStack[exprStackTop - 2] : undefined;
+    };
+
+    /// Returns the number of values currently pushed onto to the stack.
+    ///
+    /// @remark
+    ///   This can be used to automatically figure out how many parameters an
+    ///   instruction needs.
+    ///
+    /// @return {Any}
+    static peekValueCount = function () {
+        return exprStackTop div 2;
     };
 
     /// Finalises the creation of this Catspeak cartridge. Assumes the program
@@ -178,7 +94,7 @@ function CatspeakCartWriter(buff_) constructor {
         buff = undefined;
         __catspeak_assert_eq(2, exprStackTop, "expression stack unbalanced (did you call finalise too early?)");
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        buffer_write(buff_, buffer_u8, CatspeakInstr.END_OF_PROGRAM);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.END_OF_PROGRAM);
         buffer_poke(buff_, chunkData, buffer_u32, buffer_tell(buff_) - cartStart); // patch data
         // write meta data
         buffer_write(buff_, buffer_string, path);
@@ -197,11 +113,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = true;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.THRW);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.THRW);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -219,14 +136,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from lazy arg
-        var lazyIdx = exprStackTop_ - (0 + 2);
-        var lazyNr = exprStack_[@ lazyIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = lazyNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.CAT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.CAT);
         buffer_write(buff_, buffer_u32, idx);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -245,11 +160,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = true;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.UWND);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.UWND);
         buffer_write(buff_, buffer_u32, label);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -268,11 +184,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.CAT_UWND);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.CAT_UWND);
         buffer_write(buff_, buffer_u32, label);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -299,20 +216,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert(n > 0, "n must be greater than 0");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from result arg
-        var resultIdx = exprStackTop_ - (0 + 2);
-        var resultNr = exprStack_[@ resultIdx + 1];
-        // propagate "noreturn" state from stmts arg
-        var stmtsIdx = exprStackTop_ - (0 + 2 + 2 * (n - 1));
-        var stmtsNr = false;
-        for (var i = (n - 1) - 1; i >= 0; i -= 1) {
-            stmtsNr = stmtsNr || exprStack_[@ stmtsIdx + 2 * i + 1];
-        }
-        exprStackTop_ -= (0 + 2 + 2 * (n - 1));
+        exprStackTop_ -= 2 * (1 + (n - 1));
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || stmtsNr || resultNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.SEQ);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.SEQ);
         buffer_write(buff_, buffer_u32, n);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -327,20 +236,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from if_false arg
-        var if_falseIdx = exprStackTop_ - (0 + 2);
-        var if_falseNr = exprStack_[@ if_falseIdx + 1];
-        // propagate "noreturn" state from if_true arg
-        var if_trueIdx = exprStackTop_ - (0 + 2 + 2);
-        var if_trueNr = exprStack_[@ if_trueIdx + 1];
-        // propagate "noreturn" state from condition arg
-        var conditionIdx = exprStackTop_ - (0 + 2 + 2 + 2);
-        var conditionNr = exprStack_[@ conditionIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2 + 2);
+        exprStackTop_ -= 2 * (3);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = conditionNr || if_trueNr && if_falseNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.IFTE);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.IFTE);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -358,11 +259,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.FCLO);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.FCLO);
         buffer_write(buff_, buffer_u32, locals);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -377,17 +279,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from lazy arg
-        var lazyIdx = exprStackTop_ - (0 + 2);
-        var lazyNr = exprStack_[@ lazyIdx + 1];
-        // propagate "noreturn" state from eager arg
-        var eagerIdx = exprStackTop_ - (0 + 2 + 2);
-        var eagerNr = exprStack_[@ eagerIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = eagerNr || lazyNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.OR);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.OR);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -401,17 +298,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.XOR);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.XOR);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -425,17 +317,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from lazy arg
-        var lazyIdx = exprStackTop_ - (0 + 2);
-        var lazyNr = exprStack_[@ lazyIdx + 1];
-        // propagate "noreturn" state from eager arg
-        var eagerIdx = exprStackTop_ - (0 + 2 + 2);
-        var eagerNr = exprStack_[@ eagerIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = eagerNr || lazyNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.AND);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.AND);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -449,17 +336,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.EQ);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.EQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -473,17 +355,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.NEQ);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.NEQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -497,17 +374,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.LT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.LT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -521,17 +393,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.LEQ);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.LEQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -545,17 +412,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -569,17 +431,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GEQ);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GEQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -593,17 +450,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.BAND);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.BAND);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -617,17 +469,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.BOR);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.BOR);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -641,17 +488,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.BXOR);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.BXOR);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -665,17 +507,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from amount arg
-        var amountIdx = exprStackTop_ - (0 + 2);
-        var amountNr = exprStack_[@ amountIdx + 1];
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr || amountNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.LSHIFT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.LSHIFT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -689,17 +526,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from amount arg
-        var amountIdx = exprStackTop_ - (0 + 2);
-        var amountNr = exprStack_[@ amountIdx + 1];
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr || amountNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.RSHIFT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.RSHIFT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -713,17 +545,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.ADD);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.ADD);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -737,17 +564,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.SUB);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.SUB);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -761,17 +583,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.MULT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.MULT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -785,17 +602,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.DIV);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.DIV);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -809,17 +621,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.IDIV);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.IDIV);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -833,17 +640,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from rhs arg
-        var rhsIdx = exprStackTop_ - (0 + 2);
-        var rhsNr = exprStack_[@ rhsIdx + 1];
-        // propagate "noreturn" state from lhs arg
-        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
-        var lhsNr = exprStack_[@ lhsIdx + 1];
-        exprStackTop_ -= (0 + 2 + 2);
+        exprStackTop_ -= 2 * (2);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.REM);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.REM);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -857,14 +659,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.POS);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.POS);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -878,14 +678,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.NEG);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.NEG);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -899,14 +697,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.NOT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.NOT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -920,14 +716,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.BNOT);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.BNOT);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -945,11 +739,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0);
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GET_N);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_N);
         buffer_write(buff_, buffer_f64, value);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -968,11 +763,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0);
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GET_S);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_S);
         buffer_write(buff_, buffer_string, value);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -987,11 +783,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0);
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GET_U);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_U);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -1009,11 +806,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0);
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GET_L);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_L);
         buffer_write(buff_, buffer_u32, idx);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -1032,14 +830,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.SET_L);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.SET_L);
         buffer_write(buff_, buffer_u32, idx);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -1058,11 +854,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= (0);
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.GET_G);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_G);
         buffer_write(buff_, buffer_string, name);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -1081,14 +878,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
         var exprStack_ = exprStack;
         var exprStackTop_ = exprStackTop;
-        // propagate "noreturn" state from value arg
-        var valueIdx = exprStackTop_ - (0 + 2);
-        var valueNr = exprStack_[@ valueIdx + 1];
-        exprStackTop_ -= (0 + 2);
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
         exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
         exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, CatspeakInstr.SET_G);
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.SET_G);
         buffer_write(buff_, buffer_string, name);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -1284,14 +1079,14 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         var instrType = buffer_read(buff_, buffer_u8);
-        if (instrType == CatspeakInstr.END_OF_PROGRAM) {
+        if (instrType == __CatspeakInstr.END_OF_PROGRAM) {
             // we've reached the end
             buff = undefined;
             buffer_seek(buff_, buffer_seek_start, cartStart + chunkEnd); // seek end
             visitor.handleDeinit();
             return false;
         }
-        __catspeak_assert(instrType >= 0 && instrType < CatspeakInstr.__SIZE__,
+        __catspeak_assert(instrType >= 0 && instrType < __CatspeakInstr.__SIZE__,
             "invalid cartridge instruction"
         );
         var instrReader = __readerLookup[instrType];
@@ -1579,44 +1374,88 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     /// @ignore
     static __readerLookup = undefined;
     if (__readerLookup == undefined) {
-        __readerLookup = array_create(CatspeakInstr.__SIZE__, undefined);
-        __readerLookup[@ CatspeakInstr.THRW] = __readThrow;
-        __readerLookup[@ CatspeakInstr.CAT] = __readCatch;
-        __readerLookup[@ CatspeakInstr.UWND] = __readUnwind;
-        __readerLookup[@ CatspeakInstr.CAT_UWND] = __readCatchUnwind;
-        __readerLookup[@ CatspeakInstr.SEQ] = __readSequence;
-        __readerLookup[@ CatspeakInstr.IFTE] = __readIfThenElse;
-        __readerLookup[@ CatspeakInstr.FCLO] = __readClosure;
-        __readerLookup[@ CatspeakInstr.OR] = __readOr;
-        __readerLookup[@ CatspeakInstr.XOR] = __readXor;
-        __readerLookup[@ CatspeakInstr.AND] = __readAnd;
-        __readerLookup[@ CatspeakInstr.EQ] = __readEqual;
-        __readerLookup[@ CatspeakInstr.NEQ] = __readNotEqual;
-        __readerLookup[@ CatspeakInstr.LT] = __readLessThan;
-        __readerLookup[@ CatspeakInstr.LEQ] = __readLessThanOrEqualTo;
-        __readerLookup[@ CatspeakInstr.GT] = __readGreaterThan;
-        __readerLookup[@ CatspeakInstr.GEQ] = __readGreaterThanOrEqualTo;
-        __readerLookup[@ CatspeakInstr.BAND] = __readBitwiseAnd;
-        __readerLookup[@ CatspeakInstr.BOR] = __readBitwiseOr;
-        __readerLookup[@ CatspeakInstr.BXOR] = __readBitwiseXor;
-        __readerLookup[@ CatspeakInstr.LSHIFT] = __readBitwiseShiftLeft;
-        __readerLookup[@ CatspeakInstr.RSHIFT] = __readBitwiseShiftRight;
-        __readerLookup[@ CatspeakInstr.ADD] = __readAdd;
-        __readerLookup[@ CatspeakInstr.SUB] = __readSubtract;
-        __readerLookup[@ CatspeakInstr.MULT] = __readMultiply;
-        __readerLookup[@ CatspeakInstr.DIV] = __readDivide;
-        __readerLookup[@ CatspeakInstr.IDIV] = __readDivideInt;
-        __readerLookup[@ CatspeakInstr.REM] = __readRemainder;
-        __readerLookup[@ CatspeakInstr.POS] = __readPositive;
-        __readerLookup[@ CatspeakInstr.NEG] = __readNegative;
-        __readerLookup[@ CatspeakInstr.NOT] = __readNot;
-        __readerLookup[@ CatspeakInstr.BNOT] = __readBitwiseNot;
-        __readerLookup[@ CatspeakInstr.GET_N] = __readConstNumber;
-        __readerLookup[@ CatspeakInstr.GET_S] = __readConstString;
-        __readerLookup[@ CatspeakInstr.GET_U] = __readConstUndefined;
-        __readerLookup[@ CatspeakInstr.GET_L] = __readGetLocal;
-        __readerLookup[@ CatspeakInstr.SET_L] = __readSetLocal;
-        __readerLookup[@ CatspeakInstr.GET_G] = __readGetGlobal;
-        __readerLookup[@ CatspeakInstr.SET_G] = __readSetGlobal;
+        __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
+        __readerLookup[@ __CatspeakInstr.THRW] = __readThrow;
+        __readerLookup[@ __CatspeakInstr.CAT] = __readCatch;
+        __readerLookup[@ __CatspeakInstr.UWND] = __readUnwind;
+        __readerLookup[@ __CatspeakInstr.CAT_UWND] = __readCatchUnwind;
+        __readerLookup[@ __CatspeakInstr.SEQ] = __readSequence;
+        __readerLookup[@ __CatspeakInstr.IFTE] = __readIfThenElse;
+        __readerLookup[@ __CatspeakInstr.FCLO] = __readClosure;
+        __readerLookup[@ __CatspeakInstr.OR] = __readOr;
+        __readerLookup[@ __CatspeakInstr.XOR] = __readXor;
+        __readerLookup[@ __CatspeakInstr.AND] = __readAnd;
+        __readerLookup[@ __CatspeakInstr.EQ] = __readEqual;
+        __readerLookup[@ __CatspeakInstr.NEQ] = __readNotEqual;
+        __readerLookup[@ __CatspeakInstr.LT] = __readLessThan;
+        __readerLookup[@ __CatspeakInstr.LEQ] = __readLessThanOrEqualTo;
+        __readerLookup[@ __CatspeakInstr.GT] = __readGreaterThan;
+        __readerLookup[@ __CatspeakInstr.GEQ] = __readGreaterThanOrEqualTo;
+        __readerLookup[@ __CatspeakInstr.BAND] = __readBitwiseAnd;
+        __readerLookup[@ __CatspeakInstr.BOR] = __readBitwiseOr;
+        __readerLookup[@ __CatspeakInstr.BXOR] = __readBitwiseXor;
+        __readerLookup[@ __CatspeakInstr.LSHIFT] = __readBitwiseShiftLeft;
+        __readerLookup[@ __CatspeakInstr.RSHIFT] = __readBitwiseShiftRight;
+        __readerLookup[@ __CatspeakInstr.ADD] = __readAdd;
+        __readerLookup[@ __CatspeakInstr.SUB] = __readSubtract;
+        __readerLookup[@ __CatspeakInstr.MULT] = __readMultiply;
+        __readerLookup[@ __CatspeakInstr.DIV] = __readDivide;
+        __readerLookup[@ __CatspeakInstr.IDIV] = __readDivideInt;
+        __readerLookup[@ __CatspeakInstr.REM] = __readRemainder;
+        __readerLookup[@ __CatspeakInstr.POS] = __readPositive;
+        __readerLookup[@ __CatspeakInstr.NEG] = __readNegative;
+        __readerLookup[@ __CatspeakInstr.NOT] = __readNot;
+        __readerLookup[@ __CatspeakInstr.BNOT] = __readBitwiseNot;
+        __readerLookup[@ __CatspeakInstr.GET_N] = __readConstNumber;
+        __readerLookup[@ __CatspeakInstr.GET_S] = __readConstString;
+        __readerLookup[@ __CatspeakInstr.GET_U] = __readConstUndefined;
+        __readerLookup[@ __CatspeakInstr.GET_L] = __readGetLocal;
+        __readerLookup[@ __CatspeakInstr.SET_L] = __readSetLocal;
+        __readerLookup[@ __CatspeakInstr.GET_G] = __readGetGlobal;
+        __readerLookup[@ __CatspeakInstr.SET_G] = __readSetGlobal;
     }
+}
+
+/// @ignore
+enum __CatspeakInstr {
+    END_OF_PROGRAM = 0,
+    THRW = 31,
+    CAT = 42,
+    UWND = 40,
+    CAT_UWND = 41,
+    SEQ = 27,
+    IFTE = 28,
+    FCLO = 34,
+    OR = 19,
+    XOR = 20,
+    AND = 18,
+    EQ = 11,
+    NEQ = 12,
+    LT = 15,
+    LEQ = 16,
+    GT = 13,
+    GEQ = 14,
+    BAND = 22,
+    BOR = 23,
+    BXOR = 24,
+    LSHIFT = 26,
+    RSHIFT = 25,
+    ADD = 5,
+    SUB = 10,
+    MULT = 7,
+    DIV = 8,
+    IDIV = 9,
+    REM = 6,
+    POS = 33,
+    NEG = 32,
+    NOT = 17,
+    BNOT = 21,
+    GET_N = 1,
+    GET_S = 3,
+    GET_U = 35,
+    GET_L = 36,
+    SET_L = 37,
+    GET_G = 38,
+    SET_G = 39,
+    __SIZE__ = 43,
 }

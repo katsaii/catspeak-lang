@@ -83,7 +83,6 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
             __catspeak_error_unimplemented("let statements");
             // TODO
         } else {
-            scope.prepareStatement();
             __parseExpression();
         }
     };

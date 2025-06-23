@@ -331,25 +331,21 @@ function CatspeakScopeStack(cartWriter_) constructor {
         var func_ = func;
         func_.blockTop += 1;
         var block_;
+        var startStackSize = cartWriter.peekValueCount();
         if (func_.blockTop >= array_length(func_.blocks)) {
             block_ = {
                 localCount : 0,
                 locals : undefined,
-                stmtCount : 0,
+                startStackSize : startStackSize,
             };
             func_.blocks[@ func_.blockTop] = block_;
         } else {
             block_ = func_.blocks[func_.blockTop];
             block_.localCount = 0;
             block_.locals = undefined;
+            block_.startStackSize = startStackSize;
         }
         block = block_;
-    };
-
-    /// Prepares a new statement to be written to the current block.
-    static prepareStatement = function () {
-        show_debug_message("dead code: "+ string(cartWriter.peekNoreturn()));
-        block.stmtCount += 1;
     };
 
     /// @ignore
@@ -364,7 +360,8 @@ function CatspeakScopeStack(cartWriter_) constructor {
         if (assert) {
             block = func_.blocks[func_.blockTop];
         }
-        cartWriter.emitSequence(block_.stmtCount, dbg);
+        var endStackSize = cartWriter.peekValueCount();
+        cartWriter.emitSequence(endStackSize - block_.startStackSize, dbg);
     };
 
     /// Ends the current block scope, writing its instruction to the supplied
