@@ -82,6 +82,41 @@ function CatspeakCartWriter(buff_) constructor {
 {% endfor %}
     /// @ignore
     buff = buff_;
+    /// @ignore
+    exprStack = array_create(32); // stores type info used for optimisations
+    /// @ignore
+    exprStackTop = 0;
+    /// @ignore
+    unreachableCount = 0;
+
+    /// Returns whether the top expression in the stack never returns a value.
+    ///
+    /// This can be used to perform optimisations, such as dead-code elimination.
+    ///
+    /// @return {Bool}
+    static peekNoreturn = function () {
+        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 1] : false;
+    };
+
+    /// Returns the current value of the top in the stack.
+    ///
+    /// This can be used to perform optimisations, such as constant folding.
+    ///
+    /// @return {Any}
+    static peekValue = function () {
+        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 0] : undefined;
+    };
+
+    /// TODO
+    static beginUnreachable = function () {
+        unreachableCount += 1;
+    };
+
+    /// TODO
+    static endUnreachable = function () {
+        __catspeak_assert(unreachableCount > 0);
+        unreachableCount -= 1;
+    };
 
     /// Finalises the creation of this Catspeak cartridge. Assumes the program
     /// section is well-formed, then writes the data section before patching
@@ -89,6 +124,7 @@ function CatspeakCartWriter(buff_) constructor {
     static finalise = function () {
         var buff_ = buff;
         buff = undefined;
+        __catspeak_assert_eq(2, exprStackTop, "expression stack unbalanced (did you call finalise too early?)");
         {{ ir_assert_cart_exists("buff_") }}
         buffer_write(buff_, {{ instr_opcode_bufftype }}, CatspeakInstr.END_OF_PROGRAM);
         {{ gml_chunk_patch(ir, "data", "buff_") }}
@@ -132,6 +168,9 @@ function CatspeakCartWriter(buff_) constructor {
 {%  for arg in instr["args"] %}
         {{ ir_assert_type(arg["type"], arg["name"]) }}
 {%  endfor %}
+        if (unreachableCount > 0) { // we're done here
+            return;
+        }
 {%  for shortcut in instr["shortcuts"] %}
         if ({{ shortcut["condition"] }}) {
 {%   if shortcut["instr"] %}
@@ -145,6 +184,42 @@ function CatspeakCartWriter(buff_) constructor {
 {%  for assert_ in instr["asserts"] %}
         __catspeak_assert({{ assert_["condition"] }}, "{{ assert_['desc'] }}");
 {%  endfor %}
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+{%  set ns = namespace(count="0", noreturn=instr["noreturn"]) %}
+{%  if "stackargs" in instr %}
+{%   for stackarg in instr["stackargs"][::-1] %}
+{%    set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+{%    if "many" in stackarg %}
+{%     set ns.count = ns.count + " + 2 * (" + stackarg["many"] + ")" %}
+{%    else %}
+{%     set ns.count = ns.count + " + 2" %}
+{%    endif %}
+{%    set stackarg_name_template = "$" + stackarg_name + "$" %}
+{%    if stackarg_name_template in ns.noreturn %}
+        // propagate "noreturn" state from {{ stackarg_name }} arg
+{%     if "many" in stackarg %}
+{%      set is_and = (stackarg_name_template + "&&*") in ns.noreturn %}
+{%      set op_ = "&&" if is_and else "||" %}
+{%      set op_init = "true" if is_and else "false" %}
+        var {{ stackarg_name }}Idx = exprStackTop_ - ({{ ns.count }});
+        var {{ stackarg_name }}Nr = {{ op_init }};
+        for (var i = ({{ stackarg["many"] }}) - 1; i >= 0; i -= 1) {
+            {{ stackarg_name }}Nr = {{ stackarg_name }}Nr {{ op_ }} exprStack_[@ {{ stackarg_name }}Idx + 2 * i + 1];
+        }
+{%      set ns.noreturn = util_replace(ns.noreturn, stackarg_name_template + op_ + "*", stackarg_name + "Nr") %}
+{%     else %}
+        var {{ stackarg_name }}Idx = exprStackTop_ - ({{ ns.count }});
+        var {{ stackarg_name }}Nr = exprStack_[@ {{ stackarg_name }}Idx + 1];
+{%      set ns.noreturn = util_replace(ns.noreturn, stackarg_name_template, stackarg_name + "Nr") %}
+{%     endif %}
+{%    endif %}
+{%   endfor %}
+{%  endif %}
+        exprStackTop_ -= ({{ ns.count }});
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = {{ ns.noreturn }};
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, {{ instr_opcode_bufftype }}, {{ instr_enum }});
 {%  for arg in instr["args"] %}
 {%   set arg_bufftype = gml_type_buffer(arg["type"]) %}

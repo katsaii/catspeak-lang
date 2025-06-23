@@ -348,6 +348,7 @@ function CatspeakScopeStack(cartWriter_) constructor {
 
     /// Prepares a new statement to be written to the current block.
     static prepareStatement = function () {
+        show_debug_message("dead code: "+ string(cartWriter.peekNoreturn()));
         block.stmtCount += 1;
     };
 

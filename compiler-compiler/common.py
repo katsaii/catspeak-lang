@@ -223,6 +223,10 @@ def util_join_lists(*xss):
 def util_print(value):
     print(repr(value))
 
+@jinja2_export
+def util_replace(s, substr, new_substr):
+    return s.replace(substr, new_substr)
+
 # compat
 
 @jinja2_export

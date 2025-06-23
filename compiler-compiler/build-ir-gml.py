@@ -17,6 +17,9 @@ ir_path = "compiler-compiler/def-catspeak-ir.yaml"
 ir = common.file_load_yaml(ir_path)
 # post-process
 ir_commonargs = ir.get("instr-commonargs") or []
+if ir_commonargs:
+    commonargs_names = [x["name"] for x in ir_commonargs]
+    print(f"patching commonargs: {commonargs_names}")
 ir_instrs = ir.get("instr") or []
 ir_instrs_seen_reprs = { }
 for instr in ir_instrs:
@@ -33,6 +36,18 @@ for instr in ir_instrs:
         if "args" not in instr:
             instr["args"] = []
         instr["args"].extend(ir_commonargs)
+    # patch noreturn field
+    if "noreturn" not in instr:
+        noreturn = "false"
+        if "stackargs" in instr:
+            for stackarg in instr["stackargs"]:
+                stackarg_name = stackarg["name"]
+                if "many" in stackarg:
+                    noreturn += f" || ${stackarg_name}$||*"
+                else:
+                    noreturn += f" || ${stackarg_name}$"
+        print(f"patching \"{instr_name}\".noreturn: {noreturn}")
+        instr["noreturn"] = noreturn
 
 env = jinja2.Environment(trim_blocks=True, lstrip_blocks=True) #autoescape=True
 env_interface = { "ir": ir }

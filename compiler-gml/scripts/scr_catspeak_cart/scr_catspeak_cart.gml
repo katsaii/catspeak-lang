@@ -147,6 +147,28 @@ function CatspeakCartWriter(buff_) constructor {
     author = "";
     /// @ignore
     buff = buff_;
+    /// @ignore
+    exprStack = array_create(32); // stores type info used for optimisations
+    /// @ignore
+    exprStackTop = 0;
+
+    /// Returns whether the top expression in the stack never returns a value.
+    ///
+    /// This can be used to perform optimisations, such as dead-code elimination.
+    ///
+    /// @return {Bool}
+    static peekNoreturn = function () {
+        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 1] : false;
+    };
+
+    /// Returns the current value of the top in the stack.
+    ///
+    /// This can be used to perform optimisations, such as constant folding.
+    ///
+    /// @return {Any}
+    static peekValue = function () {
+        return exprStackTop > 0 ? exprStack[exprStackTop - 2 + 0] : undefined;
+    };
 
     /// Finalises the creation of this Catspeak cartridge. Assumes the program
     /// section is well-formed, then writes the data section before patching
@@ -154,6 +176,7 @@ function CatspeakCartWriter(buff_) constructor {
     static finalise = function () {
         var buff_ = buff;
         buff = undefined;
+        __catspeak_assert_eq(2, exprStackTop, "expression stack unbalanced (did you call finalise too early?)");
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         buffer_write(buff_, buffer_u8, CatspeakInstr.END_OF_PROGRAM);
         buffer_poke(buff_, chunkData, buffer_u32, buffer_tell(buff_) - cartStart); // patch data
@@ -172,6 +195,12 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = true;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.THRW);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -188,6 +217,15 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from lazy arg
+        var lazyIdx = exprStackTop_ - (0 + 2);
+        var lazyNr = exprStack_[@ lazyIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = lazyNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.CAT);
         buffer_write(buff_, buffer_u32, idx);
         buffer_write(buff_, buffer_u32, dbg);
@@ -205,6 +243,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(label, is_numeric, "expected type of u32");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = true;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.UWND);
         buffer_write(buff_, buffer_u32, label);
         buffer_write(buff_, buffer_u32, dbg);
@@ -222,6 +266,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(label, is_numeric, "expected type of u32");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.CAT_UWND);
         buffer_write(buff_, buffer_u32, label);
         buffer_write(buff_, buffer_u32, dbg);
@@ -247,6 +297,21 @@ function CatspeakCartWriter(buff_) constructor {
             return;
         }
         __catspeak_assert(n > 0, "n must be greater than 0");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from result arg
+        var resultIdx = exprStackTop_ - (0 + 2);
+        var resultNr = exprStack_[@ resultIdx + 1];
+        // propagate "noreturn" state from stmts arg
+        var stmtsIdx = exprStackTop_ - (0 + 2 + 2 * (n - 1));
+        var stmtsNr = false;
+        for (var i = (n - 1) - 1; i >= 0; i -= 1) {
+            stmtsNr = stmtsNr || exprStack_[@ stmtsIdx + 2 * i + 1];
+        }
+        exprStackTop_ -= (0 + 2 + 2 * (n - 1));
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || stmtsNr || resultNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.SEQ);
         buffer_write(buff_, buffer_u32, n);
         buffer_write(buff_, buffer_u32, dbg);
@@ -260,6 +325,21 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from if_false arg
+        var if_falseIdx = exprStackTop_ - (0 + 2);
+        var if_falseNr = exprStack_[@ if_falseIdx + 1];
+        // propagate "noreturn" state from if_true arg
+        var if_trueIdx = exprStackTop_ - (0 + 2 + 2);
+        var if_trueNr = exprStack_[@ if_trueIdx + 1];
+        // propagate "noreturn" state from condition arg
+        var conditionIdx = exprStackTop_ - (0 + 2 + 2 + 2);
+        var conditionNr = exprStack_[@ conditionIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = conditionNr || if_trueNr && if_falseNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.IFTE);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -276,6 +356,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(locals, is_numeric, "expected type of u32");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.FCLO);
         buffer_write(buff_, buffer_u32, locals);
         buffer_write(buff_, buffer_u32, dbg);
@@ -289,6 +375,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from lazy arg
+        var lazyIdx = exprStackTop_ - (0 + 2);
+        var lazyNr = exprStack_[@ lazyIdx + 1];
+        // propagate "noreturn" state from eager arg
+        var eagerIdx = exprStackTop_ - (0 + 2 + 2);
+        var eagerNr = exprStack_[@ eagerIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = eagerNr || lazyNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.OR);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -301,6 +399,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.XOR);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -313,6 +423,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from lazy arg
+        var lazyIdx = exprStackTop_ - (0 + 2);
+        var lazyNr = exprStack_[@ lazyIdx + 1];
+        // propagate "noreturn" state from eager arg
+        var eagerIdx = exprStackTop_ - (0 + 2 + 2);
+        var eagerNr = exprStack_[@ eagerIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = eagerNr || lazyNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.AND);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -325,6 +447,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.EQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -337,6 +471,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.NEQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -349,6 +495,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.LT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -361,6 +519,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.LEQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -373,6 +543,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -385,6 +567,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GEQ);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -397,6 +591,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.BAND);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -409,6 +615,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.BOR);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -421,6 +639,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.BXOR);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -433,6 +663,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from amount arg
+        var amountIdx = exprStackTop_ - (0 + 2);
+        var amountNr = exprStack_[@ amountIdx + 1];
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr || amountNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.LSHIFT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -445,6 +687,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from amount arg
+        var amountIdx = exprStackTop_ - (0 + 2);
+        var amountNr = exprStack_[@ amountIdx + 1];
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr || amountNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.RSHIFT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -457,6 +711,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.ADD);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -469,6 +735,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.SUB);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -481,6 +759,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.MULT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -493,6 +783,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.DIV);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -505,6 +807,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.IDIV);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -517,6 +831,18 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from rhs arg
+        var rhsIdx = exprStackTop_ - (0 + 2);
+        var rhsNr = exprStack_[@ rhsIdx + 1];
+        // propagate "noreturn" state from lhs arg
+        var lhsIdx = exprStackTop_ - (0 + 2 + 2);
+        var lhsNr = exprStack_[@ lhsIdx + 1];
+        exprStackTop_ -= (0 + 2 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || lhsNr || rhsNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.REM);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -529,6 +855,15 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.POS);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -541,6 +876,15 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.NEG);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -553,6 +897,15 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.NOT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -565,6 +918,15 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.BNOT);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -581,6 +943,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(value, is_numeric, "expected type of f64");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_N);
         buffer_write(buff_, buffer_f64, value);
         buffer_write(buff_, buffer_u32, dbg);
@@ -598,6 +966,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(value, is_string, "expected type of string");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_S);
         buffer_write(buff_, buffer_string, value);
         buffer_write(buff_, buffer_u32, dbg);
@@ -611,6 +985,12 @@ function CatspeakCartWriter(buff_) constructor {
         var buff_ = buff;
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_U);
         buffer_write(buff_, buffer_u32, dbg);
     };
@@ -627,6 +1007,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_L);
         buffer_write(buff_, buffer_u32, idx);
         buffer_write(buff_, buffer_u32, dbg);
@@ -644,6 +1030,15 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.SET_L);
         buffer_write(buff_, buffer_u32, idx);
         buffer_write(buff_, buffer_u32, dbg);
@@ -661,6 +1056,12 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(name, is_string, "expected type of string");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= (0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.GET_G);
         buffer_write(buff_, buffer_string, name);
         buffer_write(buff_, buffer_u32, dbg);
@@ -678,6 +1079,15 @@ function CatspeakCartWriter(buff_) constructor {
         __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
         __catspeak_assert_typeof(name, is_string, "expected type of string");
         __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        // propagate "noreturn" state from value arg
+        var valueIdx = exprStackTop_ - (0 + 2);
+        var valueNr = exprStack_[@ valueIdx + 1];
+        exprStackTop_ -= (0 + 2);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = false || valueNr;
+        exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, CatspeakInstr.SET_G);
         buffer_write(buff_, buffer_string, name);
         buffer_write(buff_, buffer_u32, dbg);
