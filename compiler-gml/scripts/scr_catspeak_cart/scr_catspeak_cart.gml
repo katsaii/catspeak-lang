@@ -1,8 +1,8 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir-outdated.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/scr_catspeak_cart.gml
+//  - scr_catspeak_cart.gml
 
 //! Responsible for the reading and writing of Catspeak IR (Intermediate
 //! Representation). Catspeak IR is a binary format that can be saved
@@ -54,7 +54,7 @@ function CatspeakCartWriter(buff_) constructor {
     ///
     /// @returns {String}
     path = "";
-    /// The author of this Cartridge.
+    /// The author of this cartridge.
     ///
     /// @returns {String}
     author = "";
@@ -191,6 +191,128 @@ function CatspeakCartWriter(buff_) constructor {
         exprStackTop = exprStackTop_ + 2;
         buffer_write(buff_, buffer_u8, __CatspeakInstr.CAT_UWND);
         buffer_write(buff_, buffer_u32, label);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Gets the value of a local variable with this id.
+    ///
+    /// @param {Real} idx
+    ///     The id of the local variable to get the value of.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitGetLocal = function (idx, dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
+        exprStackTop = exprStackTop_ + 2;
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_L);
+        buffer_write(buff_, buffer_u32, idx);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Sets the value of a local variable with this id.
+    ///
+    /// @param {Real} idx
+    ///     The id of the local variable to set the value of.
+    ///
+    /// @param {String} [op]
+    ///     The type of assignment operator to use.
+    ///
+    ///     Can be one of:
+    ///       - "direct"
+    ///       - "multiply"
+    ///       - "divide"
+    ///       - "add"
+    ///       - "subtract"
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitSetLocal = function (idx, op = "direct", dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
+        __catspeak_assert_typeof(op, is_string, "expected type of string");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        __catspeak_assert(op == "direct", "unknown assignment operator");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
+        exprStackTop = exprStackTop_ + 2;
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.SET_L);
+        buffer_write(buff_, buffer_u32, idx);
+        buffer_write(buff_, buffer_string, op);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Gets the value of a global variable with this name.
+    ///
+    /// @param {String} name
+    ///     The name of the global variable to get the value of.
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitGetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(name, is_string, "expected type of string");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= 2 * (0);
+        __catspeak_assert(exprStackTop_ >= 0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
+        exprStackTop = exprStackTop_ + 2;
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_G);
+        buffer_write(buff_, buffer_string, name);
+        buffer_write(buff_, buffer_u32, dbg);
+    };
+
+    /// Sets the value of a global variable with this name.
+    ///
+    /// @param {String} name
+    ///     The name of the global variable to set the value of.
+    ///
+    /// @param {String} [op]
+    ///     The type of assignment operator to use.
+    ///
+    ///     Can be one of:
+    ///       - "direct"
+    ///       - "multiply"
+    ///       - "divide"
+    ///       - "add"
+    ///       - "subtract"
+    ///
+    /// @param {Real} [dbg]
+    ///     The approximate location of the number in the source code.
+    static emitSetGlobal = function (name, op = "direct", dbg = CATSPEAK_NOLOCATION) {
+        var buff_ = buff;
+        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
+        __catspeak_assert_typeof(name, is_string, "expected type of string");
+        __catspeak_assert_typeof(op, is_string, "expected type of string");
+        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
+        __catspeak_assert(op == "direct", "unknown assignment operator");
+        var exprStack_ = exprStack;
+        var exprStackTop_ = exprStackTop;
+        exprStackTop_ -= 2 * (1);
+        __catspeak_assert(exprStackTop_ >= 0);
+        exprStack_[@ exprStackTop_ + 0] = undefined;
+        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
+        exprStackTop = exprStackTop_ + 2;
+        buffer_write(buff_, buffer_u8, __CatspeakInstr.SET_G);
+        buffer_write(buff_, buffer_string, name);
+        buffer_write(buff_, buffer_string, op);
         buffer_write(buff_, buffer_u32, dbg);
     };
 
@@ -791,102 +913,6 @@ function CatspeakCartWriter(buff_) constructor {
         buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_U);
         buffer_write(buff_, buffer_u32, dbg);
     };
-
-    /// Gets the value of a local variable with this id.
-    ///
-    /// @param {Real} idx
-    ///     The id of the local variable to get the value of.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitGetLocal = function (idx, dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        var exprStack_ = exprStack;
-        var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= 2 * (0);
-        __catspeak_assert(exprStackTop_ >= 0);
-        exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
-        exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_L);
-        buffer_write(buff_, buffer_u32, idx);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
-    /// Sets the value of a local variable with this id.
-    ///
-    /// @param {Real} idx
-    ///     The id of the local variable to set the value of.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitSetLocal = function (idx, dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(idx, is_numeric, "expected type of u32");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        var exprStack_ = exprStack;
-        var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= 2 * (1);
-        __catspeak_assert(exprStackTop_ >= 0);
-        exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
-        exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, __CatspeakInstr.SET_L);
-        buffer_write(buff_, buffer_u32, idx);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
-    /// Gets the value of a global variable with this name.
-    ///
-    /// @param {String} name
-    ///     The name of the global variable to get the value of.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitGetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(name, is_string, "expected type of string");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        var exprStack_ = exprStack;
-        var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= 2 * (0);
-        __catspeak_assert(exprStackTop_ >= 0);
-        exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
-        exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, __CatspeakInstr.GET_G);
-        buffer_write(buff_, buffer_string, name);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
-
-    /// Sets the value of a global variable with this name.
-    ///
-    /// @param {String} name
-    ///     The name of the global variable to set the value of.
-    ///
-    /// @param {Real} [dbg]
-    ///     The approximate location of the number in the source code.
-    static emitSetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
-        var buff_ = buff;
-        __catspeak_assert_typeof(buff_, __catspeak_is_buffer, "no cartridge loaded");
-        __catspeak_assert_typeof(name, is_string, "expected type of string");
-        __catspeak_assert_typeof(dbg, is_numeric, "expected type of u32");
-        var exprStack_ = exprStack;
-        var exprStackTop_ = exprStackTop;
-        exprStackTop_ -= 2 * (1);
-        __catspeak_assert(exprStackTop_ >= 0);
-        exprStack_[@ exprStackTop_ + 0] = undefined;
-        exprStack_[@ exprStackTop_ + 1] = buffer_tell(buff_);
-        exprStackTop = exprStackTop_ + 2;
-        buffer_write(buff_, buffer_u8, __CatspeakInstr.SET_G);
-        buffer_write(buff_, buffer_string, name);
-        buffer_write(buff_, buffer_u32, dbg);
-    };
 }
 
 /// Handles the parsing of Catspeak cartridges.
@@ -919,6 +945,18 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     );
     __catspeak_assert_typeof(visitor_[$ "handleInstrCatchUnwind"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrCatchUnwind'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrGetLocal"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrGetLocal'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrSetLocal"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrSetLocal'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrGetGlobal"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrGetGlobal'"
+    );
+    __catspeak_assert_typeof(visitor_[$ "handleInstrSetGlobal"], __catspeak_is_callable,
+        "visitor is missing a handler for 'handleInstrSetGlobal'"
     );
     __catspeak_assert_typeof(visitor_[$ "handleInstrSequence"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrSequence'"
@@ -1009,18 +1047,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     );
     __catspeak_assert_typeof(visitor_[$ "handleInstrConstUndefined"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleInstrConstUndefined'"
-    );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrGetLocal"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrGetLocal'"
-    );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrSetLocal"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrSetLocal'"
-    );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrGetGlobal"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrGetGlobal'"
-    );
-    __catspeak_assert_typeof(visitor_[$ "handleInstrSetGlobal"], __catspeak_is_callable,
-        "visitor is missing a handler for 'handleInstrSetGlobal'"
     );
     __catspeak_assert_typeof(visitor_[$ "handleMeta"], __catspeak_is_callable,
         "visitor is missing a handler for 'handleMeta'"
@@ -1123,6 +1149,40 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         var argLabel = buffer_read(buff_, buffer_u32);
         var argDbg = buffer_read(buff_, buffer_u32);
         visitor.handleInstrCatchUnwind(argLabel, argDbg);
+    };
+
+    /// @ignore
+    static __readGetLocal = function () {
+        var buff_ = buff;
+        var argIdx = buffer_read(buff_, buffer_u32);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrGetLocal(argIdx, argDbg);
+    };
+
+    /// @ignore
+    static __readSetLocal = function () {
+        var buff_ = buff;
+        var argIdx = buffer_read(buff_, buffer_u32);
+        var argOp = buffer_read(buff_, buffer_string);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrSetLocal(argIdx, argOp, argDbg);
+    };
+
+    /// @ignore
+    static __readGetGlobal = function () {
+        var buff_ = buff;
+        var argName = buffer_read(buff_, buffer_string);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrGetGlobal(argName, argDbg);
+    };
+
+    /// @ignore
+    static __readSetGlobal = function () {
+        var buff_ = buff;
+        var argName = buffer_read(buff_, buffer_string);
+        var argOp = buffer_read(buff_, buffer_string);
+        var argDbg = buffer_read(buff_, buffer_u32);
+        visitor.handleInstrSetGlobal(argName, argOp, argDbg);
     };
 
     /// @ignore
@@ -1340,38 +1400,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
     };
 
     /// @ignore
-    static __readGetLocal = function () {
-        var buff_ = buff;
-        var argIdx = buffer_read(buff_, buffer_u32);
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrGetLocal(argIdx, argDbg);
-    };
-
-    /// @ignore
-    static __readSetLocal = function () {
-        var buff_ = buff;
-        var argIdx = buffer_read(buff_, buffer_u32);
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrSetLocal(argIdx, argDbg);
-    };
-
-    /// @ignore
-    static __readGetGlobal = function () {
-        var buff_ = buff;
-        var argName = buffer_read(buff_, buffer_string);
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrGetGlobal(argName, argDbg);
-    };
-
-    /// @ignore
-    static __readSetGlobal = function () {
-        var buff_ = buff;
-        var argName = buffer_read(buff_, buffer_string);
-        var argDbg = buffer_read(buff_, buffer_u32);
-        visitor.handleInstrSetGlobal(argName, argDbg);
-    };
-
-    /// @ignore
     static __readerLookup = undefined;
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
@@ -1379,6 +1407,10 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.CAT] = __readCatch;
         __readerLookup[@ __CatspeakInstr.UWND] = __readUnwind;
         __readerLookup[@ __CatspeakInstr.CAT_UWND] = __readCatchUnwind;
+        __readerLookup[@ __CatspeakInstr.GET_L] = __readGetLocal;
+        __readerLookup[@ __CatspeakInstr.SET_L] = __readSetLocal;
+        __readerLookup[@ __CatspeakInstr.GET_G] = __readGetGlobal;
+        __readerLookup[@ __CatspeakInstr.SET_G] = __readSetGlobal;
         __readerLookup[@ __CatspeakInstr.SEQ] = __readSequence;
         __readerLookup[@ __CatspeakInstr.IFTE] = __readIfThenElse;
         __readerLookup[@ __CatspeakInstr.FCLO] = __readClosure;
@@ -1409,10 +1441,6 @@ function CatspeakCartReader(buff_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.GET_N] = __readConstNumber;
         __readerLookup[@ __CatspeakInstr.GET_S] = __readConstString;
         __readerLookup[@ __CatspeakInstr.GET_U] = __readConstUndefined;
-        __readerLookup[@ __CatspeakInstr.GET_L] = __readGetLocal;
-        __readerLookup[@ __CatspeakInstr.SET_L] = __readSetLocal;
-        __readerLookup[@ __CatspeakInstr.GET_G] = __readGetGlobal;
-        __readerLookup[@ __CatspeakInstr.SET_G] = __readSetGlobal;
     }
 }
 
@@ -1423,6 +1451,10 @@ enum __CatspeakInstr {
     CAT = 42,
     UWND = 40,
     CAT_UWND = 41,
+    GET_L = 36,
+    SET_L = 37,
+    GET_G = 38,
+    SET_G = 39,
     SEQ = 27,
     IFTE = 28,
     FCLO = 34,
@@ -1453,9 +1485,5 @@ enum __CatspeakInstr {
     GET_N = 1,
     GET_S = 3,
     GET_U = 35,
-    GET_L = 36,
-    SET_L = 37,
-    GET_G = 38,
-    SET_G = 39,
     __SIZE__ = 43,
 }

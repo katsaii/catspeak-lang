@@ -1,8 +1,8 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir-outdated.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/scr_catspeak_gen_gml.gml
+//  - scr_catspeak_gen_gml.gml
 
 //! TODO
 
@@ -137,6 +137,120 @@ function CatspeakCodegenGML() constructor {
             dbg : dbg,
             body : body,
         }, __catspeak_instr_cat_uwnd__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrGetLocal = function (idx, dbg) {
+        var exec;
+        exec = method({
+            ctx : ctx,
+            idx : idx,
+            dbg : dbg,
+        }, __catspeak_instr_get_l__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrSetLocal = function (idx, op, dbg) {
+        var exec;
+        var value = popValue();
+        if (op == "multiply") {
+            exec = method({
+                ctx : ctx,
+                idx : idx,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_l_multiply__);
+        } else
+        if (op == "divide") {
+            exec = method({
+                ctx : ctx,
+                idx : idx,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_l_divide__);
+        } else
+        if (op == "add") {
+            exec = method({
+                ctx : ctx,
+                idx : idx,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_l_add__);
+        } else
+        if (op == "subtract") {
+            exec = method({
+                ctx : ctx,
+                idx : idx,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_l_subtract__);
+        } else
+        exec = method({
+            ctx : ctx,
+            idx : idx,
+            op : op,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_set_l__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrGetGlobal = function (name, dbg) {
+        var exec;
+        exec = method({
+            ctx : ctx,
+            name : name,
+            dbg : dbg,
+        }, __catspeak_instr_get_g__);
+        pushValue(exec);
+    };
+
+    /// @ignore
+    static handleInstrSetGlobal = function (name, op, dbg) {
+        var exec;
+        var value = popValue();
+        if (op == "multiply") {
+            exec = method({
+                ctx : ctx,
+                name : name,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_g_multiply__);
+        } else
+        if (op == "divide") {
+            exec = method({
+                ctx : ctx,
+                name : name,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_g_divide__);
+        } else
+        if (op == "add") {
+            exec = method({
+                ctx : ctx,
+                name : name,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_g_add__);
+        } else
+        if (op == "subtract") {
+            exec = method({
+                ctx : ctx,
+                name : name,
+                dbg : dbg,
+                value : value,
+            }, __catspeak_instr_set_g_subtract__);
+        } else
+        exec = method({
+            ctx : ctx,
+            name : name,
+            op : op,
+            dbg : dbg,
+            value : value,
+        }, __catspeak_instr_set_g__);
         pushValue(exec);
     };
 
@@ -625,54 +739,6 @@ function CatspeakCodegenGML() constructor {
             ctx : ctx,
             dbg : dbg,
         }, __catspeak_instr_get_u__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrGetLocal = function (idx, dbg) {
-        var exec;
-        exec = method({
-            ctx : ctx,
-            idx : idx,
-            dbg : dbg,
-        }, __catspeak_instr_get_l__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrSetLocal = function (idx, dbg) {
-        var exec;
-        var value = popValue();
-        exec = method({
-            ctx : ctx,
-            idx : idx,
-            dbg : dbg,
-            value : value,
-        }, __catspeak_instr_set_l__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrGetGlobal = function (name, dbg) {
-        var exec;
-        exec = method({
-            ctx : ctx,
-            name : name,
-            dbg : dbg,
-        }, __catspeak_instr_get_g__);
-        pushValue(exec);
-    };
-
-    /// @ignore
-    static handleInstrSetGlobal = function (name, dbg) {
-        var exec;
-        var value = popValue();
-        exec = method({
-            ctx : ctx,
-            name : name,
-            dbg : dbg,
-            value : value,
-        }, __catspeak_instr_set_g__);
         pushValue(exec);
     };
 }

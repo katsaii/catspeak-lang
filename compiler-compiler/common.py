@@ -3,23 +3,8 @@ common functions used between all build scripts
 """
 
 import jinja2
-import yaml
 import os
 from textwrap import dedent
-
-# file handling
-
-def file_load_yaml(path):
-    with open(path, "r", encoding="utf-8") as file:
-        return yaml.safe_load(file)
-
-def file_load(path):
-    with open(path, "r", encoding="utf-8") as file:
-        return file.read()
-
-def file_save(path, script):
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(str(script))
 
 GITHUB_URL = "https://github.com/katsaii/catspeak-lang/blob/main/"
 def sanitise_file_path(path):
@@ -100,7 +85,11 @@ def gml_literal(type_name, value):
     match type_name:
         case "i32" | "u32" | "f64" | "u8":
             return value
-        case "string": return f"@'{value}'"
+        case "string":
+            if all(ch.isalnum() for ch in value):
+                return f"\"{value}\""
+            else:
+                return f"@'{value}'"
         case t: ir_unknown_type(t)
 
 @jinja2_export
@@ -176,7 +165,7 @@ def gml_var_ref(name, prefix = "v"):
 def gml_func_arg(arg, prefix = "v"):
     arg_str = gml_var_ref(arg["name"], prefix)
     if "default" in arg:
-        arg_str += f" = {arg['default']}"
+        arg_str += f" = {gml_literal(arg['type'], arg['default'])}"
     return arg_str
 
 @jinja2_export

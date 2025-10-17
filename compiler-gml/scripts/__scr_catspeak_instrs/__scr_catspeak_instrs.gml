@@ -126,29 +126,32 @@ function __catspeak_function__() {
     ctx_.callee_ = self;
     var returnValue = body();
     ctx_.callee_ = prevCallee;
-    /* TODO: repurpose
-    if (doThrowValue) {
-        if (is_struct(throwValue)) {
-            var catspeakErr = "CATSPEAK RUNTIME ERROR -- " +
-                    __catspeak_gml_exec_get_error(body);
-            if (variable_struct_exists(throwValue, "message")) {
-                // add where the error occurred (really bad implementation, might be good enough for now)
-                throwValue.message = catspeakErr + ": " + throwValue.message;
-            }
-            if (variable_struct_exists(throwValue, "longMessage")) {
-                // add where the error occurred (really bad implementation, might be good enough for now)
-                throwValue.longMessage += "\n-----\n" + catspeakErr + "\n";
-            }
-        }
-        throw throwValue;
-    }
-    */
     return returnValue;
 }
 
 /// @ignore
 function __catspeak_instr_get_l__() {
     return ctx.callee_.locals[idx];
+}
+
+/// @ignore
+function __catspeak_instr_set_l_multiply__() {
+    ctx.callee_.locals[idx] *= value();
+}
+
+/// @ignore
+function __catspeak_instr_set_l_divide__() {
+    ctx.callee_.locals[idx] /= value();
+}
+
+/// @ignore
+function __catspeak_instr_set_l_add__() {
+    ctx.callee_.locals[idx] += value();
+}
+
+/// @ignore
+function __catspeak_instr_set_l_subtract__() {
+    ctx.callee_.locals[idx] -= value();
 }
 
 /// @ignore
@@ -159,6 +162,26 @@ function __catspeak_instr_set_l__() {
 /// @ignore
 function __catspeak_instr_get_g__() {
     return ctx.globals[$ name];
+}
+
+/// @ignore
+function __catspeak_instr_set_g_multiply__() {
+    ctx.globals[$ name] *= value();
+}
+
+/// @ignore
+function __catspeak_instr_set_g_divide__() {
+    ctx.globals[$ name] /= value();
+}
+
+/// @ignore
+function __catspeak_instr_set_g_add__() {
+    ctx.globals[$ name] += value();
+}
+
+/// @ignore
+function __catspeak_instr_set_g_subtract__() {
+    ctx.globals[$ name] -= value();
 }
 
 /// @ignore

@@ -141,14 +141,8 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
                 __catspeak_error_bug();
             }
         } else {
-            __parseAssign();
+            __parseCatch();
         }
-    };
-
-    /// @ignore
-    static __parseAssign = function () {
-        // TODO
-        __parseCatch();
     };
 
     /// @ignore
@@ -426,6 +420,30 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
     };
 
     /// @ignore
+    static __peekAssignOp = function () {
+        var peeked = lexer.peek();
+        if (
+            peeked > CatspeakToken.__OP_ASSIGN_BEGIN__ &&
+            peeked < CatspeakToken.__OP_ASSIGN_END__
+        ) {
+            if (peeked == CatspeakToken.ASSIGN) {
+                return "direct";
+            } else if (peeked == CatspeakToken.ASSIGN_MULTIPLY) {
+                return "multiply";
+            } else if (peeked == CatspeakToken.ASSIGN_DIVIDE) {
+                return "divide";
+            } else if (peeked == CatspeakToken.ASSIGN_PLUS) {
+                return "add";
+            } else if (peeked == CatspeakToken.ASSIGN_MINUS) {
+                return "subtract";
+            } else {
+                __catspeak_error_bug();
+            }
+        }
+        return undefined;
+    };
+
+    /// @ignore
     static __parseTerminal = function () {
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.NUMBER) {
@@ -439,7 +457,15 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
             cartWriter.emitConstUndefined(lexer.getLocation());
         } else if (peeked == CatspeakToken.IDENT) {
             lexer.next();
-            scope.emitGet(lexer.getValue(), lexer.getLocation());
+            var varName = lexer.getValue();
+            var varDbg = lexer.getLocation();
+            var op = __peekAssignOp();
+            if (op == undefined) {
+                scope.emitGet(varName, varDbg);
+            } else {
+                __parseExpression();
+                scope.emitSet(op, varName, varDbg);
+            }
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
             __catspeak_error_unimplemented("self");

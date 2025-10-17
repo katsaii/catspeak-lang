@@ -113,6 +113,26 @@ function CatspeakCodegenGML() constructor {
         var {{ stackarg_name }} = popValue();
 {%    endif %}
 {%   endfor %}
+{%   for arg in instr["args"] %}
+{%    set arg_name = gml_var_ref(arg["name"], None) %}
+{%    for arg_variant in arg["inline-variants"] %}
+        if ({{ arg_name }} == {{ gml_literal(arg["type"], arg_variant) }}) {
+            exec = method({
+                ctx : ctx,
+{%       for arg2 in instr["args"] %}
+{%        set arg2_name = gml_var_ref(arg2["name"], None) %}
+{%        if arg_name != arg2_name %}
+                {{ arg2_name }} : {{ arg2_name }},
+{%        endif %}
+{%       endfor %}
+{%       for stackarg in instr["stackargs"] %}
+{%        set stackarg_name = gml_var_ref(stackarg["name"], None) %}
+                {{ stackarg_name }} : {{ stackarg_name }},
+{%       endfor %}
+            }, __catspeak_instr_{{ case_snake(instr_name) }}_{{ arg_variant }}__);
+        } else
+{%    endfor %}
+{%   endfor %}
 {%   for stackarg in instr["stackargs"][::-1] %}
 {%    set stackarg_name = gml_var_ref(stackarg["name"], None) %}
 {%    if "many-inline" in stackarg %}

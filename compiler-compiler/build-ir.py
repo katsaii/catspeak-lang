@@ -1,5 +1,5 @@
 """
-builds the Catspeak IR compiler from the def-catspeak-ir.yaml file
+builds the Catspeak IR compilers from the def-catspeak-ir.yaml file
 """
 
 import common
@@ -8,7 +8,7 @@ import jinja2
 from pathlib import Path
 
 scripts = [
-    "scr_catspeak_cart",
+    "scr_catspeak_cart", ,
     "scr_catspeak_disassembler",
     "scr_catspeak_gen_gml",
     "__scr_catspeak_instrs_generated",
@@ -17,28 +17,6 @@ scripts = [
 ir_path = "compiler-compiler/def-catspeak-ir-outdated.yaml"
 with open(ir_path, "r", encoding="utf-8") as file:
     ir = yaml.safe_load(file)
-
-# post-process
-ir_commonargs = ir.get("instr-commonargs") or []
-if ir_commonargs:
-    commonargs_names = [x["name"] for x in ir_commonargs]
-    print(f"patching commonargs: {commonargs_names}")
-ir_instrs = ir.get("instr") or []
-ir_instrs_seen_reprs = { }
-for instr in ir_instrs:
-    # check all repr fields are unique
-    instr_repr = instr["repr"]
-    instr_name = instr["name"]
-    if instr_repr in ir_instrs_seen_reprs:
-        instr_name_conflict = ir_instrs_seen_reprs[instr_repr]
-        raise Exception(f"instruction '{instr_name}' and '{instr_name_conflict}' both have the same representation: {instr_repr}")
-    else:
-        ir_instrs_seen_reprs[instr_repr] = instr_name
-    # patch common args
-    if ir_commonargs:
-        if "args" not in instr:
-            instr["args"] = []
-        instr["args"].extend(ir_commonargs)
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader("compiler-compiler/template"),

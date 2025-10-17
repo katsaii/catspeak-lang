@@ -1,0 +1,502 @@
+# Catspeak cartridge layout #
+# ========================= #
+
+# The header comes first. In the order they are defined below, these values are
+# written to the start of the buffer.
+
+head-order: [signal, title, version]
+head:
+  signal:
+    value-unfinished: 0xC7544E #< The colour of Wanda,  if you know you know.
+    value: 0x5B7859            #< The colour of Forest, if you know you know.
+    type: u32
+  title:
+    value: "CATSPEAK CART"
+    type: string
+  version:
+    value: 1
+    type: u8
+
+# Directly after the header are byte offsets, relative to the start of the
+# Catspeak cartridge, each pointing to a specialised chunk of the Catspeak
+# cartridge.
+#
+# In the order defined below, these are:
+
+chunk-order: [instr, data, end]
+chunk:
+  instr: u32 #< The offset of the program section.
+  data: u32  #< The offset of the data section.
+  end: u32   #< The offset of the end of the Cartridge.
+
+# The program section contains the executable code, encoded in reverse-polish
+# notation. Each instruction is prefixed with an instruction opcode followed by
+# any operands associated with the instruction.
+#
+# Although each instruction is of variable length, the complete program code
+# is null-terminated.
+
+instr-opcode: u8  #< The underlying type used for instruction opcodes.
+instr-commonargs: #< Any arguments common between all instructions.
+  - name: dbg
+    desc: "the approximate location of the number in the source code"
+    type: u32
+    default: CATSPEAK_NOLOCATION
+instr:
+
+# - name: "example"                     #< The name of the instruction.
+#   name-short: "ex_1"                  #< A shorter name for the instruction.
+#   desc: "just an example instruction" #< Instruction description.
+#   repr: 0x0F                          #< Underlying opcode representation.
+#   args:
+#     - name: "n"                                   #< Operand name.
+#       desc: "the number of hoops to jump through" #< Operand description.
+#       type: u8                                    #< Operand type.
+#   stackargs:
+#     - name: "m" #< Pop value off the stack, and associate it with a name.
+#       desc: "the number of additional hoops to jump through"
+#   simple: true
+
+  - name: "throw"
+    name-short: thrw
+    desc: "throw a value as an exception"
+    repr: 0x1F
+    stackargs:
+      - name: result
+        desc: "the exception value to throw"
+
+  - name: "catch"
+    name-short: cat
+    desc: "catch an exception"
+    repr: 0x2A
+    args:
+      - name: idx
+        desc: "the id of the local variable to assign the exception value to"
+        type: u32
+    stackargs:
+      - name: eager
+        desc: "the body of the code which may raise an exception"
+      - name: lazy
+        desc: "the body of the code which handles the exception"
+
+  - name: "unwind"
+    name-short: uwnd
+    desc: "throw a value to the first unwind block with the same id"
+    repr: 0x28
+    args:
+      - name: label
+        desc: "the id of the label to unwind to"
+        type: u32
+    stackargs:
+      - name: result
+        desc: "the value to unwind"
+
+  - name: "catch unwind"
+    name-short: cat_uwnd
+    desc: "catch a labelled value thrown by the `uwnd` instruction"
+    repr: 0x29
+    args:
+      - name: label
+        desc: "the id of the label to catch values of"
+        type: u32
+    stackargs:
+      - name: body
+        desc: "the body of the code which may unwind"
+
+  - name: "get local"
+    name-short: get_l
+    desc: "gets the value of a local variable with this id"
+    repr: 0x24
+    args:
+      - name: idx
+        desc: "the id of the local variable to get the value of"
+        type: u32
+
+  - name: "set local"
+    name-short: set_l
+    desc: "sets the value of a local variable with this id"
+    repr: 0x25
+    args:
+      - name: idx
+        desc: "the id of the local variable to set the value of"
+        type: u32
+      - name: op
+        desc: "the type of assignment operator to use"
+        type: string
+        inline-variants: [multiply, divide, add, subtract]
+        default: direct
+    stackargs:
+      - name: value
+        desc: "value to assign to this local variable"
+    asserts:
+      - condition: op == "direct"
+        desc: "unknown assignment operator"
+
+  - name: "get global"
+    name-short: get_g
+    desc: "gets the value of a global variable with this name"
+    repr: 0x26
+    args:
+      - name: name
+        desc: "the name of the global variable to get the value of"
+        type: string
+
+  - name: "set global"
+    name-short: set_g
+    desc: "sets the value of a global variable with this name"
+    repr: 0x27
+    args:
+      - name: name
+        desc: "the name of the global variable to set the value of"
+        type: string
+      - name: op
+        desc: "the type of assignment operator to use"
+        type: string
+        inline-variants: [multiply, divide, add, subtract]
+        default: direct
+    stackargs:
+      - name: value
+        desc: "value to assign to this global variable"
+    asserts:
+      - condition: op == "direct"
+        desc: "unknown assignment operator"
+
+  - name: "sequence"
+    name-short: seq
+    desc: "evaluates n-many expressions, implicitly returning the final expression"
+          # dev note: behaves similar to comma expressions in JavaScript
+    repr: 0x1B
+    args:
+      - name: n
+        desc: "the number of expressions to evaluate, must be greater than 0"
+        type: u32
+    stackargs:
+      - name: stmts
+        desc: "the computations to run to calculate the result"
+        many: n - 1
+        many-inline: 5
+      - name: result
+        desc: "the result of the computation"
+    asserts:
+      - condition: n > 0
+        desc: "n must be greater than 0"
+    shortcuts:
+      - condition: n == 0
+        instr: "const undefined"
+      - condition: n == 1
+        instr: null
+
+  - name: "if then else"
+    name-short: ifte
+    desc: "evaluates one of two expressions, depending on whether a condition is true or false"
+    repr: 0x1C
+    stackargs:
+      - name: condition
+        desc: "the condition to check for"
+      - name: if_true
+        desc: "the code to run if the condition evaluates to true"
+      - name: if_false
+        desc: "the code to run if the condition evaluates to false"
+    comptime: "$condition$ ? $if_true$ : $if_false$"
+
+  - name: "closure"
+    name-short: fclo
+    desc: "builds a function closure, updating any upvalues if they exist"
+    repr: 0x22
+    args:
+      - name: locals
+        desc: "the number of local variables this function has allocated"
+        type: u32
+    stackargs:
+      - name: body
+        desc: "the body of the function expression to execute when called"
+    precalc-if: "true"
+
+  - name: "or"
+    desc: "calculate the logical OR of two values"
+    repr: 0x13
+    stackargs:
+      - name: eager
+        desc: "the left-hand-side value of the expression"
+      - name: lazy
+        desc: "the right-hand-side value of the expression, only evaluated if `eager` is falsy"
+    comptime: $eager$ || $lazy$
+
+  - name: "xor"
+    desc: "calculate the logical XOR of two values"
+    repr: 0x14
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ ^^ $rhs$
+
+  - name: "and"
+    desc: "calculate the logical AND of two values"
+    repr: 0x12
+    stackargs:
+      - name: eager
+        desc: "the left-hand-side value of the expression"
+      - name: lazy
+        desc: "the right-hand-side value of the expression, only evaluated if `eager` is truthy"
+    comptime: $eager$ && $lazy$
+
+  - name: "equal"
+    name-short: eq
+    desc: "check whether two values are equal"
+    repr: 0x0B
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the equality"
+      - name: rhs
+        desc: "the right-hand-side value of the equality"
+    comptime: $lhs$ == $rhs$
+
+  - name: "not equal"
+    name-short: neq
+    desc: "check whether two values are NOT equal"
+    repr: 0x0C
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the equality"
+      - name: rhs
+        desc: "the right-hand-side value of the equality"
+    comptime: $lhs$ != $rhs$
+
+  - name: "less than"
+    name-short: lt
+    desc: "check whether a value is less than another"
+    repr: 0x0F
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ < $rhs$
+
+  - name: "less than or equal to"
+    name-short: leq
+    desc: "check whether a value is less than or equal to another"
+    repr: 0x10
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ <= $rhs$
+
+  - name: "greater than"
+    name-short: gt
+    desc: "check whether a value is greater than another"
+    repr: 0x0D
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ > $rhs$
+
+  - name: "greater than or equal to"
+    name-short: geq
+    desc: "check whether a value is greater than or equal to another"
+    repr: 0x0E
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ >= $rhs$
+
+  - name: "bitwise and"
+    name-short: band
+    desc: "calculate the bitwise AND of two values"
+    repr: 0x16
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ & $rhs$
+
+  - name: "bitwise or"
+    name-short: bor
+    desc: "calculate the bitwise OR of two values"
+    repr: 0x17
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ | $rhs$
+
+  - name: "bitwise xor"
+    name-short: bxor
+    desc: "calculate the bitwise XOR of two values"
+    repr: 0x18
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ ^ $rhs$
+
+  - name: "bitwise shift left"
+    name-short: lshift
+    desc: "calculate the bitwise left shift of two values"
+    repr: 0x1A
+    stackargs:
+      - name: value
+        desc: "the value to shift"
+      - name: amount
+        desc: "the amount of bits to shift left by"
+    comptime: $value$ << $amount$
+
+  - name: "bitwise shift right"
+    name-short: rshift
+    desc: "calculate the bitwise right shift of two values"
+    repr: 0x19
+    stackargs:
+      - name: value
+        desc: "the value to shift"
+      - name: amount
+        desc: "the amount of bits to shift right by"
+    comptime: $value$ >> $amount$
+
+  - name: "add"
+    desc: "calculate the sum of two values"
+    repr: 0x05
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the sum"
+      - name: rhs
+        desc: "the right-hand-side value of the sum"
+    comptime: $lhs$ + $rhs$
+
+  - name: "subtract"
+    name-short: sub
+    desc: "calculate the difference of two values"
+    repr: 0x0A
+    stackargs:
+      - name: lhs
+        desc: "the value to subtract from"
+      - name: rhs
+        desc: "the value to subtract"
+    comptime: $lhs$ - $rhs$
+
+  - name: "multiply"
+    name-short: mult
+    desc: "calculate the product of two values"
+    repr: 0x07
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the product"
+      - name: rhs
+        desc: "the right-hand-side value of the product"
+    comptime: $lhs$ * $rhs$
+
+  - name: "divide"
+    name-short: div
+    desc: "calculate the division of two values"
+    repr: 0x08
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ / $rhs$
+
+  - name: "divide int"
+    name-short: idiv
+    desc: "calculate the integer division of two values"
+    repr: 0x09
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ div $rhs$
+
+  - name: "remainder"
+    name-short: rem
+    desc: "calculate the remainder of two values"
+    repr: 0x06
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ % $rhs$
+
+  - name: "positive"
+    name-short: pos
+    desc: "calculate the positive of a value"
+    repr: 0x21
+    stackargs:
+      - name: value
+        desc: "the value to add to 0"
+    comptime: +$value$
+
+  - name: "negative"
+    name-short: neg
+    desc: "calculate the negative of a value"
+    repr: 0x20
+    stackargs:
+      - name: value
+        desc: "the value to subtract from 0"
+    comptime: -$value$
+
+  - name: "not"
+    desc: "calculate the logical negation of a value"
+    repr: 0x11
+    stackargs:
+      - name: value
+        desc: "the value to negate"
+    comptime: "!$value$"
+
+  - name: "bitwise not"
+    name-short: bnot
+    desc: "calculate the bitwise negation of a value"
+    repr: 0x15
+    stackargs:
+      - name: value
+        desc: "the value to bitwise negate"
+    comptime: ~$value$
+
+  - name: "const number"
+    name-short: get_n
+    desc: "get a numeric constant"
+    repr: 0x01
+    args:
+      - name: value
+        desc: "the number to emit"
+        type: f64
+    comptime: $value$
+
+  - name: "const string"
+    name-short: get_s
+    desc: "get a string constant"
+    repr: 0x03
+    args:
+      - name: value
+        desc: "the string to emit"
+        type: string
+    comptime: $value$
+
+  - name: "const undefined"
+    name-short: get_u
+    desc: "get the undefined constant"
+    repr: 0x23
+    comptime: undefined
+
+data-order: [meta]
+data:
+
+  meta-order: [path, author]
+  meta:
+    path:
+      desc: "the path to the file containing source code for this Cartridge"
+      type: string
+    author:
+      desc: "the author of this cartridge"
+      type: string

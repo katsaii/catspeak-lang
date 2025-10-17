@@ -134,6 +134,16 @@ function CatspeakCartWriter(buff_) constructor {
     /// @param {{ ir_type_as_feather_type(arg["type"]) }} {{ arg["name"]}}
 {%   endif %}
     ///     {{ case_sentence(arg["desc"]) }}
+{%   if "inline-variants" in arg %}
+    ///
+    ///     Can be one of:
+{%    if "default" in arg %}
+    ///       - {{ gml_literal(arg["type"], arg["default"]) }}
+{%    endif %}
+{%    for variant in arg["inline-variants"] %}
+    ///       - {{ gml_literal(arg["type"], variant) }}
+{%    endfor %}
+{%   endif %}
 {%  endfor %}
     static {{ instr_func }} = function ({{ gml_func_args(instr["args"], None) }}) {
         var buff_ = buff;

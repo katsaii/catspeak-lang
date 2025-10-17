@@ -1,8 +1,8 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir-outdated.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/scr_catspeak_disassembler.gml
+//  - scr_catspeak_disassembler.gml
 
 //! Responsible for disassembling a Catspeak cartridge and printing its content
 //! in a human-readable bytecode format.
@@ -85,6 +85,36 @@ function __CatspeakCartDisassembler() constructor {
     static handleInstrCatchUnwind = function (label, dbg) {
         asmStr += "  cat_uwnd";
         asmStr += "  " + string(label);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrGetLocal = function (idx, dbg) {
+        asmStr += "  get_l";
+        asmStr += "  " + string(idx);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrSetLocal = function (idx, op, dbg) {
+        asmStr += "  set_l";
+        asmStr += "  " + string(idx);
+        asmStr += "  " + string(op);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrGetGlobal = function (name, dbg) {
+        asmStr += "  get_g";
+        asmStr += "  " + string(name);
+        asmStr += "\n"
+    };
+
+    /// @ignore
+    static handleInstrSetGlobal = function (name, op, dbg) {
+        asmStr += "  set_g";
+        asmStr += "  " + string(name);
+        asmStr += "  " + string(op);
         asmStr += "\n"
     };
 
@@ -269,34 +299,6 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrConstUndefined = function (dbg) {
         asmStr += "  get_u";
-        asmStr += "\n"
-    };
-
-    /// @ignore
-    static handleInstrGetLocal = function (idx, dbg) {
-        asmStr += "  get_l";
-        asmStr += "  " + string(idx);
-        asmStr += "\n"
-    };
-
-    /// @ignore
-    static handleInstrSetLocal = function (idx, dbg) {
-        asmStr += "  set_l";
-        asmStr += "  " + string(idx);
-        asmStr += "\n"
-    };
-
-    /// @ignore
-    static handleInstrGetGlobal = function (name, dbg) {
-        asmStr += "  get_g";
-        asmStr += "  " + string(name);
-        asmStr += "\n"
-    };
-
-    /// @ignore
-    static handleInstrSetGlobal = function (name, dbg) {
-        asmStr += "  set_g";
-        asmStr += "  " + string(name);
         asmStr += "\n"
     };
 }

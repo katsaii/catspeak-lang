@@ -399,7 +399,7 @@ function CatspeakScopeStack(cartWriter_) constructor {
     ///
     /// @param {Real} [dbg]
     ///     The approximate location of the number in the source code.
-    static emitGet = function (name, dbg = CATSPEAK_NOLOCATION) {
+    static emitGet = function (name, dbg = undefined) {
         var func_ = func;
         for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
             // find local variables
@@ -429,16 +429,21 @@ function CatspeakScopeStack(cartWriter_) constructor {
     /// @param {String} name
     ///   The name of the variable to search for.
     ///
+    /// @param {String} [op]
+    ///   The type of assignment operator to use. See
+    ///   `CartWriter::emitSetLocal` and `CartWriter::emitSetGlobal` for
+    ///   allowed types.
+    ///
     /// @param {Real} [dbg]
     ///     The approximate location of the number in the source code.
-    static emitSet = function (name, dbg = CATSPEAK_NOLOCATION) {
+    static emitSet = function (name, op = undefined, dbg = undefined) {
         var func_ = func;
         for (var iBlock = func_.blockTop; iBlock >= 0; iBlock -= 1) {
             // find local variables
             var block_ = func_.blocks[iBlock];
             var localVarIdx = block_.locals[$ name];
             if (localVarIdx != undefined) {
-                cartWriter.emitSetLocal(localVarIdx, dbg);
+                cartWriter.emitSetLocal(localVarIdx, op, dbg);
                 return;
             }
         }
@@ -449,6 +454,6 @@ function CatspeakScopeStack(cartWriter_) constructor {
                 // TODO
             }
         }
-        cartWriter.emitSetGlobal(name, dbg);
+        cartWriter.emitSetGlobal(name, op, dbg);
     };
 }

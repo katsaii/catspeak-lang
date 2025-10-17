@@ -1,8 +1,8 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
+//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir-outdated.yaml
 //  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir-gml.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/__scr_catspeak_instrs_generated.gml
+//  - __scr_catspeak_instrs_generated.gml
 
 //# feather use syntax-errors
 
