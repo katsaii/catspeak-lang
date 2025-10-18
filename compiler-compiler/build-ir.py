@@ -10,6 +10,7 @@ from pathlib import Path
 
 SCRIPTS = [
     "compiler-gml/scripts/scr_catspeak_cart/scr_catspeak_cart.gml",
+    "compiler-gml/scripts/scr_catspeak_disassembler/scr_catspeak_disassembler.gml",
 ]
 def infer_comment_style_from_path(path):
     match os.path.splitext(path)[1]:

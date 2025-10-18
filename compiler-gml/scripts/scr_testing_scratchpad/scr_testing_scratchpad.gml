@@ -9,8 +9,17 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4-ctx";
+var runExperiment = "catspeak4-cart";
 #macro TEST_EXPERIMENT if runExperiment ==
+
+TEST_EXPERIMENT "catspeak4-cart" {
+    var writer = new CatspeakCartWriter();
+    writer.author = "me";
+    writer.path = "https://katsaii.com/joe/mama.meow"
+    var cart = writer.finalise();
+    show_message(catspeak_cart_disassemble(cart, 0));
+}
+
 /*
 TEST_EXPERIMENT "catspeak4-ctx" {
     var ctx = new CatspeakCtx();
@@ -282,7 +291,7 @@ TEST_EXPERIMENT "catspeak4-lex" {
     }
     //show_message("see output");
 }
-
+/*
 TEST_EXPERIMENT "catspeak4-parse" {
     var buff = catspeak_util_buffer_create_from_string(@'
         "hello youtube"
@@ -308,3 +317,4 @@ TEST_EXPERIMENT "catspeak4-parse" {
     program = program();
     show_message(program());
 }
+*/

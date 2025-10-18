@@ -31,15 +31,12 @@ head:
 #
 # In the order defined below, these are:
 
-meta-order: [name, path, author, version, version-minor, patch, date]
+meta-order: [name, author, version, version-minor, patch, path, date]
 meta:
   name:
     desc: "the name of this cartridge"
     type: string
     default: "untitled"
-  path:
-    desc: "the path to the file containing source code for this cartridge"
-    type: string
   author:
     desc: "the author of this cartridge"
     type: string
@@ -53,6 +50,9 @@ meta:
   patch:
     desc: "the patch number of this cartridge"
     type: u8
+  path:
+    desc: "the path to the file containing source code for this cartridge"
+    type: string
   date:
     desc: "the date this cartridge was compiled, in Unix time"
     type: u32

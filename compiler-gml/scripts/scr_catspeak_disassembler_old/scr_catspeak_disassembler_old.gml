@@ -8,7 +8,7 @@
 //! in a human-readable bytecode format.
 
 //# feather use syntax-errors
-
+/*
 /// Disassembles a supplied Catspeak cartridge into a string.
 ///
 /// @experimental

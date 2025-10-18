@@ -22,18 +22,14 @@
 
 //# feather use syntax-errors
 
-/// Handles the writing of Catspeak cartridges
+/// Handles the creation of Catspeak cartridges
 ///
 /// @experimental
-function CatspeakCartBuilder() constructor {
+function CatspeakCartWriter() constructor {
     /// The name of this cartridge.
     ///
     /// @returns {String}
     name = undefined;
-    /// The path to the file containing source code for this cartridge.
-    ///
-    /// @returns {String}
-    path = undefined;
     /// The author of this cartridge.
     ///
     /// @returns {String}
@@ -50,6 +46,10 @@ function CatspeakCartBuilder() constructor {
     ///
     /// @returns {Real}
     patch = undefined;
+    /// The path to the file containing source code for this cartridge.
+    ///
+    /// @returns {String}
+    path = undefined;
     /// The date this cartridge was compiled, in Unix time.
     ///
     /// @returns {Real}
@@ -95,11 +95,11 @@ function CatspeakCartBuilder() constructor {
         buffer_write(cart, buffer_u8, 1); // cart-version
         // write metadata
         buffer_write(cart, buffer_string, name ?? "untitled");
-        buffer_write(cart, buffer_string, path ?? "");
         buffer_write(cart, buffer_string, author ?? "");
         buffer_write(cart, buffer_u8, version ?? 1);
         buffer_write(cart, buffer_u8, versionMinor ?? 0);
         buffer_write(cart, buffer_u8, patch ?? 0);
+        buffer_write(cart, buffer_string, path ?? "");
         buffer_write(cart, buffer_u32, date ?? 0);
         return cart;
     };
@@ -147,7 +147,7 @@ function catspeak_cart_version(cart) {
     return 0;
 }
 
-/// Handles the reading of Catspeak cartridges.
+/// Handles the parsing of Catspeak cartridges.
 ///
 /// @experimental
 ///
@@ -162,7 +162,7 @@ function catspeak_cart_version(cart) {
 ///   A struct containing methods for handling each of the following cases:
 ///
 ///   - TODO
-function CatspeakCartParser(cart_, visitor_) constructor {
+function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(cart_, __catspeak_is_buffer,
         "buffer doesn't exist"
     );
@@ -173,41 +173,46 @@ function CatspeakCartParser(cart_, visitor_) constructor {
         "visitor must be a struct"
     );
     // read header
-    var failedMessage = undefined;
-    try {
-        if (buffer_read(cart_, buffer_u32) != 13063246) {
-            failedMessage = @'signal-w 13063246 of type `u32` missing from header';
-        }
-        if (buffer_read(cart_, buffer_u32) != 5994585) {
-            failedMessage = @'signal-f 5994585 of type `u32` missing from header';
-        }
-        if (buffer_read(cart_, buffer_string) != "CATSPEAK CART") {
-            failedMessage = @'title "CATSPEAK CART" of type `string` missing from header';
-        }
-        if (buffer_read(cart_, buffer_u8) != 1) {
-            failedMessage = @'cart-version 1 of type `u8` missing from header';
-        }
-    } catch (ex_) {
-        failedMessage = ex_.message;
+    var val;
+    val = buffer_read(cart_, buffer_u32);
+    if (val != 13063246) {
+        __catspeak_error(__catspeak_cat(
+            @'signal-w 13063246 of type `u32` missing from cartridge header, got ', val
+        ));
     }
-    if (failedMessage != undefined) {
-        __catspeak_error("failed to read Catspeak cartridge: ", failedMessage);
+    val = buffer_read(cart_, buffer_u32);
+    if (val != 5994585) {
+        __catspeak_error(__catspeak_cat(
+            @'signal-f 5994585 of type `u32` missing from cartridge header, got ', val
+        ));
+    }
+    val = buffer_read(cart_, buffer_string);
+    if (val != "CATSPEAK CART") {
+        __catspeak_error(__catspeak_cat(
+            @'title "CATSPEAK CART" of type `string` missing from cartridge header, got ', val
+        ));
+    }
+    val = buffer_read(cart_, buffer_u8);
+    if (val != 1) {
+        __catspeak_error(__catspeak_cat(
+            @'cart-version 1 of type `u8` missing from cartridge header, got ', val
+        ));
     }
     // read metadata
     var name = buffer_read(cart_, buffer_string);
-    var path = buffer_read(cart_, buffer_string);
     var author = buffer_read(cart_, buffer_string);
     var version = buffer_read(cart_, buffer_u8);
     var versionMinor = buffer_read(cart_, buffer_u8);
     var patch = buffer_read(cart_, buffer_u8);
+    var path = buffer_read(cart_, buffer_string);
     var date = buffer_read(cart_, buffer_u32);
     visitor_.handleMeta({
         name : name,
-        path : path,
         author : author,
         version : version,
         versionMinor : versionMinor,
         patch : patch,
+        path : path,
         date : date,
     });
 
@@ -225,5 +230,5 @@ function CatspeakCartParser(cart_, visitor_) constructor {
     /// @return {Bool}
     static readInstr = function () {
         return false;
-    }
+    };
 }

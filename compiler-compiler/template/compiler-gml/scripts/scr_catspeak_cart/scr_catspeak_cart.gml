@@ -16,10 +16,10 @@
 
 //# feather use syntax-errors
 
-/// Handles the writing of Catspeak cartridges
+/// Handles the creation of Catspeak cartridges
 ///
 /// @experimental
-function CatspeakCartBuilder() constructor {
+function CatspeakCartWriter() constructor {
 {% for meta in MetaItem.enum(ir) %}
     /// {{ case_sentence(meta.desc) }}
     ///
@@ -105,7 +105,7 @@ function catspeak_cart_version(cart) {
     return 0;
 }
 
-/// Handles the reading of Catspeak cartridges.
+/// Handles the parsing of Catspeak cartridges.
 ///
 /// @experimental
 ///
@@ -120,7 +120,7 @@ function catspeak_cart_version(cart) {
 ///   A struct containing methods for handling each of the following cases:
 ///
 ///   - TODO
-function CatspeakCartParser(cart_, visitor_) constructor {
+function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(cart_, __catspeak_is_buffer,
         "buffer doesn't exist"
     );
@@ -131,19 +131,15 @@ function CatspeakCartParser(cart_, visitor_) constructor {
         "visitor must be a struct"
     );
     // read header
-    var failedMessage = undefined;
-    try {
+    var val;
 {% for head in HeadItem.enum(ir) %}
-        if (buffer_read(cart_, {{ head.type_buffer }}) != {{ head.value_lit }}) {
-            failedMessage = @'{{ head.name }} {{ head.value_lit }} of type `{{ head.type }}` missing from header';
-        }
+    val = buffer_read(cart_, {{ head.type_buffer }});
+    if (val != {{ head.value_lit }}) {
+        __catspeak_error(__catspeak_cat(
+            @'{{ head.name }} {{ head.value_lit }} of type `{{ head.type }}` missing from cartridge header, got ', val
+        ));
+    }
 {% endfor %}
-    } catch (ex_) {
-        failedMessage = ex_.message;
-    }
-    if (failedMessage != undefined) {
-        __catspeak_error("failed to read Catspeak cartridge: ", failedMessage);
-    }
     // read metadata
 {% for meta in MetaItem.enum(ir) %}
     var {{ meta.name_id }} = buffer_read(cart_, {{ meta.type_buffer }});

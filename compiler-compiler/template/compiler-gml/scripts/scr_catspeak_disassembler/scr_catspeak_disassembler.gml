@@ -1,9 +1,3 @@
-// AUTO GENERATED, DO NOT MODIFY THIS FILE
-// see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/compiler-gml/scripts/scr_catspeak_disassembler/scr_catspeak_disassembler.gml
-
 //! Responsible for disassembling a Catspeak cartridge and printing its content
 //! in a human-readable bytecode format.
 
@@ -52,19 +46,9 @@ function __CatspeakCartDisassembler() constructor {
     static handleMeta = function (meta) {
         out = "";
         var val;
-        val = meta.name;
-        if (val != "untitled") { out += "-- name:\t" + string(val) + "\n" }
-        val = meta.author;
-        if (val != "") { out += "-- author:\t" + string(val) + "\n" }
-        val = meta.version;
-        if (val != 1) { out += "-- version:\t" + string(val) + "\n" }
-        val = meta.versionMinor;
-        if (val != 0) { out += "-- version-minor:\t" + string(val) + "\n" }
-        val = meta.patch;
-        if (val != 0) { out += "-- patch:\t" + string(val) + "\n" }
-        val = meta.path;
-        if (val != "") { out += "-- path:\t" + string(val) + "\n" }
-        val = meta.date;
-        if (val != 0) { out += "-- date:\t" + string(val) + "\n" }
+{% for meta in MetaItem.enum(ir) %}
+        val = meta.{{ meta.name_id }};
+        if (val != {{ meta.value_lit }}) { out += "-- {{ meta.name }}:\t" + string(val) + "\n" }
+{% endfor %}
     };
 }
