@@ -3,14 +3,14 @@
 //!
 //! This module contains the parser for Catspeak, responsible for converting
 //! tokens emitted by `CatspeakLexer` into a runnable representation. More
-//! about this representation can be found on `CatspeakCartWriter`.
+//! about this representation can be found on `CatspeakCartWriterOld`.
 //!
 //# feather use syntax-errors
 
 /// Consumes tokens produced by a `CatspeakLexer`, transforming the program
 /// they represent into a Catspeak cartridge. This cartridge can be further
 /// compiled into a callable GML function using a combination of
-/// `CatspeakCartReader` and `CatspeakCodegenGML`. (Though, it's probably
+/// `CatspeakCartReaderOld` and `CatspeakCodegenGML`. (Though, it's probably
 /// best if you stick to using the stable `CatspeakCtx` API!)
 ///
 /// @experimental
@@ -20,7 +20,7 @@
 ///   to delete the buffer once the lexer is complete. Failure to do this will
 ///   result in leaking memory.
 ///
-/// @param {Struct.CatspeakCartWriter} cartWriter
+/// @param {Struct.CatspeakCartWriterOld} cartWriter
 ///   The writer for the cartridge to emit.
 ///
 /// @param {Id.Buffer} buff

@@ -1,9 +1,3 @@
-// AUTO GENERATED, DO NOT MODIFY THIS FILE
-// see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/compiler-gml/scripts/scr_catspeak_cart/scr_catspeak_cart.gml
-
 //! Responsible for the reading and writing of Catspeak IR (Intermediate
 //! Representation). Catspeak IR is a binary format that can be saved and
 //! loaded from a file, or treated like a "ROM" or "cartridge".
@@ -26,34 +20,15 @@
 ///
 /// @experimental
 function CatspeakCartBuilder() constructor {
-    /// The name of this cartridge.
+{% for meta_name, meta in ir_enumerate(ir, "meta") %}
+{%  set meta_ref = gml_var_ref(meta_name) %}
+{%  set meta_desc = case_sentence(meta["desc"]) %}
+{%  set meta_feather = gml_type_feather(meta["type"]) %}
+    /// {{ meta_desc }}
     ///
-    /// @returns {String}
-    name = undefined;
-    /// The path to the file containing source code for this cartridge.
-    ///
-    /// @returns {String}
-    path = undefined;
-    /// The author of this cartridge.
-    ///
-    /// @returns {String}
-    author = undefined;
-    /// The major version of this cartridge.
-    ///
-    /// @returns {Real}
-    version = undefined;
-    /// The minor version of this cartridge.
-    ///
-    /// @returns {Real}
-    versionMinor = undefined;
-    /// The patch number of this cartridge.
-    ///
-    /// @returns {Real}
-    patch = undefined;
-    /// The date this cartridge was compiled, in Unix time.
-    ///
-    /// @returns {Real}
-    date = undefined;
+    /// @returns {{ meta_feather }}
+    {{ meta_ref }} = undefined;
+{% endfor %}
     /// @ignore
     isAlive = true;
 
@@ -89,18 +64,18 @@ function CatspeakCartBuilder() constructor {
             cart = buff;
         }
         // write header
-        buffer_write(cart, buffer_u32, 13063246); // signal-w
-        buffer_write(cart, buffer_u32, 5994585); // signal-f
-        buffer_write(cart, buffer_string, @'CATSPEAK CART'); // title
-        buffer_write(cart, buffer_u8, 1); // cart-version
+{% for head_name, head in ir_enumerate(ir, "head") %}
+{%  set head_bufftype = gml_type_buffer(head["type"]) %}
+{%  set head_value = ir_type_as_gml_literal(head["type"], head["value"]) %}
+        buffer_write(cart, {{ head_bufftype }}, {{ head_value }}); // {{ head_name }}
+{% endfor %}
         // write metadata
-        buffer_write(cart, buffer_string, name ?? "untitled");
-        buffer_write(cart, buffer_string, path ?? "");
-        buffer_write(cart, buffer_string, author ?? "");
-        buffer_write(cart, buffer_u8, version ?? 1);
-        buffer_write(cart, buffer_u8, versionMinor ?? 0);
-        buffer_write(cart, buffer_u8, patch ?? 0);
-        buffer_write(cart, buffer_u32, date ?? 0);
+{% for meta_name, meta in ir_enumerate(ir, "meta") %}
+{%  set meta_ref = gml_var_ref(meta_name) %}
+{%  set meta_bufftype = gml_type_buffer(meta["type"]) %}
+{%  set meta_value = ir_type_as_gml_literal(meta["type"], meta["value"]) %}
+        buffer_write(cart, {{ meta_bufftype }}, {{ meta_ref }} ?? {{ meta_value }});
+{% endfor %}
         return cart;
     };
 }
@@ -119,28 +94,21 @@ function catspeak_cart_version(cart) {
     var currSeek = buffer_tell(cart);
     var val;
     try {
-        // signal-w
-        val = buffer_read(cart, buffer_u32);
-        if (val != 13063246) {
-            buffer_seek(cart, buffer_seek_start, currSeek);
-            return 0;
-        }
-        // signal-f
-        val = buffer_read(cart, buffer_u32);
-        if (val != 5994585) {
-            buffer_seek(cart, buffer_seek_start, currSeek);
-            return 0;
-        }
-        // title
-        val = buffer_read(cart, buffer_string);
-        if (val != @'CATSPEAK CART') {
-            buffer_seek(cart, buffer_seek_start, currSeek);
-            return 0;
-        }
-        // cart-version
-        val = buffer_read(cart, buffer_u8);
+{% for head_name, head in ir_enumerate(ir, "head") %}
+{%  set head_bufftype = gml_type_buffer(head["type"]) %}
+{%  set head_value = ir_type_as_gml_literal(head["type"], head["value"]) %}
+        // {{ head_name }}
+        val = buffer_read(cart, {{ head_bufftype }});
+{%  if head_name == "cart-version" %}
         buffer_seek(cart, buffer_seek_start, currSeek);
         return val;
+{%  else %}
+        if (val != {{ head_value }}) {
+            buffer_seek(cart, buffer_seek_start, currSeek);
+            return 0;
+        }
+{%  endif %}
+{% endfor %}
     } catch (ex) {
         buffer_seek(cart, buffer_seek_start, currSeek);
     }
@@ -175,18 +143,13 @@ function CatspeakCartParser(cart_, visitor_) constructor {
     // read header
     var failedMessage = undefined;
     try {
-        if (buffer_read(cart_, buffer_u32) != 13063246) {
-            failedMessage = @'signal-w `13063246` of type u32 missing from header';
+{% for head_name, head in ir_enumerate(ir, "head") %}
+{%  set head_bufftype = gml_type_buffer(head["type"]) %}
+{%  set head_value = ir_type_as_gml_literal(head["type"], head["value"]) %}
+        if (buffer_read(cart_, {{ head_bufftype }}) != {{ head_value }}) {
+            failedMessage = @'{{ head_name }} `{{ head["value"] }}` of type {{ head["type"] }} missing from header';
         }
-        if (buffer_read(cart_, buffer_u32) != 5994585) {
-            failedMessage = @'signal-f `5994585` of type u32 missing from header';
-        }
-        if (buffer_read(cart_, buffer_string) != @'CATSPEAK CART') {
-            failedMessage = @'title `CATSPEAK CART` of type string missing from header';
-        }
-        if (buffer_read(cart_, buffer_u8) != 1) {
-            failedMessage = @'cart-version `1` of type u8 missing from header';
-        }
+{% endfor %}
     } catch (ex_) {
         failedMessage = ex_.message;
     }
@@ -194,21 +157,16 @@ function CatspeakCartParser(cart_, visitor_) constructor {
         __catspeak_error("failed to read Catspeak cartridge: ", failedMessage);
     }
     // read metadata
-    var name = buffer_read(cart_, buffer_string);
-    var path = buffer_read(cart_, buffer_string);
-    var author = buffer_read(cart_, buffer_string);
-    var version = buffer_read(cart_, buffer_u8);
-    var versionMinor = buffer_read(cart_, buffer_u8);
-    var patch = buffer_read(cart_, buffer_u8);
-    var date = buffer_read(cart_, buffer_u32);
+{% for meta_name, meta in ir_enumerate(ir, "meta") %}
+{%  set meta_ref = gml_var_ref(meta_name) %}
+{%  set meta_bufftype = gml_type_buffer(meta["type"]) %}
+    var {{ meta_ref }} = buffer_read(cart_, {{ meta_bufftype }});
+{% endfor %}
     visitor_.handleMeta({
-        name : name,
-        path : path,
-        author : author,
-        version : version,
-        versionMinor : versionMinor,
-        patch : patch,
-        date : date,
+{% for meta_name, meta in ir_enumerate(ir, "meta") %}
+{%  set meta_ref = gml_var_ref(meta_name) %}
+        {{ meta_ref }} : {{ meta_ref }},
+{% endfor %}
     });
 
     /// @ignore

@@ -1,28 +1,4 @@
-"""
-common functions used between all build scripts
-"""
-
 import jinja2
-import os
-
-GITHUB_URL = "https://github.com/katsaii/catspeak-lang/blob/main/"
-def sanitise_file_path(path):
-    if os.path.isfile(path):
-        return GITHUB_URL + os.path.relpath(path)
-    else:
-        return path
-
-def get_generated_header(comment_prefix, *paths):
-    header = f"{comment_prefix} AUTO GENERATED, DO NOT MODIFY THIS FILE\n"
-    if len(paths) == 1:
-        header += f"{comment_prefix} see: {sanitise_file_path(paths[0])}\n"
-    elif len(paths) > 1:
-        header += f"{comment_prefix} see:\n"
-        for path in paths:
-            header += f"{comment_prefix}  - {sanitise_file_path(path)}\n"
-    return header
-
-# jinja library
 
 JINJA2_FUNCS = [
     map, max, min, len,
@@ -32,8 +8,10 @@ def jinja2_export(func):
     JINJA2_FUNCS.append(func)
     return func
 
+# case conversion
+
 def case_explode(ident):
-    return ident.split()
+    return [x for word in ident.split() for x in word.split("-")]
 
 @jinja2_export
 def case_capitalise(ident):
@@ -73,7 +51,11 @@ def case_kebab(ident):
 def case_kebab_upper(ident):
     return case_kebab(ident).upper()
 
+# ir functions
+
 def ir_unknown_type(type_name): raise Exception(f"unknown type '{type_name}'")
+
+# gml utils
 
 @jinja2_export
 def gml_name(name):
@@ -155,24 +137,24 @@ def gml_chunk_seek(ir, name, buff_name):
         raise Exception(f"chunk '{name}' doesn't exist")
 
 @jinja2_export
-def gml_var_ref(name, prefix = "v"):
+def gml_var_ref(name, prefix = None):
     if prefix == None:
         return case_camel(name)
     return prefix + case_camel_upper(name)
 
 @jinja2_export
-def gml_func_arg(arg, prefix = "v"):
+def gml_func_arg(arg, prefix = None):
     arg_str = gml_var_ref(arg["name"], prefix)
     if "default" in arg:
         arg_str += f" = {gml_literal(arg['type'], arg['default'])}"
     return arg_str
 
 @jinja2_export
-def gml_func_args(args, prefix = "v"):
+def gml_func_args(args, prefix = None):
     return ", ".join(gml_func_arg(arg, prefix) for arg in args)
 
 @jinja2_export
-def gml_func_args_var_ref(args, prefix = "v"):
+def gml_func_args_var_ref(args, prefix = None):
     return ", ".join(gml_var_ref(arg, prefix) for arg in args)
 
 @jinja2_export

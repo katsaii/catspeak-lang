@@ -25,7 +25,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
     }
     var disassembly
     try {
-        var reader = new CatspeakCartReader(buff, disassembler);
+        var reader = new CatspeakCartReaderOld(buff, disassembler);
         do {
             var moreRemains = reader.readInstr();
         } until (!moreRemains);

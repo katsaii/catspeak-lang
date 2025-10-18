@@ -8,7 +8,7 @@ import jinja2
 from pathlib import Path
 
 scripts = [
-    "scr_catspeak_cart",
+    "scr_catspeak_cart_old",
     "scr_catspeak_disassembler",
     "scr_catspeak_gen_gml",
     "__scr_catspeak_instrs_generated",
@@ -55,7 +55,7 @@ for script in scripts:
     script_path_src = f"{script}.gml"
     script_path_dest = f"compiler-gml/scripts/{script}/{script}.gml"
     temp_header = common.get_generated_header(
-        ir_path, __file__, script_path_src
+        "//", ir_path, __file__, script_path_src
     )
     temp = env.get_template(script_path_src)
     temp_script = temp_header + "\n" + temp.render(env_interface)

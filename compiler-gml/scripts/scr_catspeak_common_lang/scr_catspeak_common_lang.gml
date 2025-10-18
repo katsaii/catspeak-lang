@@ -247,10 +247,10 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
 
 /// TODO
 ///
-/// @param {Struct.CatspeakCartWriter} cartWriter_
+/// @param {Struct.CatspeakCartWriterOld} cartWriter_
 ///   The cartridge to modify.
 function CatspeakScopeStack(cartWriter_) constructor {
-    __catspeak_assert_instanceof(cartWriter_, CatspeakCartWriter);
+    __catspeak_assert_instanceof(cartWriter_, CatspeakCartWriterOld);
     /// @ignore
     cartWriter = cartWriter_;
     /// @ignore

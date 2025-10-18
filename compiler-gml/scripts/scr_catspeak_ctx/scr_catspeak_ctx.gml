@@ -273,7 +273,7 @@ function CatspeakModule(ctx_, buildArgs) constructor {
             __catspeak_assert(parserType != undefined, "invalid parser");
             cartIsOwned = true;
             cart = buffer_create(1, buffer_grow, 1);
-            var cartWriter = new CatspeakCartWriter(cart);
+            var cartWriter = new CatspeakCartWriterOld(cart);
             parser = new parserType(cartWriter, srcBuff, srcOffset, srcLength);
         }
         var continueParsing;
@@ -297,7 +297,7 @@ function CatspeakModule(ctx_, buildArgs) constructor {
             var codegenType = ctx.codegenType;
             __catspeak_assert(codegenType != undefined, "invalid code generator");
             codegen = new codegenType();
-            cartReader = new CatspeakCartReader(cart, codegen);
+            cartReader = new CatspeakCartReaderOld(cart, codegen);
         }
         var continueCodegen;
         do {

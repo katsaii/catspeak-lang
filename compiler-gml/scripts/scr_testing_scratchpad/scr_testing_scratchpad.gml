@@ -217,7 +217,7 @@ TEST_EXPERIMENT "err" {
 
 TEST_EXPERIMENT "catspeak4" {
     var buff = buffer_create(1, buffer_grow, 1);
-    var writer = new CatspeakCartWriter(buff);
+    var writer = new CatspeakCartWriterOld(buff);
     writer.emitConstNumber(false);
     writer.emitConstString("hello |");
     writer.emitConstString(" youtube");
@@ -232,7 +232,7 @@ TEST_EXPERIMENT "catspeak4" {
     show_message(catspeak_cart_disassemble(buff));
     buffer_seek(buff, buffer_seek_start, 0);
     var codegen = new CatspeakCodegenGML();
-    var reader = new CatspeakCartReader(buff, codegen);
+    var reader = new CatspeakCartReaderOld(buff, codegen);
     do {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
@@ -288,7 +288,7 @@ TEST_EXPERIMENT "catspeak4-parse" {
         a
     ');
     var buffCart = buffer_create(1, buffer_grow, 1);
-    var cart = new CatspeakCartWriter(buffCart);
+    var cart = new CatspeakCartWriterOld(buffCart);
     // do parse
     var parser = new CatspeakParser(cart, buff);
     do {
@@ -299,7 +299,7 @@ TEST_EXPERIMENT "catspeak4-parse" {
     // do codegen
     buffer_seek(buffCart, buffer_seek_start, 0);
     var codegen = new CatspeakCodegenGML();
-    var reader = new CatspeakCartReader(buffCart, codegen);
+    var reader = new CatspeakCartReaderOld(buffCart, codegen);
     do {
         var moreRemains = reader.readInstr();
     } until (!moreRemains);
