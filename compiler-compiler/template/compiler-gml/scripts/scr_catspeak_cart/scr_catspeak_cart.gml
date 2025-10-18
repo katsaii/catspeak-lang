@@ -20,14 +20,11 @@
 ///
 /// @experimental
 function CatspeakCartBuilder() constructor {
-{% for meta_name, meta in ir_enumerate(ir, "meta") %}
-{%  set meta_ref = gml_var_ref(meta_name) %}
-{%  set meta_desc = case_sentence(meta["desc"]) %}
-{%  set meta_feather = gml_type_feather(meta["type"]) %}
-    /// {{ meta_desc }}
+{% for meta in MetaItem.enum(ir) %}
+    /// {{ case_sentence(meta.desc) }}
     ///
-    /// @returns {{ meta_feather }}
-    {{ meta_ref }} = undefined;
+    /// @returns {{ meta.type_feather }}
+    {{ meta.name_id }} = undefined;
 {% endfor %}
     /// @ignore
     isAlive = true;
@@ -64,17 +61,12 @@ function CatspeakCartBuilder() constructor {
             cart = buff;
         }
         // write header
-{% for head_name, head in ir_enumerate(ir, "head") %}
-{%  set head_bufftype = gml_type_buffer(head["type"]) %}
-{%  set head_value = ir_type_as_gml_literal(head["type"], head["value"]) %}
-        buffer_write(cart, {{ head_bufftype }}, {{ head_value }}); // {{ head_name }}
+{% for head in HeadItem.enum(ir) %}
+        buffer_write(cart, {{ head.type_buffer }}, {{ head.value_lit }}); // {{ head.name }}
 {% endfor %}
         // write metadata
-{% for meta_name, meta in ir_enumerate(ir, "meta") %}
-{%  set meta_ref = gml_var_ref(meta_name) %}
-{%  set meta_bufftype = gml_type_buffer(meta["type"]) %}
-{%  set meta_value = ir_type_as_gml_literal(meta["type"], meta["value"]) %}
-        buffer_write(cart, {{ meta_bufftype }}, {{ meta_ref }} ?? {{ meta_value }});
+{% for meta in MetaItem.enum(ir) %}
+        buffer_write(cart, {{ meta.type_buffer }}, {{ meta.name_id }} ?? {{ meta.value_lit }});
 {% endfor %}
         return cart;
     };
@@ -94,16 +86,14 @@ function catspeak_cart_version(cart) {
     var currSeek = buffer_tell(cart);
     var val;
     try {
-{% for head_name, head in ir_enumerate(ir, "head") %}
-{%  set head_bufftype = gml_type_buffer(head["type"]) %}
-{%  set head_value = ir_type_as_gml_literal(head["type"], head["value"]) %}
-        // {{ head_name }}
-        val = buffer_read(cart, {{ head_bufftype }});
-{%  if head_name == "cart-version" %}
+{% for head in HeadItem.enum(ir) %}
+        // {{ head.name }}
+        val = buffer_read(cart, {{ head.type_buffer }});
+{%  if head.name == "cart-version" %}
         buffer_seek(cart, buffer_seek_start, currSeek);
         return val;
 {%  else %}
-        if (val != {{ head_value }}) {
+        if (val != {{ head.value_lit }}) {
             buffer_seek(cart, buffer_seek_start, currSeek);
             return 0;
         }
@@ -143,11 +133,9 @@ function CatspeakCartParser(cart_, visitor_) constructor {
     // read header
     var failedMessage = undefined;
     try {
-{% for head_name, head in ir_enumerate(ir, "head") %}
-{%  set head_bufftype = gml_type_buffer(head["type"]) %}
-{%  set head_value = ir_type_as_gml_literal(head["type"], head["value"]) %}
-        if (buffer_read(cart_, {{ head_bufftype }}) != {{ head_value }}) {
-            failedMessage = @'{{ head_name }} `{{ head["value"] }}` of type {{ head["type"] }} missing from header';
+{% for head in HeadItem.enum(ir) %}
+        if (buffer_read(cart_, {{ head.type_buffer }}) != {{ head.value_lit }}) {
+            failedMessage = @'{{ head.name }} {{ head.value_lit }} of type `{{ head.type }}` missing from header';
         }
 {% endfor %}
     } catch (ex_) {
@@ -157,15 +145,12 @@ function CatspeakCartParser(cart_, visitor_) constructor {
         __catspeak_error("failed to read Catspeak cartridge: ", failedMessage);
     }
     // read metadata
-{% for meta_name, meta in ir_enumerate(ir, "meta") %}
-{%  set meta_ref = gml_var_ref(meta_name) %}
-{%  set meta_bufftype = gml_type_buffer(meta["type"]) %}
-    var {{ meta_ref }} = buffer_read(cart_, {{ meta_bufftype }});
+{% for meta in MetaItem.enum(ir) %}
+    var {{ meta.name_id }} = buffer_read(cart_, {{ meta.type_buffer }});
 {% endfor %}
     visitor_.handleMeta({
-{% for meta_name, meta in ir_enumerate(ir, "meta") %}
-{%  set meta_ref = gml_var_ref(meta_name) %}
-        {{ meta_ref }} : {{ meta_ref }},
+{% for meta in MetaItem.enum(ir) %}
+        {{ meta.name_id }} : {{ meta.name_id }},
 {% endfor %}
     });
 

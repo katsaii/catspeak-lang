@@ -36,31 +36,26 @@ meta:
   name:
     desc: "the name of this cartridge"
     type: string
-    value: "untitled"
+    default: "untitled"
   path:
     desc: "the path to the file containing source code for this cartridge"
     type: string
-    value: ""
   author:
     desc: "the author of this cartridge"
     type: string
-    value: ""
   version:
     desc: "the major version of this cartridge"
     type: u8
-    value: 1
+    default: 1
   version-minor:
     desc: "the minor version of this cartridge"
     type: u8
-    value: 0
   patch:
     desc: "the patch number of this cartridge"
     type: u8
-    value: 0
   date:
     desc: "the date this cartridge was compiled, in Unix time"
     type: u32
-    value: 0
 
 # Next, is the program section. This consists of a single number
 # representing the number of function definitions defined in this cartridge,

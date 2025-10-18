@@ -91,7 +91,7 @@ function CatspeakCartBuilder() constructor {
         // write header
         buffer_write(cart, buffer_u32, 13063246); // signal-w
         buffer_write(cart, buffer_u32, 5994585); // signal-f
-        buffer_write(cart, buffer_string, @'CATSPEAK CART'); // title
+        buffer_write(cart, buffer_string, "CATSPEAK CART"); // title
         buffer_write(cart, buffer_u8, 1); // cart-version
         // write metadata
         buffer_write(cart, buffer_string, name ?? "untitled");
@@ -133,7 +133,7 @@ function catspeak_cart_version(cart) {
         }
         // title
         val = buffer_read(cart, buffer_string);
-        if (val != @'CATSPEAK CART') {
+        if (val != "CATSPEAK CART") {
             buffer_seek(cart, buffer_seek_start, currSeek);
             return 0;
         }
@@ -176,16 +176,16 @@ function CatspeakCartParser(cart_, visitor_) constructor {
     var failedMessage = undefined;
     try {
         if (buffer_read(cart_, buffer_u32) != 13063246) {
-            failedMessage = @'signal-w `13063246` of type u32 missing from header';
+            failedMessage = @'signal-w 13063246 of type `u32` missing from header';
         }
         if (buffer_read(cart_, buffer_u32) != 5994585) {
-            failedMessage = @'signal-f `5994585` of type u32 missing from header';
+            failedMessage = @'signal-f 5994585 of type `u32` missing from header';
         }
-        if (buffer_read(cart_, buffer_string) != @'CATSPEAK CART') {
-            failedMessage = @'title `CATSPEAK CART` of type string missing from header';
+        if (buffer_read(cart_, buffer_string) != "CATSPEAK CART") {
+            failedMessage = @'title "CATSPEAK CART" of type `string` missing from header';
         }
         if (buffer_read(cart_, buffer_u8) != 1) {
-            failedMessage = @'cart-version `1` of type u8 missing from header';
+            failedMessage = @'cart-version 1 of type `u8` missing from header';
         }
     } catch (ex_) {
         failedMessage = ex_.message;
