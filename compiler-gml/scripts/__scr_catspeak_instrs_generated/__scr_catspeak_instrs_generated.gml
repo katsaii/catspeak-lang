@@ -5,7 +5,7 @@
 //  - __scr_catspeak_instrs_generated.gml
 
 //# feather use syntax-errors
-
+/*
 /// @ignore
 function __catspeak_instr_ifte__() {
     return condition() ? if_true() : if_false();

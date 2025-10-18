@@ -4,7 +4,7 @@
 // instructions
 
 //# feather use syntax-errors
-
+/*
 /// @ignore
 function __catspeak_gml_exec_get_error(exec) {
     var closure_ = method_get_self(exec);

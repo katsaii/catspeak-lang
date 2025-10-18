@@ -20,7 +20,7 @@
 //! Each instruction may also be associated with zero or many static parameters.
 
 //# feather use syntax-errors
-
+/*
 /// Handles the creation of Catspeak cartridges.
 ///
 /// @experimental

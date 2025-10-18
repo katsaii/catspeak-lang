@@ -11,7 +11,7 @@ catspeak_force_init();
 
 var runExperiment = "catspeak4-ctx";
 #macro TEST_EXPERIMENT if runExperiment ==
-
+/*
 TEST_EXPERIMENT "catspeak4-ctx" {
     var ctx = new CatspeakCtx();
     ctx.parserType = CatspeakParser;
@@ -31,6 +31,7 @@ TEST_EXPERIMENT "catspeak4-ctx" {
     show_message(catspeak_cart_disassemble(module.cart));
     show_message(module.result);
 }
+*/
 
 TEST_EXPERIMENT "lexer" {
     var buff = __catspeak_create_buffer_from_string(@'1 2._ 3._4_ 5_6_7__');

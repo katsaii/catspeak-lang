@@ -168,5 +168,5 @@ function CatspeakCartParser(cart_, visitor_) constructor {
     /// @return {Bool}
     static readInstr = function () {
         return false;
-    }
+    };
 }
