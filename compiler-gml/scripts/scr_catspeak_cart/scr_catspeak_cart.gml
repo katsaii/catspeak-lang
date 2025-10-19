@@ -97,61 +97,66 @@ function CatspeakCartWriter() constructor {
     ///   The buffer to write the cartridge to. Must be a `buffer_grow` type
     ///   buffer with an alignment of 1.
     static finalise = function (buff = undefined) {
-        __catspeak_assert(isAlive, "cannot call `finalise` method twice");
-        var cart;
-        if (buff == undefined) {
-            cart = buffer_create(1, buffer_grow, 1);
-        } else {
-            __catspeak_assert_typeof(buff, __catspeak_is_buffer,
-                "argument `buff` must be a buffer"
+        try {
+            __catspeak_assert(isAlive, "cannot call `finalise` method twice");
+            var cart;
+            if (buff == undefined) {
+                cart = buffer_create(1, buffer_grow, 1);
+            } else {
+                __catspeak_assert_typeof(buff, __catspeak_is_buffer,
+                    "argument `buff` must be a buffer"
+                );
+                __catspeak_assert_eq(buffer_grow, buffer_get_type(buff),
+                    "requires a grow buffer (buffer_grow)"
+                );
+                __catspeak_assert_eq(1, buffer_get_alignment(buff),
+                    "requires a buffer with alignment 1"
+                );
+                cart = buff;
+            }
+            // write header
+            buffer_write(cart, buffer_u32, 13063246); // signal-w
+            buffer_write(cart, buffer_u32, 5994585); // signal-f
+            buffer_write(cart, buffer_string, "CATSPEAK CART"); // title
+            buffer_write(cart, buffer_u8, 1); // cart-version
+            // write metadata
+            buffer_write(cart, buffer_string, name ?? "untitled");
+            buffer_write(cart, buffer_string, author ?? "");
+            buffer_write(cart, buffer_u8, version ?? 1);
+            buffer_write(cart, buffer_u8, versionMinor ?? 0);
+            buffer_write(cart, buffer_u8, patch ?? 0);
+            buffer_write(cart, buffer_string, path ?? "");
+            buffer_write(cart, buffer_u32, date ?? 0);
+            // write functions
+            __catspeak_assert_eq(0, ds_stack_size(chunkStack),
+                "missing calls to `popFunction`"
             );
-            __catspeak_assert_eq(buffer_grow, buffer_get_type(buff),
-                "requires a grow buffer (buffer_grow)"
-            );
-            __catspeak_assert_eq(1, buffer_get_alignment(buff),
-                "requires a buffer with alignment 1"
-            );
-            cart = buff;
+            var completedChunks_ = completedChunks;
+            var chunkCount = ds_list_size(completedChunks_);
+            var offset = buffer_tell(cart);
+            for (var i = 0; i < chunkCount; i += 1) {
+                var chunk = completedChunks_[| i];
+                var chunkSize = buffer_tell(chunk);
+                buffer_copy(chunk, 0, chunkSize, cart, offset);
+                offset += chunkSize;
+            }
+            buffer_seek(cart, buffer_seek_start, offset);
+            // 0xFF indicates the end of the program section
+            buffer_write(cart, buffer_u8, 255);
+        } finally {
+            destroy();
         }
-        // write header
-        buffer_write(cart, buffer_u32, 13063246); // signal-w
-        buffer_write(cart, buffer_u32, 5994585); // signal-f
-        buffer_write(cart, buffer_string, "CATSPEAK CART"); // title
-        buffer_write(cart, buffer_u8, 1); // cart-version
-        // write metadata
-        buffer_write(cart, buffer_string, name ?? "untitled");
-        buffer_write(cart, buffer_string, author ?? "");
-        buffer_write(cart, buffer_u8, version ?? 1);
-        buffer_write(cart, buffer_u8, versionMinor ?? 0);
-        buffer_write(cart, buffer_u8, patch ?? 0);
-        buffer_write(cart, buffer_string, path ?? "");
-        buffer_write(cart, buffer_u32, date ?? 0);
-        // write functions
-        __catspeak_assert_eq(0, ds_stack_size(chunkStack),
-            "missing calls to `popFunction`"
-        );
-        var completedChunks_ = completedChunks;
-        var chunkCount = ds_list_size(completedChunks_);
-        var offset = buffer_tell(cart);
-        for (var i = 0; i < chunkCount; i += 1) {
-            var chunk = completedChunks_[| i];
-            var chunkSize = buffer_tell(chunk);
-            buffer_copy(chunk, 0, chunkSize, cart, offset);
-            offset += chunkSize;
-        }
-        buffer_seek(cart, buffer_seek_start, offset);
-        // 0xFF indicates the end of the program section
-        buffer_write(cart, buffer_u8, 255);
-        destroy();
         return cart;
     };
 
-    /// TODO
+    /// Starts a new function.
     static pushFunction = function () {
         ds_stack_push(chunkStack, buffer_create(1, buffer_grow, 1));
     };
 
-    /// TODO
+    /// Ends the current function, returning its id.
+    ///
+    /// @return {Real}
     static popFunction = function () {
         var chunk = ds_stack_pop(chunkStack);
         __catspeak_assert(chunk != undefined, "unbalanced function stack");
@@ -160,7 +165,10 @@ function CatspeakCartWriter() constructor {
         return ds_list_size(completedChunks) - 1;
     };
 
-    /// TODO
+    /// Get a numeric constant.
+    ///
+    /// @param {Real} value
+    ///     
     static emitConstNumber = function (value, dbg = CATSPEAK_NOLOCATION) {
         var chunk = ds_stack_top(chunkStack);
         __catspeak_assert(chunk != undefined, "function stack empty");
@@ -226,7 +234,9 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - TODO
+///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)`
+///   - `.handleFunc(idx)`
+///   - `.handleInstrConstNumber(dbg, value)`
 function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(cart_, __catspeak_is_buffer,
         "buffer doesn't exist"

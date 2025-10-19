@@ -73,56 +73,61 @@ function CatspeakCartWriter() constructor {
     ///   The buffer to write the cartridge to. Must be a `buffer_grow` type
     ///   buffer with an alignment of 1.
     static finalise = function (buff = undefined) {
-        __catspeak_assert(isAlive, "cannot call `finalise` method twice");
-        var cart;
-        if (buff == undefined) {
-            cart = buffer_create(1, buffer_grow, 1);
-        } else {
-            __catspeak_assert_typeof(buff, __catspeak_is_buffer,
-                "argument `buff` must be a buffer"
-            );
-            __catspeak_assert_eq(buffer_grow, buffer_get_type(buff),
-                "requires a grow buffer (buffer_grow)"
-            );
-            __catspeak_assert_eq(1, buffer_get_alignment(buff),
-                "requires a buffer with alignment 1"
-            );
-            cart = buff;
-        }
-        // write header
+        try {
+            __catspeak_assert(isAlive, "cannot call `finalise` method twice");
+            var cart;
+            if (buff == undefined) {
+                cart = buffer_create(1, buffer_grow, 1);
+            } else {
+                __catspeak_assert_typeof(buff, __catspeak_is_buffer,
+                    "argument `buff` must be a buffer"
+                );
+                __catspeak_assert_eq(buffer_grow, buffer_get_type(buff),
+                    "requires a grow buffer (buffer_grow)"
+                );
+                __catspeak_assert_eq(1, buffer_get_alignment(buff),
+                    "requires a buffer with alignment 1"
+                );
+                cart = buff;
+            }
+            // write header
 {% for head in HeadItem.enum(ir) %}
-        buffer_write(cart, {{ head.type_buffer }}, {{ head.value_lit }}); // {{ head.name }}
+            buffer_write(cart, {{ head.type_buffer }}, {{ head.value_lit }}); // {{ head.name }}
 {% endfor %}
-        // write metadata
+            // write metadata
 {% for meta in MetaItem.enum(ir) %}
-        buffer_write(cart, {{ meta.type_buffer }}, {{ meta.name_id }} ?? {{ meta.value_lit }});
+            buffer_write(cart, {{ meta.type_buffer }}, {{ meta.name_id }} ?? {{ meta.value_lit }});
 {% endfor %}
-        // write functions
-        __catspeak_assert_eq(0, ds_stack_size(chunkStack),
-            "missing calls to `popFunction`"
-        );
-        var completedChunks_ = completedChunks;
-        var chunkCount = ds_list_size(completedChunks_);
-        var offset = buffer_tell(cart);
-        for (var i = 0; i < chunkCount; i += 1) {
-            var chunk = completedChunks_[| i];
-            var chunkSize = buffer_tell(chunk);
-            buffer_copy(chunk, 0, chunkSize, cart, offset);
-            offset += chunkSize;
+            // write functions
+            __catspeak_assert_eq(0, ds_stack_size(chunkStack),
+                "missing calls to `popFunction`"
+            );
+            var completedChunks_ = completedChunks;
+            var chunkCount = ds_list_size(completedChunks_);
+            var offset = buffer_tell(cart);
+            for (var i = 0; i < chunkCount; i += 1) {
+                var chunk = completedChunks_[| i];
+                var chunkSize = buffer_tell(chunk);
+                buffer_copy(chunk, 0, chunkSize, cart, offset);
+                offset += chunkSize;
+            }
+            buffer_seek(cart, buffer_seek_start, offset);
+            // 0xFF indicates the end of the program section
+            buffer_write(cart, {{ opcode_type_buffer }}, {{ opcode_eof }});
+        } finally {
+            destroy();
         }
-        buffer_seek(cart, buffer_seek_start, offset);
-        // 0xFF indicates the end of the program section
-        buffer_write(cart, {{ opcode_type_buffer }}, {{ opcode_eof }});
-        destroy();
         return cart;
     };
 
-    /// TODO
+    /// Starts a new function.
     static pushFunction = function () {
         ds_stack_push(chunkStack, buffer_create(1, buffer_grow, 1));
     };
 
-    /// TODO
+    /// Ends the current function, returning its id.
+    ///
+    /// @return {Real}
     static popFunction = function () {
         var chunk = ds_stack_pop(chunkStack);
         __catspeak_assert(chunk != undefined, "unbalanced function stack");
@@ -134,7 +139,16 @@ function CatspeakCartWriter() constructor {
 {% for instr in InstrItem.enum(ir) %}
 {%  set instr_writer = "emit" + case_camel_upper(instr.name) %}
 {%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr.name_short) %}
-    /// TODO
+    /// {{ case_sentence(instr.desc) }}
+{%  for arg in InstrArgItem.enum(instr.ir) %}
+    ///
+{%   if arg.value_default == None %}
+    /// @param {{ arg.type_feather }} {{ arg.name_id }}
+{%   else %}
+    /// @param {{ arg.type_feather }} [{{ arg.name_id }}]
+{%   endif %}
+    ///     {{ case_sentence(arg.desc) }}
+{%  endfor %}
     static {{ instr_writer }} = function ({{
         join(", ", args(InstrArgItem.enum(instr.ir)) + ["dbg = CATSPEAK_NOLOCATION"])
     }}) {
@@ -196,7 +210,13 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - TODO
+///   - `.handleMeta({{ join(", ", args(MetaItem.enum(ir))) }})`
+///   - `.handleFunc(idx)`
+{% for instr in InstrItem.enum(ir) %}
+///   - `.{{ instr.name_handler }}({{
+            join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
+        }})`
+{% endfor %}
 function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(cart_, __catspeak_is_buffer,
         "buffer doesn't exist"
