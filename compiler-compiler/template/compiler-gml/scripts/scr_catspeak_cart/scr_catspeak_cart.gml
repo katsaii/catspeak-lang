@@ -33,9 +33,11 @@ function CatspeakCartWriter() constructor {
     /// @ignore
     isAlive = true;
     /// @ignore
-    completedChunks = ds_list_create();
+    chunks = ds_list_create();
     /// @ignore
-    chunkStack = ds_stack_create();
+    chunkTop = -1;
+    /// @ignore
+    funcCount = 0;
 
     /// Frees any dynamically allocated resources managed by this writer.
     ///
@@ -45,17 +47,10 @@ function CatspeakCartWriter() constructor {
         if (!isAlive) {
             return;
         }
-        var completedChunks_ = completedChunks;
-        for (var i = ds_list_size(completedChunks_) - 1; i >= 0; i -= 1) {
-            var chunk = completedChunks_[| i];
+        for (var i = ds_list_size(chunks) - 1; i >= 0; i -= 1) {
+            var chunk = chunks[| i];
             buffer_delete(chunk);
         }
-        ds_list_destroy(completedChunks_);
-        repeat (ds_stack_size(chunkStack)) {
-            var chunk = ds_stack_pop(chunkStack);
-            buffer_delete(chunk);
-        }
-        ds_stack_destroy(chunkStack);
         isAlive = false;
     };
 
@@ -99,14 +94,12 @@ function CatspeakCartWriter() constructor {
             buffer_write(cart, {{ meta.type_buffer }}, {{ meta.name_id }} ?? {{ meta.value_lit }});
 {% endfor %}
             // write functions
-            __catspeak_assert_eq(0, ds_stack_size(chunkStack),
-                "missing calls to `popFunction`"
+            __catspeak_assert(chunkTop < 0,
+                "missing call to `popFunction` after calling `pushFunction`"
             );
-            var completedChunks_ = completedChunks;
-            var chunkCount = ds_list_size(completedChunks_);
             var offset = buffer_tell(cart);
-            for (var i = 0; i < chunkCount; i += 1) {
-                var chunk = completedChunks_[| i];
+            for (var i = ds_list_size(chunks) - 1; i >= 0; i -= 1) {
+                var chunk = chunks[| i];
                 var chunkSize = buffer_tell(chunk);
                 buffer_copy(chunk, 0, chunkSize, cart, offset);
                 offset += chunkSize;
@@ -122,18 +115,25 @@ function CatspeakCartWriter() constructor {
 
     /// Starts a new function.
     static pushFunction = function () {
-        ds_stack_push(chunkStack, buffer_create(1, buffer_grow, 1));
+        chunkTop += 1;
+        if (chunks[| chunkTop] == undefined) {
+            chunks[| chunkTop] = buffer_create(1, buffer_grow, 1);
+        }
     };
 
     /// Ends the current function, returning its id.
     ///
     /// @return {Real}
     static popFunction = function () {
-        var chunk = ds_stack_pop(chunkStack);
-        __catspeak_assert(chunk != undefined, "unbalanced function stack");
+        __catspeak_assert(chunkTop >= 0,
+            "unbalanced function stack! too many calls to `popFunction`"
+        );
+        var chunk = chunks[| chunkTop];
         buffer_write(chunk, {{ opcode_type_buffer }}, 0);
-        ds_list_add(completedChunks, chunk);
-        return ds_list_size(completedChunks) - 1;
+        var idx = funcCount;
+        funcCount += 1;
+        chunkTop -= 1;
+        return idx;
     };
 
 {% for instr in InstrItem.enum(ir) %}
@@ -152,8 +152,8 @@ function CatspeakCartWriter() constructor {
     static {{ instr_writer }} = function ({{
         join(", ", args(InstrArgItem.enum(instr.ir)) + ["dbg = CATSPEAK_NOLOCATION"])
     }}) {
-        var chunk = ds_stack_top(chunkStack);
-        __catspeak_assert(chunk != undefined, "function stack empty");
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
         buffer_write(chunk, {{ opcode_type_buffer }}, {{ instr_enum }});
         buffer_write(chunk, {{ dbg_type_buffer }}, dbg);
 {%  for arg in InstrArgItem.enum(instr.ir) %}
@@ -163,7 +163,7 @@ function CatspeakCartWriter() constructor {
 {% endfor %}
 }
 
-/// Returns the version number of this Catspeak cartridge, or 0 if the
+/// Returns the version number of this Catspeak cartridge, or `0` if the
 /// given buffer isn't a valid cartridge.
 ///
 /// @param {Id.Buffer} cart
