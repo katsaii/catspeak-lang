@@ -37,7 +37,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
             "partial disassembly:\n", disassembler.out
         ));
     } finally {
-        disassembler.out = undefined;
+        disassembler.out = "";
         buffer_seek(buff, buffer_seek_start, buffStart);
     }
     return disassembly;
@@ -46,25 +46,52 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
-    out = undefined;
+    out = "";
 
     /// @ignore
-    static handleMeta = function (meta) {
-        out = "";
-        var val;
-        val = meta.name;
-        if (val != "untitled") { out += "-- name:\t" + string(val) + "\n" }
-        val = meta.author;
-        if (val != "") { out += "-- author:\t" + string(val) + "\n" }
-        val = meta.version;
-        if (val != 1) { out += "-- version:\t" + string(val) + "\n" }
-        val = meta.versionMinor;
-        if (val != 0) { out += "-- version-minor:\t" + string(val) + "\n" }
-        val = meta.patch;
-        if (val != 0) { out += "-- patch:\t" + string(val) + "\n" }
-        val = meta.path;
-        if (val != "") { out += "-- path:\t" + string(val) + "\n" }
-        val = meta.date;
-        if (val != 0) { out += "-- date:\t" + string(val) + "\n" }
+    static handleMeta = function (
+        name, author, version, versionMinor, patch, path, date
+    ) {
+        if (name != "untitled") {
+            out += "-- name:  " + string(name) + "\n";
+        }
+        if (author != "") {
+            out += "-- author:  " + string(author) + "\n";
+        }
+        if (version != 1) {
+            out += "-- version:  " + string(version) + "\n";
+        }
+        if (versionMinor != 0) {
+            out += "-- version-minor:  " + string(versionMinor) + "\n";
+        }
+        if (patch != 0) {
+            out += "-- patch:  " + string(patch) + "\n";
+        }
+        if (path != "") {
+            out += "-- path:  " + string(path) + "\n";
+        }
+        if (date != 0) {
+            out += "-- date:  " + string(date) + "\n";
+        }
+    };
+
+    /// @ignore
+    static handleFunc = function (idx) {
+        out += "\nfun f" + string(idx) + "\n";
+    };
+
+    /// @ignore
+    static __writeDbg = function (dbg) {
+        if (dbg != CATSPEAK_NOLOCATION) {
+            out += "  \t-- " + string(catspeak_location_get_row(dbg));
+            out += ":" + string(catspeak_location_get_column(dbg));
+        }
+    };
+
+    /// @ignore
+    static handleInstrConstNumber = function (dbg, value) {
+        out += "\n  get_n";
+        out += "  " + string(value);
+        __writeDbg(dbg);
     };
 }

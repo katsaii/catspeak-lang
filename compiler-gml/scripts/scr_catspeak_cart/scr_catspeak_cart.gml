@@ -56,6 +56,32 @@ function CatspeakCartWriter() constructor {
     date = undefined;
     /// @ignore
     isAlive = true;
+    /// @ignore
+    completedChunks = ds_list_create();
+    /// @ignore
+    chunkStack = ds_stack_create();
+
+    /// Frees any dynamically allocated resources managed by this writer.
+    ///
+    /// @warning
+    ///   This **must** be called in a `finally` block if you expect exceptions.
+    static destroy = function () {
+        if (!isAlive) {
+            return;
+        }
+        var completedChunks_ = completedChunks;
+        for (var i = ds_list_size(completedChunks_) - 1; i >= 0; i -= 1) {
+            var chunk = completedChunks_[| i];
+            buffer_delete(chunk);
+        }
+        ds_list_destroy(completedChunks_);
+        repeat (ds_stack_size(chunkStack)) {
+            var chunk = ds_stack_pop(chunkStack);
+            buffer_delete(chunk);
+        }
+        ds_stack_destroy(chunkStack);
+        isAlive = false;
+    };
 
     /// Writes the contents of this builder to the given buffer. If no buffer
     /// is supplied then a new, fresh buffer is allocated and returned.
@@ -72,7 +98,6 @@ function CatspeakCartWriter() constructor {
     ///   buffer with an alignment of 1.
     static finalise = function (buff = undefined) {
         __catspeak_assert(isAlive, "cannot call `finalise` method twice");
-        isAlive = false;
         var cart;
         if (buff == undefined) {
             cart = buffer_create(1, buffer_grow, 1);
@@ -101,7 +126,47 @@ function CatspeakCartWriter() constructor {
         buffer_write(cart, buffer_u8, patch ?? 0);
         buffer_write(cart, buffer_string, path ?? "");
         buffer_write(cart, buffer_u32, date ?? 0);
+        // write functions
+        __catspeak_assert_eq(0, ds_stack_size(chunkStack),
+            "missing calls to `popFunction`"
+        );
+        var completedChunks_ = completedChunks;
+        var chunkCount = ds_list_size(completedChunks_);
+        var offset = buffer_tell(cart);
+        for (var i = 0; i < chunkCount; i += 1) {
+            var chunk = completedChunks_[| i];
+            var chunkSize = buffer_tell(chunk);
+            buffer_copy(chunk, 0, chunkSize, cart, offset);
+            offset += chunkSize;
+        }
+        buffer_seek(cart, buffer_seek_start, offset);
+        // 0xFF indicates the end of the program section
+        buffer_write(cart, buffer_u8, 255);
+        destroy();
         return cart;
+    };
+
+    /// TODO
+    static pushFunction = function () {
+        ds_stack_push(chunkStack, buffer_create(1, buffer_grow, 1));
+    };
+
+    /// TODO
+    static popFunction = function () {
+        var chunk = ds_stack_pop(chunkStack);
+        __catspeak_assert(chunk != undefined, "unbalanced function stack");
+        buffer_write(chunk, buffer_u8, 0);
+        ds_list_add(completedChunks, chunk);
+        return ds_list_size(completedChunks) - 1;
+    };
+
+    /// TODO
+    static emitConstNumber = function (value, dbg = CATSPEAK_NOLOCATION) {
+        var chunk = ds_stack_top(chunkStack);
+        __catspeak_assert(chunk != undefined, "function stack empty");
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_N);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_f64, value);
     };
 }
 
@@ -206,29 +271,66 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     var patch = buffer_read(cart_, buffer_u8);
     var path = buffer_read(cart_, buffer_string);
     var date = buffer_read(cart_, buffer_u32);
-    visitor_.handleMeta({
-        name : name,
-        author : author,
-        version : version,
-        versionMinor : versionMinor,
-        patch : patch,
-        path : path,
-        date : date,
-    });
+    visitor_.handleMeta(name, author, version, versionMinor, patch, path, date);
 
     /// @ignore
     cart = cart_;
     /// @ignore
     visitor = visitor_;
+    /// @ignore
+    funcIdx = 0;
 
     /// Reads the next instruction if it exists, calling its handler.
     ///
     /// If there are more instructions left to be read, then this function will
     /// return `true`. If all instructions have been read, then `false` is
-    /// returned, and the buffers seek is set to the end of the Cartidge.
+    /// returned, and the buffer seek is set to the **end of the Cartidge**.
     ///
     /// @return {Bool}
     static readInstr = function () {
-        return false;
+        var cart_ = cart;
+        __catspeak_assert(cart_ != undefined,
+            "called `readInstr` after reaching end of cartridge"
+        );
+        var opcode = buffer_read(cart_, buffer_u8);
+        if (opcode == 255) {
+            // we've reached the end
+            cart_ = undefined;
+            return false;
+        }
+        __catspeak_assert(opcode >= 0 && opcode < __CatspeakInstr.__SIZE__,
+            "invalid cartridge instruction: " + string(opcode)
+        );
+        var instrReader = __readerLookup[opcode];
+        instrReader();
+        return true;
     };
+
+    /// @ignore
+    static __readFunc = function () {
+        visitor.handleFunc(funcIdx);
+        funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readIConstNumber = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var value = buffer_read(cart_, buffer_f64);
+        visitor.handleInstrConstNumber(dbg, value);
+    };
+
+    /// @ignore
+    static __readerLookup = undefined;
+    if (__readerLookup == undefined) {
+        __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
+        __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.GET_N] = __readIConstNumber;
+    }
+}
+
+/// @ignore
+enum __CatspeakInstr {
+    GET_N = 1,
+    __SIZE__ = 2,
 }

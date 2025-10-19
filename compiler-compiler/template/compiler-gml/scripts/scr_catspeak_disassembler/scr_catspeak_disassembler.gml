@@ -31,7 +31,7 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
             "partial disassembly:\n", disassembler.out
         ));
     } finally {
-        disassembler.out = undefined;
+        disassembler.out = "";
         buffer_seek(buff, buffer_seek_start, buffStart);
     }
     return disassembly;
@@ -40,15 +40,42 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 /// @ignore
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
-    out = undefined;
+    out = "";
 
     /// @ignore
-    static handleMeta = function (meta) {
-        out = "";
-        var val;
+    static handleMeta = function (
+        {{ join(", ", args(MetaItem.enum(ir))) }}
+    ) {
 {% for meta in MetaItem.enum(ir) %}
-        val = meta.{{ meta.name_id }};
-        if (val != {{ meta.value_lit }}) { out += "-- {{ meta.name }}:\t" + string(val) + "\n" }
+        if ({{ meta.name_id }} != {{ meta.value_lit }}) {
+            out += "-- {{ meta.name }}:  " + string({{ meta.name_id }}) + "\n";
+        }
 {% endfor %}
     };
+
+    /// @ignore
+    static handleFunc = function (idx) {
+        out += "\nfun f" + string(idx) + "\n";
+    };
+
+    /// @ignore
+    static __writeDbg = function (dbg) {
+        if (dbg != CATSPEAK_NOLOCATION) {
+            out += "  \t-- " + string(catspeak_location_get_row(dbg));
+            out += ":" + string(catspeak_location_get_column(dbg));
+        }
+    };
+
+{% for instr in InstrItem.enum(ir) %}
+    /// @ignore
+    static {{ instr.name_handler }} = function ({{
+        join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
+    }}) {
+        out += "\n  {{ instr.name_short }}";
+{%  for arg in InstrArgItem.enum(instr.ir) %}
+        out += "  " + string({{ arg.name_id }});
+{%  endfor %}
+        __writeDbg(dbg);
+    };
+{% endfor %}
 }

@@ -16,6 +16,9 @@ TEST_EXPERIMENT "catspeak4-cart" {
     var writer = new CatspeakCartWriter();
     writer.author = "me";
     writer.path = "https://katsaii.com/joe/mama.meow"
+    writer.pushFunction();
+    writer.emitConstNumber(123, catspeak_location_create(10, 2));
+    writer.popFunction();
     var cart = writer.finalise();
     show_message(catspeak_cart_disassemble(cart, 0));
 }

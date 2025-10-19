@@ -16,6 +16,10 @@
 
 //# feather use syntax-errors
 
+{% set opcode_type_buffer = type_to_gml_buffer(ir["instr-opcode-type"]) -%}
+{% set opcode_eof = ir["program-end-signal"] -%}
+{% set dbg_type_buffer = type_to_gml_buffer(ir["instr-dbg-type"]) -%}
+
 /// Handles the creation of Catspeak cartridges
 ///
 /// @experimental
@@ -28,6 +32,32 @@ function CatspeakCartWriter() constructor {
 {% endfor %}
     /// @ignore
     isAlive = true;
+    /// @ignore
+    completedChunks = ds_list_create();
+    /// @ignore
+    chunkStack = ds_stack_create();
+
+    /// Frees any dynamically allocated resources managed by this writer.
+    ///
+    /// @warning
+    ///   This **must** be called in a `finally` block if you expect exceptions.
+    static destroy = function () {
+        if (!isAlive) {
+            return;
+        }
+        var completedChunks_ = completedChunks;
+        for (var i = ds_list_size(completedChunks_) - 1; i >= 0; i -= 1) {
+            var chunk = completedChunks_[| i];
+            buffer_delete(chunk);
+        }
+        ds_list_destroy(completedChunks_);
+        repeat (ds_stack_size(chunkStack)) {
+            var chunk = ds_stack_pop(chunkStack);
+            buffer_delete(chunk);
+        }
+        ds_stack_destroy(chunkStack);
+        isAlive = false;
+    };
 
     /// Writes the contents of this builder to the given buffer. If no buffer
     /// is supplied then a new, fresh buffer is allocated and returned.
@@ -44,7 +74,6 @@ function CatspeakCartWriter() constructor {
     ///   buffer with an alignment of 1.
     static finalise = function (buff = undefined) {
         __catspeak_assert(isAlive, "cannot call `finalise` method twice");
-        isAlive = false;
         var cart;
         if (buff == undefined) {
             cart = buffer_create(1, buffer_grow, 1);
@@ -68,8 +97,56 @@ function CatspeakCartWriter() constructor {
 {% for meta in MetaItem.enum(ir) %}
         buffer_write(cart, {{ meta.type_buffer }}, {{ meta.name_id }} ?? {{ meta.value_lit }});
 {% endfor %}
+        // write functions
+        __catspeak_assert_eq(0, ds_stack_size(chunkStack),
+            "missing calls to `popFunction`"
+        );
+        var completedChunks_ = completedChunks;
+        var chunkCount = ds_list_size(completedChunks_);
+        var offset = buffer_tell(cart);
+        for (var i = 0; i < chunkCount; i += 1) {
+            var chunk = completedChunks_[| i];
+            var chunkSize = buffer_tell(chunk);
+            buffer_copy(chunk, 0, chunkSize, cart, offset);
+            offset += chunkSize;
+        }
+        buffer_seek(cart, buffer_seek_start, offset);
+        // 0xFF indicates the end of the program section
+        buffer_write(cart, {{ opcode_type_buffer }}, {{ opcode_eof }});
+        destroy();
         return cart;
     };
+
+    /// TODO
+    static pushFunction = function () {
+        ds_stack_push(chunkStack, buffer_create(1, buffer_grow, 1));
+    };
+
+    /// TODO
+    static popFunction = function () {
+        var chunk = ds_stack_pop(chunkStack);
+        __catspeak_assert(chunk != undefined, "unbalanced function stack");
+        buffer_write(chunk, {{ opcode_type_buffer }}, 0);
+        ds_list_add(completedChunks, chunk);
+        return ds_list_size(completedChunks) - 1;
+    };
+
+{% for instr in InstrItem.enum(ir) %}
+{%  set instr_writer = "emit" + case_camel_upper(instr.name) %}
+{%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr.name_short) %}
+    /// TODO
+    static {{ instr_writer }} = function ({{
+        join(", ", args(InstrArgItem.enum(instr.ir)) + ["dbg = CATSPEAK_NOLOCATION"])
+    }}) {
+        var chunk = ds_stack_top(chunkStack);
+        __catspeak_assert(chunk != undefined, "function stack empty");
+        buffer_write(chunk, {{ opcode_type_buffer }}, {{ instr_enum }});
+        buffer_write(chunk, {{ dbg_type_buffer }}, dbg);
+{%  for arg in InstrArgItem.enum(instr.ir) %}
+        buffer_write(chunk, {{ arg.type_buffer }}, {{ arg.name_id }});
+{%  endfor %}
+    };
+{% endfor %}
 }
 
 /// Returns the version number of this Catspeak cartridge, or 0 if the
@@ -144,25 +221,79 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 {% for meta in MetaItem.enum(ir) %}
     var {{ meta.name_id }} = buffer_read(cart_, {{ meta.type_buffer }});
 {% endfor %}
-    visitor_.handleMeta({
-{% for meta in MetaItem.enum(ir) %}
-        {{ meta.name_id }} : {{ meta.name_id }},
-{% endfor %}
-    });
+    visitor_.handleMeta({{ join(", ", args(MetaItem.enum(ir))) }});
 
     /// @ignore
     cart = cart_;
     /// @ignore
     visitor = visitor_;
+    /// @ignore
+    funcIdx = 0;
 
     /// Reads the next instruction if it exists, calling its handler.
     ///
     /// If there are more instructions left to be read, then this function will
     /// return `true`. If all instructions have been read, then `false` is
-    /// returned, and the buffers seek is set to the end of the Cartidge.
+    /// returned, and the buffer seek is set to the **end of the Cartidge**.
     ///
     /// @return {Bool}
     static readInstr = function () {
-        return false;
+        var cart_ = cart;
+        __catspeak_assert(cart_ != undefined,
+            "called `readInstr` after reaching end of cartridge"
+        );
+        var opcode = buffer_read(cart_, {{ opcode_type_buffer }});
+        if (opcode == {{ opcode_eof }}) {
+            // we've reached the end
+            cart_ = undefined;
+            return false;
+        }
+        __catspeak_assert(opcode >= 0 && opcode < __CatspeakInstr.__SIZE__,
+            "invalid cartridge instruction: " + string(opcode)
+        );
+        var instrReader = __readerLookup[opcode];
+        instrReader();
+        return true;
     };
+
+    /// @ignore
+    static __readFunc = function () {
+        visitor.handleFunc(funcIdx);
+        funcIdx += 1;
+    };
+
+{% for instr in InstrItem.enum(ir) %}
+{%  set instr_reader = "__readI" + case_camel_upper(instr.name) %}
+    /// @ignore
+    static {{ instr_reader }} = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, {{ dbg_type_buffer }});
+{%  for arg in InstrArgItem.enum(instr.ir) %}
+        var {{ arg.name_id }} = buffer_read(cart_, {{ arg.type_buffer }});
+{%  endfor %}
+        visitor.{{ instr.name_handler }}({{
+            join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
+        }});
+    };
+{% endfor %}
+
+    /// @ignore
+    static __readerLookup = undefined;
+    if (__readerLookup == undefined) {
+        __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
+        __readerLookup[@ 0] = __readFunc;
+{% for instr in InstrItem.enum(ir) %}
+{%  set instr_reader = "__readI" + case_camel_upper(instr.name) %}
+{%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr.name_short) %}
+        __readerLookup[@ {{ instr_enum }}] = {{ instr_reader }};
+{% endfor %}
+    }
+}
+
+/// @ignore
+enum __CatspeakInstr {
+{% for instr in InstrItem.enum(ir) %}
+    {{ case_snake_upper(instr.name_short) }} = {{ instr.opcode }},
+{% endfor %}
+    __SIZE__ = {{ InstrItem.max_opcode(ir) + 1 }},
 }

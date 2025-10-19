@@ -57,16 +57,15 @@ meta:
     desc: "the date this cartridge was compiled, in Unix time"
     type: u32
 
-# Next, is the program section. This consists of a single number
-# representing the number of function definitions defined in this cartridge,
-# followed by exactly that many function definitions.
-
-func-n-type: u32
+# Next, is the program section. This is where the executable code of a
+# Catspeak cartridge lives, and consists of a sequence of function definitions
+# terminated by `\0` (null).
 
 # A function definition consists of two parts:
 # * A sequence of instructions, terminated by `\0` (null) ...
 
-instr-opcode-type: u8 #< The underlying type used for opcodes.
+instr-opcode-type: u8 #< The type used for opcodes.
+instr-dbg-type: u32   #< The type used for debug info.
 instr:
 
 # - name: "example"                     #< The name of the instruction.
@@ -89,10 +88,6 @@ instr:
       - name: value
         desc: "the number to emit"
         type: f64
-      - name: dbg
-        desc: "the approximate location of the number in the source code"
-        type: u32
-        default: CATSPEAK_NOLOCATION
     comptime: $value$
 
 # * ... Followed by information about the enclosing function this sequence of
@@ -110,3 +105,8 @@ func:
 # * There is no padding or alignment applied to instructions, and they are
 #   packed as closely together as possible, despite not having a consistent
 #   length.
+
+# Finally, every cartridge ends with 0xFF of type u8. (The same type as
+# `instr-opcode-type`!)
+
+program-end-signal: 0xFF
