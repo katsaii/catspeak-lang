@@ -63,7 +63,7 @@ def args(iter_):
 
 @jinja2_export
 def ir_enum(collection, idx):
-    iter_ = collection[idx]
+    iter_ = collection.get(idx, [])
     iter_order = collection.get(f"{idx}-order")
     if iter_order == None:
         if type(iter_) == dict:
@@ -78,9 +78,9 @@ def ir_enum(collection, idx):
 def type_to_gml_literal(type_name, value=None):
     match type_name:
         case "i32" | "u32" | "f64" | "u8":
-            return value if value else "0"
+            return str(value) if value != None else "0"
         case "string":
-            if value:
+            if value != None:
                 if all(ch != '"' for ch in value):
                     return f"\"{value}\""
                 else:
@@ -177,19 +177,23 @@ class InstrArgItem():
 
 @jinja2_export
 class InstrInlineItem():
-    def __init__(self, ir):
+    def __init__(self, args, ir):
+        arg_2_types = { arg.name: arg.type for arg in args }
         self.ir = ir
         self.name = ir["name"]
         if not all(ch.isalnum() or ch == "_" for ch in self.name):
             raise Exception("force-inline names must be alphanumeric")
-        self.conditions = ir.get("conditions", [])
-        self.condition_args = [name for name, _ in self.conditions]
+        self.conditions = {
+            name: type_to_gml_literal(arg_2_types[name], value)
+            for name, value in ir.get("conditions", [])
+        }
 
     def has_default_impl(ir):
         return not ir.get("force-inline-always", False)
 
     def enum(ir):
-        return (InstrInlineItem(ir_) for _, ir_ in ir_enum(ir, "force-inline"))
+        args = [x for x in InstrArgItem.enum(ir)]
+        return (InstrInlineItem(args, ir_) for _, ir_ in ir_enum(ir, "force-inline"))
 
 @jinja2_export
 class FuncItem():

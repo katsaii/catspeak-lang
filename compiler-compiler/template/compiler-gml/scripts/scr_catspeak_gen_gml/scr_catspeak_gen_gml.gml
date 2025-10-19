@@ -91,8 +91,8 @@ function CatspeakGenGML() constructor {
         }, __catspeak_function_simple__);
         funcs[| idx] = func;
     };
-
 {% for instr in InstrItem.enum(ir) %}
+
     /// @ignore
     static {{ instr.name_handler }} = function ({{
         join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
@@ -101,15 +101,15 @@ function CatspeakGenGML() constructor {
 {#   special case for inlined arguments #}
 {%   for inlined in InstrInlineItem.enum(instr.ir) %}
         if (
-{%-   for condition in inlined.conditions -%}
-            {{- condition[0] }} == {{ condition[1] -}}
+{%-   for name, value_lit in inlined.conditions.items() -%}
+            {{- name }} == {{ value_lit -}}
             {{- " && " if not loop.last else "" -}}
 {%-   endfor -%}
         ) {
             exec = method({
                 ctx : ctx,
 {%    for arg in InstrArgItem.enum(instr.ir) %}
-{%     if arg.name not in inlined.condition_args %}
+{%     if arg.name not in inlined.conditions %}
                 {{ arg.name }} : {{ arg.name }},
 {%     endif %}
 {%    endfor %}
@@ -141,7 +141,6 @@ function __catspeak_function_simple__() {
 }
 
 // automatically generated instructions below (here be dragons)
-
 {# generate comptime instructions #}
 {% for instr in InstrItem.enum(ir) %}
 {%  if instr.comptime != None %}
@@ -151,14 +150,15 @@ function __catspeak_function_simple__() {
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
 {%    endfor %}
+
 /// @ignore
 function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
 {%   endif %}
 {#   special case for inlined arguments #}
 {%   for inlined in InstrInlineItem.enum(instr.ir) %}
 {%    set ns.expr = expr_stackargs %}
-{%    for condition in inlined.conditions %}
-{%     set ns.expr = ns.expr.replace("$" + condition[0] + "$", str(condition[1])) %}
+{%-   for name, value_lit in inlined.conditions.items() -%}
+{%     set ns.expr = ns.expr.replace("$" + name + "$", value_lit) %}
 {%    endfor %}
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}

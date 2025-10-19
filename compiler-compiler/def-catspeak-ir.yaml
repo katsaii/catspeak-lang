@@ -90,24 +90,70 @@ instr:
         type: f64
     comptime: $value$
     force-inline:
-      - name: n1
-        conditions:
-          - [value, -1]
       - name: "0"
         conditions:
           - [value, 0]
-      - name: "1"
+      - name: "1" #< Common in incrementation e.g. x += 1
         conditions:
           - [value, 1]
-      - name: "2"
+      - name: "2" #< Common in divisions e.g. x /= 2
         conditions:
           - [value, 2]
+      - name: "3"
+        conditions:
+          - [value, 3]
+      - name: "5"
+        conditions:
+          - [value, 5]
+      - name: "10"
+        conditions:
+          - [value, 10]
+      - name: "100"     #< Common when dealing with percentages.
+        conditions:
+          - [value, 100]
+      - name: "1000"    #< Common when converting between s and ms.
+        conditions:
+          - [value, 1000]
+      - name: "1000000" #< Common when converting between s and us.
+        conditions:
+          - [value, 1000000]
+
+  - name: "const string"
+    name-short: get_s
+    desc: "get a string constant"
+    opcode: 0x03
+    args:
+      - name: value
+        desc: "the string to emit"
+        type: string
+    comptime: $value$
+    force-inline:
+      - name: empty
+        conditions:
+          - [value, ""]
+      - name: star  #< Common when dealing with files. (GLOB patterns)
+        conditions:
+          - [value, "*"]
+      - name: slash #< Common when dealing with file paths.
+        conditions:
+          - [value, "/"]
+      - name: x
+        conditions:
+          - [value, "x"]
+      - name: y
+        conditions:
+          - [value, "y"]
+
+  - name: "const undefined"
+    name-short: get_u
+    desc: "get the undefined constant"
+    opcode: 0x23
+    comptime: undefined
 
 # * ... Followed by information about the enclosing function this sequence of
 #   instructions belongs to.
 
 func:
-  locals-type: u32
 
 # Notes:
 #

@@ -99,4 +99,15 @@ function __CatspeakCartDisassembler() constructor {
         out += "  " + string(value);
         __writeDbg(dbg);
     };
+    /// @ignore
+    static handleInstrConstString = function (dbg, value) {
+        out += "\n  get_s";
+        out += "  " + string(value);
+        __writeDbg(dbg);
+    };
+    /// @ignore
+    static handleInstrConstUndefined = function (dbg) {
+        out += "\n  get_u";
+        __writeDbg(dbg);
+    };
 }

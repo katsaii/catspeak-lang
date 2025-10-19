@@ -105,11 +105,6 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
         var exec;
-        if (value == -1) {
-            exec = method({
-                ctx : ctx,
-            }, __catspeak_instr_get_n_n1__);
-        } else
         if (value == 0) {
             exec = method({
                 ctx : ctx,
@@ -125,10 +120,86 @@ function CatspeakGenGML() constructor {
                 ctx : ctx,
             }, __catspeak_instr_get_n_2__);
         } else
+        if (value == 3) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_3__);
+        } else
+        if (value == 5) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_5__);
+        } else
+        if (value == 10) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_10__);
+        } else
+        if (value == 100) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_100__);
+        } else
+        if (value == 1000) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_1000__);
+        } else
+        if (value == 1000000) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_1000000__);
+        } else
         exec = method({
             ctx : ctx,
             value : value,
         }, __catspeak_instr_get_n__);
+        // TODO :: debug information
+        ds_stack_push(exprStack, exec);
+    };
+
+    /// @ignore
+    static handleInstrConstString = function (dbg, value) {
+        var exec;
+        if (value == "") {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_s_empty__);
+        } else
+        if (value == "*") {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_s_star__);
+        } else
+        if (value == "/") {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_s_slash__);
+        } else
+        if (value == "x") {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_s_x__);
+        } else
+        if (value == "y") {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_s_y__);
+        } else
+        exec = method({
+            ctx : ctx,
+            value : value,
+        }, __catspeak_instr_get_s__);
+        // TODO :: debug information
+        ds_stack_push(exprStack, exec);
+    };
+
+    /// @ignore
+    static handleInstrConstUndefined = function (dbg) {
+        var exec;
+        exec = method({
+            ctx : ctx,
+        }, __catspeak_instr_get_u__);
         // TODO :: debug information
         ds_stack_push(exprStack, exec);
     };
@@ -145,9 +216,6 @@ function __catspeak_function_simple__() {
 function __catspeak_instr_get_n__() { return value }
 
 /// @ignore
-function __catspeak_instr_get_n_n1__() { return -1 }
-
-/// @ignore
 function __catspeak_instr_get_n_0__() { return 0 }
 
 /// @ignore
@@ -155,3 +223,42 @@ function __catspeak_instr_get_n_1__() { return 1 }
 
 /// @ignore
 function __catspeak_instr_get_n_2__() { return 2 }
+
+/// @ignore
+function __catspeak_instr_get_n_3__() { return 3 }
+
+/// @ignore
+function __catspeak_instr_get_n_5__() { return 5 }
+
+/// @ignore
+function __catspeak_instr_get_n_10__() { return 10 }
+
+/// @ignore
+function __catspeak_instr_get_n_100__() { return 100 }
+
+/// @ignore
+function __catspeak_instr_get_n_1000__() { return 1000 }
+
+/// @ignore
+function __catspeak_instr_get_n_1000000__() { return 1000000 }
+
+/// @ignore
+function __catspeak_instr_get_s__() { return value }
+
+/// @ignore
+function __catspeak_instr_get_s_empty__() { return "" }
+
+/// @ignore
+function __catspeak_instr_get_s_star__() { return "*" }
+
+/// @ignore
+function __catspeak_instr_get_s_slash__() { return "/" }
+
+/// @ignore
+function __catspeak_instr_get_s_x__() { return "x" }
+
+/// @ignore
+function __catspeak_instr_get_s_y__() { return "y" }
+
+/// @ignore
+function __catspeak_instr_get_u__() { return undefined }

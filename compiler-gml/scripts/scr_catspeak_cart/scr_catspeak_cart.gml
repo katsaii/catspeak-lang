@@ -178,6 +178,24 @@ function CatspeakCartWriter() constructor {
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_f64, value);
     };
+    /// Get a string constant.
+    ///
+    /// @param {String} [value]
+    ///     
+    static emitConstString = function (value, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_S);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_string, value);
+    };
+    /// Get the undefined constant.
+    static emitConstUndefined = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_U);
+        buffer_write(chunk, buffer_u32, dbg);
+    };
 }
 
 /// Returns the version number of this Catspeak cartridge, or `0` if the
@@ -239,6 +257,8 @@ function catspeak_cart_version(cart) {
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
 ///   - `.handleInstrConstNumber(dbg, value)`
+///   - `.handleInstrConstString(dbg, value)`
+///   - `.handleInstrConstUndefined(dbg)`
 function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(cart_, __catspeak_is_buffer,
         "buffer doesn't exist"
@@ -331,6 +351,19 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var value = buffer_read(cart_, buffer_f64);
         visitor.handleInstrConstNumber(dbg, value);
     };
+    /// @ignore
+    static __readIConstString = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var value = buffer_read(cart_, buffer_string);
+        visitor.handleInstrConstString(dbg, value);
+    };
+    /// @ignore
+    static __readIConstUndefined = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrConstUndefined(dbg);
+    };
 
     /// @ignore
     static __readerLookup = undefined;
@@ -338,11 +371,15 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
         __readerLookup[@ __CatspeakInstr.GET_N] = __readIConstNumber;
+        __readerLookup[@ __CatspeakInstr.GET_S] = __readIConstString;
+        __readerLookup[@ __CatspeakInstr.GET_U] = __readIConstUndefined;
     }
 }
 
 /// @ignore
 enum __CatspeakInstr {
     GET_N = 1,
-    __SIZE__ = 2,
+    GET_S = 3,
+    GET_U = 35,
+    __SIZE__ = 36,
 }
