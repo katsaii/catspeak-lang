@@ -169,14 +169,14 @@ function CatspeakCartWriter() constructor {
 
     /// Get a numeric constant.
     ///
-    /// @param {Real} []
+    /// @param {Real} [value]
     ///     
     static emitConstNumber = function (value, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_N);
         buffer_write(chunk, buffer_u32, dbg);
-        buffer_write(chunk, buffer_f64, );
+        buffer_write(chunk, buffer_f64, value);
     };
 }
 
@@ -236,7 +236,7 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - `.handleMeta(name, author, version, version-minor, patch, path, date)` (always invoked first)
+///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
 ///   - `.handleInstrConstNumber(dbg, value)`
 function CatspeakCartReader(cart_, visitor_) constructor {
@@ -283,7 +283,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     var patch = buffer_read(cart_, buffer_u8);
     var path = buffer_read(cart_, buffer_string);
     var date = buffer_read(cart_, buffer_u32);
-    visitor_.handleMeta(name, author, version, version-minor, patch, path, date);
+    visitor_.handleMeta(name, author, version, versionMinor, patch, path, date);
 
     /// @ignore
     cart = cart_;
@@ -328,7 +328,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readIConstNumber = function () {
         var cart_ = cart;
         var dbg = buffer_read(cart_, buffer_u32);
-        var  = buffer_read(cart_, buffer_f64);
+        var value = buffer_read(cart_, buffer_f64);
         visitor.handleInstrConstNumber(dbg, value);
     };
 

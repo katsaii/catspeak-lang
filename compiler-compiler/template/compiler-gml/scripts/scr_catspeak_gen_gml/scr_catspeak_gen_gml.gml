@@ -117,12 +117,18 @@ function CatspeakGenGML() constructor {
         } else
 {%   endfor %}
 {#  default case for instructions #}
+{%  if InstrInlineItem.has_default_impl(instr.ir) %}
         exec = method({
             ctx : ctx,
-{%  for arg in InstrArgItem.enum(instr.ir) %}
+{%   for arg in InstrArgItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
-{%  endfor %}
+{%   endfor %}
         }, __catspeak_instr_{{ instr.name_id_op }}__);
+{%  else %}
+        __catspeak_error(
+            "instruction {{ instr.name_short }} has no implementation for the given args"
+        );
+{%  endif %}
         // TODO :: debug information
         ds_stack_push(exprStack, exec);
     };
@@ -134,16 +140,20 @@ function __catspeak_function_simple__() {
     return body();
 }
 
+// automatically generated instructions below (here be dragons)
+
 {# generate comptime instructions #}
 {% for instr in InstrItem.enum(ir) %}
 {%  if instr.comptime != None %}
 {%   set ns = namespace(expr = instr.comptime) %}
 {%   set expr_stackargs = ns.expr %}
-{%   for arg in InstrArgItem.enum(instr.ir) %}
-{%    set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
-{%   endfor %}
+{%   if InstrInlineItem.has_default_impl(instr.ir) %}
+{%    for arg in InstrArgItem.enum(instr.ir) %}
+{%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
+{%    endfor %}
 /// @ignore
 function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
+{%   endif %}
 {#   special case for inlined arguments #}
 {%   for inlined in InstrInlineItem.enum(instr.ir) %}
 {%    set ns.expr = expr_stackargs %}

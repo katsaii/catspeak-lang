@@ -145,9 +145,9 @@ function CatspeakCartWriter() constructor {
 {%  for arg in InstrArgItem.enum(instr.ir) %}
     ///
 {%   if arg.value_default == None %}
-    /// @param {{ arg.type_feather }} {{ arg.name_id }}
+    /// @param {{ arg.type_feather }} {{ arg.name }}
 {%   else %}
-    /// @param {{ arg.type_feather }} [{{ arg.name_id }}]
+    /// @param {{ arg.type_feather }} [{{ arg.name }}]
 {%   endif %}
     ///     {{ case_sentence(arg.desc) }}
 {%  endfor %}
@@ -159,7 +159,7 @@ function CatspeakCartWriter() constructor {
         buffer_write(chunk, {{ opcode_type_buffer }}, {{ instr_enum }});
         buffer_write(chunk, {{ dbg_type_buffer }}, dbg);
 {%  for arg in InstrArgItem.enum(instr.ir) %}
-        buffer_write(chunk, {{ arg.type_buffer }}, {{ arg.name_id }});
+        buffer_write(chunk, {{ arg.type_buffer }}, {{ arg.name }});
 {%  endfor %}
     };
 {% endfor %}
@@ -291,7 +291,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var cart_ = cart;
         var dbg = buffer_read(cart_, {{ dbg_type_buffer }});
 {%  for arg in InstrArgItem.enum(instr.ir) %}
-        var {{ arg.name_id }} = buffer_read(cart_, {{ arg.type_buffer }});
+        var {{ arg.name }} = buffer_read(cart_, {{ arg.type_buffer }});
 {%  endfor %}
         visitor.{{ instr.name_handler }}({{
             join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))

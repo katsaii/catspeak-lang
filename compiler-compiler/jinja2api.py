@@ -59,7 +59,7 @@ def join(sep, iter_):
 
 @jinja2_export
 def args(iter_):
-    return [x.name for x in iter_]
+    return [getattr(x, "name_id", x.name) for x in iter_]
 
 @jinja2_export
 def ir_enum(collection, idx):
@@ -184,6 +184,9 @@ class InstrInlineItem():
             raise Exception("force-inline names must be alphanumeric")
         self.conditions = ir.get("conditions", [])
         self.condition_args = [name for name, _ in self.conditions]
+
+    def has_default_impl(ir):
+        return not ir.get("force-inline-always", False)
 
     def enum(ir):
         return (InstrInlineItem(ir_) for _, ir_ in ir_enum(ir, "force-inline"))

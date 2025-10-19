@@ -55,7 +55,7 @@ function __CatspeakCartDisassembler() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, version-minor, patch, path, date
+        name, author, version, versionMinor, patch, path, date
     ) {
         if (name != "untitled") {
             out += "-- name:  " + string(name) + "\n";
@@ -96,7 +96,7 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
         out += "\n  get_n";
-        out += "  " + string();
+        out += "  " + string(value);
         __writeDbg(dbg);
     };
 }

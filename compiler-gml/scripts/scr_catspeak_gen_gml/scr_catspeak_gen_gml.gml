@@ -69,7 +69,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, version-minor, patch, path, date
+        name, author, version, versionMinor, patch, path, date
     ) {
         isAlive = true;
         exprStack = ds_stack_create();
@@ -138,6 +138,8 @@ function CatspeakGenGML() constructor {
 function __catspeak_function_simple__() {
     return body();
 }
+
+// automatically generated instructions below (here be dragons)
 
 /// @ignore
 function __catspeak_instr_get_n__() { return value }
