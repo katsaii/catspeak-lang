@@ -80,6 +80,279 @@ instr:
 #     - name: "m" #< Pop value off the stack, and associate it with a name.
 #       desc: "the number of additional hoops to jump through"
 
+  - name: "function"
+    name-short: get_fun
+    desc: "return a reference to a function"
+    opcode: 0x1C
+    args:
+      - name: idx
+        desc: "the numeric id of the function to get"
+        type: u32
+
+  - name: "if then else"
+    name-short: ifte
+    desc: "evaluate one of two expressions, depending on whether a condition is true or false"
+    opcode: 0x1C
+    stackargs:
+      - name: condition
+        desc: "the condition to check for"
+      - name: if_true
+        desc: "the code to run if the condition evaluates to true"
+      - name: if_false
+        desc: "the code to run if the condition evaluates to false"
+    comptime: "$condition$ ? $if_true$ : $if_false$"
+
+  - name: "or"
+    desc: "calculate the logical OR of two values"
+    opcode: 0x13
+    stackargs:
+      - name: eager
+        desc: "the left-hand-side value of the expression"
+      - name: lazy
+        desc: "the right-hand-side value of the expression, only evaluated if `eager` is falsy"
+    comptime: $eager$ || $lazy$
+
+  - name: "xor"
+    desc: "calculate the logical XOR of two values"
+    opcode: 0x14
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ ^^ $rhs$
+
+  - name: "and"
+    desc: "calculate the logical AND of two values"
+    opcode: 0x12
+    stackargs:
+      - name: eager
+        desc: "the left-hand-side value of the expression"
+      - name: lazy
+        desc: "the right-hand-side value of the expression, only evaluated if `eager` is truthy"
+    comptime: $eager$ && $lazy$
+
+  - name: "equal"
+    name-short: eq
+    desc: "check whether two values are equal"
+    opcode: 0x0B
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the equality"
+      - name: rhs
+        desc: "the right-hand-side value of the equality"
+    comptime: $lhs$ == $rhs$
+
+  - name: "not equal"
+    name-short: neq
+    desc: "check whether two values are NOT equal"
+    opcode: 0x0C
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the equality"
+      - name: rhs
+        desc: "the right-hand-side value of the equality"
+    comptime: $lhs$ != $rhs$
+
+  - name: "less than"
+    name-short: lt
+    desc: "check whether a value is less than another"
+    opcode: 0x0F
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ < $rhs$
+
+  - name: "less than or equal to"
+    name-short: leq
+    desc: "check whether a value is less than or equal to another"
+    opcode: 0x10
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ <= $rhs$
+
+  - name: "greater than"
+    name-short: gt
+    desc: "check whether a value is greater than another"
+    opcode: 0x0D
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ > $rhs$
+
+  - name: "greater than or equal to"
+    name-short: geq
+    desc: "check whether a value is greater than or equal to another"
+    opcode: 0x0E
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the inequality"
+      - name: rhs
+        desc: "the right-hand-side value of the inequality"
+    comptime: $lhs$ >= $rhs$
+
+  - name: "bitwise and"
+    name-short: band
+    desc: "calculate the bitwise AND of two values"
+    opcode: 0x16
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ & $rhs$
+
+  - name: "bitwise or"
+    name-short: bor
+    desc: "calculate the bitwise OR of two values"
+    opcode: 0x17
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ | $rhs$
+
+  - name: "bitwise xor"
+    name-short: bxor
+    desc: "calculate the bitwise XOR of two values"
+    opcode: 0x18
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the expression"
+      - name: rhs
+        desc: "the right-hand-side value of the expression"
+    comptime: $lhs$ ^ $rhs$
+
+  - name: "bitwise shift left"
+    name-short: lshift
+    desc: "calculate the bitwise left shift of two values"
+    opcode: 0x1A
+    stackargs:
+      - name: value
+        desc: "the value to shift"
+      - name: amount
+        desc: "the amount of bits to shift left by"
+    comptime: $value$ << $amount$
+
+  - name: "bitwise shift right"
+    name-short: rshift
+    desc: "calculate the bitwise right shift of two values"
+    opcode: 0x19
+    stackargs:
+      - name: value
+        desc: "the value to shift"
+      - name: amount
+        desc: "the amount of bits to shift right by"
+    comptime: $value$ >> $amount$
+
+  - name: "add"
+    desc: "calculate the sum of two values"
+    opcode: 0x05
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the sum"
+      - name: rhs
+        desc: "the right-hand-side value of the sum"
+    comptime: $lhs$ + $rhs$
+
+  - name: "subtract"
+    name-short: sub
+    desc: "calculate the difference of two values"
+    opcode: 0x0A
+    stackargs:
+      - name: lhs
+        desc: "the value to subtract from"
+      - name: rhs
+        desc: "the value to subtract"
+    comptime: $lhs$ - $rhs$
+
+  - name: "multiply"
+    name-short: mult
+    desc: "calculate the product of two values"
+    opcode: 0x07
+    stackargs:
+      - name: lhs
+        desc: "the left-hand-side value of the product"
+      - name: rhs
+        desc: "the right-hand-side value of the product"
+    comptime: $lhs$ * $rhs$
+
+  - name: "divide"
+    name-short: div
+    desc: "calculate the division of two values"
+    opcode: 0x08
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ / $rhs$
+
+  - name: "divide int"
+    name-short: idiv
+    desc: "calculate the integer division of two values"
+    opcode: 0x09
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ div $rhs$
+
+  - name: "remainder"
+    name-short: rem
+    desc: "calculate the remainder of two values"
+    opcode: 0x06
+    stackargs:
+      - name: lhs
+        desc: "the dividend"
+      - name: rhs
+        desc: "the divisor"
+    comptime: $lhs$ % $rhs$
+
+  - name: "positive"
+    name-short: pos
+    desc: "calculate the positive of a value"
+    opcode: 0x21
+    stackargs:
+      - name: value
+        desc: "the value to add to 0"
+    comptime: +$value$
+
+  - name: "negative"
+    name-short: neg
+    desc: "calculate the negative of a value"
+    opcode: 0x20
+    stackargs:
+      - name: value
+        desc: "the value to subtract from 0"
+    comptime: -$value$
+
+  - name: "not"
+    desc: "calculate the logical negation of a value"
+    opcode: 0x11
+    stackargs:
+      - name: value
+        desc: "the value to negate"
+    comptime: "!$value$"
+
+  - name: "bitwise not"
+    name-short: bnot
+    desc: "calculate the bitwise negation of a value"
+    opcode: 0x15
+    stackargs:
+      - name: value
+        desc: "the value to bitwise negate"
+    comptime: ~$value$
+
   - name: "const number"
     name-short: get_n
     desc: "get a numeric constant"

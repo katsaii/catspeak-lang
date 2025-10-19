@@ -137,20 +137,20 @@ function CatspeakCartWriter() constructor {
         chunkTop -= 1;
         return idx;
     };
-
 {% for instr in InstrItem.enum(ir) %}
 {%  set instr_writer = "emit" + case_camel_upper(instr.name) %}
 {%  set instr_enum = "__CatspeakInstr." + case_snake_upper(instr.name_short) %}
+
     /// {{ case_sentence(instr.desc) }}
 {%  for arg in InstrArgItem.enum(instr.ir) %}
     ///
-{%   if arg.value_default == None %}
     /// @param {{ arg.type_feather }} {{ arg.name }}
-{%   else %}
-    /// @param {{ arg.type_feather }} [{{ arg.name }}]
-{%   endif %}
-    ///     {{ case_sentence(arg.desc) }}
+    ///   {{ case_sentence(arg.desc) }}
 {%  endfor %}
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
     static {{ instr_writer }} = function ({{
         join(", ", args(InstrArgItem.enum(instr.ir)) + ["dbg = CATSPEAK_NOLOCATION"])
     }}) {
@@ -283,9 +283,9 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
     };
-
 {% for instr in InstrItem.enum(ir) %}
 {%  set instr_reader = "__readI" + case_camel_upper(instr.name) %}
+
     /// @ignore
     static {{ instr_reader }} = function () {
         var cart_ = cart;

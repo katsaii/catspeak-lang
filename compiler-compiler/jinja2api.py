@@ -1,7 +1,7 @@
 import jinja2
 
 JINJA2_FUNCS = [
-    map, max, min, len, str,
+    map, max, min, len, str, list,
 ]
 
 def jinja2_export(func):
@@ -168,12 +168,26 @@ class InstrArgItem():
         self.name = ir["name"]
         if not all(ch.isalnum() or ch == "_" for ch in self.name):
             raise Exception("argument names must be alphanumeric")
+        self.desc = ir["desc"]
         self.type = ir["type"]
         self.type_buffer = type_to_gml_buffer(self.type)
         self.type_feather = type_to_gml_feather(self.type)
 
     def enum(ir):
         return (InstrArgItem(idx, ir_) for idx, ir_ in ir_enum(ir, "args"))
+
+@jinja2_export
+class InstrStackargItem():
+    def __init__(self, idx, ir):
+        self.idx = idx
+        self.ir = ir
+        self.name = ir["name"]
+        if not all(ch.isalnum() or ch == "_" for ch in self.name):
+            raise Exception("argument names must be alphanumeric")
+        self.desc = ir["desc"]
+
+    def enum(ir):
+        return (InstrStackargItem(idx, ir_) for idx, ir_ in ir_enum(ir, "stackargs"))
 
 @jinja2_export
 class InstrInlineItem():

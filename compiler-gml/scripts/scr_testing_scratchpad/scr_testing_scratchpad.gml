@@ -17,7 +17,11 @@ TEST_EXPERIMENT "catspeak4-cart" {
     writer.author = "me";
     writer.path = "https://katsaii.com/joe/mama.meow"
     writer.pushFunction();
-    writer.emitConstNumber(123, catspeak_location_create(1, 1));
+    writer.emitConstNumber(1);
+    writer.emitConstNumber(2);
+    writer.emitConstNumber(3);
+    writer.emitMultiply();
+    writer.emitAdd();
     writer.popFunction();
     var cart = writer.finalise();
     buffer_seek(cart, buffer_seek_start, 0);
@@ -26,9 +30,9 @@ TEST_EXPERIMENT "catspeak4-cart" {
     do {
         var keepReading = reader.readInstr();
     } until (!keepReading);
-    //show_message(catspeak_cart_disassemble(cart, 0));
     var f = codegen.finalise();
     show_message(f());
+    show_message(catspeak_cart_disassemble(cart, 0));
 }
 
 /*

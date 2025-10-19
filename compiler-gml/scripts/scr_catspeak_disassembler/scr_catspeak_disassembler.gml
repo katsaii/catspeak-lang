@@ -94,17 +94,169 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrIfThenElse = function (dbg) {
+        out += "\n  ifte";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrOr = function (dbg) {
+        out += "\n  or";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrXor = function (dbg) {
+        out += "\n  xor";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrAnd = function (dbg) {
+        out += "\n  and";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrEqual = function (dbg) {
+        out += "\n  eq";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrNotEqual = function (dbg) {
+        out += "\n  neq";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrLessThan = function (dbg) {
+        out += "\n  lt";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrLessThanOrEqualTo = function (dbg) {
+        out += "\n  leq";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrGreaterThan = function (dbg) {
+        out += "\n  gt";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrGreaterThanOrEqualTo = function (dbg) {
+        out += "\n  geq";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseAnd = function (dbg) {
+        out += "\n  band";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseOr = function (dbg) {
+        out += "\n  bor";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseXor = function (dbg) {
+        out += "\n  bxor";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseShiftLeft = function (dbg) {
+        out += "\n  lshift";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseShiftRight = function (dbg) {
+        out += "\n  rshift";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrAdd = function (dbg) {
+        out += "\n  add";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrSubtract = function (dbg) {
+        out += "\n  sub";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrMultiply = function (dbg) {
+        out += "\n  mult";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrDivide = function (dbg) {
+        out += "\n  div";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrDivideInt = function (dbg) {
+        out += "\n  idiv";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrRemainder = function (dbg) {
+        out += "\n  rem";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrPositive = function (dbg) {
+        out += "\n  pos";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrNegative = function (dbg) {
+        out += "\n  neg";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrNot = function (dbg) {
+        out += "\n  not";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrBitwiseNot = function (dbg) {
+        out += "\n  bnot";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
         out += "\n  get_n";
         out += "  " + string(value);
         __writeDbg(dbg);
     };
+
     /// @ignore
     static handleInstrConstString = function (dbg, value) {
         out += "\n  get_s";
         out += "  " + string(value);
         __writeDbg(dbg);
     };
+
     /// @ignore
     static handleInstrConstUndefined = function (dbg) {
         out += "\n  get_u";

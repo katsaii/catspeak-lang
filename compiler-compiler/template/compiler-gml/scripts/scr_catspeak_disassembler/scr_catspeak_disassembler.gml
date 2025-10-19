@@ -70,8 +70,8 @@ function __CatspeakCartDisassembler() constructor {
             out += ":" + string(catspeak_location_get_column(dbg));
         }
     };
-
 {% for instr in InstrItem.enum(ir) %}
+
     /// @ignore
     static {{ instr.name_handler }} = function ({{
         join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))

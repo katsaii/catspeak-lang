@@ -97,30 +97,41 @@ function CatspeakGenGML() constructor {
     static {{ instr.name_handler }} = function ({{
         join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
     }}) {
+        var exprStack_ = exprStack;
+{#  pop stackargs in reverse order #}
+{%  for arg in list(InstrStackargItem.enum(instr.ir))[::-1] %}
+        var {{ arg.name }} = ds_stack_pop(exprStack_);
+{%  endfor %}
         var exec;
-{#   special case for inlined arguments #}
-{%   for inlined in InstrInlineItem.enum(instr.ir) %}
+{#  special case for inlined arguments #}
+{%  for inlined in InstrInlineItem.enum(instr.ir) %}
         if (
-{%-   for name, value_lit in inlined.conditions.items() -%}
+{%-  for name, value_lit in inlined.conditions.items() -%}
             {{- name }} == {{ value_lit -}}
             {{- " && " if not loop.last else "" -}}
-{%-   endfor -%}
+{%-  endfor -%}
         ) {
             exec = method({
                 ctx : ctx,
-{%    for arg in InstrArgItem.enum(instr.ir) %}
-{%     if arg.name not in inlined.conditions %}
+{%   for arg in InstrArgItem.enum(instr.ir) %}
+{%    if arg.name not in inlined.conditions %}
                 {{ arg.name }} : {{ arg.name }},
-{%     endif %}
-{%    endfor %}
+{%    endif %}
+{%   endfor %}
+{%   for arg in InstrStackargItem.enum(instr.ir) %}
+                {{ arg.name }} : {{ arg.name }},
+{%   endfor %}
             }, __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__);
         } else
-{%   endfor %}
+{%  endfor %}
 {#  default case for instructions #}
 {%  if InstrInlineItem.has_default_impl(instr.ir) %}
         exec = method({
             ctx : ctx,
 {%   for arg in InstrArgItem.enum(instr.ir) %}
+            {{ arg.name }} : {{ arg.name }},
+{%   endfor %}
+{%   for arg in InstrStackargItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
 {%   endfor %}
         }, __catspeak_instr_{{ instr.name_id_op }}__);
@@ -130,7 +141,7 @@ function CatspeakGenGML() constructor {
         );
 {%  endif %}
         // TODO :: debug information
-        ds_stack_push(exprStack, exec);
+        ds_stack_push(exprStack_, exec);
     };
 {% endfor %}
 }
@@ -141,18 +152,20 @@ function __catspeak_function_simple__() {
 }
 
 // automatically generated instructions below (here be dragons)
+
 {# generate comptime instructions #}
 {% for instr in InstrItem.enum(ir) %}
 {%  if instr.comptime != None %}
 {%   set ns = namespace(expr = instr.comptime) %}
+{%   for arg in InstrStackargItem.enum(instr.ir) %}
+{%    set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name + "()") %}
+{%   endfor %}
 {%   set expr_stackargs = ns.expr %}
 {%   if InstrInlineItem.has_default_impl(instr.ir) %}
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
 {%    endfor %}
-
-/// @ignore
-function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
+/** @ignore */ function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
 {%   endif %}
 {#   special case for inlined arguments #}
 {%   for inlined in InstrInlineItem.enum(instr.ir) %}
@@ -163,9 +176,7 @@ function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
 {%    endfor %}
-
-/// @ignore
-function __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__() { return {{ ns.expr }} }
+/** @ignore */ function __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__() { return {{ ns.expr }} }
 {%   endfor %}
 {%  endif %}
 {% endfor %}
