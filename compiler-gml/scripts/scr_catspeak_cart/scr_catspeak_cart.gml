@@ -91,9 +91,11 @@ function CatspeakCartWriter() constructor {
     /// @param {Id.Buffer} [buff]
     ///   The buffer to write the cartridge to. Must be a `buffer_grow` type
     ///   buffer with an alignment of 1.
+    ///
+    /// @return {Id.Buffer}
     static finalise = function (buff = undefined) {
+        __catspeak_assert(isAlive, "cannot call `finalise` method twice");
         try {
-            __catspeak_assert(isAlive, "cannot call `finalise` method twice");
             var cart;
             if (buff == undefined) {
                 cart = buffer_create(1, buffer_grow, 1);
@@ -178,7 +180,7 @@ function CatspeakCartWriter() constructor {
     };
 }
 
-/// Returns the version number of this Catspeak cartridge, or 0 if the
+/// Returns the version number of this Catspeak cartridge, or `0` if the
 /// given buffer isn't a valid cartridge.
 ///
 /// @param {Id.Buffer} cart
@@ -234,7 +236,7 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)`
+///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
 ///   - `.handleInstrConstNumber(dbg, value)`
 function CatspeakCartReader(cart_, visitor_) constructor {

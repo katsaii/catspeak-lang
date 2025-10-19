@@ -63,6 +63,12 @@
 /// @return {String}
 #macro CATSPEAK_VERSION "4.0.0"
 
+/// The number of microseconds before a Catspeak program times out. The
+/// default is 1 second.
+///
+/// @return {Real}
+#macro CATSPEAK_TIMEOUT 1000
+
 #region LOCATION
 
 /// 0b00000000000011111111111111111111

@@ -8,11 +8,6 @@
 
 //# feather use syntax-errors
 
-/// The number of microseconds before a Catspeak program times out. The
-/// default is 1 second.
-///
-/// @return {Real}
-#macro CATSPEAK_TIMEOUT 1000
 /*
 /// TODO
 function CatspeakCodegenGML() constructor {

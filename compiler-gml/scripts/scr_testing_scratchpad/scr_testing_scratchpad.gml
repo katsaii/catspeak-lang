@@ -17,10 +17,18 @@ TEST_EXPERIMENT "catspeak4-cart" {
     writer.author = "me";
     writer.path = "https://katsaii.com/joe/mama.meow"
     writer.pushFunction();
-    writer.emitConstNumber(123, catspeak_location_create(10, 2));
+    writer.emitConstNumber(123, catspeak_location_create(1, 1));
     writer.popFunction();
     var cart = writer.finalise();
-    show_message(catspeak_cart_disassemble(cart, 0));
+    buffer_seek(cart, buffer_seek_start, 0);
+    var codegen = new CatspeakGenGML();
+    var reader = new CatspeakCartReader(cart, codegen);
+    do {
+        var keepReading = reader.readInstr();
+    } until (!keepReading);
+    //show_message(catspeak_cart_disassemble(cart, 0));
+    var f = codegen.finalise();
+    f();
 }
 
 /*

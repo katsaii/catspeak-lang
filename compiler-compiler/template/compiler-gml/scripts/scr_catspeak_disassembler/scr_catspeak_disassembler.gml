@@ -11,28 +11,26 @@
 ///   This should only be used for debug purposes.
 ///
 /// @returns {String}
-function catspeak_cart_disassemble(buff, offset = undefined) {
+function catspeak_cart_disassemble(cart, offset = undefined) {
     static disassembler = new __CatspeakCartDisassembler();
-    var buffStart = buffer_tell(buff);
+    var cartStart = buffer_tell(cart);
     if (offset != undefined) {
-        buffer_seek(buff, buffer_seek_start, offset);
+        buffer_seek(cart, buffer_seek_start, offset);
     }
     var disassembly
     try {
-        var reader = new CatspeakCartReader(buff, disassembler);
+        var reader = new CatspeakCartReader(cart, disassembler);
         do {
             var keepReading = reader.readInstr();
         } until (!keepReading);
-        disassembly = disassembler.out;
-        if (disassembly == "") { disassembly = "-- empty" }
     } catch (err_) {
         __catspeak_error(__catspeak_cat(
             "failed to disassemble cartridge: ", err_.message, "\n",
             "partial disassembly:\n", disassembler.out
         ));
     } finally {
-        disassembler.out = "";
-        buffer_seek(buff, buffer_seek_start, buffStart);
+        disassembly = disassembler.finalise();
+        buffer_seek(cart, buffer_seek_start, cartStart);
     }
     return disassembly;
 }
@@ -41,6 +39,13 @@ function catspeak_cart_disassemble(buff, offset = undefined) {
 function __CatspeakCartDisassembler() constructor {
     /// @ignore
     out = "";
+
+    /// @ignore
+    static finalise = function () {
+        var disasm = out == "" ? "-- empty" : out;
+        out = "";
+        return disasm;
+    };
 
     /// @ignore
     static handleMeta = function (
@@ -55,7 +60,7 @@ function __CatspeakCartDisassembler() constructor {
 
     /// @ignore
     static handleFunc = function (idx) {
-        out += "\nfun f" + string(idx) + "\n";
+        out += "\nfun " + string(idx) + "\n";
     };
 
     /// @ignore

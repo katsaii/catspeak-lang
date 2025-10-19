@@ -1,9 +1,3 @@
-// AUTO GENERATED, DO NOT MODIFY THIS FILE
-// see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/template/compiler-gml/scripts/scr_catspeak_gen_gml/scr_catspeak_gen_gml.gml
-
 //! Transforms Catspeak IR into callable GML functions.
 //!
 //! This stage of the compiler is very unintelligent, and may produce bad
@@ -61,7 +55,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, versionMinor, patch, path, date
+        {{ join(", ", args(MetaItem.enum(ir))) }}
     ) {
         isAlive = true;
         exprStack = ds_stack_create();
@@ -70,13 +64,9 @@ function CatspeakGenGML() constructor {
             callee_ : undefined,
             self_ : undefined,
             other_ : undefined,
-            name : name,
-            author : author,
-            version : version,
-            versionMinor : versionMinor,
-            patch : patch,
-            path : path,
-            date : date,
+{% for meta in MetaItem.enum(ir) %}
+            {{ meta.name_id }} : {{ meta.name_id }},
+{% endfor %}
         };
     };
 
@@ -85,8 +75,12 @@ function CatspeakGenGML() constructor {
         ds_stack_push(exprStack, function () { show_message("testing") });
     };
 
+{% for instr in InstrItem.enum(ir) %}
     /// @ignore
-    static handleInstrConstNumber = function (dbg, value) {
+    static {{ instr.name_handler }} = function ({{
+        join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
+    }}) {
         // TODO
     };
+{% endfor %}
 }

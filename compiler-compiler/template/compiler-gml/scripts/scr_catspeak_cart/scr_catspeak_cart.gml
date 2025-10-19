@@ -67,9 +67,11 @@ function CatspeakCartWriter() constructor {
     /// @param {Id.Buffer} [buff]
     ///   The buffer to write the cartridge to. Must be a `buffer_grow` type
     ///   buffer with an alignment of 1.
+    ///
+    /// @return {Id.Buffer}
     static finalise = function (buff = undefined) {
+        __catspeak_assert(isAlive, "cannot call `finalise` method twice");
         try {
-            __catspeak_assert(isAlive, "cannot call `finalise` method twice");
             var cart;
             if (buff == undefined) {
                 cart = buffer_create(1, buffer_grow, 1);
@@ -210,7 +212,7 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - `.handleMeta({{ join(", ", args(MetaItem.enum(ir))) }})`
+///   - `.handleMeta({{ join(", ", args(MetaItem.enum(ir))) }})` (always invoked first)
 ///   - `.handleFunc(idx)`
 {% for instr in InstrItem.enum(ir) %}
 ///   - `.{{ instr.name_handler }}({{
