@@ -16,6 +16,8 @@ function CatspeakGenGML() constructor {
     /// @ignore
     exprStack = undefined;
     /// @ignore
+    funcs = undefined;
+    /// @ignore
     globals = undefined;
     /// @ignore
     ctx = undefined;
@@ -32,6 +34,8 @@ function CatspeakGenGML() constructor {
         }
         ds_stack_destroy(exprStack);
         exprStack = undefined;
+        ds_list_destroy(funcs);
+        funcs = undefined;
         isAlive = false;
     };
 
@@ -49,10 +53,14 @@ function CatspeakGenGML() constructor {
         ));
         var program;
         try {
-            __catspeak_assert_eq(1, ds_stack_size(exprStack),
+            __catspeak_assert_eq(0, ds_stack_size(exprStack),
                 "unbalanced stack! this may be caused by malformed cartridge"
             );
-            program = ds_stack_pop(exprStack);
+            var programIdx = ds_list_size(funcs) - 1;
+            __catspeak_assert(programIdx >= 0,
+                "cartridge is missing an entry-point"
+            );
+            program = funcs[| programIdx];
         } finally {
             destroy();
         }
@@ -65,6 +73,7 @@ function CatspeakGenGML() constructor {
     ) {
         isAlive = true;
         exprStack = ds_stack_create();
+        funcs = ds_list_create();
         ctx = {
             globals : globals ?? { },
             callee_ : undefined,
@@ -82,11 +91,35 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static handleFunc = function (idx) {
-        ds_stack_push(exprStack, function () { show_message("testing") });
+        var body = ds_stack_pop(exprStack);
+        __catspeak_assert(body != undefined,
+            "unbalanced stack! function is missing body"
+        );
+        var func;
+        func = method({
+            body : body,
+        }, __catspeak_function_simple__);
+        funcs[| idx] = func;
     };
 
     /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
-        // TODO
+        var exec;
+        exec = method({
+            ctx : ctx,
+            // TODO :: debug information
+            value : value,
+        }, __catspeak_instr_get_n__);
+        ds_stack_push(exprStack, exec);
     };
+}
+
+/// @ignore
+function __catspeak_function_simple__() {
+    return body();
+}
+
+/// @ignore
+function __catspeak_instr_get_n__() {
+    return value;
 }

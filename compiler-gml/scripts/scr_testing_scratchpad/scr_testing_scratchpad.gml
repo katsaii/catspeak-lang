@@ -28,7 +28,7 @@ TEST_EXPERIMENT "catspeak4-cart" {
     } until (!keepReading);
     //show_message(catspeak_cart_disassemble(cart, 0));
     var f = codegen.finalise();
-    f();
+    show_message(f());
 }
 
 /*

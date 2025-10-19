@@ -88,6 +88,7 @@ instr:
       - name: value
         desc: "the number to emit"
         type: f64
+        inline: [-1, 0, 1, 2]
     comptime: $value$
 
 # * ... Followed by information about the enclosing function this sequence of
