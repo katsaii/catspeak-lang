@@ -69,7 +69,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, versionMinor, patch, path, date
+        name, author, version, version-minor, patch, path, date
     ) {
         isAlive = true;
         exprStack = ds_stack_create();
@@ -108,22 +108,22 @@ function CatspeakGenGML() constructor {
         if (value == -1) {
             exec = method({
                 ctx : ctx,
-            }, __catspeak_instr_get_n_value__1__);
+            }, __catspeak_instr_get_n_n1__);
         } else
         if (value == 0) {
             exec = method({
                 ctx : ctx,
-            }, __catspeak_instr_get_n_value_0__);
+            }, __catspeak_instr_get_n_0__);
         } else
         if (value == 1) {
             exec = method({
                 ctx : ctx,
-            }, __catspeak_instr_get_n_value_1__);
+            }, __catspeak_instr_get_n_1__);
         } else
         if (value == 2) {
             exec = method({
                 ctx : ctx,
-            }, __catspeak_instr_get_n_value_2__);
+            }, __catspeak_instr_get_n_2__);
         } else
         exec = method({
             ctx : ctx,
@@ -140,16 +140,16 @@ function __catspeak_function_simple__() {
 }
 
 /// @ignore
-function __catspeak_instr_get_n_value__1__() { return -1 }
-
-/// @ignore
-function __catspeak_instr_get_n_value_0__() { return 0 }
-
-/// @ignore
-function __catspeak_instr_get_n_value_1__() { return 1 }
-
-/// @ignore
-function __catspeak_instr_get_n_value_2__() { return 2 }
-
-/// @ignore
 function __catspeak_instr_get_n__() { return value }
+
+/// @ignore
+function __catspeak_instr_get_n_n1__() { return -1 }
+
+/// @ignore
+function __catspeak_instr_get_n_0__() { return 0 }
+
+/// @ignore
+function __catspeak_instr_get_n_1__() { return 1 }
+
+/// @ignore
+function __catspeak_instr_get_n_2__() { return 2 }

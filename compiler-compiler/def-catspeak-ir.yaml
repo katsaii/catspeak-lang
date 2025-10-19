@@ -88,8 +88,20 @@ instr:
       - name: value
         desc: "the number to emit"
         type: f64
-        force-inline: [-1, 0, 1, 2]
     comptime: $value$
+    force-inline:
+      - name: n1
+        conditions:
+          - [value, -1]
+      - name: "0"
+        conditions:
+          - [value, 0]
+      - name: "1"
+        conditions:
+          - [value, 1]
+      - name: "2"
+        conditions:
+          - [value, 2]
 
 # * ... Followed by information about the enclosing function this sequence of
 #   instructions belongs to.

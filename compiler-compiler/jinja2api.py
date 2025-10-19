@@ -59,7 +59,7 @@ def join(sep, iter_):
 
 @jinja2_export
 def args(iter_):
-    return [x.name_id for x in iter_]
+    return [x.name for x in iter_]
 
 @jinja2_export
 def ir_enum(collection, idx):
@@ -166,16 +166,27 @@ class InstrArgItem():
         self.idx = idx
         self.ir = ir
         self.name = ir["name"]
-        self.name_id = case_camel(self.name)
+        if not all(ch.isalnum() or ch == "_" for ch in self.name):
+            raise Exception("argument names must be alphanumeric")
         self.type = ir["type"]
         self.type_buffer = type_to_gml_buffer(self.type)
         self.type_feather = type_to_gml_feather(self.type)
-        self.inline_values = [
-            (v, case_snake(str(v))) for v in ir.get("force-inline", [])
-        ]
 
     def enum(ir):
         return (InstrArgItem(idx, ir_) for idx, ir_ in ir_enum(ir, "args"))
+
+@jinja2_export
+class InstrInlineItem():
+    def __init__(self, ir):
+        self.ir = ir
+        self.name = ir["name"]
+        if not all(ch.isalnum() or ch == "_" for ch in self.name):
+            raise Exception("force-inline names must be alphanumeric")
+        self.conditions = ir.get("conditions", [])
+        self.condition_args = [name for name, _ in self.conditions]
+
+    def enum(ir):
+        return (InstrInlineItem(ir_) for _, ir_ in ir_enum(ir, "force-inline"))
 
 @jinja2_export
 class FuncItem():

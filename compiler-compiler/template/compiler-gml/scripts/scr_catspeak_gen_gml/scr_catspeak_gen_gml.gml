@@ -98,26 +98,29 @@ function CatspeakGenGML() constructor {
         join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
     }}) {
         var exec;
-{#  specialised case for specific argument values #}
-{%  for arg in InstrArgItem.enum(instr.ir) %}
-{%   for value, value_id in arg.inline_values %}
-        if ({{ arg.name_id }} == {{ value }}) {
+{#   special case for inlined arguments #}
+{%   for inlined in InstrInlineItem.enum(instr.ir) %}
+        if (
+{%-   for condition in inlined.conditions -%}
+            {{- condition[0] }} == {{ condition[1] -}}
+            {{- " && " if not loop.last else "" -}}
+{%-   endfor -%}
+        ) {
             exec = method({
                 ctx : ctx,
-{%    for arg_2 in InstrArgItem.enum(instr.ir) %}
-{%     if arg_2.name_id != arg.name_id %}
-                {{ arg_2.name_id }} : {{ arg_2.name_id }},
+{%    for arg in InstrArgItem.enum(instr.ir) %}
+{%     if arg.name not in inlined.condition_args %}
+                {{ arg.name }} : {{ arg.name }},
 {%     endif %}
 {%    endfor %}
-            }, __catspeak_instr_{{ instr.name_id_op }}_{{ arg.name_id }}_{{ value_id }}__);
+            }, __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__);
         } else
 {%   endfor %}
-{%  endfor %}
 {#  default case for instructions #}
         exec = method({
             ctx : ctx,
 {%  for arg in InstrArgItem.enum(instr.ir) %}
-            {{ arg.name_id }} : {{ arg.name_id }},
+            {{ arg.name }} : {{ arg.name }},
 {%  endfor %}
         }, __catspeak_instr_{{ instr.name_id_op }}__);
         // TODO :: debug information
@@ -137,20 +140,22 @@ function __catspeak_function_simple__() {
 {%   set ns = namespace(expr = instr.comptime) %}
 {%   set expr_stackargs = ns.expr %}
 {%   for arg in InstrArgItem.enum(instr.ir) %}
-{%    set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name_id) %}
-{#    generate inline version of instructions #}
-{%    for value, value_id in arg.inline_values %}
-{%     set ns_2 = namespace(expr = expr_stackargs) %}
-{%     set ns_2.expr = ns_2.expr.replace("$" + arg.name + "$", str(value)) %}
-{%     for arg_2 in InstrArgItem.enum(instr.ir) %}
-{%      set ns_2.expr = ns_2.expr.replace("$" + arg_2.name + "$", arg_2.name_id) %}
-{%     endfor %}
-/// @ignore
-function __catspeak_instr_{{ instr.name_id_op }}_{{ arg.name_id }}_{{ value_id }}__() { return {{ ns_2.expr }} }
-
-{%    endfor %}
+{%    set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
 {%   endfor %}
 /// @ignore
 function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
+{#   special case for inlined arguments #}
+{%   for inlined in InstrInlineItem.enum(instr.ir) %}
+{%    set ns.expr = expr_stackargs %}
+{%    for condition in inlined.conditions %}
+{%     set ns.expr = ns.expr.replace("$" + condition[0] + "$", str(condition[1])) %}
+{%    endfor %}
+{%    for arg in InstrArgItem.enum(instr.ir) %}
+{%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
+{%    endfor %}
+
+/// @ignore
+function __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__() { return {{ ns.expr }} }
+{%   endfor %}
 {%  endif %}
 {% endfor %}
