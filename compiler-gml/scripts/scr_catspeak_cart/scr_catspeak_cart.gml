@@ -169,7 +169,7 @@ function CatspeakCartWriter() constructor {
 
     /// Get a numeric constant.
     ///
-    /// @param {Real} value
+    /// @param {Real} [value]
     ///     
     static emitConstNumber = function (value, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");

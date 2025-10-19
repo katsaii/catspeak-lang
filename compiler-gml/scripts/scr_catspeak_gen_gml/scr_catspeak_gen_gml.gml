@@ -105,11 +105,31 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
         var exec;
+        if (value == -1) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_value__1__);
+        } else
+        if (value == 0) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_value_0__);
+        } else
+        if (value == 1) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_value_1__);
+        } else
+        if (value == 2) {
+            exec = method({
+                ctx : ctx,
+            }, __catspeak_instr_get_n_value_2__);
+        } else
         exec = method({
             ctx : ctx,
-            // TODO :: debug information
             value : value,
         }, __catspeak_instr_get_n__);
+        // TODO :: debug information
         ds_stack_push(exprStack, exec);
     };
 }
@@ -120,6 +140,16 @@ function __catspeak_function_simple__() {
 }
 
 /// @ignore
-function __catspeak_instr_get_n__() {
-    return value;
-}
+function __catspeak_instr_get_n_value__1__() { return -1 }
+
+/// @ignore
+function __catspeak_instr_get_n_value_0__() { return 0 }
+
+/// @ignore
+function __catspeak_instr_get_n_value_1__() { return 1 }
+
+/// @ignore
+function __catspeak_instr_get_n_value_2__() { return 2 }
+
+/// @ignore
+function __catspeak_instr_get_n__() { return value }

@@ -1,7 +1,7 @@
 import jinja2
 
 JINJA2_FUNCS = [
-    map, max, min, len,
+    map, max, min, len, str,
 ]
 
 def jinja2_export(func):
@@ -144,6 +144,7 @@ class InstrItem():
         self.name = ir["name"]
         self.name_short = ir.get("name-short", self.name)
         self.name_id = case_camel(self.name)
+        self.name_id_op = case_snake(self.name_short)
         self.name_handler = "handleInstr" + case_camel_upper(self.name)
         self.desc = ir["desc"]
         self.opcode = ir["opcode"]
@@ -169,9 +170,9 @@ class InstrArgItem():
         self.type = ir["type"]
         self.type_buffer = type_to_gml_buffer(self.type)
         self.type_feather = type_to_gml_feather(self.type)
-        self.value_default = ir.get("default", None)
-        self.value_lit = type_to_gml_literal(self.type, self.value_default)
-        self.value_lit_default = type_to_gml_literal(self.type)
+        self.inline_values = [
+            (v, case_snake(str(v))) for v in ir.get("force-inline", [])
+        ]
 
     def enum(ir):
         return (InstrArgItem(idx, ir_) for idx, ir_ in ir_enum(ir, "args"))
