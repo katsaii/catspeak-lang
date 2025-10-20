@@ -103,47 +103,61 @@ function CatspeakGenGML() constructor {
         var {{ arg.name }} = ds_stack_pop(exprStack_);
 {%  endfor %}
         var exec;
-{#  special case for inlined arguments #}
-{%  for inlined in InstrInlineItem.enum(instr.ir) %}
+{%  if instr.intrinsic == None %}
+{#   special case for inlined arguments #}
+{%   for inlined in InstrInlineItem.enum(instr.ir) %}
         if (
-{%-  for name, value_lit in inlined.conditions.items() -%}
+{%-   for name, value_lit in inlined.conditions.items() -%}
             {{- name }} == {{ value_lit -}}
             {{- " && " if not loop.last else "" -}}
-{%-  endfor -%}
+{%-   endfor -%}
         ) {
             exec = method({
                 ctx : ctx,
-{%   for arg in InstrArgItem.enum(instr.ir) %}
-{%    if arg.name not in inlined.conditions %}
+{%    for arg in InstrArgItem.enum(instr.ir) %}
+{%     if arg.name not in inlined.conditions %}
                 {{ arg.name }} : {{ arg.name }},
-{%    endif %}
-{%   endfor %}
-{%   for arg in InstrStackargItem.enum(instr.ir) %}
+{%     endif %}
+{%    endfor %}
+{%    for arg in InstrStackargItem.enum(instr.ir) %}
                 {{ arg.name }} : {{ arg.name }},
-{%   endfor %}
+{%    endfor %}
             }, __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__);
         } else
-{%  endfor %}
-{#  default case for instructions #}
-{%  if InstrInlineItem.has_default_impl(instr.ir) %}
+{%   endfor %}
+{#   default case for instructions #}
+{%   if InstrInlineItem.has_default_impl(instr.ir) %}
         exec = method({
             ctx : ctx,
-{%   for arg in InstrArgItem.enum(instr.ir) %}
+{%    for arg in InstrArgItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
-{%   endfor %}
-{%   for arg in InstrStackargItem.enum(instr.ir) %}
+{%    endfor %}
+{%    for arg in InstrStackargItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
-{%   endfor %}
+{%    endfor %}
         }, __catspeak_instr_{{ instr.name_id_op }}__);
-{%  else %}
+{%   else %}
         __catspeak_error(
             "instruction {{ instr.name_short }} has no implementation for the given args"
         );
+{%   endif %}
+{%  else %}
+        exec = {{ instr.intrinsic }}({{
+            join(", ",
+                args(InstrArgItem.enum(instr.ir)) +
+                args(InstrStackargItem.enum(instr.ir))
+            )
+        }});
 {%  endif %}
         // TODO :: debug information
         ds_stack_push(exprStack_, exec);
     };
 {% endfor %}
+
+    /// @ignore
+    static __intrinsicClosure = function (idx) {
+        return funcs[| idx];
+    };
 }
 
 /// @ignore

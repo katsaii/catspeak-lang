@@ -153,6 +153,8 @@ class InstrItem():
         if self.opcode == 0xFF:
             raise Exception("opcode cannot be 0xFF")
         self.comptime = ir.get("comptime", None)
+        is_intrinsic = ir.get("intrinsic", False)
+        self.intrinsic = f"__intrinsic{case_camel_upper(self.name)}" if is_intrinsic else None
 
     def enum(ir):
         return (InstrItem(ir_) for _, ir_ in ir_enum(ir, "instr"))

@@ -167,7 +167,23 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
-    /// Evaluates one of two expressions, depending on whether a condition is true or false.
+    /// Return a reference to a function.
+    ///
+    /// @param {Real} idx
+    ///   The numeric id of the function to get.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitClosure = function (idx, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CLO);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u32, idx);
+    };
+
+    /// Evaluate one of two expressions, depending on whether a condition is true or false.
     ///
     /// @param {Real} [dbg]
     ///   The approximate location of this instruction in the source code.
@@ -570,6 +586,7 @@ function catspeak_cart_version(cart) {
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrClosure(dbg, idx)`
 ///   - `.handleInstrIfThenElse(dbg)`
 ///   - `.handleInstrOr(dbg)`
 ///   - `.handleInstrXor(dbg)`
@@ -681,6 +698,14 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readFunc = function () {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readIClosure = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var idx = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrClosure(dbg, idx);
     };
 
     /// @ignore
@@ -886,6 +911,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.CLO] = __readIClosure;
         __readerLookup[@ __CatspeakInstr.IFTE] = __readIIfThenElse;
         __readerLookup[@ __CatspeakInstr.OR] = __readIOr;
         __readerLookup[@ __CatspeakInstr.XOR] = __readIXor;
@@ -919,6 +945,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
+    CLO = 28,
     IFTE = 28,
     OR = 19,
     XOR = 20,

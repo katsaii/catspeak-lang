@@ -94,6 +94,13 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrClosure = function (dbg, idx) {
+        out += "\n  clo";
+        out += "  " + string(idx);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrIfThenElse = function (dbg) {
         out += "\n  ifte";
         __writeDbg(dbg);

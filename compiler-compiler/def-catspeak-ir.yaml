@@ -80,14 +80,15 @@ instr:
 #     - name: "m" #< Pop value off the stack, and associate it with a name.
 #       desc: "the number of additional hoops to jump through"
 
-  - name: "function"
-    name-short: get_fun
+  - name: "closure"
+    name-short: fclo
     desc: "return a reference to a function"
     opcode: 0x1C
     args:
       - name: idx
         desc: "the numeric id of the function to get"
         type: u32
+    intrinsic: true
 
   - name: "if then else"
     name-short: ifte

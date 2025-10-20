@@ -103,6 +103,15 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static handleInstrClosure = function (dbg, idx) {
+        var exprStack_ = exprStack;
+        var exec;
+        exec = __intrinsicClosure(idx);
+        // TODO :: debug information
+        ds_stack_push(exprStack_, exec);
+    };
+
+    /// @ignore
     static handleInstrIfThenElse = function (dbg) {
         var exprStack_ = exprStack;
         var if_false = ds_stack_pop(exprStack_);
@@ -574,6 +583,11 @@ function CatspeakGenGML() constructor {
         }, __catspeak_instr_get_u__);
         // TODO :: debug information
         ds_stack_push(exprStack_, exec);
+    };
+
+    /// @ignore
+    static __intrinsicClosure = function (idx) {
+        return funcs[| idx];
     };
 }
 
