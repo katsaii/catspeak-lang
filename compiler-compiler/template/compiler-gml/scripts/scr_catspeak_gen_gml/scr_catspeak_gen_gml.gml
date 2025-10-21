@@ -93,9 +93,18 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __genExpr = function (self_, func_) {
+        if (variable_struct_names_count(self_) == 0) {
+            return method(undefined, func_);
+        } else {
+            self_.ctx = ctx;
+            return method(self_, func_);
+        }
+    };
+
+    /// @ignore
     static __genExprClosure = function (idx) {
-        return method({
-            ctx : ctx,
+        return __genExpr({
             value : funcs[| idx],
         }, __catspeak_instr_fclo_simple__);
     };
@@ -122,12 +131,12 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static __genExprSequence = function (n, stmts) {
         var nStatic = min(n, __genExprSequence_versN - 1);
-        var closure_ = { ctx : ctx };
+        var closure_ = { };
         for (var i = 0; i < nStatic; i += 1) {
             closure_[$ "_" + string(i + 1)] = stmts[i];
         }
         if (n == nStatic) {
-            return method(closure_, __genExprSequence_vers[n]);
+            return __genExpr(closure_, __genExprSequence_vers[n]);
         } else {
             // encode statments in reverse for (maybe) faster iteration
             var moreN = n - __genExprSequence_versN;
@@ -138,7 +147,7 @@ function CatspeakGenGML() constructor {
             closure_.moreN = moreN;
             closure_.more = more;
             closure_.result = stmts[n - 1];
-            return method(closure_, __catspeak_instr_seq__);
+            return __genExpr(closure_, __catspeak_instr_seq__);
         }
     };
 
@@ -172,8 +181,7 @@ function CatspeakGenGML() constructor {
             {{- " && " if not loop.last else "" -}}
 {%-   endfor -%}
         ) {
-            exec = method({
-                ctx : ctx,
+            exec = __genExpr({
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     if arg.name not in inlined.conditions %}
                 {{ arg.name }} : {{ arg.name }},
@@ -187,8 +195,7 @@ function CatspeakGenGML() constructor {
 {%   endfor %}
 {#   default case for instructions #}
 {%   if InstrInlineItem.has_default_impl(instr.ir) %}
-        exec = method({
-            ctx : ctx,
+        exec = __genExpr({
 {%    for arg in InstrArgItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
 {%    endfor %}
