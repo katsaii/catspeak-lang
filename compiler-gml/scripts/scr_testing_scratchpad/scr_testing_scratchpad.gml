@@ -9,12 +9,12 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4-parse";
+var runExperiment = "catspeak4-cart";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "catspeak4-parse" {
     var writer = new CatspeakCartWriter();
-    var src = catspeak_util_buffer_create_from_string(@'
+    var src = catspeak_buffer_create_from_string(@'
         1 + 2
     ');
     var parser = new CatspeakParser(writer, src);
@@ -308,7 +308,7 @@ TEST_EXPERIMENT "catspeak4" {
 }
 
 TEST_EXPERIMENT "catspeak4-lex" {
-    var buff = catspeak_util_buffer_create_from_string(@'
+    var buff = catspeak_buffer_create_from_string(@'
         let `abcdef$` = @"this is a test script ""but do quotes work?"""
         "normal string, no escapes"
         "normal string, yes\tescapes \"\n"
@@ -330,7 +330,7 @@ TEST_EXPERIMENT "catspeak4-lex" {
 }
 /*
 TEST_EXPERIMENT "catspeak4-parse" {
-    var buff = catspeak_util_buffer_create_from_string(@'
+    var buff = catspeak_buffer_create_from_string(@'
         "hello youtube"
         a
     ');

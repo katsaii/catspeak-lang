@@ -80,7 +80,7 @@ catspeak_force_init();
 /// @param {String} src
 /// @return {Id.Buffer}
 function __catspeak_create_buffer_from_string(src) {
-    return catspeak_util_buffer_create_from_string(src);
+    return catspeak_buffer_create_from_string(src);
 }
 
 /// @ignore
