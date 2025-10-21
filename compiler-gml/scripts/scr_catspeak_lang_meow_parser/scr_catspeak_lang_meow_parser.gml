@@ -10,38 +10,58 @@
 /// Consumes tokens produced by a `CatspeakLexer`, transforming the program
 /// they represent into a Catspeak cartridge. This cartridge can be further
 /// compiled into a callable GML function using a combination of
-/// `CatspeakCartReaderOld` and `CatspeakCodegenGML`. (Though, it's probably
-/// best if you stick to using the stable `CatspeakCtx` API!)
+/// `CatspeakCartReader` and `CatspeakGenGML`. (Though, it's probably best
+/// if you stick to using the stable `CatspeakCtx` API!)
 ///
 /// @experimental
 ///
-/// @warning
-///   The lexer does not take ownership of its buffer, so you must make sure
-///   to delete the buffer once the lexer is complete. Failure to do this will
-///   result in leaking memory.
-///
-/// @param {Struct.CatspeakCartWriterOld} cartWriter
+/// @param {Struct.CatspeakCartWriter} cartWriter
 ///   The writer for the cartridge to emit.
-///
-/// @param {Id.Buffer} buff
-///   The ID of the GML buffer to parse tokens from.
-///
-/// @param {Real} [offset]
-///   The offset in the buffer to start parsing from. Defaults to 0.
-///
-/// @param {Real} [size]
-///   The length of the buffer input. Any characters beyond this limit
-///   will be treated as the end of the file. Defaults to `infinity`.
-function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined) constructor {
+function CatspeakParser(cartWriter) constructor {
     /// @ignore
-    cartWriter = cartWriter_;
+    ir = cartWriter;
     /// @ignore
-    scope = new CatspeakScopeStack(cartWriter);
-    /// @ignore
-    lexer = new CatspeakLexer(buff, offset, size);
-    /// @ignore
-    finalised = false;
-    scope.beginFunction();
+    lexer = undefined;
+
+    /// Initialises the parser with the given lexer.
+    ///
+    /// @param {Struct.CatspeakLexer} lexer_
+    ///   The lexer to consume tokens from.
+    static initialise = function (lexer_) {
+        __catspeak_assert(lexer == undefined,
+            "called `initialise` before calling `finalise`"
+        );
+        __catspeak_assert(is_struct(lexer_) && instanceof(lexer_) == "CatspeakLexer",
+            "invalid lexer"
+        );
+        lexer = lexer_;
+        ir.pushFunction();
+    };
+
+    /// Frees any dynamically allocated resources managed by this parser.
+    ///
+    /// @warning
+    ///   This **must** be called in a `finally` block if you expect exceptions.
+    static destroy = function () {
+        if (lexer == undefined) {
+            return;
+        }
+        lexer = undefined;
+    };
+
+    /// Completes the parsing of this Catspeak script, returning the id of the
+    /// generated function.
+    ///
+    /// @return {Real}
+    static finalise = function () {
+        var funcIdx;
+        try {
+            funcIdx = ir.popFunction();
+        } finally {
+            destroy();
+        }
+        return funcIdx;
+    };
 
     /// Parses single a top-level statement, adding any relevant parse
     /// information to the cartridge.
@@ -61,16 +81,19 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
     ///   `true` if there is still more data left to parse, and `false`
     ///   if the parser has reached the end of the file.
     static parseOnce = function () {
-        __catspeak_assert(!finalised, "attempting to update parser after it has been finalised");
+        __catspeak_assert(lexer != undefined,
+            "attempting call `parseOnce` before calling `initialise`"
+        );
         if (lexer.peek() == CatspeakToken.EOF) {
-            scope.endFunction();
-            cartWriter.finalise();
-            finalised = true;
             return false;
         }
-        __parseStatement();
+        //__parseStatement();
+        lexer.next();
         return true;
     };
+
+    /*
+
 
     /// @ignore
     static __parseStatement = function () {
@@ -531,4 +554,6 @@ function CatspeakParser(cartWriter_, buff, offset = undefined, size = undefined)
         }
         return "token '" + lexer.getLexeme() + "' (" + string(peeked) + ")";
     };
+    
+    */
 }
