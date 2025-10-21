@@ -15,7 +15,7 @@ For more information, read the guidelines supplied by [GitHub](https://docs.gith
 
 If you want to test the project on another version, call either the
 `./copy-project.bat` or `./copy-project.sh` command. This will duplicate the
-`compiler-gml` directory onto the `./bin` folder, allowing you to make destructive
+`compiler-gml` directory into the `./bin` folder, allowing you to make destructive
 changes to the source code without the GameMaker IDE freaking out and modifying
 all of the project `.yy` and `.yyp` files.
 
@@ -35,6 +35,7 @@ on it. I wont assign issues to anyone.
 
 This isn't necessarily  very important, but please try and keep commit messages
 in the past tense and lower-case. Examples of commit messages include:
+
  - [added new `self` keyword](https://github.com/katsaii/catspeak-lang/commit/e839bac400aaf1874f4bf3e87487813a8354bff7)
  - [implemented 'or' logical operator](https://github.com/katsaii/catspeak-lang/commit/c432c6c21f53feaf7968c0e6453af548932e4844)
  - [updated README.md](https://github.com/katsaii/catspeak-lang/commit/18989abe7a8ebca0965ac1d6e77b596b0ca18340)
@@ -43,6 +44,7 @@ in the past tense and lower-case. Examples of commit messages include:
 
 Please try your best to follow the style of any surrounding code. Here are some
 brief tips:
+
  - Indentation uses 4 spaces, **please do not use tabs**.
  - Follow the [K&R](https://en.wikipedia.org/wiki/Indentation_style#K&R_style) style for brackets.
  - Do not use multi-line comments.
@@ -78,6 +80,7 @@ into it.
 The general format of "doc comments" is similar to JSDoc, with some exceptions.
 Below is a template which should be followed for doc comments attached to
 functions and methods:
+
 ```js
 /// Description for `catspeak_example`.
 ///
@@ -103,6 +106,7 @@ You don't need to write documentation for internal functions.
 
 There are also a handful of other JSDoc tags which can be used for better
 documentation. These are:
+
  - `@ignore`: Does not include the documented definition in the documentation.
  - `@experimental`: Includes a stab in the documentation definition warning that
    the feature may change or be removed randomly. It is not stablised.

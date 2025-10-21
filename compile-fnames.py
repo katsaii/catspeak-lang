@@ -19,6 +19,10 @@ blocklist = [
     "physics_",
     "rollback_",
     "wallpaper_",
+    "_GMFILE_",
+    "_GMLINE_",
+    "_GMFUNCTION_",
+    "GM_project_filename",
     # temp
     "AudioEffectType",
     "AudioLFOType",

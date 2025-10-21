@@ -32,7 +32,6 @@ function __catspeak_get_gml_interface() {
                 db[$ "GM_build_date"] = GM_build_date;
                 db[$ "GM_version"] = GM_version;
                 db[$ "GM_runtime_version"] = GM_runtime_version;
-                db[$ "GM_project_filename"] = GM_project_filename;
                 db[$ "GM_build_type"] = GM_build_type;
                 db[$ "is_real"] = method(undefined, is_real);
                 db[$ "is_numeric"] = method(undefined, is_numeric);

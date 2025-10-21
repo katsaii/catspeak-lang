@@ -10,7 +10,7 @@ from pathlib import Path
 
 SCRIPTS = [
     "compiler-gml/scripts/scr_catspeak_cart/scr_catspeak_cart.gml",
-    "compiler-gml/scripts/scr_catspeak_disassembler/scr_catspeak_disassembler.gml",
+    "compiler-gml/scripts/scr_catspeak_disasm/scr_catspeak_disasm.gml",
     "compiler-gml/scripts/scr_catspeak_gen_gml/scr_catspeak_gen_gml.gml",
 ]
 def infer_comment_style_from_path(path):
@@ -69,7 +69,7 @@ if ir_instrs_name_conflict != None:
     """)
 
 # init jinja
-TEMPLATE_PATH = "compiler-compiler/template"
+TEMPLATE_PATH = "compiler-compiler/templates"
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(TEMPLATE_PATH),
     trim_blocks=True,
