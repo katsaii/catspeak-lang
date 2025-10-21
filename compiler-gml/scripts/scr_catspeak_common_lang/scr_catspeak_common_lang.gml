@@ -245,6 +245,7 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
     };
 }
 
+/*
 /// TODO
 ///
 /// @param {Struct.CatspeakCartWriterOld} cartWriter_
@@ -457,3 +458,4 @@ function CatspeakScopeStack(cartWriter_) constructor {
         cartWriter.emitSetGlobal(name, op, dbg);
     };
 }
+*/

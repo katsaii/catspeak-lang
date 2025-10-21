@@ -9,8 +9,21 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4-cart";
+var runExperiment = "catspeak4-parse";
 #macro TEST_EXPERIMENT if runExperiment ==
+
+TEST_EXPERIMENT "catspeak4-parse" {
+    var writer = new CatspeakCartWriter();
+    var src = catspeak_util_buffer_create_from_string(@'
+        1 + 2
+    ');
+    var parser = new CatspeakParser(writer, src);
+    do {
+        var keepParsing = parser.parseOnce();
+    } until (!keepParsing);
+    var cart = writer.finalise();
+    show_message(catspeak_cart_disassemble(cart, 0));
+}
 
 TEST_EXPERIMENT "catspeak4-cart" {
     var writer = new CatspeakCartWriter();

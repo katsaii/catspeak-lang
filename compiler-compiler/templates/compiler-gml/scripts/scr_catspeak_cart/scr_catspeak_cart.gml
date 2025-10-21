@@ -20,7 +20,8 @@
 {% set opcode_eof = ir["program-end-signal"] -%}
 {% set dbg_type_buffer = type_to_gml_buffer(ir["instr-dbg-type"]) -%}
 
-/// Handles the creation of Catspeak cartridges
+/// Handles the creation of Catspeak cartridges. Performs little to no
+/// optimisations on the output. What you emit is what you get!
 ///
 /// @experimental
 function CatspeakCartWriter() constructor {
@@ -38,6 +39,29 @@ function CatspeakCartWriter() constructor {
     chunkTop = -1;
     /// @ignore
     funcCount = 0;
+    /// @ignore
+    prevChunkStates = ds_stack_create();
+    /// @ignore
+    stackSize = 0;
+    /// @ignore
+    varCount = 0;
+
+    /// Returns the number of expressions on the stack at this current moment.
+    /// Useful when working with instructions which don't take a constant
+    /// number of stackargs. (e.g. `emitSequence`)
+    ///
+    /// @return {Real}
+    static getStackSize = function () { return stackSize };
+
+    /// Returns a new fresh local variable id for the current function.
+    /// Intended for use with `emitLocalGet` and `emitLocalSet`.
+    ///
+    /// @return {Real}
+    static getFreshVar = function () {
+        var idx = varCount;
+        varCount += 1;
+        return idx;
+    };
 
     /// Frees any dynamically allocated resources managed by this writer.
     ///
@@ -47,10 +71,13 @@ function CatspeakCartWriter() constructor {
         if (!isAlive) {
             return;
         }
-        for (var i = ds_list_size(chunks) - 1; i >= 0; i -= 1) {
-            var chunk = chunks[| i];
+        var chunks_ = chunks;
+        for (var i = ds_list_size(chunks_) - 1; i >= 0; i -= 1) {
+            var chunk = chunks_[| i];
             buffer_delete(chunk);
         }
+        ds_list_destroy(chunks_);
+        ds_stack_destroy(prevChunkStates);
         isAlive = false;
     };
 
@@ -121,6 +148,9 @@ function CatspeakCartWriter() constructor {
         if (chunks[| chunkTop] == undefined) {
             chunks[| chunkTop] = buffer_create(1, buffer_grow, 1);
         }
+        var prevChunkStates_ = prevChunkStates;
+        ds_stack_push(prevChunkStates_, stackSize);
+        ds_stack_push(prevChunkStates_, varCount);
     };
 
     /// Ends the current function, returning its id.
@@ -135,6 +165,10 @@ function CatspeakCartWriter() constructor {
         var idx = funcCount;
         funcCount += 1;
         chunkTop -= 1;
+        // revert to previous state
+        var prevChunkStates_ = prevChunkStates;
+        varCount = ds_stack_pop(prevChunkStates_);
+        stackSize = ds_stack_pop(prevChunkStates_);
         return idx;
     };
 {% for instr in InstrItem.enum(ir) %}
@@ -161,6 +195,12 @@ function CatspeakCartWriter() constructor {
 {%  for arg in InstrArgItem.enum(instr.ir) %}
         buffer_write(chunk, {{ arg.type_buffer }}, {{ arg.name }});
 {%  endfor %}
+{%  set stack_size_change = 1 - len(args(InstrStackargItem.enum(instr.ir))) %}
+{%  if stack_size_change > 0 %}
+        stackSize += {{ stack_size_change }};
+{%  elif stack_size_change < 0 %}
+        stackSize -= {{ -stack_size_change }};
+{%  endif %}
     };
 {% endfor %}
 }

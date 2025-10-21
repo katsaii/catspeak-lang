@@ -22,7 +22,8 @@
 
 //# feather use syntax-errors
 
-/// Handles the creation of Catspeak cartridges
+/// Handles the creation of Catspeak cartridges. Performs little to no
+/// optimisations on the output. What you emit is what you get!
 ///
 /// @experimental
 function CatspeakCartWriter() constructor {
@@ -62,6 +63,29 @@ function CatspeakCartWriter() constructor {
     chunkTop = -1;
     /// @ignore
     funcCount = 0;
+    /// @ignore
+    prevChunkStates = ds_stack_create();
+    /// @ignore
+    stackSize = 0;
+    /// @ignore
+    varCount = 0;
+
+    /// Returns the number of expressions on the stack at this current moment.
+    /// Useful when working with instructions which don't take a constant
+    /// number of stackargs. (e.g. `emitSequence`)
+    ///
+    /// @return {Real}
+    static getStackSize = function () { return stackSize };
+
+    /// Returns a new fresh local variable id for the current function.
+    /// Intended for use with `emitLocalGet` and `emitLocalSet`.
+    ///
+    /// @return {Real}
+    static getFreshVar = function () {
+        var idx = varCount;
+        varCount += 1;
+        return idx;
+    };
 
     /// Frees any dynamically allocated resources managed by this writer.
     ///
@@ -71,10 +95,13 @@ function CatspeakCartWriter() constructor {
         if (!isAlive) {
             return;
         }
-        for (var i = ds_list_size(chunks) - 1; i >= 0; i -= 1) {
-            var chunk = chunks[| i];
+        var chunks_ = chunks;
+        for (var i = ds_list_size(chunks_) - 1; i >= 0; i -= 1) {
+            var chunk = chunks_[| i];
             buffer_delete(chunk);
         }
+        ds_list_destroy(chunks_);
+        ds_stack_destroy(prevChunkStates);
         isAlive = false;
     };
 
@@ -150,6 +177,9 @@ function CatspeakCartWriter() constructor {
         if (chunks[| chunkTop] == undefined) {
             chunks[| chunkTop] = buffer_create(1, buffer_grow, 1);
         }
+        var prevChunkStates_ = prevChunkStates;
+        ds_stack_push(prevChunkStates_, stackSize);
+        ds_stack_push(prevChunkStates_, varCount);
     };
 
     /// Ends the current function, returning its id.
@@ -164,6 +194,10 @@ function CatspeakCartWriter() constructor {
         var idx = funcCount;
         funcCount += 1;
         chunkTop -= 1;
+        // revert to previous state
+        var prevChunkStates_ = prevChunkStates;
+        varCount = ds_stack_pop(prevChunkStates_);
+        stackSize = ds_stack_pop(prevChunkStates_);
         return idx;
     };
 
@@ -197,6 +231,7 @@ function CatspeakCartWriter() constructor {
         buffer_write(chunk, buffer_u8, __CatspeakInstr.FCLO);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_u32, idx);
+        stackSize += 1;
     };
 
     /// Evaluate one of two expressions, depending on whether a condition is true or false.
@@ -209,6 +244,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.IFTE);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 2;
     };
 
     /// Calculate the logical OR of two values.
@@ -221,6 +257,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.OR);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the logical XOR of two values.
@@ -233,6 +270,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.XOR);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the logical AND of two values.
@@ -245,6 +283,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.AND);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Check whether two values are equal.
@@ -257,6 +296,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.EQ);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Check whether two values are NOT equal.
@@ -269,6 +309,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.NEQ);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Check whether a value is less than another.
@@ -281,6 +322,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.LT);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Check whether a value is less than or equal to another.
@@ -293,6 +335,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.LEQ);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Check whether a value is greater than another.
@@ -305,6 +348,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GT);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Check whether a value is greater than or equal to another.
@@ -317,6 +361,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GEQ);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the bitwise AND of two values.
@@ -329,6 +374,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.BAND);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the bitwise OR of two values.
@@ -341,6 +387,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.BOR);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the bitwise XOR of two values.
@@ -353,6 +400,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.BXOR);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the bitwise left shift of two values.
@@ -365,6 +413,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.LSHIFT);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the bitwise right shift of two values.
@@ -377,6 +426,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.RSHIFT);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the sum of two values.
@@ -389,6 +439,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.ADD);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the difference of two values.
@@ -401,6 +452,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.SUB);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the product of two values.
@@ -413,6 +465,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.MULT);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the division of two values.
@@ -425,6 +478,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.DIV);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the integer division of two values.
@@ -437,6 +491,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.IDIV);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the remainder of two values.
@@ -449,6 +504,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.REM);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize -= 1;
     };
 
     /// Calculate the positive of a value.
@@ -513,6 +569,7 @@ function CatspeakCartWriter() constructor {
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_N);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_f64, value);
+        stackSize += 1;
     };
 
     /// Get a string constant.
@@ -529,6 +586,7 @@ function CatspeakCartWriter() constructor {
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_S);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_string, value);
+        stackSize += 1;
     };
 
     /// Get the undefined constant.
@@ -541,6 +599,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_U);
         buffer_write(chunk, buffer_u32, dbg);
+        stackSize += 1;
     };
 }
 

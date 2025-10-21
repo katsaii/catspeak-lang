@@ -206,8 +206,9 @@ enum CatspeakToken {
 /// @param {Real} [size]
 ///   The length of the buffer input. Any characters beyond this limit
 ///   will be treated as the end of the file. Defaults to `infinity`.
-function CatspeakLexer(buff, offset = undefined, size = undefined)
-        : CatspeakUTF8Scanner(buff, offset, size) constructor {
+function CatspeakLexer(
+    buff, offset = undefined, size = undefined
+) : CatspeakUTF8Scanner(buff, offset, size) constructor {
     /// @ignore
     value = undefined;
     /// @ignore
