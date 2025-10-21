@@ -21,7 +21,7 @@ TEST_EXPERIMENT "catspeak4-cart" {
     writer.pushFunction();
     writer.emitConstNumber(3);
     writer.emitConstNumber(4);
-    writer.emitMultiply();
+    writer.emitMultiply(catspeak_location_create(12, 3));
     var f1 = writer.popFunction();
     writer.emitClosure(f1);
     writer.pushFunction();
@@ -42,7 +42,6 @@ TEST_EXPERIMENT "catspeak4-cart" {
     } until (!keepReading);
     var res = (codegen.finalise())();
     show_message(res());
-    
 }
 
 /*

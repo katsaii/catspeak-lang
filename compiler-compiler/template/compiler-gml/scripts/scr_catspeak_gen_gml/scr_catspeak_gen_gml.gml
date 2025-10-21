@@ -73,6 +73,7 @@ function CatspeakGenGML() constructor {
             callee_ : undefined,
             self_ : undefined,
             other_ : undefined,
+            dbg : CATSPEAK_NOLOCATION,
 {% for meta in MetaItem.enum(ir) %}
             {{ meta.name_id }} : {{ meta.name_id }},
 {% endfor %}
@@ -86,10 +87,23 @@ function CatspeakGenGML() constructor {
             "unbalanced stack! function is missing body"
         );
         var func;
-        func = method({
+        func = __genExpr({
             body : body,
         }, __catspeak_function_simple__);
         funcs[| idx] = func;
+    };
+
+    /// @ignore
+    static __attachDbg = function (dbg, expr) {
+        if (dbg == CATSPEAK_NOLOCATION) {
+            return expr;
+        } else {
+            // insert instruction to track debug info
+            return __genExpr({
+                dbg : dbg,
+                body : expr,
+            }, __catspeak_dbg__);
+        }
     };
 
     /// @ignore
@@ -171,7 +185,7 @@ function CatspeakGenGML() constructor {
         var {{ arg.name }} = ds_stack_pop(exprStack_);
 {%   endif %}
 {%  endfor %}
-        var exec;
+        var expr;
 {%  if instr.comptime %}
 {#   special case for inlined arguments #}
 {%   for inlined in InstrInlineItem.enum(instr.ir) %}
@@ -181,7 +195,7 @@ function CatspeakGenGML() constructor {
             {{- " && " if not loop.last else "" -}}
 {%-   endfor -%}
         ) {
-            exec = __genExpr({
+            expr = __genExpr({
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     if arg.name not in inlined.conditions %}
                 {{ arg.name }} : {{ arg.name }},
@@ -195,7 +209,7 @@ function CatspeakGenGML() constructor {
 {%   endfor %}
 {#   default case for instructions #}
 {%   if InstrInlineItem.has_default_impl(instr.ir) %}
-        exec = __genExpr({
+        expr = __genExpr({
 {%    for arg in InstrArgItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
 {%    endfor %}
@@ -209,7 +223,7 @@ function CatspeakGenGML() constructor {
         );
 {%   endif %}
 {%  else %}
-        exec = __genExpr{{ case_camel_upper(instr.name) }}({{
+        expr = __genExpr{{ case_camel_upper(instr.name) }}({{
             join(", ",
                 args(InstrArgItem.enum(instr.ir)) +
                 args(InstrStackargItem.enum(instr.ir))
@@ -217,16 +231,36 @@ function CatspeakGenGML() constructor {
         }});
 {%  endif %}
 {%  if instr.exceptional %}
-        // TODO :: debug information
+        expr = __attachDbg(dbg, expr);
 {%  endif %}
-        ds_stack_push(exprStack_, exec);
+        ds_stack_push(exprStack_, expr);
     };
 {% endfor %}
 }
 
 /// @ignore
 function __catspeak_function_simple__() {
-    return body();
+    // recover from errors
+    var result;
+    try {
+        result = body();
+    } catch (ex) {
+        ex.longMessage += " " + catspeak_location_show(ctx.dbg, ctx.path) + "\n";
+        throw ex;
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_dbg__() {
+    var ctx_ = ctx;
+    var dbgPrev = ctx_.dbg;
+    ctx_.dbg = dbg;
+    var result = body();
+    // don't want to use `finally` here, because we want to track the error
+    // location when an exception occurs
+    ctx_.dbg = dbgPrev;
+    return result;
 }
 
 /// @ignore

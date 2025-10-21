@@ -130,10 +130,10 @@ function catspeak_location_create(line, column) {
     gml_pragma("forceinline");
     __catspeak_assert_typeof(line, is_numeric, "invalid line number");
     __catspeak_assert_typeof(column, is_numeric, "invalid column number");
-    if (line < 0 || line > __CATSPEAK_LOCATION_LINE_MASK) {
+    if (line < 1 || line > __CATSPEAK_LOCATION_LINE_MASK) {
         return CATSPEAK_NOLOCATION;
     }
-    if (column < 0 || column > (__CATSPEAK_LOCATION_COLUMN_MASK >> 20)) {
+    if (column < 1 || column > (__CATSPEAK_LOCATION_COLUMN_MASK >> 20)) {
         return CATSPEAK_NOLOCATION;
     }
     return line | (column << 20);
@@ -207,7 +207,7 @@ function catspeak_location_show(location = CATSPEAK_NOLOCATION, filepath = "") {
     if (filepath != "") {
         msg += string(filepath);
     } else {
-        msg += "a file";
+        msg += "a catspeak file";
     }
     if (location != CATSPEAK_NOLOCATION) {
         msg += " at (line " + string(catspeak_location_get_row(location));

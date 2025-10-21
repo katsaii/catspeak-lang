@@ -402,19 +402,40 @@ instr:
       - name: "3"
         conditions:
           - [value, 3]
-      - name: "5"
+      - name: "4" #< Common with bitwise operations (up until 256).
         conditions:
-          - [value, 5]
+          - [value, 4]
+      - name: "8"
+        conditions:
+          - [value, 8]
+      - name: "16"
+        conditions:
+          - [value, 16]
+      - name: "24"
+        conditions:
+          - [value, 24]
+      - name: "32"
+        conditions:
+          - [value, 32]
+      - name: "64"
+        conditions:
+          - [value, 64]
+      - name: "128"
+        conditions:
+          - [value, 128]
+      - name: "256"
+        conditions:
+          - [value, 256]
       - name: "10"
         conditions:
           - [value, 10]
-      - name: "100"     #< Common when dealing with percentages.
+      - name: "100" #< Common when dealing with percentages.
         conditions:
           - [value, 100]
-      - name: "1000"    #< Common when converting between s and ms.
+      - name: "1k"  #< Common when converting between s and ms.
         conditions:
           - [value, 1000]
-      - name: "1000000" #< Common when converting between s and us.
+      - name: "1m"  #< Common when converting between s and us.
         conditions:
           - [value, 1000000]
 

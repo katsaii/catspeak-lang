@@ -79,6 +79,7 @@ function CatspeakGenGML() constructor {
             callee_ : undefined,
             self_ : undefined,
             other_ : undefined,
+            dbg : CATSPEAK_NOLOCATION,
             name : name,
             author : author,
             version : version,
@@ -96,10 +97,23 @@ function CatspeakGenGML() constructor {
             "unbalanced stack! function is missing body"
         );
         var func;
-        func = method({
+        func = __genExpr({
             body : body,
         }, __catspeak_function_simple__);
         funcs[| idx] = func;
+    };
+
+    /// @ignore
+    static __attachDbg = function (dbg, expr) {
+        if (dbg == CATSPEAK_NOLOCATION) {
+            return expr;
+        } else {
+            // insert instruction to track debug info
+            return __genExpr({
+                dbg : dbg,
+                body : expr,
+            }, __catspeak_dbg__);
+        }
     };
 
     /// @ignore
@@ -170,18 +184,18 @@ function CatspeakGenGML() constructor {
         for (var i = array_length(stmts) - 1; i >= 0; i -= 1) {
             stmts[@ i] = ds_stack_pop(exprStack_);
         }
-        var exec;
-        exec = __genExprSequence(n, stmts);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        var expr;
+        expr = __genExprSequence(n, stmts);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrClosure = function (dbg, idx) {
         var exprStack_ = exprStack;
-        var exec;
-        exec = __genExprClosure(idx);
-        ds_stack_push(exprStack_, exec);
+        var expr;
+        expr = __genExprClosure(idx);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -190,14 +204,14 @@ function CatspeakGenGML() constructor {
         var if_false = ds_stack_pop(exprStack_);
         var if_true = ds_stack_pop(exprStack_);
         var condition = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             condition : condition,
             if_true : if_true,
             if_false : if_false,
         }, __catspeak_instr_ifte__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -205,13 +219,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var lazy = ds_stack_pop(exprStack_);
         var eager = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             eager : eager,
             lazy : lazy,
         }, __catspeak_instr_or__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -219,13 +233,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_xor__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -233,13 +247,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var lazy = ds_stack_pop(exprStack_);
         var eager = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             eager : eager,
             lazy : lazy,
         }, __catspeak_instr_and__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -247,13 +261,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_eq__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -261,13 +275,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_neq__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -275,13 +289,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_lt__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -289,13 +303,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_leq__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -303,13 +317,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_gt__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -317,13 +331,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_geq__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -331,13 +345,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_band__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -345,13 +359,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_bor__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -359,13 +373,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_bxor__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -373,13 +387,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var amount = ds_stack_pop(exprStack_);
         var value = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             value : value,
             amount : amount,
         }, __catspeak_instr_lshift__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -387,13 +401,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var amount = ds_stack_pop(exprStack_);
         var value = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             value : value,
             amount : amount,
         }, __catspeak_instr_rshift__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -401,13 +415,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_add__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -415,13 +429,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_sub__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -429,13 +443,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_mult__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -443,13 +457,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_div__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -457,13 +471,13 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_idiv__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
@@ -471,152 +485,200 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var rhs = ds_stack_pop(exprStack_);
         var lhs = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_rem__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrPositive = function (dbg) {
         var exprStack_ = exprStack;
         var value = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             value : value,
         }, __catspeak_instr_pos__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrNegative = function (dbg) {
         var exprStack_ = exprStack;
         var value = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             value : value,
         }, __catspeak_instr_neg__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrNot = function (dbg) {
         var exprStack_ = exprStack;
         var value = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             value : value,
         }, __catspeak_instr_not__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrBitwiseNot = function (dbg) {
         var exprStack_ = exprStack;
         var value = ds_stack_pop(exprStack_);
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
             value : value,
         }, __catspeak_instr_bnot__);
-        // TODO :: debug information
-        ds_stack_push(exprStack_, exec);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
         var exprStack_ = exprStack;
-        var exec;
+        var expr;
         if (value == 0) {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_n_0__);
         } else
         if (value == 1) {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_n_1__);
         } else
         if (value == 2) {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_n_2__);
         } else
         if (value == 3) {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_n_3__);
         } else
-        if (value == 5) {
-            exec = __genExpr({
-            }, __catspeak_instr_get_n_5__);
+        if (value == 4) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_4__);
+        } else
+        if (value == 8) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_8__);
+        } else
+        if (value == 16) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_16__);
+        } else
+        if (value == 24) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_24__);
+        } else
+        if (value == 32) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_32__);
+        } else
+        if (value == 64) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_64__);
+        } else
+        if (value == 128) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_128__);
+        } else
+        if (value == 256) {
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_256__);
         } else
         if (value == 10) {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_n_10__);
         } else
         if (value == 100) {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_n_100__);
         } else
         if (value == 1000) {
-            exec = __genExpr({
-            }, __catspeak_instr_get_n_1000__);
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_1k__);
         } else
         if (value == 1000000) {
-            exec = __genExpr({
-            }, __catspeak_instr_get_n_1000000__);
+            expr = __genExpr({
+            }, __catspeak_instr_get_n_1m__);
         } else
-        exec = __genExpr({
+        expr = __genExpr({
             value : value,
         }, __catspeak_instr_get_n__);
-        ds_stack_push(exprStack_, exec);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrConstString = function (dbg, value) {
         var exprStack_ = exprStack;
-        var exec;
+        var expr;
         if (value == "") {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_s_empty__);
         } else
         if (value == "*") {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_s_star__);
         } else
         if (value == "/") {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_s_slash__);
         } else
         if (value == "x") {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_s_x__);
         } else
         if (value == "y") {
-            exec = __genExpr({
+            expr = __genExpr({
             }, __catspeak_instr_get_s_y__);
         } else
-        exec = __genExpr({
+        expr = __genExpr({
             value : value,
         }, __catspeak_instr_get_s__);
-        ds_stack_push(exprStack_, exec);
+        ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
     static handleInstrConstUndefined = function (dbg) {
         var exprStack_ = exprStack;
-        var exec;
-        exec = __genExpr({
+        var expr;
+        expr = __genExpr({
         }, __catspeak_instr_get_u__);
-        ds_stack_push(exprStack_, exec);
+        ds_stack_push(exprStack_, expr);
     };
 }
 
 /// @ignore
 function __catspeak_function_simple__() {
-    return body();
+    // recover from errors
+    var result;
+    try {
+        result = body();
+    } catch (ex) {
+        ex.longMessage += " " + catspeak_location_show(ctx.dbg, ctx.path) + "\n";
+        throw ex;
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_dbg__() {
+    var ctx_ = ctx;
+    var dbgPrev = ctx_.dbg;
+    ctx_.dbg = dbg;
+    var result = body();
+    // don't want to use `finally` here, because we want to track the error
+    // location when an exception occurs
+    ctx_.dbg = dbgPrev;
+    return result;
 }
 
 /// @ignore
@@ -678,11 +740,18 @@ function __catspeak_instr_seq__() {
 /** @ignore */ function __catspeak_instr_get_n_1__() { return 1 }
 /** @ignore */ function __catspeak_instr_get_n_2__() { return 2 }
 /** @ignore */ function __catspeak_instr_get_n_3__() { return 3 }
-/** @ignore */ function __catspeak_instr_get_n_5__() { return 5 }
+/** @ignore */ function __catspeak_instr_get_n_4__() { return 4 }
+/** @ignore */ function __catspeak_instr_get_n_8__() { return 8 }
+/** @ignore */ function __catspeak_instr_get_n_16__() { return 16 }
+/** @ignore */ function __catspeak_instr_get_n_24__() { return 24 }
+/** @ignore */ function __catspeak_instr_get_n_32__() { return 32 }
+/** @ignore */ function __catspeak_instr_get_n_64__() { return 64 }
+/** @ignore */ function __catspeak_instr_get_n_128__() { return 128 }
+/** @ignore */ function __catspeak_instr_get_n_256__() { return 256 }
 /** @ignore */ function __catspeak_instr_get_n_10__() { return 10 }
 /** @ignore */ function __catspeak_instr_get_n_100__() { return 100 }
-/** @ignore */ function __catspeak_instr_get_n_1000__() { return 1000 }
-/** @ignore */ function __catspeak_instr_get_n_1000000__() { return 1000000 }
+/** @ignore */ function __catspeak_instr_get_n_1k__() { return 1000 }
+/** @ignore */ function __catspeak_instr_get_n_1m__() { return 1000000 }
 /** @ignore */ function __catspeak_instr_get_s__() { return value }
 /** @ignore */ function __catspeak_instr_get_s_empty__() { return "" }
 /** @ignore */ function __catspeak_instr_get_s_star__() { return "*" }
