@@ -41,7 +41,7 @@ function CatspeakCartWriter() constructor {
     /// The minor version of this cartridge.
     ///
     /// @returns {Real}
-    version-minor = undefined;
+    versionMinor = undefined;
     /// The patch number of this cartridge.
     ///
     /// @returns {Real}
@@ -120,7 +120,7 @@ function CatspeakCartWriter() constructor {
             buffer_write(cart, buffer_string, name ?? "untitled");
             buffer_write(cart, buffer_string, author ?? "");
             buffer_write(cart, buffer_u8, version ?? 1);
-            buffer_write(cart, buffer_u8, version-minor ?? 0);
+            buffer_write(cart, buffer_u8, versionMinor ?? 0);
             buffer_write(cart, buffer_u8, patch ?? 0);
             buffer_write(cart, buffer_string, path ?? "");
             buffer_write(cart, buffer_u32, date ?? 0);
@@ -600,7 +600,7 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - `.handleMeta(name, author, version, version-minor, patch, path, date)` (always invoked first)
+///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
 ///   - `.handleInstrSequence(dbg, n)`
 ///   - `.handleInstrClosure(dbg, idx)`
@@ -672,11 +672,11 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     var name = buffer_read(cart_, buffer_string);
     var author = buffer_read(cart_, buffer_string);
     var version = buffer_read(cart_, buffer_u8);
-    var version-minor = buffer_read(cart_, buffer_u8);
+    var versionMinor = buffer_read(cart_, buffer_u8);
     var patch = buffer_read(cart_, buffer_u8);
     var path = buffer_read(cart_, buffer_string);
     var date = buffer_read(cart_, buffer_u32);
-    visitor_.handleMeta(name, author, version, version-minor, patch, path, date);
+    visitor_.handleMeta(name, author, version, versionMinor, patch, path, date);
 
     /// @ignore
     cart = cart_;

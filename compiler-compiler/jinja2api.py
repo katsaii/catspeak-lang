@@ -11,7 +11,12 @@ def jinja2_export(func):
 # case conversion
 
 def case_explode(ident):
-    return [x for word in ident.split() for x in word.split(r"[-_]")]
+    return [
+        kebab_and_snake_idents
+        for word in ident.split()
+        for snake_idents in word.split("_")
+        for kebab_and_snake_idents in snake_idents.split("-")
+    ]
 
 @jinja2_export
 def case_capitalise(ident):

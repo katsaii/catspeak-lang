@@ -55,7 +55,7 @@ function __CatspeakCartDisassembler() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, version-minor, patch, path, date
+        name, author, version, versionMinor, patch, path, date
     ) {
         if (name != "untitled") {
             out += "-- name:  " + string(name) + "\n";
@@ -66,8 +66,8 @@ function __CatspeakCartDisassembler() constructor {
         if (version != 1) {
             out += "-- version:  " + string(version) + "\n";
         }
-        if (version-minor != 0) {
-            out += "-- version-minor:  " + string(version-minor) + "\n";
+        if (versionMinor != 0) {
+            out += "-- version-minor:  " + string(versionMinor) + "\n";
         }
         if (patch != 0) {
             out += "-- patch:  " + string(patch) + "\n";

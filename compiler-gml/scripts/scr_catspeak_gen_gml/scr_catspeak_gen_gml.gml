@@ -69,7 +69,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, version-minor, patch, path, date
+        name, author, version, versionMinor, patch, path, date
     ) {
         isAlive = true;
         exprStack = ds_stack_create();
@@ -82,7 +82,7 @@ function CatspeakGenGML() constructor {
             name : name,
             author : author,
             version : version,
-            version-minor : version-minor,
+            versionMinor : versionMinor,
             patch : patch,
             path : path,
             date : date,
@@ -111,15 +111,44 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __genExprSequence_vers = undefined;
+    static __genExprSequence_versN = 0;
+    if (__genExprSequence_vers == undefined) {
+        __genExprSequence_vers = [
+            __catspeak_instr_seq_0__,
+            __catspeak_instr_seq_1__,
+            __catspeak_instr_seq_2__,
+            __catspeak_instr_seq_3__,
+            __catspeak_instr_seq_4__,
+            __catspeak_instr_seq_5__,
+            __catspeak_instr_seq_6__,
+            __catspeak_instr_seq_7__,
+            __catspeak_instr_seq_8__,
+            __catspeak_instr_seq_9__,
+        ];
+        __genExprSequence_versN = array_length(__genExprSequence_vers);
+    }
+
+    /// @ignore
     static __genExprSequence = function (n, stmts) {
-        if (n == 0) {
-            return method({
-                ctx : ctx,
-            }, __catspeak_instr_seq_0__);
+        var nStatic = min(n, __genExprSequence_versN - 1);
+        var closure_ = { ctx : ctx };
+        for (var i = 0; i < nStatic; i += 1) {
+            closure_[$ "_" + string(i + 1)] = stmts[i];
+        }
+        if (n == nStatic) {
+            return method(closure_, __genExprSequence_vers[n]);
         } else {
-            return method({
-                ctx : ctx,
-            }, __catspeak_instr_seq__);
+            // encode statments in reverse for (maybe) faster iteration
+            var moreN = n - __genExprSequence_versN;
+            var more = array_create(moreN);
+            for (var i = 0; i < moreN; i += 1) {
+                more[@ i] = stmts[n - 2 - i];
+            }
+            closure_.moreN = moreN;
+            closure_.more = more;
+            closure_.result = stmts[n - 1];
+            return method(closure_, __catspeak_instr_seq__);
         }
     };
 
@@ -628,14 +657,26 @@ function __catspeak_instr_fclo_simple__() {
     return value;
 }
 
-/// @ignore
-function __catspeak_instr_seq_0__() {
-    return result();
-}
+/** @ignore */ function __catspeak_instr_seq_0__() { return undefined }
+/** @ignore */ function __catspeak_instr_seq_1__() { return _1() }
+/** @ignore */ function __catspeak_instr_seq_2__() { _1(); return _2() }
+/** @ignore */ function __catspeak_instr_seq_3__() { _1(); _2(); return _3() }
+/** @ignore */ function __catspeak_instr_seq_4__() { _1(); _2(); _3(); return _4() }
+/** @ignore */ function __catspeak_instr_seq_5__() { _1(); _2(); _3(); _4(); return _5() }
+/** @ignore */ function __catspeak_instr_seq_6__() { _1(); _2(); _3(); _4(); _5(); return _6() }
+/** @ignore */ function __catspeak_instr_seq_7__() { _1(); _2(); _3(); _4(); _5(); _6(); return _7() }
+/** @ignore */ function __catspeak_instr_seq_8__() { _1(); _2(); _3(); _4(); _5(); _6(); _7(); return _8() }
+/** @ignore */ function __catspeak_instr_seq_9__() { _1(); _2(); _3(); _4(); _5(); _6(); _7(); _8(); return _9() }
 
 /// @ignore
 function __catspeak_instr_seq__() {
-    // TODO
+    _1(); _2(); _3(); _4(); _5(); _6(); _7(); _8(); _9();
+    var more_ = more;
+    for (var i = moreN - 1; i >= 0; i -= 1) {
+        var comp = more_[i];
+        comp();
+    }
+    return result();
 }
 
 // automatically generated instructions below (here be dragons)
