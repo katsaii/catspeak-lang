@@ -91,6 +91,29 @@ function CatspeakGenGML() constructor {
         }, __catspeak_function_simple__);
         funcs[| idx] = func;
     };
+
+    /// @ignore
+    static __genExprClosure = function (idx) {
+        return method({
+            ctx : ctx,
+            value : funcs[| idx],
+        }, __catspeak_instr_fclo_simple__);
+    };
+
+    /// @ignore
+    static __genExprSequence = function (n, stmts) {
+        if (n == 0) {
+            return method({
+                ctx : ctx,
+            }, __catspeak_instr_seq_0__);
+        } else {
+            return method({
+                ctx : ctx,
+            }, __catspeak_instr_seq__);
+        }
+    };
+
+    // automatically generated code generation functions (here be dragons)
 {% for instr in InstrItem.enum(ir) %}
 
     /// @ignore
@@ -100,10 +123,18 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
 {#  pop stackargs in reverse order #}
 {%  for arg in list(InstrStackargItem.enum(instr.ir))[::-1] %}
+{%   if arg.many %}
+{#    pop many arguments and put them into an array #}
+        var {{ arg.name }} = array_create({{ arg.many }});
+        for (var i = array_length({{ arg.name }}) - 1; i >= 0; i -= 1) {
+            {{ arg.name }}[@ i] = ds_stack_pop(exprStack_);
+        }
+{%   else %}
         var {{ arg.name }} = ds_stack_pop(exprStack_);
+{%   endif %}
 {%  endfor %}
         var exec;
-{%  if instr.intrinsic == None %}
+{%  if instr.comptime %}
 {#   special case for inlined arguments #}
 {%   for inlined in InstrInlineItem.enum(instr.ir) %}
         if (
@@ -142,27 +173,39 @@ function CatspeakGenGML() constructor {
         );
 {%   endif %}
 {%  else %}
-        exec = {{ instr.intrinsic }}({{
+        exec = __genExpr{{ case_camel_upper(instr.name) }}({{
             join(", ",
                 args(InstrArgItem.enum(instr.ir)) +
                 args(InstrStackargItem.enum(instr.ir))
             )
         }});
 {%  endif %}
+{%  if instr.exceptional %}
         // TODO :: debug information
+{%  endif %}
         ds_stack_push(exprStack_, exec);
     };
 {% endfor %}
-
-    /// @ignore
-    static __intrinsicClosure = function (idx) {
-        return funcs[| idx];
-    };
 }
 
 /// @ignore
 function __catspeak_function_simple__() {
     return body();
+}
+
+/// @ignore
+function __catspeak_instr_fclo_simple__() {
+    return value;
+}
+
+/// @ignore
+function __catspeak_instr_seq_0__() {
+    return result();
+}
+
+/// @ignore
+function __catspeak_instr_seq__() {
+    // TODO
 }
 
 // automatically generated instructions below (here be dragons)

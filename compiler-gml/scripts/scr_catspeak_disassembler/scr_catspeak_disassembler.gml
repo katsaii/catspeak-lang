@@ -55,7 +55,7 @@ function __CatspeakCartDisassembler() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, versionMinor, patch, path, date
+        name, author, version, version-minor, patch, path, date
     ) {
         if (name != "untitled") {
             out += "-- name:  " + string(name) + "\n";
@@ -66,8 +66,8 @@ function __CatspeakCartDisassembler() constructor {
         if (version != 1) {
             out += "-- version:  " + string(version) + "\n";
         }
-        if (versionMinor != 0) {
-            out += "-- version-minor:  " + string(versionMinor) + "\n";
+        if (version-minor != 0) {
+            out += "-- version-minor:  " + string(version-minor) + "\n";
         }
         if (patch != 0) {
             out += "-- patch:  " + string(patch) + "\n";
@@ -94,8 +94,15 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrSequence = function (dbg, n) {
+        out += "\n  seq";
+        out += "  " + string(n);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrClosure = function (dbg, idx) {
-        out += "\n  clo";
+        out += "\n  fclo";
         out += "  " + string(idx);
         __writeDbg(dbg);
     };

@@ -41,7 +41,7 @@ function CatspeakCartWriter() constructor {
     /// The minor version of this cartridge.
     ///
     /// @returns {Real}
-    versionMinor = undefined;
+    version-minor = undefined;
     /// The patch number of this cartridge.
     ///
     /// @returns {Real}
@@ -120,7 +120,7 @@ function CatspeakCartWriter() constructor {
             buffer_write(cart, buffer_string, name ?? "untitled");
             buffer_write(cart, buffer_string, author ?? "");
             buffer_write(cart, buffer_u8, version ?? 1);
-            buffer_write(cart, buffer_u8, versionMinor ?? 0);
+            buffer_write(cart, buffer_u8, version-minor ?? 0);
             buffer_write(cart, buffer_u8, patch ?? 0);
             buffer_write(cart, buffer_string, path ?? "");
             buffer_write(cart, buffer_u32, date ?? 0);
@@ -167,6 +167,22 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
+    /// Evaluates n-many expressions, implicitly returning the final expression.
+    ///
+    /// @param {Real} n
+    ///   The number of expressions to evaluate.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSequence = function (n, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SEQ);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u32, n);
+    };
+
     /// Return a reference to a function.
     ///
     /// @param {Real} idx
@@ -178,7 +194,7 @@ function CatspeakCartWriter() constructor {
     static emitClosure = function (idx, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
-        buffer_write(chunk, buffer_u8, __CatspeakInstr.CLO);
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.FCLO);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_u32, idx);
     };
@@ -584,8 +600,9 @@ function catspeak_cart_version(cart) {
 /// @param {Struct} visitor_
 ///   A struct containing methods for handling each of the following cases:
 ///
-///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
+///   - `.handleMeta(name, author, version, version-minor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrSequence(dbg, n)`
 ///   - `.handleInstrClosure(dbg, idx)`
 ///   - `.handleInstrIfThenElse(dbg)`
 ///   - `.handleInstrOr(dbg)`
@@ -655,11 +672,11 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     var name = buffer_read(cart_, buffer_string);
     var author = buffer_read(cart_, buffer_string);
     var version = buffer_read(cart_, buffer_u8);
-    var versionMinor = buffer_read(cart_, buffer_u8);
+    var version-minor = buffer_read(cart_, buffer_u8);
     var patch = buffer_read(cart_, buffer_u8);
     var path = buffer_read(cart_, buffer_string);
     var date = buffer_read(cart_, buffer_u32);
-    visitor_.handleMeta(name, author, version, versionMinor, patch, path, date);
+    visitor_.handleMeta(name, author, version, version-minor, patch, path, date);
 
     /// @ignore
     cart = cart_;
@@ -698,6 +715,14 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readFunc = function () {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readISequence = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var n = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrSequence(dbg, n);
     };
 
     /// @ignore
@@ -911,7 +936,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
-        __readerLookup[@ __CatspeakInstr.CLO] = __readIClosure;
+        __readerLookup[@ __CatspeakInstr.SEQ] = __readISequence;
+        __readerLookup[@ __CatspeakInstr.FCLO] = __readIClosure;
         __readerLookup[@ __CatspeakInstr.IFTE] = __readIIfThenElse;
         __readerLookup[@ __CatspeakInstr.OR] = __readIOr;
         __readerLookup[@ __CatspeakInstr.XOR] = __readIXor;
@@ -945,7 +971,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
-    CLO = 28,
+    SEQ = 2,
+    FCLO = 27,
     IFTE = 28,
     OR = 19,
     XOR = 20,

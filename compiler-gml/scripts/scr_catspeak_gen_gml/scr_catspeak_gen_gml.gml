@@ -69,7 +69,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static handleMeta = function (
-        name, author, version, versionMinor, patch, path, date
+        name, author, version, version-minor, patch, path, date
     ) {
         isAlive = true;
         exprStack = ds_stack_create();
@@ -82,7 +82,7 @@ function CatspeakGenGML() constructor {
             name : name,
             author : author,
             version : version,
-            versionMinor : versionMinor,
+            version-minor : version-minor,
             patch : patch,
             path : path,
             date : date,
@@ -103,11 +103,46 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __genExprClosure = function (idx) {
+        return method({
+            ctx : ctx,
+            value : funcs[| idx],
+        }, __catspeak_instr_fclo_simple__);
+    };
+
+    /// @ignore
+    static __genExprSequence = function (n, stmts) {
+        if (n == 0) {
+            return method({
+                ctx : ctx,
+            }, __catspeak_instr_seq_0__);
+        } else {
+            return method({
+                ctx : ctx,
+            }, __catspeak_instr_seq__);
+        }
+    };
+
+    // automatically generated code generation functions (here be dragons)
+
+    /// @ignore
+    static handleInstrSequence = function (dbg, n) {
+        var exprStack_ = exprStack;
+        var stmts = array_create(n);
+        for (var i = array_length(stmts) - 1; i >= 0; i -= 1) {
+            stmts[@ i] = ds_stack_pop(exprStack_);
+        }
+        var exec;
+        exec = __genExprSequence(n, stmts);
+        // TODO :: debug information
+        ds_stack_push(exprStack_, exec);
+    };
+
+    /// @ignore
     static handleInstrClosure = function (dbg, idx) {
         var exprStack_ = exprStack;
         var exec;
-        exec = __intrinsicClosure(idx);
-        // TODO :: debug information
+        exec = __genExprClosure(idx);
         ds_stack_push(exprStack_, exec);
     };
 
@@ -533,7 +568,6 @@ function CatspeakGenGML() constructor {
             ctx : ctx,
             value : value,
         }, __catspeak_instr_get_n__);
-        // TODO :: debug information
         ds_stack_push(exprStack_, exec);
     };
 
@@ -570,7 +604,6 @@ function CatspeakGenGML() constructor {
             ctx : ctx,
             value : value,
         }, __catspeak_instr_get_s__);
-        // TODO :: debug information
         ds_stack_push(exprStack_, exec);
     };
 
@@ -581,19 +614,28 @@ function CatspeakGenGML() constructor {
         exec = method({
             ctx : ctx,
         }, __catspeak_instr_get_u__);
-        // TODO :: debug information
         ds_stack_push(exprStack_, exec);
-    };
-
-    /// @ignore
-    static __intrinsicClosure = function (idx) {
-        return funcs[| idx];
     };
 }
 
 /// @ignore
 function __catspeak_function_simple__() {
     return body();
+}
+
+/// @ignore
+function __catspeak_instr_fclo_simple__() {
+    return value;
+}
+
+/// @ignore
+function __catspeak_instr_seq_0__() {
+    return result();
+}
+
+/// @ignore
+function __catspeak_instr_seq__() {
+    // TODO
 }
 
 // automatically generated instructions below (here be dragons)

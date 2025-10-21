@@ -62,13 +62,17 @@ meta:
 # terminated by `\0` (null).
 
 # A function definition consists of two parts:
-# * A sequence of instructions, terminated by `\0` (null) ...
+# * A sequence of instructions, terminated by `\0` (null).
+# * Followed by information about the enclosing function this sequence of
+#   instructions belongs to.
 
-instr-opcode-type: u8 #< The type used for opcodes.
-instr-dbg-type: u32   #< The type used for debug info.
-instr:
-
-# - name: "example"                     #< The name of the instruction.
+# Each instruction starts with an opcode followed by a 32-bit encoded line
+# and column number. (For information on how to encode line and columns, see:
+# https://www.katsaii.com/catspeak-lang/3.2.0/lib-init.html#catspeak_location_create)
+#
+# An example instruction definition is shown below:
+#
+#   name: "example"                     #< The name of the instruction.
 #   name-short: "ex_1"                  #< A shorter name for the instruction.
 #   desc: "just an example instruction" #< Instruction description.
 #   opcode: 0x0F                        #< Underlying opcode representation.
@@ -79,16 +83,37 @@ instr:
 #   stackargs:
 #     - name: "m" #< Pop value off the stack, and associate it with a name.
 #       desc: "the number of additional hoops to jump through"
+#
+# The IR then encodes each argument of an instruction in the order they appear
+# below (i.e. the `args` field of each instruction):
+
+instr-opcode-type: u8 #< The type used for opcodes.
+instr-dbg-type: u32   #< The type used for debug info.
+instr:
+
+  - name: "sequence" # NOTE: behaves similar to comma expressions in JavaScript
+    name-short: seq
+    desc: "evaluates n-many expressions, implicitly returning the final expression"
+    opcode: 0x02
+    args:
+      - name: n
+        desc: "the number of expressions to evaluate"
+        type: u32
+    stackargs:
+      - name: stmts
+        desc: "the computations to run for this sequence"
+        many: n
 
   - name: "closure"
     name-short: fclo
     desc: "return a reference to a function"
-    opcode: 0x1C
+    opcode: 0x1B
     args:
       - name: idx
         desc: "the numeric id of the function to get"
         type: u32
     intrinsic: true
+    exceptional: false
 
   - name: "if then else"
     name-short: ifte
@@ -362,6 +387,7 @@ instr:
       - name: value
         desc: "the number to emit"
         type: f64
+    exceptional: false
     comptime: $value$
     force-inline:
       - name: "0"
@@ -400,6 +426,7 @@ instr:
       - name: value
         desc: "the string to emit"
         type: string
+    exceptional: false
     comptime: $value$
     force-inline:
       - name: empty
@@ -422,10 +449,8 @@ instr:
     name-short: get_u
     desc: "get the undefined constant"
     opcode: 0x23
+    exceptional: false
     comptime: undefined
-
-# * ... Followed by information about the enclosing function this sequence of
-#   instructions belongs to.
 
 func:
 

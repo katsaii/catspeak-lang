@@ -17,22 +17,32 @@ TEST_EXPERIMENT "catspeak4-cart" {
     writer.author = "me";
     writer.path = "https://katsaii.com/joe/mama.meow"
     writer.pushFunction();
-    writer.emitConstNumber(1);
-    writer.emitConstNumber(2);
+    writer.emitConstNumber(true);
+    writer.pushFunction();
     writer.emitConstNumber(3);
+    writer.emitConstNumber(4);
     writer.emitMultiply();
+    var f1 = writer.popFunction();
+    writer.emitClosure(f1);
+    writer.pushFunction();
+    writer.emitConstNumber(3);
+    writer.emitConstNumber(4);
     writer.emitAdd();
+    var f2 = writer.popFunction();
+    writer.emitClosure(f2);
+    writer.emitIfThenElse();
     writer.popFunction();
     var cart = writer.finalise();
+    show_message(catspeak_cart_disassemble(cart, 0));
     buffer_seek(cart, buffer_seek_start, 0);
     var codegen = new CatspeakGenGML();
     var reader = new CatspeakCartReader(cart, codegen);
     do {
         var keepReading = reader.readInstr();
     } until (!keepReading);
-    var f = codegen.finalise();
-    show_message(f());
-    show_message(catspeak_cart_disassemble(cart, 0));
+    var res = (codegen.finalise())();
+    show_message(res());
+    
 }
 
 /*

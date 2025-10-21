@@ -11,7 +11,7 @@ def jinja2_export(func):
 # case conversion
 
 def case_explode(ident):
-    return [x for word in ident.split() for x in word.split("-")]
+    return [x for word in ident.split() for x in word.split(r"[-_]")]
 
 @jinja2_export
 def case_capitalise(ident):
@@ -153,8 +153,7 @@ class InstrItem():
         if self.opcode == 0xFF:
             raise Exception("opcode cannot be 0xFF")
         self.comptime = ir.get("comptime", None)
-        is_intrinsic = ir.get("intrinsic", False)
-        self.intrinsic = f"__intrinsic{case_camel_upper(self.name)}" if is_intrinsic else None
+        self.exceptional = ir.get("exceptional", True)
 
     def enum(ir):
         return (InstrItem(ir_) for _, ir_ in ir_enum(ir, "instr"))
@@ -187,6 +186,7 @@ class InstrStackargItem():
         if not all(ch.isalnum() or ch == "_" for ch in self.name):
             raise Exception("argument names must be alphanumeric")
         self.desc = ir["desc"]
+        self.many = ir.get("many", None)
 
     def enum(ir):
         return (InstrStackargItem(idx, ir_) for idx, ir_ in ir_enum(ir, "stackargs"))

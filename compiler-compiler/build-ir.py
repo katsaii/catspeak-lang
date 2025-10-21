@@ -38,6 +38,35 @@ def get_generated_header(comment_prefix, *paths):
 IR_PATH = "compiler-compiler/def-catspeak-ir.yaml"
 with open(IR_PATH, "r", encoding="utf-8") as file:
     ir = yaml.safe_load(file)
+ir_instrs_opcodes = { }
+ir_instrs_opcode_max = 0
+ir_instrs_name_conflict = None
+for instr in ir["instr"]:
+    # check all opcode fields are unique
+    instr_opcode = instr["opcode"]
+    instr_name = instr.get("name-short", instr["name"])
+    ir_instrs_opcode_max = max(ir_instrs_opcode_max, instr_opcode)
+    if instr_opcode in ir_instrs_opcodes:
+        ir_instrs_name_conflict = (instr_opcode, instr_name, ir_instrs_opcodes[instr_opcode])
+    else:
+        ir_instrs_opcodes[instr_opcode] = instr_name
+free_opcodes = [
+    hex(n)
+    for n in range(1, ir_instrs_opcode_max + 1)
+    if n not in ir_instrs_opcodes
+]
+if free_opcodes:
+    print(
+        "WARNING! there are gaps in the opcodes of IR instructions:\n  " +
+        ", ".join(free_opcodes)
+    )
+if ir_instrs_name_conflict != None:
+    (offending_opcode, instr_1, instr_2) = ir_instrs_name_conflict
+    candidate_opcode = free_opcodes[0] if free_opcodes else hex(ir_instrs_opcode_max + 1)
+    raise Exception(f"""
+        instructions '{instr_1}' and '{instr_2}' both have the same opcode: {hex(offending_opcode)}
+        (suggestion: change opcode for '{instr_2}' to {candidate_opcode})
+    """)
 
 # init jinja
 TEMPLATE_PATH = "compiler-compiler/template"
