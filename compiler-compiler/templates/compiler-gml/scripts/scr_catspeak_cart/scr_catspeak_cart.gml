@@ -195,12 +195,17 @@ function CatspeakCartWriter() constructor {
 {%  for arg in InstrArgItem.enum(instr.ir) %}
         buffer_write(chunk, {{ arg.type_buffer }}, {{ arg.name }});
 {%  endfor %}
-{%  set stack_size_change = 1 - len(args(InstrStackargItem.enum(instr.ir))) %}
-{%  if stack_size_change > 0 %}
-        stackSize += {{ stack_size_change }};
-{%  elif stack_size_change < 0 %}
-        stackSize -= {{ -stack_size_change }};
-{%  endif %}
+{%  set ns = namespace(pushes = "1", pushes_name = "<result>") %}
+{%  for arg in InstrStackargItem.enum(instr.ir) %}
+{%   set ns.pushes_name = ns.pushes_name + " - " + arg.name %}
+{%   if arg.many %}
+{%    set ns.pushes = ns.pushes + " - " + str(arg.many) %}
+{%   else %}
+{%    set ns.pushes = ns.pushes + " - 1" %}
+{%   endif %}
+{%  endfor %}
+        // {{ ns.pushes_name }}
+        {{ "//" if ns.pushes == "1 - 1" else "" }}stackSize += {{ ns.pushes }};
     };
 {% endfor %}
 }

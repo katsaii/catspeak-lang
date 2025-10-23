@@ -38,21 +38,21 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     /// @ignore
     isAlive = true;
     __pushFunc();
-    __pushBlock();
 
     /// @ignore
     static __pushFunc = function () {
         ir.pushFunction();
         funcTop += 1;
-        
         funcs[@ funcTop] = {
             blocks : array_create(8, undefined),
             blockTop : -1,
         };
+        __pushBlock();
     };
 
     /// @ignore
     static __popFunc = function () {
+        __popBlock();
         funcs[@ funcTop] = undefined;
         funcTop -= 1;
         return ir.popFunction();
@@ -113,7 +113,6 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     static parseOnce = function () {
         __catspeak_assert(isAlive, "parser has expired");
         if (lexer.peek() == CatspeakToken.EOF) {
-            __popBlock();
             return __popFunc();
         }
         try {
@@ -177,14 +176,14 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 //    peeked == CatspeakToken.BRACE_RIGHT ||
                 //    peeked == CatspeakToken.LET
                 //) {
-                //    ir.emitConstUndefined(lexer.getLocation());
+                //    ir.emitConstUndefined();
                 //} else {
                 //    __parseExpression();
                 //}
-                //scope.emitReturn(lexer.getLocation());
+                //scope.emitReturn();
             } else if (peeked == CatspeakToken.CONTINUE) {
                 __catspeak_error_unimplemented("continue");
-                //scope.emitContinue(lexer.getLocation());
+                //scope.emitContinue();
             } else if (peeked == CatspeakToken.BREAK) {
                 peeked = lexer.peek();
                 if (
@@ -192,16 +191,16 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     peeked == CatspeakToken.BRACE_RIGHT ||
                     peeked == CatspeakToken.LET
                 ) {
-                    ir.emitConstUndefined(lexer.getLocation());
+                    ir.emitConstUndefined();
                 } else {
                     __parseExpression();
                 }
                 __catspeak_error_unimplemented("break");
-                //scope.emitBreak(lexer.getLocation());
+                //scope.emitBreak();
             } else if (peeked == CatspeakToken.THROW) {
                 __parseExpression();
                 __catspeak_error_unimplemented("throw");
-                //ir.emitThrow(lexer.getLocation());
+                //ir.emitThrow();
             } else {
                 __catspeak_error_bug();
             }
@@ -223,7 +222,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             peeked > CatspeakToken.__BLOCKEXPR_BEGIN__ &&
             peeked < CatspeakToken.__BLOCKEXPR_END__
         ) {
-
+            var dbg = lexer.getLocationStart();
             lexer.next();
             if (peeked == CatspeakToken.DO) {
                 __pushBlock();
@@ -231,24 +230,24 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 __popBlock();
             } else if (peeked == CatspeakToken.IF) {
                 __catspeak_error_unimplemented("if");
-                //__parseCondition();
-                //scope.beginBlock();
-                //__parseStatements("if");
-                //scope.endBlock();
-                //if (lexer.peek() == CatspeakToken.ELSE) {
-                //    lexer.next();
-                //    if (lexer.peek() == CatspeakToken.IF) {
-                //        // for `else if` support
-                //        __parseExpressionBlock();
-                //    } else {
-                //        scope.beginBlock();
-                //        __parseStatements("else");
-                //        scope.endBlock();
-                //    }
-                //} else {
-                //    ir.emitConstUndefined(lexer.getLocation());
-                //}
-                //ir.emitIfThenElse(lexer.getLocation());
+                __parseCondition();
+                __pushBlock();
+                __parseStatements("if");
+                __popBlock();
+                if (lexer.peek() == CatspeakToken.ELSE) {
+                    lexer.next();
+                    if (lexer.peek() == CatspeakToken.IF) {
+                        // for `else if` support
+                        __parseExpressionBlock();
+                    } else {
+                        __pushBlock();
+                        __parseStatements("else");
+                        __popBlock();
+                    }
+                } else {
+                    ir.emitConstUndefined();
+                }
+                ir.emitIfThenElse(dbg);
             } else if (peeked == CatspeakToken.WHILE) {
                 // TODO
             } else if (peeked == CatspeakToken.FOR) {
@@ -260,7 +259,23 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             } else if (peeked == CatspeakToken.MATCH) {
                 // TODO
             } else if (peeked == CatspeakToken.FUN) {
-                // TODO
+                __pushFunc();
+                if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
+                    if (lexer.next() != CatspeakToken.PAREN_LEFT) {
+                        __ex("expected opening '(' after 'fun' keyword");
+                    }
+                    var peeked = lexer.peek();
+                    while (peeked != CatspeakToken.PAREN_RIGHT && peeked != CatspeakToken.EOF) {
+                        // TODO function args
+                        peeked = lexer.peek();
+                    }
+                    if (lexer.peek() != CatspeakToken.PAREN_RIGHT) {
+                        __ex("expected closing ')' after function arguments");
+                    }
+                    lexer.next();
+                }
+                __parseStatements("fun");
+                ir.emitClosure(__popFunc(), dbg);
             } else if (peeked == CatspeakToken.IMPL) {
                 __catspeak_error_unimplemented("impl blocks");
             } else {
@@ -285,12 +300,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_OR_BEGIN__ &&
                 peeked < CatspeakToken.__OP_OR_END__
             ) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpLogicalAND();
                 if (peeked == CatspeakToken.OR) {
-                    ir.emitOr(lexer.getLocation());
+                    ir.emitOr(dbg);
                 } else if (peeked == CatspeakToken.XOR) {
-                    ir.emitXor(lexer.getLocation());
+                    ir.emitXor(dbg);
                 } else {
                     __catspeak_error_bug();
                 }
@@ -306,9 +322,10 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (peeked == CatspeakToken.AND) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpPipe();
-                ir.emitAnd(lexer.getLocation());
+                ir.emitAnd(dbg);
             } else {
                 break;
             }
@@ -330,12 +347,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_EQUAL_BEGIN__ &&
                 peeked < CatspeakToken.__OP_EQUAL_END__
             ) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpRelational();
                 if (peeked == CatspeakToken.EQUAL) {
-                    ir.emitEqual(lexer.getLocation());
+                    ir.emitEqual(dbg);
                 } else if (peeked == CatspeakToken.NOT_EQUAL) {
-                    ir.emitNotEqual(lexer.getLocation());
+                    ir.emitNotEqual(dbg);
                 } else {
                     __catspeak_error_bug();
                 }
@@ -354,16 +372,17 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_RELATE_BEGIN__ &&
                 peeked < CatspeakToken.__OP_RELATE_END__
             ) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpBitwise();
                 if (peeked == CatspeakToken.LESS) {
-                    ir.emitLessThan(lexer.getLocation());
+                    ir.emitLessThan(dbg);
                 } else if (peeked == CatspeakToken.LESS_EQUAL) {
-                    ir.emitLessThanOrEqualTo(lexer.getLocation());
+                    ir.emitLessThanOrEqualTo(dbg);
                 } else if (peeked == CatspeakToken.GREATER) {
-                    ir.emitGreaterThan(lexer.getLocation());
+                    ir.emitGreaterThan(dbg);
                 } else if (peeked == CatspeakToken.GREATER_EQUAL) {
-                    ir.emitGreaterThanOrEqualTo(lexer.getLocation());
+                    ir.emitGreaterThanOrEqualTo(dbg);
                 } else {
                     __catspeak_error_bug();
                 }
@@ -382,18 +401,19 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_BITWISE_BEGIN__ &&
                 peeked < CatspeakToken.__OP_BITWISE_END__
             ) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpAdd();
                 if (peeked == CatspeakToken.AND) {
-                    ir.emitBitwiseAnd(lexer.getLocation());
+                    ir.emitBitwiseAnd(dbg);
                 } else if (peeked == CatspeakToken.OR) {
-                    ir.emitBitwiseOr(lexer.getLocation());
+                    ir.emitBitwiseOr(dbg);
                 } else if (peeked == CatspeakToken.XOR) {
-                    ir.emitBitwiseXor(lexer.getLocation());
+                    ir.emitBitwiseXor(dbg);
                 } else if (peeked == CatspeakToken.SHIFT_LEFT) {
-                    ir.emitBitwiseShiftLeft(lexer.getLocation());
+                    ir.emitBitwiseShiftLeft(dbg);
                 } else if (peeked == CatspeakToken.SHIFT_RIGHT) {
-                    ir.emitBitwiseShiftRight(lexer.getLocation());
+                    ir.emitBitwiseShiftRight(dbg);
                 } else {
                     __catspeak_error_bug();
                 }
@@ -412,12 +432,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_ADD_BEGIN__ &&
                 peeked < CatspeakToken.__OP_ADD_END__
             ) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpMultiply();
                 if (peeked == CatspeakToken.PLUS) {
-                    ir.emitAdd(lexer.getLocation());
+                    ir.emitAdd(dbg);
                 } else if (peeked == CatspeakToken.MINUS) {
-                    ir.emitSubtract(lexer.getLocation());
+                    ir.emitSubtract(dbg);
                 } else {
                     __catspeak_error_bug();
                 }
@@ -436,16 +457,17 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_MULT_BEGIN__ &&
                 peeked < CatspeakToken.__OP_MULT_END__
             ) {
+                var dbg = lexer.getLocationStart();
                 lexer.next();
                 __parseOpUnary();
                 if (peeked == CatspeakToken.MULTIPLY) {
-                    ir.emitMultiply(lexer.getLocation());
+                    ir.emitMultiply(dbg);
                 } else if (peeked == CatspeakToken.DIVIDE) {
-                    ir.emitDivide(lexer.getLocation());
+                    ir.emitDivide(dbg);
                 } else if (peeked == CatspeakToken.DIVIDE_INT) {
-                    ir.emitDivideInt(lexer.getLocation());
+                    ir.emitDivideInt(dbg);
                 } else if (peeked == CatspeakToken.REMAINDER) {
-                    ir.emitRemainder(lexer.getLocation());
+                    ir.emitRemainder(dbg);
                 } else {
                     __catspeak_error_bug();
                 }
@@ -462,16 +484,17 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             peeked > CatspeakToken.__OP_UNARY_BEGIN__ &&
             peeked < CatspeakToken.__OP_UNARY_END__
         ) {
+            var dbg = lexer.getLocationStart();
             lexer.next();
             __parseIndex();
             if (peeked == CatspeakToken.PLUS) {
-                ir.emitPositive(lexer.getLocation());
+                ir.emitPositive(dbg);
             } else if (peeked == CatspeakToken.MINUS) {
-                ir.emitNegative(lexer.getLocation());
+                ir.emitNegative(dbg);
             } else if (peeked == CatspeakToken.NOT) {
-                ir.emitNot(lexer.getLocation());
+                ir.emitNot(dbg);
             } else if (peeked == CatspeakToken.BITWISE_NOT) {
-                ir.emitBitwiseNot(lexer.getLocation());
+                ir.emitBitwiseNot(dbg);
             } else {
                 __catspeak_error_bug();
             }
@@ -515,18 +538,18 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.NUMBER) {
             lexer.next();
-            ir.emitConstNumber(lexer.getValue(), lexer.getLocation());
+            ir.emitConstNumber(lexer.getValue(), lexer.getLocationStart());
         } else if (peeked == CatspeakToken.STRING) {
             lexer.next();
-            ir.emitConstString(lexer.getValue(), lexer.getLocation());
+            ir.emitConstString(lexer.getValue(), lexer.getLocationStart());
         } else if (peeked == CatspeakToken.UNDEFINED) {
             lexer.next();
-            ir.emitConstUndefined(lexer.getLocation());
+            ir.emitConstUndefined(lexer.getLocationStart());
         } else if (peeked == CatspeakToken.IDENT) {
             __catspeak_error_unimplemented("ids");
             //lexer.next();
             //var varName = lexer.getValue();
-            //var varDbg = lexer.getLocation();
+            //var varDbg = lexer.getLocationStart();
             //var op = __peekAssignOp();
             //if (op == undefined) {
             //    scope.emitGet(varName, varDbg);
@@ -537,11 +560,11 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
             __catspeak_error_unimplemented("self");
-            //ir.emitSelf(lexer.getLocation());
+            //ir.emitSelf(lexer.getLocationStart());
         } else if (peeked == CatspeakToken.OTHER) {
             lexer.next();
             __catspeak_error_unimplemented("other");
-            //ir.emitSelf(lexer.getLocation());
+            //ir.emitOther(lexer.getLocationStart());
         } else {
             __parseGrouping();
         }
