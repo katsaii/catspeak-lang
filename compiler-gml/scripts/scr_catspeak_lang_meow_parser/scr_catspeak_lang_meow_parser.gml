@@ -17,58 +17,52 @@
 ///
 /// @param {Struct.CatspeakCartWriter} cartWriter
 ///   The writer for the cartridge to emit.
-function CatspeakParser(cartWriter) constructor {
+///
+/// @param {Struct.CatspeakLexer} lexer_
+///   The lexer to consume tokens from.
+function CatspeakParser(cartWriter, lexer_) constructor {
+    __catspeak_assert(is_struct(cartWriter) && instanceof(cartWriter) == "CatspeakCartWriter",
+        "invalid cart writer"
+    );
+    __catspeak_assert(is_struct(lexer_) && instanceof(lexer_) == "CatspeakLexer",
+        "invalid lexer"
+    );
     /// @ignore
     ir = cartWriter;
     /// @ignore
-    lexer = undefined;
+    lexer = lexer_;
+    /// @ignore
+    isAlive = true;
+    __pushFunc();
 
-    /// Initialises the parser with the given lexer.
-    ///
-    /// @param {Struct.CatspeakLexer} lexer
-    ///   The lexer to consume tokens from.
-    static initialise = function (lexer_) {
-        __catspeak_assert(lexer == undefined,
-            "called `initialise` before calling `finalise`"
-        );
-        __catspeak_assert(is_struct(lexer_) && instanceof(lexer_) == "CatspeakLexer",
-            "invalid lexer"
-        );
-        lexer = lexer_;
+    /// @ignore
+    static __pushFunc = function () {
         ir.pushFunction();
-    };
-
-    /// Frees any dynamically allocated resources managed by this parser.
-    ///
-    /// @warning
-    ///   This **must** be called in a `finally` block if you expect exceptions.
-    static destroy = function () {
-        if (lexer == undefined) {
-            return;
-        }
-        lexer = undefined;
-    };
-
-    /// Completes the parsing of this Catspeak script, returning the id of the
-    /// generated function.
-    ///
-    /// @return {Real}
-    static finalise = function () {
-        var funcIdx;
-        try {
-            funcIdx = ir.popFunction();
-        } finally {
-            destroy();
-        }
-        return funcIdx;
+        // TODO
     };
 
     /// @ignore
-    static __ex = function (msg = "no message") {
-        __catspeak_error_v3(
-            catspeak_location_show(lexer.getLocationStart(), ir.path) + " during parsing",
-            msg, ", got", __token
-        );
+    static __popFunc = function () {
+        // TODO
+        return ir.popFunction();
+    };
+
+    /// @ignore
+    static __pushBlock = function () {
+        // TODO
+    };
+
+    /// @ignore
+    static __popBlock = function () {
+        // TODO
+    };
+
+    /// @ignore
+    static __err = function (msg = "no message") {
+        __catspeak_error(__catspeak_cat(
+            catspeak_location_show(lexer.getLocationStart(), ir.path),
+            " -- ", msg, ", got ", __dbg()
+        ));
     };
 
     /// @ignore
@@ -96,18 +90,17 @@ function CatspeakParser(cartWriter) constructor {
     ///   } until (!moreRemains);
     ///   ```
     ///
-    /// @return {Bool}
-    ///   `true` if there is still more data left to parse, and `false`
-    ///   if the parser has reached the end of the file.
+    /// @return {Real}
+    ///   `undefined` if there is still more data left to parse, or a number
+    ///   representing the compiled function, if the parser has reached the
+    ///   end of the file.
     static parseOnce = function () {
-        __catspeak_assert(lexer != undefined,
-            "attempting call `parseOnce` before calling `initialise`"
-        );
+        __catspeak_assert(isAlive, "parser has expired");
         if (lexer.peek() == CatspeakToken.EOF) {
-            return false;
+            return __popFunc();
         }
         __parseStatement();
-        return true;
+        return undefined;
     };
 
     /// @ignore
@@ -128,7 +121,7 @@ function CatspeakParser(cartWriter) constructor {
     /// @ignore
     static __parseStatements = function (keyword) {
         if (lexer.next() != CatspeakToken.BRACE_LEFT) {
-            __ex("expected opening '{' at the start of '", keyword, "' block");
+            __err("expected opening '{' at the start of '", keyword, "' block");
         }
         var peeked = lexer.peek();
         while (peeked == CatspeakToken.BRACE_RIGHT || peeked == CatspeakToken.EOF) {
@@ -136,7 +129,7 @@ function CatspeakParser(cartWriter) constructor {
             peeked = lexer.peek();
         }
         if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-            __ex("expected closing '}' after '", keyword, "' block");
+            __err("expected closing '}' after '", keyword, "' block");
         }
     };
 
@@ -533,7 +526,7 @@ function CatspeakParser(cartWriter) constructor {
             lexer.next();
             __parseExpression();
             if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
-                __ex("expected closing ')' after group expression");
+                __err("expected closing ')' after group expression");
             }
         } else if (peeked == CatspeakToken.BOX_LEFT) {
             lexer.next();
@@ -544,7 +537,7 @@ function CatspeakParser(cartWriter) constructor {
             __catspeak_error_unimplemented("struct literals");
             // TODO
         } else {
-            __ex("unexpected end of expression, expected one of: '(', '[' or '{'");
+            __err("unexpected end of expression, expected one of: '(', '[' or '{'");
         }
     };
 }

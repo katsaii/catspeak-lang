@@ -14,14 +14,14 @@ var runExperiment = "catspeak4-parse";
 
 TEST_EXPERIMENT "catspeak4-parse" {
     var writer = new CatspeakCartWriter();
-    var parser = new CatspeakParser(writer);
-    parser.initialise(new CatspeakLexer(catspeak_buffer_create_from_string(@'
-        1 + 2
-    ')));
+    var parser = new CatspeakParser(writer,
+        new CatspeakLexer(catspeak_buffer_create_from_string(@'
+            1 + 2
+        '))
+    );
     do {
-        var keepParsing = parser.parseOnce();
+        var keepParsing = parser.parseOnce() == undefined;
     } until (!keepParsing);
-    parser.finalise();
     var cart = writer.finalise();
     show_message(catspeak_cart_disassemble(cart, 0));
 }
