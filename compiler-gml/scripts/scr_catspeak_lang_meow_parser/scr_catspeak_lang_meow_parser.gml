@@ -32,48 +32,64 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     /// @ignore
     lexer = lexer_;
     /// @ignore
+    funcs = array_create(4, undefined);
+    /// @ignore
+    funcTop = -1;
+    /// @ignore
     isAlive = true;
     __pushFunc();
+    __pushBlock();
 
     /// @ignore
     static __pushFunc = function () {
         ir.pushFunction();
-        // TODO
+        funcTop += 1;
+        
+        funcs[@ funcTop] = {
+            blocks : array_create(8, undefined),
+            blockTop : -1,
+        };
     };
 
     /// @ignore
     static __popFunc = function () {
-        // TODO
+        funcs[@ funcTop] = undefined;
+        funcTop -= 1;
         return ir.popFunction();
     };
 
     /// @ignore
     static __pushBlock = function () {
-        // TODO
+        var func = funcs[funcTop];
+        func.blockTop += 1;
+        func.blocks[@ func.blockTop] = {
+            vars : { },
+            // used to track the number of statements to pop in `__popBlock`
+            stackSize : ir.getStackSize(),
+        };
     };
 
     /// @ignore
     static __popBlock = function () {
-        // TODO
+        var func = funcs[funcTop];
+        var exprCount = ir.getStackSize() - func.blocks[func.blockTop].stackSize;
+        func.blocks[@ func.blockTop] = undefined;
+        func.blockTop -= 1;
+        ir.emitSequence(exprCount);
     };
 
     /// @ignore
     static __err = function (msg = "no message") {
-        __catspeak_error(__catspeak_cat(
-            catspeak_location_show(lexer.getLocationStart(), ir.path),
-            " -- ", msg, ", got ", __dbg()
-        ));
-    };
-
-    /// @ignore
-    static __dbg = function () {
         var peeked = lexer.peek();
+        var tokenStr;
         if (peeked == CatspeakToken.EOF) {
-            return "end of file";
+            tokenStr = "end of file";
         } else if (peeked == CatspeakToken.SEMICOLON) {
-            return "line break ';'";
+            tokenStr = "line break ';'";
+        } else {
+            tokenStr = "token '" + lexer.getLexeme() + "' (" + string(peeked) + ")";
         }
-        return "token '" + lexer.getLexeme() + "' (" + string(peeked) + ")";
+        __catspeak_error(msg + ", got " + tokenStr);
     };
 
     /// Parses single a top-level statement, adding any relevant parse
@@ -97,9 +113,15 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     static parseOnce = function () {
         __catspeak_assert(isAlive, "parser has expired");
         if (lexer.peek() == CatspeakToken.EOF) {
+            __popBlock();
             return __popFunc();
         }
-        __parseStatement();
+        try {
+            __parseStatement();
+        } catch (ex) {
+            catspeak_location_trace(ex, lexer.getLocationStart(), ir.path);
+            throw ex;
+        }
         return undefined;
     };
 
@@ -120,17 +142,23 @@ function CatspeakParser(cartWriter, lexer_) constructor {
 
     /// @ignore
     static __parseStatements = function (keyword) {
-        if (lexer.next() != CatspeakToken.BRACE_LEFT) {
-            __err("expected opening '{' at the start of '", keyword, "' block");
+        if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
+            __err(__catspeak_cat(
+                "expected opening '{' at the start of '", keyword, "' block"
+            ));
         }
+        lexer.next();
         var peeked = lexer.peek();
-        while (peeked == CatspeakToken.BRACE_RIGHT || peeked == CatspeakToken.EOF) {
+        while (peeked != CatspeakToken.BRACE_RIGHT && peeked != CatspeakToken.EOF) {
             __parseStatement();
             peeked = lexer.peek();
         }
-        if (lexer.next() != CatspeakToken.BRACE_RIGHT) {
-            __err("expected closing '}' after '", keyword, "' block");
+        if (lexer.peek() != CatspeakToken.BRACE_RIGHT) {
+            __err(__catspeak_cat(
+                "expected closing '}' after '", keyword, "' block"
+            ));
         }
+        lexer.next();
     };
 
     /// @ignore
@@ -195,12 +223,12 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             peeked > CatspeakToken.__BLOCKEXPR_BEGIN__ &&
             peeked < CatspeakToken.__BLOCKEXPR_END__
         ) {
+
             lexer.next();
             if (peeked == CatspeakToken.DO) {
-                __catspeak_error_unimplemented("do");
-                //scope.beginBlock();
-                //__parseStatements("do");
-                //scope.endBlock();
+                __pushBlock();
+                __parseStatements("do");
+                __popBlock();
             } else if (peeked == CatspeakToken.IF) {
                 __catspeak_error_unimplemented("if");
                 //__parseCondition();

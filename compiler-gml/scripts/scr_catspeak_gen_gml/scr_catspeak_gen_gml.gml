@@ -663,7 +663,7 @@ function __catspeak_function_simple__() {
     try {
         result = body();
     } catch (ex) {
-        ex.longMessage += " " + catspeak_location_show(ctx.dbg, ctx.path) + "\n";
+        catspeak_location_trace(ex, ctx.dbg, ctx.path);
         throw ex;
     }
     return result;
