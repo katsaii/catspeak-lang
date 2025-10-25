@@ -83,13 +83,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     };
 
     /// @ignore
-    static __emitVarGet = function (name) {
-        // TODO
+    static __emitVarGet = function (name, dbg) {
+        ir.emitGetLocal(0, dbg);
     };
 
     /// @ignore
-    static __emitVarSet = function (name) {
-        // TODO
+    static __emitVarSet = function (op, name, dbg) {
+        ir.emitSetLocal(op, 0, dbg);
     };
 
     /// @ignore
@@ -544,7 +544,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 __emitVarGet(name, dbg);
             } else {
                 __parseExpression();
-                __emitVarSet(name, dbg, op);
+                __emitVarSet(op, name, dbg);
             }
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();

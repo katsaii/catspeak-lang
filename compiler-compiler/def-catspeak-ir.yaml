@@ -7,6 +7,7 @@
 # * u32:    Unsigned 32-bit integer.
 # * f64:    64-bit floating point number.
 # * string: A sequence of UTF-8 characters terminated by `\0` (null).
+# * char:   A single UTF-8 encoded character.
 
 # The header comes first. In the order they are defined below, these values are
 # written to the start of the buffer.
@@ -90,6 +91,31 @@ meta:
 instr-opcode-type: u8 #< The type used for opcodes.
 instr-dbg-type: u32   #< The type used for debug info.
 instr:
+
+  - name: "get local"
+    name-short: get_l
+    desc: "gets a value of the local variable with the given id"
+    opcode: 0x04
+    args:
+      - name: idx
+        desc: "the id of the local variable to get"
+        type: u32
+
+  - name: "set local"
+    name-short: set_l
+    desc: "assigns a value to the local variable with the given id"
+    opcode: 0x1D
+    args:
+      - name: flavour
+        desc: "the flavour of assignment to use"
+        type: char
+        values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
+      - name: idx
+        desc: "the id of the local variable to assign"
+        type: u32
+    stackargs:
+      - name: value
+        desc: "the value to assign to this local variable"
 
   - name: "sequence" # NOTE: behaves similar to comma expressions in JavaScript
     name-short: seq

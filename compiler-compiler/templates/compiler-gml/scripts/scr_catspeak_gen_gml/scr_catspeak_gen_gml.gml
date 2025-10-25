@@ -16,6 +16,10 @@ function CatspeakGenGML() constructor {
     /// @ignore
     ctx = undefined;
     /// @ignore
+    localsN = 0;
+    /// @ignore
+    hasDebug = false;
+    /// @ignore
     isAlive = false;
 
     /// Frees any dynamically allocated resources managed by this generator.
@@ -70,6 +74,8 @@ function CatspeakGenGML() constructor {
         funcs = ds_list_create();
         ctx = {
             globals : globals ?? { },
+            stack : [],
+            stackN : 0, // current stack size
             callee_ : undefined,
             self_ : undefined,
             other_ : undefined,
@@ -86,11 +92,23 @@ function CatspeakGenGML() constructor {
         __catspeak_assert(body != undefined,
             "unbalanced stack! function is missing body"
         );
+        if (hasDebug) {
+            body = __genExpr({
+                body : body,
+            }, __catspeak_dbg_trace__);
+        }
         var func;
-        func = __genExpr({
-            body : body,
-        }, __catspeak_function_simple__);
+        if (localsN > 0) {
+            func = __genExpr({
+                body : body,
+                n : localsN,
+            }, __catspeak_function__);
+        } else {
+            func = body;
+        }
         funcs[| idx] = func;
+        localsN = 0;
+        hasDebug = false;
     };
 
     /// @ignore
@@ -99,6 +117,7 @@ function CatspeakGenGML() constructor {
             return expr;
         } else {
             // insert instruction to track debug info
+            hasDebug = true;
             return __genExpr({
                 dbg : dbg,
                 body : expr,
@@ -165,6 +184,34 @@ function CatspeakGenGML() constructor {
         }
     };
 
+    /// @ignore
+    static __genExprGetLocal = function (idx) {
+        localsN = max(localsN, idx + 1);
+        return __genExpr({
+            off : -1 - idx, // relative to the top of the stack
+        }, __catspeak_instr_get_l__);
+    };
+
+    /// @ignore
+    static __genExprSetLocal = function (flavour, idx, value) {
+        localsN = max(localsN, idx + 1);
+        var func;
+        switch (flavour) {
+        case ord("="): func = __catspeak_instr_set_l__; break;
+        case ord("+"): func = __catspeak_instr_set_l_add__; break;
+        case ord("-"): func = __catspeak_instr_set_l_sub__; break;
+        case ord("*"): func = __catspeak_instr_set_l_mul__; break;
+        case ord("/"): func = __catspeak_instr_set_l_div__; break;
+        default:
+            __catspeak_error_bug();
+            break;
+        }
+        return __genExpr({
+            value : value,
+            off : -1 - idx,
+        }, func);
+    };
+
     // automatically generated code generation functions (here be dragons)
 {% for instr in InstrItem.enum(ir) %}
 
@@ -177,11 +224,22 @@ function CatspeakGenGML() constructor {
 {%  for arg in list(InstrStackargItem.enum(instr.ir))[::-1] %}
 {%   if arg.many %}
 {#    pop many arguments and put them into an array #}
-        var {{ arg.name }} = array_create({{ arg.many }});
-        for (var i = array_length({{ arg.name }}) - 1; i >= 0; i -= 1) {
+        var {{ arg.name }}__n = {{ arg.many }};
+        var {{ arg.name }}__nGot = ds_stack_size(exprStack_);
+        if ({{ arg.name }}__nGot < {{ arg.name }}__n) {
+            __catspeak_error(__catspeak_cat(
+                "not enough stack space for arg '{{ arg.name }}' in '{{ instr.name_id_op }}' instruction (expected ",
+                {{ arg.name }}__n, ", got ", {{ arg.name }}__nGot, ")"
+            ));
+        }
+        var {{ arg.name }} = array_create({{ arg.name }}__n);
+        for (var i = {{ arg.name }}__n - 1; i >= 0; i -= 1) {
             {{ arg.name }}[@ i] = ds_stack_pop(exprStack_);
         }
 {%   else %}
+        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
+            "not enough stack space for arg '{{ arg.name }}' in '{{ instr.name_id_op }}' instruction"
+        );
         var {{ arg.name }} = ds_stack_pop(exprStack_);
 {%   endif %}
 {%  endfor %}
@@ -239,16 +297,18 @@ function CatspeakGenGML() constructor {
 }
 
 /// @ignore
-function __catspeak_function_simple__() {
-    // recover from errors
+function __catspeak_function__() {
+    var ctx_ = ctx;
+    var n_ = n;
+    ctx_.stackN += n_;
+    array_resize(ctx_.stack, ctx_.stackN);
     var result;
     try {
         result = body();
-    } catch (ex) {
-        catspeak_location_trace(ex, ctx.dbg, ctx.path);
-        throw ex;
+    } finally {
+        ctx_.stackN -= n_;
+        //array_resize(ctx_.stack, ctx_.stackN);
     }
-    return result;
 }
 
 /// @ignore
@@ -260,6 +320,18 @@ function __catspeak_dbg__() {
     // don't want to use `finally` here, because we want to track the error
     // location when an exception occurs
     ctx_.dbg = dbgPrev;
+    return result;
+}
+
+/// @ignore
+function __catspeak_dbg_trace__() {
+    var result;
+    try {
+        result = body();
+    } catch (ex) {
+        catspeak_location_trace(ex, ctx.dbg, ctx.path);
+        throw ex;
+    }
     return result;
 }
 
@@ -288,6 +360,47 @@ function __catspeak_instr_seq__() {
         comp();
     }
     return result();
+}
+
+/// @ignore
+function __catspeak_instr_get_l__() {
+    var ctx_ = ctx;
+    return ctx_.stack[ctx_.stackN + off];
+}
+
+/// @ignore
+function __catspeak_instr_set_l__() {
+    var ctx_ = ctx;
+    ctx_.stack[ctx_.stackN + off] = value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_l_add__() {
+    var ctx_ = ctx;
+    ctx_.stack[ctx_.stackN + off] += value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_l_sub__() {
+    var ctx_ = ctx;
+    ctx_.stack[ctx_.stackN + off] -= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_l_mul__() {
+    var ctx_ = ctx;
+    ctx_.stack[ctx_.stackN + off] *= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_l_div__() {
+    var ctx_ = ctx;
+    ctx_.stack[ctx_.stackN + off] /= value();
+    return undefined;
 }
 
 // automatically generated instructions below (here be dragons)

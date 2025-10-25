@@ -94,6 +94,21 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrGetLocal = function (dbg, idx) {
+        out += "\n  get_l";
+        out += "  " + string(idx);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrSetLocal = function (dbg, flavour, idx) {
+        out += "\n  set_l";
+        out += "  " + string(flavour);
+        out += "  " + string(idx);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrSequence = function (dbg, n) {
         out += "\n  seq";
         out += "  " + string(n);

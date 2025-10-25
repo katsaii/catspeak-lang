@@ -92,22 +92,26 @@ def type_to_gml_literal(type_name, value=None):
                     return f"@'{value}'"
             else:
                 return '""'
-        case t: ir_unknown_type(t)
+        case "char":
+            return f"ord(\"{value}\")" if value != None else "0"
+        case t: raise Exception(f"unknown value type: {t}")
 
 @jinja2_export
 def type_to_gml_feather(type_name):
     match type_name:
-        case "i32" | "u32" | "f64" | "u8":
+        case "i32" | "u32" | "f64" | "u8" | "char":
             return "{Real}"
         case "string": return "{String}"
-        case t: ir_unknown_type(t)
+        case t: raise Exception(f"unknown feather type: {t}")
 
 @jinja2_export
 def type_to_gml_buffer(type_name):
     match type_name:
         case "i32" | "u32" | "f64" | "u8" | "string":
             return f"buffer_{type_name}"
-        case t: ir_unknown_type(t)
+        case "char":
+            return "buffer_u8"
+        case t: raise Exception(f"unknown buffer type: {t}")
 
 @jinja2_export
 class HeadItem():

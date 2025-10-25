@@ -27,6 +27,15 @@ TEST_EXPERIMENT "catspeak4-parse" {
     } until (!keepParsing);
     var cart = writer.finalise();
     show_message(catspeak_cart_disassemble(cart, 0));
+    // codegen
+    buffer_seek(cart, buffer_seek_start, 0);
+    var codegen = new CatspeakGenGML();
+    var reader = new CatspeakCartReader(cart, codegen);
+    do {
+        var keepReading = reader.readInstr();
+    } until (!keepReading);
+    var res = (codegen.finalise());
+    show_message(res());
 }
 
 TEST_EXPERIMENT "catspeak4-cart" {

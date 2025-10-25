@@ -201,6 +201,46 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
+    /// Gets a value of the local variable with the given id.
+    ///
+    /// @param {Real} idx
+    ///   The id of the local variable to get.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitGetLocal = function (idx, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_L);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u32, idx);
+        // <result>
+        stackSize += 1;
+    };
+
+    /// Assigns a value to the local variable with the given id.
+    ///
+    /// @param {Real} flavour
+    ///   The flavour of assignment to use.
+    ///
+    /// @param {Real} idx
+    ///   The id of the local variable to assign.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSetLocal = function (flavour, idx, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_L);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u8, flavour);
+        buffer_write(chunk, buffer_u32, idx);
+        // <result> - value
+        //stackSize += 1 - 1;
+    };
+
     /// Evaluates n-many expressions, implicitly returning the final expression.
     ///
     /// @param {Real} n
@@ -696,6 +736,8 @@ function catspeak_cart_version(cart) {
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrGetLocal(dbg, idx)`
+///   - `.handleInstrSetLocal(dbg, flavour, idx)`
 ///   - `.handleInstrSequence(dbg, n)`
 ///   - `.handleInstrClosure(dbg, idx)`
 ///   - `.handleInstrIfThenElse(dbg)`
@@ -809,6 +851,23 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readFunc = function () {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readIGetLocal = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var idx = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrGetLocal(dbg, idx);
+    };
+
+    /// @ignore
+    static __readISetLocal = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var flavour = buffer_read(cart_, buffer_u8);
+        var idx = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrSetLocal(dbg, flavour, idx);
     };
 
     /// @ignore
@@ -1030,6 +1089,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.GET_L] = __readIGetLocal;
+        __readerLookup[@ __CatspeakInstr.SET_L] = __readISetLocal;
         __readerLookup[@ __CatspeakInstr.SEQ] = __readISequence;
         __readerLookup[@ __CatspeakInstr.FCLO] = __readIClosure;
         __readerLookup[@ __CatspeakInstr.IFTE] = __readIIfThenElse;
@@ -1065,6 +1126,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
+    GET_L = 4,
+    SET_L = 29,
     SEQ = 2,
     FCLO = 27,
     IFTE = 28,
