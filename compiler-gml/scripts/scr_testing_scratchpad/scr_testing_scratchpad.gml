@@ -16,15 +16,16 @@ TEST_EXPERIMENT "catspeak4-parse" {
     var writer = new CatspeakCartWriter();
     var parser = new CatspeakParser(writer,
         new CatspeakLexer(catspeak_buffer_create_from_string(@'
-            do {
-                a = 1
-                a
-            }
+do {
+    let a = 1
+    a
+}
         '))
     );
     do {
         var keepParsing = parser.parseOnce() == undefined;
     } until (!keepParsing);
+    writer.path = "example.meow";
     var cart = writer.finalise();
     show_message(catspeak_cart_disassemble(cart, 0));
     // codegen

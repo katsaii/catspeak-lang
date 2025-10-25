@@ -100,6 +100,7 @@ instr:
       - name: idx
         desc: "the id of the local variable to get"
         type: u32
+    exceptional: false
 
   - name: "set local"
     name-short: set_l
@@ -116,6 +117,7 @@ instr:
     stackargs:
       - name: value
         desc: "the value to assign to this local variable"
+    exceptional: false
 
   - name: "sequence" # NOTE: behaves similar to comma expressions in JavaScript
     name-short: seq
@@ -129,6 +131,7 @@ instr:
       - name: stmts
         desc: "the computations to run for this sequence"
         many: n
+    exceptional: false
 
   - name: "closure"
     name-short: fclo
@@ -194,6 +197,7 @@ instr:
       - name: rhs
         desc: "the right-hand-side value of the equality"
     comptime: $lhs$ == $rhs$
+    exceptional: false
 
   - name: "not equal"
     name-short: neq
@@ -205,6 +209,7 @@ instr:
       - name: rhs
         desc: "the right-hand-side value of the equality"
     comptime: $lhs$ != $rhs$
+    exceptional: false
 
   - name: "less than"
     name-short: lt

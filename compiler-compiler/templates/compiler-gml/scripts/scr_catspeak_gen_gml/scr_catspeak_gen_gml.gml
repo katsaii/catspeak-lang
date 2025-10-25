@@ -307,8 +307,10 @@ function __catspeak_function__() {
         result = body();
     } finally {
         ctx_.stackN -= n_;
+        // NOTE :: enable this in the future if it matters
         //array_resize(ctx_.stack, ctx_.stackN);
     }
+    return result;
 }
 
 /// @ignore

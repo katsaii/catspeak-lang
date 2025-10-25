@@ -78,18 +78,45 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     };
 
     /// @ignore
-    static __emitRef = function (name) {
-        // TODO
+    static __allocLocal = function (name) {
+        var func = funcs[funcTop];
+        var block = func.blocks[func.blockTop];
+        var idx = ir.getFreshVar();
+        block.vars[$ name] = idx;
+        return idx;
+    };
+
+    /// @ignore
+    static __findLocal = function (name) {
+        var func = funcs[funcTop];
+        for (var i = func.blockTop; i >= 0; i -= 1) {
+            var block = func.blocks[i];
+            var idx = block.vars[$ name];
+            if (idx != undefined) {
+                return idx;
+            }
+        }
+        return undefined;
     };
 
     /// @ignore
     static __emitVarGet = function (name, dbg) {
-        ir.emitGetLocal(0, dbg);
+        var idx = __findLocal(name);
+        if (idx != undefined) {
+            ir.emitGetLocal(idx, dbg);
+        } else {
+            ir.emitGetGlobal(name, dbg);
+        }
     };
 
     /// @ignore
     static __emitVarSet = function (op, name, dbg) {
-        ir.emitSetLocal(op, 0, dbg);
+        var idx = __findLocal(name);
+        if (idx != undefined) {
+            ir.emitSetLocal(op, idx, dbg);
+        } else {
+            ir.emitSetGlobal(op, name, dbg);
+        }
     };
 
     /// @ignore
@@ -146,8 +173,20 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             return;
         } else if (peeked == CatspeakToken.LET) {
             lexer.next();
-            __catspeak_error_unimplemented("let statements");
-            // TODO
+            if (lexer.peek() != CatspeakToken.IDENT) {
+                __err("expected identifier after 'let' keyword");
+            }
+            lexer.next();
+            var idx = __allocLocal(lexer.getValue());
+            var dbg = undefined;
+            if (lexer.peek() == CatspeakToken.ASSIGN) {
+                lexer.next();
+                dbg = lexer.getLocationStart();
+                __parseExpression();
+            } else {
+                ir.emitConstUndefined();
+            }
+            ir.emitSetLocal(ord("="), idx, dbg);
         } else {
             __parseExpression();
         }

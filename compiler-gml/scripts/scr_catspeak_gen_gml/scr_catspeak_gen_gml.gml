@@ -229,7 +229,6 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var expr;
         expr = __genExprGetLocal(idx);
-        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -242,7 +241,6 @@ function CatspeakGenGML() constructor {
         var value = ds_stack_pop(exprStack_);
         var expr;
         expr = __genExprSetLocal(flavour, idx, value);
-        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -263,7 +261,6 @@ function CatspeakGenGML() constructor {
         }
         var expr;
         expr = __genExprSequence(n, stmts);
-        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -376,7 +373,6 @@ function CatspeakGenGML() constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_eq__);
-        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -396,7 +392,6 @@ function CatspeakGenGML() constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_neq__);
-        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
