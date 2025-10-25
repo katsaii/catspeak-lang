@@ -21,12 +21,9 @@
 /// @param {Struct.CatspeakLexer} lexer_
 ///   The lexer to consume tokens from.
 function CatspeakParser(cartWriter, lexer_) constructor {
-    __catspeak_assert(is_struct(cartWriter) && instanceof(cartWriter) == "CatspeakCartWriter",
-        "invalid cart writer"
-    );
-    __catspeak_assert(is_struct(lexer_) && instanceof(lexer_) == "CatspeakLexer",
-        "invalid lexer"
-    );
+    __catspeak_assert_instanceof(cartWriter, CatspeakCartWriter, "invalid cart writer");
+    __catspeak_assert_instanceof(lexer_, CatspeakLexer, "invalid lexer");
+
     /// @ignore
     ir = cartWriter;
     /// @ignore
@@ -75,7 +72,24 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         var exprCount = ir.getStackSize() - func.blocks[func.blockTop].stackSize;
         func.blocks[@ func.blockTop] = undefined;
         func.blockTop -= 1;
-        ir.emitSequence(exprCount);
+        if (exprCount != 1) {
+            ir.emitSequence(exprCount);
+        }
+    };
+
+    /// @ignore
+    static __emitRef = function (name) {
+        // TODO
+    };
+
+    /// @ignore
+    static __emitVarGet = function (name) {
+        // TODO
+    };
+
+    /// @ignore
+    static __emitVarSet = function (name) {
+        // TODO
     };
 
     /// @ignore
@@ -506,35 +520,11 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     /// @ignore
     static __parseIndex = function () {
         // TODO
-        __parseTerminal();
+        __parsePrimary();
     };
 
     /// @ignore
-    static __peekAssignOp = function () {
-        var peeked = lexer.peek();
-        if (
-            peeked > CatspeakToken.__OP_ASSIGN_BEGIN__ &&
-            peeked < CatspeakToken.__OP_ASSIGN_END__
-        ) {
-            if (peeked == CatspeakToken.ASSIGN) {
-                return "direct";
-            } else if (peeked == CatspeakToken.ASSIGN_MULTIPLY) {
-                return "multiply";
-            } else if (peeked == CatspeakToken.ASSIGN_DIVIDE) {
-                return "divide";
-            } else if (peeked == CatspeakToken.ASSIGN_PLUS) {
-                return "add";
-            } else if (peeked == CatspeakToken.ASSIGN_MINUS) {
-                return "subtract";
-            } else {
-                __catspeak_error_bug();
-            }
-        }
-        return undefined;
-    };
-
-    /// @ignore
-    static __parseTerminal = function () {
+    static __parsePrimary = function () {
         var peeked = lexer.peek();
         if (peeked == CatspeakToken.NUMBER) {
             lexer.next();
@@ -546,17 +536,16 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             lexer.next();
             ir.emitConstUndefined(lexer.getLocationStart());
         } else if (peeked == CatspeakToken.IDENT) {
-            __catspeak_error_unimplemented("ids");
-            //lexer.next();
-            //var varName = lexer.getValue();
-            //var varDbg = lexer.getLocationStart();
-            //var op = __peekAssignOp();
-            //if (op == undefined) {
-            //    scope.emitGet(varName, varDbg);
-            //} else {
-            //    __parseExpression();
-            //    scope.emitSet(op, varName, varDbg);
-            //}
+            lexer.next();
+            var name = lexer.getValue();
+            var dbg = lexer.getLocationStart();
+            var op = __parseAssignOp();
+            if (op == undefined) {
+                __emitVarGet(name, dbg);
+            } else {
+                __parseExpression();
+                __emitVarSet(name, dbg, op);
+            }
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
             __catspeak_error_unimplemented("self");
@@ -565,18 +554,10 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             lexer.next();
             __catspeak_error_unimplemented("other");
             //ir.emitOther(lexer.getLocationStart());
-        } else {
-            __parseGrouping();
-        }
-    };
-
-    /// @ignore
-    static __parseGrouping = function () {
-        var peeked = lexer.peek();
-        if (peeked == CatspeakToken.PAREN_LEFT) {
+        } else if (peeked == CatspeakToken.PAREN_LEFT) {
             lexer.next();
             __parseExpression();
-            if (lexer.next() != CatspeakToken.PAREN_RIGHT) {
+            if (lexer.peek() != CatspeakToken.PAREN_RIGHT) {
                 __err("expected closing ')' after group expression");
             }
         } else if (peeked == CatspeakToken.BOX_LEFT) {
@@ -590,5 +571,30 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         } else {
             __err("unexpected end of expression, expected one of: '(', '[' or '{'");
         }
+    };
+
+    /// @ignore
+    static __parseAssignOp = function () {
+        var peeked = lexer.peek();
+        if (
+            peeked > CatspeakToken.__OP_ASSIGN_BEGIN__ &&
+            peeked < CatspeakToken.__OP_ASSIGN_END__
+        ) {
+            lexer.next();
+            if (peeked == CatspeakToken.ASSIGN) {
+                return ord("=");
+            } else if (peeked == CatspeakToken.ASSIGN_MULTIPLY) {
+                return ord("*");
+            } else if (peeked == CatspeakToken.ASSIGN_DIVIDE) {
+                return ord("/");
+            } else if (peeked == CatspeakToken.ASSIGN_PLUS) {
+                return ord("+");
+            } else if (peeked == CatspeakToken.ASSIGN_MINUS) {
+                return ord("-");
+            } else {
+                __catspeak_error_bug();
+            }
+        }
+        return undefined;
     };
 }

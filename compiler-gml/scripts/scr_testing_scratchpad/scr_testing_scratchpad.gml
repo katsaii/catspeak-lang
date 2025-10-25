@@ -16,7 +16,10 @@ TEST_EXPERIMENT "catspeak4-parse" {
     var writer = new CatspeakCartWriter();
     var parser = new CatspeakParser(writer,
         new CatspeakLexer(catspeak_buffer_create_from_string(@'
-            do { 1 + 2; fun () { @"hiii\:3" } }
+            do {
+                a = 1
+                a
+            }
         '))
     );
     do {
