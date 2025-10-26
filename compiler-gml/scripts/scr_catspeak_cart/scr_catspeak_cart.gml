@@ -920,7 +920,7 @@ function CatspeakCartWriter() constructor {
     static emitConstNumber = function (value, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
-        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_N);
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CONST_N);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_f64, value);
         // <result>
@@ -938,7 +938,7 @@ function CatspeakCartWriter() constructor {
     static emitConstString = function (value, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
-        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_S);
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CONST_S);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_string, value);
         // <result>
@@ -953,7 +953,7 @@ function CatspeakCartWriter() constructor {
     static emitConstUndefined = function (dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
-        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_U);
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CONST_U);
         buffer_write(chunk, buffer_u32, dbg);
         // <result>
         stackSize += 1;
@@ -1564,9 +1564,9 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.NEG] = __readINegative;
         __readerLookup[@ __CatspeakInstr.NOT] = __readINot;
         __readerLookup[@ __CatspeakInstr.BNOT] = __readIBitwiseNot;
-        __readerLookup[@ __CatspeakInstr.GET_N] = __readIConstNumber;
-        __readerLookup[@ __CatspeakInstr.GET_S] = __readIConstString;
-        __readerLookup[@ __CatspeakInstr.GET_U] = __readIConstUndefined;
+        __readerLookup[@ __CatspeakInstr.CONST_N] = __readIConstNumber;
+        __readerLookup[@ __CatspeakInstr.CONST_S] = __readIConstString;
+        __readerLookup[@ __CatspeakInstr.CONST_U] = __readIConstUndefined;
     }
 }
 
@@ -1618,8 +1618,8 @@ enum __CatspeakInstr {
     NEG = 32,
     NOT = 17,
     BNOT = 21,
-    GET_N = 1,
-    GET_S = 3,
-    GET_U = 35,
+    CONST_N = 1,
+    CONST_S = 3,
+    CONST_U = 35,
     __SIZE__ = 52,
 }

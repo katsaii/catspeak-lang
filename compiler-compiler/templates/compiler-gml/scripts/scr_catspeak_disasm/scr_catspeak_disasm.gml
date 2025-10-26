@@ -78,7 +78,7 @@ function __CatspeakCartDisassembler() constructor {
     }}) {
         out += "\n  {{ instr.name_short }}";
 {%  for arg in InstrArgItem.enum(instr.ir) %}
-        out += "  " + string({{ arg.name }});
+        out += "  " + {{ type_to_gml_format(arg.type, arg.name) }};
 {%  endfor %}
         __writeDbg(dbg);
     };

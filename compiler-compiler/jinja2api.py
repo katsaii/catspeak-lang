@@ -99,6 +99,19 @@ def type_to_gml_literal(type_name, value=None):
         case t: raise Exception(f"unknown value type: {t}")
 
 @jinja2_export
+def type_to_gml_format(type_name, expr):
+    match type_name:
+        case "i32" | "u32" | "i16" | "u16" | "i8" | "u8" | "f64":
+            return f"string({expr})"
+        case "string":
+            return f'("\\"" + ({expr}) + "\\"")'
+        case "char":
+            return f'("\'" + chr({expr}) + "\'")'
+        case "bool":
+            return f'({expr} ? "true" : "false")'
+        case t: raise Exception(f"unknown value type: {t}")
+
+@jinja2_export
 def type_to_gml_feather(type_name):
     match type_name:
         case "i32" | "u32" | "i16" | "u16" | "i8" | "u8" | "f64" | "char":

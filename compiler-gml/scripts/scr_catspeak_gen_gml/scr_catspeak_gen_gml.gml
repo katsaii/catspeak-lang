@@ -1276,71 +1276,71 @@ function CatspeakGenGML() constructor {
         var expr;
         if (value == 0) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_0__);
+            }, __catspeak_instr_const_n_0__);
         } else
         if (value == 1) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_1__);
+            }, __catspeak_instr_const_n_1__);
         } else
         if (value == 2) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_2__);
+            }, __catspeak_instr_const_n_2__);
         } else
         if (value == 3) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_3__);
+            }, __catspeak_instr_const_n_3__);
         } else
         if (value == 4) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_4__);
+            }, __catspeak_instr_const_n_4__);
         } else
         if (value == 8) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_8__);
+            }, __catspeak_instr_const_n_8__);
         } else
         if (value == 16) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_16__);
+            }, __catspeak_instr_const_n_16__);
         } else
         if (value == 24) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_24__);
+            }, __catspeak_instr_const_n_24__);
         } else
         if (value == 32) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_32__);
+            }, __catspeak_instr_const_n_32__);
         } else
         if (value == 64) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_64__);
+            }, __catspeak_instr_const_n_64__);
         } else
         if (value == 128) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_128__);
+            }, __catspeak_instr_const_n_128__);
         } else
         if (value == 256) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_256__);
+            }, __catspeak_instr_const_n_256__);
         } else
         if (value == 10) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_10__);
+            }, __catspeak_instr_const_n_10__);
         } else
         if (value == 100) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_100__);
+            }, __catspeak_instr_const_n_100__);
         } else
         if (value == 1000) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_1k__);
+            }, __catspeak_instr_const_n_1k__);
         } else
         if (value == 1000000) {
             expr = __genExpr({
-            }, __catspeak_instr_get_n_1m__);
+            }, __catspeak_instr_const_n_1m__);
         } else
         expr = __genExpr({
             value : value,
-        }, __catspeak_instr_get_n__);
+        }, __catspeak_instr_const_n__);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1350,27 +1350,27 @@ function CatspeakGenGML() constructor {
         var expr;
         if (value == "") {
             expr = __genExpr({
-            }, __catspeak_instr_get_s_empty__);
+            }, __catspeak_instr_const_s_empty__);
         } else
         if (value == "*") {
             expr = __genExpr({
-            }, __catspeak_instr_get_s_star__);
+            }, __catspeak_instr_const_s_star__);
         } else
         if (value == "/") {
             expr = __genExpr({
-            }, __catspeak_instr_get_s_slash__);
+            }, __catspeak_instr_const_s_slash__);
         } else
         if (value == "x") {
             expr = __genExpr({
-            }, __catspeak_instr_get_s_x__);
+            }, __catspeak_instr_const_s_x__);
         } else
         if (value == "y") {
             expr = __genExpr({
-            }, __catspeak_instr_get_s_y__);
+            }, __catspeak_instr_const_s_y__);
         } else
         expr = __genExpr({
             value : value,
-        }, __catspeak_instr_get_s__);
+        }, __catspeak_instr_const_s__);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1379,7 +1379,7 @@ function CatspeakGenGML() constructor {
         var exprStack_ = exprStack;
         var expr;
         expr = __genExpr({
-        }, __catspeak_instr_get_u__);
+        }, __catspeak_instr_const_u__);
         ds_stack_push(exprStack_, expr);
     };
 }
@@ -1909,27 +1909,27 @@ function __catspeak_instr_obj__() {
 /** @ignore */ function __catspeak_instr_neg__() { return -value() }
 /** @ignore */ function __catspeak_instr_not__() { return !value() }
 /** @ignore */ function __catspeak_instr_bnot__() { return ~value() }
-/** @ignore */ function __catspeak_instr_get_n__() { return value }
-/** @ignore */ function __catspeak_instr_get_n_0__() { return 0 }
-/** @ignore */ function __catspeak_instr_get_n_1__() { return 1 }
-/** @ignore */ function __catspeak_instr_get_n_2__() { return 2 }
-/** @ignore */ function __catspeak_instr_get_n_3__() { return 3 }
-/** @ignore */ function __catspeak_instr_get_n_4__() { return 4 }
-/** @ignore */ function __catspeak_instr_get_n_8__() { return 8 }
-/** @ignore */ function __catspeak_instr_get_n_16__() { return 16 }
-/** @ignore */ function __catspeak_instr_get_n_24__() { return 24 }
-/** @ignore */ function __catspeak_instr_get_n_32__() { return 32 }
-/** @ignore */ function __catspeak_instr_get_n_64__() { return 64 }
-/** @ignore */ function __catspeak_instr_get_n_128__() { return 128 }
-/** @ignore */ function __catspeak_instr_get_n_256__() { return 256 }
-/** @ignore */ function __catspeak_instr_get_n_10__() { return 10 }
-/** @ignore */ function __catspeak_instr_get_n_100__() { return 100 }
-/** @ignore */ function __catspeak_instr_get_n_1k__() { return 1000 }
-/** @ignore */ function __catspeak_instr_get_n_1m__() { return 1000000 }
-/** @ignore */ function __catspeak_instr_get_s__() { return value }
-/** @ignore */ function __catspeak_instr_get_s_empty__() { return "" }
-/** @ignore */ function __catspeak_instr_get_s_star__() { return "*" }
-/** @ignore */ function __catspeak_instr_get_s_slash__() { return "/" }
-/** @ignore */ function __catspeak_instr_get_s_x__() { return "x" }
-/** @ignore */ function __catspeak_instr_get_s_y__() { return "y" }
-/** @ignore */ function __catspeak_instr_get_u__() { return undefined }
+/** @ignore */ function __catspeak_instr_const_n__() { return value }
+/** @ignore */ function __catspeak_instr_const_n_0__() { return 0 }
+/** @ignore */ function __catspeak_instr_const_n_1__() { return 1 }
+/** @ignore */ function __catspeak_instr_const_n_2__() { return 2 }
+/** @ignore */ function __catspeak_instr_const_n_3__() { return 3 }
+/** @ignore */ function __catspeak_instr_const_n_4__() { return 4 }
+/** @ignore */ function __catspeak_instr_const_n_8__() { return 8 }
+/** @ignore */ function __catspeak_instr_const_n_16__() { return 16 }
+/** @ignore */ function __catspeak_instr_const_n_24__() { return 24 }
+/** @ignore */ function __catspeak_instr_const_n_32__() { return 32 }
+/** @ignore */ function __catspeak_instr_const_n_64__() { return 64 }
+/** @ignore */ function __catspeak_instr_const_n_128__() { return 128 }
+/** @ignore */ function __catspeak_instr_const_n_256__() { return 256 }
+/** @ignore */ function __catspeak_instr_const_n_10__() { return 10 }
+/** @ignore */ function __catspeak_instr_const_n_100__() { return 100 }
+/** @ignore */ function __catspeak_instr_const_n_1k__() { return 1000 }
+/** @ignore */ function __catspeak_instr_const_n_1m__() { return 1000000 }
+/** @ignore */ function __catspeak_instr_const_s__() { return value }
+/** @ignore */ function __catspeak_instr_const_s_empty__() { return "" }
+/** @ignore */ function __catspeak_instr_const_s_star__() { return "*" }
+/** @ignore */ function __catspeak_instr_const_s_slash__() { return "/" }
+/** @ignore */ function __catspeak_instr_const_s_x__() { return "x" }
+/** @ignore */ function __catspeak_instr_const_s_y__() { return "y" }
+/** @ignore */ function __catspeak_instr_const_u__() { return undefined }

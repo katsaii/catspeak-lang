@@ -629,7 +629,7 @@ instr:
     comptime: ~$value$
 
   - name: "const number"
-    name-short: get_n
+    name-short: const_n
     desc: "get a numeric constant"
     opcode: 0x01
     args:
@@ -689,7 +689,7 @@ instr:
           - [value, 1000000]
 
   - name: "const string"
-    name-short: get_s
+    name-short: const_s
     desc: "get a string constant"
     opcode: 0x03
     args:
@@ -716,7 +716,7 @@ instr:
           - [value, "y"]
 
   - name: "const undefined"
-    name-short: get_u
+    name-short: const_u
     desc: "get the undefined constant"
     opcode: 0x23
     exceptional: false

@@ -168,7 +168,7 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrSetLocal = function (dbg, flavour, idx) {
         out += "\n  set_l";
-        out += "  " + string(flavour);
+        out += "  " + ("'" + chr(flavour) + "'");
         out += "  " + string(idx);
         __writeDbg(dbg);
     };
@@ -182,15 +182,15 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrGetIndexString = function (dbg, idx) {
         out += "\n  get_is";
-        out += "  " + string(idx);
+        out += "  " + ("\"" + (idx) + "\"");
         __writeDbg(dbg);
     };
 
     /// @ignore
     static handleInstrSetIndexString = function (dbg, flavour, idx) {
         out += "\n  set_is";
-        out += "  " + string(flavour);
-        out += "  " + string(idx);
+        out += "  " + ("'" + chr(flavour) + "'");
+        out += "  " + ("\"" + (idx) + "\"");
         __writeDbg(dbg);
     };
 
@@ -203,7 +203,7 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrSetIndexNumber = function (dbg, flavour, idx) {
         out += "\n  set_in";
-        out += "  " + string(flavour);
+        out += "  " + ("'" + chr(flavour) + "'");
         out += "  " + string(idx);
         __writeDbg(dbg);
     };
@@ -217,7 +217,7 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInstrSetIndex = function (dbg, flavour) {
         out += "\n  set_i";
-        out += "  " + string(flavour);
+        out += "  " + ("'" + chr(flavour) + "'");
         __writeDbg(dbg);
     };
 
@@ -387,21 +387,21 @@ function __CatspeakCartDisassembler() constructor {
 
     /// @ignore
     static handleInstrConstNumber = function (dbg, value) {
-        out += "\n  get_n";
+        out += "\n  const_n";
         out += "  " + string(value);
         __writeDbg(dbg);
     };
 
     /// @ignore
     static handleInstrConstString = function (dbg, value) {
-        out += "\n  get_s";
-        out += "  " + string(value);
+        out += "\n  const_s";
+        out += "  " + ("\"" + (value) + "\"");
         __writeDbg(dbg);
     };
 
     /// @ignore
     static handleInstrConstUndefined = function (dbg) {
-        out += "\n  get_u";
+        out += "\n  const_u";
         __writeDbg(dbg);
     };
 }
