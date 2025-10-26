@@ -220,6 +220,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             peeked > CatspeakToken.__EXPR_BEGIN__ &&
             peeked < CatspeakToken.__EXPR_END__
         ) {
+            var dbg = lexer.getLocationStart();
             lexer.next();
             if (peeked == CatspeakToken.RETURN) {
                 __catspeak_error_unimplemented("return");
@@ -252,8 +253,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 //scope.emitBreak();
             } else if (peeked == CatspeakToken.THROW) {
                 __parseExpression();
-                __catspeak_error_unimplemented("throw");
-                //ir.emitThrow();
+                ir.emitThrow(dbg);
             } else {
                 __catspeak_error_bug();
             }
@@ -264,8 +264,24 @@ function CatspeakParser(cartWriter, lexer_) constructor {
 
     /// @ignore
     static __parseCatch = function () {
-        // TODO
         __parseExpressionBlock();
+        if (lexer.peek() == CatspeakToken.CATCH) {
+            var dbg = lexer.getLocationStart();
+            lexer.next();
+            var idx;
+            if (lexer.peek() == CatspeakToken.IDENT) {
+                lexer.next();
+                var name = lexer.getValue();
+                idx = __findLocal(name);
+            } else {
+                // TODO :: reuse this
+                idx = ir.getFreshVar();
+            }
+            __pushBlock();
+            __parseStatements("catch");
+            __popBlock();
+            ir.emitCatch(idx, dbg);
+        }
     };
 
     /// @ignore

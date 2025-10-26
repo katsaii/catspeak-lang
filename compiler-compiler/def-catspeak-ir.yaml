@@ -92,6 +92,29 @@ instr-opcode-type: u8 #< The type used for opcodes.
 instr-dbg-type: u32   #< The type used for debug info.
 instr:
 
+  - name: "throw"
+    name-short: thrw
+    desc: "throw a value as an exception"
+    opcode: 0x22
+    stackargs:
+      - name: value
+        desc: "the exception value to throw"
+
+  - name: "catch"
+    name-short: cat
+    desc: "catch an exception"
+    opcode: 0x2A
+    args:
+      - name: idx
+        desc: "the id of the local variable to assign the exception value to"
+        type: u32
+    stackargs:
+      - name: eager
+        desc: "the body of the code which may raise an exception"
+      - name: lazy
+        desc: "the body of the code which handles the exception"
+    exceptional: false
+
   - name: "get local"
     name-short: get_l
     desc: "gets a value of the local variable with the given id"
@@ -112,11 +135,38 @@ instr:
         type: char
         values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
       - name: idx
-        desc: "the id of the local variable to assign"
+        desc: "the id of the local variable to set"
         type: u32
     stackargs:
       - name: value
         desc: "the value to assign to this local variable"
+    exceptional: false
+
+  - name: "get global"
+    name-short: get_g
+    desc: "gets a value of the global variable with the given name"
+    opcode: 0x1F
+    args:
+      - name: name
+        desc: "the name of the global variable to get"
+        type: string
+    exceptional: false
+
+  - name: "set global"
+    name-short: set_g
+    desc: "assigns a value to the global variable with the given name"
+    opcode: 0x1E
+    args:
+      - name: flavour
+        desc: "the flavour of assignment to use"
+        type: char
+        values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
+      - name: name
+        desc: "the name of the global variable to set"
+        type: string
+    stackargs:
+      - name: value
+        desc: "the value to assign to this global variable"
     exceptional: false
 
   - name: "sequence" # NOTE: behaves similar to comma expressions in JavaScript

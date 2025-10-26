@@ -201,6 +201,38 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
+    /// Throw a value as an exception.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitThrow = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.THRW);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - value
+        //stackSize += 1 - 1;
+    };
+
+    /// Catch an exception.
+    ///
+    /// @param {Real} idx
+    ///   The id of the local variable to assign the exception value to.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitCatch = function (idx, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CAT);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u32, idx);
+        // <result> - eager - lazy
+        stackSize += 1 - 1 - 1;
+    };
+
     /// Gets a value of the local variable with the given id.
     ///
     /// @param {Real} idx
@@ -225,7 +257,7 @@ function CatspeakCartWriter() constructor {
     ///   The flavour of assignment to use.
     ///
     /// @param {Real} idx
-    ///   The id of the local variable to assign.
+    ///   The id of the local variable to set.
     ///
     /// @param {Real} [dbg]
     ///   The approximate location of this instruction in the source code.
@@ -237,6 +269,46 @@ function CatspeakCartWriter() constructor {
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_u8, flavour);
         buffer_write(chunk, buffer_u32, idx);
+        // <result> - value
+        //stackSize += 1 - 1;
+    };
+
+    /// Gets a value of the global variable with the given name.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to get.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitGetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_G);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_string, name);
+        // <result>
+        stackSize += 1;
+    };
+
+    /// Assigns a value to the global variable with the given name.
+    ///
+    /// @param {Real} flavour
+    ///   The flavour of assignment to use.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to set.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSetGlobal = function (flavour, name, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_G);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u8, flavour);
+        buffer_write(chunk, buffer_string, name);
         // <result> - value
         //stackSize += 1 - 1;
     };
@@ -736,8 +808,12 @@ function catspeak_cart_version(cart) {
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrThrow(dbg)`
+///   - `.handleInstrCatch(dbg, idx)`
 ///   - `.handleInstrGetLocal(dbg, idx)`
 ///   - `.handleInstrSetLocal(dbg, flavour, idx)`
+///   - `.handleInstrGetGlobal(dbg, name)`
+///   - `.handleInstrSetGlobal(dbg, flavour, name)`
 ///   - `.handleInstrSequence(dbg, n)`
 ///   - `.handleInstrClosure(dbg, idx)`
 ///   - `.handleInstrIfThenElse(dbg)`
@@ -854,6 +930,21 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     };
 
     /// @ignore
+    static __readIThrow = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrThrow(dbg);
+    };
+
+    /// @ignore
+    static __readICatch = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var idx = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrCatch(dbg, idx);
+    };
+
+    /// @ignore
     static __readIGetLocal = function () {
         var cart_ = cart;
         var dbg = buffer_read(cart_, buffer_u32);
@@ -868,6 +959,23 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var flavour = buffer_read(cart_, buffer_u8);
         var idx = buffer_read(cart_, buffer_u32);
         visitor.handleInstrSetLocal(dbg, flavour, idx);
+    };
+
+    /// @ignore
+    static __readIGetGlobal = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var name = buffer_read(cart_, buffer_string);
+        visitor.handleInstrGetGlobal(dbg, name);
+    };
+
+    /// @ignore
+    static __readISetGlobal = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var flavour = buffer_read(cart_, buffer_u8);
+        var name = buffer_read(cart_, buffer_string);
+        visitor.handleInstrSetGlobal(dbg, flavour, name);
     };
 
     /// @ignore
@@ -1089,8 +1197,12 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.THRW] = __readIThrow;
+        __readerLookup[@ __CatspeakInstr.CAT] = __readICatch;
         __readerLookup[@ __CatspeakInstr.GET_L] = __readIGetLocal;
         __readerLookup[@ __CatspeakInstr.SET_L] = __readISetLocal;
+        __readerLookup[@ __CatspeakInstr.GET_G] = __readIGetGlobal;
+        __readerLookup[@ __CatspeakInstr.SET_G] = __readISetGlobal;
         __readerLookup[@ __CatspeakInstr.SEQ] = __readISequence;
         __readerLookup[@ __CatspeakInstr.FCLO] = __readIClosure;
         __readerLookup[@ __CatspeakInstr.IFTE] = __readIIfThenElse;
@@ -1126,8 +1238,12 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
+    THRW = 34,
+    CAT = 42,
     GET_L = 4,
     SET_L = 29,
+    GET_G = 31,
+    SET_G = 30,
     SEQ = 2,
     FCLO = 27,
     IFTE = 28,
@@ -1158,5 +1274,5 @@ enum __CatspeakInstr {
     GET_N = 1,
     GET_S = 3,
     GET_U = 35,
-    __SIZE__ = 36,
+    __SIZE__ = 43,
 }

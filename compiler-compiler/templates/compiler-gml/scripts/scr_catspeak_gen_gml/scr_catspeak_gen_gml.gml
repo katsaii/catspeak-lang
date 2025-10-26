@@ -80,9 +80,11 @@ function CatspeakGenGML() constructor {
             self_ : undefined,
             other_ : undefined,
             dbg : CATSPEAK_NOLOCATION,
+            meta : {
 {% for meta in MetaItem.enum(ir) %}
-            {{ meta.name_id }} : {{ meta.name_id }},
+                {{ meta.name_id }} : {{ meta.name_id }},
 {% endfor %}
+            },
         };
     };
 
@@ -185,10 +187,13 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __localIdx2Offset = function (idx) { return -1 - idx }
+
+    /// @ignore
     static __genExprGetLocal = function (idx) {
         localsN = max(localsN, idx + 1);
         return __genExpr({
-            off : -1 - idx, // relative to the top of the stack
+            off : __localIdx2Offset(idx), // relative to the top of the stack
         }, __catspeak_instr_get_l__);
     };
 
@@ -208,8 +213,51 @@ function CatspeakGenGML() constructor {
         }
         return __genExpr({
             value : value,
-            off : -1 - idx,
+            off : __localIdx2Offset(idx),
         }, func);
+    };
+
+    /// @ignore
+    static __genExprGetGlobal = function (name) {
+        return __genExpr({
+            name : name,
+        }, __catspeak_instr_get_g__);
+    };
+
+    /// @ignore
+    static __genExprSetGlobal = function (flavour, name, value) {
+        var func;
+        switch (flavour) {
+        case ord("="): func = __catspeak_instr_set_g__; break;
+        case ord("+"): func = __catspeak_instr_set_g_add__; break;
+        case ord("-"): func = __catspeak_instr_set_g_sub__; break;
+        case ord("*"): func = __catspeak_instr_set_g_mul__; break;
+        case ord("/"): func = __catspeak_instr_set_g_div__; break;
+        default:
+            __catspeak_error_bug();
+            break;
+        }
+        return __genExpr({
+            value : value,
+            name : name,
+        }, func);
+    };
+
+    /// @ignore
+    static __genExprThrow = function (value) {
+        return __genExpr({
+            value : value,
+        }, __catspeak_instr_thrw__);
+    };
+
+    /// @ignore
+    static __genExprCatch = function (idx, eager, lazy) {
+        localsN = max(localsN, idx + 1);
+        return __genExpr({
+            off : __localIdx2Offset(idx),
+            eager : eager,
+            lazy : lazy,
+        }, __catspeak_instr_cat__);
     };
 
     // automatically generated code generation functions (here be dragons)
@@ -228,7 +276,7 @@ function CatspeakGenGML() constructor {
         var {{ arg.name }}__nGot = ds_stack_size(exprStack_);
         if ({{ arg.name }}__nGot < {{ arg.name }}__n) {
             __catspeak_error(__catspeak_cat(
-                "not enough stack space for arg '{{ arg.name }}' in '{{ instr.name_id_op }}' instruction (expected ",
+                "not enough stack space for '{{ arg.name }}' argument of '{{ instr.name_id_op }}' instruction (expected ",
                 {{ arg.name }}__n, ", got ", {{ arg.name }}__nGot, ")"
             ));
         }
@@ -237,10 +285,10 @@ function CatspeakGenGML() constructor {
             {{ arg.name }}[@ i] = ds_stack_pop(exprStack_);
         }
 {%   else %}
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg '{{ arg.name }}' in '{{ instr.name_id_op }}' instruction"
-        );
         var {{ arg.name }} = ds_stack_pop(exprStack_);
+        __catspeak_assert({{ arg.name }} != undefined,
+            "not enough stack space for '{{ arg.name }}' argument of '{{ instr.name_id_op }}' instruction"
+        );
 {%   endif %}
 {%  endfor %}
         var expr;
@@ -331,7 +379,7 @@ function __catspeak_dbg_trace__() {
     try {
         result = body();
     } catch (ex) {
-        catspeak_location_trace(ex, ctx.dbg, ctx.path);
+        catspeak_location_trace(ex, ctx.dbg, ctx.meta.path);
         throw ex;
     }
     return result;
@@ -404,6 +452,58 @@ function __catspeak_instr_set_l_div__() {
     ctx_.stack[ctx_.stackN + off] /= value();
     return undefined;
 }
+
+/// @ignore
+function __catspeak_instr_get_g__() { return ctx.globals[$ name] }
+
+/// @ignore
+function __catspeak_instr_set_g__() {
+    ctx.globals[$ name] = value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_add__() {
+    ctx.globals[$ name] += value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_sub__() {
+    ctx.globals[$ name] -= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_mul__() {
+    ctx.globals[$ name] *= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_div__() {
+    ctx.globals[$ name] /= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_thrw__() {
+    throw value();
+}
+
+/// @ignore
+function __catspeak_instr_cat__() {
+    var ctx_ = ctx;
+    var result;
+    try {
+        result = eager();
+    } catch (ex) {
+        // TODO :: let the special unwind boxed type pass through
+        ctx_.stack[ctx_.stackN + off] = ex;
+        result = lazy();
+    }
+    return result;
+};
 
 // automatically generated instructions below (here be dragons)
 

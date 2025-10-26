@@ -165,7 +165,7 @@ function catspeak_location_show(location = CATSPEAK_NOLOCATION, filepath = "") {
 ///   A path to a file to associate this diagnostic information with. A file
 ///   at the given path does not need to exist.
 function catspeak_location_trace(err, location = CATSPEAK_NOLOCATION, filepath = "") {
-    if (variable_struct_exists(err, "longMessage")) {
+    if (is_struct(err) && variable_struct_exists(err, "longMessage")) {
         if (!is_string(err.longMessage)) {
             err.longMessage = string(err.longMessage);
         }

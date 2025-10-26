@@ -86,13 +86,15 @@ function CatspeakGenGML() constructor {
             self_ : undefined,
             other_ : undefined,
             dbg : CATSPEAK_NOLOCATION,
-            name : name,
-            author : author,
-            version : version,
-            versionMinor : versionMinor,
-            patch : patch,
-            path : path,
-            date : date,
+            meta : {
+                name : name,
+                author : author,
+                version : version,
+                versionMinor : versionMinor,
+                patch : patch,
+                path : path,
+                date : date,
+            },
         };
     };
 
@@ -195,10 +197,13 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __localIdx2Offset = function (idx) { return -1 - idx }
+
+    /// @ignore
     static __genExprGetLocal = function (idx) {
         localsN = max(localsN, idx + 1);
         return __genExpr({
-            off : -1 - idx, // relative to the top of the stack
+            off : __localIdx2Offset(idx), // relative to the top of the stack
         }, __catspeak_instr_get_l__);
     };
 
@@ -218,11 +223,83 @@ function CatspeakGenGML() constructor {
         }
         return __genExpr({
             value : value,
-            off : -1 - idx,
+            off : __localIdx2Offset(idx),
         }, func);
     };
 
+    /// @ignore
+    static __genExprGetGlobal = function (name) {
+        return __genExpr({
+            name : name,
+        }, __catspeak_instr_get_g__);
+    };
+
+    /// @ignore
+    static __genExprSetGlobal = function (flavour, name, value) {
+        var func;
+        switch (flavour) {
+        case ord("="): func = __catspeak_instr_set_g__; break;
+        case ord("+"): func = __catspeak_instr_set_g_add__; break;
+        case ord("-"): func = __catspeak_instr_set_g_sub__; break;
+        case ord("*"): func = __catspeak_instr_set_g_mul__; break;
+        case ord("/"): func = __catspeak_instr_set_g_div__; break;
+        default:
+            __catspeak_error_bug();
+            break;
+        }
+        return __genExpr({
+            value : value,
+            name : name,
+        }, func);
+    };
+
+    /// @ignore
+    static __genExprThrow = function (value) {
+        return __genExpr({
+            value : value,
+        }, __catspeak_instr_thrw__);
+    };
+
+    /// @ignore
+    static __genExprCatch = function (idx, eager, lazy) {
+        localsN = max(localsN, idx + 1);
+        return __genExpr({
+            off : __localIdx2Offset(idx),
+            eager : eager,
+            lazy : lazy,
+        }, __catspeak_instr_cat__);
+    };
+
     // automatically generated code generation functions (here be dragons)
+
+    /// @ignore
+    static handleInstrThrow = function (dbg) {
+        var exprStack_ = exprStack;
+        var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'thrw' instruction"
+        );
+        var expr;
+        expr = __genExprThrow(value);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrCatch = function (dbg, idx) {
+        var exprStack_ = exprStack;
+        var lazy = ds_stack_pop(exprStack_);
+        __catspeak_assert(lazy != undefined,
+            "not enough stack space for 'lazy' argument of 'cat' instruction"
+        );
+        var eager = ds_stack_pop(exprStack_);
+        __catspeak_assert(eager != undefined,
+            "not enough stack space for 'eager' argument of 'cat' instruction"
+        );
+        var expr;
+        expr = __genExprCatch(idx, eager, lazy);
+        ds_stack_push(exprStack_, expr);
+    };
 
     /// @ignore
     static handleInstrGetLocal = function (dbg, idx) {
@@ -235,12 +312,32 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrSetLocal = function (dbg, flavour, idx) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'set_l' instruction"
-        );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'set_l' instruction"
+        );
         var expr;
         expr = __genExprSetLocal(flavour, idx, value);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrGetGlobal = function (dbg, name) {
+        var exprStack_ = exprStack;
+        var expr;
+        expr = __genExprGetGlobal(name);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrSetGlobal = function (dbg, flavour, name) {
+        var exprStack_ = exprStack;
+        var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'set_g' instruction"
+        );
+        var expr;
+        expr = __genExprSetGlobal(flavour, name, value);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -251,7 +348,7 @@ function CatspeakGenGML() constructor {
         var stmts__nGot = ds_stack_size(exprStack_);
         if (stmts__nGot < stmts__n) {
             __catspeak_error(__catspeak_cat(
-                "not enough stack space for arg 'stmts' in 'seq' instruction (expected ",
+                "not enough stack space for 'stmts' argument of 'seq' instruction (expected ",
                 stmts__n, ", got ", stmts__nGot, ")"
             ));
         }
@@ -275,18 +372,18 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrIfThenElse = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'if_false' in 'ifte' instruction"
-        );
         var if_false = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'if_true' in 'ifte' instruction"
+        __catspeak_assert(if_false != undefined,
+            "not enough stack space for 'if_false' argument of 'ifte' instruction"
         );
         var if_true = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'condition' in 'ifte' instruction"
+        __catspeak_assert(if_true != undefined,
+            "not enough stack space for 'if_true' argument of 'ifte' instruction"
         );
         var condition = ds_stack_pop(exprStack_);
+        __catspeak_assert(condition != undefined,
+            "not enough stack space for 'condition' argument of 'ifte' instruction"
+        );
         var expr;
         expr = __genExpr({
             condition : condition,
@@ -300,14 +397,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrOr = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lazy' in 'or' instruction"
-        );
         var lazy = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'eager' in 'or' instruction"
+        __catspeak_assert(lazy != undefined,
+            "not enough stack space for 'lazy' argument of 'or' instruction"
         );
         var eager = ds_stack_pop(exprStack_);
+        __catspeak_assert(eager != undefined,
+            "not enough stack space for 'eager' argument of 'or' instruction"
+        );
         var expr;
         expr = __genExpr({
             eager : eager,
@@ -320,14 +417,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrXor = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'xor' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'xor' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'xor' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'xor' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -340,14 +437,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrAnd = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lazy' in 'and' instruction"
-        );
         var lazy = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'eager' in 'and' instruction"
+        __catspeak_assert(lazy != undefined,
+            "not enough stack space for 'lazy' argument of 'and' instruction"
         );
         var eager = ds_stack_pop(exprStack_);
+        __catspeak_assert(eager != undefined,
+            "not enough stack space for 'eager' argument of 'and' instruction"
+        );
         var expr;
         expr = __genExpr({
             eager : eager,
@@ -360,14 +457,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrEqual = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'eq' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'eq' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'eq' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'eq' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -379,14 +476,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrNotEqual = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'neq' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'neq' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'neq' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'neq' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -398,14 +495,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrLessThan = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'lt' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'lt' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'lt' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'lt' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -418,14 +515,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrLessThanOrEqualTo = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'leq' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'leq' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'leq' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'leq' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -438,14 +535,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrGreaterThan = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'gt' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'gt' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'gt' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'gt' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -458,14 +555,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrGreaterThanOrEqualTo = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'geq' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'geq' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'geq' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'geq' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -478,14 +575,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrBitwiseAnd = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'band' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'band' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'band' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'band' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -498,14 +595,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrBitwiseOr = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'bor' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'bor' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'bor' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'bor' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -518,14 +615,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrBitwiseXor = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'bxor' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'bxor' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'bxor' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'bxor' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -538,14 +635,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrBitwiseShiftLeft = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'amount' in 'lshift' instruction"
-        );
         var amount = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'lshift' instruction"
+        __catspeak_assert(amount != undefined,
+            "not enough stack space for 'amount' argument of 'lshift' instruction"
         );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'lshift' instruction"
+        );
         var expr;
         expr = __genExpr({
             value : value,
@@ -558,14 +655,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrBitwiseShiftRight = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'amount' in 'rshift' instruction"
-        );
         var amount = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'rshift' instruction"
+        __catspeak_assert(amount != undefined,
+            "not enough stack space for 'amount' argument of 'rshift' instruction"
         );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'rshift' instruction"
+        );
         var expr;
         expr = __genExpr({
             value : value,
@@ -578,14 +675,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrAdd = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'add' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'add' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'add' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'add' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -598,14 +695,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrSubtract = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'sub' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'sub' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'sub' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'sub' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -618,14 +715,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrMultiply = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'mult' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'mult' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'mult' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'mult' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -638,14 +735,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrDivide = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'div' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'div' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'div' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'div' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -658,14 +755,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrDivideInt = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'idiv' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'idiv' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'idiv' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'idiv' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -678,14 +775,14 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrRemainder = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'rhs' in 'rem' instruction"
-        );
         var rhs = ds_stack_pop(exprStack_);
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'lhs' in 'rem' instruction"
+        __catspeak_assert(rhs != undefined,
+            "not enough stack space for 'rhs' argument of 'rem' instruction"
         );
         var lhs = ds_stack_pop(exprStack_);
+        __catspeak_assert(lhs != undefined,
+            "not enough stack space for 'lhs' argument of 'rem' instruction"
+        );
         var expr;
         expr = __genExpr({
             lhs : lhs,
@@ -698,10 +795,10 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrPositive = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'pos' instruction"
-        );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'pos' instruction"
+        );
         var expr;
         expr = __genExpr({
             value : value,
@@ -713,10 +810,10 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrNegative = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'neg' instruction"
-        );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'neg' instruction"
+        );
         var expr;
         expr = __genExpr({
             value : value,
@@ -728,10 +825,10 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrNot = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'not' instruction"
-        );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'not' instruction"
+        );
         var expr;
         expr = __genExpr({
             value : value,
@@ -743,10 +840,10 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static handleInstrBitwiseNot = function (dbg) {
         var exprStack_ = exprStack;
-        __catspeak_assert(ds_stack_size(exprStack_) >= 1,
-            "not enough stack space for arg 'value' in 'bnot' instruction"
-        );
         var value = ds_stack_pop(exprStack_);
+        __catspeak_assert(value != undefined,
+            "not enough stack space for 'value' argument of 'bnot' instruction"
+        );
         var expr;
         expr = __genExpr({
             value : value,
@@ -904,7 +1001,7 @@ function __catspeak_dbg_trace__() {
     try {
         result = body();
     } catch (ex) {
-        catspeak_location_trace(ex, ctx.dbg, ctx.path);
+        catspeak_location_trace(ex, ctx.dbg, ctx.meta.path);
         throw ex;
     }
     return result;
@@ -977,6 +1074,58 @@ function __catspeak_instr_set_l_div__() {
     ctx_.stack[ctx_.stackN + off] /= value();
     return undefined;
 }
+
+/// @ignore
+function __catspeak_instr_get_g__() { return ctx.globals[$ name] }
+
+/// @ignore
+function __catspeak_instr_set_g__() {
+    ctx.globals[$ name] = value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_add__() {
+    ctx.globals[$ name] += value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_sub__() {
+    ctx.globals[$ name] -= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_mul__() {
+    ctx.globals[$ name] *= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_set_g_div__() {
+    ctx.globals[$ name] /= value();
+    return undefined;
+}
+
+/// @ignore
+function __catspeak_instr_thrw__() {
+    throw value();
+}
+
+/// @ignore
+function __catspeak_instr_cat__() {
+    var ctx_ = ctx;
+    var result;
+    try {
+        result = eager();
+    } catch (ex) {
+        // TODO :: let the special unwind boxed type pass through
+        ctx_.stack[ctx_.stackN + off] = ex;
+        result = lazy();
+    }
+    return result;
+};
 
 // automatically generated instructions below (here be dragons)
 
