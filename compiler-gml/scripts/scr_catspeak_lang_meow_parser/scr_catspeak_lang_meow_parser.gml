@@ -102,26 +102,6 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     };
 
     /// @ignore
-    static __emitVarGet = function (name, dbg) {
-        var idx = __findLocal(name);
-        if (idx != undefined) {
-            ir.emitGetLocal(idx, dbg);
-        } else {
-            ir.emitGetGlobal(name, dbg);
-        }
-    };
-
-    /// @ignore
-    static __emitVarSet = function (op, name, dbg) {
-        var idx = __findLocal(name);
-        if (idx != undefined) {
-            ir.emitSetLocal(op, idx, dbg);
-        } else {
-            ir.emitSetGlobal(op, name, dbg);
-        }
-    };
-
-    /// @ignore
     static __getLabelReturn = function () { return 0 };
 
     /// @ignore
@@ -640,12 +620,26 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         } else if (peeked == CatspeakToken.IDENT) {
             lexer.next();
             var name = lexer.getValue();
+            var idx = __findLocal(name);
             var op = __parseAssignOp();
             if (op == undefined) {
-                __emitVarGet(name, dbg);
+                // get
+                if (idx == undefined) {
+                    ir.emitGlobal();
+                    ir.emitGetIndexString(name, dbg);
+                } else {
+                    ir.emitGetLocal(idx, dbg);
+                }
             } else {
-                __parseExpression();
-                __emitVarSet(op, name, dbg);
+                // set
+                if (idx == undefined) {
+                    ir.emitGlobal();
+                    __parseExpression();
+                    ir.emitSetIndexString(op, name, dbg);
+                } else {
+                    __parseExpression();
+                    ir.emitSetLocal(op, idx, dbg);
+                }
             }
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
@@ -707,7 +701,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     lexer.next();
                     __parseExpression();
                 } else if (key == CatspeakToken.IDENT) {
-                    __emitVarGet(keyValue, keyDbg);
+                    var idx = __findLocal(keyValue);
+                    if (idx != undefined) {
+                        ir.emitGetLocal(idx, keyDbg);
+                    } else {
+                        ir.emitGlobal();
+                        ir.emitGetIndexString(keyValue, keyDbg);
+                    }
                 } else {
                     __err("expected ':' between key and value of struct literal");
                 }

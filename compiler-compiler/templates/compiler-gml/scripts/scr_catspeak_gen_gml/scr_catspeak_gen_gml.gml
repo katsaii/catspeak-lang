@@ -218,32 +218,6 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
-    static __genExprGetGlobal = function (name) {
-        return __genExpr({
-            name : name,
-        }, __catspeak_instr_get_g__);
-    };
-
-    /// @ignore
-    static __genExprSetGlobal = function (flavour, name, value) {
-        var func;
-        switch (flavour) {
-        case ord("="): func = __catspeak_instr_set_g__; break;
-        case ord("+"): func = __catspeak_instr_set_g_add__; break;
-        case ord("-"): func = __catspeak_instr_set_g_sub__; break;
-        case ord("*"): func = __catspeak_instr_set_g_mul__; break;
-        case ord("/"): func = __catspeak_instr_set_g_div__; break;
-        default:
-            __catspeak_error_bug();
-            break;
-        }
-        return __genExpr({
-            value : value,
-            name : name,
-        }, func);
-    };
-
-    /// @ignore
     static __genExprGlobal = function () {
         return __genExpr({ }, __catspeak_glob__);
     };
@@ -682,44 +656,6 @@ function __catspeak_instr_set_l_div__() {
     var ctx_ = ctx;
     var value_ = value();
     ctx_.stack[ctx_.stackN + off] /= value_;
-    return value_;
-}
-
-/// @ignore
-function __catspeak_instr_get_g__() { return ctx.globals[$ name] }
-
-/// @ignore
-function __catspeak_instr_set_g__() {
-    var value_ = value();
-    ctx.globals[$ name] = value_;
-    return value_;
-}
-
-/// @ignore
-function __catspeak_instr_set_g_add__() {
-    var value_ = value();
-    ctx.globals[$ name] += value_;
-    return value_;
-}
-
-/// @ignore
-function __catspeak_instr_set_g_sub__() {
-    var value_ = value();
-    ctx.globals[$ name] -= value_;
-    return value_;
-}
-
-/// @ignore
-function __catspeak_instr_set_g_mul__() {
-    var value_ = value();
-    ctx.globals[$ name] *= value_;
-    return value_;
-}
-
-/// @ignore
-function __catspeak_instr_set_g_div__() {
-    var value_ = value();
-    ctx.globals[$ name] /= value_;
     return value_;
 }
 
