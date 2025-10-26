@@ -260,6 +260,29 @@ function CatspeakGenGML() constructor {
         }, __catspeak_instr_cat__);
     };
 
+    if (!variable_global_exists("__catspeakSharedUnwindBox")) {
+        // guarantee the special unwind box exists if we're generating code
+        global.__catspeakSharedUnwindBox = [undefined, undefined];
+    }
+
+    /// @ignore
+    static __genExprUnwind = function (label, value) {
+        return __genExpr({
+            magicBox : global.__catspeakSharedUnwindBox,
+            label : label,
+            value : value,
+        }, __catspeak_instr_uwnd__);
+    };
+
+    /// @ignore
+    static __genExprUnwindLanding = function (label, body) {
+        return __genExpr({
+            magicBox : global.__catspeakSharedUnwindBox,
+            label : label,
+            body : body,
+        }, __catspeak_instr_land__);
+    };
+
     // automatically generated code generation functions (here be dragons)
 {% for instr in InstrItem.enum(ir) %}
 
@@ -503,7 +526,31 @@ function __catspeak_instr_cat__() {
         result = lazy();
     }
     return result;
-};
+}
+
+/// @ignore
+function __catspeak_instr_uwnd__() {
+    var box_ = magicBox;
+    box_[@ 0] = label;
+    box_[@ 1] = value();
+    throw box_;
+}
+
+/// @ignore
+function __catspeak_instr_land__() {
+    var box_ = magicBox;
+    var result;
+    try {
+        result = body();
+    } catch (ex) {
+        if (ex == box_ && box_[0] == label) {
+            result = box_[1];
+        } else {
+            throw ex;
+        }
+    }
+    return result;
+}
 
 // automatically generated instructions below (here be dragons)
 

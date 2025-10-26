@@ -43,6 +43,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         funcs[@ funcTop] = {
             blocks : array_create(8, undefined),
             blockTop : -1,
+            unwindDepth : 0,
         };
         __pushBlock();
     };
@@ -50,6 +51,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     /// @ignore
     static __popFunc = function () {
         __popBlock();
+        ir.emitUnwindLanding(0);
         funcs[@ funcTop] = undefined;
         funcTop -= 1;
         return ir.popFunction();
@@ -223,21 +225,21 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             var dbg = lexer.getLocationStart();
             lexer.next();
             if (peeked == CatspeakToken.RETURN) {
-                __catspeak_error_unimplemented("return");
-                //peeked = lexer.peek();
-                //if (
-                //    peeked == CatspeakToken.SEMICOLON ||
-                //    peeked == CatspeakToken.BRACE_RIGHT ||
-                //    peeked == CatspeakToken.LET
-                //) {
-                //    ir.emitConstUndefined();
-                //} else {
-                //    __parseExpression();
-                //}
-                //scope.emitReturn();
+                peeked = lexer.peek();
+                if (
+                    peeked == CatspeakToken.SEMICOLON ||
+                    peeked == CatspeakToken.BRACE_RIGHT ||
+                    peeked == CatspeakToken.LET
+                ) {
+                    ir.emitConstUndefined();
+                } else {
+                    __parseExpression();
+                }
+                ir.emitUnwind(0, dbg);
             } else if (peeked == CatspeakToken.CONTINUE) {
                 __catspeak_error_unimplemented("continue");
-                //scope.emitContinue();
+                ir.emitConstUndefined();
+                ir.emitUnwind(1, dbg);
             } else if (peeked == CatspeakToken.BREAK) {
                 peeked = lexer.peek();
                 if (
@@ -249,8 +251,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 } else {
                     __parseExpression();
                 }
-                __catspeak_error_unimplemented("break");
-                //scope.emitBreak();
+                ir.emitUnwind(2, dbg);
             } else if (peeked == CatspeakToken.THROW) {
                 __parseExpression();
                 ir.emitThrow(dbg);

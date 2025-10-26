@@ -201,6 +201,42 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
+    /// Jump to the end of a labelled block, using a value as the result of the expression.
+    ///
+    /// @param {Real} label
+    ///   The label to unwind to.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitUnwind = function (label, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.UWND);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u32, label);
+        // <result> - value
+        //stackSize += 1 - 1;
+    };
+
+    /// The target of an `unwind` instruction.
+    ///
+    /// @param {Real} label
+    ///   The label of this expression.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitUnwindLanding = function (label, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.LAND);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u32, label);
+        // <result> - body
+        //stackSize += 1 - 1;
+    };
+
     /// Throw a value as an exception.
     ///
     /// @param {Real} [dbg]
@@ -808,6 +844,8 @@ function catspeak_cart_version(cart) {
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrUnwind(dbg, label)`
+///   - `.handleInstrUnwindLanding(dbg, label)`
 ///   - `.handleInstrThrow(dbg)`
 ///   - `.handleInstrCatch(dbg, idx)`
 ///   - `.handleInstrGetLocal(dbg, idx)`
@@ -927,6 +965,22 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readFunc = function () {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readIUnwind = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var label = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrUnwind(dbg, label);
+    };
+
+    /// @ignore
+    static __readIUnwindLanding = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var label = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrUnwindLanding(dbg, label);
     };
 
     /// @ignore
@@ -1197,6 +1251,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.UWND] = __readIUnwind;
+        __readerLookup[@ __CatspeakInstr.LAND] = __readIUnwindLanding;
         __readerLookup[@ __CatspeakInstr.THRW] = __readIThrow;
         __readerLookup[@ __CatspeakInstr.CAT] = __readICatch;
         __readerLookup[@ __CatspeakInstr.GET_L] = __readIGetLocal;
@@ -1238,6 +1294,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
+    UWND = 37,
+    LAND = 36,
     THRW = 34,
     CAT = 42,
     GET_L = 4,

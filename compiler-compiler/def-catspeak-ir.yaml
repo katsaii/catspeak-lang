@@ -92,6 +92,34 @@ instr-opcode-type: u8 #< The type used for opcodes.
 instr-dbg-type: u32   #< The type used for debug info.
 instr:
 
+  - name: "unwind"
+    name-short: uwnd
+    desc: "jump to the end of a labelled block, using a value as the result of the expression"
+    opcode: 0x25
+    args:
+      - name: label
+        desc: "the label to unwind to"
+        type: u32
+    stackargs:
+      - name: value
+        desc: "the value to unwind with"
+    exceptional: false #< May use exceptions to do unwinding, but well-formed
+                       #< code shouldn't be "exceptional" or leak this
+                       #< implementation detail.
+
+  - name: "unwind landing"
+    name-short: land
+    desc: "the target of an `unwind` instruction"
+    opcode: 0x24
+    args:
+      - name: label
+        desc: "the label of this expression"
+        type: u32
+    stackargs:
+      - name: body
+        desc: "the body of the code containing an `unwind` instruction"
+    exceptional: false
+
   - name: "throw"
     name-short: thrw
     desc: "throw a value as an exception"
@@ -169,7 +197,7 @@ instr:
         desc: "the value to assign to this global variable"
     exceptional: false
 
-  - name: "sequence" # NOTE: behaves similar to comma expressions in JavaScript
+  - name: "sequence" #< Behaves similar to comma expressions in JavaScript.
     name-short: seq
     desc: "evaluates n-many expressions, implicitly returning the final expression"
     opcode: 0x02

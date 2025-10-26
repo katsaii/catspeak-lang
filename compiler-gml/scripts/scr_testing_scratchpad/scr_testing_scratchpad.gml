@@ -20,7 +20,7 @@ TEST_EXPERIMENT "catspeak4-parse" {
             do {
                 let a = 1
                 let c = do {
-                    throw "hi"
+                    return "hi"
                 }
                 a + b * c
             }
@@ -33,6 +33,27 @@ TEST_EXPERIMENT "catspeak4-parse" {
     var cart = writer.finalise();
     show_message(catspeak_cart_disassemble(cart, 0));
     // codegen
+    buffer_seek(cart, buffer_seek_start, 0);
+    var codegen = new CatspeakGenGML();
+    var reader = new CatspeakCartReader(cart, codegen);
+    do {
+        var keepReading = reader.readInstr();
+    } until (!keepReading);
+    var res = (codegen.finalise());
+    show_message(res());
+}
+
+TEST_EXPERIMENT "catspeak4-cart2" {
+    var writer = new CatspeakCartWriter();
+    writer.author = "me";
+    writer.path = "https://katsaii.com/joe/mama.meow"
+    writer.pushFunction();
+    writer.emitConstNumber(2);
+    writer.emitUnwind(1);
+    writer.emitUnwindLanding(1);
+    writer.popFunction();
+    var cart = writer.finalise();
+    show_message(catspeak_cart_disassemble(cart, 0));
     buffer_seek(cart, buffer_seek_start, 0);
     var codegen = new CatspeakGenGML();
     var reader = new CatspeakCartReader(cart, codegen);
