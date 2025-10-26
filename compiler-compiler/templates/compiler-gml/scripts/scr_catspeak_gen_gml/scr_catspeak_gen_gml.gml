@@ -244,6 +244,34 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __genExprGetIndex = function (data, idx) {
+        return __genExpr({
+            data : data,
+            idx : idx,
+        }, __catspeak_instr_get_i__);
+    };
+
+    /// @ignore
+    static __genExprSetIndex = function (flavour, data, idx, value) {
+        var func;
+        switch (flavour) {
+        case ord("="): func = __catspeak_instr_set_i__; break;
+        case ord("+"): func = __catspeak_instr_set_i_add__; break;
+        case ord("-"): func = __catspeak_instr_set_i_sub__; break;
+        case ord("*"): func = __catspeak_instr_set_i_mul__; break;
+        case ord("/"): func = __catspeak_instr_set_i_div__; break;
+        default:
+            __catspeak_error_bug();
+            break;
+        }
+        return __genExpr({
+            value : value,
+            data : data,
+            idx : idx,
+        }, func);
+    };
+
+    /// @ignore
     static __genExprThrow = function (value) {
         return __genExpr({
             value : value,
@@ -559,36 +587,41 @@ function __catspeak_instr_get_l__() {
 /// @ignore
 function __catspeak_instr_set_l__() {
     var ctx_ = ctx;
-    ctx_.stack[ctx_.stackN + off] = value();
-    return undefined;
+    var value_ = value();
+    ctx_.stack[ctx_.stackN + off] = value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_l_add__() {
     var ctx_ = ctx;
-    ctx_.stack[ctx_.stackN + off] += value();
-    return undefined;
+    var value_ = value();
+    ctx_.stack[ctx_.stackN + off] += value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_l_sub__() {
     var ctx_ = ctx;
-    ctx_.stack[ctx_.stackN + off] -= value();
-    return undefined;
+    var value_ = value();
+    ctx_.stack[ctx_.stackN + off] -= value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_l_mul__() {
     var ctx_ = ctx;
-    ctx_.stack[ctx_.stackN + off] *= value();
-    return undefined;
+    var value_ = value();
+    ctx_.stack[ctx_.stackN + off] *= value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_l_div__() {
     var ctx_ = ctx;
-    ctx_.stack[ctx_.stackN + off] /= value();
-    return undefined;
+    var value_ = value();
+    ctx_.stack[ctx_.stackN + off] /= value_;
+    return value_;
 }
 
 /// @ignore
@@ -596,32 +629,113 @@ function __catspeak_instr_get_g__() { return ctx.globals[$ name] }
 
 /// @ignore
 function __catspeak_instr_set_g__() {
-    ctx.globals[$ name] = value();
-    return undefined;
+    var value_ = value();
+    ctx.globals[$ name] = value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_g_add__() {
-    ctx.globals[$ name] += value();
-    return undefined;
+    var value_ = value();
+    ctx.globals[$ name] += value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_g_sub__() {
-    ctx.globals[$ name] -= value();
-    return undefined;
+    var value_ = value();
+    ctx.globals[$ name] -= value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_g_mul__() {
-    ctx.globals[$ name] *= value();
-    return undefined;
+    var value_ = value();
+    ctx.globals[$ name] *= value_;
+    return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_g_div__() {
-    ctx.globals[$ name] /= value();
-    return undefined;
+    var value_ = value();
+    ctx.globals[$ name] /= value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_get_i__() {
+    var data_ = data();
+    var idx_ = idx();
+    if (is_array(data_)) {
+        return data_[idx_];
+    } else {
+        return data_[$ idx_];
+    }
+}
+
+/// @ignore
+function __catspeak_instr_set_i__() {
+    var data_ = data();
+    var idx_ = idx();
+    var value_ = value();
+    if (is_array(data_)) {
+        data_[idx_] = value_;
+    } else {
+        data_[$ idx_] = value_;
+    }
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_i_add__() {
+    var data_ = data();
+    var idx_ = idx();
+    var value_ = value();
+    if (is_array(data_)) {
+        data_[idx_] += value_;
+    } else {
+        data_[$ idx_] += value_;
+    }
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_i_sub__() {
+    var data_ = data();
+    var idx_ = idx();
+    var value_ = value();
+    if (is_array(data_)) {
+        data_[idx_] -= value_;
+    } else {
+        data_[$ idx_] -= value_;
+    }
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_i_mul__() {
+    var data_ = data();
+    var idx_ = idx();
+    var value_ = value();
+    if (is_array(data_)) {
+        data_[idx_] *= value_;
+    } else {
+        data_[$ idx_] *= value_;
+    }
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_i_div__() {
+    var data_ = data();
+    var idx_ = idx();
+    var value_ = value();
+    if (is_array(data_)) {
+        data_[idx_] /= value_;
+    } else {
+        data_[$ idx_] /= value_;
+    }
+    return value_;
 }
 
 /// @ignore

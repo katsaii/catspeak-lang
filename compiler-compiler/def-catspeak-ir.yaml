@@ -271,6 +271,99 @@ instr:
         desc: "the value to assign to this global variable"
     exceptional: false
 
+  - name: "global"
+    name-short: glob
+    desc: "get a reference to the global variable struct for this cartridge"
+    opcode: 0x2F
+    exceptional: false
+
+  - name: "get index string"
+    name-short: get_is
+    desc: "get a value from a collection at the given string index"
+    opcode: 0x30
+    arg:
+      - name: idx
+        desc: "the index of the collection"
+        type: string
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+
+  - name: "set index string"
+    name-short: set_is
+    desc: "assign a value to a collection at the given index"
+    opcode: 0x31
+    args:
+      - name: flavour
+        desc: "the flavour of assignment to use"
+        type: char
+        values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
+      - name: idx
+        desc: "the index of the collection"
+        type: string
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+      - name: value
+        desc: "the value to assign to this collection"
+
+  - name: "get index number"
+    name-short: get_in
+    desc: "get a value from a collection at the given numeric index"
+    opcode: 0x32
+    arg:
+      - name: idx
+        desc: "the index of the collection"
+        type: f64
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+
+  - name: "set index number"
+    name-short: set_in
+    desc: "assign a value to a collection at the given numeric index"
+    opcode: 0x33
+    args:
+      - name: flavour
+        desc: "the flavour of assignment to use"
+        type: char
+        values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
+      - name: idx
+        desc: "the index of the collection"
+        type: f64
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+      - name: value
+        desc: "the value to assign to this collection"
+
+  - name: "get index"
+    name-short: get_i
+    desc: "get a value from a collection at the given index"
+    opcode: 0x2E
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+      - name: idx
+        desc: "the index of the collection"
+
+  - name: "set index"
+    name-short: set_i
+    desc: "assign a value to a collection at the given index"
+    opcode: 0x2D
+    args:
+      - name: flavour
+        desc: "the flavour of assignment to use"
+        type: char
+        values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+      - name: idx
+        desc: "the index of the collection"
+      - name: value
+        desc: "the value to assign to this collection"
+
   - name: "sequence" #< Behaves similar to comma expressions in JavaScript.
     name-short: seq
     desc: "evaluate n-many expressions, implicitly returning the final expression"

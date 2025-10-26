@@ -441,6 +441,124 @@ function CatspeakCartWriter() constructor {
         //stackSize += 1 - 1;
     };
 
+    /// Get a reference to the global variable struct for this cartridge.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitGlobal = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GLOB);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result>
+        stackSize += 1;
+    };
+
+    /// Get a value from a collection at the given string index.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitGetIndexString = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_IS);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - data
+        //stackSize += 1 - 1;
+    };
+
+    /// Assign a value to a collection at the given index.
+    ///
+    /// @param {Real} flavour
+    ///   The flavour of assignment to use.
+    ///
+    /// @param {String} idx
+    ///   The index of the collection.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSetIndexString = function (flavour, idx, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_IS);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u8, flavour);
+        buffer_write(chunk, buffer_string, idx);
+        // <result> - data - value
+        stackSize += 1 - 1 - 1;
+    };
+
+    /// Get a value from a collection at the given numeric index.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitGetIndexNumber = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_IN);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - data
+        //stackSize += 1 - 1;
+    };
+
+    /// Assign a value to a collection at the given numeric index.
+    ///
+    /// @param {Real} flavour
+    ///   The flavour of assignment to use.
+    ///
+    /// @param {Real} idx
+    ///   The index of the collection.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSetIndexNumber = function (flavour, idx, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_IN);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u8, flavour);
+        buffer_write(chunk, buffer_f64, idx);
+        // <result> - data - value
+        stackSize += 1 - 1 - 1;
+    };
+
+    /// Get a value from a collection at the given index.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitGetIndex = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_I);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - data - idx
+        stackSize += 1 - 1 - 1;
+    };
+
+    /// Assign a value to a collection at the given index.
+    ///
+    /// @param {Real} flavour
+    ///   The flavour of assignment to use.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSetIndex = function (flavour, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_I);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u8, flavour);
+        // <result> - data - idx - value
+        stackSize += 1 - 1 - 1 - 1;
+    };
+
     /// Evaluate n-many expressions, implicitly returning the final expression.
     ///
     /// @param {Real} n
@@ -950,6 +1068,13 @@ function catspeak_cart_version(cart) {
 ///   - `.handleInstrSetLocal(dbg, flavour, idx)`
 ///   - `.handleInstrGetGlobal(dbg, name)`
 ///   - `.handleInstrSetGlobal(dbg, flavour, name)`
+///   - `.handleInstrGlobal(dbg)`
+///   - `.handleInstrGetIndexString(dbg)`
+///   - `.handleInstrSetIndexString(dbg, flavour, idx)`
+///   - `.handleInstrGetIndexNumber(dbg)`
+///   - `.handleInstrSetIndexNumber(dbg, flavour, idx)`
+///   - `.handleInstrGetIndex(dbg)`
+///   - `.handleInstrSetIndex(dbg, flavour)`
 ///   - `.handleInstrSequence(dbg, n)`
 ///   - `.handleInstrClosure(dbg, idx)`
 ///   - `.handleInstrIfThenElse(dbg)`
@@ -1172,6 +1297,60 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var flavour = buffer_read(cart_, buffer_u8);
         var name = buffer_read(cart_, buffer_string);
         visitor.handleInstrSetGlobal(dbg, flavour, name);
+    };
+
+    /// @ignore
+    static __readIGlobal = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrGlobal(dbg);
+    };
+
+    /// @ignore
+    static __readIGetIndexString = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrGetIndexString(dbg);
+    };
+
+    /// @ignore
+    static __readISetIndexString = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var flavour = buffer_read(cart_, buffer_u8);
+        var idx = buffer_read(cart_, buffer_string);
+        visitor.handleInstrSetIndexString(dbg, flavour, idx);
+    };
+
+    /// @ignore
+    static __readIGetIndexNumber = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrGetIndexNumber(dbg);
+    };
+
+    /// @ignore
+    static __readISetIndexNumber = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var flavour = buffer_read(cart_, buffer_u8);
+        var idx = buffer_read(cart_, buffer_f64);
+        visitor.handleInstrSetIndexNumber(dbg, flavour, idx);
+    };
+
+    /// @ignore
+    static __readIGetIndex = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrGetIndex(dbg);
+    };
+
+    /// @ignore
+    static __readISetIndex = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var flavour = buffer_read(cart_, buffer_u8);
+        visitor.handleInstrSetIndex(dbg, flavour);
     };
 
     /// @ignore
@@ -1407,6 +1586,13 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.SET_L] = __readISetLocal;
         __readerLookup[@ __CatspeakInstr.GET_G] = __readIGetGlobal;
         __readerLookup[@ __CatspeakInstr.SET_G] = __readISetGlobal;
+        __readerLookup[@ __CatspeakInstr.GLOB] = __readIGlobal;
+        __readerLookup[@ __CatspeakInstr.GET_IS] = __readIGetIndexString;
+        __readerLookup[@ __CatspeakInstr.SET_IS] = __readISetIndexString;
+        __readerLookup[@ __CatspeakInstr.GET_IN] = __readIGetIndexNumber;
+        __readerLookup[@ __CatspeakInstr.SET_IN] = __readISetIndexNumber;
+        __readerLookup[@ __CatspeakInstr.GET_I] = __readIGetIndex;
+        __readerLookup[@ __CatspeakInstr.SET_I] = __readISetIndex;
         __readerLookup[@ __CatspeakInstr.SEQ] = __readISequence;
         __readerLookup[@ __CatspeakInstr.FCLO] = __readIClosure;
         __readerLookup[@ __CatspeakInstr.IFTE] = __readIIfThenElse;
@@ -1456,6 +1642,13 @@ enum __CatspeakInstr {
     SET_L = 29,
     GET_G = 31,
     SET_G = 30,
+    GLOB = 47,
+    GET_IS = 48,
+    SET_IS = 49,
+    GET_IN = 50,
+    SET_IN = 51,
+    GET_I = 46,
+    SET_I = 45,
     SEQ = 2,
     FCLO = 27,
     IFTE = 28,
@@ -1486,5 +1679,5 @@ enum __CatspeakInstr {
     GET_N = 1,
     GET_S = 3,
     GET_U = 35,
-    __SIZE__ = 45,
+    __SIZE__ = 52,
 }

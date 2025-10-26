@@ -189,6 +189,53 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrGlobal = function (dbg) {
+        out += "\n  glob";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrGetIndexString = function (dbg) {
+        out += "\n  get_is";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrSetIndexString = function (dbg, flavour, idx) {
+        out += "\n  set_is";
+        out += "  " + string(flavour);
+        out += "  " + string(idx);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrGetIndexNumber = function (dbg) {
+        out += "\n  get_in";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrSetIndexNumber = function (dbg, flavour, idx) {
+        out += "\n  set_in";
+        out += "  " + string(flavour);
+        out += "  " + string(idx);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrGetIndex = function (dbg) {
+        out += "\n  get_i";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrSetIndex = function (dbg, flavour) {
+        out += "\n  set_i";
+        out += "  " + string(flavour);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrSequence = function (dbg, n) {
         out += "\n  seq";
         out += "  " + string(n);

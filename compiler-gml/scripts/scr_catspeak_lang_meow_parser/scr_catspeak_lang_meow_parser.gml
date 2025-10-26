@@ -601,8 +601,27 @@ function CatspeakParser(cartWriter, lexer_) constructor {
 
     /// @ignore
     static __parseIndex = function () {
-        // TODO
         __parsePrimary();
+        while (true) {
+            var peeked = lexer.peek();
+            if (peeked == CatspeakToken.PAREN_LEFT) {
+                __catspeak_error_unimplemented("function calls");
+            } else if (peeked == CatspeakToken.BOX_LEFT) {
+                var dbg = lexer.getLocationStart();
+                lexer.next();
+                __parseExpression();
+                __expect(CatspeakToken.BOX_RIGHT, "expected closing ']' after index expression");
+                var op = __parseAssignOp();
+                if (op == undefined) {
+                    ir.emitGetIndex(dbg);
+                } else {
+                    __parseExpression();
+                    ir.emitSetIndex(op, dbg);
+                }
+            } else {
+                break;
+            }
+        }
     };
 
     /// @ignore
