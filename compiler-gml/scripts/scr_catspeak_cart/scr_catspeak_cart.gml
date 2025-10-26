@@ -415,6 +415,34 @@ function CatspeakCartWriter() constructor {
         stackSize += 1;
     };
 
+    /// Get a reference to the current 'self' scope.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSelf = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SELF);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result>
+        stackSize += 1;
+    };
+
+    /// Get a reference to the current 'other' scope.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitOther = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.OTHR);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result>
+        stackSize += 1;
+    };
+
     /// Get a value from a collection at the given string index.
     ///
     /// @param {String} idx
@@ -1031,6 +1059,8 @@ function catspeak_cart_version(cart) {
 ///   - `.handleInstrGetLocal(dbg, idx)`
 ///   - `.handleInstrSetLocal(dbg, flavour, idx)`
 ///   - `.handleInstrGlobal(dbg)`
+///   - `.handleInstrSelf(dbg)`
+///   - `.handleInstrOther(dbg)`
 ///   - `.handleInstrGetIndexString(dbg, idx)`
 ///   - `.handleInstrSetIndexString(dbg, flavour, idx)`
 ///   - `.handleInstrGetIndexNumber(dbg)`
@@ -1249,6 +1279,20 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var cart_ = cart;
         var dbg = buffer_read(cart_, buffer_u32);
         visitor.handleInstrGlobal(dbg);
+    };
+
+    /// @ignore
+    static __readISelf = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrSelf(dbg);
+    };
+
+    /// @ignore
+    static __readIOther = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrOther(dbg);
     };
 
     /// @ignore
@@ -1531,6 +1575,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.GET_L] = __readIGetLocal;
         __readerLookup[@ __CatspeakInstr.SET_L] = __readISetLocal;
         __readerLookup[@ __CatspeakInstr.GLOB] = __readIGlobal;
+        __readerLookup[@ __CatspeakInstr.SELF] = __readISelf;
+        __readerLookup[@ __CatspeakInstr.OTHR] = __readIOther;
         __readerLookup[@ __CatspeakInstr.GET_IS] = __readIGetIndexString;
         __readerLookup[@ __CatspeakInstr.SET_IS] = __readISetIndexString;
         __readerLookup[@ __CatspeakInstr.GET_IN] = __readIGetIndexNumber;
@@ -1585,6 +1631,8 @@ enum __CatspeakInstr {
     GET_L = 4,
     SET_L = 29,
     GLOB = 47,
+    SELF = 30,
+    OTHR = 31,
     GET_IS = 48,
     SET_IS = 49,
     GET_IN = 50,

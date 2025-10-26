@@ -643,12 +643,10 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             }
         } else if (peeked == CatspeakToken.SELF) {
             lexer.next();
-            __catspeak_error_unimplemented("self");
-            //ir.emitSelf(lexer.getLocationStart());
+            ir.emitSelf();
         } else if (peeked == CatspeakToken.OTHER) {
             lexer.next();
-            __catspeak_error_unimplemented("other");
-            //ir.emitOther(lexer.getLocationStart());
+            ir.emitOther();
         } else if (peeked == CatspeakToken.PAREN_LEFT) {
             lexer.next();
             __parseExpression();

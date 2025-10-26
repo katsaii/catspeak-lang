@@ -250,6 +250,18 @@ instr:
     opcode: 0x2F
     exceptional: false
 
+  - name: "self"
+    name-short: self
+    desc: "get a reference to the current 'self' scope"
+    opcode: 0x1E
+    exceptional: false
+
+  - name: "other"
+    name-short: othr
+    desc: "get a reference to the current 'other' scope"
+    opcode: 0x1F
+    exceptional: false
+
   - name: "get index string"
     name-short: get_is
     desc: "get a value from a collection at the given string index"

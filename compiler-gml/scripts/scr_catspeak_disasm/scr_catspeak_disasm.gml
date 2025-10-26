@@ -180,6 +180,18 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrSelf = function (dbg) {
+        out += "\n  self";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrOther = function (dbg) {
+        out += "\n  othr";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrGetIndexString = function (dbg, idx) {
         out += "\n  get_is";
         out += "  " + ("\"" + (idx) + "\"");

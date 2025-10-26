@@ -17,6 +17,7 @@ TEST_EXPERIMENT "catspeak4-parse" {
     var parser = new CatspeakParser(writer,
         new CatspeakLexer(catspeak_buffer_create_from_string(@'
             b = 2
+            self["a"] = 10
             do {
                 let n = 10
                 while n > 0 {
@@ -28,7 +29,7 @@ TEST_EXPERIMENT "catspeak4-parse" {
                     2
                 }
                 let z = [ a * c + b, 8910, { a, b, c, ["guh"]: 123, } ]
-                z[1] -= 10
+                z[1] -= self["a"]
                 z
             }
         '))
