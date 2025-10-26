@@ -201,6 +201,42 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
+    /// Construct an array.
+    ///
+    /// @param {Real} n
+    ///   The size of this array literal.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitArray = function (n, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.ARR);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u16, n);
+        // <result> - values
+        stackSize += 1 - n;
+    };
+
+    /// Construct a struct literal.
+    ///
+    /// @param {Real} n
+    ///   The size of this struct literal, must be a multiple of 2.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitStruct = function (n, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.OBJ);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u16, n);
+        // <result> - values
+        stackSize += 1 - n;
+    };
+
     /// Loop infinitely.
     ///
     /// @param {Real} [dbg]
@@ -900,6 +936,8 @@ function catspeak_cart_version(cart) {
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrArray(dbg, n)`
+///   - `.handleInstrStruct(dbg, n)`
 ///   - `.handleInstrLoopInf(dbg)`
 ///   - `.handleInstrLoop(dbg)`
 ///   - `.handleInstrLoopStep(dbg)`
@@ -1025,6 +1063,22 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readFunc = function () {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readIArray = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var n = buffer_read(cart_, buffer_u16);
+        visitor.handleInstrArray(dbg, n);
+    };
+
+    /// @ignore
+    static __readIStruct = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var n = buffer_read(cart_, buffer_u16);
+        visitor.handleInstrStruct(dbg, n);
     };
 
     /// @ignore
@@ -1339,6 +1393,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.ARR] = __readIArray;
+        __readerLookup[@ __CatspeakInstr.OBJ] = __readIStruct;
         __readerLookup[@ __CatspeakInstr.LOOP_INF] = __readILoopInf;
         __readerLookup[@ __CatspeakInstr.LOOP] = __readILoop;
         __readerLookup[@ __CatspeakInstr.LOOP_S] = __readILoopStep;
@@ -1386,6 +1442,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
+    ARR = 44,
+    OBJ = 43,
     LOOP_INF = 38,
     LOOP = 39,
     LOOP_S = 40,
@@ -1428,5 +1486,5 @@ enum __CatspeakInstr {
     GET_N = 1,
     GET_S = 3,
     GET_U = 35,
-    __SIZE__ = 43,
+    __SIZE__ = 45,
 }

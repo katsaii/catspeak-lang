@@ -27,7 +27,7 @@ TEST_EXPERIMENT "catspeak4-parse" {
                 let c = do {
                     2
                 }
-                a * c + b
+                [ a * c + b, 8910, { a, b, c, ["guh"]: 123, } ]
             }
         '))
     );

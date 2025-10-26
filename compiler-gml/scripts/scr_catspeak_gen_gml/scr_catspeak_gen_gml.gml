@@ -325,7 +325,130 @@ function CatspeakGenGML() constructor {
         }, __catspeak_instr_loop_w__);
     };
 
+    /// @ignore
+    static __genExprArray_vers = undefined;
+    static __genExprArray_versN = 0;
+    if (__genExprArray_vers == undefined) {
+        __genExprArray_vers = [
+            __catspeak_instr_arr_0__,
+            __catspeak_instr_arr_1__,
+            __catspeak_instr_arr_2__,
+            __catspeak_instr_arr_3__,
+            __catspeak_instr_arr_4__,
+            __catspeak_instr_arr_5__,
+            __catspeak_instr_arr_6__,
+            __catspeak_instr_arr_7__,
+            __catspeak_instr_arr_8__,
+            __catspeak_instr_arr_9__,
+        ];
+        __genExprArray_versN = array_length(__genExprArray_vers);
+    }
+
+    /// @ignore
+    static __genExprArray = function (n, values) {
+        var nStatic = min(n, __genExprArray_versN - 1);
+        var closure_ = { };
+        for (var i = 0; i < nStatic; i += 1) {
+            closure_[$ "_" + string(i + 1)] = values[i];
+        }
+        if (n == nStatic) {
+            return __genExpr(closure_, __genExprArray_vers[n]);
+        } else {
+            // encode values in reverse for (maybe) faster iteration
+            var moreN = n - __genExprArray_versN + 1;
+            var more = array_create(moreN);
+            for (var i = 0; i < moreN; i += 1) {
+                more[@ i] = values[n - 1 - i];
+            }
+            closure_.moreN = moreN;
+            closure_.more = more;
+            return __genExpr(closure_, __catspeak_instr_arr__);
+        }
+    };
+
+    /// @ignore
+    static __genExprStruct_vers = undefined;
+    static __genExprStruct_versN = 0;
+    if (__genExprStruct_vers == undefined) {
+        __genExprStruct_vers = [
+            __catspeak_instr_obj_0__,
+            __catspeak_instr_obj_1__,
+            __catspeak_instr_obj_2__,
+            __catspeak_instr_obj_3__,
+            __catspeak_instr_obj_4__,
+        ];
+        __genExprStruct_versN = array_length(__genExprStruct_vers);
+    }
+
+    /// @ignore
+    static __genExprStruct = function (n, values) {
+        __catspeak_assert(n % 2 == 0,
+            "'obj' instructions must have an even number of 'values'"
+        );
+        n = n div 2;
+        var nStatic = min(n, __genExprStruct_versN - 1);
+        var closure_ = { };
+        for (var i = 0; i < nStatic; i += 1) {
+            closure_[$ "_k" + string(i + 1)] = values[i * 2];
+            closure_[$ "_v" + string(i + 1)] = values[i * 2 + 1];
+        }
+        if (n == nStatic) {
+            return __genExpr(closure_, __genExprStruct_vers[n]);
+        } else {
+            // encode values in reverse for (maybe) faster iteration
+            var moreN = n - __genExprStruct_versN + 1;
+            var more = array_create(moreN * 2);
+            for (var i = 0; i < moreN; i += 1) {
+                more[@ i * 2] = values[n - 2 - i];
+                more[@ i * 2 + 1] = values[n - 1 - i];
+            }
+            closure_.moreN = moreN;
+            closure_.more = more;
+            return __genExpr(closure_, __catspeak_instr_obj__);
+        }
+    };
+
     // automatically generated code generation functions (here be dragons)
+
+    /// @ignore
+    static handleInstrArray = function (dbg, n) {
+        var exprStack_ = exprStack;
+        var values__n = n;
+        var values__nGot = ds_stack_size(exprStack_);
+        if (values__nGot < values__n) {
+            __catspeak_error(__catspeak_cat(
+                "not enough stack space for 'values' argument of 'arr' instruction (expected ",
+                values__n, ", got ", values__nGot, ")"
+            ));
+        }
+        var values = array_create(values__n);
+        for (var i = values__n - 1; i >= 0; i -= 1) {
+            values[@ i] = ds_stack_pop(exprStack_);
+        }
+        var expr;
+        expr = __genExprArray(n, values);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrStruct = function (dbg, n) {
+        var exprStack_ = exprStack;
+        var values__n = n;
+        var values__nGot = ds_stack_size(exprStack_);
+        if (values__nGot < values__n) {
+            __catspeak_error(__catspeak_cat(
+                "not enough stack space for 'values' argument of 'obj' instruction (expected ",
+                values__n, ", got ", values__nGot, ")"
+            ));
+        }
+        var values = array_create(values__n);
+        for (var i = values__n - 1; i >= 0; i -= 1) {
+            values[@ i] = ds_stack_pop(exprStack_);
+        }
+        var expr;
+        expr = __genExprStruct(n, values);
+        ds_stack_push(exprStack_, expr);
+    };
 
     /// @ignore
     static handleInstrLoopInf = function (dbg) {
@@ -1325,12 +1448,146 @@ function __catspeak_instr_loop_s__() {
     }
 }
 
+/// @ignore
 function __catspeak_instr_loop_w__() {
     var cond_ = cond;
     var body_ = body;
     with (cond_()) {
         body_();
     }
+}
+
+/// @ignore
+function __catspeak_instr_arr_0__() { return [] }
+
+/// @ignore
+function __catspeak_instr_arr_1__() { return [_1()] }
+
+/// @ignore
+function __catspeak_instr_arr_2__() {
+    var a1 = _1();
+    return [a1, _2()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_3__() {
+    var a1 = _1(); var a2 = _2();
+    return [a1, a2, _3()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_4__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3();
+    return [a1, a2, a3, _4()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_5__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    return [a1, a2, a3, a4, _5()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_6__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5();
+    return [a1, a2, a3, a4, a5, _6()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_7__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6();
+    return [a1, a2, a3, a4, a5, a6, _7()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_8__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6(); var a7 = _7();
+    return [a1, a2, a3, a4, a5, a6, a7, _8()];
+}
+
+/// @ignore
+function __catspeak_instr_arr_9__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6(); var a7 = _7(); var a8 = _8();
+    return [a1, a2, a3, a4, a5, a6, a7, a8, _9()];
+}
+
+/// @ignore
+function __catspeak_instr_arr__() {
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6(); var a7 = _7(); var a8 = _8();
+    var arr = [a1, a2, a3, a4, a5, a6, a7, a8, _9()];
+    var more_ = more;
+    for (var i = moreN - 1; i >= 0; i -= 1) {
+        var value = more_[i];
+        arr[@ 10 + i] = value();
+    }
+    return arr;
+}
+
+/// @ignore
+function __catspeak_instr_obj_0__() { return { } }
+
+/// @ignore
+function __catspeak_instr_obj_1__() {
+    var k1 = _k1(); var v1 = _v1();
+    var obj = { };
+    obj[$ k1] = v1;
+    return obj;
+}
+
+/// @ignore
+function __catspeak_instr_obj_2__() {
+    var k1 = _k1(); var v1 = _v1(); var k2 = _k2(); var v2 = _v2();
+    var obj = { };
+    obj[$ k1] = v1;
+    obj[$ k2] = v2;
+    return obj;
+}
+
+/// @ignore
+function __catspeak_instr_obj_3__() {
+    var k1 = _k1(); var v1 = _v1(); var k2 = _k2(); var v2 = _v2();
+    var k3 = _k3(); var v3 = _v3();
+    var obj = { };
+    obj[$ k1] = v1;
+    obj[$ k2] = v2;
+    obj[$ k3] = v3;
+    return obj;
+}
+
+/// @ignore
+function __catspeak_instr_obj_4__() {
+    var k1 = _k1(); var v1 = _v1(); var k2 = _k2(); var v2 = _v2();
+    var k3 = _k3(); var v3 = _v3(); var k4 = _k4(); var v4 = _v4();
+    var obj = { };
+    obj[$ k1] = v1;
+    obj[$ k2] = v2;
+    obj[$ k3] = v3;
+    obj[$ k4] = v4;
+    return obj;
+}
+
+/// @ignore
+function __catspeak_instr_obj__() {
+    var k1 = _k1(); var v1 = _v1(); var k2 = _k2(); var v2 = _v2();
+    var k3 = _k3(); var v3 = _v3(); var k4 = _k4(); var v4 = _v4();
+    var obj = { };
+    obj[$ k1] = v1;
+    obj[$ k2] = v2;
+    obj[$ k3] = v3;
+    obj[$ k4] = v4;
+    var more_ = more;
+    for (var i = moreN - 1; i >= 0; i -= 1) {
+        var key = more_[i * 2];
+        var value = more_[i * 2 + 1];
+        var key_ = key();
+        obj[$ key_] = value();
+    }
+    return obj;
 }
 
 // automatically generated instructions below (here be dragons)

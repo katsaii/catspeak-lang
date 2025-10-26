@@ -82,7 +82,7 @@ def ir_enum(collection, idx):
 @jinja2_export
 def type_to_gml_literal(type_name, value=None):
     match type_name:
-        case "i32" | "u32" | "f64" | "u8":
+        case "i32" | "u32" | "i16" | "u16" | "i8" | "u8" | "f64":
             return str(value) if value != None else "0"
         case "string":
             if value != None:
@@ -94,23 +94,28 @@ def type_to_gml_literal(type_name, value=None):
                 return '""'
         case "char":
             return f"ord(\"{value}\")" if value != None else "0"
+        case "bool":
+            return f"real({value})" if value != None else "0"
         case t: raise Exception(f"unknown value type: {t}")
 
 @jinja2_export
 def type_to_gml_feather(type_name):
     match type_name:
-        case "i32" | "u32" | "f64" | "u8" | "char":
+        case "i32" | "u32" | "i16" | "u16" | "i8" | "u8" | "f64" | "char":
             return "{Real}"
         case "string": return "{String}"
+        case "bool": return "{Bool}"
         case t: raise Exception(f"unknown feather type: {t}")
 
 @jinja2_export
 def type_to_gml_buffer(type_name):
     match type_name:
-        case "i32" | "u32" | "f64" | "u8" | "string":
+        case "u32" | "u16" | "u8" | "f64" | "string":
             return f"buffer_{type_name}"
-        case "char":
-            return "buffer_u8"
+        case "i32": return "buffer_s32"
+        case "i16": return "buffer_s16"
+        case "i8": return "buffer_s8"
+        case "char" | "bool": return "buffer_u8"
         case t: raise Exception(f"unknown buffer type: {t}")
 
 @jinja2_export

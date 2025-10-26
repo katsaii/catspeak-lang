@@ -217,7 +217,7 @@ function CatspeakLexer(
     peeked = undefined;
 
     /// Returns the actual value representation of the most recent token
-    /// emitted by the `next` or `nextWithWhitespace` methods.
+    /// emitted by the `peek`, `next`, or `nextWithWhitespace` methods.
     ///
     /// @remark
     ///   Unlike `getLexeme` this value is not always a string. For numeric
