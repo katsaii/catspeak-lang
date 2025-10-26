@@ -94,6 +94,30 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrLoopInf = function (dbg) {
+        out += "\n  loop_inf";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrLoop = function (dbg) {
+        out += "\n  loop";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrLoopStep = function (dbg) {
+        out += "\n  loop_s";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrLoopWith = function (dbg) {
+        out += "\n  loop_w";
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrUnwind = function (dbg, label) {
         out += "\n  uwnd";
         out += "  " + string(label);

@@ -51,7 +51,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     /// @ignore
     static __popFunc = function () {
         __popBlock();
-        ir.emitUnwindLanding(0);
+        ir.emitUnwindLanding(__getLabelReturn());
         funcs[@ funcTop] = undefined;
         funcTop -= 1;
         return ir.popFunction();
@@ -120,6 +120,15 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             ir.emitSetGlobal(op, name, dbg);
         }
     };
+
+    /// @ignore
+    static __getLabelReturn = function () { return 0 };
+
+    /// @ignore
+    static __getLabelContinue = function () { return 1 };
+
+    /// @ignore
+    static __getLabelBreak = function () { return 2 };
 
     /// @ignore
     static __err = function (msg = "no message") {
@@ -235,11 +244,11 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 } else {
                     __parseExpression();
                 }
-                ir.emitUnwind(0, dbg);
+                ir.emitUnwind(__getLabelReturn(), dbg);
             } else if (peeked == CatspeakToken.CONTINUE) {
                 __catspeak_error_unimplemented("continue");
                 ir.emitConstUndefined();
-                ir.emitUnwind(1, dbg);
+                ir.emitUnwind(__getLabelContinue(), dbg);
             } else if (peeked == CatspeakToken.BREAK) {
                 peeked = lexer.peek();
                 if (
@@ -251,7 +260,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 } else {
                     __parseExpression();
                 }
-                ir.emitUnwind(2, dbg);
+                ir.emitUnwind(__getLabelBreak(), dbg);
             } else if (peeked == CatspeakToken.THROW) {
                 __parseExpression();
                 ir.emitThrow(dbg);
@@ -319,13 +328,30 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 }
                 ir.emitIfThenElse(dbg);
             } else if (peeked == CatspeakToken.WHILE) {
-                // TODO
+                __parseExpression();
+                __pushBlock();
+                __parseStatements("while");
+                __popBlock();
+                ir.emitUnwindLanding(__getLabelContinue());
+                ir.emitLoop(dbg);
+                ir.emitUnwindLanding(__getLabelBreak());
             } else if (peeked == CatspeakToken.FOR) {
                 __catspeak_error_unimplemented("for loops");
             } else if (peeked == CatspeakToken.LOOP) {
-                __catspeak_error_unimplemented("infinite loops");
+                __pushBlock();
+                __parseStatements("loop");
+                __popBlock();
+                ir.emitUnwindLanding(__getLabelContinue());
+                ir.emitLoopInf(dbg);
+                ir.emitUnwindLanding(__getLabelBreak());
             } else if (peeked == CatspeakToken.WITH) {
-                // TODO
+                __parseExpression();
+                __pushBlock();
+                __parseStatements("with");
+                __popBlock();
+                ir.emitUnwindLanding(__getLabelContinue());
+                ir.emitLoopWith(dbg);
+                ir.emitUnwindLanding(__getLabelBreak());
             } else if (peeked == CatspeakToken.MATCH) {
                 // TODO
             } else if (peeked == CatspeakToken.FUN) {

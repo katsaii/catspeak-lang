@@ -293,7 +293,106 @@ function CatspeakGenGML() constructor {
         }, __catspeak_instr_land__);
     };
 
+    /// @ignore
+    static __genExprLoopInf = function (body) {
+        return __genExpr({
+            body : body,
+        }, __catspeak_instr_loop_inf__);
+    };
+
+    /// @ignore
+    static __genExprLoop = function (cond, body) {
+        return __genExpr({
+            cond : cond,
+            body : body,
+        }, __catspeak_instr_loop__);
+    };
+
+    /// @ignore
+    static __genExprLoopStep = function (cond, step, body) {
+        return __genExpr({
+            cond : cond,
+            step : step,
+            body : body,
+        }, __catspeak_instr_loop_s__);
+    };
+
+    /// @ignore
+    static __genExprLoopWith = function (cond, body) {
+        return __genExpr({
+            cond : cond,
+            body : body,
+        }, __catspeak_instr_loop_w__);
+    };
+
     // automatically generated code generation functions (here be dragons)
+
+    /// @ignore
+    static handleInstrLoopInf = function (dbg) {
+        var exprStack_ = exprStack;
+        var body = ds_stack_pop(exprStack_);
+        __catspeak_assert(body != undefined,
+            "not enough stack space for 'body' argument of 'loop_inf' instruction"
+        );
+        var expr;
+        expr = __genExprLoopInf(body);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrLoop = function (dbg) {
+        var exprStack_ = exprStack;
+        var body = ds_stack_pop(exprStack_);
+        __catspeak_assert(body != undefined,
+            "not enough stack space for 'body' argument of 'loop' instruction"
+        );
+        var cond = ds_stack_pop(exprStack_);
+        __catspeak_assert(cond != undefined,
+            "not enough stack space for 'cond' argument of 'loop' instruction"
+        );
+        var expr;
+        expr = __genExprLoop(cond, body);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrLoopStep = function (dbg) {
+        var exprStack_ = exprStack;
+        var body = ds_stack_pop(exprStack_);
+        __catspeak_assert(body != undefined,
+            "not enough stack space for 'body' argument of 'loop_s' instruction"
+        );
+        var step = ds_stack_pop(exprStack_);
+        __catspeak_assert(step != undefined,
+            "not enough stack space for 'step' argument of 'loop_s' instruction"
+        );
+        var cond = ds_stack_pop(exprStack_);
+        __catspeak_assert(cond != undefined,
+            "not enough stack space for 'cond' argument of 'loop_s' instruction"
+        );
+        var expr;
+        expr = __genExprLoopStep(cond, step, body);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrLoopWith = function (dbg) {
+        var exprStack_ = exprStack;
+        var body = ds_stack_pop(exprStack_);
+        __catspeak_assert(body != undefined,
+            "not enough stack space for 'body' argument of 'loop_w' instruction"
+        );
+        var cond = ds_stack_pop(exprStack_);
+        __catspeak_assert(cond != undefined,
+            "not enough stack space for 'cond' argument of 'loop_w' instruction"
+        );
+        var expr;
+        expr = __genExprLoopWith(cond, body);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
+    };
 
     /// @ignore
     static handleInstrUnwind = function (dbg, label) {
@@ -1196,6 +1295,42 @@ function __catspeak_instr_land__() {
         }
     }
     return result;
+}
+
+/// @ignore
+function __catspeak_instr_loop_inf__() {
+    var body_ = body;
+    while (true) {
+        body_();
+    }
+}
+
+/// @ignore
+function __catspeak_instr_loop__() {
+    var cond_ = cond;
+    var body_ = body;
+    while (cond_()) {
+        body_();
+    }
+}
+
+/// @ignore
+function __catspeak_instr_loop_s__() {
+    var cond_ = cond;
+    var body_ = body;
+    var step_ = step;
+    while (cond_()) {
+        body_();
+        step_();
+    }
+}
+
+function __catspeak_instr_loop_w__() {
+    var cond_ = cond;
+    var body_ = body;
+    with (cond_()) {
+        body_();
+    }
 }
 
 // automatically generated instructions below (here be dragons)

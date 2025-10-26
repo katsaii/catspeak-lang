@@ -92,9 +92,50 @@ instr-opcode-type: u8 #< The type used for opcodes.
 instr-dbg-type: u32   #< The type used for debug info.
 instr:
 
+  - name: "loop inf"
+    name-short: loop_inf
+    desc: "loop infinitely"
+    opcode: 0x26
+    stackargs:
+      - name: body
+        desc: "the body of the loop to execute"
+    exceptional: false
+
+  - name: "loop"
+    name-short: loop
+    desc: "loop whilst a condition is true"
+    opcode: 0x27
+    stackargs:
+      - name: cond
+        desc: "the condition of the loop to check"
+      - name: body
+        desc: "the body of the loop to execute"
+
+  - name: "loop step"
+    name-short: loop_s
+    desc: "loop whilst a condition is true, evaluating an expression every iteration"
+    opcode: 0x28
+    stackargs:
+      - name: cond
+        desc: "the condition of the loop to check"
+      - name: step
+        desc: "the step expression to evaluate at the end of every iteration"
+      - name: body
+        desc: "the body of the loop to execute"
+
+  - name: "loop with"
+    name-short: loop_w
+    desc: "perform a GML-style `with` loop over all instances of an object"
+    opcode: 0x29
+    stackargs:
+      - name: cond
+        desc: "the condition of the loop to check"
+      - name: body
+        desc: "the body of the loop to execute"
+
   - name: "unwind"
     name-short: uwnd
-    desc: "jump to the end of a labelled block, using a value as the result of the expression"
+    desc: "jump to the end of a landing block"
     opcode: 0x25
     args:
       - name: label
@@ -109,7 +150,7 @@ instr:
 
   - name: "unwind landing"
     name-short: land
-    desc: "the target of an `unwind` instruction"
+    desc: "catch the result of an `unwind` instruction"
     opcode: 0x24
     args:
       - name: label
@@ -145,7 +186,7 @@ instr:
 
   - name: "get local"
     name-short: get_l
-    desc: "gets a value of the local variable with the given id"
+    desc: "get a value of the local variable with the given id"
     opcode: 0x04
     args:
       - name: idx
@@ -155,7 +196,7 @@ instr:
 
   - name: "set local"
     name-short: set_l
-    desc: "assigns a value to the local variable with the given id"
+    desc: "assign a value to the local variable with the given id"
     opcode: 0x1D
     args:
       - name: flavour
@@ -172,7 +213,7 @@ instr:
 
   - name: "get global"
     name-short: get_g
-    desc: "gets a value of the global variable with the given name"
+    desc: "get a value of the global variable with the given name"
     opcode: 0x1F
     args:
       - name: name
@@ -182,7 +223,7 @@ instr:
 
   - name: "set global"
     name-short: set_g
-    desc: "assigns a value to the global variable with the given name"
+    desc: "assign a value to the global variable with the given name"
     opcode: 0x1E
     args:
       - name: flavour
@@ -199,7 +240,7 @@ instr:
 
   - name: "sequence" #< Behaves similar to comma expressions in JavaScript.
     name-short: seq
-    desc: "evaluates n-many expressions, implicitly returning the final expression"
+    desc: "evaluate n-many expressions, implicitly returning the final expression"
     opcode: 0x02
     args:
       - name: n

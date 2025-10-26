@@ -201,7 +201,63 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
-    /// Jump to the end of a labelled block, using a value as the result of the expression.
+    /// Loop infinitely.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitLoopInf = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.LOOP_INF);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - body
+        //stackSize += 1 - 1;
+    };
+
+    /// Loop whilst a condition is true.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitLoop = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.LOOP);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - cond - body
+        stackSize += 1 - 1 - 1;
+    };
+
+    /// Loop whilst a condition is true, evaluating an expression every iteration.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitLoopStep = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.LOOP_S);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - cond - step - body
+        stackSize += 1 - 1 - 1 - 1;
+    };
+
+    /// Perform a GML-style `with` loop over all instances of an object.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitLoopWith = function (dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.LOOP_W);
+        buffer_write(chunk, buffer_u32, dbg);
+        // <result> - cond - body
+        stackSize += 1 - 1 - 1;
+    };
+
+    /// Jump to the end of a landing block.
     ///
     /// @param {Real} label
     ///   The label to unwind to.
@@ -219,7 +275,7 @@ function CatspeakCartWriter() constructor {
         //stackSize += 1 - 1;
     };
 
-    /// The target of an `unwind` instruction.
+    /// Catch the result of an `unwind` instruction.
     ///
     /// @param {Real} label
     ///   The label of this expression.
@@ -269,7 +325,7 @@ function CatspeakCartWriter() constructor {
         stackSize += 1 - 1 - 1;
     };
 
-    /// Gets a value of the local variable with the given id.
+    /// Get a value of the local variable with the given id.
     ///
     /// @param {Real} idx
     ///   The id of the local variable to get.
@@ -287,7 +343,7 @@ function CatspeakCartWriter() constructor {
         stackSize += 1;
     };
 
-    /// Assigns a value to the local variable with the given id.
+    /// Assign a value to the local variable with the given id.
     ///
     /// @param {Real} flavour
     ///   The flavour of assignment to use.
@@ -309,7 +365,7 @@ function CatspeakCartWriter() constructor {
         //stackSize += 1 - 1;
     };
 
-    /// Gets a value of the global variable with the given name.
+    /// Get a value of the global variable with the given name.
     ///
     /// @param {String} name
     ///   The name of the global variable to get.
@@ -327,7 +383,7 @@ function CatspeakCartWriter() constructor {
         stackSize += 1;
     };
 
-    /// Assigns a value to the global variable with the given name.
+    /// Assign a value to the global variable with the given name.
     ///
     /// @param {Real} flavour
     ///   The flavour of assignment to use.
@@ -349,7 +405,7 @@ function CatspeakCartWriter() constructor {
         //stackSize += 1 - 1;
     };
 
-    /// Evaluates n-many expressions, implicitly returning the final expression.
+    /// Evaluate n-many expressions, implicitly returning the final expression.
     ///
     /// @param {Real} n
     ///   The number of expressions to evaluate.
@@ -844,6 +900,10 @@ function catspeak_cart_version(cart) {
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx)`
+///   - `.handleInstrLoopInf(dbg)`
+///   - `.handleInstrLoop(dbg)`
+///   - `.handleInstrLoopStep(dbg)`
+///   - `.handleInstrLoopWith(dbg)`
 ///   - `.handleInstrUnwind(dbg, label)`
 ///   - `.handleInstrUnwindLanding(dbg, label)`
 ///   - `.handleInstrThrow(dbg)`
@@ -965,6 +1025,34 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readFunc = function () {
         visitor.handleFunc(funcIdx);
         funcIdx += 1;
+    };
+
+    /// @ignore
+    static __readILoopInf = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrLoopInf(dbg);
+    };
+
+    /// @ignore
+    static __readILoop = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrLoop(dbg);
+    };
+
+    /// @ignore
+    static __readILoopStep = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrLoopStep(dbg);
+    };
+
+    /// @ignore
+    static __readILoopWith = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        visitor.handleInstrLoopWith(dbg);
     };
 
     /// @ignore
@@ -1251,6 +1339,10 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ 0] = __readFunc;
+        __readerLookup[@ __CatspeakInstr.LOOP_INF] = __readILoopInf;
+        __readerLookup[@ __CatspeakInstr.LOOP] = __readILoop;
+        __readerLookup[@ __CatspeakInstr.LOOP_S] = __readILoopStep;
+        __readerLookup[@ __CatspeakInstr.LOOP_W] = __readILoopWith;
         __readerLookup[@ __CatspeakInstr.UWND] = __readIUnwind;
         __readerLookup[@ __CatspeakInstr.LAND] = __readIUnwindLanding;
         __readerLookup[@ __CatspeakInstr.THRW] = __readIThrow;
@@ -1294,6 +1386,10 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
 /// @ignore
 enum __CatspeakInstr {
+    LOOP_INF = 38,
+    LOOP = 39,
+    LOOP_S = 40,
+    LOOP_W = 41,
     UWND = 37,
     LAND = 36,
     THRW = 34,

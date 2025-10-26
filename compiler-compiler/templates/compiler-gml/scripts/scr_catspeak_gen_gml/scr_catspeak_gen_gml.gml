@@ -283,6 +283,38 @@ function CatspeakGenGML() constructor {
         }, __catspeak_instr_land__);
     };
 
+    /// @ignore
+    static __genExprLoopInf = function (body) {
+        return __genExpr({
+            body : body,
+        }, __catspeak_instr_loop_inf__);
+    };
+
+    /// @ignore
+    static __genExprLoop = function (cond, body) {
+        return __genExpr({
+            cond : cond,
+            body : body,
+        }, __catspeak_instr_loop__);
+    };
+
+    /// @ignore
+    static __genExprLoopStep = function (cond, step, body) {
+        return __genExpr({
+            cond : cond,
+            step : step,
+            body : body,
+        }, __catspeak_instr_loop_s__);
+    };
+
+    /// @ignore
+    static __genExprLoopWith = function (cond, body) {
+        return __genExpr({
+            cond : cond,
+            body : body,
+        }, __catspeak_instr_loop_w__);
+    };
+
     // automatically generated code generation functions (here be dragons)
 {% for instr in InstrItem.enum(ir) %}
 
@@ -550,6 +582,42 @@ function __catspeak_instr_land__() {
         }
     }
     return result;
+}
+
+/// @ignore
+function __catspeak_instr_loop_inf__() {
+    var body_ = body;
+    while (true) {
+        body_();
+    }
+}
+
+/// @ignore
+function __catspeak_instr_loop__() {
+    var cond_ = cond;
+    var body_ = body;
+    while (cond_()) {
+        body_();
+    }
+}
+
+/// @ignore
+function __catspeak_instr_loop_s__() {
+    var cond_ = cond;
+    var body_ = body;
+    var step_ = step;
+    while (cond_()) {
+        body_();
+        step_();
+    }
+}
+
+function __catspeak_instr_loop_w__() {
+    var cond_ = cond;
+    var body_ = body;
+    with (cond_()) {
+        body_();
+    }
 }
 
 // automatically generated instructions below (here be dragons)

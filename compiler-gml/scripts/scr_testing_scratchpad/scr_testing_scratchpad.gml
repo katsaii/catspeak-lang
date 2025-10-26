@@ -18,11 +18,16 @@ TEST_EXPERIMENT "catspeak4-parse" {
         new CatspeakLexer(catspeak_buffer_create_from_string(@'
             b = 2
             do {
+                let n = 10
+                while n > 0 {
+                    n -= 1
+                    b += 3
+                }
                 let a = 1
                 let c = do {
-                    return "hi"
+                    2
                 }
-                a + b * c
+                a * c + b
             }
         '))
     );
