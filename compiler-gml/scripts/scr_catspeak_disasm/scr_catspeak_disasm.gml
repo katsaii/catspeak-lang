@@ -195,8 +195,9 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleInstrGetIndexString = function (dbg) {
+    static handleInstrGetIndexString = function (dbg, idx) {
         out += "\n  get_is";
+        out += "  " + string(idx);
         __writeDbg(dbg);
     };
 

@@ -457,14 +457,18 @@ function CatspeakCartWriter() constructor {
 
     /// Get a value from a collection at the given string index.
     ///
+    /// @param {String} idx
+    ///   The index of the collection.
+    ///
     /// @param {Real} [dbg]
     ///   The approximate location of this instruction in the source code.
     ///   Defaults to `CATSPEAK_NOLOCATION`.
-    static emitGetIndexString = function (dbg = CATSPEAK_NOLOCATION) {
+    static emitGetIndexString = function (idx, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_IS);
         buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_string, idx);
         // <result> - data
         //stackSize += 1 - 1;
     };
@@ -1069,7 +1073,7 @@ function catspeak_cart_version(cart) {
 ///   - `.handleInstrGetGlobal(dbg, name)`
 ///   - `.handleInstrSetGlobal(dbg, flavour, name)`
 ///   - `.handleInstrGlobal(dbg)`
-///   - `.handleInstrGetIndexString(dbg)`
+///   - `.handleInstrGetIndexString(dbg, idx)`
 ///   - `.handleInstrSetIndexString(dbg, flavour, idx)`
 ///   - `.handleInstrGetIndexNumber(dbg)`
 ///   - `.handleInstrSetIndexNumber(dbg, flavour, idx)`
@@ -1310,7 +1314,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readIGetIndexString = function () {
         var cart_ = cart;
         var dbg = buffer_read(cart_, buffer_u32);
-        visitor.handleInstrGetIndexString(dbg);
+        var idx = buffer_read(cart_, buffer_string);
+        visitor.handleInstrGetIndexString(dbg, idx);
     };
 
     /// @ignore

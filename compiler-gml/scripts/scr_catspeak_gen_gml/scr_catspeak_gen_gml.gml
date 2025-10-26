@@ -254,6 +254,67 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __genExprGlobal = function () {
+        return __genExpr({ }, __catspeak_glob__);
+    };
+
+    /// @ignore
+    static __genExprGetIndexString = function (idx, data) {
+        return __genExpr({
+            data : data,
+            idx : idx,
+        }, __catspeak_instr_get_is__);
+    };
+
+    /// @ignore
+    static __genExprSetIndexString = function (flavour, idx, data, value) {
+        var func;
+        switch (flavour) {
+        case ord("="): func = __catspeak_instr_set_is__; break;
+        case ord("+"): func = __catspeak_instr_set_is_add__; break;
+        case ord("-"): func = __catspeak_instr_set_is_sub__; break;
+        case ord("*"): func = __catspeak_instr_set_is_mul__; break;
+        case ord("/"): func = __catspeak_instr_set_is_div__; break;
+        default:
+            __catspeak_error_bug();
+            break;
+        }
+        return __genExpr({
+            value : value,
+            data : data,
+            idx : idx,
+        }, func);
+    };
+
+    /// @ignore
+    static __genExprGetIndexNumber = function (idx, data) {
+        return __genExpr({
+            data : data,
+            idx : idx,
+        }, __catspeak_instr_get_in__);
+    };
+
+    /// @ignore
+    static __genExprSetIndexNumber = function (flavour, idx, data, value) {
+        var func;
+        switch (flavour) {
+        case ord("="): func = __catspeak_instr_set_in__; break;
+        case ord("+"): func = __catspeak_instr_set_in_add__; break;
+        case ord("-"): func = __catspeak_instr_set_in_sub__; break;
+        case ord("*"): func = __catspeak_instr_set_in_mul__; break;
+        case ord("/"): func = __catspeak_instr_set_in_div__; break;
+        default:
+            __catspeak_error_bug();
+            break;
+        }
+        return __genExpr({
+            value : value,
+            data : data,
+            idx : idx,
+        }, func);
+    };
+
+    /// @ignore
     static __genExprGetIndex = function (data, idx) {
         return __genExpr({
             data : data,
@@ -647,14 +708,14 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
-    static handleInstrGetIndexString = function (dbg) {
+    static handleInstrGetIndexString = function (dbg, idx) {
         var exprStack_ = exprStack;
         var data = ds_stack_pop(exprStack_);
         __catspeak_assert(data != undefined,
             "not enough stack space for 'data' argument of 'get_is' instruction"
         );
         var expr;
-        expr = __genExprGetIndexString(data);
+        expr = __genExprGetIndexString(idx, data);
         expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
@@ -1522,6 +1583,101 @@ function __catspeak_instr_set_g_div__() {
 }
 
 /// @ignore
+function __catspeak_glob__() { return ctx.globals }
+
+/// @ignore
+function __catspeak_instr_get_is__() {
+    var data_ = data();
+    return data_[$ idx];
+}
+
+/// @ignore
+function __catspeak_instr_set_is__() {
+    var data_ = data();
+    var value_ = value();
+    data_[$ idx] = value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_is_add__() {
+    var data_ = data();
+    var value_ = value();
+    data_[$ idx] += value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_is_sub__() {
+    var data_ = data();
+    var value_ = value();
+    data_[$ idx] -= value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_is_mul__() {
+    var data_ = data();
+    var value_ = value();
+    data_[$ idx] *= value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_is_div__() {
+    var data_ = data();
+    var value_ = value();
+    data_[$ idx] /= value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_get_in__() {
+    var data_ = data();
+    return data_[idx];
+}
+
+/// @ignore
+function __catspeak_instr_set_in__() {
+    var data_ = data();
+    var value_ = value();
+    data_[@ idx] = value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_in_add__() {
+    var data_ = data();
+    var value_ = value();
+    data_[@ idx] += value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_in_sub__() {
+    var data_ = data();
+    var value_ = value();
+    data_[@ idx] -= value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_in_mul__() {
+    var data_ = data();
+    var value_ = value();
+    data_[@ idx] *= value_;
+    return value_;
+}
+
+/// @ignore
+function __catspeak_instr_set_in_div__() {
+    var data_ = data();
+    var value_ = value();
+    data_[@ idx] /= value_;
+    return value_;
+}
+
+/// @ignore
 function __catspeak_instr_get_i__() {
     var data_ = data();
     var idx_ = idx();
@@ -1538,7 +1694,7 @@ function __catspeak_instr_set_i__() {
     var idx_ = idx();
     var value_ = value();
     if (is_array(data_)) {
-        data_[idx_] = value_;
+        data_[@ idx_] = value_;
     } else {
         data_[$ idx_] = value_;
     }
@@ -1551,7 +1707,7 @@ function __catspeak_instr_set_i_add__() {
     var idx_ = idx();
     var value_ = value();
     if (is_array(data_)) {
-        data_[idx_] += value_;
+        data_[@ idx_] += value_;
     } else {
         data_[$ idx_] += value_;
     }
@@ -1564,7 +1720,7 @@ function __catspeak_instr_set_i_sub__() {
     var idx_ = idx();
     var value_ = value();
     if (is_array(data_)) {
-        data_[idx_] -= value_;
+        data_[@ idx_] -= value_;
     } else {
         data_[$ idx_] -= value_;
     }
@@ -1577,7 +1733,7 @@ function __catspeak_instr_set_i_mul__() {
     var idx_ = idx();
     var value_ = value();
     if (is_array(data_)) {
-        data_[idx_] *= value_;
+        data_[@ idx_] *= value_;
     } else {
         data_[$ idx_] *= value_;
     }
@@ -1590,7 +1746,7 @@ function __catspeak_instr_set_i_div__() {
     var idx_ = idx();
     var value_ = value();
     if (is_array(data_)) {
-        data_[idx_] /= value_;
+        data_[@ idx_] /= value_;
     } else {
         data_[$ idx_] /= value_;
     }

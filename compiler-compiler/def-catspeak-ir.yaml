@@ -281,7 +281,7 @@ instr:
     name-short: get_is
     desc: "get a value from a collection at the given string index"
     opcode: 0x30
-    arg:
+    args:
       - name: idx
         desc: "the index of the collection"
         type: string
