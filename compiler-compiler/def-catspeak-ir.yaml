@@ -97,6 +97,21 @@ instr-opcode-type: u8 #< The type used for opcodes.
 instr-dbg-type: u32   #< The type used for debug info.
 instr:
 
+  - name: "call"
+    name-short: call
+    desc: "call a function expression"
+    opcode: 0x34
+    args:
+      - name: n
+        desc: "the number of arguments in this call"
+        type: u16
+    stackargs:
+      - name: callee
+        desc: "the function to call"
+      - name: args
+        desc: "the arguments to call `callee` with"
+        many: n
+
   - name: "array"
     name-short: arr
     desc: "construct an array"

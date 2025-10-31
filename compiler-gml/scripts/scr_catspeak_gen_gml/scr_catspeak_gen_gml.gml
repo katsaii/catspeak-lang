@@ -485,6 +485,31 @@ function CatspeakGenGML() constructor {
     // automatically generated code generation functions (here be dragons)
 
     /// @ignore
+    static handleInstrCall = function (dbg, n) {
+        var exprStack_ = exprStack;
+        var args__n = n;
+        var args__nGot = ds_stack_size(exprStack_);
+        if (args__nGot < args__n) {
+            __catspeak_error(__catspeak_cat(
+                "not enough stack space for 'args' argument of 'call' instruction (expected ",
+                args__n, ", got ", args__nGot, ")"
+            ));
+        }
+        var args = array_create(args__n);
+        for (var i = args__n - 1; i >= 0; i -= 1) {
+            args[@ i] = ds_stack_pop(exprStack_);
+        }
+        var callee = ds_stack_pop(exprStack_);
+        __catspeak_assert(callee != undefined,
+            "not enough stack space for 'callee' argument of 'call' instruction"
+        );
+        var expr;
+        expr = __genExprCall(n, callee, args);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
     static handleInstrArray = function (dbg, n) {
         var exprStack_ = exprStack;
         var values__n = n;

@@ -94,6 +94,13 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrCall = function (dbg, n) {
+        out += "\n  call";
+        out += "  " + string(n);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrArray = function (dbg, n) {
         out += "\n  arr";
         out += "  " + string(n);

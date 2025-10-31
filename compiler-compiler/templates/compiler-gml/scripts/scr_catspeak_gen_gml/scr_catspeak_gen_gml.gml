@@ -418,11 +418,10 @@ function CatspeakGenGML() constructor {
         if (n == nStatic) {
             return method(closure_, __genExprArray_vers[n]);
         } else {
-            // encode values in reverse for (maybe) faster iteration
             var moreN = n - __genExprArray_versN + 1;
             var more = array_create(moreN);
             for (var i = 0; i < moreN; i += 1) {
-                more[@ i] = values[n - 1 - i];
+                more[@ i] = values[__genExprArray_versN + i];
             }
             closure_.moreN = moreN;
             closure_.more = more;
@@ -470,6 +469,14 @@ function CatspeakGenGML() constructor {
             closure_.more = more;
             return method(closure_, __catspeak_instr_obj__);
         }
+    };
+
+    /// @ignore
+    static __genExprCall = function (n, callee, args) {
+        var closure_ = { callee : callee };
+        closure_.argsN = n;
+        closure_.args = args;
+        return method(closure_, __catspeak_instr_call__);
     };
 
     // automatically generated code generation functions (here be dragons)
@@ -587,11 +594,14 @@ function __catspeak_dbg__() {
 
 /// @ignore
 function __catspeak_dbg_trace__() {
+    var ctx_ = ctx;
     var result;
+    var dbgPrev = ctx_.dbg;
     try {
         result = body();
     } catch (ex) {
-        catspeak_location_trace(ex, ctx.dbg, ctx.meta.path);
+        catspeak_location_trace(ex, ctx_.dbg, ctx_.meta.path);
+        ctx_.dbg = dbgPrev; // recover debug info for parent call expression
         throw ex;
     }
     return result;
@@ -1001,7 +1011,8 @@ function __catspeak_instr_arr__() {
     var a5 = _5(); var a6 = _6(); var a7 = _7(); var a8 = _8();
     var arr = [a1, a2, a3, a4, a5, a6, a7, a8, _9()];
     var more_ = more;
-    for (var i = moreN - 1; i >= 0; i -= 1) {
+    var moreN_ = moreN;
+    for (var i = 0; i < moreN_; i += 1) {
         var value = more_[i];
         arr[@ 10 + i] = value();
     }
@@ -1068,6 +1079,21 @@ function __catspeak_instr_obj__() {
         obj[$ key_] = value();
     }
     return obj;
+}
+
+/// @ignore
+function __catspeak_instr_call__() {
+    static argsComplete = [];
+    var callee_ = callee();
+    // build args array
+    var argsN_ = argsN;
+    var args_ = args;
+    array_resize(argsComplete, argsN_);
+    for (var i = 0; i < argsN_; i += 1) {
+        var arg = args_[i];
+        argsComplete[@ i] = arg();
+    }
+    return undefined; // bluh
 }
 
 // automatically generated instructions below (here be dragons)
