@@ -20,6 +20,8 @@ function CatspeakGenGML() constructor {
     /// @ignore
     hasDebug = false;
     /// @ignore
+    requiresScopes = false;
+    /// @ignore
     isAlive = false;
 
     /// Frees any dynamically allocated resources managed by this generator.
@@ -98,6 +100,12 @@ function CatspeakGenGML() constructor {
                 body : body,
             }, __catspeak_dbg_trace__);
         }
+        if (requiresScopes) {
+            body = method({
+                ctx : ctx,
+                body : body,
+            }, __catspeak_scopes_init__);
+        }
         var func;
         if (localsN > 0) {
             func = method({
@@ -111,6 +119,7 @@ function CatspeakGenGML() constructor {
         funcs[| idx] = func;
         localsN = 0;
         hasDebug = false;
+        requiresScopes = false;
     };
 
     /// @ignore
@@ -219,21 +228,23 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprGlobal = function () {
-        return method({ ctx : ctx }, __catspeak_glob__);
+        return method({ ctx : ctx }, __catspeak_instr_glob__);
     };
 
     /// @ignore
     static __genExprSelf = function () {
+        requiresScopes = true;
         return method({
             ctx : ctx,
-        }, __catspeak_self__);
+        }, __catspeak_instr_self__);
     };
 
     /// @ignore
     static __genExprOther = function () {
+        requiresScopes = true;
         return method({
             ctx : ctx,
-        }, __catspeak_othr__);
+        }, __catspeak_instr_othr__);
     };
 
     /// @ignore
@@ -387,6 +398,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprLoopWith = function (cond, body) {
+        requiresScopes = true;
         return method({
             cond : cond,
             body : body,
@@ -495,6 +507,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprCall = function (n, callee, args) {
+        requiresScopes = true;
         var closure_ = { callee : callee };
         if (n < __genExprCall_versN) {
             for (var i = 0; i < n; i += 1) {
@@ -609,6 +622,23 @@ function __catspeak_function__() {
 }
 
 /// @ignore
+function __catspeak_scopes_init__() {
+    var scopes = __catspeak_scope_get();
+    var oldSelf = scopes.self_;
+    var oldOther = scopes.other_;
+    var result;
+    try {
+        scopes.self_ ??= ctx.globals;
+        scopes.other_ ??= ctx.globals;
+        result = body();
+    } finally {
+        scopes.self_ = oldSelf;
+        scopes.other_ = oldOther;
+    }
+    return result;
+}
+
+/// @ignore
 function __catspeak_dbg__() {
     var ctx_ = ctx;
     var dbgPrev = ctx_.dbg;
@@ -709,17 +739,13 @@ function __catspeak_instr_set_l_div__() {
 }
 
 /// @ignore
-function __catspeak_glob__() { return ctx.globals }
+function __catspeak_instr_glob__() { return ctx.globals }
 
-/// TODO :: optimise self access by not having `_ ?? ctx.globals`
-///
 /// @ignore
-function __catspeak_self__() { return __catspeak_scope_get().self_ ?? ctx.globals }
+function __catspeak_instr_self__() { return __catspeak_scope_get().self_ }
 
-/// TODO :: optimise other access by not having `_ ?? ctx.globals`
-///
 /// @ignore
-function __catspeak_othr__() { return __catspeak_scope_get().other_ ?? ctx.globals }
+function __catspeak_instr_othr__() { return __catspeak_scope_get().other_ }
 
 /// @ignore
 function __catspeak_instr_get_is__() {
@@ -1115,7 +1141,7 @@ function __catspeak_instr_obj__() {
 
 /// @ignore
 function __catspeak_script_execute_ext_fixed(callee_, args_) {
-    static variants = undefinedl;
+    static variants = undefined;
     if (variants == undefined) {
         variants = [
             function (callee_, args_) { return callee_() },

@@ -585,7 +585,23 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (peeked == CatspeakToken.PAREN_LEFT) {
-                __catspeak_error_unimplemented("function calls");
+                var dbg = lexer.getLocationStart();
+                lexer.next();
+                var n = 0;
+                peeked = lexer.peek();
+                var expectExpr = true;
+                while (expectExpr && peeked != CatspeakToken.PAREN_RIGHT) {
+                    __parseExpression();
+                    n += 1;
+                    peeked = lexer.peek();
+                    expectExpr = peeked == CatspeakToken.COMMA;
+                    if (expectExpr) {
+                        lexer.next();
+                        peeked = lexer.peek();
+                    }
+                }
+                __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after call expression");
+                ir.emitCall(n, dbg);
             } else if (peeked == CatspeakToken.BOX_LEFT) {
                 var dbg = lexer.getLocationStart();
                 lexer.next();

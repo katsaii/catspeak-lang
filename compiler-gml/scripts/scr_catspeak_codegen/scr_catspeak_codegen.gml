@@ -1540,7 +1540,7 @@ function __catspeak_expr_op_2__() {
     return op(lhs_, rhs_);
 }
 
-function __catspeak_script_execute_ext_fixed(callee_, args_) {
+function __catspeak_script_execute_ext_fixed_v3(callee_, args_) {
     // LTS has issues with calling functions that have many args, so fix that here
     var n = array_length(args_);
     switch (n) {
@@ -1610,7 +1610,7 @@ function __catspeak_expr_call_method__() {
     __CATSPEAK_BEGIN_SELF = catspeak_get_self(callee_) ?? collection_;
     with (method_get_self(callee_) ?? collection_) {
         var calleeIdx = method_get_index(callee_);
-        result = __catspeak_script_execute_ext_fixed(calleeIdx, args_);
+        result = __catspeak_script_execute_ext_fixed_v3(calleeIdx, args_);
         break;
     }
     __CATSPEAK_END_SELF;
@@ -1643,7 +1643,7 @@ function __catspeak_expr_call__() {
         (shared_.self_ ?? (global.__catspeakGmlSelf ?? shared_.globals))
     ) {
         var calleeIdx = method_get_index(callee_);
-        return __catspeak_script_execute_ext_fixed(calleeIdx, args_);
+        return __catspeak_script_execute_ext_fixed_v3(calleeIdx, args_);
     }
 }
 
