@@ -7,26 +7,21 @@
 
 /// @ignore
 function __catspeak_scope_get() {
-    static scopes = { self_ : { }, other_ : { } };
+    static scopes = { self_ : undefined, other_ : undefined };
     return scopes;
 }
 
 /// @ignore
-function __catspeak_scope_push(self_) {
+function __catspeak_scope_get_bound(boundSelf) {
+    static methodScopes = { other_ : undefined, self_ : undefined };
     var scopes = __catspeak_scope_get();
-    var otherOther = scopes.other_;
-    scopes.other_ = scopes.self_;
-    scopes.self_ = self_;
-    return otherOther;
-}
-
-/// @ignore
-function __catspeak_scope_pop(otherOther) {
-    var scopes = __catspeak_scope_get();
-    var selfSelf = scopes.self_;
-    scopes.self_ = scopes.other_;
-    scopes.other_ = otherOther;
-    return selfSelf;
+    if (boundSelf == undefined) {
+        return scopes;
+    } else {
+        methodScopes.self_ = boundSelf;
+        methodScopes.other_ = scopes.self_;
+        return methodScopes;
+    }
 }
 
 /// 0b00000000000011111111111111111111

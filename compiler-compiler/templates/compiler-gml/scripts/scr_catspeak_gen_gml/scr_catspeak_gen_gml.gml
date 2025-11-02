@@ -224,12 +224,16 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprSelf = function () {
-        return method(__catspeak_scope_get(), __catspeak_self__);
+        return method({
+            ctx : ctx,
+        }, __catspeak_self__);
     };
 
     /// @ignore
     static __genExprOther = function () {
-        return method(__catspeak_scope_get(), __catspeak_othr__);
+        return method({
+            ctx : ctx,
+        }, __catspeak_othr__);
     };
 
     /// @ignore
@@ -472,11 +476,36 @@ function CatspeakGenGML() constructor {
     };
 
     /// @ignore
+    static __genExprCall_vers = undefined;
+    static __genExprCall_versN = 0;
+    if (__genExprCall_vers == undefined) {
+        __genExprCall_vers = [
+            __catspeak_instr_call_0__,
+            __catspeak_instr_call_1__,
+            __catspeak_instr_call_2__,
+            __catspeak_instr_call_3__,
+            __catspeak_instr_call_4__,
+            __catspeak_instr_call_5__,
+            __catspeak_instr_call_6__,
+            __catspeak_instr_call_7__,
+            __catspeak_instr_call_8__,
+        ];
+        __genExprCall_versN = array_length(__genExprCall_vers);
+    }
+
+    /// @ignore
     static __genExprCall = function (n, callee, args) {
         var closure_ = { callee : callee };
-        closure_.argsN = n;
-        closure_.args = args;
-        return method(closure_, __catspeak_instr_call__);
+        if (n < __genExprCall_versN) {
+            for (var i = 0; i < n; i += 1) {
+                closure_[$ "_" + string(i + 1)] = args[i];
+            }
+            return method(closure_, __genExprCall_vers[n]);
+        } else {
+            closure_.argsN = n;
+            closure_.args = args;
+            return method(closure_, __catspeak_instr_call__);
+        }
     };
 
     // automatically generated code generation functions (here be dragons)
@@ -574,8 +603,7 @@ function __catspeak_function__() {
         result = body();
     } finally {
         ctx_.stackN -= n_;
-        // NOTE :: enable this in the future if it matters
-        //array_resize(ctx_.stack, ctx_.stackN);
+        array_resize(ctx_.stack, ctx_.stackN);
     }
     return result;
 }
@@ -683,11 +711,15 @@ function __catspeak_instr_set_l_div__() {
 /// @ignore
 function __catspeak_glob__() { return ctx.globals }
 
+/// TODO :: optimise self access by not having `_ ?? ctx.globals`
+///
 /// @ignore
-function __catspeak_self__() { return self_ }
+function __catspeak_self__() { return __catspeak_scope_get().self_ ?? ctx.globals }
 
+/// TODO :: optimise other access by not having `_ ?? ctx.globals`
+///
 /// @ignore
-function __catspeak_othr__() { return other_ }
+function __catspeak_othr__() { return __catspeak_scope_get().other_ ?? ctx.globals }
 
 /// @ignore
 function __catspeak_instr_get_is__() {
@@ -933,17 +965,17 @@ function __catspeak_instr_loop_w__() {
     var cond_ = cond();
     var body_ = body;
     var scopes = __catspeak_scope_get();
-    var otherOther = scopes.other_;
-    var other_ = scopes.self_;
+    var oldOther = scopes.other_;
+    var oldSelf = scopes.self_;
     try {
-        scopes.other_ = self;
+        scopes.other_ = scopes.self_;
         with (cond_) {
             scopes.self_ = self;
             body_();
         }
     } finally {
-        scopes.other_ = otherOther;
-        scopes.self_ = other_;
+        scopes.other_ = oldOther;
+        scopes.self_ = oldSelf;
     }
 }
 
@@ -1082,6 +1114,147 @@ function __catspeak_instr_obj__() {
 }
 
 /// @ignore
+function __catspeak_script_execute_ext_fixed(callee_, args_) {
+    static variants = undefinedl;
+    if (variants == undefined) {
+        variants = [
+            function (callee_, args_) { return callee_() },
+            function (callee_, args_) { return callee_(args_[0]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14]) },
+            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14], args_[15]) },
+            script_execute_ext
+        ];
+    }
+    // LTS has issues with calling functions that have many args, so fix that here
+    var variant = variants[min(17, array_length(args_))];
+    return variant(callee_, args_);
+}
+
+/// @ignore
+function __catspeak_instr_call_0__() {
+    var callee_ = callee();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_();
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_1__() {
+    var callee_ = callee();
+    var a1 = _1();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_2__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_3__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2(); var a3 = _3();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2, a3);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_4__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2, a3, a4);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_5__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2, a3, a4, a5);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_6__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2, a3, a4, a5, a6);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_7__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6(); var a7 = _7();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2, a3, a4, a5, a6, a7);
+    }
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_8__() {
+    var callee_ = callee();
+    var a1 = _1(); var a2 = _2(); var a3 = _3(); var a4 = _4();
+    var a5 = _5(); var a6 = _6(); var a7 = _7(); var a8 = _8();
+    var scopes = __catspeak_scope_get();
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        result = callee_(a1, a2, a3, a4, a5, a6, a7, a8);
+    }
+    return result;
+}
+
+/// @ignore
 function __catspeak_instr_call__() {
     static argsComplete = [];
     var callee_ = callee();
@@ -1093,7 +1266,14 @@ function __catspeak_instr_call__() {
         var arg = args_[i];
         argsComplete[@ i] = arg();
     }
-    return undefined; // bluh
+    var scopes = __catspeak_scope_get_bound(method_get_self(callee_));
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        var calleeUnbound = method_get_index(callee_);
+        result = __catspeak_script_execute_ext_fixed(calleeUnbound, args_);
+    }
+    array_resize(argsComplete, 0);
+    return result;
 }
 
 // automatically generated instructions below (here be dragons)
