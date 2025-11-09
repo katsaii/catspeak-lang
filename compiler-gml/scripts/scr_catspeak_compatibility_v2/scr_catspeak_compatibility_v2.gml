@@ -94,7 +94,7 @@ function catspeak_add_constant() {
 ///
 /// @return {Struct.Future}
 function catspeak_execute_v2(scr, args) {
-    __catspeak_error_v3_deprecated("catspeak_execute");
+    __catspeak_error_v3_deprecated("catspeak_execute_v3");
     static noArgs = [];
     var args_ = args ?? noArgs;
     var argo = 0;

@@ -49,6 +49,5 @@ test_add(function () : TestCodegenGMLResult("codegen-gml-value-block-2",
 test_add(function () : TestCodegenGML("codegen-gml-value-self",
     @'let a = self; a'
 ) constructor {
-    self.gmlFunc.setSelf(self);
-    assertEq(self, self.gmlFunc());
+    assertEq(self, catspeak_execute(self.gmlFunc));
 }, IgnorePlatform.WIN_YYC);

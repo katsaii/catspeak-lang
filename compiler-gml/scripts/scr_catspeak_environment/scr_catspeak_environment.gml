@@ -19,7 +19,7 @@
 //!   var main = Catspeak.compile(ir);
 //!
 //!   // initialise the Catspeak script by calling its main entry point
-//!   catspeak_execute(main);
+//!   catspeak_execute_v3(main);
 //!
 //!   // grab the counter function from the script
 //!   var counter = catspeak_globals(main).counter;
@@ -931,49 +931,6 @@ function CatspeakEnvironment() constructor {
     static removeFunction = __removeInterface;
 }
 
-/// Because Catspeak is sandboxed, care must be taken to not expose any
-/// unintentional exploits to modders with GML-specific knowledge. One
-/// exampe of an exploit is using the number `-5` to access all the
-/// internal global variables of a game:
-/// ```gml
-/// var globalBypass = -5;
-/// show_message(globalBypass.secret);
-/// ```
-///
-/// Catspeak avoids these exploits by requiring that all special values
-/// be converted to their struct counterpart; that is, Catspeak does not
-/// coerce numbers to these special types implicitly.
-///
-/// Use this function to convert special GML constants, such as `self`,
-/// `global`, or instances into their struct counterparts. Will return
-/// `undefined` if there does not exist a valid conversion.
-///
-/// @param {Any} gmlSpecial
-///   Any special GML value to convert into a Catspeak-compatible struct.
-///   E.g. `global` or an instance ID.
-///
-/// @return {Struct}
-function catspeak_special_to_struct(gmlSpecial) {
-    if (is_struct(gmlSpecial)) {
-        return gmlSpecial;
-    }
-    if (gmlSpecial == global) {
-        var getGlobal = method(global, function () { return self });
-        return getGlobal();
-    }
-    if (__catspeak_is_withable(gmlSpecial)) {
-        with (gmlSpecial) {
-            // magic to convert an id into its struct version
-            return self;
-        }
-    }
-    __catspeak_error_v3_silent(
-        "could not convert special GML value '", gmlSpecial, "' ",
-        "into a valid Catspeak representation"
-    );
-    return undefined;
-}
-
 /// The default global Catspeak environment. Mostly exists for UX reasons.
 ///
 /// Unless you need to have multiple instances of Catspeak with different
@@ -983,7 +940,7 @@ function catspeak_special_to_struct(gmlSpecial) {
 /// @return {Struct.CatspeakEnvironment}
 #macro Catspeak global.__catspeak__
 
-/// Simple wrapper over `catspeak_execute_ext` which infers the `self` and
+/// Simple wrapper over `catspeak_execute_ext_v3` which infers the `self` and
 /// `other` context from the current callsite.
 ///
 /// @remark
@@ -1001,12 +958,12 @@ function catspeak_special_to_struct(gmlSpecial) {
 ///
 /// @return {Any}
 ///   The result of evaluating the `callee` function.
-function catspeak_execute(callee) {
+function catspeak_execute_v3(callee) {
     static args = [];
     for (var i = argument_count; i >= 1; i -= 1) {
         args[@ i - 1] = argument[i];
     }
-    return catspeak_execute_ext(callee, self, args, 0, argument_count - 1);
+    return catspeak_execute_ext_v3(callee, self, args, 0, argument_count - 1);
 }
 
 #macro __CATSPEAK_BEGIN_SELF \
@@ -1050,7 +1007,7 @@ function catspeak_execute(callee) {
 ///
 /// @return {Any}
 ///   The result of evaluating the `callee` function.
-function catspeak_execute_ext(
+function catspeak_execute_ext_v3(
     callee,
     self_,
     args = undefined,
@@ -1184,7 +1141,7 @@ function __catspeak_function_method__() {
     for (var i = argument_count; i >= 0; i -= 1) {
         args[@ i] = argument[i];
     }
-    return catspeak_execute_ext(callee, self_, args, 0, argument_count);
+    return catspeak_execute_ext_v3(callee, self_, args, 0, argument_count);
 }
 
 /// @ignore

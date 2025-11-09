@@ -76,6 +76,7 @@ function CatspeakGenGML() constructor {
         funcs = ds_list_create();
         ctx = {
             globals : globals ?? { },
+            binding : undefined,
             stack : [],
             stackN : 0, // current stack size
             callee_ : undefined,
@@ -95,27 +96,26 @@ function CatspeakGenGML() constructor {
             "unbalanced stack! function is missing body"
         );
         if (hasDebug) {
-            body = method({
-                ctx : ctx,
+            body = __genExpr({
                 body : body,
             }, __catspeak_dbg_trace__);
         }
         if (requiresScopes) {
-            body = method({
-                ctx : ctx,
+            body = __genExpr({
                 body : body,
             }, __catspeak_scopes_init__);
         }
         var func;
         if (localsN > 0) {
-            func = method({
-                ctx : ctx,
+            func = __genExpr({
                 body : body,
                 n : localsN,
             }, __catspeak_function__);
         } else {
             func = body;
         }
+        // ensure that Catspeak functions have a ctx field on their bound self
+        
         funcs[| idx] = func;
         localsN = 0;
         hasDebug = false;
@@ -129,8 +129,7 @@ function CatspeakGenGML() constructor {
         } else {
             // insert instruction to track debug info
             hasDebug = true;
-            return method({
-                ctx : ctx,
+            return __genExpr({
                 dbg : dbg,
                 body : expr,
             }, __catspeak_dbg__);
@@ -139,14 +138,14 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExpr = function (self_, func_) {
+        self_ ??= { };
         self_.ctx = ctx;
         return method(self_, func_);
     };
 
     /// @ignore
     static __genExprClosure = function (idx) {
-        return method({
-            ctx : ctx,
+        return __genExpr({
             value : funcs[| idx],
         }, __catspeak_instr_fclo_simple__);
     };
@@ -178,7 +177,7 @@ function CatspeakGenGML() constructor {
             closure_[$ "_" + string(i + 1)] = stmts[i];
         }
         if (n == nStatic) {
-            return method(closure_, __genExprSequence_vers[n]);
+            return __genExpr(closure_, __genExprSequence_vers[n]);
         } else {
             // encode statments in reverse for (maybe) faster iteration
             var moreN = n - __genExprSequence_versN;
@@ -189,7 +188,7 @@ function CatspeakGenGML() constructor {
             closure_.moreN = moreN;
             closure_.more = more;
             closure_.result = stmts[n - 1];
-            return method(closure_, __catspeak_instr_seq__);
+            return __genExpr(closure_, __catspeak_instr_seq__);
         }
     };
 
@@ -199,8 +198,7 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static __genExprGetLocal = function (idx) {
         localsN = max(localsN, idx + 1);
-        return method({
-            ctx : ctx,
+        return __genExpr({
             off : __localIdx2Offset(idx), // relative to the top of the stack
         }, __catspeak_instr_get_l__);
     };
@@ -219,8 +217,7 @@ function CatspeakGenGML() constructor {
             __catspeak_error_bug();
             break;
         }
-        return method({
-            ctx : ctx,
+        return __genExpr({
             value : value,
             off : __localIdx2Offset(idx),
         }, func);
@@ -228,28 +225,24 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprGlobal = function () {
-        return method({ ctx : ctx }, __catspeak_instr_glob__);
+        return __genExpr(undefined, __catspeak_instr_glob__);
     };
 
     /// @ignore
     static __genExprSelf = function () {
         requiresScopes = true;
-        return method({
-            ctx : ctx,
-        }, __catspeak_instr_self__);
+        return __genExpr(undefined, __catspeak_instr_self__);
     };
 
     /// @ignore
     static __genExprOther = function () {
         requiresScopes = true;
-        return method({
-            ctx : ctx,
-        }, __catspeak_instr_othr__);
+        return __genExpr(undefined, __catspeak_instr_othr__);
     };
 
     /// @ignore
     static __genExprGetIndexString = function (idx, data) {
-        return method({
+        return __genExpr({
             data : data,
             idx : idx,
         }, __catspeak_instr_get_is__);
@@ -268,7 +261,7 @@ function CatspeakGenGML() constructor {
             __catspeak_error_bug();
             break;
         }
-        return method({
+        return __genExpr({
             value : value,
             data : data,
             idx : idx,
@@ -277,7 +270,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprGetIndexNumber = function (idx, data) {
-        return method({
+        return __genExpr({
             data : data,
             idx : idx,
         }, __catspeak_instr_get_in__);
@@ -296,7 +289,7 @@ function CatspeakGenGML() constructor {
             __catspeak_error_bug();
             break;
         }
-        return method({
+        return __genExpr({
             value : value,
             data : data,
             idx : idx,
@@ -305,7 +298,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprGetIndex = function (data, idx) {
-        return method({
+        return __genExpr({
             data : data,
             idx : idx,
         }, __catspeak_instr_get_i__);
@@ -324,7 +317,7 @@ function CatspeakGenGML() constructor {
             __catspeak_error_bug();
             break;
         }
-        return method({
+        return __genExpr({
             value : value,
             data : data,
             idx : idx,
@@ -333,7 +326,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprThrow = function (value) {
-        return method({
+        return __genExpr({
             value : value,
         }, __catspeak_instr_thrw__);
     };
@@ -341,8 +334,7 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static __genExprCatch = function (idx, eager, lazy) {
         localsN = max(localsN, idx + 1);
-        return method({
-            ctx : ctx,
+        return __genExpr({
             off : __localIdx2Offset(idx),
             eager : eager,
             lazy : lazy,
@@ -356,7 +348,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprUnwind = function (label, value) {
-        return method({
+        return __genExpr({
             magicBox : global.__catspeakSharedUnwindBox,
             label : label,
             value : value,
@@ -365,7 +357,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprUnwindLanding = function (label, body) {
-        return method({
+        return __genExpr({
             magicBox : global.__catspeakSharedUnwindBox,
             label : label,
             body : body,
@@ -374,14 +366,14 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprLoopInf = function (body) {
-        return method({
+        return __genExpr({
             body : body,
         }, __catspeak_instr_loop_inf__);
     };
 
     /// @ignore
     static __genExprLoop = function (cond, body) {
-        return method({
+        return __genExpr({
             cond : cond,
             body : body,
         }, __catspeak_instr_loop__);
@@ -389,7 +381,7 @@ function CatspeakGenGML() constructor {
 
     /// @ignore
     static __genExprLoopStep = function (cond, step, body) {
-        return method({
+        return __genExpr({
             cond : cond,
             step : step,
             body : body,
@@ -399,7 +391,7 @@ function CatspeakGenGML() constructor {
     /// @ignore
     static __genExprLoopWith = function (cond, body) {
         requiresScopes = true;
-        return method({
+        return __genExpr({
             cond : cond,
             body : body,
         }, __catspeak_instr_loop_w__);
@@ -432,7 +424,7 @@ function CatspeakGenGML() constructor {
             closure_[$ "_" + string(i + 1)] = values[i];
         }
         if (n == nStatic) {
-            return method(closure_, __genExprArray_vers[n]);
+            return __genExpr(closure_, __genExprArray_vers[n]);
         } else {
             var moreN = n - __genExprArray_versN + 1;
             var more = array_create(moreN);
@@ -441,7 +433,7 @@ function CatspeakGenGML() constructor {
             }
             closure_.moreN = moreN;
             closure_.more = more;
-            return method(closure_, __catspeak_instr_arr__);
+            return __genExpr(closure_, __catspeak_instr_arr__);
         }
     };
 
@@ -472,7 +464,7 @@ function CatspeakGenGML() constructor {
             closure_[$ "_v" + string(i + 1)] = values[i * 2 + 1];
         }
         if (n == nStatic) {
-            return method(closure_, __genExprStruct_vers[n]);
+            return __genExpr(closure_, __genExprStruct_vers[n]);
         } else {
             // encode values in reverse for (maybe) faster iteration
             var moreN = n - __genExprStruct_versN + 1;
@@ -483,7 +475,7 @@ function CatspeakGenGML() constructor {
             }
             closure_.moreN = moreN;
             closure_.more = more;
-            return method(closure_, __catspeak_instr_obj__);
+            return __genExpr(closure_, __catspeak_instr_obj__);
         }
     };
 
@@ -513,11 +505,11 @@ function CatspeakGenGML() constructor {
             for (var i = 0; i < n; i += 1) {
                 closure_[$ "_" + string(i + 1)] = args[i];
             }
-            return method(closure_, __genExprCall_vers[n]);
+            return __genExpr(closure_, __genExprCall_vers[n]);
         } else {
             closure_.argsN = n;
             closure_.args = args;
-            return method(closure_, __catspeak_instr_call__);
+            return __genExpr(closure_, __catspeak_instr_call__);
         }
     };
 
@@ -562,7 +554,7 @@ function CatspeakGenGML() constructor {
             {{- " && " if not loop.last else "" -}}
 {%-   endfor -%}
         ) {
-            expr = method({
+            expr = __genExpr({
 {%    for arg in InstrArgItem.enum(instr.ir) %}
 {%     if arg.name not in inlined.conditions %}
                 {{ arg.name }} : {{ arg.name }},
@@ -576,7 +568,7 @@ function CatspeakGenGML() constructor {
 {%   endfor %}
 {#   default case for instructions #}
 {%   if InstrInlineItem.has_default_impl(instr.ir) %}
-        expr = method({
+        expr = __genExpr({
 {%    for arg in InstrArgItem.enum(instr.ir) %}
             {{ arg.name }} : {{ arg.name }},
 {%    endfor %}

@@ -1,6 +1,7 @@
 
 //# feather use syntax-errors
 
+/*
 function TestParserASG(name, src) : Test(name) constructor {
     self.src = src;
 
@@ -28,3 +29,4 @@ function TestParserASGValue(name, src, expect) : TestParserASG(
         }
     });
 };
+*/

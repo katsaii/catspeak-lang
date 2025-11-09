@@ -2,19 +2,22 @@
 //# feather use syntax-errors
 
 function TestCodegenGML(name, src) : Test(name) constructor {
-    var buff = __catspeak_create_buffer_from_string(src);
-    var lexer = new CatspeakLexerV3(buff);
-    var builder = new CatspeakIRBuilder();
-    var parser = new CatspeakParserV3(lexer, builder);
-    var moreToParse;
+    var strBuff = catspeak_buffer_create_from_string(src);
+    var writer = new CatspeakCartWriter();
+    var parser = new CatspeakParser(writer, new CatspeakLexer(strBuff));
     do {
-        moreToParse = parser.update();
-    } until (!moreToParse);
-    buffer_delete(buff);
-    var compiler = new CatspeakGMLCompiler(builder.get());
+        var keepParsing = parser.parseOnce() == undefined;
+    } until (!keepParsing);
+    writer.path = name;
+    var cart = writer.finalise();
+    buffer_delete(strBuff);
+    buffer_seek(cart, buffer_seek_start, 0);
+    var codegen = new CatspeakGenGML();
+    var reader = new CatspeakCartReader(cart, codegen);
     do {
-        self.gmlFunc = compiler.update();
-    } until (self.gmlFunc != undefined);
+        var keepReading = reader.readInstr();
+    } until (!keepReading);
+    gmlFunc = codegen.finalise();
 }
 
 function TestCodegenGMLResult(name, src, result) : TestCodegenGML(

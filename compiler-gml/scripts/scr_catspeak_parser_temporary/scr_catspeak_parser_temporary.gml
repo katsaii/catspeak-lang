@@ -1,18 +1,3 @@
-//! Responsible for the lexical analysis stage of the Catspeak compiler.
-//! This stage converts UTF8 encoded text from individual characters into
-//! discrete clusters of characters called [tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization).
-
-//# feather use syntax-errors
-
-//! Responsible for the syntax analysis stage of the Catspeak compiler.
-//!
-//! This stage uses `CatspeakIRBuilder` to create a hierarchical
-//! representation of your Catspeak programs, called an abstract syntax graph
-//! (or ASG for short). These graphs are encoded as a JSON object, making it
-//! possible for you to cache the result of parsing a mod to a file, instead
-//! of re-parsing each time the game loads.
-
-//# feather use syntax-errors
 
 /// Consumes tokens produced by a `CatspeakLexerV3`, transforming the program
 /// they represent into Catspeak IR. This Catspeak IR can be further compiled

@@ -69,6 +69,138 @@
 /// @return {Real}
 #macro CATSPEAK_TIMEOUT 1000
 
+/// Simple wrapper over `catspeak_execute_ext_v3` which infers the `self` and
+/// `other` context from the current callsite.
+///
+/// @remark
+///   Gets around a limitation in GML where the `self` and `other` of the
+///   callsite cannot be accessed from within bound methods. Use this
+///   function if you want the `self` of a called Catspeak function to be
+///   the same as the `self` of the callsite in GML land.
+///
+/// @param {Any} callee_
+///   The function to call. Can be a GML function, Catspeak function, or a
+///   function bound using `catspeak_method`.
+///
+/// @param {Any} ...
+///   The arguments to pass to this function.
+///
+/// @return {Any}
+///   The result of evaluating the `callee` function.
+function catspeak_execute(callee_) {
+    static args = [];
+    for (var i = argument_count; i >= 1; i -= 1) {
+        args[@ i - 1] = argument[i];
+    }
+    return catspeak_execute_ext(self, other, callee_, args, 0, argument_count - 1);
+}
+
+/// Executes a Catspeak-compatible function in the supplied `self` scope.
+///
+/// @remark
+///   Gets around a limitation in GML where the `self` and `other` of the
+///   callsite cannot be accessed from within bound methods. Use this
+///   function if you want the `self` of a called Catspeak function to be
+///   the same as the `self` of the callsite in GML land.
+///
+/// @param {Struct} self_
+///   The `self` context to use when calling this Catspeak function.
+///
+/// @param {Struct} other_
+///   The `other` context to use when calling this Catspeak function.
+///
+/// @param {Any} callee_
+///   The function to call. Can be a GML function, Catspeak function, or a
+///   function bound using `catspeak_method`.
+///
+/// @param {Array<Any>} [args]
+///   The argument list to call this function with. Defaults to no arguments.
+///
+/// @param {Real} [offset]
+///   The offset in the `args` array to begin reading arguments from. Defaults
+///   to 0.
+///
+/// @param {Real} [argc]
+///   The number of arguments to pass to the function call. Defaults to
+///   `array_length(args) - offset`.
+///
+/// @return {Any}
+///   The result of evaluating the `callee` function.
+function catspeak_execute_ext(
+    self_,
+    other_,
+    callee_,
+    args = undefined,
+    offset = 0,
+    argc = undefined
+) {
+    var scopes = __catspeak_scope_get();
+    var oldSelf = scopes.self_;
+    var oldOther = scopes.other_;
+    var result = undefined;
+    try {
+        scopes.self_ = catspeak_special_to_struct(self_);
+        scopes.other_ = catspeak_special_to_struct(other_);
+        var boundScopes = __catspeak_scope_get_bound(method_get_self(callee_));
+        with (boundScopes.other_) with (boundScopes.self_) {
+            var calleeUnbound = method_get_index(callee_);
+            if (args == undefined) {
+                result = script_execute(calleeUnbound);
+            } else {
+                argc ??= array_length(args) - offset;
+                result = script_execute_ext(calleeUnbound, args, offset, argc);
+            }
+        }
+    } finally {
+        scopes.self_ = oldSelf;
+        scopes.other_ = oldOther;
+    }
+    return result;
+}
+
+/// Because Catspeak is sandboxed, care must be taken to not expose any
+/// unintentional exploits to modders with GML-specific knowledge. One
+/// exampe of an exploit is using the number `-5` to access all the
+/// internal global variables of a game:
+/// ```gml
+/// var globalBypass = -5;
+/// show_message(globalBypass.secret);
+/// ```
+///
+/// Catspeak avoids these exploits by requiring that all special values
+/// be converted to their struct counterpart; that is, Catspeak does not
+/// coerce numbers to these special types implicitly.
+///
+/// Use this function to convert special GML constants, such as `self`,
+/// `global`, or instances into their struct counterparts. Will return
+/// `undefined` if there does not exist a valid conversion.
+///
+/// @param {Any} gmlSpecial
+///   Any special GML value to convert into a Catspeak-compatible struct.
+///   E.g. `global` or an instance ID.
+///
+/// @return {Struct}
+function catspeak_special_to_struct(gmlSpecial) {
+    if (gmlSpecial == undefined || is_struct(gmlSpecial)) {
+        return gmlSpecial;
+    }
+    if (gmlSpecial == global) {
+        var getGlobal = method(global, function () { return self });
+        return getGlobal();
+    }
+    if (__catspeak_is_withable(gmlSpecial)) {
+        with (gmlSpecial) {
+            // magic to convert an id into its struct version
+            return self;
+        }
+    }
+    __catspeak_error_silent(__catspeak_cat(
+        "could not convert special GML value '", gmlSpecial, "' ",
+        "into a valid Catspeak representation"
+    ));
+    return undefined;
+}
+
 function CatspeakCtx() constructor {
     parserType = undefined;
     codegenType = CatspeakCodegenGML;
@@ -385,7 +517,7 @@ function CatspeakModule(ctx_, buildArgs) constructor {
         var globals_ = globals;
         with (globals_) {
             with (globals_) {
-                result_ = catspeak_execute(entry_);
+                result_ = catspeak_execute_v3(entry_);
             }
         }
         entry = entry_;
