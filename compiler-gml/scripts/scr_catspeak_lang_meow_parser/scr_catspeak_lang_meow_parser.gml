@@ -344,8 +344,10 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
                     __expect(CatspeakToken.PAREN_LEFT, "expected opening '(' after 'fun' keyword");
                     var peeked = lexer.peek();
-                    while (peeked != CatspeakToken.PAREN_RIGHT && peeked != CatspeakToken.EOF) {
+                    var expectIdent = true;
+                    while (expectIdent && peeked != CatspeakToken.PAREN_RIGHT) {
                         // TODO function args
+                        expectIdent = false;
                         peeked = lexer.peek();
                     }
                     __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after function arguments");

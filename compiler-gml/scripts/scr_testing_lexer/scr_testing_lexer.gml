@@ -1,12 +1,12 @@
 
 //# feather use syntax-errors
 
-function TestLexerTokenStream(name, src) : Test(name) constructor {
+function TestLexerTokenStream(name, src, offset = undefined, length = undefined) : Test(name) constructor {
     self.src = src;
 
     static checkTokens = function () {
         var buff = __catspeak_create_buffer_from_string(src);
-        var lexer = new CatspeakLexerV3(buff);
+        var lexer = new CatspeakLexerV3(buff, offset, length);
         for (var i = 0; i < argument_count; i += 1) {
             var peeked = lexer.peek();
             var nexted = lexer.next();

@@ -512,8 +512,52 @@ function CatspeakForeignInterface() constructor {
     };
 }
 
+function CatspeakEnvironment() : CatspeakCtx() constructor {
+    /// Enables the shared global feature on this Catspeak environment,
+    /// forcing all Catspeak programs compiled after this point to share the
+    /// same global variable scope.
+    ///
+    /// Typically this should not be enabled, but it can be useful for REPL
+    /// (Read-Eval-Print-Loop) style command consoles, where variables persist
+    /// between commands.
+    ///
+    /// Returns the shared global struct if this feature is enabled, or
+    /// `undefined` if the feature is disabled.
+    ///
+    /// @param {Bool} [enabled]
+    ///   Whether to enable this feature. Defaults to `true`.
+    ///
+    /// @return {Struct}
+    static enableSharedGlobal = function (enabled = true) {
+        globals = enabled ? { } : undefined;
+        return globals;
+    };
+
+    /// Similar to `Catspeak.parse`, except a string is used instead of a buffer.
+    ///
+    /// @param {String} src
+    ///   The string containing Catspeak source code to parse.
+    ///
+    /// @param {String} [filepath]
+    ///   Associates this Catspeak source code with a filename.
+    ///
+    /// @return {Struct}
+    static parseString = parse;
+
+    /// Compiles Catspeak IR into a callable GML function.
+    ///
+    /// @deprecated {3.0.2}
+    ///   Use `Catspeak.compile` instead.
+    ///
+    /// @param {Struct} ir
+    ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
+    ///
+    /// @return {Function}
+    static compileGML = compile;
+}
+
 /// Encapsulates all common Catspeak features into a single, configurable box.
-function CatspeakEnvironment() constructor {
+function CatspeakEnvironment_() constructor {
     /// @ignore
     self.keywords = undefined;
     /// The foreign interface used by this Catspeak environment. This is where
@@ -951,7 +995,7 @@ function CatspeakEnvironment() constructor {
 ///
 /// @param {Any} callee
 ///   The function to call. Can be a GML function, Catspeak function, or a
-///   function bound using `catspeak_method`.
+///   function bound using `catspeak_method_v3`.
 ///
 /// @param {Any} ...
 ///   The arguments to pass to this function.
@@ -989,7 +1033,7 @@ function catspeak_execute_v3(callee) {
 ///
 /// @param {Any} callee
 ///   The function to call. Can be a GML function, Catspeak function, or a
-///   function bound using `catspeak_method`.
+///   function bound using `catspeak_method_v3`.
 ///
 /// @param {Struct} self_
 ///   The `self` context to use when calling this Catspeak function.
@@ -1038,7 +1082,7 @@ function catspeak_execute_ext_v3(
 ///
 /// @param {Any} callee
 ///   The function to get the global context of. Can be a GML function,
-///   Catspeak function, or a function bound using `catspeak_method`.
+///   Catspeak function, or a function bound using `catspeak_method_v3`.
 ///
 /// @return {Struct}
 function catspeak_globals_v3(callee) {
@@ -1064,10 +1108,10 @@ function catspeak_globals_v3(callee) {
 ///
 /// @param {Any} callee
 ///   The function to get the global context of. Can be a GML function,
-///   Catspeak function, or a function bound using `catspeak_method`.
+///   Catspeak function, or a function bound using `catspeak_method_v3`.
 ///
 /// @return {Any}
-function catspeak_method(self_, callee) {
+function catspeak_method_v3(self_, callee) {
     if (is_catspeak(callee)) {
         if (method_get_index(callee) == __catspeak_function_method__) {
             var methodData = method_get_self(callee);
@@ -1100,7 +1144,7 @@ function catspeak_method(self_, callee) {
 ///
 /// @param {Any} callee
 ///  The function to get the current global context of. Can be a GML function,
-///  Catspeak function, or a function bound using `catspeak_method`.
+///  Catspeak function, or a function bound using `catspeak_method_v3`.
 ///
 /// @return {Any}
 function catspeak_get_self(callee) {
@@ -1124,7 +1168,7 @@ function catspeak_get_self(callee) {
 ///
 /// @param {Any} callee
 ///  The function to get the current global context of. Can be a GML function,
-///  Catspeak function, or a function bound using `catspeak_method`.
+///  Catspeak function, or a function bound using `catspeak_method_v3`.
 ///
 /// @return {Any}
 function catspeak_get_index(callee) {

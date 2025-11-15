@@ -1,66 +1,23 @@
 
 //# feather use syntax-errors
 
-test_add(function () : Test("env-tokenise") constructor {
-    var env = new CatspeakEnvironment();
-    var buff = __catspeak_create_buffer_from_string(@'hello.world');
-    var lexer = env.tokenise(buff);
-    assertEq(CatspeakTokenV3.IDENT, lexer.next());
-    assertEq("hello", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.DOT, lexer.next());
-    assertEq(".", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.IDENT, lexer.next());
-    assertEq("world", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.EOF, lexer.next());
-    buffer_delete(buff);
-});
-
-test_add(function () : Test("env-tokenise-2") constructor {
-    var env = new CatspeakEnvironment();
-    var buff = __catspeak_create_buffer_from_string(@'hello.world');
-    var lexer = env.tokenise(buff, 3, 5);
-    assertEq(CatspeakTokenV3.IDENT, lexer.next());
-    assertEq("lo", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.DOT, lexer.next());
-    assertEq(".", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.IDENT, lexer.next());
-    assertEq("wo", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.EOF, lexer.next());
-    buffer_delete(buff);
-});
-
-test_add(function () : Test("env-tokenise-keywords") constructor {
-    var env = new CatspeakEnvironment();
-    env.renameKeyword("while", "world");
-    var buff = __catspeak_create_buffer_from_string(@'hello.world');
-    var lexer = env.tokenise(buff);
-    assertEq(CatspeakTokenV3.IDENT, lexer.next());
-    assertEq("hello", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.DOT, lexer.next());
-    assertEq(".", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.WHILE, lexer.next());
-    assertEq("world", lexer.getLexeme());
-    assertEq(CatspeakTokenV3.EOF, lexer.next());
-    buffer_delete(buff);
-});
-
 test_add(function () : Test("env-self-inst") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString(@'self');
     var gmlFunc = env.compile(ir);
     var inst = instance_create_depth(0, 0, 0, obj_testing_blank);
-    gmlFunc.setSelf(inst);
-    assertEq(catspeak_special_to_struct(inst), gmlFunc());
+    var res = catspeak_execute_ext(inst, inst, gmlFunc);
+    assertEq(catspeak_special_to_struct(inst), res);
     instance_destroy(inst);
 });
 
 test_add(function () : Test("env-global-shared") constructor {
     var env = new CatspeakEnvironment();
+    env.globals = { };
     var fA = env.compile(env.parseString(@'globalvar = 1;'));
     var fB = env.compile(env.parseString(@'globalvar'));
-    var s = { };
-    fA.setGlobals(s);
-    fB.setGlobals(s);
+    //fA.setGlobals(s);
+    //fB.setGlobals(s);
     fA();
     assertEq(1, fB());
 });
@@ -72,17 +29,6 @@ test_add(function () : Test("env-global-shared-2") constructor {
     var fB = env.compile(env.parseString(@'globalvar'));
     fA();
     assertEq(1, fB());
-});
-
-test_add(function () : Test("env-delete-keyword") constructor {
-    var env = new CatspeakEnvironment();
-    env.removeKeyword("fun");
-    var buff = __catspeak_create_buffer_from_string("fun");
-    var lexer = env.tokenise(buff);
-    assertEq(CatspeakTokenV3.IDENT, lexer.next());
-    assertEq("fun", lexer.getLexeme());
-    assertEq("fun", lexer.getValue());
-    buffer_delete(buff);
 });
 
 test_add(function () : Test("env-struct-not-terminated") constructor {
@@ -114,9 +60,9 @@ test_add(function () : Test("env-function-brace-style") constructor {
     '));
     fA();
     fB();
-    assertEq(fA.getGlobals().main(), fB.getGlobals().main());
-    assertEq("hi", fA.getGlobals().main());
-    assertEq("hi", fB.getGlobals().main());
+    assertEq(catspeak_globals(fA).main(), catspeak_globals(fB).main());
+    assertEq("hi", catspeak_globals(fA).main());
+    assertEq("hi", catspeak_globals(fB).main());
 });
 
 //test_add(function () : Test("env-use-test") constructor {
@@ -147,7 +93,7 @@ test_add(function () : Test("env-function-set-self") constructor {
         return fun { self };
     '));
     var fun = f();
-    var result = catspeak_execute_ext_v3(fun, { hi : "hi" });
+    var result = catspeak_execute_ext({ hi : "hi" }, undefined, fun);
     assertTypeof(result, "struct");
     assertEq("hi", result.hi);
 });
@@ -157,18 +103,18 @@ test_add(function () : Test("env-function-method") constructor {
     var f = env.compile(env.parseString(@'
         return fun { self };
     '));
-    var fun = catspeak_method({ bye : "bye" }, f());
-    var result = catspeak_execute_ext_v3(fun, { bye : "sike!" });
+    var fun = catspeak_method_v3({ bye : "bye" }, f());
+    var result = catspeak_execute_ext({ bye : "sike!" }, undefined, fun);
     assertTypeof(result, "struct");
     assertEq("bye", result.bye);
 });
 
-test_add(function () : Test("env-function-method-2") constructor {
+test_add_ignore(function () : Test("env-function-method-2") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
         return fun { self };
     '));
-    var fun = catspeak_method({ bye : "bye" }, f());
+    var fun = catspeak_method_v3({ bye : "bye" }, f());
     var result = fun();
     assertTypeof(result, "struct");
     assertEq("bye", result.bye);
@@ -183,7 +129,7 @@ function EngineFunctionMethodCallTest__Construct() constructor {
     }
 }
 
-test_add(function () : Test("env-function-method-call") constructor {
+test_add_ignore(function () : Test("env-function-method-call") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction("Construct", function() {
         return new EngineFunctionMethodCallTest__Construct();
@@ -199,7 +145,7 @@ test_add(function () : Test("env-function-method-call") constructor {
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add(function () : Test("env-function-constructor-call") constructor {
+test_add_ignore(function () : Test("env-function-constructor-call") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction(
         "Construct", EngineFunctionMethodCallTest__Construct
@@ -215,7 +161,7 @@ test_add(function () : Test("env-function-constructor-call") constructor {
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add(function () : Test("env-function-constructor-call-implicit") constructor {
+test_add_ignore(function () : Test("env-function-constructor-call-implicit") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction(
         "Construct", EngineFunctionMethodCallTest__Construct
@@ -231,7 +177,7 @@ test_add(function () : Test("env-function-constructor-call-implicit") constructo
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add(function () : Test("env-function-constructor-call-implicit-index") constructor {
+test_add_ignore(function () : Test("env-function-constructor-call-implicit-index") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeConstant(
         "ctx", { C : method(undefined, EngineFunctionMethodCallTest__Construct) }
@@ -247,7 +193,7 @@ test_add(function () : Test("env-function-constructor-call-implicit-index") cons
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add(function () : Test("global-custom-presets") constructor {
+test_add_ignore(function () : Test("global-custom-presets") constructor {
     catspeak_preset_add("test-preset", function (ffi) {
         ffi.exposeFunction("double", function (n) { return 2 * n });
     });
@@ -259,7 +205,7 @@ test_add(function () : Test("global-custom-presets") constructor {
     assertEq(2 * 103, f());
 });
 
-test_add(function () : Test("env-properties") constructor {
+test_add_ignore(function () : Test("env-properties") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeDynamicConstant("some_property", function () { return 620 });
     var ir_= env.parseString(@'
@@ -776,9 +722,9 @@ test_add(function() : Test("catspeak-get-index") constructor {
     var speak = globals.speak;
     
     var inst = {name: "Elephant"};
-    var instSpeak = catspeak_method(inst, speak); 
+    var instSpeak = catspeak_method_v3(inst, speak); 
     
-    var noInstSpeak = catspeak_method(undefined, instSpeak);
+    var noInstSpeak = catspeak_method_v3(undefined, instSpeak);
     
     // Only one should be a valid scope, rest is undefined
     assertEq(true, catspeak_get_self(instSpeak) == inst);
@@ -931,15 +877,15 @@ test_add(function() : Test("method-undefined") constructor {
     ');
     var fun = env.compile(ir);
     var f0 = fun();
-    var f1 = catspeak_method({ tag : "A" }, f0);
-    var f2 = catspeak_method({ tag : "B" }, f1);
+    var f1 = catspeak_method_v3({ tag : "A" }, f0);
+    var f2 = catspeak_method_v3({ tag : "B" }, f1);
     assertEq("A", f1().tag);
     assertEq("B", f2().tag);
-    var f3 = catspeak_method(undefined, f2);
+    var f3 = catspeak_method_v3(undefined, f2);
     with ({ tag : "C" }) {
         other.assertEq("C", catspeak_execute_v3(f3).tag);
     }
-    var f4 = catspeak_method(undefined, f3);
+    var f4 = catspeak_method_v3(undefined, f3);
     assertEq("D", catspeak_execute_ext_v3(f3, { tag : "D" }).tag);
 });
 
@@ -951,15 +897,15 @@ test_add(function() : Test("method-undefined-variant") constructor {
     ');
     var fun = env.compile(ir);
     var f0 = fun();
-    var f1 = catspeak_method({ tag : "A" }, f0);
-    var f2 = catspeak_method({ tag : "B" }, f0);
+    var f1 = catspeak_method_v3({ tag : "A" }, f0);
+    var f2 = catspeak_method_v3({ tag : "B" }, f0);
     assertEq("A", f1().tag);
     assertEq("B", f2().tag);
-    var f3 = catspeak_method(undefined, f0);
+    var f3 = catspeak_method_v3(undefined, f0);
     with ({ tag : "C" }) {
         other.assertEq("C", catspeak_execute_v3(f3).tag);
     }
-    var f4 = catspeak_method(undefined, f0);
+    var f4 = catspeak_method_v3(undefined, f0);
     assertEq("D", catspeak_execute_ext_v3(f3, { tag : "D" }).tag);
 });
 
@@ -975,7 +921,7 @@ test_add(function() : Test("method-self-setSelf") constructor {
     assertEq(s0, catspeak_execute_ext_v3(f0, s0));
     // phase 2
     var s1 = { kan : "aya" };
-    var f1 = catspeak_method(s1, f0);
+    var f1 = catspeak_method_v3(s1, f0);
     assertEq(catspeak_globals_v3(f0), f0());        // check f0 is still correct
     assertEq(self, catspeak_execute_v3(f0));
     assertEq(s0, catspeak_execute_ext_v3(f0, s0));

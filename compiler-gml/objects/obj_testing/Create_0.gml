@@ -10,7 +10,7 @@
 #macro TESTING_COL_FAIL #CC4E67
 #macro TESTING_COL_FATAL #FF0000
 
-
+/*
 var env = new CatspeakEnvironment();
 env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
 var f = env.compile(env.parseString(@'
@@ -21,6 +21,7 @@ var f = env.compile(env.parseString(@'
     show_debug_message("--- END TEST ---")
 '));
 f();
+*/
 
 show_debug_overlay(true);
 

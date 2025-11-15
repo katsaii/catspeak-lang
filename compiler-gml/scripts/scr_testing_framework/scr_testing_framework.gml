@@ -2,6 +2,7 @@
 
 //# feather use syntax-errors
 
+#macro TEST_EARLY_FAIL true
 #macro TEST_RUN_ENABLED true
 #macro NoTest:TEST_RUN_ENABLED false
 
@@ -248,18 +249,26 @@ function test_run() {
         return;
     }
     var testFunc = ds_queue_dequeue(stats.testQueue);
-    try {
+    if (TEST_EARLY_FAIL) {
         test = new testFunc();
         if (test.automatic) {
             // otherwise `complete()` needs to be called manually
             test.complete();
         }
-    } catch (e) {
-        stats.totalFatal += 1;
-        show_debug_message(
-            "encountered a fatal error when running one of the test cases:\n"
-            + string(e)
-        );
+    } else {
+        try {
+            test = new testFunc();
+            if (test.automatic) {
+                // otherwise `complete()` needs to be called manually
+                test.complete();
+            }
+        } catch (e) {
+            stats.totalFatal += 1;
+            show_debug_message(
+                "encountered a fatal error when running one of the test cases:\n"
+                + string(e.longMessage)
+            );
+        }
     }
 }
 

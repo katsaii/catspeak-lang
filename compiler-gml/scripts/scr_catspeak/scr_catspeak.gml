@@ -80,7 +80,7 @@
 ///
 /// @param {Any} callee_
 ///   The function to call. Can be a GML function, Catspeak function, or a
-///   function bound using `catspeak_method`.
+///   function bound using `catspeak_method_v3`.
 ///
 /// @param {Any} ...
 ///   The arguments to pass to this function.
@@ -111,7 +111,7 @@ function catspeak_execute(callee_) {
 ///
 /// @param {Any} callee_
 ///   The function to call. Can be a GML function, Catspeak function, or a
-///   function bound using `catspeak_method`.
+///   function bound using `catspeak_method_v3`.
 ///
 /// @param {Array<Any>} [args]
 ///   The argument list to call this function with. Defaults to no arguments.
@@ -206,7 +206,7 @@ function catspeak_special_to_struct(gmlSpecial) {
 ///
 /// @param {Any} callee
 ///   The function to get the global context of. Can be a GML function,
-///   Catspeak function, or a function bound using `catspeak_method`.
+///   Catspeak function, or a function bound using `catspeak_method_v3`.
 ///
 /// @return {Struct}
 function catspeak_globals(callee) {
@@ -227,7 +227,7 @@ function catspeak_globals(callee) {
 ///
 /// @param {Any} callee
 ///   The function to get the global context of. Can be a GML function,
-///   Catspeak function, or a function bound using `catspeak_method`.
+///   Catspeak function, or a function bound using `catspeak_method_v3`.
 ///
 /// @return {Struct}
 function catspeak_meta(callee) {
