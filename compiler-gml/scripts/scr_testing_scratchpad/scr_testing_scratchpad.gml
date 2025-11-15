@@ -9,8 +9,16 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = undefined;
+var runExperiment = "catspeak4-ctx";
 #macro TEST_EXPERIMENT if runExperiment ==
+
+TEST_EXPERIMENT "catspeak4-ctx" {
+    var ctx = new CatspeakCtx();
+    var module = ctx.run(@'
+        return "hi catspeak"
+    ');
+    show_message(module.result);
+}
 
 TEST_EXPERIMENT "catspeak4-parse" {
     var writer = new CatspeakCartWriter();
@@ -104,28 +112,6 @@ TEST_EXPERIMENT "catspeak4-cart" {
     var res = (codegen.finalise())();
     show_message(res());
 }
-
-/*
-TEST_EXPERIMENT "catspeak4-ctx" {
-    var ctx = new CatspeakCtx();
-    ctx.parserType = CatspeakParser;
-    var module = ctx.run({
-        src : @'
-            do {
-                do {
-                    some
-                    return 4
-                    
-                }
-            }
-        ',
-        flags : CatspeakBuildFlags.KEEP_CARTRIDGE,
-    });
-    buffer_seek(module.cart, buffer_seek_start, 0);
-    show_message(catspeak_cart_disassemble(module.cart));
-    show_message(module.result);
-}
-*/
 
 TEST_EXPERIMENT "lexer" {
     var buff = __catspeak_create_buffer_from_string(@'1 2._ 3._4_ 5_6_7__');

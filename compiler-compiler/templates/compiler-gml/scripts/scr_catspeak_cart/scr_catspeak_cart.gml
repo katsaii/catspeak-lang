@@ -95,8 +95,12 @@ function CatspeakCartWriter() constructor {
     ///   The buffer to write the cartridge to. Must be a `buffer_grow` type
     ///   buffer with an alignment of 1.
     ///
+    /// @param {Bool} [rewind]
+    ///   Whether to rewind the buffer once the cart is finalised. Defaults to
+    ///   `true`.
+    ///
     /// @return {Id.Buffer}
-    static finalise = function (buff = undefined) {
+    static finalise = function (buff = undefined, rewind = true) {
         __catspeak_assert(isAlive, "cannot call `finalise` method twice");
         try {
             var cart;
@@ -114,6 +118,7 @@ function CatspeakCartWriter() constructor {
                 );
                 cart = buff;
             }
+            var cartStart = buffer_tell(cart);
             // write header
 {% for head in HeadItem.enum(ir) %}
             buffer_write(cart, {{ head.type_buffer }}, {{ head.value_lit }}); // {{ head.name }}
@@ -136,6 +141,9 @@ function CatspeakCartWriter() constructor {
             buffer_seek(cart, buffer_seek_start, offset);
             // 0xFF indicates the end of the program section
             buffer_write(cart, {{ opcode_type_buffer }}, {{ opcode_eof }});
+            if (rewind) {
+                buffer_seek(cart, buffer_seek_start, cartStart);
+            }
         } finally {
             destroy();
         }

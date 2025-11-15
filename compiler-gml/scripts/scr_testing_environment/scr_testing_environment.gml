@@ -969,14 +969,14 @@ test_add(function() : Test("method-self-setSelf") constructor {
     var fun = env.compile(ir);
     // phase 1
     var f0 = fun();
-    assertEq(catspeak_globals(f0), f0());
+    assertEq(catspeak_globals_v3(f0), f0());
     assertEq(self, catspeak_execute_v3(f0));
     var s0 = { nothing : true };
     assertEq(s0, catspeak_execute_ext_v3(f0, s0));
     // phase 2
     var s1 = { kan : "aya" };
     var f1 = catspeak_method(s1, f0);
-    assertEq(catspeak_globals(f0), f0());        // check f0 is still correct
+    assertEq(catspeak_globals_v3(f0), f0());        // check f0 is still correct
     assertEq(self, catspeak_execute_v3(f0));
     assertEq(s0, catspeak_execute_ext_v3(f0, s0));
     assertEq(s1, f1());                          // check if f1 is bound
@@ -993,7 +993,7 @@ test_add(function() : Test("method-self-setSelf") constructor {
     assertEq(s2, catspeak_execute_ext_v3(f1, { }));
     // phase 4
     f0.setSelf(undefined);
-    assertEq(catspeak_globals(f0), f0());        // check f0 is unbound
+    assertEq(catspeak_globals_v3(f0), f0());        // check f0 is unbound
     assertEq(self, catspeak_execute_v3(f0));
     assertEq(s0, catspeak_execute_ext_v3(f0, s0));
     assertEq(s1, f1());                          // check f1 is bound to s1

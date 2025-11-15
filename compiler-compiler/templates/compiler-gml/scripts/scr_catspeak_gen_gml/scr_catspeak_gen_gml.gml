@@ -6,13 +6,13 @@
 //# feather use syntax-errors
 
 /// TODO
-function CatspeakGenGML() constructor {
+function CatspeakGenGML(globals_ = undefined) constructor {
     /// @ignore
     exprStack = undefined;
     /// @ignore
     funcs = undefined;
     /// @ignore
-    globals = undefined;
+    globals = globals_;
     /// @ignore
     ctx = undefined;
     /// @ignore

@@ -22,7 +22,7 @@
 //!   catspeak_execute_v3(main);
 //!
 //!   // grab the counter function from the script
-//!   var counter = catspeak_globals(main).counter;
+//!   var counter = catspeak_globals_v3(main).counter;
 //!
 //!   // call the Catspeak `counter` function from GML!
 //!   show_message(counter()); // prints 1
@@ -1041,7 +1041,7 @@ function catspeak_execute_ext_v3(
 ///   Catspeak function, or a function bound using `catspeak_method`.
 ///
 /// @return {Struct}
-function catspeak_globals(callee) {
+function catspeak_globals_v3(callee) {
     if (is_catspeak(callee)) {
         if (method_get_index(callee) == __catspeak_function_method__) {
             // TODO
