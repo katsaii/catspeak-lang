@@ -19,6 +19,7 @@
 {% set opcode_type_buffer = type_to_gml_buffer(ir["instr-opcode-type"]) -%}
 {% set opcode_eof = ir["program-end-signal"] -%}
 {% set dbg_type_buffer = type_to_gml_buffer(ir["instr-dbg-type"]) -%}
+{% set argc_type_buffer = type_to_gml_buffer(ir["func-argc-type"]) -%}
 
 /// Handles the creation of Catspeak cartridges. Performs little to no
 /// optimisations on the output. What you emit is what you get!
@@ -159,17 +160,23 @@ function CatspeakCartWriter() constructor {
         var prevChunkStates_ = prevChunkStates;
         ds_stack_push(prevChunkStates_, stackSize);
         ds_stack_push(prevChunkStates_, varCount);
+        stackSize = 0;
+        varCount = 0;
     };
 
     /// Ends the current function, returning its id.
     ///
+    /// @param {Real} [argc]
+    ///   The number of named args this function accepts. Defaults to 0.
+    ///
     /// @return {Real}
-    static popFunction = function () {
+    static popFunction = function (argc = 0) {
         __catspeak_assert(chunkTop >= 0,
             "unbalanced function stack! too many calls to `popFunction`"
         );
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, {{ opcode_type_buffer }}, 0);
+        buffer_write(chunk, {{ argc_type_buffer }}, argc);
         var idx = funcCount;
         funcCount += 1;
         chunkTop -= 1;
@@ -266,7 +273,7 @@ function catspeak_cart_version(cart) {
 ///   A struct containing methods for handling each of the following cases:
 ///
 ///   - `.handleMeta({{ join(", ", args(MetaItem.enum(ir))) }})` (always invoked first)
-///   - `.handleFunc(idx)`
+///   - `.handleFunc(idx, argc)`
 {% for instr in InstrItem.enum(ir) %}
 ///   - `.{{ instr.name_handler }}({{
             join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
@@ -333,7 +340,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
     /// @ignore
     static __readFunc = function () {
-        visitor.handleFunc(funcIdx);
+        var argc = buffer_read(cart, {{ argc_type_buffer }});
+        visitor.handleFunc(funcIdx, argc);
         funcIdx += 1;
     };
 {% for instr in InstrItem.enum(ir) %}

@@ -749,7 +749,7 @@ instr:
     exceptional: false
     comptime: undefined
 
-func:
+func-argc-type: u8
 
 # Notes:
 #

@@ -188,17 +188,23 @@ function CatspeakCartWriter() constructor {
         var prevChunkStates_ = prevChunkStates;
         ds_stack_push(prevChunkStates_, stackSize);
         ds_stack_push(prevChunkStates_, varCount);
+        stackSize = 0;
+        varCount = 0;
     };
 
     /// Ends the current function, returning its id.
     ///
+    /// @param {Real} [argc]
+    ///   The number of named args this function accepts. Defaults to 0.
+    ///
     /// @return {Real}
-    static popFunction = function () {
+    static popFunction = function (argc = 0) {
         __catspeak_assert(chunkTop >= 0,
             "unbalanced function stack! too many calls to `popFunction`"
         );
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, 0);
+        buffer_write(chunk, buffer_u8, argc);
         var idx = funcCount;
         funcCount += 1;
         chunkTop -= 1;
@@ -1071,7 +1077,7 @@ function catspeak_cart_version(cart) {
 ///   A struct containing methods for handling each of the following cases:
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
-///   - `.handleFunc(idx)`
+///   - `.handleFunc(idx, argc)`
 ///   - `.handleInstrCall(dbg, n)`
 ///   - `.handleInstrArray(dbg, n)`
 ///   - `.handleInstrStruct(dbg, n)`
@@ -1205,7 +1211,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 
     /// @ignore
     static __readFunc = function () {
-        visitor.handleFunc(funcIdx);
+        var argc = buffer_read(cart, buffer_u8);
+        visitor.handleFunc(funcIdx, argc);
         funcIdx += 1;
     };
 
