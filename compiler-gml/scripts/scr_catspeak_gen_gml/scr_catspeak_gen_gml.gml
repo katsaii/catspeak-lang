@@ -100,7 +100,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
     };
 
     /// @ignore
-    static handleFunc = function (idx) {
+    static handleFunc = function (idx, argc) {
         var body = ds_stack_pop(exprStack);
         __catspeak_assert(body != undefined,
             "unbalanced stack! function is missing body"
@@ -120,12 +120,11 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             func = __genExpr({
                 body : body,
                 n : localsN,
+                argc : min(localsN, argc),
             }, __catspeak_function__);
         } else {
             func = body;
         }
-        // ensure that Catspeak functions have a ctx field on their bound self
-        
         funcs[| idx] = func;
         localsN = 0;
         hasDebug = false;
@@ -1482,13 +1481,19 @@ function __catspeak_function__() {
     var ctx_ = ctx;
     var n_ = n;
     ctx_.stackN += n_;
-    array_resize(ctx_.stack, ctx_.stackN);
+    var stack = ctx_.stack;
+    var stackN = ctx_.stackN;
+    array_resize(stack, stackN);
+    for (var i = argc - 1; i >= 0; i -= 1) {
+        var value = i < argument_count ? argument[i] : undefined;
+        stack[stackN - 1 - i] = value;
+    }
     var result;
     try {
         result = body();
     } finally {
         ctx_.stackN -= n_;
-        array_resize(ctx_.stack, ctx_.stackN);
+        array_resize(stack, ctx_.stackN);
     }
     return result;
 }
