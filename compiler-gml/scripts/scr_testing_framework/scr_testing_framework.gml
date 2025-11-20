@@ -209,6 +209,8 @@ function Test(name, negative) constructor {
     }
 }
 
+function TestNegative(name) : Test(name, true) constructor { }
+
 function AsyncTest(name) : Test(name) constructor {
     automatic = false;
 }

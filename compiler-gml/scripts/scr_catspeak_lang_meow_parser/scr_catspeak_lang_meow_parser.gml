@@ -420,8 +420,18 @@ function CatspeakParser(cartWriter, lexer_) constructor {
 
     /// @ignore
     static __parseOpPipe = function () {
-        // TODO
         __parseOpEquality();
+        while (true) {
+            var peeked = lexer.peek();
+            if (
+                peeked > CatspeakToken.__OP_PIPE_BEGIN__ &&
+                peeked < CatspeakToken.__OP_PIPE_END__
+            ) {
+                __err("pipe operators '|>' and '<|' are no longer supported");
+            } else {
+                break;
+            }
+        }
     };
 
     /// @ignore

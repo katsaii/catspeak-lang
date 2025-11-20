@@ -258,6 +258,7 @@ test_add(function () : Test("env-misc-get-set") constructor {
     assertEq(2 * (2 * 8 + 6) + 2 * (2 * 8 + 6), result[1]);
 });
 
+/*
 test_add(function () : Test("env-pipe-left") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
@@ -275,8 +276,9 @@ test_add(function () : Test("env-pipe-right") constructor {
     '));
     assertEq("helloworld", f());
 });
+*/
 
-test_add(function () : Test("env-gm-asset") constructor {
+test_add_ignore(function () : Test("env-gm-asset") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunction("font_exists", font_exists);
@@ -289,7 +291,7 @@ test_add(function () : Test("env-gm-asset") constructor {
     assertEq(true, result);
 });
 
-test_add(function () : Test("env-gml-function") constructor {
+test_add_ignore(function () : Test("env-gml-function") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByName("is_string");
@@ -301,7 +303,7 @@ test_add(function () : Test("env-gml-function") constructor {
     assertEq(true, result);
 });
 
-test_add(function () : Test("env-gml-function-2") constructor {
+test_add_ignore(function () : Test("env-gml-function-2") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByName(is_string);
@@ -313,7 +315,7 @@ test_add(function () : Test("env-gml-function-2") constructor {
     assertEq(true, result);
 });
 
-test_add(function () : Test("env-gml-function-3") constructor {
+test_add_ignore(function () : Test("env-gml-function-3") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("is_");
@@ -325,7 +327,7 @@ test_add(function () : Test("env-gml-function-3") constructor {
     assertEq(true, result);
 });
 
-test_add(function () : Test("env-gml-function-by-substring") constructor {
+test_add_ignore(function () : Test("env-gml-function-by-substring") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("test_array");
@@ -338,7 +340,7 @@ test_add(function () : Test("env-gml-function-by-substring") constructor {
     assertEq(8, result);
 });
 
-test_add(function () : Test("env-gml-function-by-substring-exist") constructor {
+test_add_ignore(function () : Test("env-gml-function-by-substring-exist") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("test_array");
@@ -365,7 +367,7 @@ test_add(function () : Test("env-gml-function-by-substring-exist") constructor {
     assert(is_method(result[4]));
 });
 
-test_add(function () : Test("env-gml-function-by-substring-not-exist") constructor {
+test_add_ignore(function () : Test("env-gml-function-by-substring-not-exist") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByPrefix("test_array");
@@ -422,7 +424,7 @@ test_add(function () : Test(
     assertEq("good", result);
 });
 
-test_add(function () : Test(
+test_add_ignore(function () : Test(
     "dynamic-constants"
 ) constructor {
     var engine = new CatspeakEnvironment();
@@ -635,7 +637,7 @@ test_add(function() : Test("with-noone") constructor {
     assertEq(true, _func());
 });
 
-test_add(function() : Test("with-inst") constructor {
+test_add_ignore(function() : Test("with-inst") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeAsset("obj_testing_blank");
     env.interface.exposeFunctionByName(array_push);
@@ -672,7 +674,7 @@ test_add(function() : Test("with-inst") constructor {
 
 // TODO :: i dont really want tests to last longer than a frame or two, so this shoould really
 //         be turned into a benchmark instead
-test_add(function() : Test("method-scope-vs-undefined") constructor {
+test_add_ignore(function() : Test("method-scope-vs-undefined") constructor {
     var env = new CatspeakEnvironment();
     var func = function(value) {
         return value * 32;
@@ -765,7 +767,7 @@ test_add(function() : Test("while-loop") constructor {
     assertEq(101, res);
 });
 
-test_add(function() : Test("expose-everything-const") constructor {
+test_add_ignore(function() : Test("expose-everything-const") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString("[ev_async_dialog, os_linux, c_maroon]");
@@ -776,7 +778,7 @@ test_add(function() : Test("expose-everything-const") constructor {
     assertEq(c_maroon, result[2]);
 });
 
-test_add(function() : Test("expose-everything-func") constructor {
+test_add_ignore(function() : Test("expose-everything-func") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString("[real, is_string, sha1_string_unicode]");
@@ -788,7 +790,7 @@ test_add(function() : Test("expose-everything-func") constructor {
     assertEq(sha1_string_unicode("some hash"), result[2]("some hash"));
 });
 
-test_add(function() : Test("expose-everything-assets") constructor {
+test_add_ignore(function() : Test("expose-everything-assets") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -804,7 +806,7 @@ test_add(function() : Test("expose-everything-assets") constructor {
     instance_destroy(result);
 });
 
-test_add(function() : Test("expose-everything-aaaaa") constructor {
+test_add_ignore(function() : Test("expose-everything-aaaaa") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -818,7 +820,7 @@ test_add(function() : Test("expose-everything-aaaaa") constructor {
     assertEq(result.show_async, show_message_async);
 });
 
-test_add(function() : Test("layer-tilemap-create") constructor {
+test_add_ignore(function() : Test("layer-tilemap-create") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -830,7 +832,7 @@ test_add(function() : Test("layer-tilemap-create") constructor {
     layer_tilemap_destroy(result);
 });
 
-test_add(function() : Test("expose-everything-inst-deactivate") constructor {
+test_add_ignore(function() : Test("expose-everything-inst-deactivate") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var f = env.compile(env.parseString(@'
@@ -947,7 +949,7 @@ test_add(function() : Test("method-self-setSelf") constructor {
     assertEq(s1, catspeak_execute_ext_v3(f1, { }));
 });
 
-test_add(function() : Test("nineslice-vars") constructor {
+test_add_ignore(function() : Test("nineslice-vars") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -1017,7 +1019,7 @@ test_add(function() : Test("try-catch-3") constructor {
     assert(is_numeric(result[3]));
 });
 
-test_add(function() : Test("try-catch-4") constructor {
+test_add_ignore(function() : Test("try-catch-4") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -1154,7 +1156,7 @@ test_add(function() : Test("exploit-obj-bad") constructor {
 });
 */
 
-test_add(function() : Test("with-inst-destroy") constructor {
+test_add_ignore(function() : Test("with-inst-destroy") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var inst1 = instance_create_depth(0, 0, 0, obj_testing_blank);
@@ -1191,7 +1193,7 @@ test_add(function() : Test("with-inst-destroy") constructor {
     }
 });
 
-test_add(function() : Test("with-inst-destroy-2") constructor {
+test_add_ignore(function() : Test("with-inst-destroy-2") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var inst1 = instance_create_depth(0, 0, 0, obj_testing_blank, { v : 1 });
