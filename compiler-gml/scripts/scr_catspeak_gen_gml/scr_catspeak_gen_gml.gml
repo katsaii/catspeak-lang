@@ -117,10 +117,11 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         }
         var func;
         if (localsN > 0) {
+            __catspeak_assert(localsN >= argc, "not enough room for function arguments");
             func = __genExpr({
                 body : body,
                 n : localsN,
-                argc : min(localsN, argc),
+                argc : argc,
             }, __catspeak_function__);
         } else {
             func = body;
@@ -1486,7 +1487,7 @@ function __catspeak_function__() {
     array_resize(stack, stackN);
     for (var i = argc - 1; i >= 0; i -= 1) {
         var value = i < argument_count ? argument[i] : undefined;
-        stack[stackN - 1 - i] = value;
+        stack[@ stackN - n + i] = value;
     }
     var result;
     try {
@@ -1579,7 +1580,7 @@ function __catspeak_instr_get_l__() {
 function __catspeak_instr_set_l__() {
     var ctx_ = ctx;
     var value_ = value();
-    ctx_.stack[ctx_.stackN + off] = value_;
+    ctx_.stack[@ ctx_.stackN + off] = value_;
     return value_;
 }
 
@@ -1587,7 +1588,7 @@ function __catspeak_instr_set_l__() {
 function __catspeak_instr_set_l_add__() {
     var ctx_ = ctx;
     var value_ = value();
-    ctx_.stack[ctx_.stackN + off] += value_;
+    ctx_.stack[@ ctx_.stackN + off] += value_;
     return value_;
 }
 
@@ -1595,7 +1596,7 @@ function __catspeak_instr_set_l_add__() {
 function __catspeak_instr_set_l_sub__() {
     var ctx_ = ctx;
     var value_ = value();
-    ctx_.stack[ctx_.stackN + off] -= value_;
+    ctx_.stack[@ ctx_.stackN + off] -= value_;
     return value_;
 }
 
@@ -1603,7 +1604,7 @@ function __catspeak_instr_set_l_sub__() {
 function __catspeak_instr_set_l_mul__() {
     var ctx_ = ctx;
     var value_ = value();
-    ctx_.stack[ctx_.stackN + off] *= value_;
+    ctx_.stack[@ ctx_.stackN + off] *= value_;
     return value_;
 }
 
@@ -1611,7 +1612,7 @@ function __catspeak_instr_set_l_mul__() {
 function __catspeak_instr_set_l_div__() {
     var ctx_ = ctx;
     var value_ = value();
-    ctx_.stack[ctx_.stackN + off] /= value_;
+    ctx_.stack[@ ctx_.stackN + off] /= value_;
     return value_;
 }
 

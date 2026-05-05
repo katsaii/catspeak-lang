@@ -1322,7 +1322,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after function arguments");
                 }
                 __parseStatements("fun");
-                ir.emitClosure(__popFunc(), dbg);
+                ir.emitClosure(__popFunc(argc), dbg);
             } else if (peeked == CatspeakToken.IMPL) {
                 __catspeak_error_unimplemented("impl blocks");
             } else {
@@ -1388,7 +1388,23 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 peeked > CatspeakToken.__OP_PIPE_BEGIN__ &&
                 peeked < CatspeakToken.__OP_PIPE_END__
             ) {
-                __err("pipe operators '|>' and '<|' are no longer supported");
+                var dbg = lexer.getLocationStart();
+                lexer.next();
+                if (peeked == CatspeakToken.PIPE_LEFT) {
+                    __parseOpEquality();
+                    ir.emitCall(1, dbg);
+                } else if (peeked == CatspeakToken.PIPE_RIGHT) {
+                    __pushBlock();
+                    var temp = ir.getFreshVar(dbg);
+                    ir.emitSetLocal(ord("="), temp, dbg);
+                    __parseOpEquality();
+                    ir.emitGetLocal(temp, dbg);
+                    ir.emitCall(1, dbg);
+                    __popBlock();
+                } else {
+                    __catspeak_error_bug();
+                }
+                
             } else {
                 break;
             }

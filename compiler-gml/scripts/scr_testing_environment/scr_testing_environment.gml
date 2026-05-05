@@ -258,7 +258,6 @@ test_add(function () : Test("env-misc-get-set") constructor {
     assertEq(2 * (2 * 8 + 6) + 2 * (2 * 8 + 6), result[1]);
 });
 
-/*
 test_add(function () : Test("env-pipe-left") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
@@ -276,7 +275,6 @@ test_add(function () : Test("env-pipe-right") constructor {
     '));
     assertEq("helloworld", f());
 });
-*/
 
 test_add_ignore(function () : Test("env-gm-asset") constructor {
     var env = new CatspeakEnvironment();
