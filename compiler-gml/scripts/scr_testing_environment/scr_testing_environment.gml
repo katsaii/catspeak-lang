@@ -718,7 +718,7 @@ test_add(function() : Test("catspeak-get-index") constructor {
     
     var program = env.compile(ir);
     program();
-    var globals = program.getGlobals();
+    var globals = catspeak_globals(program);
     var speak = globals.speak;
     
     var inst = {name: "Elephant"};

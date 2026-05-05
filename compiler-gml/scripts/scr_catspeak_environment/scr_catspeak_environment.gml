@@ -1087,11 +1087,7 @@ function catspeak_execute_ext_v3(
 /// @return {Struct}
 function catspeak_globals_v3(callee) {
     if (is_catspeak(callee)) {
-        if (method_get_index(callee) == __catspeak_function_method__) {
-            // TODO
-        } else {
-            return callee.getGlobals();
-        }
+        return catspeak_globals(callee);
     }
     return undefined;
 }
