@@ -1289,11 +1289,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     }
                     peeked = lexer.peek();
                 }
-                if (lexer.peek() != CatspeakToken.BRACE_RIGHT) {
-                    __err(__catspeak_cat(
-                        "expected closing '}' after 'match' block"
-                    ));
-                }
+                __expect(CatspeakToken.BRACE_RIGHT, "expected closing '}' after 'match' block");
                 lexer.next();
                 ir.emitConstUndefined();
                 repeat (seenCases) {
@@ -1599,15 +1595,22 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 }
                 __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after call expression");
                 ir.emitCall(n, dbg);
-            } else if (peeked == CatspeakToken.BOX_LEFT) {
+            } else if (peeked == CatspeakToken.BOX_LEFT || peeked == CatspeakToken.DOT) {
                 var dbg = lexer.getLocationStart();
                 lexer.next();
-                __parseExpression();
-                __expect(CatspeakToken.BOX_RIGHT, "expected closing ']' after index expression");
+                if (peeked == CatspeakToken.BOX_LEFT) {
+                    __parseExpression();
+                    __expect(CatspeakToken.BOX_RIGHT, "expected closing ']' after index expression");
+                } else {
+                    __expect(CatspeakToken.IDENT, "expected identifier after '.' index expression");
+                    ir.emitConstString(lexer.getValue());
+                }
                 var op = __parseAssignOp();
                 if (op == undefined) {
+                    // get
                     ir.emitGetIndex(dbg);
                 } else {
+                    // set
                     __parseExpression();
                     ir.emitSetIndex(op, dbg);
                 }
