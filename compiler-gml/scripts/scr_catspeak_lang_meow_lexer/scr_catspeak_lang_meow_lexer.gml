@@ -143,6 +143,8 @@ enum CatspeakToken {
     WITH,
     /// @experimental
     MATCH,
+    /// @experimental
+    CASE,
     FUN,
     /// Reserved in case of constructors.
     ///
@@ -752,6 +754,7 @@ function CatspeakLexer(
         __keywords[$ "loop"] = CatspeakToken.LOOP;
         __keywords[$ "with"] = CatspeakToken.WITH;
         __keywords[$ "match"] = CatspeakToken.MATCH;
+        __keywords[$ "case"] = CatspeakToken.CASE;
         __keywords[$ "fun"] = CatspeakToken.FUN;
         __keywords[$ "new"] = CatspeakToken.NEW;
         __keywords[$ "impl"] = CatspeakToken.IMPL;
@@ -1189,7 +1192,6 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 var name = lexer.getValue();
                 idx = __findLocal(name);
             } else {
-                // TODO :: reuse this
                 idx = ir.getFreshVar();
             }
             __pushBlock();
@@ -1257,8 +1259,47 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 ir.emitLoopWith(dbg);
                 ir.emitUnwindLanding(__getLabelBreak());
             } else if (peeked == CatspeakToken.MATCH) {
-                // TODO
-                __catspeak_error_unimplemented("match");
+                __pushBlock();
+                __parseCondition();
+                var caseVar = ir.getFreshVar(dbg);
+                ir.emitSetLocal(ord("="), caseVar, dbg);
+                if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
+                    __err(__catspeak_cat(
+                        "expected opening '{' at the start of 'match' block"
+                    ));
+                }
+                lexer.next();
+                var seenCases = 0;
+                var peeked = lexer.peek();
+                while (peeked != CatspeakToken.BRACE_RIGHT && peeked != CatspeakToken.EOF) {
+                    lexer.next();
+                    seenCases += 1;
+                    if (peeked == CatspeakToken.CASE) {
+                        __parseCondition();
+                        ir.emitGetLocal(caseVar);
+                        ir.emitEqual();
+                        __parseStatements("case");
+                    } else if (peeked == CatspeakToken.ELSE) {
+                        ir.emitConstNumber(true);
+                        __parseStatements("else");
+                    } else {
+                        __err(__catspeak_cat(
+                            "expected either 'case' or 'else' in 'match' block"
+                        ));
+                    }
+                    peeked = lexer.peek();
+                }
+                if (lexer.peek() != CatspeakToken.BRACE_RIGHT) {
+                    __err(__catspeak_cat(
+                        "expected closing '}' after 'match' block"
+                    ));
+                }
+                lexer.next();
+                ir.emitConstUndefined();
+                repeat (seenCases) {
+                    ir.emitIfThenElse();
+                }
+                __popBlock();
             } else if (peeked == CatspeakToken.FUN) {
                 __pushFunc();
                 var argc = 0;
