@@ -48,19 +48,27 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleMeta = function (
-        {{ join(", ", args(MetaItem.enum(ir))) }}
-    ) {
-{% for meta in MetaItem.enum(ir) %}
-        if ({{ meta.name_id }} != {{ meta.value_lit }}) {
-            out += "-- {{ meta.name }}:  " + string({{ meta.name_id }}) + "\n";
+    static handleMeta = function ({{
+        join(", ", ir_enum_ids(ir, "meta"))
+    }}) {
+{% for meta_name, meta in ir_enum(ir, "meta") %}
+{%  set meta_id = case_camel(meta_name) %}
+{%  set meta_value = type_to_gml_literal(meta["type"], meta["default"]) %}
+        if ({{ meta_id }} != {{ meta_value }}) {
+            out += "-- {{ meta_name }}:  " + string({{ meta_id }}) + "\n";
         }
 {% endfor %}
     };
 
     /// @ignore
-    static handleFunc = function (idx) {
+    static handleFunc = function ({{
+        join(", ", ["idx"], ir_enum_ids(ir, "func"))
+    }}) {
         out += "\nfun " + string(idx) + "\n";
+{% for func_name, func in ir_enum(ir, "func") %}
+{%  set func_id = case_camel(func_name) %}
+        out += "--^ {{ func_name }}:  " + string({{ func_id }}) + "\n";
+{% endfor %}
     };
 
     /// @ignore
@@ -70,15 +78,15 @@ function __CatspeakCartDisassembler() constructor {
             out += ":" + string(catspeak_location_get_column(dbg));
         }
     };
-{% for instr in InstrItem.enum(ir) %}
+{% for _, instr in ir_enum(ir, "instr-ops") %}
 
     /// @ignore
-    static {{ instr.name_handler }} = function ({{
-        join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
+    static handleInstr{{ case_camel_upper(instr["name"]) }} = function ({{
+        join(", ", ["dbg"], ir_enum_ids(instr, "args"))
     }}) {
-        out += "\n  {{ instr.name_short }}";
-{%  for arg in InstrArgItem.enum(instr.ir) %}
-        out += "  " + {{ type_to_gml_format(arg.type, arg.name) }};
+        out += "\n  {{ instr.get('name-short', 'name') }}";
+{%  for _, arg in ir_enum(instr, "args") %}
+        out += "  " + {{ type_to_gml_format(arg["type"], arg["name"]) }};
 {%  endfor %}
         __writeDbg(dbg);
     };

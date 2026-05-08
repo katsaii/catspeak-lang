@@ -19,7 +19,8 @@
 {% set opcode_type_buffer = type_to_gml_buffer(ir["instr-opcode-type"]) -%}
 {% set opcode_eof = ir["program-end-signal"] -%}
 {% set dbg_type_buffer = type_to_gml_buffer(ir["instr-dbg-type"]) -%}
-{% set argc_type_buffer = type_to_gml_buffer(ir["func-argc-type"]) -%}
+{% set instrc_type_buffer = type_to_gml_buffer(ir["func"]["instr-count"]) -%}
+{% set argc_type_buffer = type_to_gml_buffer(ir["func"]["arg-count"]) -%}
 
 /// Handles the creation of Catspeak cartridges. Performs little to no
 /// optimisations on the output. What you emit is what you get!

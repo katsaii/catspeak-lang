@@ -59,8 +59,23 @@ def case_kebab_upper(ident):
 # utils
 
 @jinja2_export
-def join(sep, iter_):
-    return sep.join(iter_)
+def compose(g, f):
+    def inner_(*args, **kwargs):
+        return g(f(*args, **kwargs))
+    return inner_
+
+@jinja2_export
+def join(sep, *iters):
+    return sep.join(item for iter_ in iters for item in iter_)
+
+@jinja2_export
+def get(*idxs):
+    def inner_(collection):
+        value = collection
+        for idx in idxs:
+            value = value[idx]
+        return value
+    return inner_
 
 @jinja2_export
 def args(iter_):
@@ -80,12 +95,24 @@ def ir_enum(collection, idx):
     return gen
 
 @jinja2_export
+def ir_enum_ids(collection, idx, case=case_camel):
+    def get_name_(x):
+        idx, item = x
+        if type(idx) == str:
+            return idx
+        elif type(item) == dict and "name" in item:
+            return item["name"]
+        else:
+            raise Exception("enum iten has no id")
+    return map(compose(case, get_name_), ir_enum(collection, idx))
+
+@jinja2_export
 def type_to_gml_literal(type_name, value=None):
     match type_name:
         case "i32" | "u32" | "i16" | "u16" | "i8" | "u8" | "f64":
-            return str(value) if value != None else "0"
+            return str(value) if value else "0"
         case "string":
-            if value != None:
+            if value:
                 if all(ch != '"' for ch in value):
                     return f"\"{value}\""
                 else:
@@ -93,9 +120,9 @@ def type_to_gml_literal(type_name, value=None):
             else:
                 return '""'
         case "char":
-            return f"ord(\"{value}\")" if value != None else "0"
+            return f"ord(\"{value}\")" if value else "0"
         case "bool":
-            return f"real({value})" if value != None else "0"
+            return f"real({value})" if value else "0"
         case t: raise Exception(f"unknown value type: {t}")
 
 @jinja2_export
@@ -183,10 +210,10 @@ class InstrItem():
         self.exceptional = ir.get("exceptional", True)
 
     def enum(ir):
-        return (InstrItem(ir_) for _, ir_ in ir_enum(ir, "instr"))
+        return (InstrItem(ir_) for _, ir_ in ir_enum(ir, "instr-ops"))
 
     def max_opcode(ir):
-        return max(ir_["opcode"] for _, ir_ in ir_enum(ir, "instr"))
+        return max(ir_["opcode"] for _, ir_ in ir_enum(ir, "instr-ops"))
 
 @jinja2_export
 class InstrArgItem():
@@ -240,5 +267,13 @@ class InstrInlineItem():
 
 @jinja2_export
 class FuncItem():
-    def __init__(self, ir):
+    def __init__(self, name, ir):
         self.ir = ir
+        self.name = name
+        self.name_id = case_camel(name)
+        self.type = ir
+        self.type_buffer = type_to_gml_buffer(self.type)
+        self.type_feather = type_to_gml_feather(self.type)
+
+    def enum(ir):
+        return (FuncItem(name, ir_) for name, ir_ in ir_enum(ir, "func"))

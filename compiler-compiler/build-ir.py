@@ -9,9 +9,9 @@ import jinja2api
 from pathlib import Path
 
 SCRIPTS = [
-    "compiler-gml/scripts/scr_catspeak_cart/scr_catspeak_cart.gml",
+    #"compiler-gml/scripts/scr_catspeak_cart/scr_catspeak_cart.gml",
     "compiler-gml/scripts/scr_catspeak_disasm/scr_catspeak_disasm.gml",
-    "compiler-gml/scripts/scr_catspeak_gen_gml/scr_catspeak_gen_gml.gml",
+    #"compiler-gml/scripts/scr_catspeak_gen_gml/scr_catspeak_gen_gml.gml",
 ]
 def infer_comment_style_from_path(path):
     match os.path.splitext(path)[1]:
@@ -41,7 +41,7 @@ with open(IR_PATH, "r", encoding="utf-8") as file:
 ir_instrs_opcodes = { }
 ir_instrs_opcode_max = 0
 ir_instrs_name_conflict = None
-for instr in ir["instr"]:
+for instr in ir["instr-ops"]:
     # check all opcode fields are unique
     instr_opcode = instr["opcode"]
     instr_name = instr.get("name-short", instr["name"])
@@ -81,7 +81,7 @@ for func in jinja2api.JINJA2_FUNCS:
     env.globals[func.__name__] = func
 
 # build scripts
-DEBUG = False
+DEBUG = True
 for script in SCRIPTS:
     comment_prefix = infer_comment_style_from_path(script)
     temp_header = get_generated_header(
