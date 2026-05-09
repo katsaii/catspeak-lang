@@ -1,36 +1,21 @@
 # Catspeak cartridge layout #
 # ========================= #
 
-# TLDR: An example layout for a simple Catspeak cartridge may look like:
-#
-# HEAD META INSTR_1 INSTR_2 \0 FUNC_1 INSTR_1 INSTR_2 INSTR_3 \0 FUNC_2 \0
-
 # Types:
 #
-# * u8:     Unsigned 8-bit integer.
-# * i8:     Signed 8-bit integer.
-# * u16:    Unsigned 16-bit integer.
-# * i16:    Signed 16-bit integer.
-# * u32:    Unsigned 32-bit integer.
 # * i32:    Signed 32-bit integer.
+# * u32:    Unsigned 32-bit integer.
+# * i16:    Signed 16-bit integer.
+# * u16:    Unsigned 16-bit integer.
+# * i8:     Signed 8-bit integer.
+# * u8:     Unsigned 8-bit integer.
 # * f64:    64-bit floating point number.
 # * char:   A single UTF-8 encoded character.
 # * string: A sequence of UTF-8 characters terminated by `\0` (null).
 # * bool:   Unsigned 8-bit integer, assumed to be exclusively 0 or 1.
 
-# Notes:
-#
-# * Both Catspeak instructions and function definitions are encoded in
-#   reverse-polish notation. This simplifies writing a non-blocking (async)
-#   code-generator in a single-threaded language like GML, since the compiler
-#   can be paused or computed over multiple frames.
-#
-# * There is no padding or alignment applied to instructions, and they are
-#   packed as closely together as possible, despite not having a consistent
-#   length.
-
 # The header comes first. In the order they are defined below, these values are
-# written to the start of the cartridge.
+# written to the start of the buffer.
 
 head-order: [signal-w, signal-f, title, cart-version]
 head:
@@ -79,42 +64,49 @@ meta:
     type: u32
 
 # Next, is the program section. This is where the executable code of a
-# Catspeak cartridge lives.
-#
-# It consists of a sequence of function definitions, terminated by `\0` (null).
-# The final function definition in the sequence is used as the entry-point for
-# the Catspeak cartridge (global scope).
+# Catspeak cartridge lives, and consists of a sequence of function definitions
+# terminated by `\0` (null).
 
-# Each function definition starts with a sequence Catspeak instructions,
-# terminated by `\0` (null). Every instruction will always begin with its
-# opcode and a 32-bit encoded line and column number.
-#
-# (For information on how to encode line and columns, see:
+# A function definition consists of two parts:
+# * A sequence of instructions, terminated by `\0` (null).
+# * Followed by information about the enclosing function this sequence of
+#   instructions belongs to.
+
+# Each instruction starts with an opcode followed by a 32-bit encoded line
+# and column number. (For information on how to encode line and columns, see:
 # https://www.katsaii.com/catspeak-lang/3.2.0/lib-init.html#catspeak_location_create)
-
-instr:
-  opcode: u8 #< The value of `opcode` from `instr-ops`.
-  dbg: u32   #< Line and column debug information.
-
-# After an instructions opcode and debug information, any `stackargs` are
-# encoded in the order they appear in the instructions `instr-ops` definition.
 #
-# Other fields beyond `opcode` and `stackargs` may be used to inform the
-# Catspeak compiler-compiler, but are not strictly necessary for the reading
-# and writing of simple cartridges.
+# An example instruction definition is shown below:
+#
+#   name: "example"                     #< The name of the instruction.
+#   name-short: "ex_1"                  #< A shorter name for the instruction.
+#   desc: "just an example instruction" #< Instruction description.
+#   opcode: 0x0F                        #< Underlying opcode representation.
+#   args:
+#     - name: "n"                                   #< Operand name.
+#       desc: "the number of hoops to jump through" #< Operand description.
+#       type: u8                                    #< Operand type.
+#   stackargs:
+#     - name: "m" #< Pop value off the stack, and associate it with a name.
+#       desc: "the number of additional hoops to jump through"
+#
+# The IR then encodes each argument of an instruction in the order they appear
+# below (i.e. the `args` field of each instruction):
 
-instr-ops:
+instr-opcode-type: u8 #< The type used for opcodes.
+instr-dbg-type: u32   #< The type used for debug info.
+instr:
 
-  - name: "call"                       #< The name of the instruction.
-    name-short: call                   #< A shorter name for the instruction.
-    desc: "call a function expression" #< Instruction description.
-    opcode: 0x34                       #< Underlying opcode representation.
+  - name: "call"
+    name-short: call
+    desc: "call a function expression"
+    opcode: 0x34
     args:
-      - name: n                                      #< Operand name.
-        desc: "the number of arguments in this call" #< Operand description.
-        type: u16                                    #< Operand type.
+      - name: n
+        desc: "the number of arguments in this call"
+        type: u16
     stackargs:
-      - name: callee #< Pop value off the stack, and associate it with a name.
+      - name: callee
         desc: "the function to call"
       - name: args
         desc: "the arguments to call `callee` with"
@@ -757,11 +749,19 @@ instr-ops:
     exceptional: false
     comptime: undefined
 
-# After all instructions for a function definition are encoded, information
-# about this function follows in the order they are defined below.
+func-argc-type: u8
 
-func-order: [argc]
-func:
-  argc:
-    desc: "the number of named arguments this function accepts"
-    type: u16 #< The number of named arguments this function has.
+# Notes:
+#
+# * Both Catspeak instructions and function definitions are encoded in
+#   reverse-polish notation. This simplifies writing a non-blocking (async)
+#   code-generator in a single-threaded language like GML.
+#
+# * There is no padding or alignment applied to instructions, and they are
+#   packed as closely together as possible, despite not having a consistent
+#   length.
+
+# Finally, every cartridge ends with 0xFF of type u8. (The same type as
+# `instr-opcode-type`!)
+
+program-end-signal: 0xFF

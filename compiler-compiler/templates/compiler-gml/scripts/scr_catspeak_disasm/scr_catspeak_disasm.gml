@@ -84,7 +84,7 @@ function __CatspeakCartDisassembler() constructor {
     static handleInstr{{ case_camel_upper(instr["name"]) }} = function ({{
         join(", ", ["dbg"], ir_enum_ids(instr, "args"))
     }}) {
-        out += "\n  {{ instr.get('name-short', 'name') }}";
+        out += "\n  {{ instr['name-short'] or instr['name'] }}";
 {%  for _, arg in ir_enum(instr, "args") %}
         out += "  " + {{ type_to_gml_format(arg["type"], arg["name"]) }};
 {%  endfor %}
