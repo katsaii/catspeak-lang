@@ -270,13 +270,28 @@ function catspeak_meta(callee) {
 }
 
 /// @ignore
-#macro __gml_method method
+#macro __catspeak_gml_method method
+
+/// @ignore
+#macro __catspeak_gml_method_get_self method_get_self
+
+/// @ignore
+#macro __catspeak_gml_method_get_index method_get_index
+
+/// @ignore
+function __catspeak_method__() {
+    static args = [];
+    for (var i = argument_count; i >= 0; i -= 1) {
+        args[@ i] = argument[i];
+    }
+    return catspeak_execute_ext(self_, callee, args, 0, argument_count);
+}
 
 /// Binds a function to a `self`. Similar to the built-in `method` function,
 /// except this supports Catspeak functions as well as GML functions.
 ///
 /// @remark
-///   Prefered over using `method` otherwise you risk breaking your compiled
+///   Prefered over using `method` otherwise you risk breaking your
 ///   Catspeak functions.
 ///
 /// @remark
@@ -296,12 +311,12 @@ function catspeak_meta(callee) {
 /// @return {Any}
 function catspeak_method(self_, callee) {
     if (is_catspeak(callee)) {
-        if (method_get_index(callee) == __catspeak_method__) {
-            var methodData = method_get_self(callee);
+        if (__catspeak_gml_method_get_index(callee) == __catspeak_method__) {
+            var methodData = __catspeak_gml_method_get_self(callee);
             if (self_ == undefined) {
                 return methodData.callee;
             }
-            return method({
+            return __catspeak_gml_method({
                 ctx : methodData.ctx,
                 callee : methodData.callee,
                 self_ : self_,
@@ -310,24 +325,79 @@ function catspeak_method(self_, callee) {
             if (self_ == undefined) {
                 return callee;
             }
-            var calleeSelf = method_get_self(callee);
-            return method({
+            var calleeSelf = __catspeak_gml_method_get_self(callee);
+            return __catspeak_gml_method({
                 ctx : calleeSelf[$ "ctx"],
                 callee : callee,
                 self_ : self_,
             }, __catspeak_method__);
         }
     }
-    return method(self_, callee);
+    return __catspeak_gml_method(self_, callee);
 }
 
-/// @ignore
-function __catspeak_method__() {
-    static args = [];
-    for (var i = argument_count; i >= 0; i -= 1) {
-        args[@ i] = argument[i];
+/// Returns the 'self' of the current method. Similar to the built-in 
+/// `method_get_self` function, except this supports Catspeak functions as well
+/// as GML functions.
+///
+/// @remark
+///   Preferred over 'method_get_self', otherwise you risk breaking your
+///   Catspeak functions.
+///
+/// @remark
+///   For your convenience, you can do the following to override the built-in
+///   `method_get_self` implementation with the Catspeak implementation:
+///   ```gml
+///   #macro method_get_self catspeak_get_self
+///   ```
+///
+/// @param {Any} callee
+///  The function to get the current global context of. Can be a GML function,
+///  Catspeak function, or a function bound using `catspeak_method`.
+///
+/// @return {Any}
+function catspeak_get_self(callee) {
+    if (is_catspeak(callee)) {
+        if (__catspeak_gml_method_get_index(callee) == __catspeak_method__) {
+            var methodData = __catspeak_gml_method_get_self(callee);
+            return methodData.self_;
+        }
+        return undefined;
     }
-    return catspeak_execute_ext(self_, callee, args, 0, argument_count);
+    return __catspeak_gml_method_get_self(callee);
+}
+
+/// Returns the... ✌_"index"_✌ ...of the current method, either by returning 
+/// the compiled Catspeak function or the exposed GML function as a method
+/// bound to `undefined`.
+///
+/// @remark
+///   Preferred over 'method_get_index', otherwise you risk breaking your compiled
+///   Catspeak functions. However, if you need the numeric ID of the given
+///   GML/Catspeak function then avoid using this function! (NOTE: Why are you
+///   doing that? It won't work on GMRT. Stop it.)
+///
+/// @remark
+///   For your convenience, you can do the following to override the built-in
+///   `method_get_index` implementation with the Catspeak implementation:
+///   ```gml
+///   #macro method_get_index catspeak_get_index
+///   ```
+///
+/// @param {Any} callee
+///  The function to get the current global context of. Can be a GML function,
+///  Catspeak function, or a function bound using `catspeak_method`.
+///
+/// @return {Any}
+function catspeak_get_index(callee) {
+    if (is_catspeak(callee)) {
+        if (__catspeak_gml_method_get_index(callee) == __catspeak_method__) {
+            var methodData = __catspeak_gml_method_get_self(callee);
+            return methodData.callee;
+        }
+        return callee;
+    }
+    return __catspeak_gml_method(undefined, callee);
 }
 
 /// TODO

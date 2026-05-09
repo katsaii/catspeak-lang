@@ -1704,8 +1704,9 @@ function __catspeak_instr_cat__() {
 /// @ignore
 function __catspeak_instr_uwnd__() {
     var box_ = magicBox;
+    var value_ = value();
     box_[@ 0] = label;
-    box_[@ 1] = value();
+    box_[@ 1] = value_;
     throw box_;
 }
 

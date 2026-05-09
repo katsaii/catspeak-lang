@@ -1263,12 +1263,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 __parseCondition();
                 var caseVar = ir.getFreshVar(dbg);
                 ir.emitSetLocal(ord("="), caseVar, dbg);
-                if (lexer.peek() != CatspeakToken.BRACE_LEFT) {
-                    __err(__catspeak_cat(
-                        "expected opening '{' at the start of 'match' block"
-                    ));
-                }
-                lexer.next();
+                __expect(CatspeakToken.BRACE_LEFT, "expected opening '{' at the start of 'match' block");
                 var seenCases = 0;
                 var peeked = lexer.peek();
                 while (peeked != CatspeakToken.BRACE_RIGHT && peeked != CatspeakToken.EOF) {
@@ -1290,7 +1285,6 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     peeked = lexer.peek();
                 }
                 __expect(CatspeakToken.BRACE_RIGHT, "expected closing '}' after 'match' block");
-                lexer.next();
                 ir.emitConstUndefined();
                 repeat (seenCases) {
                     ir.emitIfThenElse();
@@ -1578,25 +1572,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         while (true) {
             var peeked = lexer.peek();
             if (peeked == CatspeakToken.PAREN_LEFT) {
-                var dbg = lexer.getLocationStart();
-                lexer.next();
-                var n = 0;
-                peeked = lexer.peek();
-                var expectExpr = true;
-                while (expectExpr && peeked != CatspeakToken.PAREN_RIGHT) {
-                    __parseExpression();
-                    n += 1;
-                    peeked = lexer.peek();
-                    expectExpr = peeked == CatspeakToken.COMMA;
-                    if (expectExpr) {
-                        lexer.next();
-                        peeked = lexer.peek();
-                    }
-                }
-                __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after call expression");
-                ir.emitCall(n, dbg);
+                __parseIndexCall();
             } else if (peeked == CatspeakToken.BOX_LEFT || peeked == CatspeakToken.DOT) {
                 var dbg = lexer.getLocationStart();
+                var selfVar = ir.getFreshVar(dbg);
+                __pushBlock();
+                ir.emitSetLocal(ord("="), selfVar, dbg);
+                ir.emitGetLocal(selfVar, dbg);
                 lexer.next();
                 if (peeked == CatspeakToken.BOX_LEFT) {
                     __parseExpression();
@@ -1609,15 +1591,47 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 if (op == undefined) {
                     // get
                     ir.emitGetIndex(dbg);
+                    if (lexer.peek() == CatspeakToken.PAREN_LEFT) {
+                        // method calls
+                        var funcVar = ir.getFreshVar(dbg);
+                        ir.emitSetLocal(ord("="), funcVar, dbg);
+                        ir.emitGetLocal(selfVar, dbg); // with self {
+                        ir.emitGetLocal(funcVar, dbg); //   func
+                        __parseIndexCall();            //   ();
+                        ir.emitUnwind(99, dbg);
+                        ir.emitLoopWith();             // }
+                        ir.emitUnwindLanding(99);
+                    }
                 } else {
                     // set
                     __parseExpression();
                     ir.emitSetIndex(op, dbg);
                 }
+                __popBlock();
             } else {
                 break;
             }
         }
+    };
+    
+    static __parseIndexCall = function () {
+        var dbg = lexer.getLocationStart();
+        __expect(CatspeakToken.PAREN_LEFT, "expected opening '(' in call expression");
+        var n = 0;
+        peeked = lexer.peek();
+        var expectExpr = true;
+        while (expectExpr && peeked != CatspeakToken.PAREN_RIGHT) {
+            __parseExpression();
+            n += 1;
+            peeked = lexer.peek();
+            expectExpr = peeked == CatspeakToken.COMMA;
+            if (expectExpr) {
+                lexer.next();
+                peeked = lexer.peek();
+            }
+        }
+        __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after call expression");
+        ir.emitCall(n, dbg);
     };
 
     /// @ignore

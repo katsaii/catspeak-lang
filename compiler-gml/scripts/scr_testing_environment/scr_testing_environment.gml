@@ -98,7 +98,7 @@ test_add(function () : Test("env-function-set-self") constructor {
     assertEq("hi", result.hi);
 });
 
-test_add_force(function () : Test("env-function-method") constructor {
+test_add(function () : Test("env-function-method") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
         return fun { self };
@@ -607,7 +607,7 @@ test_add(function() : Test("with-struct-other-double") constructor {
     assertEq(result[2], result[3]);
 }, IgnorePlatform.WIN_YYC);
 
-test_add(function() : Test("with-struct-other-method") constructor {
+test_add_force(function() : Test("with-struct-other-method") constructor {
     var engine = new CatspeakEnvironment();
     var ir = engine.parseString(@'
         let expect_other_ = { yeah : false };
@@ -618,6 +618,7 @@ test_add(function() : Test("with-struct-other-method") constructor {
     ');
     var _func = engine.compile(ir);
     var result = _func();
+    show_message(result);
     assertEq(result[0], result[2][1]);
     assertEq(result[1], result[2][0]);
 }, IgnorePlatform.WIN_YYC);

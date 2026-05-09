@@ -9,7 +9,7 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = "catspeak4-ctx";
+var runExperiment = undefined; //"catspeak4-ctx";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "catspeak4-ctx" {

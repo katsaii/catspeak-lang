@@ -2,7 +2,7 @@
 
 //# feather use syntax-errors
 
-#macro TEST_EARLY_FAIL false
+#macro TEST_EARLY_FAIL true
 #macro TEST_RUN_ENABLED true
 #macro NoTest:TEST_RUN_ENABLED false
 

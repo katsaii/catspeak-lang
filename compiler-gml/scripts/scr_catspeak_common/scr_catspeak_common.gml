@@ -643,7 +643,7 @@ function __catspeak_is_buffer(val) {
     gml_pragma("forceinline");
     var isBuff = false;
     try {
-        isBuff = buffer_exists(val);
+        isBuff = !is_string(val) && buffer_exists(val);
     } catch (_) { }
     return isBuff;
 }
