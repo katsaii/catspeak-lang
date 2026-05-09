@@ -516,7 +516,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
     // automatically generated code generation functions (here be dragons)
 {% for _, instr in ir_enum(ir, "instr-ops") %}
 {%  set instr_id_upper = case_camel_upper(instr.name) %}
-{%  set instr_id_snake = case_snake(instr.name) %}
+{%  set instr_id_snake = case_snake(instr["name-short"] or instr["name"]) %}
 
     /// @ignore
     static handleInstr{{ instr_id_upper }} = function ({{

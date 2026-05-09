@@ -19,13 +19,14 @@
 //!
 //! Each instruction may also be associated with zero or more static
 //! parameters.
+//!
+//! @advanced
+//! @experimental
 
 //# feather use syntax-errors
 
 /// Handles the creation of Catspeak cartridges. Performs little to no
 /// optimisations on the output. What you emit is what you get!
-///
-/// @experimental
 function CatspeakCartWriter() constructor {
     /// The name of this cartridge.
     ///
@@ -70,7 +71,8 @@ function CatspeakCartWriter() constructor {
     /// @ignore
     varCount = 0;
 
-    /// Returns the number of expressions on the stack at this current moment.
+    /// Returns the number of expressions on the stack.
+    ///
     /// Useful when working with instructions which don't take a constant
     /// number of stackargs. (e.g. `emitSequence`)
     ///
@@ -78,7 +80,7 @@ function CatspeakCartWriter() constructor {
     static getStackSize = function () { return stackSize };
 
     /// Returns a new fresh local variable id for the current function.
-    /// Intended for use with `emitLocalGet` and `emitLocalSet`.
+    /// Intended for use with `emitGetLocal` and `emitSetLocal`.
     ///
     /// @return {Real}
     static getFreshVar = function () {
@@ -109,7 +111,9 @@ function CatspeakCartWriter() constructor {
     /// is supplied then a new, fresh buffer is allocated and returned.
     ///
     /// This method will also free the memory allocated by this builder, and
-    /// mark it for garbage collection.
+    /// mark it for garbage collection. **This means you cannot use the same
+    /// builder twice to write to different buffers**, you should use
+    /// `buffer_copy` for that!
     ///
     /// @warning
     ///   Continuing to use the builder after this method has been called is
@@ -168,8 +172,7 @@ function CatspeakCartWriter() constructor {
                 offset += chunkSize;
             }
             buffer_seek(cart, buffer_seek_start, offset);
-            // 0xFF indicates the end of the program section
-            buffer_write(cart, buffer_u8, 255);
+            buffer_write(cart, buffer_u8, 0); // end of program
             if (rewind) {
                 buffer_seek(cart, buffer_seek_start, cartStart);
             }
@@ -194,17 +197,17 @@ function CatspeakCartWriter() constructor {
 
     /// Ends the current function, returning its id.
     ///
-    /// @param {Real} [argc]
-    ///   The number of named args this function accepts. Defaults to 0.
+    /// @param {Real} argc
+    ///   The number of named arguments this function accepts.
     ///
     /// @return {Real}
-    static popFunction = function (argc = 0) {
+    static popFunction = function (argc) {
         __catspeak_assert(chunkTop >= 0,
             "unbalanced function stack! too many calls to `popFunction`"
         );
         var chunk = chunks[| chunkTop];
-        buffer_write(chunk, buffer_u8, 0);
-        buffer_write(chunk, buffer_u8, argc);
+        buffer_write(chunk, buffer_u8, 0); // end of instructions
+        buffer_write(chunk, buffer_u16, argc);
         var idx = funcCount;
         funcCount += 1;
         chunkTop -= 1;
@@ -629,7 +632,7 @@ function CatspeakCartWriter() constructor {
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.IFTE);
         buffer_write(chunk, buffer_u32, dbg);
-        // <result> - condition - if_true - if_false
+        // <result> - condition - ifTrue - ifFalse
         stackSize += 1 - 1 - 1 - 1;
     };
 
@@ -1064,11 +1067,9 @@ function catspeak_cart_version(cart) {
 
 /// Handles the parsing of Catspeak cartridges.
 ///
-/// @experimental
-///
 /// @remark
 ///   Immediately reads and calls the handlers for the "data" section of the
-///   Catspeak cartridge.
+///   given Catspeak cartridge.
 ///
 /// @param {Id.Buffer} cart_
 ///   The buffer to read cartridge info from.
@@ -1182,6 +1183,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     visitor = visitor_;
     /// @ignore
     funcIdx = 0;
+    /// @ignore
+    instrIdx = 0;
 
     /// Reads the next instruction if it exists, calling its handler.
     ///
@@ -1196,24 +1199,29 @@ function CatspeakCartReader(cart_, visitor_) constructor {
             "called `readInstr` after reaching end of cartridge"
         );
         var opcode = buffer_read(cart_, buffer_u8);
-        if (opcode == 255) {
-            // we've reached the end
-            cart_ = undefined;
-            return false;
+        if (opcode == 0x00) {
+            if (instrIdx == 0) {
+                // end of program
+                __catspeak_assert(funcIdx > 0,
+                    "cartridge cannot contain 0 functions"
+                );
+                return false;
+            } else {
+                // end of function
+                var argc = buffer_read(cart, buffer_u16);
+                visitor.handleFunc(funcIdx, argc);
+                funcIdx += 1;
+                instrIdx = 0;
+                return true;
+            }
         }
+        instrIdx += 1;
         __catspeak_assert(opcode >= 0 && opcode < __CatspeakInstr.__SIZE__,
             "invalid cartridge instruction: " + string(opcode)
         );
         var instrReader = __readerLookup[opcode];
         instrReader();
         return true;
-    };
-
-    /// @ignore
-    static __readFunc = function () {
-        var argc = buffer_read(cart, buffer_u8);
-        visitor.handleFunc(funcIdx, argc);
-        funcIdx += 1;
     };
 
     /// @ignore
@@ -1603,7 +1611,6 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     static __readerLookup = undefined;
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
-        __readerLookup[@ 0] = __readFunc;
         __readerLookup[@ __CatspeakInstr.CALL] = __readICall;
         __readerLookup[@ __CatspeakInstr.ARR] = __readIArray;
         __readerLookup[@ __CatspeakInstr.OBJ] = __readIStruct;

@@ -81,7 +81,7 @@ for func in jinja2api.JINJA2_FUNCS:
     env.globals[func.__name__] = func
 
 # build scripts
-DEBUG = True
+DEBUG = False
 for script in SCRIPTS:
     comment_prefix = infer_comment_style_from_path(script)
     temp_header = get_generated_header(

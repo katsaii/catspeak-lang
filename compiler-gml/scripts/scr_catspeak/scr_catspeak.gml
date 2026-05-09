@@ -315,6 +315,7 @@ function CatspeakCtx() constructor {
         var cart = parse(args);
         var program;
         try {
+        show_message(catspeak_cart_disassemble(cart));
             program = compile(cart);
         } finally {
             if (cartIsOwned) {

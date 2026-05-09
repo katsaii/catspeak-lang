@@ -54,9 +54,7 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleMeta = function (
-        name, author, version, versionMinor, patch, path, date
-    ) {
+    static handleMeta = function (name, author, version, versionMinor, patch, path, date) {
         if (name != "untitled") {
             out += "-- name:  " + string(name) + "\n";
         }
@@ -81,8 +79,9 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleFunc = function (idx) {
+    static handleFunc = function (idx, argc) {
         out += "\nfun " + string(idx) + "\n";
+        out += "--^ argc:  " + string(argc) + "\n";
     };
 
     /// @ignore

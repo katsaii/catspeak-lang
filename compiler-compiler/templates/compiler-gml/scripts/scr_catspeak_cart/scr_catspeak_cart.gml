@@ -231,9 +231,9 @@ function CatspeakCartWriter() constructor {
         {{ m_buffer_write("chunk", arg["type"], case_camel(arg["name"])) }};
 {%  endfor %}
 {%  set ns = namespace(pushes = "1", pushes_name = "<result>") %}
-{%  for _, arg in ir_enum(instr, "args") %}
+{%  for _, arg in ir_enum(instr, "stackargs") %}
 {%   set ns.pushes_name = ns.pushes_name + " - " + case_camel(arg["name"]) %}
-{%   if arg["many"] %}
+{%   if "many" in arg %}
 {%    set ns.pushes = ns.pushes + " - " + str(arg["many"]) %}
 {%   else %}
 {%    set ns.pushes = ns.pushes + " - 1" %}
