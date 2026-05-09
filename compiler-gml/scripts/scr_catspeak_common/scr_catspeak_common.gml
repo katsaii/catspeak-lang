@@ -4,6 +4,8 @@
 //!   If you're not writing your own language front-end, then you can
 //!   ignore this entire page! If you don't know what that means, then you
 //!   can also ignore this page!
+//!
+//! @advanced
 
 /// @ignore
 function __catspeak_scope_get() {
@@ -27,15 +29,11 @@ function __catspeak_scope_get_bound(boundSelf) {
 /// 0b00000000000011111111111111111111
 ///
 /// @ignore
-///
-/// @return {Real}
 #macro __CATSPEAK_LOCATION_LINE_MASK 0x000FFFFF
 
 /// 0b11111111111100000000000000000000
 ///
 /// @ignore
-///
-/// @return {Real}
 #macro __CATSPEAK_LOCATION_COLUMN_MASK 0xFFF00000
 
 /// Indicates a lack of location in a source file.
@@ -194,8 +192,6 @@ function catspeak_location_trace(err, location = CATSPEAK_NOLOCATION, filepath =
 
 /// A utility function that can be used to convert a string into a
 /// Catspeak-compatible source buffer.
-///
-/// @experimental
 ///
 /// @param {String} src
 ///   The string to transform into a buffer.

@@ -5,14 +5,14 @@
 //! converting source code from individual characters into clusters of
 //! characters called[tokens](https://en.wikipedia.org/wiki/Lexical_analysis#Lexical_token_and_lexical_tokenization),
 //! and then further into an executable Catspeak cartridge.
+//!
+//! @advanced
 
 //# feather use syntax-errors
 
 /// A token in Catspeak is a series of characters with meaning, usually
 /// separated by whitespace. These meanings are represented by unique
 /// elements of the `CatspeakToken` enum.
-///
-/// @experimental
 ///
 /// @example
 ///   Some examples of tokens in Catspeak, and their meanings:

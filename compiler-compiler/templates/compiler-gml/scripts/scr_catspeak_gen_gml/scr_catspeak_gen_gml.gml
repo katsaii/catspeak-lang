@@ -2,10 +2,17 @@
 //!
 //! This stage of the compiler is very unintelligent, and may produce bad
 //! results if given invalid IR.
+//!
+//! @advanced
+//! @experimental
 
 //# feather use syntax-errors
 
-/// TODO
+/// A visitor to be used by `CatspeakCartReader` which lowers a Catspeak
+/// cartridge into an executable GML method.
+///
+/// @param {Struct} [globals_]
+///   The struct to use as global scope for unbound variables in Catspeak.
 function CatspeakGenGML(globals_ = undefined) constructor {
     /// @ignore
     exprStack = undefined;

@@ -1,11 +1,12 @@
 //! Responsible for disassembling a Catspeak cartridge and printing its content
 //! in a human-readable bytecode format.
+//!
+//! @advanced
+//! @experimental
 
 //# feather use syntax-errors
 
 /// Disassembles a supplied Catspeak cartridge into a string.
-///
-/// @experimental
 ///
 /// @warning
 ///   This should only be used for debug purposes.
