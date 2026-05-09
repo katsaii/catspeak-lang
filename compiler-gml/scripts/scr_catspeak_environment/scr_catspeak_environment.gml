@@ -19,10 +19,10 @@
 //!   var main = Catspeak.compile(ir);
 //!
 //!   // initialise the Catspeak script by calling its main entry point
-//!   catspeak_execute_v3(main);
+//!   catspeak_execute(main);
 //!
 //!   // grab the counter function from the script
-//!   var counter = catspeak_globals_v3(main).counter;
+//!   var counter = catspeak_globals(main).counter;
 //!
 //!   // call the Catspeak `counter` function from GML!
 //!   show_message(counter()); // prints 1
@@ -984,32 +984,6 @@ function CatspeakEnvironment_() constructor {
 /// @return {Struct.CatspeakEnvironment}
 #macro Catspeak global.__catspeak__
 
-/// Simple wrapper over `catspeak_execute_ext_v3` which infers the `self` and
-/// `other` context from the current callsite.
-///
-/// @remark
-///   Gets around a limitation in GML where the `self` and `other` of the
-///   callsite cannot be accessed from within bound methods. Use this
-///   function if you want the `self` of a called Catspeak function to be
-///   the same as the `self` of the callsite in GML land.
-///
-/// @param {Any} callee
-///   The function to call. Can be a GML function, Catspeak function, or a
-///   function bound using `catspeak_method_v3`.
-///
-/// @param {Any} ...
-///   The arguments to pass to this function.
-///
-/// @return {Any}
-///   The result of evaluating the `callee` function.
-function catspeak_execute_v3(callee) {
-    static args = [];
-    for (var i = argument_count; i >= 1; i -= 1) {
-        args[@ i - 1] = argument[i];
-    }
-    return catspeak_execute_ext_v3(callee, self, args, 0, argument_count - 1);
-}
-
 #macro __CATSPEAK_BEGIN_SELF \
         var __selfPrev = global.__catspeakGmlSelf; \
         var __otherPrev = global.__catspeakGmlOther; \
@@ -1023,114 +997,6 @@ function catspeak_execute_v3(callee) {
             global.__catspeakGmlOther = __otherPrev; \
         }
 
-/// Executes a Catspeak-compatible function in the supplied `self` scope.
-///
-/// @remark
-///   Gets around a limitation in GML where the `self` and `other` of the
-///   callsite cannot be accessed from within bound methods. Use this
-///   function if you want the `self` of a called Catspeak function to be
-///   the same as the `self` of the callsite in GML land.
-///
-/// @param {Any} callee
-///   The function to call. Can be a GML function, Catspeak function, or a
-///   function bound using `catspeak_method_v3`.
-///
-/// @param {Struct} self_
-///   The `self` context to use when calling this Catspeak function.
-///
-/// @param {Array<Any>} [args]
-///   The argument list to call this function with. Defaults to no arguments.
-///
-/// @param {Real} [offset]
-///   The offset in the `args` array to begin reading arguments from. Defaults
-///   to 0.
-///
-/// @param {Real} [argc]
-///   The number of arguments to pass to the function call. Defaults to
-///   `array_length(args) - offset`.
-///
-/// @return {Any}
-///   The result of evaluating the `callee` function.
-function catspeak_execute_ext_v3(
-    callee,
-    self_,
-    args = undefined,
-    offset = 0,
-    argc = undefined
-) {
-    var result = undefined;
-    __CATSPEAK_BEGIN_SELF = self_;
-    with (__selfPrev ?? other) {
-        with (method_get_self(callee) ?? self_) {
-            if (args == undefined) {
-                result = script_execute(method_get_index(callee));
-            } else {
-                argc ??= array_length(args) - offset;
-                result =  script_execute_ext(
-                    method_get_index(callee),
-                    args, offset, argc
-                );
-            }
-        }
-    }
-    __CATSPEAK_END_SELF;
-    return result;
-}
-
-/// Returns a struct containing the global variable context of a Catspeak
-/// function, or `undefined` if no globals exist.
-///
-/// @param {Any} callee
-///   The function to get the global context of. Can be a GML function,
-///   Catspeak function, or a function bound using `catspeak_method_v3`.
-///
-/// @return {Struct}
-function catspeak_globals_v3(callee) {
-    if (is_catspeak(callee)) {
-        return catspeak_globals(callee);
-    }
-    return undefined;
-}
-
-/// Binds a function to a `self`. Similar to the built-in `method` function,
-/// except this supports Catspeak functions as well as GML functions.
-///
-/// @remark
-///   Prefered over using `method` otherwise you risk breaking your compiled
-///   Catspeak functions.
-///
-/// @param {Any} self_
-///   The scope to bind this function to. Can be a struct or `undefined`.
-///
-/// @param {Any} callee
-///   The function to get the global context of. Can be a GML function,
-///   Catspeak function, or a function bound using `catspeak_method_v3`.
-///
-/// @return {Any}
-function catspeak_method_v3(self_, callee) {
-    if (is_catspeak(callee)) {
-        if (method_get_index(callee) == __catspeak_function_method__) {
-            var methodData = method_get_self(callee);
-            if (self_ == undefined) {
-                return methodData.callee;
-            }
-            return method({
-                callee : methodData.callee,
-                self_ : self_,
-            }, __catspeak_function_method__);
-        } else {
-            if (self_ == undefined) {
-                return callee;
-            }
-            return method({
-                callee : callee,
-                self_ : self_,
-            }, __catspeak_function_method__);
-        }
-    }
-    return method(self_, callee);
-}
-
 /// Returns the 'self' of the current method, either by returning the correct Catspeak scope
 /// or the exposed GML method scope (if any)
 ///
@@ -1140,7 +1006,7 @@ function catspeak_method_v3(self_, callee) {
 ///
 /// @param {Any} callee
 ///  The function to get the current global context of. Can be a GML function,
-///  Catspeak function, or a function bound using `catspeak_method_v3`.
+///  Catspeak function, or a function bound using `catspeak_method`.
 ///
 /// @return {Any}
 function catspeak_get_self(callee) {
@@ -1164,7 +1030,7 @@ function catspeak_get_self(callee) {
 ///
 /// @param {Any} callee
 ///  The function to get the current global context of. Can be a GML function,
-///  Catspeak function, or a function bound using `catspeak_method_v3`.
+///  Catspeak function, or a function bound using `catspeak_method`.
 ///
 /// @return {Any}
 function catspeak_get_index(callee) {
@@ -1173,15 +1039,6 @@ function catspeak_get_index(callee) {
         return self_[$ "callee"] ?? callee;
     }
     return method(undefined, callee);
-}
-
-/// @ignore
-function __catspeak_function_method__() {
-    static args = [];
-    for (var i = argument_count; i >= 0; i -= 1) {
-        args[@ i] = argument[i];
-    }
-    return catspeak_execute_ext_v3(callee, self_, args, 0, argument_count);
 }
 
 /// @ignore

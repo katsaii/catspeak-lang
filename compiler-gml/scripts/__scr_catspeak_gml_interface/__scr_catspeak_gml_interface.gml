@@ -143,7 +143,7 @@ function __catspeak_get_gml_interface() {
                 db[$ "chr"] = method(undefined, chr);
                 db[$ "ansi_char"] = method(undefined, ansi_char);
                 db[$ "ord"] = method(undefined, ord);
-                db[$ "method"] = method(undefined, catspeak_method_v3);
+                db[$ "method"] = method(undefined, catspeak_method);
                 db[$ "method_get_index"] = method(undefined, catspeak_get_index);
                 db[$ "method_get_self"] = method(undefined, catspeak_get_self);
                 db[$ "string_length"] = method(undefined, string_length);

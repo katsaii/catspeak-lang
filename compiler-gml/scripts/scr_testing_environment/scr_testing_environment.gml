@@ -114,7 +114,7 @@ test_add_ignore(function () : Test("env-function-method-2") constructor {
     var f = env.compile(env.parseString(@'
         return fun { self };
     '));
-    var fun = catspeak_method_v3({ bye : "bye" }, f());
+    var fun = catspeak_method({ bye : "bye" }, f());
     var result = fun();
     assertTypeof(result, "struct");
     assertEq("bye", result.bye);
@@ -722,9 +722,9 @@ test_add(function() : Test("catspeak-get-index") constructor {
     var speak = globals.speak;
     
     var inst = {name: "Elephant"};
-    var instSpeak = catspeak_method_v3(inst, speak); 
+    var instSpeak = catspeak_method(inst, speak); 
     
-    var noInstSpeak = catspeak_method_v3(undefined, instSpeak);
+    var noInstSpeak = catspeak_method(undefined, instSpeak);
     
     // Only one should be a valid scope, rest is undefined
     assertEq(true, catspeak_get_self(instSpeak) == inst);
@@ -877,16 +877,16 @@ test_add(function() : Test("method-undefined") constructor {
     ');
     var fun = env.compile(ir);
     var f0 = fun();
-    var f1 = catspeak_method_v3({ tag : "A" }, f0);
-    var f2 = catspeak_method_v3({ tag : "B" }, f1);
+    var f1 = catspeak_method({ tag : "A" }, f0);
+    var f2 = catspeak_method({ tag : "B" }, f1);
     assertEq("A", f1().tag);
     assertEq("B", f2().tag);
-    var f3 = catspeak_method_v3(undefined, f2);
+    var f3 = catspeak_method(undefined, f2);
     with ({ tag : "C" }) {
-        other.assertEq("C", catspeak_execute_v3(f3).tag);
+        other.assertEq("C", catspeak_execute(f3).tag);
     }
-    var f4 = catspeak_method_v3(undefined, f3);
-    assertEq("D", catspeak_execute_ext_v3(f3, { tag : "D" }).tag);
+    var f4 = catspeak_method(undefined, f3);
+    assertEq("D", catspeak_execute_ext(f3, { tag : "D" }).tag);
 });
 
 test_add(function() : Test("method-undefined-variant") constructor {
@@ -897,16 +897,16 @@ test_add(function() : Test("method-undefined-variant") constructor {
     ');
     var fun = env.compile(ir);
     var f0 = fun();
-    var f1 = catspeak_method_v3({ tag : "A" }, f0);
-    var f2 = catspeak_method_v3({ tag : "B" }, f0);
+    var f1 = catspeak_method({ tag : "A" }, f0);
+    var f2 = catspeak_method({ tag : "B" }, f0);
     assertEq("A", f1().tag);
     assertEq("B", f2().tag);
-    var f3 = catspeak_method_v3(undefined, f0);
+    var f3 = catspeak_method(undefined, f0);
     with ({ tag : "C" }) {
-        other.assertEq("C", catspeak_execute_v3(f3).tag);
+        other.assertEq("C", catspeak_execute(f3).tag);
     }
-    var f4 = catspeak_method_v3(undefined, f0);
-    assertEq("D", catspeak_execute_ext_v3(f3, { tag : "D" }).tag);
+    var f4 = catspeak_method(undefined, f0);
+    assertEq("D", catspeak_execute_ext(f3, { tag : "D" }).tag);
 });
 
 test_add(function() : Test("method-self-setSelf") constructor {
@@ -915,36 +915,36 @@ test_add(function() : Test("method-self-setSelf") constructor {
     var fun = env.compile(ir);
     // phase 1
     var f0 = fun();
-    assertEq(catspeak_globals_v3(f0), f0());
-    assertEq(self, catspeak_execute_v3(f0));
+    assertEq(catspeak_globals(f0), f0());
+    assertEq(self, catspeak_execute(f0));
     var s0 = { nothing : true };
-    assertEq(s0, catspeak_execute_ext_v3(f0, s0));
+    assertEq(s0, catspeak_execute_ext(f0, s0));
     // phase 2
     var s1 = { kan : "aya" };
-    var f1 = catspeak_method_v3(s1, f0);
-    assertEq(catspeak_globals_v3(f0), f0());        // check f0 is still correct
-    assertEq(self, catspeak_execute_v3(f0));
-    assertEq(s0, catspeak_execute_ext_v3(f0, s0));
+    var f1 = catspeak_method(s1, f0);
+    assertEq(catspeak_globals(f0), f0());        // check f0 is still correct
+    assertEq(self, catspeak_execute(f0));
+    assertEq(s0, catspeak_execute_ext(f0, s0));
     assertEq(s1, f1());                          // check if f1 is bound
-    assertEq(s1, catspeak_execute_v3(f1));
-    assertEq(s1, catspeak_execute_ext_v3(f1, { }));
+    assertEq(s1, catspeak_execute(f1));
+    assertEq(s1, catspeak_execute_ext(f1, { }));
     // phase 3
     var s2 = { baddie : true };
     f0.setSelf(s2);
     assertEq(s2, f0());                          // check f0 is bound
-    assertEq(s2, catspeak_execute_v3(f0));
-    assertEq(s2, catspeak_execute_ext_v3(f0, s0));
+    assertEq(s2, catspeak_execute(f0));
+    assertEq(s2, catspeak_execute_ext(f0, s0));
     assertEq(s2, f1());                          // check f1 is re-bound
-    assertEq(s2, catspeak_execute_v3(f1));
-    assertEq(s2, catspeak_execute_ext_v3(f1, { }));
+    assertEq(s2, catspeak_execute(f1));
+    assertEq(s2, catspeak_execute_ext(f1, { }));
     // phase 4
     f0.setSelf(undefined);
-    assertEq(catspeak_globals_v3(f0), f0());        // check f0 is unbound
-    assertEq(self, catspeak_execute_v3(f0));
-    assertEq(s0, catspeak_execute_ext_v3(f0, s0));
+    assertEq(catspeak_globals(f0), f0());        // check f0 is unbound
+    assertEq(self, catspeak_execute(f0));
+    assertEq(s0, catspeak_execute_ext(f0, s0));
     assertEq(s1, f1());                          // check f1 is bound to s1
-    assertEq(s1, catspeak_execute_v3(f1));
-    assertEq(s1, catspeak_execute_ext_v3(f1, { }));
+    assertEq(s1, catspeak_execute(f1));
+    assertEq(s1, catspeak_execute_ext(f1, { }));
 });
 
 test_add_ignore(function() : Test("nineslice-vars") constructor {

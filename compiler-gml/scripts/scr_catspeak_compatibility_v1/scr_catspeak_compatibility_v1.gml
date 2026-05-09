@@ -217,7 +217,7 @@ function catspeak_session_add_function(
 function catspeak_session_create_process(
     session_id, script_id_or_method, args=[]
 ) {
-    var result = catspeak_execute_ext_v3(session_id.main, self, args);
+    var result = catspeak_execute_ext(session_id.main, self, args);
     script_id_or_method(result);
 }
 
@@ -233,5 +233,5 @@ function catspeak_session_create_process(
 ///
 /// @return {Any}
 function catspeak_session_create_process_greedy(session_id, args=[]) {
-    return catspeak_execute_ext_v3(session_id.main, self, args);
+    return catspeak_execute_ext(session_id.main, self, args);
 }
