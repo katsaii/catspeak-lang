@@ -68,9 +68,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
     };
 
     /// @ignore
-    static handleMeta = function (
-        {{ join(", ", args(MetaItem.enum(ir))) }}
-    ) {
+    static handleMeta = function ({{ join(", ", ir_enum_ids(ir, "meta")) }}) {
         isAlive = true;
         exprStack = ds_stack_create();
         funcs = ds_list_create();
@@ -82,8 +80,9 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             callee_ : undefined,
             dbg : CATSPEAK_NOLOCATION,
             meta : {
-{% for meta in MetaItem.enum(ir) %}
-                {{ meta.name_id }} : {{ meta.name_id }},
+{% for meta_name, meta in ir_enum(ir, "meta") %}
+{%  set meta_id = case_camel(meta_name) %}
+                {{ meta_id }} : {{ meta_id }},
 {% endfor %}
             },
         };
@@ -135,6 +134,11 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             }, __catspeak_dbg__);
         }
     };
+
+    if (!variable_global_exists("__catspeakSharedUnwindBox")) {
+        // guarantee the special unwind box exists if we're generating code
+        global.__catspeakSharedUnwindBox = [undefined, undefined];
+    }
 
     /// @ignore
     static __genExpr = function (self_, func_) {
@@ -335,16 +339,12 @@ function CatspeakGenGML(globals_ = undefined) constructor {
     static __genExprCatch = function (idx, eager, lazy) {
         localsN = max(localsN, idx + 1);
         return __genExpr({
+            magicBox : global.__catspeakSharedUnwindBox,
             off : __localIdx2Offset(idx),
             eager : eager,
             lazy : lazy,
         }, __catspeak_instr_cat__);
     };
-
-    if (!variable_global_exists("__catspeakSharedUnwindBox")) {
-        // guarantee the special unwind box exists if we're generating code
-        global.__catspeakSharedUnwindBox = [undefined, undefined];
-    }
 
     /// @ignore
     static __genExprUnwind = function (label, value) {
@@ -514,82 +514,60 @@ function CatspeakGenGML(globals_ = undefined) constructor {
     };
 
     // automatically generated code generation functions (here be dragons)
-{% for instr in InstrItem.enum(ir) %}
+{% for _, instr in ir_enum(ir, "instr-ops") %}
+{%  set instr_id_upper = case_camel_upper(instr.name) %}
+{%  set instr_id_snake = case_snake(instr.name) %}
 
     /// @ignore
-    static {{ instr.name_handler }} = function ({{
-        join(", ", ["dbg"] + args(InstrArgItem.enum(instr.ir)))
+    static handleInstr{{ instr_id_upper }} = function ({{
+        join(", ", ["dbg"], ir_enum_ids(instr, "args"))
     }}) {
         var exprStack_ = exprStack;
 {#  pop stackargs in reverse order #}
-{%  for arg in list(InstrStackargItem.enum(instr.ir))[::-1] %}
-{%   if arg.many %}
+{%  for _, arg in list(ir_enum(instr, "stackargs"))[::-1] %}
+{%   set arg_name = case_camel(arg["name"]) %}
+{%   if "many" in arg %}
 {#    pop many arguments and put them into an array #}
-        var {{ arg.name }}__n = {{ arg.many }};
-        var {{ arg.name }}__nGot = ds_stack_size(exprStack_);
-        if ({{ arg.name }}__nGot < {{ arg.name }}__n) {
+        var {{ arg_name }}__n = {{ arg["many"] }};
+        var {{ arg_name }}__nGot = ds_stack_size(exprStack_);
+        if ({{ arg_name }}__nGot < {{ arg_name }}__n) {
             __catspeak_error(__catspeak_cat(
-                "not enough stack space for '{{ arg.name }}' argument of '{{ instr.name_id_op }}' instruction (expected ",
-                {{ arg.name }}__n, ", got ", {{ arg.name }}__nGot, ")"
+                "not enough stack space for '{{ arg_name }}' argument of '{{ instr_id_snake }}' instruction (expected ",
+                {{ arg_name }}__n, ", got ", {{ arg_name }}__nGot, ")"
             ));
         }
-        var {{ arg.name }} = array_create({{ arg.name }}__n);
-        for (var i = {{ arg.name }}__n - 1; i >= 0; i -= 1) {
-            {{ arg.name }}[@ i] = ds_stack_pop(exprStack_);
+        var {{ arg_name }} = array_create({{ arg_name }}__n);
+        for (var i = {{ arg_name }}__n - 1; i >= 0; i -= 1) {
+            {{ arg_name }}[@ i] = ds_stack_pop(exprStack_);
         }
 {%   else %}
-        var {{ arg.name }} = ds_stack_pop(exprStack_);
-        __catspeak_assert({{ arg.name }} != undefined,
-            "not enough stack space for '{{ arg.name }}' argument of '{{ instr.name_id_op }}' instruction"
+        var {{ arg_name }} = ds_stack_pop(exprStack_);
+        __catspeak_assert({{ arg_name }} != undefined,
+            "not enough stack space for '{{ arg_name }}' argument of '{{ instr_id_snake }}' instruction"
         );
 {%   endif %}
 {%  endfor %}
         var expr;
-{%  if instr.comptime %}
-{#   special case for inlined arguments #}
-{%   for inlined in InstrInlineItem.enum(instr.ir) %}
-        if (
-{%-   for name, value_lit in inlined.conditions.items() -%}
-            {{- name }} == {{ value_lit -}}
-            {{- " && " if not loop.last else "" -}}
-{%-   endfor -%}
-        ) {
-            expr = __genExpr({
-{%    for arg in InstrArgItem.enum(instr.ir) %}
-{%     if arg.name not in inlined.conditions %}
-                {{ arg.name }} : {{ arg.name }},
-{%     endif %}
-{%    endfor %}
-{%    for arg in InstrStackargItem.enum(instr.ir) %}
-                {{ arg.name }} : {{ arg.name }},
-{%    endfor %}
-            }, __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__);
-        } else
-{%   endfor %}
-{#   default case for instructions #}
-{%   if InstrInlineItem.has_default_impl(instr.ir) %}
+{%  if "comptime" in instr %}
         expr = __genExpr({
-{%    for arg in InstrArgItem.enum(instr.ir) %}
-            {{ arg.name }} : {{ arg.name }},
-{%    endfor %}
-{%    for arg in InstrStackargItem.enum(instr.ir) %}
-            {{ arg.name }} : {{ arg.name }},
-{%    endfor %}
-        }, __catspeak_instr_{{ instr.name_id_op }}__);
-{%   else %}
-        __catspeak_error(
-            "instruction {{ instr.name_short }} has no implementation for the given args"
-        );
-{%   endif %}
+{%  for _, arg in list(ir_enum(instr, "args")) %}
+{%   set arg_name = case_camel(arg["name"]) %}
+            {{ arg_name }} : {{ arg_name }},
+{%   endfor %}
+{%  for _, arg in list(ir_enum(instr, "stackargs")) %}
+{%   set arg_name = case_camel(arg["name"]) %}
+            {{ arg_name }} : {{ arg_name }},
+{%   endfor %}
+        }, __catspeak_instr_{{ instr_id_snake }}__);
 {%  else %}
-        expr = __genExpr{{ case_camel_upper(instr.name) }}({{
+        expr = __genExpr{{ instr_id_upper }}({{
             join(", ",
-                args(InstrArgItem.enum(instr.ir)) +
-                args(InstrStackargItem.enum(instr.ir))
+                ir_enum_ids(instr, "args"),
+                ir_enum_ids(instr, "stackargs")
             )
         }});
 {%  endif %}
-{%  if instr.exceptional %}
+{%  if instr.get("exceptional", False) %}
         expr = __attachDbg(dbg, expr);
 {%  endif %}
         ds_stack_push(exprStack_, expr);
@@ -925,7 +903,9 @@ function __catspeak_instr_cat__() {
     try {
         result = eager();
     } catch (ex) {
-        // TODO :: let the special unwind boxed type pass through
+        if (ex == magicBox) {
+            throw ex;
+        }
         ctx_.stack[ctx_.stackN + off] = ex;
         result = lazy();
     }
@@ -1303,29 +1283,17 @@ function __catspeak_instr_call__() {
 // automatically generated instructions below (here be dragons)
 
 {# generate comptime instructions #}
-{% for instr in InstrItem.enum(ir) %}
-{%  if instr.comptime != None %}
-{%   set ns = namespace(expr = instr.comptime) %}
-{%   for arg in InstrStackargItem.enum(instr.ir) %}
-{%    set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name + "()") %}
+{% for _, instr in ir_enum(ir, "instr-ops") %}
+{%  set instr_id_snake = case_snake(instr["name-short"] or instr["name"]) %}
+{%  if "comptime" in instr %}
+{%   set ns = namespace(expr = instr["comptime"]) %}
+{%   for _, arg in ir_enum(instr, "stackargs") %}
+{%    set ns.expr = ns.expr.replace("$" + arg["name"] + "$", case_camel(arg["name"]) + "()") %}
 {%   endfor %}
 {%   set expr_stackargs = ns.expr %}
-{%   if InstrInlineItem.has_default_impl(instr.ir) %}
-{%    for arg in InstrArgItem.enum(instr.ir) %}
-{%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
-{%    endfor %}
-/** @ignore */ function __catspeak_instr_{{ instr.name_id_op }}__() { return {{ ns.expr }} }
-{%   endif %}
-{#   special case for inlined arguments #}
-{%   for inlined in InstrInlineItem.enum(instr.ir) %}
-{%    set ns.expr = expr_stackargs %}
-{%-   for name, value_lit in inlined.conditions.items() -%}
-{%     set ns.expr = ns.expr.replace("$" + name + "$", value_lit) %}
-{%    endfor %}
-{%    for arg in InstrArgItem.enum(instr.ir) %}
-{%     set ns.expr = ns.expr.replace("$" + arg.name + "$", arg.name) %}
-{%    endfor %}
-/** @ignore */ function __catspeak_instr_{{ instr.name_id_op }}_{{ inlined.name }}__() { return {{ ns.expr }} }
+{%   for _, arg in ir_enum(instr, "args") %}
+{%    set ns.expr = ns.expr.replace("$" + arg["name"] + "$", case_camel(arg["name"])) %}
 {%   endfor %}
+/** @ignore */ function __catspeak_instr_{{ instr_id_snake }}__() { return {{ ns.expr }} }
 {%  endif %}
 {% endfor %}

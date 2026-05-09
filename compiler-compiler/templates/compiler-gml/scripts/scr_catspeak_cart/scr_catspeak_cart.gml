@@ -373,16 +373,16 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         return true;
     };
 {% for _, instr in ir_enum(ir, "instr-ops") %}
-{%  set instr_name_upper = case_camel_upper(instr.name) %}
+{%  set instr_id_upper = case_camel_upper(instr.name) %}
 
     /// @ignore
-    static __readI{{ instr_name_upper }} = function () {
+    static __readI{{ instr_id_upper }} = function () {
         var cart_ = cart;
         var dbg = {{ m_buffer_read("cart_", dbg_type) }};
 {%  for _, arg in ir_enum(instr, "args") %}
         var {{ case_camel(arg["name"]) }} = {{ m_buffer_read("cart_", arg["type"]) }};
 {%  endfor %}
-        visitor.handleInstr{{ instr_name_upper }}({{
+        visitor.handleInstr{{ instr_id_upper }}({{
             join(", ", ["dbg"], ir_enum_ids(instr, "args"))
         }});
     };
@@ -393,9 +393,9 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
 {% for _, instr in ir_enum(ir, "instr-ops") %}
-{%  set instr_name_upper = case_camel_upper(instr["name"]) %}
-{%  set instr_name_upper_snake = case_snake_upper(instr["name-short"] or instr["name"]) %}
-        __readerLookup[@ __CatspeakInstr.{{ instr_name_upper_snake }}] = __readI{{ instr_name_upper }};
+{%  set instr_id_upper = case_camel_upper(instr["name"]) %}
+{%  set instr_id_upper_snake = case_snake_upper(instr["name-short"] or instr["name"]) %}
+        __readerLookup[@ __CatspeakInstr.{{ instr_id_upper_snake }}] = __readI{{ instr_id_upper }};
 {% endfor %}
     }
 }
@@ -403,8 +403,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 /// @ignore
 enum __CatspeakInstr {
 {% for _, instr in ir_enum(ir, "instr-ops") %}
-{%  set instr_name_upper_snake = case_snake_upper(instr["name-short"] or instr["name"]) %}
-    {{ instr_name_upper_snake }} = {{ instr["opcode"] }},
+{%  set instr_id_upper_snake = case_snake_upper(instr["name-short"] or instr["name"]) %}
+    {{ instr_id_upper_snake }} = {{ instr["opcode"] }},
 {% endfor %}
     __SIZE__ = {{ max(map(get(1, "opcode"), ir_enum(ir, "instr-ops"))) + 1 }},
 }

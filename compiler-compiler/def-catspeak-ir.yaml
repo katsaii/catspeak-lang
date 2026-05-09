@@ -673,55 +673,6 @@ instr-ops:
         type: f64
     exceptional: false
     comptime: $value$
-    force-inline:
-      - name: "0"
-        conditions:
-          - [value, 0]
-      - name: "1" #< Common in incrementation e.g. x += 1
-        conditions:
-          - [value, 1]
-      - name: "2" #< Common in divisions e.g. x /= 2
-        conditions:
-          - [value, 2]
-      - name: "3"
-        conditions:
-          - [value, 3]
-      - name: "4" #< Common with bitwise operations (up until 256).
-        conditions:
-          - [value, 4]
-      - name: "8"
-        conditions:
-          - [value, 8]
-      - name: "16"
-        conditions:
-          - [value, 16]
-      - name: "24"
-        conditions:
-          - [value, 24]
-      - name: "32"
-        conditions:
-          - [value, 32]
-      - name: "64"
-        conditions:
-          - [value, 64]
-      - name: "128"
-        conditions:
-          - [value, 128]
-      - name: "256"
-        conditions:
-          - [value, 256]
-      - name: "10"
-        conditions:
-          - [value, 10]
-      - name: "100" #< Common when dealing with percentages.
-        conditions:
-          - [value, 100]
-      - name: "1k"  #< Common when converting between s and ms.
-        conditions:
-          - [value, 1000]
-      - name: "1m"  #< Common when converting between s and us.
-        conditions:
-          - [value, 1000000]
 
   - name: "const string"
     name-short: const_s
@@ -733,22 +684,6 @@ instr-ops:
         type: string
     exceptional: false
     comptime: $value$
-    force-inline:
-      - name: empty
-        conditions:
-          - [value, ""]
-      - name: star  #< Common when dealing with files. (GLOB patterns)
-        conditions:
-          - [value, "*"]
-      - name: slash #< Common when dealing with file paths.
-        conditions:
-          - [value, "/"]
-      - name: x
-        conditions:
-          - [value, "x"]
-      - name: y
-        conditions:
-          - [value, "y"]
 
   - name: "const undefined"
     name-short: const_u
