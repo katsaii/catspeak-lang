@@ -17,7 +17,7 @@ TEST_EXPERIMENT "catspeak4-ctx" {
     var module = ctx.run(@'
         return "hi catspeak"
     ');
-    show_message(module);
+    //show_message(module);
 }
 
 TEST_EXPERIMENT "catspeak4-parse" {

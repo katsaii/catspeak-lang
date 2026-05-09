@@ -69,6 +69,36 @@
 /// @return {Real}
 #macro CATSPEAK_TIMEOUT 1000
 
+/// Checks whether a value is a valid Catspeak function.
+///
+/// @warning
+///   Internally, this actually just checks whether the methods name starts
+///   with `__catspeak_`. Because of this, you should avoid giving your
+///   functions that prefix to prevent false positives.
+///
+/// @param {Any} value
+///   The value to check is a Catspeak function.
+///
+/// @return {Bool}
+function is_catspeak(value) {
+    if (!is_method(value)) {
+        return false;
+    }
+    var scr = method_get_index(value);
+    if (scr == __catspeak_function__) {
+        return true;
+    }
+    var scrName = script_get_name(scr);
+    if (string_starts_with(scrName, "__catspeak_")) {
+        var self_ = method_get_self(value);
+        if (variable_struct_exists(self_, "ctx")) {
+            // all Catspeak functions should have this on their self binding
+            return true;
+        }
+    }
+    return false;
+}
+
 /// Simple wrapper over `catspeak_execute_ext_v3` which infers the `self` and
 /// `other` context from the current callsite.
 ///
@@ -92,7 +122,7 @@ function catspeak_execute(callee_) {
     for (var i = argument_count; i >= 1; i -= 1) {
         args[@ i - 1] = argument[i];
     }
-    return catspeak_execute_ext(self, other, callee_, args, 0, argument_count - 1);
+    return catspeak_execute_ext(self, callee_, args, 0, argument_count - 1);
 }
 
 /// Executes a Catspeak-compatible function in the supplied `self` scope.
@@ -105,9 +135,6 @@ function catspeak_execute(callee_) {
 ///
 /// @param {Struct} self_
 ///   The `self` context to use when calling this Catspeak function.
-///
-/// @param {Struct} other_
-///   The `other` context to use when calling this Catspeak function.
 ///
 /// @param {Any} callee_
 ///   The function to call. Can be a GML function, Catspeak function, or a
@@ -128,7 +155,6 @@ function catspeak_execute(callee_) {
 ///   The result of evaluating the `callee` function.
 function catspeak_execute_ext(
     self_,
-    other_,
     callee_,
     args = undefined,
     offset = 0,
@@ -139,8 +165,8 @@ function catspeak_execute_ext(
     var oldOther = scopes.other_;
     var result = undefined;
     try {
+        scopes.other_ = scopes.self_;
         scopes.self_ = catspeak_special_to_struct(self_);
-        scopes.other_ = catspeak_special_to_struct(other_);
         var boundScopes = __catspeak_scope_get_bound(method_get_self(callee_));
         with (boundScopes.other_) with (boundScopes.self_) {
             var calleeUnbound = method_get_index(callee_);
@@ -243,6 +269,67 @@ function catspeak_meta(callee) {
     return undefined;
 }
 
+/// @ignore
+#macro __gml_method method
+
+/// Binds a function to a `self`. Similar to the built-in `method` function,
+/// except this supports Catspeak functions as well as GML functions.
+///
+/// @remark
+///   Prefered over using `method` otherwise you risk breaking your compiled
+///   Catspeak functions.
+///
+/// @remark
+///   For your convenience, you can do the following to override the built-in
+///   `method` implementation with the Catspeak implementation:
+///   ```gml
+///   #macro method catspeak_method
+///   ```
+///
+/// @param {Any} self_
+///   The scope to bind this function to. Can be a struct or `undefined`.
+///
+/// @param {Any} callee
+///   The function to get the global context of. Can be a GML function,
+///   Catspeak function, or a function bound using `catspeak_method_v3`.
+///
+/// @return {Any}
+function catspeak_method(self_, callee) {
+    if (is_catspeak(callee)) {
+        if (method_get_index(callee) == __catspeak_method__) {
+            var methodData = method_get_self(callee);
+            if (self_ == undefined) {
+                return methodData.callee;
+            }
+            return method({
+                ctx : methodData.ctx,
+                callee : methodData.callee,
+                self_ : self_,
+            }, __catspeak_method__);
+        } else {
+            if (self_ == undefined) {
+                return callee;
+            }
+            var calleeSelf = method_get_self(callee);
+            return method({
+                ctx : calleeSelf[$ "ctx"],
+                callee : callee,
+                self_ : self_,
+            }, __catspeak_method__);
+        }
+    }
+    return method(self_, callee);
+}
+
+/// @ignore
+function __catspeak_method__() {
+    static args = [];
+    for (var i = argument_count; i >= 0; i -= 1) {
+        args[@ i] = argument[i];
+    }
+    return catspeak_execute_ext(self_, callee, args, 0, argument_count);
+}
+
 /// TODO
 function CatspeakCtx() constructor {
 
@@ -315,7 +402,6 @@ function CatspeakCtx() constructor {
         var cart = parse(args);
         var program;
         try {
-        show_message(catspeak_cart_disassemble(cart));
             program = compile(cart);
         } finally {
             if (cartIsOwned) {

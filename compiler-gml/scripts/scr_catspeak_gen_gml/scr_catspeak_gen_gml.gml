@@ -87,7 +87,6 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         funcs = ds_list_create();
         ctx = {
             globals : globals ?? { },
-            binding : undefined,
             stack : [],
             stackN : 0, // current stack size
             callee_ : undefined,

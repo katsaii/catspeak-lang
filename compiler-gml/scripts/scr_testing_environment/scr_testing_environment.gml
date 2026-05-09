@@ -6,7 +6,7 @@ test_add(function () : Test("env-self-inst") constructor {
     var ir = env.parseString(@'self');
     var gmlFunc = env.compile(ir);
     var inst = instance_create_depth(0, 0, 0, obj_testing_blank);
-    var res = catspeak_execute_ext(inst, inst, gmlFunc);
+    var res = catspeak_execute_ext(inst, gmlFunc);
     assertEq(catspeak_special_to_struct(inst), res);
     instance_destroy(inst);
 });
@@ -93,18 +93,18 @@ test_add(function () : Test("env-function-set-self") constructor {
         return fun { self };
     '));
     var fun = f();
-    var result = catspeak_execute_ext({ hi : "hi" }, undefined, fun);
+    var result = catspeak_execute_ext({ hi : "hi" }, fun);
     assertTypeof(result, "struct");
     assertEq("hi", result.hi);
 });
 
-test_add(function () : Test("env-function-method") constructor {
+test_add_force(function () : Test("env-function-method") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
         return fun { self };
     '));
-    var fun = catspeak_method_v3({ bye : "bye" }, f());
-    var result = catspeak_execute_ext({ bye : "sike!" }, undefined, fun);
+    var fun = catspeak_method({ bye : "bye" }, f());
+    var result = catspeak_execute_ext({ bye : "sike!" }, fun);
     assertTypeof(result, "struct");
     assertEq("bye", result.bye);
 });

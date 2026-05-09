@@ -22,30 +22,6 @@ function __catspeak_infer_function_name(func) {
     return script_get_name(func);
 }
 
-/// Checks whether a value is a valid Catspeak function compiled through
-/// `CatspeakGMLCompiler`.
-///
-/// @warning
-///   Internally, this actually just checks whether the methods name starts
-///   with `__catspeak_`. Because of this, you should avoid giving your
-///   functions that prefix to prevent false positives.
-///
-/// @param {Any} value
-///   The value to check is a Catspeak function.
-///
-/// @return {Bool}
-function is_catspeak(value) {
-    if (!is_method(value)) {
-        return false;
-    }
-    var scr = method_get_index(value);
-    if (scr == __catspeak_function_v3__) {
-        return true;
-    }
-    var scrName = script_get_name(scr);
-    return string_starts_with(scrName, "__catspeak_");
-}
-
 /// @ignore
 ///
 /// @param {Real} t
