@@ -3,6 +3,8 @@
 
 function TestLexerTokenStream(name, src, offset = undefined, length = undefined) : Test(name) constructor {
     self.src = src;
+    self.offset = offset;
+    self.length = length;
 
     static checkTokens = function () {
         var buff = __catspeak_create_buffer_from_string(src);

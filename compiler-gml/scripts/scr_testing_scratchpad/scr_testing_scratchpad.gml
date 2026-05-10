@@ -241,8 +241,8 @@ TEST_EXPERIMENT "env" {
         print(self.id);
     '));
     with ({ something : 1 }) {
-        f.setSelf(self);
-        f();
+        var g = catspeak_method(self, f);
+        g();
     }
 }
 

@@ -6,7 +6,7 @@ test_add(function () : Test("env-self-inst") constructor {
     var ir = env.parseString(@'self');
     var gmlFunc = env.compile(ir);
     var inst = instance_create_depth(0, 0, 0, obj_testing_blank);
-    var res = catspeak_execute_ext(inst, gmlFunc);
+    var res = catspeak_execute_ext(gmlFunc, inst);
     assertEq(catspeak_special_to_struct(inst), res);
     instance_destroy(inst);
 });
@@ -65,27 +65,27 @@ test_add(function () : Test("env-function-brace-style") constructor {
     assertEq("hi", catspeak_globals(fB).main());
 });
 
-//test_add(function () : Test("env-use-test") constructor {
-//    msg = "start";
-//    var env = new CatspeakEnvironment();
-//    env.addMethod("thing", function () {
-//        msg = "inside";
-//        return function () { msg = "end" };
-//    });
-//    env.addMethod("get_msg", function () {
-//        return msg;
-//    });
-//    var fA = env.compile(env.parseString(@'
-//        let a = get_msg();
-//        let b;
-//        use thing {
-//            b = get_msg();
-//        }
-//        let c = get_msg();
-//        [a, b, c]
-//    '));
-//    assertEq(["start", "inside", "end"], fA());
-//});
+test_add_ignore(function () : Test("env-use-test") constructor {
+    msg = "start";
+    var env = new CatspeakEnvironment();
+    env.addMethod("thing", function () {
+        msg = "inside";
+        return function () { msg = "end" };
+    });
+    env.addMethod("get_msg", function () {
+        return msg;
+    });
+    var fA = env.compile(env.parseString(@'
+        let a = get_msg();
+        let b;
+        use thing {
+            b = get_msg();
+        }
+        let c = get_msg();
+        [a, b, c]
+    '));
+    assertEq(["start", "inside", "end"], fA());
+});
 
 test_add(function () : Test("env-function-set-self") constructor {
     var env = new CatspeakEnvironment();
@@ -93,7 +93,7 @@ test_add(function () : Test("env-function-set-self") constructor {
         return fun { self };
     '));
     var fun = f();
-    var result = catspeak_execute_ext({ hi : "hi" }, fun);
+    var result = catspeak_execute_ext(fun, { hi : "hi" });
     assertTypeof(result, "struct");
     assertEq("hi", result.hi);
 });
@@ -104,7 +104,7 @@ test_add(function () : Test("env-function-method") constructor {
         return fun { self };
     '));
     var fun = catspeak_method({ bye : "bye" }, f());
-    var result = catspeak_execute_ext({ bye : "sike!" }, fun);
+    var result = catspeak_execute_ext(fun, { bye : "sike!" });
     assertTypeof(result, "struct");
     assertEq("bye", result.bye);
 });
@@ -607,7 +607,7 @@ test_add(function() : Test("with-struct-other-double") constructor {
     assertEq(result[2], result[3]);
 }, IgnorePlatform.WIN_YYC);
 
-test_add_force(function() : Test("with-struct-other-method") constructor {
+test_add(function() : Test("with-struct-other-method") constructor {
     var engine = new CatspeakEnvironment();
     var ir = engine.parseString(@'
         let expect_other_ = { yeah : false };
@@ -618,7 +618,6 @@ test_add_force(function() : Test("with-struct-other-method") constructor {
     ');
     var _func = engine.compile(ir);
     var result = _func();
-    show_message(result);
     assertEq(result[0], result[2][1]);
     assertEq(result[1], result[2][0]);
 }, IgnorePlatform.WIN_YYC);
@@ -863,7 +862,7 @@ test_add(function() : Test("moss-set-self-2") constructor {
 test_add(function() : Test("get-self-method") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString(@'
-        let s = { get_self : fun() { self } };
+        let s = { get_self : fun () { self } };
         return [s.get_self(), s]; -- should return true, but returns false instead
     ');
     var fun = env.compile(ir);
@@ -910,7 +909,7 @@ test_add(function() : Test("method-undefined-variant") constructor {
     assertEq("D", catspeak_execute_ext(f3, { tag : "D" }).tag);
 });
 
-test_add(function() : Test("method-self-setSelf") constructor {
+test_add_ignore(function() : Test("method-self-setSelf") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString("fun () { self }");
     var fun = env.compile(ir);

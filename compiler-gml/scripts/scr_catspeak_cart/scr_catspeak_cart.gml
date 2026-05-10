@@ -236,6 +236,24 @@ function CatspeakCartWriter() constructor {
         stackSize += 1 - 1 - n;
     };
 
+    /// Call a method expression.
+    ///
+    /// @param {Real} n
+    ///   The number of arguments in this call.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitCallIndex = function (n, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CALL_I);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u16, n);
+        // <result> - data - idx - args
+        stackSize += 1 - 1 - 1 - n;
+    };
+
     /// Construct an array.
     ///
     /// @param {Real} n
@@ -1080,6 +1098,7 @@ function catspeak_cart_version(cart) {
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
 ///   - `.handleFunc(idx, argc)`
 ///   - `.handleInstrCall(dbg, n)`
+///   - `.handleInstrCallIndex(dbg, n)`
 ///   - `.handleInstrArray(dbg, n)`
 ///   - `.handleInstrStruct(dbg, n)`
 ///   - `.handleInstrLoopInf(dbg)`
@@ -1230,6 +1249,14 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var dbg = buffer_read(cart_, buffer_u32);
         var n = buffer_read(cart_, buffer_u16);
         visitor.handleInstrCall(dbg, n);
+    };
+
+    /// @ignore
+    static __readICallIndex = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var n = buffer_read(cart_, buffer_u16);
+        visitor.handleInstrCallIndex(dbg, n);
     };
 
     /// @ignore
@@ -1612,6 +1639,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
         __readerLookup[@ __CatspeakInstr.CALL] = __readICall;
+        __readerLookup[@ __CatspeakInstr.CALL_I] = __readICallIndex;
         __readerLookup[@ __CatspeakInstr.ARR] = __readIArray;
         __readerLookup[@ __CatspeakInstr.OBJ] = __readIStruct;
         __readerLookup[@ __CatspeakInstr.LOOP_INF] = __readILoopInf;
@@ -1669,6 +1697,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
 /// @ignore
 enum __CatspeakInstr {
     CALL = 52,
+    CALL_I = 53,
     ARR = 44,
     OBJ = 43,
     LOOP_INF = 38,
@@ -1720,5 +1749,5 @@ enum __CatspeakInstr {
     CONST_N = 1,
     CONST_S = 3,
     CONST_U = 35,
-    __SIZE__ = 53,
+    __SIZE__ = 54,
 }

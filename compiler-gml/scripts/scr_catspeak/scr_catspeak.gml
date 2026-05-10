@@ -122,7 +122,7 @@ function catspeak_execute(callee_) {
     for (var i = argument_count; i >= 1; i -= 1) {
         args[@ i - 1] = argument[i];
     }
-    return catspeak_execute_ext(self, callee_, args, 0, argument_count - 1);
+    return catspeak_execute_ext(callee_, self, args, 0, argument_count - 1);
 }
 
 /// Executes a Catspeak-compatible function in the supplied `self` scope.
@@ -133,12 +133,12 @@ function catspeak_execute(callee_) {
 ///   function if you want the `self` of a called Catspeak function to be
 ///   the same as the `self` of the callsite in GML land.
 ///
-/// @param {Struct} self_
-///   The `self` context to use when calling this Catspeak function.
-///
 /// @param {Any} callee_
 ///   The function to call. Can be a GML function, Catspeak function, or a
 ///   function bound using `catspeak_method`.
+///
+/// @param {Struct} self_
+///   The `self` context to use when calling this Catspeak function.
 ///
 /// @param {Array<Any>} [args]
 ///   The argument list to call this function with. Defaults to no arguments.
@@ -154,8 +154,8 @@ function catspeak_execute(callee_) {
 /// @return {Any}
 ///   The result of evaluating the `callee` function.
 function catspeak_execute_ext(
-    self_,
     callee_,
+    self_,
     args = undefined,
     offset = 0,
     argc = undefined
@@ -284,7 +284,7 @@ function __catspeak_method__() {
     for (var i = argument_count; i >= 0; i -= 1) {
         args[@ i] = argument[i];
     }
-    return catspeak_execute_ext(self_, callee, args, 0, argument_count);
+    return catspeak_execute_ext(callee, self_, args, 0, argument_count);
 }
 
 /// Binds a function to a `self`. Similar to the built-in `method` function,
@@ -398,6 +398,33 @@ function catspeak_get_index(callee) {
         return callee;
     }
     return __catspeak_gml_method(undefined, callee);
+}
+
+/// TODO
+///
+/// @experimental
+function catspeak_debug_tree(value, indent = "  ") {
+    if (is_method(value)) {
+        var msg = script_get_name(__catspeak_gml_method_get_index(value));
+        if (is_catspeak(value)) {
+            var methodData = __catspeak_gml_method_get_self(value);
+            var names = variable_struct_get_names(methodData);
+            var n = array_length(names) - 2;
+            for (var i = array_length(names) - 1; i >= 0; i -= 1) {
+                var name = names[i];
+                if (name == "ctx" || name == "toString") {
+                    continue;
+                }
+                var newIndent = n > 0 ? (indent + "| ") : (indent + "  ");
+                msg += "\n" + indent + name + ": " +
+                        catspeak_debug_tree(methodData[$ name], newIndent);
+                n -= 1;
+            }
+        }
+        return msg;
+    } else {
+        return string(value);
+    }
 }
 
 /// TODO

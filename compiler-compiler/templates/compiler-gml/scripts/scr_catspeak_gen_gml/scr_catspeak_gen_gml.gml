@@ -520,6 +520,17 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         }
     };
 
+    /// @ignore
+    static __genExprCallIndex = function (n, data, idx, args) {
+        requiresScopes = true;
+        return __genExpr({
+            data : data,
+            idx : idx,
+            argsN : n,
+            args : args
+        }, __catspeak_instr_call_i__);
+    };
+
     // automatically generated code generation functions (here be dragons)
 {% for _, instr in ir_enum(ir, "instr-ops") %}
 {%  set instr_id_upper = case_camel_upper(instr.name) %}
@@ -922,8 +933,9 @@ function __catspeak_instr_cat__() {
 /// @ignore
 function __catspeak_instr_uwnd__() {
     var box_ = magicBox;
+    var value_ = value();
     box_[@ 0] = label;
-    box_[@ 1] = value();
+    box_[@ 1] = value_;
     throw box_;
 }
 
@@ -1124,29 +1136,34 @@ function __catspeak_instr_obj__() {
     return obj;
 }
 
+/** @ignore */ function __catspeak_seef_0 (callee_, args_) { return callee_() }
+/** @ignore */ function __catspeak_seef_1 (callee_, args_) { return callee_(args_[0]) }
+/** @ignore */ function __catspeak_seef_2 (callee_, args_) { return callee_(args_[0], args_[1]) }
+/** @ignore */ function __catspeak_seef_3 (callee_, args_) { return callee_(args_[0], args_[1], args_[2]) }
+/** @ignore */ function __catspeak_seef_4 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3]) }
+/** @ignore */ function __catspeak_seef_5 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4]) }
+/** @ignore */ function __catspeak_seef_6 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5]) }
+/** @ignore */ function __catspeak_seef_7 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6]) }
+/** @ignore */ function __catspeak_seef_8 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7]) }
+/** @ignore */ function __catspeak_seef_9 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8]) }
+/** @ignore */ function __catspeak_seef_10 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9]) }
+/** @ignore */ function __catspeak_seef_11 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10]) }
+/** @ignore */ function __catspeak_seef_12 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11]) }
+/** @ignore */ function __catspeak_seef_13 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12]) }
+/** @ignore */ function __catspeak_seef_14 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13]) }
+/** @ignore */ function __catspeak_seef_15 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14]) }
+/** @ignore */ function __catspeak_seef_16 (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14], args_[15]) }
+
 /// @ignore
 function __catspeak_script_execute_ext_fixed(callee_, args_) {
     static variants = undefined;
     if (variants == undefined) {
         variants = [
-            function (callee_, args_) { return callee_() },
-            function (callee_, args_) { return callee_(args_[0]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14]) },
-            function (callee_, args_) { return callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14], args_[15]) },
-            script_execute_ext
+            __catspeak_seef_0,  __catspeak_seef_1,  __catspeak_seef_2,  __catspeak_seef_3,
+            __catspeak_seef_4,  __catspeak_seef_5,  __catspeak_seef_6,  __catspeak_seef_7,
+            __catspeak_seef_8,  __catspeak_seef_9,  __catspeak_seef_10, __catspeak_seef_11,
+            __catspeak_seef_12, __catspeak_seef_13, __catspeak_seef_14, __catspeak_seef_15,
+            __catspeak_seef_16, script_execute_ext
         ];
     }
     // LTS has issues with calling functions that have many args, so fix that here
@@ -1282,6 +1299,43 @@ function __catspeak_instr_call__() {
     with (scopes.other_) with (scopes.self_) {
         var calleeUnbound = method_get_index(callee_);
         result = __catspeak_script_execute_ext_fixed(calleeUnbound, args_);
+    }
+    array_resize(argsComplete, 0);
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_i__() {
+    static argsComplete = [];
+    var data_ = data();
+    var idx_ = idx();
+    var callee_ = is_array(data_) ? data_[idx_] : data_[$ idx_];
+    // build args array
+    var argsN_ = argsN;
+    var args_ = args;
+    array_resize(argsComplete, argsN_);
+    for (var i = 0; i < argsN_; i += 1) {
+        var arg = args_[i];
+        argsComplete[@ i] = arg();
+    }
+    // modify scope
+    var scopes = __catspeak_scope_get();
+    var oldSelf = scopes.self_;
+    var oldOther = scopes.other_;
+    var result = undefined;
+    try {
+        if (!is_array(data_)) {
+            scopes.other_ = scopes.self_;
+            scopes.self_ = catspeak_special_to_struct(data_);
+        }
+        var scopes2 = __catspeak_scope_get_bound(method_get_self(callee_));
+        with (scopes2.other_) with (scopes2.self_) {
+            var calleeUnbound = method_get_index(callee_);
+            result = __catspeak_script_execute_ext_fixed(calleeUnbound, args_);
+        }
+    } finally {
+        scopes.self_ = oldSelf;
+        scopes.other_ = oldOther;
     }
     array_resize(argsComplete, 0);
     return result;

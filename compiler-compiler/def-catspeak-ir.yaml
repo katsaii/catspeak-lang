@@ -120,6 +120,23 @@ instr-ops:
         desc: "the arguments to call `callee` with"
         many: n
 
+  - name: "call index"
+    name-short: call_i
+    desc: "call a method expression"
+    opcode: 0x35
+    args:
+      - name: n
+        desc: "the number of arguments in this call"
+        type: u16
+    stackargs:
+      - name: data
+        desc: "the collection to access"
+      - name: idx
+        desc: "the index of the collection"
+      - name: args
+        desc: "the arguments to call `data[idx]` with"
+        many: n
+
   - name: "array"
     name-short: arr
     desc: "construct an array"

@@ -1183,18 +1183,17 @@ function CatspeakParser(cartWriter, lexer_) constructor {
     /// @ignore
     static __parseCatch = function () {
         __parseExpressionBlock();
-        if (lexer.peek() == CatspeakToken.CATCH) {
+        while (lexer.peek() == CatspeakToken.CATCH) {
             var dbg = lexer.getLocationStart();
             lexer.next();
             var idx;
+            __pushBlock();
             if (lexer.peek() == CatspeakToken.IDENT) {
                 lexer.next();
-                var name = lexer.getValue();
-                idx = __findLocal(name);
+                idx = __allocLocal(lexer.getValue());
             } else {
                 idx = ir.getFreshVar();
             }
-            __pushBlock();
             __parseStatements("catch");
             __popBlock();
             ir.emitCatch(idx, dbg);
@@ -1571,14 +1570,11 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         __parsePrimary();
         while (true) {
             var peeked = lexer.peek();
+            var dbg = lexer.getLocationStart();
             if (peeked == CatspeakToken.PAREN_LEFT) {
-                __parseIndexCall();
+                var n = __parseCallArgs();
+                ir.emitCall(n, dbg);
             } else if (peeked == CatspeakToken.BOX_LEFT || peeked == CatspeakToken.DOT) {
-                var dbg = lexer.getLocationStart();
-                var selfVar = ir.getFreshVar(dbg);
-                __pushBlock();
-                ir.emitSetLocal(ord("="), selfVar, dbg);
-                ir.emitGetLocal(selfVar, dbg);
                 lexer.next();
                 if (peeked == CatspeakToken.BOX_LEFT) {
                     __parseExpression();
@@ -1590,31 +1586,25 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 var op = __parseAssignOp();
                 if (op == undefined) {
                     // get
-                    ir.emitGetIndex(dbg);
                     if (lexer.peek() == CatspeakToken.PAREN_LEFT) {
                         // method calls
-                        var funcVar = ir.getFreshVar(dbg);
-                        ir.emitSetLocal(ord("="), funcVar, dbg);
-                        ir.emitGetLocal(selfVar, dbg); // with self {
-                        ir.emitGetLocal(funcVar, dbg); //   func
-                        __parseIndexCall();            //   ();
-                        ir.emitUnwind(99, dbg);
-                        ir.emitLoopWith();             // }
-                        ir.emitUnwindLanding(99);
+                        var n = __parseCallArgs();
+                        ir.emitCallIndex(n, dbg);
+                    } else {
+                        ir.emitGetIndex(dbg);
                     }
                 } else {
                     // set
                     __parseExpression();
                     ir.emitSetIndex(op, dbg);
                 }
-                __popBlock();
             } else {
                 break;
             }
         }
     };
     
-    static __parseIndexCall = function () {
+    static __parseCallArgs = function () {
         var dbg = lexer.getLocationStart();
         __expect(CatspeakToken.PAREN_LEFT, "expected opening '(' in call expression");
         var n = 0;
@@ -1631,7 +1621,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             }
         }
         __expect(CatspeakToken.PAREN_RIGHT, "expected closing ')' after call expression");
-        ir.emitCall(n, dbg);
+        return n;
     };
 
     /// @ignore

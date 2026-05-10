@@ -2,7 +2,7 @@
 
 //# feather use syntax-errors
 
-#macro TEST_EARLY_FAIL true
+#macro TEST_EARLY_FAIL false
 #macro TEST_RUN_ENABLED true
 #macro NoTest:TEST_RUN_ENABLED false
 
@@ -29,9 +29,7 @@ function test_stats() {
 #macro TEST_SHOW_PASSED false
 
 function Test(name, negative) constructor {
-    if (TEST_SHOW_PASSED) {
-        show_debug_message("RUNNING TEST " + string(name));
-    }
+    show_debug_message("RUNNING TEST " + string(name));
 
     var stats = test_stats();
     self.number = stats.n; stats.n += 1;
