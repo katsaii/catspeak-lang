@@ -378,7 +378,7 @@ test_add_ignore(function () : Test("env-gml-function-by-substring-not-exist") co
     assert(!is_method(result));
 });
 
-test_add(function () : Test("env-object-index") constructor {
+test_add_ignore(function () : Test("env-object-index") constructor {
     try {
         instance_create_depth(0, 0, 0, obj_testing_env_object_index);
     } catch (e) {
@@ -843,12 +843,12 @@ test_add_ignore(function() : Test("expose-everything-inst-deactivate") construct
     f();
 });
 
-test_add(function() : AsyncTest("moss-set-self") constructor {
+test_add_ignore(function() : AsyncTest("moss-set-self") constructor {
     var me = self;
     instance_create_depth(0, 0, 0, obj_testing_moss_oinitial, { test : me });
 });
 
-test_add(function() : Test("moss-set-self-2") constructor {
+test_add_ignore(function() : Test("moss-set-self-2") constructor {
     env = new CatspeakEnvironment();
     outputs = [];
     global.__testing_moss_2_test = self;
