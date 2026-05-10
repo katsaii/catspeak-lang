@@ -1555,12 +1555,24 @@ function __catspeak_instr_othr__() { return __catspeak_scope_get().other_ }
 /// @ignore
 function __catspeak_instr_get_is__() {
     var data_ = data();
+    if (!__catspeak_is_withable(data_)) {
+        __catspeak_error(__catspeak_cat(
+            "(string) index '[]' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     return data_[$ idx];
 }
 
 /// @ignore
 function __catspeak_instr_set_is__() {
     var data_ = data();
+    if (!__catspeak_is_withable(data_)) {
+        __catspeak_error(__catspeak_cat(
+            "(string) index '[]=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     var value_ = value();
     data_[$ idx] = value_;
     return value_;
@@ -1569,6 +1581,12 @@ function __catspeak_instr_set_is__() {
 /// @ignore
 function __catspeak_instr_set_is_add__() {
     var data_ = data();
+    if (!__catspeak_is_withable(data_)) {
+        __catspeak_error(__catspeak_cat(
+            "(string) index '[]+=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     var value_ = value();
     data_[$ idx] += value_;
     return value_;
@@ -1577,6 +1595,12 @@ function __catspeak_instr_set_is_add__() {
 /// @ignore
 function __catspeak_instr_set_is_sub__() {
     var data_ = data();
+    if (!__catspeak_is_withable(data_)) {
+        __catspeak_error(__catspeak_cat(
+            "(string) index '[]-=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     var value_ = value();
     data_[$ idx] -= value_;
     return value_;
@@ -1585,6 +1609,12 @@ function __catspeak_instr_set_is_sub__() {
 /// @ignore
 function __catspeak_instr_set_is_mul__() {
     var data_ = data();
+    if (!__catspeak_is_withable(data_)) {
+        __catspeak_error(__catspeak_cat(
+            "(string) index '[]*=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     var value_ = value();
     data_[$ idx] *= value_;
     return value_;
@@ -1593,6 +1623,12 @@ function __catspeak_instr_set_is_mul__() {
 /// @ignore
 function __catspeak_instr_set_is_div__() {
     var data_ = data();
+    if (!__catspeak_is_withable(data_)) {
+        __catspeak_error(__catspeak_cat(
+            "(string) index '[]/=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     var value_ = value();
     data_[$ idx] /= value_;
     return value_;
@@ -1650,8 +1686,13 @@ function __catspeak_instr_get_i__() {
     var idx_ = idx();
     if (is_array(data_)) {
         return data_[idx_];
-    } else {
+    } else if (__catspeak_is_withable(data_)) {
         return data_[$ idx_];
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
     }
 }
 
@@ -1662,8 +1703,13 @@ function __catspeak_instr_set_i__() {
     var value_ = value();
     if (is_array(data_)) {
         data_[@ idx_] = value_;
-    } else {
+    } else if (__catspeak_is_withable(data_)) {
         data_[$ idx_] = value_;
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
     }
     return value_;
 }
@@ -1675,8 +1721,13 @@ function __catspeak_instr_set_i_add__() {
     var value_ = value();
     if (is_array(data_)) {
         data_[@ idx_] += value_;
-    } else {
+    } else if (__catspeak_is_withable(data_)) {
         data_[$ idx_] += value_;
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]+=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
     }
     return value_;
 }
@@ -1688,8 +1739,13 @@ function __catspeak_instr_set_i_sub__() {
     var value_ = value();
     if (is_array(data_)) {
         data_[@ idx_] -= value_;
-    } else {
+    } else if (__catspeak_is_withable(data_)) {
         data_[$ idx_] -= value_;
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]-=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
     }
     return value_;
 }
@@ -1701,8 +1757,13 @@ function __catspeak_instr_set_i_mul__() {
     var value_ = value();
     if (is_array(data_)) {
         data_[@ idx_] *= value_;
-    } else {
+    } else if (__catspeak_is_withable(data_)) {
         data_[$ idx_] *= value_;
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]*=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
     }
     return value_;
 }
@@ -1714,8 +1775,13 @@ function __catspeak_instr_set_i_div__() {
     var value_ = value();
     if (is_array(data_)) {
         data_[@ idx_] /= value_;
-    } else {
+    } else if (__catspeak_is_withable(data_)) {
         data_[$ idx_] /= value_;
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]/=' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
     }
     return value_;
 }
@@ -2120,7 +2186,17 @@ function __catspeak_instr_call_i__() {
     static argsComplete = [];
     var data_ = data();
     var idx_ = idx();
-    var callee_ = is_array(data_) ? data_[idx_] : data_[$ idx_];
+    var callee_ = undefined;
+    if (is_array(data_)) {
+        callee_ = data_[idx_];
+    } else if (__catspeak_is_withable(data_)) {
+        callee_ = data_[$ idx_];
+    } else {
+        __catspeak_error(__catspeak_cat(
+            "index '[]()' expression is not allowed for values of type '",
+            typeof(data_), "'"
+        ));
+    }
     // build args array
     var argsN_ = argsN;
     var args_ = args;
