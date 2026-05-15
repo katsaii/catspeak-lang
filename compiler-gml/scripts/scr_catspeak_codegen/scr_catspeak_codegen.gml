@@ -9,21 +9,6 @@
 
 /// @ignore
 ///
-/// @param {Function} func
-/// @return {String}
-function __catspeak_infer_function_name(func) {
-    if (is_method(func)) {
-        var name = func[$ "name"];
-        if (is_string(name)) {
-            return name;
-        }
-        func = method_get_index(func);
-    }
-    return script_get_name(func);
-}
-
-/// @ignore
-///
 /// @param {Real} t
 function __catspeak_timeout_check(t) {
     gml_pragma("forceinline");

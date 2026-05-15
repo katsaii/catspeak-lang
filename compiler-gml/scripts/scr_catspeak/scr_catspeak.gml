@@ -434,6 +434,16 @@ function CatspeakCtx() constructor {
 
     // assign this to make scripts share a global variable scope
     globals = undefined;
+    /// TODO
+    interface = new CatspeakModulePrelude();
+    /// @ignore
+    modules = { };
+    addModule(interface);
+
+    /// TODO
+    static addModule = function (module) {
+        modules[$ module.path] = module;
+    };
 
     /// TODO
     static parse = function (args) {
@@ -481,7 +491,7 @@ function CatspeakCtx() constructor {
         var codegen;
         var program = undefined;
         try {
-            codegen = new CatspeakGenGML(globals);
+            codegen = new CatspeakGenGML(globals, interface);
             var reader = new CatspeakCartReader(cart, codegen);
             do {
                 var keepReading = reader.readInstr();
