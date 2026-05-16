@@ -111,7 +111,7 @@ function CatspeakCartWriter() constructor {
             var delim = string_last_pos("::", path);
             alias = delim > 0 ? string_delete(path, 1, delim + 1) : path;
         }
-        ds_list_add(includes, name, alias);
+        ds_list_add(includes, path, alias);
     };
 
     /// Frees any dynamically allocated resources managed by this writer.

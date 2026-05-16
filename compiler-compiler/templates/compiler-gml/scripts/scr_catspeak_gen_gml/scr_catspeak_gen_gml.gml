@@ -276,11 +276,35 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
 
     /// @ignore
     static __genExprGetGlobal = function (name) {
-        return __genExpr({ name : name }, __catspeak_instr_get_g__);
+        var foundModule = undefined;
+        var foundValue = undefined;
+        for (var i = array_length(importsWildcard) - 1; i >= 0; i -= 1) {
+            // check modules for globals, otherwise fallback to the Catspeak global
+            var module_ = importsWildcard[i];
+            if (module_.exists(name)) {
+                if (foundModule != undefined) {
+                    __catspeak_error(__catspeak_cat(
+                        "ambiguous import: module item '", name, "' exists in both '",
+                        module_.path, "' and '", foundModule.path, "'"
+                    ));
+                }
+                foundModule = module_;
+                foundValue = module_.get(name);
+            }
+        }
+        if (foundModule != undefined) {
+            return __genExpr({
+                module_ : foundModule,
+                value : foundValue,
+            }, __catspeak_instr_module_value__);
+        } else {
+            return __genExpr({ name : name }, __catspeak_instr_get_g__);
+        }
     };
 
     /// @ignore
     static __genExprSetGlobal = function (flavour, name, value) {
+        // TODO :: setters on modules
         var func;
         switch (flavour) {
         case ord("="): func = __catspeak_instr_set_g__; break;
@@ -713,6 +737,11 @@ function __catspeak_dbg_trace__() {
         throw ex;
     }
     return result;
+}
+
+/// @ignore
+function __catspeak_instr_module_value__() {
+    return value;
 }
 
 /// @ignore

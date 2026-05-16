@@ -9,15 +9,17 @@ if (os_browser != browser_not_a_browser) {
 
 catspeak_force_init();
 
-var runExperiment = undefined; //"catspeak4-ctx";
+var runExperiment = "catspeak4-ctx";
 #macro TEST_EXPERIMENT if runExperiment ==
 
 TEST_EXPERIMENT "catspeak4-ctx" {
     var ctx = new CatspeakCtx();
+    ctx.interface.exposeConstant("a", "hi");
+    ctx.interface.globals.b = "catspeak";
     var module = ctx.run(@'
-        return "hi catspeak"
+        return a + " " + b
     ');
-    //show_message(module);
+    show_message(module);
 }
 
 TEST_EXPERIMENT "catspeak4-parse" {
