@@ -80,6 +80,15 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInclude = function (path, alias) {
+        out += "include " + string(path);
+        if (alias != undefined) {
+            out += "as " + string(alias);
+        }
+        out += "\n";
+    };
+
+    /// @ignore
     static handleFunc = function (idx, argc) {
         out += "\nfun " + string(idx) + "\n";
         out += "--^ argc:  " + string(argc) + "\n";

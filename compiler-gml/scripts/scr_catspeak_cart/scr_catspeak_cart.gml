@@ -57,6 +57,8 @@ function CatspeakCartWriter() constructor {
     /// @returns {Real}
     date = undefined;
     /// @ignore
+    includes = ds_list_create();
+    /// @ignore
     isAlive = true;
     /// @ignore
     chunks = ds_list_create();
@@ -89,6 +91,40 @@ function CatspeakCartWriter() constructor {
         return idx;
     };
 
+    /// Adds a new module include to this cartridge. So long as the given
+    /// module is loaded, this gives this cartridge permission to read global
+    /// variables from that module.
+    ///
+    /// @param {String} path
+    ///   The path of the module, either absolute or relative to this
+    ///   cartridge in the virtual filesystem.
+    ///
+    /// @param {String} [alias]
+    ///   The short alias to use for this module. Defaults to the last identifier
+    ///   following the special `::` path separator.
+    ///
+    /// @example
+    ///   ```meow
+    ///   import common::utils::math
+    ///   --                    ^^^^ alias (short for `import abc::xyz as xyz`)
+    ///   --     ^^^^^^^^^^^^^^^^^^^ path
+    ///
+    ///   import gml::unsafe as u
+    ///   --     ^^^^^^^^^^^    ^ alias
+    ///   --     path
+    ///   ```
+    ///
+    /// @param
+    static addInclude = function (path, alias = undefined) {
+        __catspeak_assert(path != "", "include path cannot be an empty string");
+        __catspeak_assert(alias != "", "include alias cannot be an empty string");
+        if (alias == undefined) {
+            var delim = string_last_pos("::", path);
+            alias = delim > 0 ? string_delete(path, 1, delim + 1) : path;
+        }
+        ds_list_add(includes, name, alias);
+    };
+
     /// Frees any dynamically allocated resources managed by this writer.
     ///
     /// @warning
@@ -104,6 +140,7 @@ function CatspeakCartWriter() constructor {
         }
         ds_list_destroy(chunks_);
         ds_stack_destroy(prevChunkStates);
+        ds_list_destroy(includes);
         isAlive = false;
     };
 
@@ -160,6 +197,12 @@ function CatspeakCartWriter() constructor {
             buffer_write(cart, buffer_u8, patch ?? 0);
             buffer_write(cart, buffer_string, path ?? "");
             buffer_write(cart, buffer_u32, date ?? 0);
+            // write includes
+            for (var i = ds_list_size(includes) - 2; i >= 0; i -= 2) {
+                buffer_write(cart, buffer_string, includes[| i + 0]);
+                buffer_write(cart, buffer_string, includes[| i + 1]);
+            }
+            buffer_write(cart, buffer_string, ""); // end of program
             // write functions
             __catspeak_assert(chunkTop < 0,
                 "missing call to `popFunction` after calling `pushFunction`"
@@ -172,7 +215,7 @@ function CatspeakCartWriter() constructor {
                 offset += chunkSize;
             }
             buffer_seek(cart, buffer_seek_start, offset);
-            buffer_write(cart, buffer_u8, 0); // end of program
+            buffer_write(cart, buffer_u8, 0x00); // end of program
             if (rewind) {
                 buffer_seek(cart, buffer_seek_start, cartStart);
             }
@@ -1096,6 +1139,7 @@ function catspeak_cart_version(cart) {
 ///   A struct containing methods for handling each of the following cases:
 ///
 ///   - `.handleMeta(name, author, version, versionMinor, patch, path, date)` (always invoked first)
+///   - `.handleInclude(path, alias)` (always invoked second)
 ///   - `.handleFunc(idx, argc)`
 ///   - `.handleInstrCall(dbg, n)`
 ///   - `.handleInstrCallIndex(dbg, n)`
@@ -1195,6 +1239,18 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     var path = buffer_read(cart_, buffer_string);
     var date = buffer_read(cart_, buffer_u32);
     visitor_.handleMeta(name, author, version, versionMinor, patch, path, date);
+    // read includes
+    for (var includeLimit = 1028; includeLimit >= 0; includeLimit -= 1) {
+        var path = buffer_read(cart_, buffer_string);
+        if (path == "") {
+            break;
+        }
+        var alias = buffer_read(cart_, buffer_string);
+        visitor_.handleInclude(path, alias);
+        if (includeLimit < 1) {
+            __catspeak_error("exceeded include limit of 1028");
+        }
+    }
 
     /// @ignore
     cart = cart_;

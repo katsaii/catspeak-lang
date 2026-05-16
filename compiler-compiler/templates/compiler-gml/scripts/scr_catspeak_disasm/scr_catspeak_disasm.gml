@@ -49,9 +49,7 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleMeta = function ({{
-        join(", ", ir_enum_ids(ir, "meta"))
-    }}) {
+    static handleMeta = function ({{ join(", ", ir_enum_ids(ir, "meta")) }}) {
 {% for meta_name, meta in ir_enum(ir, "meta") %}
 {%  set meta_id = case_camel(meta_name) %}
 {%  set meta_value = type_to_gml_literal(meta["type"], meta["default"]) %}
@@ -62,9 +60,16 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleFunc = function ({{
-        join(", ", ["idx"], ir_enum_ids(ir, "func"))
-    }}) {
+    static handleInclude = function (path, alias) {
+        out += "include " + string(path);
+        if (alias != undefined) {
+            out += "as " + string(alias);
+        }
+        out += "\n";
+    };
+
+    /// @ignore
+    static handleFunc = function ({{ join(", ", ["idx"], ir_enum_ids(ir, "func")) }}) {
         out += "\nfun " + string(idx) + "\n";
 {% for func_name, func in ir_enum(ir, "func") %}
 {%  set func_id = case_camel(func_name) %}

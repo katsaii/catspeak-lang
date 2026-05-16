@@ -32,6 +32,10 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     /// @ignore
     globals = globals_;
     /// @ignore
+    importsMap = undefined;
+    /// @ignore
+    importsWildcard = undefined;
+    /// @ignore
     ctx = undefined;
     /// @ignore
     localsN = 0;
@@ -90,6 +94,8 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         isAlive = true;
         exprStack = ds_stack_create();
         funcs = ds_list_create();
+        importsMap = { };
+        importsWildcard = [];
         ctx = {
             globals : globals ?? { },
             binding : undefined,
@@ -107,6 +113,35 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
                 date : date,
             },
         };
+    };
+
+    /// @ignore
+    static handleInclude = function (path, alias) {
+        if (variable_struct_exists(importsMap, alias)) {
+            __catspeak_error(__catspeak_cat(
+                "ambiguous import: '", alias, "' resolves to both '", path,
+                "' and '", importsMap[$ alias], "'"
+            ));
+        }
+        var module_ = undefined;
+        var relPath = ctx.meta.path + "::" + path;
+        if (variable_struct_exists(modules, relPath)) {
+            module_ = modules[$ relPath];
+        } else if (variable_struct_exists(modules, path)) {
+            module_ = modules[$ path];
+        }
+        if (module_ == undefined) {
+            __catspeak_error(__catspeak_cat(
+                "failed to import module '", path,
+                "' (this could be caused by a cyclic dependency)"
+            ));
+        }
+        if (alias == "*") {
+            // wildcard imports
+            array_push(importsWildcard, module_);
+        } else {
+            importsMap[$ alias] = module_;
+        }
     };
 
     /// @ignore

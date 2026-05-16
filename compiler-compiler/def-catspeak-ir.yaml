@@ -84,7 +84,6 @@ meta:
 # Next appears a sequence of module includes requested by this cartridge,
 # terminated by `\0` (null). Both `path` and `alias` must not be empty!
 
-include-order: [path, alias]
 include:
   path: string
   alias: string
