@@ -3,7 +3,7 @@
 
 # TLDR: An example layout for a simple Catspeak cartridge may look like:
 #
-# HEAD META INSTR_1 INSTR_2 \0 FUNC_1 INSTR_1 INSTR_2 INSTR_3 \0 FUNC_2 \0
+# HEAD META INCLUDE_1 INCLUDE_2 \0 INSTR_1 INSTR_2 \0 FUNC_1 INSTR_1 INSTR_2 INSTR_3 \0 FUNC_2 \0
 
 # Types:
 #
@@ -71,16 +71,27 @@ meta:
   patch:
     desc: "the patch number of this cartridge"
     type: u8
-  path:
+  filepath:
     desc: "the path to the file containing source code for this cartridge"
+    type: string
+  path:
+    desc: "the module path of this cartridge, used for symbol resolution"
     type: string
   date:
     desc: "the date this cartridge was compiled, in Unix time"
     type: u32
 
-# Next, is the program section. This is where the executable code of a
-# Catspeak cartridge lives.
-#
+# Next appears a sequence of module includes requested by this cartridge,
+# terminated by `\0` (null). Both `path` and `alias` must not be empty!
+
+include-order: [path, alias]
+include:
+  path: string
+  alias: string
+
+# At the end of the cartridge is the program section. This is where the
+# executable code of a Catspeak cartridge lives.
+#s
 # It consists of a sequence of function definitions, terminated by `\0` (null).
 # The final function definition in the sequence is used as the entry-point for
 # the Catspeak cartridge (global scope).

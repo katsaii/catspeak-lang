@@ -289,7 +289,7 @@ test_add_ignore(function () : Test("env-gm-asset") constructor {
     assertEq(true, result);
 });
 
-test_add_ignore(function () : Test("env-gml-function") constructor {
+test_add(function () : Test("env-gml-function") constructor {
     var env = new CatspeakEnvironment();
     var ffi = env.getInterface();
     ffi.exposeFunctionByName("is_string");

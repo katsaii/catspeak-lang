@@ -440,6 +440,12 @@ function CatspeakCtx() constructor {
     modules = { };
     addModule(interface);
 
+    /// @deprecated {3.0.0}
+    ///   Use `Catspeak.interface` instead.
+    ///
+    /// @return {Struct.CatspeakForeignInterface}
+    static getInterface = function () { return interface };
+
     /// TODO
     static addModule = function (module) {
         modules[$ module.path] = module;
@@ -491,7 +497,7 @@ function CatspeakCtx() constructor {
         var codegen;
         var program = undefined;
         try {
-            codegen = new CatspeakGenGML(globals, interface);
+            codegen = new CatspeakGenGML(modules, globals);
             var reader = new CatspeakCartReader(cart, codegen);
             do {
                 var keepReading = reader.readInstr();

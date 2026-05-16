@@ -17,13 +17,18 @@
 /// A visitor to be used by `CatspeakCartReader` which lowers a Catspeak
 /// cartridge into an executable GML method.
 ///
+/// @param {Struct} [modules_]
+///   A struct containing modules visible to this cartridge.
+///
 /// @param {Struct} [globals_]
 ///   The struct to use as global scope for unbound variables in Catspeak.
-function CatspeakGenGML(globals_ = undefined) constructor {
+function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor {
     /// @ignore
     exprStack = undefined;
     /// @ignore
     funcs = undefined;
+    /// @ignore
+    modules = modules_;
     /// @ignore
     globals = globals_;
     /// @ignore
@@ -563,6 +568,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprCall(n, callee, args);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -591,6 +597,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprCallIndex(n, data, idx, args);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -659,6 +666,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprLoop(cond, body);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -679,6 +687,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprLoopStep(cond, step, body);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -695,6 +704,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprLoopWith(cond, body);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -731,6 +741,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprThrow(value);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -803,6 +814,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprGetIndexString(idx, data);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -819,6 +831,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprSetIndexString(flavour, idx, data, value);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -831,6 +844,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprGetIndexNumber(data);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -847,6 +861,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprSetIndexNumber(flavour, idx, data, value);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -863,6 +878,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprGetIndex(data, idx);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -883,6 +899,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         );
         var expr;
         expr = __genExprSetIndex(flavour, data, idx, value);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -935,6 +952,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             ifTrue : ifTrue,
             ifFalse : ifFalse,
         }, __catspeak_instr_ifte__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -954,6 +972,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             eager : eager,
             lazy : lazy,
         }, __catspeak_instr_or__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -973,6 +992,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_xor__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -992,6 +1012,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             eager : eager,
             lazy : lazy,
         }, __catspeak_instr_and__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1049,6 +1070,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_lt__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1068,6 +1090,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_leq__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1087,6 +1110,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_gt__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1106,6 +1130,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_geq__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1125,6 +1150,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_band__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1144,6 +1170,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_bor__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1163,6 +1190,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_bxor__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1182,6 +1210,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             value : value,
             amount : amount,
         }, __catspeak_instr_lshift__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1201,6 +1230,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             value : value,
             amount : amount,
         }, __catspeak_instr_rshift__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1220,6 +1250,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_add__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1239,6 +1270,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_sub__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1258,6 +1290,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_mult__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1277,6 +1310,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_div__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1296,6 +1330,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_idiv__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1315,6 +1350,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             lhs : lhs,
             rhs : rhs,
         }, __catspeak_instr_rem__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1329,6 +1365,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         expr = __genExpr({
             value : value,
         }, __catspeak_instr_pos__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1343,6 +1380,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         expr = __genExpr({
             value : value,
         }, __catspeak_instr_neg__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1357,6 +1395,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         expr = __genExpr({
             value : value,
         }, __catspeak_instr_not__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
@@ -1371,6 +1410,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
         expr = __genExpr({
             value : value,
         }, __catspeak_instr_bnot__);
+        expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 

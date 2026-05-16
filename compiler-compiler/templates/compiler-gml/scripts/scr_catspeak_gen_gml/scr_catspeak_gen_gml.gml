@@ -11,13 +11,18 @@
 /// A visitor to be used by `CatspeakCartReader` which lowers a Catspeak
 /// cartridge into an executable GML method.
 ///
+/// @param {Struct} [modules_]
+///   A struct containing modules visible to this cartridge.
+///
 /// @param {Struct} [globals_]
 ///   The struct to use as global scope for unbound variables in Catspeak.
-function CatspeakGenGML(globals_ = undefined) constructor {
+function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor {
     /// @ignore
     exprStack = undefined;
     /// @ignore
     funcs = undefined;
+    /// @ignore
+    modules = modules_;
     /// @ignore
     globals = globals_;
     /// @ignore
@@ -585,7 +590,7 @@ function CatspeakGenGML(globals_ = undefined) constructor {
             )
         }});
 {%  endif %}
-{%  if instr.get("exceptional", False) %}
+{%  if instr.get("exceptional", True) %}
         expr = __attachDbg(dbg, expr);
 {%  endif %}
         ds_stack_push(exprStack_, expr);

@@ -48,7 +48,7 @@ function CatspeakCartWriter() constructor {
     ///
     /// @returns {Real}
     patch = undefined;
-    /// The path to the file containing source code for this cartridge.
+    /// The module path of this cartridge, used for symbol resolution.
     ///
     /// @returns {String}
     path = undefined;
