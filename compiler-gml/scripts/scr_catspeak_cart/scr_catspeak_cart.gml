@@ -497,18 +497,44 @@ function CatspeakCartWriter() constructor {
         //stackSize += 1 - 1;
     };
 
-    /// Get a reference to the global variable struct for this cartridge.
+    /// Get a value of the global variable with the given name.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to get.
     ///
     /// @param {Real} [dbg]
     ///   The approximate location of this instruction in the source code.
     ///   Defaults to `CATSPEAK_NOLOCATION`.
-    static emitGlobal = function (dbg = CATSPEAK_NOLOCATION) {
+    static emitGetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
-        buffer_write(chunk, buffer_u8, __CatspeakInstr.GLOB);
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_G);
         buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_string, name);
         // <result>
         stackSize += 1;
+    };
+
+    /// Assign a value to the global variable with the given name.
+    ///
+    /// @param {Real} flavour
+    ///   The flavour of assignment to use.
+    ///
+    /// @param {String} name
+    ///   The name of the global variable to set.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitSetGlobal = function (flavour, name, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_G);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_u8, flavour);
+        buffer_write(chunk, buffer_string, name);
+        // <result> - value
+        //stackSize += 1 - 1;
     };
 
     /// Get a reference to the current 'self' scope.
@@ -1155,7 +1181,8 @@ function catspeak_cart_version(cart) {
 ///   - `.handleInstrCatch(dbg, idx)`
 ///   - `.handleInstrGetLocal(dbg, idx)`
 ///   - `.handleInstrSetLocal(dbg, flavour, idx)`
-///   - `.handleInstrGlobal(dbg)`
+///   - `.handleInstrGetGlobal(dbg, name)`
+///   - `.handleInstrSetGlobal(dbg, flavour, name)`
 ///   - `.handleInstrSelf(dbg)`
 ///   - `.handleInstrOther(dbg)`
 ///   - `.handleInstrGetIndexString(dbg, idx)`
@@ -1408,10 +1435,20 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     };
 
     /// @ignore
-    static __readIGlobal = function () {
+    static __readIGetGlobal = function () {
         var cart_ = cart;
         var dbg = buffer_read(cart_, buffer_u32);
-        visitor.handleInstrGlobal(dbg);
+        var name = buffer_read(cart_, buffer_string);
+        visitor.handleInstrGetGlobal(dbg, name);
+    };
+
+    /// @ignore
+    static __readISetGlobal = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var flavour = buffer_read(cart_, buffer_u8);
+        var name = buffer_read(cart_, buffer_string);
+        visitor.handleInstrSetGlobal(dbg, flavour, name);
     };
 
     /// @ignore
@@ -1708,7 +1745,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.CAT] = __readICatch;
         __readerLookup[@ __CatspeakInstr.GET_L] = __readIGetLocal;
         __readerLookup[@ __CatspeakInstr.SET_L] = __readISetLocal;
-        __readerLookup[@ __CatspeakInstr.GLOB] = __readIGlobal;
+        __readerLookup[@ __CatspeakInstr.GET_G] = __readIGetGlobal;
+        __readerLookup[@ __CatspeakInstr.SET_G] = __readISetGlobal;
         __readerLookup[@ __CatspeakInstr.SELF] = __readISelf;
         __readerLookup[@ __CatspeakInstr.OTHR] = __readIOther;
         __readerLookup[@ __CatspeakInstr.GET_IS] = __readIGetIndexString;
@@ -1766,7 +1804,8 @@ enum __CatspeakInstr {
     CAT = 42,
     GET_L = 4,
     SET_L = 29,
-    GLOB = 47,
+    GET_G = 47,
+    SET_G = 54,
     SELF = 30,
     OTHR = 31,
     GET_IS = 48,
@@ -1805,5 +1844,5 @@ enum __CatspeakInstr {
     CONST_N = 1,
     CONST_S = 3,
     CONST_U = 35,
-    __SIZE__ = 54,
+    __SIZE__ = 55,
 }

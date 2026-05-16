@@ -1645,19 +1645,16 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             if (op == undefined) {
                 // get
                 if (idx == undefined) {
-                    ir.emitGlobal();
-                    ir.emitGetIndexString(name, dbg);
+                    ir.emitGetGlobal(name, dbg);
                 } else {
                     ir.emitGetLocal(idx, dbg);
                 }
             } else {
                 // set
+                __parseExpression();
                 if (idx == undefined) {
-                    ir.emitGlobal();
-                    __parseExpression();
-                    ir.emitSetIndexString(op, name, dbg);
+                    ir.emitSetGlobal(op, name, dbg);
                 } else {
-                    __parseExpression();
                     ir.emitSetLocal(op, idx, dbg);
                 }
             }
@@ -1723,8 +1720,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     if (idx != undefined) {
                         ir.emitGetLocal(idx, keyDbg);
                     } else {
-                        ir.emitGlobal();
-                        ir.emitGetIndexString(keyValue, keyDbg);
+                        ir.emitGetGlobal(keyValue, keyDbg);
                     }
                 } else {
                     __err("expected ':' between key and value of struct literal");

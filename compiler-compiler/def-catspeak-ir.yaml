@@ -294,11 +294,30 @@ instr-ops:
         desc: "the value to assign to this local variable"
     exceptional: false
 
-  - name: "global"
-    name-short: glob
-    desc: "get a reference to the global variable struct for this cartridge"
+  - name: "get global"
+    name-short: get_g
+    desc: "get a value of the global variable with the given name"
     opcode: 0x2F
-    exceptional: false
+    args:
+      - name: name
+        desc: "the name of the global variable to get"
+        type: string
+
+  - name: "set global"
+    name-short: set_g
+    desc: "assign a value to the global variable with the given name"
+    opcode: 0x36
+    args:
+      - name: flavour
+        desc: "the flavour of assignment to use"
+        type: char
+        values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
+      - name: name
+        desc: "the name of the global variable to set"
+        type: string
+    stackargs:
+      - name: value
+        desc: "the value to assign to this global variable"
 
   - name: "self"
     name-short: self

@@ -197,8 +197,17 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
-    static handleInstrGlobal = function (dbg) {
-        out += "\n  glob";
+    static handleInstrGetGlobal = function (dbg, name) {
+        out += "\n  get_g";
+        out += "  " + ("\"" + (name) + "\"");
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
+    static handleInstrSetGlobal = function (dbg, flavour, name) {
+        out += "\n  set_g";
+        out += "  " + ("'" + chr(flavour) + "'");
+        out += "  " + ("\"" + (name) + "\"");
         __writeDbg(dbg);
     };
 
