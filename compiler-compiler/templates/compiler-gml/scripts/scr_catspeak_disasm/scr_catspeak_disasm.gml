@@ -62,9 +62,7 @@ function __CatspeakCartDisassembler() constructor {
     /// @ignore
     static handleInclude = function (path, alias) {
         out += "include " + string(path);
-        if (alias != undefined) {
-            out += "as " + string(alias);
-        }
+        out += "as " + (alias == CATSPEAK_CURRENT_MODULE ? "self" : string(alias));
         out += "\n";
     };
 

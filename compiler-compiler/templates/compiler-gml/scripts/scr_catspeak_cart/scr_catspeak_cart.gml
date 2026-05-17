@@ -40,7 +40,7 @@ buffer_read({{ cart }}, {{ type_to_gml_buffer(type_) }})
 /// this may appear as `self::module_item`.
 ///
 /// @return {String}
-#macro CATSPEAK_CURRENT_MODULE ""
+#macro CATSPEAK_CURRENT_MODULE "*"
 
 /// Handles the creation of Catspeak cartridges. Performs little to no
 /// optimisations on the output. What you emit is what you get!
@@ -112,6 +112,7 @@ function CatspeakCartWriter() constructor {
     /// @param
     static addInclude = function (path, alias = undefined) {
         __catspeak_assert(path != "", "include path cannot be an empty string");
+        __catspeak_assert(alias != "", "include alias cannot be an empty string");
         if (alias == undefined) {
             var delim = string_last_pos("::", path);
             alias = delim > 0 ? string_delete(path, 1, delim + 1) : path;

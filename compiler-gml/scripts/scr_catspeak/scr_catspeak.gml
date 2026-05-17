@@ -471,7 +471,7 @@ function CatspeakCtx() constructor {
         // do parsing
         var writer = new CatspeakCartWriter();
         writer.path = path;
-        writer.addInclude(interface.path, ""); // prelude included implicitly
+        writer.addInclude(interface.path, CATSPEAK_CURRENT_MODULE); // prelude included implicitly
         try {
             // TODO :: multi-language support
             // TODO :: caching support

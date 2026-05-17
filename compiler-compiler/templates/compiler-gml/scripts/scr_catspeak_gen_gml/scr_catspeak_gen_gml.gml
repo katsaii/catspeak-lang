@@ -28,7 +28,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     /// @ignore
     importsMap = undefined;
     /// @ignore
-    importsWildcard = undefined;
+    importsCache = undefined;
     /// @ignore
     ctx = undefined;
     /// @ignore
@@ -89,7 +89,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         exprStack = ds_stack_create();
         funcs = ds_list_create();
         importsMap = { };
-        importsWildcard = [];
+        importsCache = { };
         ctx = {
             globals : globals ?? { },
             binding : undefined,
@@ -108,12 +108,6 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
 
     /// @ignore
     static handleInclude = function (path, alias) {
-        if (variable_struct_exists(importsMap, alias)) {
-            __catspeak_error(__catspeak_cat(
-                "ambiguous import: '", alias, "' resolves to both '", path,
-                "' and '", importsMap[$ alias], "'"
-            ));
-        }
         var module_ = undefined;
         var relPath = ctx.meta.path + "::" + path;
         if (variable_struct_exists(modules, relPath)) {
@@ -127,12 +121,9 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
                 "' (this could be caused by a cyclic dependency)"
             ));
         }
-        if (alias == CATSPEAK_CURRENT_MODULE) {
-            // wildcard imports
-            array_push(importsWildcard, module_);
-        } else {
-            importsMap[$ alias] = module_;
-        }
+        var candidates = importsMap[$ alias] ?? [];
+        array_push(candidates, module_);
+        importsMap[$ alias] = candidates;
     };
 
     /// @ignore
@@ -274,13 +265,17 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         }, func);
     };
 
-    /// @ignore
-    static __genExprGetGlobal = function (name, path) {
+    static __findModuleItem = function (name, path) {
+        var cacheName = path + "::" + name;
+        if (variable_struct_exists(importsCache, cacheName)) {
+            return importsCache[$ cacheName];
+        }
+        var candidates = importsMap[$ path];
         var foundModule = undefined;
         var foundValue = undefined;
-        for (var i = array_length(importsWildcard) - 1; i >= 0; i -= 1) {
+        for (var i = array_length(candidates) - 1; i >= 0; i -= 1) {
             // check modules for globals, otherwise fallback to the Catspeak global
-            var module_ = importsWildcard[i];
+            var module_ = candidates[i];
             if (module_.exists(name)) {
                 if (foundModule != undefined) {
                     __catspeak_error(__catspeak_cat(
@@ -292,14 +287,30 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
                 foundValue = module_.get(name);
             }
         }
-        if (foundModule != undefined) {
+        var result = { hasValue : foundModule != undefined, value : foundValue };
+        importsCache[$ cacheName] = result;
+        return result;
+    };
+
+    /// @ignore
+    static __genExprGetGlobal = function (name, path) {
+        var result;
+        result = __findModuleItem(name, path);
+        if (result.hasValue) {
             return __genExpr({
-                module_ : foundModule,
-                value : foundValue,
+                value : result.value,
             }, __catspeak_instr_module_value__);
-        } else {
-            return __genExpr({ name : name }, __catspeak_instr_get_g__);
         }
+        result = __findModuleItem(name + "_get", path);
+        if (result.hasValue) {
+            // getters
+            return __genExprCall(
+                0, __genExpr({
+                    value : result.value,
+                }, __catspeak_instr_module_value__), []
+            );
+        }
+        return __genExpr({ name : name }, __catspeak_instr_get_g__);
     };
 
     /// @ignore
