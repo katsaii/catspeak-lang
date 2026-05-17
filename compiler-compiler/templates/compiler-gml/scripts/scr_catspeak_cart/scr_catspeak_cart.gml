@@ -357,6 +357,18 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(visitor_, is_struct,
         "visitor must be a struct"
     );
+
+    /// @ignore
+    cart = cart_;
+    /// @ignore
+    cartStart = buffer_tell(cart_);
+    /// @ignore
+    visitor = visitor_;
+    /// @ignore
+    funcIdx = 0;
+    /// @ignore
+    instrIdx = 0;
+
     // read header
     var val;
 {% for head_name, head in ir_enum(ir, "head") %}
@@ -386,14 +398,27 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         }
     }
 
-    /// @ignore
-    cart = cart_;
-    /// @ignore
-    visitor = visitor_;
-    /// @ignore
-    funcIdx = 0;
-    /// @ignore
-    instrIdx = 0;
+    /// Invokes the `finalise` method of the supplied visitor, if one exists.
+    /// Also rewinds the cartridge if desired.
+    ///
+    /// @param {Bool} [rewind]
+    ///   Whether to rewind the buffer once the cart is finalised. Defaults to
+    ///   `true`.
+    ///
+    /// @return {Any}
+    static finalise = function (rewind = true) {
+        var result = undefined;
+        try {
+            if (variable_struct_exists(visitor, "finalise")) {
+                result = visitor.finalise();
+            }
+        } finally {
+            if (rewind) {
+                buffer_seek(cart, buffer_seek_start, cartStart);
+            }
+        }
+        return result;
+    };
 
     /// Reads the next instruction if it exists, calling its handler.
     ///

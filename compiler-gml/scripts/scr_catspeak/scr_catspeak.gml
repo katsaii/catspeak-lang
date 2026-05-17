@@ -503,7 +503,7 @@ function CatspeakCtx() constructor {
             do {
                 var keepReading = reader.readInstr();
             } until (!keepReading);
-            program = codegen.finalise();
+            program = reader.finalise();
         } finally {
             codegen.destroy();
         }
@@ -514,7 +514,7 @@ function CatspeakCtx() constructor {
     static run = function (args) {
         var cartIsOwned = !(is_struct(args) && __catspeak_is_buffer(args[$ "cart"]));
         var cart = parse(args);
-        var program;
+        var program = undefined;
         try {
             program = compile(cart);
         } finally {
