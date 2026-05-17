@@ -1146,7 +1146,13 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             var dbg = lexer.getLocationStart();
             lexer.next();
             if (peeked == CatspeakToken.IMPORT) {
-                var path = __parsePath();
+                __expect(CatspeakToken.IDENT, "expected identifier after 'import' keyword");
+                var module_ = lexer.getValue();
+                while (lexer.peek() == CatspeakToken.COLON_COLON) {
+                    lexer.next();
+                    __expect(CatspeakToken.IDENT, "expected identifier after '::' symbol");
+                    module_ += "::" + lexer.getValue();
+                }
                 var alias = undefined;
                 if (lexer.peek() == CatspeakToken.AS) {
                     lexer.next();
@@ -1157,7 +1163,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                         alias = lexer.getValue();
                     }
                 }
-                ir.addInclude(path.full, alias);
+                ir.addInclude(module_, alias);
                 ir.emitConstUndefined(); // TODO :: instruction to get result of module
             } else if (peeked == CatspeakToken.RETURN) {
                 peeked = lexer.peek();
@@ -1657,13 +1663,23 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         } else if (peeked == CatspeakToken.IDENT) {
             // TODO :: module::module_item
             lexer.next();
+            var module = CATSPEAK_CURRENT_MODULE;
             var name = lexer.getValue();
-            var idx = __findLocal(name);
+            var idx = undefined;
+            if (lexer.peek() == CatspeakToken.COLON_COLON) {
+                // ident::module_item
+                lexer.next();
+                __expect(CatspeakToken.IDENT, "expected identifier after '::'");
+                module = name;
+                name = lexer.getValue();
+            } else {
+                idx = __findLocal(name);
+            }
             var op = __parseAssignOp();
             if (op == undefined) {
                 // get
                 if (idx == undefined) {
-                    ir.emitGetGlobal(name, CATSPEAK_CURRENT_MODULE, dbg);
+                    ir.emitGetGlobal(name, module, dbg);
                 } else {
                     ir.emitGetLocal(idx, dbg);
                 }
@@ -1671,18 +1687,24 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 // set
                 __parseExpression();
                 if (idx == undefined) {
-                    ir.emitSetGlobal(op, name, dbg);
+                    ir.emitSetGlobal(op, name, module, dbg);
                 } else {
                     ir.emitSetLocal(op, idx, dbg);
                 }
             }
         } else if (peeked == CatspeakToken.SELF) {
-            // TODO :: self::module_item
             lexer.next();
-            ir.emitSelf();
+            if (lexer.peek() == CatspeakToken.COLON_COLON) {
+                // self::module_item
+                lexer.next();
+                __expect(CatspeakToken.IDENT, "expected identifier after 'self::'");
+                ir.emitGetGlobal(lexer.getValue(), CATSPEAK_CURRENT_MODULE, dbg);
+            } else {
+                ir.emitSelf(dbg);
+            }
         } else if (peeked == CatspeakToken.OTHER) {
             lexer.next();
-            ir.emitOther();
+            ir.emitOther(dbg);
         } else if (peeked == CatspeakToken.PAREN_LEFT) {
             lexer.next();
             __parseExpression();
@@ -1757,24 +1779,6 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         } else {
             __err("unexpected end of expression, expected one of: '(', '[' or '{'");
         }
-    };
-    
-    static __parsePath = function () {
-        static result = { };
-        __expect(CatspeakToken.IDENT, "expected identifier in module path");
-        var first = lexer.getValue();
-        var full = first;
-        var last = first;
-        while (lexer.peek() == CatspeakToken.COLON_COLON) {
-            lexer.next();
-            __expect(CatspeakToken.IDENT, "expected identifier after '::' symbol");
-            last = lexer.getValue();
-            full += "::" + last;
-        }
-        result.first = first;
-        result.full = full;
-        result.last = last;
-        return result;
     };
 
     /// @ignore
