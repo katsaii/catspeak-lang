@@ -24,7 +24,7 @@ TEST_EXPERIMENT "catspeak4-ctx" {
 
         return add(add("res: ", random_n) + " ", result)
     ');
-    show_message(moduleMeow.result); // "hi catspeak"
+    //show_message(moduleMeow.result); // "hi catspeak"
 }
 
 TEST_EXPERIMENT "catspeak4-parse" {

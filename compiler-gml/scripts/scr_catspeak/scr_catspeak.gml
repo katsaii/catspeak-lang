@@ -412,7 +412,7 @@ function catspeak_debug_tree(value, indent = "  ") {
             var n = array_length(names) - 2;
             for (var i = array_length(names) - 1; i >= 0; i -= 1) {
                 var name = names[i];
-                if (name == "ctx" || name == "toString") {
+                if (name == "ctx" || name == "toString" || name == "magicBox" || name == "dbg") {
                     continue;
                 }
                 var newIndent = n > 0 ? (indent + "| ") : (indent + "  ");

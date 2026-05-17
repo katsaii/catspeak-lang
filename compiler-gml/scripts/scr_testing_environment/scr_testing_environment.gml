@@ -109,7 +109,7 @@ test_add(function () : Test("env-function-method") constructor {
     assertEq("bye", result.bye);
 });
 
-test_add_ignore(function () : Test("env-function-method-2") constructor {
+test_add(function () : Test("env-function-method-2") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
         return fun { self };
@@ -129,7 +129,7 @@ function EngineFunctionMethodCallTest__Construct() constructor {
     }
 }
 
-test_add_ignore(function () : Test("env-function-method-call") constructor {
+test_add(function () : Test("env-function-method-call") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction("Construct", function() {
         return new EngineFunctionMethodCallTest__Construct();

@@ -2382,7 +2382,7 @@ function __catspeak_instr_call__() {
     var result = undefined;
     with (scopes.other_) with (scopes.self_) {
         var calleeUnbound = method_get_index(callee_);
-        result = __catspeak_script_execute_ext_fixed(calleeUnbound, args_);
+        result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsComplete);
     }
     array_resize(argsComplete, 0);
     return result;
@@ -2425,7 +2425,7 @@ function __catspeak_instr_call_i__() {
         var scopes2 = __catspeak_scope_get_bound(method_get_self(callee_));
         with (scopes2.other_) with (scopes2.self_) {
             var calleeUnbound = method_get_index(callee_);
-            result = __catspeak_script_execute_ext_fixed(calleeUnbound, args_);
+            result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsComplete);
         }
     } finally {
         scopes.self_ = oldSelf;
