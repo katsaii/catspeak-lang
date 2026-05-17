@@ -1151,7 +1151,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 if (lexer.peek() == CatspeakToken.AS) {
                     lexer.next();
                     if (lexer.peek() == CatspeakToken.SELF) {
-                        alias = "*"; // update to be `self` instead
+                        alias = CATSPEAK_CURRENT_MODULE;
                     } else {
                         __expect(CatspeakToken.IDENT, "expected identifier after 'as' keyword");
                         alias = lexer.getValue();
@@ -1663,7 +1663,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             if (op == undefined) {
                 // get
                 if (idx == undefined) {
-                    ir.emitGetGlobal(name, dbg);
+                    ir.emitGetGlobal(name, CATSPEAK_CURRENT_MODULE, dbg);
                 } else {
                     ir.emitGetLocal(idx, dbg);
                 }
@@ -1739,7 +1739,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     if (idx != undefined) {
                         ir.emitGetLocal(idx, keyDbg);
                     } else {
-                        ir.emitGetGlobal(keyValue, keyDbg);
+                        ir.emitGetGlobal(keyValue, CATSPEAK_CURRENT_MODULE, keyDbg);
                     }
                 } else {
                     __err("expected ':' between key and value of struct literal");

@@ -136,7 +136,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
                 "' (this could be caused by a cyclic dependency)"
             ));
         }
-        if (alias == "*") {
+        if (alias == CATSPEAK_CURRENT_MODULE) {
             // wildcard imports
             array_push(importsWildcard, module_);
         } else {
@@ -284,7 +284,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     };
 
     /// @ignore
-    static __genExprGetGlobal = function (name) {
+    static __genExprGetGlobal = function (name, path) {
         var foundModule = undefined;
         var foundValue = undefined;
         for (var i = array_length(importsWildcard) - 1; i >= 0; i -= 1) {
@@ -312,7 +312,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     };
 
     /// @ignore
-    static __genExprSetGlobal = function (flavour, name, value) {
+    static __genExprSetGlobal = function (flavour, name, path, value) {
         // TODO :: setters on modules
         var func;
         switch (flavour) {
@@ -857,23 +857,23 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     };
 
     /// @ignore
-    static handleInstrGetGlobal = function (dbg, name) {
+    static handleInstrGetGlobal = function (dbg, name, path) {
         var exprStack_ = exprStack;
         var expr;
-        expr = __genExprGetGlobal(name);
+        expr = __genExprGetGlobal(name, path);
         expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
 
     /// @ignore
-    static handleInstrSetGlobal = function (dbg, flavour, name) {
+    static handleInstrSetGlobal = function (dbg, flavour, name, path) {
         var exprStack_ = exprStack;
         var value = ds_stack_pop(exprStack_);
         __catspeak_assert(value != undefined,
             "not enough stack space for 'value' argument of 'set_g' instruction"
         );
         var expr;
-        expr = __genExprSetGlobal(flavour, name, value);
+        expr = __genExprSetGlobal(flavour, name, path, value);
         expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };

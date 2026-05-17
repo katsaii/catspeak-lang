@@ -302,6 +302,9 @@ instr-ops:
       - name: name
         desc: "the name of the global variable to get"
         type: string
+      - name: path
+        desc: "the path of the module to search for this global variable in"
+        type: string
 
   - name: "set global"
     name-short: set_g
@@ -314,6 +317,9 @@ instr-ops:
         values: ["=", "+", "-", "*", "/"] #< As chars, i.e. `ord("=")` in GML.
       - name: name
         desc: "the name of the global variable to set"
+        type: string
+      - name: path
+        desc: "the path of the module to search for this global variable in"
         type: string
     stackargs:
       - name: value

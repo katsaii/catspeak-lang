@@ -127,7 +127,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
                 "' (this could be caused by a cyclic dependency)"
             ));
         }
-        if (alias == "*") {
+        if (alias == CATSPEAK_CURRENT_MODULE) {
             // wildcard imports
             array_push(importsWildcard, module_);
         } else {
@@ -275,7 +275,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     };
 
     /// @ignore
-    static __genExprGetGlobal = function (name) {
+    static __genExprGetGlobal = function (name, path) {
         var foundModule = undefined;
         var foundValue = undefined;
         for (var i = array_length(importsWildcard) - 1; i >= 0; i -= 1) {
@@ -303,7 +303,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     };
 
     /// @ignore
-    static __genExprSetGlobal = function (flavour, name, value) {
+    static __genExprSetGlobal = function (flavour, name, path, value) {
         // TODO :: setters on modules
         var func;
         switch (flavour) {

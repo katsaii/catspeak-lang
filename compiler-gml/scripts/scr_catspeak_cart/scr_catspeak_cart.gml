@@ -25,6 +25,12 @@
 
 //# feather use syntax-errors
 
+/// The empty string represents the current Catspeak module. In `.meow` files
+/// this may appear as `self::module_item`.
+///
+/// @return {String}
+#macro CATSPEAK_CURRENT_MODULE ""
+
 /// Handles the creation of Catspeak cartridges. Performs little to no
 /// optimisations on the output. What you emit is what you get!
 function CatspeakCartWriter() constructor {
@@ -117,7 +123,6 @@ function CatspeakCartWriter() constructor {
     /// @param
     static addInclude = function (path, alias = undefined) {
         __catspeak_assert(path != "", "include path cannot be an empty string");
-        __catspeak_assert(alias != "", "include alias cannot be an empty string");
         if (alias == undefined) {
             var delim = string_last_pos("::", path);
             alias = delim > 0 ? string_delete(path, 1, delim + 1) : path;
@@ -502,15 +507,19 @@ function CatspeakCartWriter() constructor {
     /// @param {String} name
     ///   The name of the global variable to get.
     ///
+    /// @param {String} path
+    ///   The path of the module to search for this global variable in.
+    ///
     /// @param {Real} [dbg]
     ///   The approximate location of this instruction in the source code.
     ///   Defaults to `CATSPEAK_NOLOCATION`.
-    static emitGetGlobal = function (name, dbg = CATSPEAK_NOLOCATION) {
+    static emitGetGlobal = function (name, path, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.GET_G);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_string, name);
+        buffer_write(chunk, buffer_string, path);
         // <result>
         stackSize += 1;
     };
@@ -523,16 +532,20 @@ function CatspeakCartWriter() constructor {
     /// @param {String} name
     ///   The name of the global variable to set.
     ///
+    /// @param {String} path
+    ///   The path of the module to search for this global variable in.
+    ///
     /// @param {Real} [dbg]
     ///   The approximate location of this instruction in the source code.
     ///   Defaults to `CATSPEAK_NOLOCATION`.
-    static emitSetGlobal = function (flavour, name, dbg = CATSPEAK_NOLOCATION) {
+    static emitSetGlobal = function (flavour, name, path, dbg = CATSPEAK_NOLOCATION) {
         __catspeak_assert(chunkTop >= 0, "function stack empty");
         var chunk = chunks[| chunkTop];
         buffer_write(chunk, buffer_u8, __CatspeakInstr.SET_G);
         buffer_write(chunk, buffer_u32, dbg);
         buffer_write(chunk, buffer_u8, flavour);
         buffer_write(chunk, buffer_string, name);
+        buffer_write(chunk, buffer_string, path);
         // <result> - value
         //stackSize += 1 - 1;
     };
@@ -1181,8 +1194,8 @@ function catspeak_cart_version(cart) {
 ///   - `.handleInstrCatch(dbg, idx)`
 ///   - `.handleInstrGetLocal(dbg, idx)`
 ///   - `.handleInstrSetLocal(dbg, flavour, idx)`
-///   - `.handleInstrGetGlobal(dbg, name)`
-///   - `.handleInstrSetGlobal(dbg, flavour, name)`
+///   - `.handleInstrGetGlobal(dbg, name, path)`
+///   - `.handleInstrSetGlobal(dbg, flavour, name, path)`
 ///   - `.handleInstrSelf(dbg)`
 ///   - `.handleInstrOther(dbg)`
 ///   - `.handleInstrGetIndexString(dbg, idx)`
@@ -1439,7 +1452,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var cart_ = cart;
         var dbg = buffer_read(cart_, buffer_u32);
         var name = buffer_read(cart_, buffer_string);
-        visitor.handleInstrGetGlobal(dbg, name);
+        var path = buffer_read(cart_, buffer_string);
+        visitor.handleInstrGetGlobal(dbg, name, path);
     };
 
     /// @ignore
@@ -1448,7 +1462,8 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         var dbg = buffer_read(cart_, buffer_u32);
         var flavour = buffer_read(cart_, buffer_u8);
         var name = buffer_read(cart_, buffer_string);
-        visitor.handleInstrSetGlobal(dbg, flavour, name);
+        var path = buffer_read(cart_, buffer_string);
+        visitor.handleInstrSetGlobal(dbg, flavour, name, path);
     };
 
     /// @ignore
