@@ -123,7 +123,7 @@ test_add(function () : Test("env-function-method-call") constructor {
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add_ignore(function () : Test("env-function-constructor-call") constructor {
+test_add(function () : Test("env-function-constructor-call") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction(
         "Construct", EngineFunctionMethodCallTest__Construct
@@ -139,7 +139,7 @@ test_add_ignore(function () : Test("env-function-constructor-call") constructor 
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add_ignore(function () : Test("env-function-constructor-call-implicit") constructor {
+test_add(function () : Test("env-function-constructor-call-implicit") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeFunction(
         "Construct", EngineFunctionMethodCallTest__Construct
@@ -155,7 +155,7 @@ test_add_ignore(function () : Test("env-function-constructor-call-implicit") con
     assertEq("Woo!Yeehaw!", inst.str);
 });
 
-test_add_ignore(function () : Test("env-function-constructor-call-implicit-index") constructor {
+test_add(function () : Test("env-function-constructor-call-implicit-index") constructor {
     var env = new CatspeakEnvironment();
     env.getInterface().exposeConstant(
         "ctx", { C : method(undefined, EngineFunctionMethodCallTest__Construct) }

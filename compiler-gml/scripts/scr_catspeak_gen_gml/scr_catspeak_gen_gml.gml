@@ -626,6 +626,16 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     };
 
     /// @ignore
+    static __genExprCallNew = function (n, callee, args) {
+        requiresScopes = true;
+        return __genExpr({
+            callee : callee,
+            argsN : n,
+            args : args
+        }, __catspeak_instr_call_n__);
+    };
+
+    /// @ignore
     static __genExprCallIndex = function (n, data, idx, args) {
         requiresScopes = true;
         return __genExpr({
@@ -671,6 +681,31 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         );
         var expr;
         expr = __genExprCall(n, callee, args);
+        expr = __attachDbg(dbg, expr);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrCallNew = function (dbg, n) {
+        var exprStack_ = exprStack;
+        var args__n = n;
+        var args__nGot = ds_stack_size(exprStack_);
+        if (args__nGot < args__n) {
+            __catspeak_error(__catspeak_cat(
+                "not enough stack space for 'args' argument of 'call_n' instruction (expected ",
+                args__n, ", got ", args__nGot, ")"
+            ));
+        }
+        var args = array_create(args__n);
+        for (var i = args__n - 1; i >= 0; i -= 1) {
+            args[@ i] = ds_stack_pop(exprStack_);
+        }
+        var callee = ds_stack_pop(exprStack_);
+        __catspeak_assert(callee != undefined,
+            "not enough stack space for 'callee' argument of 'call_n' instruction"
+        );
+        var expr;
+        expr = __genExprCallNew(n, callee, args);
         expr = __attachDbg(dbg, expr);
         ds_stack_push(exprStack_, expr);
     };
@@ -2255,6 +2290,44 @@ function __catspeak_script_execute_ext_fixed(callee_, args_) {
     return variant(callee_, args_);
 }
 
+/** @ignore */ function __catspeak_cc_0 (callee_, args_) { return new callee_() }
+/** @ignore */ function __catspeak_cc_1 (callee_, args_) { return new callee_(args_[0]) }
+/** @ignore */ function __catspeak_cc_2 (callee_, args_) { return new callee_(args_[0], args_[1]) }
+/** @ignore */ function __catspeak_cc_3 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2]) }
+/** @ignore */ function __catspeak_cc_4 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3]) }
+/** @ignore */ function __catspeak_cc_5 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4]) }
+/** @ignore */ function __catspeak_cc_6 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5]) }
+/** @ignore */ function __catspeak_cc_7 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6]) }
+/** @ignore */ function __catspeak_cc_8 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7]) }
+/** @ignore */ function __catspeak_cc_9 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8]) }
+/** @ignore */ function __catspeak_cc_10 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9]) }
+/** @ignore */ function __catspeak_cc_11 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10]) }
+/** @ignore */ function __catspeak_cc_12 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11]) }
+/** @ignore */ function __catspeak_cc_13 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12]) }
+/** @ignore */ function __catspeak_cc_14 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13]) }
+/** @ignore */ function __catspeak_cc_15 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14]) }
+/** @ignore */ function __catspeak_cc_16 (callee_, args_) { return new callee_(args_[0], args_[1], args_[2], args_[3], args_[4], args_[5], args_[6], args_[7], args_[8], args_[9], args_[10], args_[11], args_[12], args_[13], args_[14], args_[15]) }
+
+/// @ignore
+function __catspeak_constructor_call(callee_, args_) {
+    static variants = undefined;
+    if (variants == undefined) {
+        variants = [
+            __catspeak_cc_0,  __catspeak_cc_1,  __catspeak_cc_2,  __catspeak_cc_3,
+            __catspeak_cc_4,  __catspeak_cc_5,  __catspeak_cc_6,  __catspeak_cc_7,
+            __catspeak_cc_8,  __catspeak_cc_9,  __catspeak_cc_10, __catspeak_cc_11,
+            __catspeak_cc_12, __catspeak_cc_13, __catspeak_cc_14, __catspeak_cc_15,
+            __catspeak_cc_16
+        ];
+    }
+    var argc = array_length(args_);
+    __catspeak_assert(argc <= 16,
+        "calling constructors with more than 16 araguments is not supported"
+    );
+    var variant = variants[argc];
+    return variant(callee_, args_);
+}
+
 /// @ignore
 function __catspeak_instr_call_0__() {
     var callee_ = callee();
@@ -2383,6 +2456,28 @@ function __catspeak_instr_call__() {
     with (scopes.other_) with (scopes.self_) {
         var calleeUnbound = method_get_index(callee_);
         result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsComplete);
+    }
+    array_resize(argsComplete, 0);
+    return result;
+}
+
+/// @ignore
+function __catspeak_instr_call_n__() {
+    static argsComplete = [];
+    var callee_ = callee();
+    // build args array
+    var argsN_ = argsN;
+    var args_ = args;
+    array_resize(argsComplete, argsN_);
+    for (var i = 0; i < argsN_; i += 1) {
+        var arg = args_[i];
+        argsComplete[@ i] = arg();
+    }
+    var scopes = __catspeak_scope_get_bound(method_get_self(callee_));
+    var result = undefined;
+    with (scopes.other_) with (scopes.self_) {
+        var calleeUnbound = method_get_index(callee_);
+        result = __catspeak_constructor_call(calleeUnbound, argsComplete);
     }
     array_resize(argsComplete, 0);
     return result;

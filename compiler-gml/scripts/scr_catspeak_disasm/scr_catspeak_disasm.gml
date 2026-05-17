@@ -108,6 +108,13 @@ function __CatspeakCartDisassembler() constructor {
     };
 
     /// @ignore
+    static handleInstrCallNew = function (dbg, n) {
+        out += "\n  call_n";
+        out += "  " + string(n);
+        __writeDbg(dbg);
+    };
+
+    /// @ignore
     static handleInstrCallIndex = function (dbg, n) {
         out += "\n  call_i";
         out += "  " + string(n);

@@ -1590,13 +1590,23 @@ function CatspeakParser(cartWriter, lexer_) constructor {
 
     /// @ignore
     static __parseIndex = function () {
+        var callNew = lexer.peek() == CatspeakToken.NEW;
+        var callNewDbg = lexer.getLocationStart();
+        if (callNew) {
+            lexer.next();
+        }
         __parsePrimary();
         while (true) {
             var peeked = lexer.peek();
             var dbg = lexer.getLocationStart();
             if (peeked == CatspeakToken.PAREN_LEFT) {
                 var n = __parseCallArgs();
-                ir.emitCall(n, dbg);
+                if (callNew) {
+                    ir.emitCallNew(n, dbg);
+                } else {
+                    ir.emitCall(n, dbg);
+                }
+                callNew = false;
             } else if (peeked == CatspeakToken.BOX_LEFT || peeked == CatspeakToken.DOT) {
                 lexer.next();
                 if (peeked == CatspeakToken.BOX_LEFT) {
@@ -1624,6 +1634,10 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             } else {
                 break;
             }
+        }
+        if (callNew) {
+            // implicit new: `let t = new Thing;`
+            ir.emitCallNew(0, callNewDbg);
         }
     };
     

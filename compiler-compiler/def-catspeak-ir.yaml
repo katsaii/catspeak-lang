@@ -130,6 +130,21 @@ instr-ops:
         desc: "the arguments to call `callee` with"
         many: n
 
+  - name: "call new"
+    name-short: call_n
+    desc: "construct a function expression"
+    opcode: 0x38
+    args:
+      - name: n
+        desc: "the number of arguments in this constructor call"
+        type: u8
+    stackargs:
+      - name: callee
+        desc: "the function to construct"
+      - name: args
+        desc: "the arguments to construct `callee` with"
+        many: n
+
   - name: "call index"
     name-short: call_i
     desc: "call a method expression"
