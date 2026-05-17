@@ -524,6 +524,9 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
     /// Returns the shared global struct if this feature is enabled, or
     /// `undefined` if the feature is disabled.
     ///
+    /// @deprecated {4.0.0}
+    ///   Assign an object to `.globals` directly.
+    ///
     /// @param {Bool} [enabled]
     ///   Whether to enable this feature. Defaults to `true`.
     ///
@@ -533,7 +536,42 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
         return globals;
     };
 
+    /// Applies list of presets to this Catspeak environment. These changes
+    /// cannot be undone, so only choose presets you really need.
+    ///
+    /// You can add additional presets using the `catspeak_preset_add` function.
+    ///
+    /// @experimental
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.addModule()` and the new module system.
+    ///
+    /// @example
+    ///   Enabling the math and draw presets on the default Catspeak
+    ///   environment:
+    ///   ```gml
+    ///   Catspeak.applyPreset(
+    ///     CatspeakPreset.MATH,
+    ///     CatspeakPreset.DRAW
+    ///   );
+    ///   ```
+    ///
+    /// @param {Enum.CatspeakPreset} preset
+    ///   The preset type to apply.
+    ///
+    /// @param {Enum.CatspeakPreset} ...
+    ///   Additional presets.
+    static applyPreset = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var presetFunc = __catspeak_preset_get(argument[i]);
+            presetFunc(getInterface());
+        }
+    };
+
     /// Similar to `Catspeak.parse`, except a string is used instead of a buffer.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.parse()` instead.
     ///
     /// @param {String} src
     ///   The string containing Catspeak source code to parse.
@@ -545,6 +583,9 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
     static parseString = parse;
 
     /// Compiles Catspeak IR into a callable GML function.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.compile()` instead.
     ///
     /// @deprecated {3.0.2}
     ///   Use `Catspeak.compile` instead.

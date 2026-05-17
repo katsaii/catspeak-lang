@@ -26,6 +26,18 @@ test_add(function () : TestCodegenGML("codegen-gml-value-fun",
     assertEq("hiiiii", a());
 }, IgnorePlatform.WIN_YYC);
 
+test_add(function () : TestCodegenGML("codegen-gml-value-complex",
+    @'do {
+        "hello world"
+        123
+        3.14_15
+        do {
+            "yippee!"
+        }
+    }',
+    "yippee!"
+) constructor { });
+
 test_add(function () : TestCodegenGMLResult("codegen-gml-value-block",
     @'
         let a = do{
