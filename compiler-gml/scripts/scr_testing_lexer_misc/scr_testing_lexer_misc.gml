@@ -2,7 +2,7 @@
 //# feather use syntax-errors
 
 test_add(function () : Test("lexer-misc-unicode") constructor {
-    var buff = __catspeak_create_buffer_from_string(@'🙀會意字 abcde1');
+    var buff = catspeak_buffer_create_from_string(@'🙀會意字 abcde1');
     var lexer = new CatspeakLexerV3(buff);
     // other
     assertEq(CatspeakTokenV3.OTHER, lexer.nextWithWhitespace());
@@ -139,7 +139,7 @@ test_add(function () : TestLexerTokenStream("env-tokenise",
 test_add(function () : Test("env-tokenise-keywords") constructor {
     var env = new CatspeakEnvironment();
     env.renameKeyword("while", "world");
-    var buff = __catspeak_create_buffer_from_string(@'hello.world');
+    var buff = catspeak_buffer_create_from_string(@'hello.world');
     var lexer = env.tokenise(buff);
     assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("hello", lexer.getLexeme());
@@ -154,7 +154,7 @@ test_add(function () : Test("env-tokenise-keywords") constructor {
 test_add(function () : Test("env-delete-keyword") constructor {
     var env = new CatspeakEnvironment();
     env.removeKeyword("fun");
-    var buff = __catspeak_create_buffer_from_string("fun");
+    var buff = catspeak_buffer_create_from_string("fun");
     var lexer = env.tokenise(buff);
     assertEq(CatspeakTokenV3.IDENT, lexer.next());
     assertEq("fun", lexer.getLexeme());

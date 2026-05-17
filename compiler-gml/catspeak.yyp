@@ -9,7 +9,6 @@
     {"id":{"name":"not_catspeak_catspeak_for_modders","path":"notes/not_catspeak_catspeak_for_modders/not_catspeak_catspeak_for_modders.yy",},"order":4,},
     {"id":{"name":"scr_catspeak_lang_gmlite","path":"scripts/scr_catspeak_lang_gmlite/scr_catspeak_lang_gmlite.yy",},"order":1,},
     {"id":{"name":"scr_testing_lexer","path":"scripts/scr_testing_lexer/scr_testing_lexer.yy",},"order":0,},
-    {"id":{"name":"scr_catspeak_codegen","path":"scripts/scr_catspeak_codegen/scr_catspeak_codegen.yy",},"order":0,},
     {"id":{"name":"tm_unit_test","path":"tilesets/tm_unit_test/tm_unit_test.yy",},"order":8,},
     {"id":{"name":"scr_catspeak_common","path":"scripts/scr_catspeak_common/scr_catspeak_common.yy",},"order":1,},
     {"id":{"name":"scr_testing_scratchpad","path":"scripts/scr_testing_scratchpad/scr_testing_scratchpad.yy",},"order":3,},
@@ -37,7 +36,6 @@
     {"id":{"name":"scr_unit_test_scr","path":"scripts/scr_unit_test_scr/scr_unit_test_scr.yy",},"order":7,},
     {"id":{"name":"scr_catspeak_lang_meow","path":"scripts/scr_catspeak_lang_meow/scr_catspeak_lang_meow.yy",},"order":0,},
     {"id":{"name":"scr_catspeak_api","path":"scripts/scr_catspeak_api/scr_catspeak_api.yy",},"order":7,},
-    {"id":{"name":"scr_catspeak_parser_temporary","path":"scripts/scr_catspeak_parser_temporary/scr_catspeak_parser_temporary.yy",},"order":5,},
     {"id":{"name":"not_catspeak_catspeak_for_developers","path":"notes/not_catspeak_catspeak_for_developers/not_catspeak_catspeak_for_developers.yy",},"order":3,},
     {"id":{"name":"scr_testing_lexer_symbols","path":"scripts/scr_testing_lexer_symbols/scr_testing_lexer_symbols.yy",},"order":9,},
     {"id":{"name":"obj_testing_example_base_gml_bench","path":"objects/obj_testing_example_base_gml_bench/obj_testing_example_base_gml_bench.yy",},"order":0,},
@@ -89,7 +87,6 @@
   ],
   "Folders": [
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak 3","folderPath":"folders/Catspeak 3.yy","order":0,},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"compiler","folderPath":"folders/Catspeak 3/compiler.yy","order":0,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Docs","folderPath":"folders/Catspeak Docs.yy","order":4,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"catspeak","folderPath":"folders/Catspeak Docs/catspeak.yy","order":2,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Catspeak Plugins","folderPath":"folders/Catspeak Plugins.yy","order":6,},

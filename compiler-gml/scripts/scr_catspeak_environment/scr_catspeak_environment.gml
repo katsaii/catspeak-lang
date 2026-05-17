@@ -202,7 +202,6 @@ function CatspeakForeignInterface() constructor {
             var value = argument[i + 1];
             if (CATSPEAK_DEBUG_MODE) {
                 __catspeak_check_arg("name", name, is_string);
-                //__catspeak_check_arg_not("value", value, __catspeak_is_callable);
             }
             database[$ name] = value;
         }
@@ -773,7 +772,7 @@ function CatspeakEnvironment_() constructor {
         if (CATSPEAK_DEBUG_MODE) {
             __catspeak_check_arg("src", src, is_string);
         }
-        var buff = __catspeak_create_buffer_from_string(src);
+        var buff = catspeak_buffer_create_from_string(src);
         var result = parse(buff, undefined, undefined, filepath);
         buffer_delete(buff);
         return result;

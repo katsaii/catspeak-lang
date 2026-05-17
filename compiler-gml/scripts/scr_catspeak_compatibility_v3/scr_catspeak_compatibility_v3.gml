@@ -28,47 +28,6 @@
 /// @return {Bool}
 #macro CATSPEAK_DEBUG_MODE true
 
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///
-/// @param {String} src
-/// @return {Id.Buffer}
-function __catspeak_create_buffer_from_string(src) {
-    return catspeak_buffer_create_from_string(src);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_location_show(location, filepath) {
-    gml_pragma("forceinline");
-    return catspeak_location_show(location, filepath);
-}
-
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_string(val) {
-    gml_pragma("forceinline");
-    return is_string(val) ? val : string(val);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_location_show_ext(location, filepath) {
-    var msg = __catspeak_location_show(location, filepath);
-    if (argument_count > 2) {
-        msg += " -- ";
-        for (var i = 2; i < argument_count; i += 1) {
-            msg += __catspeak_string(argument[i]);
-        }
-    }
-    return msg;
-}
-
 /// Gets the line component of a Catspeak source location. This is stored as a
 /// 20-bit unsigned integer within the least-significant bits of the supplied
 /// Catspeak location handle.
@@ -92,140 +51,11 @@ function catspeak_location_get_row(location) {
 /// Calling this function forces Catspeak to collect that garbage.
 ///
 /// @deprecated {4.0.0}
+///   Does nothing.
 function catspeak_collect() {
     if (CATSPEAK_DEBUG_MODE) {
         __catspeak_check_init();
     }
-    var pool = global.__catspeakAllocPool;
-    var poolSize = array_length(pool)-1;
-    for (var i = poolSize; i >= 0; i -= 1) {
-        var weakRef = pool[i];
-        if (weak_ref_alive(weakRef)) {
-            continue;
-        }
-        weakRef.adapter.destroy(weakRef.ds);
-        array_delete(pool, i, 1);
-    }
-}
-
-/// "adapter" here is a struct with two fields: "create" and "destroy" which
-/// indicates how to construct and destruct the resource once the owner gets
-/// collected.
-///
-/// "owner" is a struct whose lifetime determines whether the resource needs
-/// to be collected as well. Once "owner" gets collected by the garbage
-/// collector, any resources it owns will eventually get collected as well.
-///
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///
-/// @param {Struct} owner
-/// @param {Struct} adapter
-/// @return {Any}
-function __catspeak_alloc(owner, adapter) {
-    var pool = global.__catspeakAllocPool;
-    var poolMax = array_length(pool) - 1;
-    if (poolMax >= 0) {
-        repeat (3) { // the number of retries until a new resource is created
-            var i = irandom(poolMax);
-            var weakRef = pool[i];
-            if (weak_ref_alive(weakRef)) {
-                continue;
-            }
-            weakRef.adapter.destroy(weakRef.ds);
-            var newWeakRef = weak_ref_create(owner);
-            var resource = adapter.create();
-            newWeakRef.adapter = adapter;
-            newWeakRef.ds = resource;
-            pool[@ i] = newWeakRef;
-            return resource;
-        }
-    }
-    var weakRef = weak_ref_create(owner);
-    var resource = adapter.create();
-    weakRef.adapter = adapter;
-    weakRef.ds = resource;
-    array_push(pool, weakRef);
-    return resource;
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///
-/// @param {Struct} owner
-function __catspeak_alloc_ds_map(owner) {
-    gml_pragma("forceinline");
-    return __catspeak_alloc(owner, global.__catspeakAllocDSMapAdapter);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///
-/// @param {Struct} owner
-function __catspeak_alloc_ds_list(owner) {
-    gml_pragma("forceinline");
-    return __catspeak_alloc(owner, global.__catspeakAllocDSListAdapter);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///
-/// @param {Struct} owner
-function __catspeak_alloc_ds_stack(owner) {
-    gml_pragma("forceinline");
-    return __catspeak_alloc(owner, global.__catspeakAllocDSStackAdapter);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///
-/// @param {Struct} owner
-function __catspeak_alloc_ds_priority(owner) {
-    gml_pragma("forceinline");
-    return __catspeak_alloc(owner, global.__catspeakAllocDSPriorityAdapter);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_init_alloc() {
-    /// @ignore
-    global.__catspeakAllocPool = [];
-    /// @ignore
-    global.__catspeakAllocDSMapAdapter = {
-        create : ds_map_create,
-        destroy : ds_map_destroy,
-    };
-    /// @ignore
-    global.__catspeakAllocDSListAdapter = {
-        create : ds_list_create,
-        destroy : ds_list_destroy,
-    };
-    /// @ignore
-    global.__catspeakAllocDSStackAdapter = {
-        create : ds_stack_create,
-        destroy : ds_stack_destroy,
-    };
-    /// @ignore
-    global.__catspeakAllocDSPriorityAdapter = {
-        create : ds_priority_create,
-        destroy : ds_priority_destroy,
-    };
-}
-
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_init_lexer_keywords() {
-    var keywords = __catspeak_keywords_create();
-    global.__catspeakConfig.keywords = keywords;
-    return keywords;
 }
 
 /// @ignore
@@ -236,7 +66,8 @@ function __catspeak_init_lexer() {
     /// @ignore
     //global.__catspeakChar2Token = __catspeak_init_lexer_codepage();
     /// @ignore
-    global.__catspeakString2Token = __catspeak_init_lexer_keywords();
+    global.__catspeakString2Token = __catspeak_keywords_create();
+    global.__catspeakConfig.keywords = global.__catspeakString2Token;
 }
 
 /// @ignore
@@ -538,22 +369,13 @@ function CatspeakLexerV3(
     buff, offset=0, size=infinity, keywords=undefined
 ) : CatspeakLexer(buff, offset, size) constructor {
     /// @ignore
-    self.__keywords = keywords ?? global.__catspeakString2Token;
+    __keywords = keywords ?? global.__catspeakString2Token;
     /// @ignore
-    self.__nextUTF8Char = __nextChar;
+    __nextUTF8Char = __nextChar;
     /// @ignore
-    self.__advance = advanceChar;
+    __advance = advanceChar;
     /// @ignore
-    self.__clearLexeme = clearLexeme;
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-///   Use `__catspeak_char_is_alphanum` instead.
-function __catspeak_char_is_alphanumeric(char) {
-    gml_pragma("forceinline");
-    return __catspeak_char_is_alphanum(char);
+    __clearLexeme = clearLexeme;
 }
 
 // Presets are built-in collections of GML functions and constants which
@@ -1072,6 +894,7 @@ function __catspeak_preset_unsafe(ffi) {
 /// catspeak environments.
 ///
 /// @deprecated {4.0.0}
+///   Use the new module system. (See `CatspeakCtx`)
 ///
 /// @param {Any} key
 ///   The key to use for the preset. Preferably a string, but it can be any
@@ -1127,7 +950,7 @@ function __catspeak_init_presets() {
 ///
 /// @deprecated {4.0.0}
 function __catspeak_error_v3() {
-    var msg = "Catspeak v" + CATSPEAK_VERSION + " (compatibility)";
+    var msg = "Catspeak v" + CATSPEAK_VERSION + " (v3 compatibility)";
     if (argument_count > 0) {
         msg += ": ";
         for (var i = 0; i < argument_count; i += 1) {
@@ -1141,7 +964,7 @@ function __catspeak_error_v3() {
 ///
 /// @deprecated {4.0.0}
 function __catspeak_error_v3_silent() {
-    var msg = "Catspeak v" + CATSPEAK_VERSION + " (compatibility)";
+    var msg = "Catspeak v" + CATSPEAK_VERSION + " (v3 compatibility)";
     if (argument_count > 0) {
         msg += ": ";
         for (var i = 0; i < argument_count; i += 1) {
@@ -1149,21 +972,6 @@ function __catspeak_error_v3_silent() {
         }
     }
     show_debug_message(msg);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_error_v3_got(msg, got) {
-    var gotStr;
-    if (is_numeric(got)) {
-        gotStr = string(got);
-    } else if (is_string(got) && string_length(got) < 16) {
-        gotStr = got;
-    } else {
-        gotStr = typeof(got);
-    }
-    __catspeak_error_v3(msg, ", got '", gotStr, "'");
 }
 
 /// @ignore
@@ -1202,82 +1010,4 @@ function __catspeak_check_arg_optional(name, val, func, typeName=undefined) {
         return;
     }
     return __catspeak_check_arg(name, val, func, typeName);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_arg_not(name, val, func, typeName=undefined) {
-    if (!func(val)) {
-        return;
-    }
-    typeName ??= __catspeak_infer_type_from_predicate(func);
-    __catspeak_error_v3(
-        "expected argument '", name,
-        "' to be any type EXCEPT of type '", typeName, "'"
-    );
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_arg_struct(name, val) {
-    __catspeak_check_arg(name, val, is_struct);
-    for (var i = 2; i < argument_count; i += 2) {
-        var varName = argument[i];
-        var varFunc = argument[i + 1];
-        if (!variable_struct_exists(val, varName)) {
-            __catspeak_error_v3(
-                "expected struct argument '", name,
-                "' to contain a variable '", varName, "'"
-            );
-        }
-        if (varFunc != undefined) {
-            __catspeak_check_arg(
-                    name + "." + varName, val[$ varName], varFunc);
-        }
-    }
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_arg_struct_instanceof(name, val, expect) {
-    __catspeak_check_arg(name, val, is_struct);
-    var actual = instanceof(val);
-    if (actual != expect) {
-        __catspeak_error_v3(
-            "expected struct argument '", name, "' to be an instance of '",
-            expect, "', but got '", actual, "'"
-        );
-    }
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_arg_size_bits(name, val, size) {
-    gml_pragma("forceinline");
-    __catspeak_check_arg(name, val, is_numeric);
-    if (val < 0) {
-        __catspeak_error_v3("argument '", name, "' must not be negative, got", val);
-    }
-    if (val >= power(2, size)) {
-        __catspeak_error_v3(
-            "argument '", name, "' is too large (", val,
-            ") it must fit within ", size, " bits"
-        );
-    }
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_global_exists(name) {
-    gml_pragma("forceinline");
-    if (!variable_global_exists(name)) {
-        __catspeak_error_v3(
-            "global variable '", name, "' does not exist"
-        );
-    }
 }

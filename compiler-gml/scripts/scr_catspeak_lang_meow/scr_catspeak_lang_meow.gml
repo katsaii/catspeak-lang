@@ -250,7 +250,7 @@ function CatspeakLexer(
     ///   printing each non-whitespace token out as a debug message.
     ///
     ///   ```gml
-    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   var lexer = new CatspeakLexer(buff);
     ///   do {
     ///     var token = lexer.nextWithWhitespace();
     ///     if (token != CatspeakToken.WHITESPACE) {
@@ -694,7 +694,7 @@ function CatspeakLexer(
     ///   printing each token out as a debug message.
     ///
     ///   ```gml
-    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   var lexer = new CatspeakLexer(buff);
     ///   do {
     ///     var token = lexer.next();
     ///     show_debug_message(lexer.getLexeme());
@@ -725,7 +725,7 @@ function CatspeakLexer(
     ///   printing each token out as a debug message.
     ///
     ///   ```gml
-    ///   var lexer = new CatspeakLexerV3(buff);
+    ///   var lexer = new CatspeakLexer(buff);
     ///   while (lexer.peek() != CatspeakToken.EOF) {
     ///     lexer.next();
     ///     show_debug_message(lexer.getLexeme());

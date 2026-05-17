@@ -7,7 +7,7 @@ function TestLexerTokenStream(name, src, offset = undefined, length = undefined)
     self.length = length;
 
     static checkTokens = function () {
-        var buff = __catspeak_create_buffer_from_string(src);
+        var buff = catspeak_buffer_create_from_string(src);
         var lexer = new CatspeakLexerV3(buff, offset, length);
         for (var i = 0; i < argument_count; i += 1) {
             var peeked = lexer.peek();
@@ -22,7 +22,7 @@ function TestLexerTokenStream(name, src, offset = undefined, length = undefined)
 }
 
 function TestLexerToken(name, token, src, value, negative = false) : Test(name, negative) constructor {
-    var buff = __catspeak_create_buffer_from_string(src);
+    var buff = catspeak_buffer_create_from_string(src);
     var lexer = new CatspeakLexerV3(buff);
     assertEq(token, lexer.nextWithWhitespace());
     assertEq(src, lexer.getLexeme());
@@ -34,7 +34,7 @@ function TestLexerToken(name, token, src, value, negative = false) : Test(name, 
 function TestLexerTokenNegative(name, token, src, value) : TestLexerToken(name, token, src, value, true) constructor { }
 
 function TestLexerUTF8(name, src) : Test(name) constructor {
-    var buff = __catspeak_create_buffer_from_string(src);
+    var buff = catspeak_buffer_create_from_string(src);
     var lexer = new CatspeakLexerV3(buff);
     var pos = 1;
     repeat (string_length(src)) {
@@ -47,7 +47,7 @@ function TestLexerUTF8(name, src) : Test(name) constructor {
 }
 
 function TestLexerKeyword(name, token, src) : Test(name) constructor {
-    var buff = __catspeak_create_buffer_from_string(src);
+    var buff = catspeak_buffer_create_from_string(src);
     var customKeywords = { };
     customKeywords[$ src] = token;
     var lexer = new CatspeakLexerV3(buff, , , customKeywords);

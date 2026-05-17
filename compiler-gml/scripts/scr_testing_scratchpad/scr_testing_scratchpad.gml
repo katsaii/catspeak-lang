@@ -121,7 +121,7 @@ TEST_EXPERIMENT "catspeak4-cart" {
 }
 
 TEST_EXPERIMENT "lexer" {
-    var buff = __catspeak_create_buffer_from_string(@'1 2._ 3._4_ 5_6_7__');
+    var buff = catspeak_buffer_create_from_string(@'1 2._ 3._4_ 5_6_7__');
     var lexer = new CatspeakLexerV3(buff);
     lexer.nextWithWhitespace(); // 1
     show_message([lexer.getLexeme(), lexer.getValue()]);
@@ -137,7 +137,7 @@ TEST_EXPERIMENT "lexer" {
 }
 
 TEST_EXPERIMENT "parser" {
-    var buff = __catspeak_create_buffer_from_string(@'123_4.5');
+    var buff = catspeak_buffer_create_from_string(@'123_4.5');
     var lexer = new CatspeakLexerV3(buff);
     var builder = new CatspeakIRBuilder();
     var parser = new CatspeakParserV3(lexer, builder);
@@ -146,19 +146,19 @@ TEST_EXPERIMENT "parser" {
 }
 
 TEST_EXPERIMENT "parser-2" {
-    var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
+    var buff = catspeak_buffer_create_from_string(@'1 2 3 4');
     var ir = Catspeak.parse(buff);
     show_message(ir);
 }
 
 TEST_EXPERIMENT "parser-3" {
-    var buff = __catspeak_create_buffer_from_string(@'1 a 2');
+    var buff = catspeak_buffer_create_from_string(@'1 a 2');
     var ir = Catspeak.parse(buff);
     show_message(json_stringify(ir)); //, true));
 }
 
 TEST_EXPERIMENT "compiler" {
-    var buff = __catspeak_create_buffer_from_string(@'1 2 3 4');
+    var buff = catspeak_buffer_create_from_string(@'1 2 3 4');
     var ir = Catspeak.parse(buff);
     var f = Catspeak.compile(ir);
     show_message([f(), f]);
@@ -166,7 +166,7 @@ TEST_EXPERIMENT "compiler" {
 }
 
 TEST_EXPERIMENT "compiler-2" {
-    var buff = __catspeak_create_buffer_from_string(@'let a = fun () { let b = "hiiiii"; b } ; a ');
+    var buff = catspeak_buffer_create_from_string(@'let a = fun () { let b = "hiiiii"; b } ; a ');
     var ir = Catspeak.parse(buff);
     var f = Catspeak.compile(ir);
     show_message(json_stringify(ir)); //, true));
@@ -174,7 +174,7 @@ TEST_EXPERIMENT "compiler-2" {
 }
 
 TEST_EXPERIMENT "compiler-3" {
-    var buff = __catspeak_create_buffer_from_string(@'
+    var buff = catspeak_buffer_create_from_string(@'
         let a = 0;
         -- if (a) {
         --   "hi"
@@ -191,7 +191,7 @@ TEST_EXPERIMENT "compiler-3" {
 }
 
 TEST_EXPERIMENT "compiler-4" {
-    var buff = __catspeak_create_buffer_from_string(@'
+    var buff = catspeak_buffer_create_from_string(@'
     
         while true {
             break "hello"
@@ -205,7 +205,7 @@ TEST_EXPERIMENT "compiler-4" {
 }
 
 TEST_EXPERIMENT "compiler-5" {
-    var buff = __catspeak_create_buffer_from_string(@'
+    var buff = catspeak_buffer_create_from_string(@'
         let a = [1, 2, 3, "five", false undefined, { "a" : 1, ["be"] : 5, cee : 89  hi }]
         
         let f = fun (yippee) {
@@ -226,7 +226,7 @@ TEST_EXPERIMENT "compiler-5" {
 }
 
 TEST_EXPERIMENT "compiler-6" {
-    var buff = __catspeak_create_buffer_from_string(@'
+    var buff = catspeak_buffer_create_from_string(@'
         global.hello = "hi";
         global.n += 1;
     ');

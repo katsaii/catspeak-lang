@@ -42,6 +42,9 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     /// @ignore
     isAlive = false;
 
+    // TODO :: add time limits
+    // TODO :: make indexing exprs less hacky
+
     /// Frees any dynamically allocated resources managed by this generator.
     ///
     /// @warning
@@ -181,6 +184,101 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     if (!variable_global_exists("__catspeakSharedUnwindBox")) {
         // guarantee the special unwind box exists if we're generating code
         global.__catspeakSharedUnwindBox = [undefined, undefined];
+    }
+
+    if (!variable_global_exists("__catspeakGmlSpecialVars")) {
+        global.__catspeakGmlSpecialVars = { };
+        var db = global.__catspeakGmlSpecialVars;
+        // addresses an LTS bug where self[$ name] = val doesn't work for internal properties
+        db[$ "enabled"] = function (s, v) { s.enabled = v };
+        db[$ "left"] = function (s, v) { s.left = v };
+        db[$ "right"] = function (s, v) { s.right = v };
+        db[$ "top"] = function (s, v) { s.top = v };
+        db[$ "bottom"] = function (s, v) { s.bottom = v };
+        db[$ "tilemode"] = function (s, v) { s.tilemode = v };
+        db[$ "frame"] = function (s, v) { s.frame = v };
+        db[$ "length"] = function (s, v) { s.length = v };
+        db[$ "stretch"] = function (s, v) { s.stretch = v };
+        db[$ "channels"] = function (s, v) { s.channels = v };
+        db[$ "channel"] = function (s, v) { s.channel = v };
+        db[$ "sequence"] = function (s, v) { s.sequence = v };
+        db[$ "headPosition"] = function (s, v) { s.headPosition = v };
+        db[$ "headDirection"] = function (s, v) { s.headDirection = v };
+        db[$ "speedScale"] = function (s, v) { s.speedScale = v };
+        db[$ "volume"] = function (s, v) { s.volume = v };
+        db[$ "paused"] = function (s, v) { s.paused = v };
+        db[$ "finished"] = function (s, v) { s.finished = v };
+        db[$ "activeTracks"] = function (s, v) { s.activeTracks = v };
+        db[$ "elementID"] = function (s, v) { s.elementID = v };
+        db[$ "name"] = function (s, v) { s.name = v };
+        db[$ "loopmode"] = function (s, v) { s.loopmode = v };
+        db[$ "playbackSpeed"] = function (s, v) { s.playbackSpeed = v };
+        db[$ "playbackSpeedType"] = function (s, v) { s.playbackSpeedType = v };
+        db[$ "xorigin"] = function (s, v) { s.xorigin = v };
+        db[$ "yorigin"] = function (s, v) { s.yorigin = v };
+        db[$ "tracks"] = function (s, v) { s.tracks = v };
+        db[$ "messageEventKeyframes"] = function (s, v) { s.messageEventKeyframes = v };
+        db[$ "momentKeyframes"] = function (s, v) { s.momentKeyframes = v };
+        db[$ "event_create"] = function (s, v) { s.event_create = v };
+        db[$ "event_destroy"] = function (s, v) { s.event_destroy = v };
+        db[$ "event_clean_up"] = function (s, v) { s.event_clean_up = v };
+        db[$ "event_step"] = function (s, v) { s.event_step = v };
+        db[$ "event_step_begin"] = function (s, v) { s.event_step_begin = v };
+        db[$ "event_step_end"] = function (s, v) { s.event_step_end = v };
+        db[$ "event_async_system"] = function (s, v) { s.event_async_system = v };
+        db[$ "event_broadcast_message"] = function (s, v) { s.event_broadcast_message = v };
+        db[$ "type"] = function (s, v) { s.type = v };
+        db[$ "subType"] = function (s, v) { s.subType = v };
+        db[$ "traits"] = function (s, v) { s.traits = v };
+        db[$ "interpolation"] = function (s, v) { s.interpolation = v };
+        db[$ "visible"] = function (s, v) { s.visible = v };
+        db[$ "linked"] = function (s, v) { s.linked = v };
+        db[$ "linkedTrack"] = function (s, v) { s.linkedTrack = v };
+        db[$ "keyframes"] = function (s, v) { s.keyframes = v };
+        db[$ "disabled"] = function (s, v) { s.disabled = v };
+        db[$ "spriteIndex"] = function (s, v) { s.spriteIndex = v };
+        db[$ "soundIndex"] = function (s, v) { s.soundIndex = v };
+        db[$ "emitterIndex"] = function (s, v) { s.emitterIndex = v };
+        db[$ "playbackMode"] = function (s, v) { s.playbackMode = v };
+        db[$ "imageIndex"] = function (s, v) { s.imageIndex = v };
+        db[$ "value"] = function (s, v) { s.value = v };
+        db[$ "colour"] = function (s, v) { s.colour = v };
+        db[$ "color"] = function (s, v) { s.color = v };
+        db[$ "curve"] = function (s, v) { s.curve = v };
+        db[$ "objectIndex"] = function (s, v) { s.objectIndex = v };
+        db[$ "text"] = function (s, v) { s.text = v };
+        db[$ "events"] = function (s, v) { s.events = v };
+        db[$ "event"] = function (s, v) { s.event = v };
+        db[$ "graphType"] = function (s, v) { s.graphType = v };
+        db[$ "iterations"] = function (s, v) { s.iterations = v };
+        db[$ "points"] = function (s, v) { s.points = v };
+        db[$ "posx"] = function (s, v) { s.posx = v };
+        db[$ "matrix"] = function (s, v) { s.matrix = v };
+        db[$ "posy"] = function (s, v) { s.posy = v };
+        db[$ "rotation"] = function (s, v) { s.rotation = v };
+        db[$ "scalex"] = function (s, v) { s.scalex = v };
+        db[$ "scaley"] = function (s, v) { s.scaley = v };
+        db[$ "gain"] = function (s, v) { s.gain = v };
+        db[$ "pitch"] = function (s, v) { s.pitch = v };
+        db[$ "width"] = function (s, v) { s.width = v };
+        db[$ "height"] = function (s, v) { s.height = v };
+        db[$ "imagespeed"] = function (s, v) { s.imagespeed = v };
+        db[$ "colormultiply"] = function (s, v) { s.colormultiply = v };
+        db[$ "colourmultiply"] = function (s, v) { s.colourmultiply = v };
+        db[$ "coloradd"] = function (s, v) { s.coloradd = v };
+        db[$ "colouradd"] = function (s, v) { s.colouradd = v };
+        db[$ "instanceID"] = function (s, v) { s.instanceID = v };
+        db[$ "track"] = function (s, v) { s.track = v };
+        db[$ "parent"] = function (s, v) { s.parent = v };
+        db[$ "objects_touched"] = function (s, v) { s.objects_touched = v };
+        db[$ "objects_collected"] = function (s, v) { s.objects_collected = v };
+        db[$ "traversal_time"] = function (s, v) { s.traversal_time = v };
+        db[$ "collection_time"] = function (s, v) { s.collection_time = v };
+        db[$ "gc_frame"] = function (s, v) { s.gc_frame = v };
+        db[$ "generation_collected"] = function (s, v) { s.generation_collected = v };
+        db[$ "num_generations"] = function (s, v) { s.num_generations = v };
+        db[$ "num_objects_in_generation"] = function (s, v) { s.num_objects_in_generation = v };
+        db[$ "ref"] = function (s, v) { s.ref = v };
     }
 
     /// @ignore
@@ -916,70 +1014,95 @@ function __catspeak_instr_get_is__() {
 /// @ignore
 function __catspeak_instr_set_is__() {
     var data_ = data();
+    var value_ = value();
     if (!__catspeak_is_withable(data_)) {
         __catspeak_error(__catspeak_cat(
             "(string) index '[]=' expression is not allowed for values of type '",
             typeof(data_), "'"
         ));
     }
-    var value_ = value();
-    data_[$ idx] = value_;
+    var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+    if (specialSet != undefined) {
+        specialSet(collection_, value_);
+    } else {
+        data_[$ idx] = value_;
+    }
     return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_is_add__() {
     var data_ = data();
+    var value_ = value();
     if (!__catspeak_is_withable(data_)) {
         __catspeak_error(__catspeak_cat(
             "(string) index '[]+=' expression is not allowed for values of type '",
             typeof(data_), "'"
         ));
     }
-    var value_ = value();
-    data_[$ idx] += value_;
+    var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+    if (specialSet != undefined) {
+        specialSet(collection_, data_[$ idx] + value_);
+    } else {
+        data_[$ idx] += value_;
+    }
     return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_is_sub__() {
     var data_ = data();
+    var value_ = value();
     if (!__catspeak_is_withable(data_)) {
         __catspeak_error(__catspeak_cat(
             "(string) index '[]-=' expression is not allowed for values of type '",
             typeof(data_), "'"
         ));
     }
-    var value_ = value();
-    data_[$ idx] -= value_;
+    var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+    if (specialSet != undefined) {
+        specialSet(collection_, data_[$ idx] - value_);
+    } else {
+        data_[$ idx] -= value_;
+    }
     return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_is_mul__() {
     var data_ = data();
+    var value_ = value();
     if (!__catspeak_is_withable(data_)) {
         __catspeak_error(__catspeak_cat(
             "(string) index '[]*=' expression is not allowed for values of type '",
             typeof(data_), "'"
         ));
     }
-    var value_ = value();
-    data_[$ idx] *= value_;
+    var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+    if (specialSet != undefined) {
+        specialSet(collection_, data_[$ idx] * value_);
+    } else {
+        data_[$ idx] *= value_;
+    }
     return value_;
 }
 
 /// @ignore
 function __catspeak_instr_set_is_div__() {
     var data_ = data();
+    var value_ = value();
     if (!__catspeak_is_withable(data_)) {
         __catspeak_error(__catspeak_cat(
             "(string) index '[]/=' expression is not allowed for values of type '",
             typeof(data_), "'"
         ));
     }
-    var value_ = value();
-    data_[$ idx] /= value_;
+    var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+    if (specialSet != undefined) {
+        specialSet(collection_, data_[$ idx] / value_);
+    } else {
+        data_[$ idx] /= value_;
+    }
     return value_;
 }
 
@@ -1053,7 +1176,12 @@ function __catspeak_instr_set_i__() {
     if (is_array(data_)) {
         data_[@ idx_] = value_;
     } else if (__catspeak_is_withable(data_)) {
-        data_[$ idx_] = value_;
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        if (specialSet != undefined) {
+            specialSet(collection_, value_);
+        } else {
+            data_[$ idx_] = value_;
+        }
     } else {
         __catspeak_error(__catspeak_cat(
             "index '[]=' expression is not allowed for values of type '",
@@ -1071,7 +1199,12 @@ function __catspeak_instr_set_i_add__() {
     if (is_array(data_)) {
         data_[@ idx_] += value_;
     } else if (__catspeak_is_withable(data_)) {
-        data_[$ idx_] += value_;
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        if (specialSet != undefined) {
+            specialSet(collection_, data_[$ idx_] + value_);
+        } else {
+            data_[$ idx_] += value_;
+        }
     } else {
         __catspeak_error(__catspeak_cat(
             "index '[]+=' expression is not allowed for values of type '",
@@ -1089,7 +1222,12 @@ function __catspeak_instr_set_i_sub__() {
     if (is_array(data_)) {
         data_[@ idx_] -= value_;
     } else if (__catspeak_is_withable(data_)) {
-        data_[$ idx_] -= value_;
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        if (specialSet != undefined) {
+            specialSet(collection_, data_[$ idx_] - value_);
+        } else {
+            data_[$ idx_] -= value_;
+        }
     } else {
         __catspeak_error(__catspeak_cat(
             "index '[]-=' expression is not allowed for values of type '",
@@ -1107,7 +1245,12 @@ function __catspeak_instr_set_i_mul__() {
     if (is_array(data_)) {
         data_[@ idx_] *= value_;
     } else if (__catspeak_is_withable(data_)) {
-        data_[$ idx_] *= value_;
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        if (specialSet != undefined) {
+            specialSet(collection_, data_[$ idx_] * value_);
+        } else {
+            data_[$ idx_] *= value_;
+        }
     } else {
         __catspeak_error(__catspeak_cat(
             "index '[]*=' expression is not allowed for values of type '",
@@ -1125,7 +1268,12 @@ function __catspeak_instr_set_i_div__() {
     if (is_array(data_)) {
         data_[@ idx_] /= value_;
     } else if (__catspeak_is_withable(data_)) {
-        data_[$ idx_] /= value_;
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        if (specialSet != undefined) {
+            specialSet(collection_, data_[$ idx_] / value_);
+        } else {
+            data_[$ idx_] /= value_;
+        }
     } else {
         __catspeak_error(__catspeak_cat(
             "index '[]/=' expression is not allowed for values of type '",

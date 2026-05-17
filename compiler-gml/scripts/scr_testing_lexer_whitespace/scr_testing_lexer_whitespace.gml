@@ -2,7 +2,7 @@
 //# feather use syntax-errors
 
 test_add(function () : Test("lexer-whitespace-sensitive-ident") constructor {
-    var buff = __catspeak_create_buffer_from_string(@'a bc d');
+    var buff = catspeak_buffer_create_from_string(@'a bc d');
     var lexer = new CatspeakLexerV3(buff);
     assertEq(CatspeakTokenV3.IDENT, lexer.nextWithWhitespace());
     assertEq("a", lexer.getLexeme());
@@ -54,7 +54,7 @@ test_add(function () : TestLexerToken("lexer-whitespace-comment",
 ) constructor { });
 
 test_add(function () : Test("lexer-whitespace-legacy-line-continue") constructor {
-    var buff = __catspeak_create_buffer_from_string(@' -- ...
+    var buff = catspeak_buffer_create_from_string(@' -- ...
         let a = (
             1,
             2, -- ...
