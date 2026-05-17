@@ -69,6 +69,48 @@
 /// @return {Real}
 #macro CATSPEAK_TIMEOUT 1000
 
+/// Usually the Catspeak environment tries to self-initialise at the start of
+/// the game, but at what time this happens relative to other scripts is not
+/// guaranteed by GameMaker.
+///
+/// Call this function to force the default `Catspeak` environment to be
+/// initialised immediately. If Catspeak was already initialised before
+/// calling this function, then nothing will happen.
+///
+/// @remark
+///   You shouldn't need to call this function unless you are trying to use
+///   Catspeak from within a global script asset, or through
+///   `gml_pragma("global", ...)`.
+///
+///   If neither of these situations apply to you, feel free to forget this
+///   function even exists.
+///
+/// @return {Bool}
+///   Returns `true` the first time this function is called, and `false`
+///   every other time.
+function catspeak_force_init() {
+    static initialised = false;
+    if (initialised) {
+        return false;
+    }
+    initialised = true;
+    /// @ignore
+    global.__catspeakConfig = { };
+    try {
+        __catspeak_init_presets();
+        __catspeak_init_lexer();
+    } catch (ex) {
+        __catspeak_error_silent("skipping compatibility modules: " + ex.message);
+    }
+    Catspeak = new CatspeakEnvironment();
+    var motd = "you are now using Catspeak v" + CATSPEAK_VERSION +
+            " by @katsaii";
+    show_debug_message(motd);
+    return true;
+}
+
+catspeak_force_init();
+
 /// Checks whether a value is a valid Catspeak function.
 ///
 /// @warning

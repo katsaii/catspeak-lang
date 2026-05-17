@@ -66,8 +66,6 @@ function CatspeakModule(path_) constructor {
     static getTag = function (name) {
         return tags[$ name] ?? CatspeakTag.UNSPECIFIED;
     };
-
-    // exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis
 }
 
 /// TODO
@@ -78,7 +76,7 @@ function CatspeakModuleAssets(path, tag_) : CatspeakModule(path) constructor {
 /// TODO
 function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     /// @ignore
-    self.banList = { };
+    banList = { };
     /// Whether to expose every symbol available to Catspeak programs. This will
     /// attempt to expose all functions, assets, constants, and global properties
     /// available in GML (with a few exceptions).
@@ -98,7 +96,7 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     ///
     ///   If this sounds okay with you, set this property to `true`, and all bets
     ///   are off. You will meet God.
-    self.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = false;
+    exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = false;
     /// @ignore
     __exists__ = function () {
         
@@ -120,9 +118,6 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     ///
     /// @return {Bool}
     static isDynamicConstant = function (name) {
-        if (databaseDynConst[$ name] ?? false) {
-            return true;
-        }
         return false;
     };
 

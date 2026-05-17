@@ -50,7 +50,6 @@
     {"id":{"name":"scr_catspeak_cart","path":"scripts/scr_catspeak_cart/scr_catspeak_cart.yy",},"order":3,},
     {"id":{"name":"scr_testing_lexer_string","path":"scripts/scr_testing_lexer_string/scr_testing_lexer_string.yy",},"order":8,},
     {"id":{"name":"scr_testing_lexer_internals","path":"scripts/scr_testing_lexer_internals/scr_testing_lexer_internals.yy",},"order":3,},
-    {"id":{"name":"scr_catspeak_compatibility_v3_hir","path":"scripts/scr_catspeak_compatibility_v3_hir/scr_catspeak_compatibility_v3_hir.yy",},"order":3,},
     {"id":{"name":"obj_testing_moss_oinitial","path":"objects/obj_testing_moss_oinitial/obj_testing_moss_oinitial.yy",},"order":11,},
     {"id":{"name":"scr_catspeak_compatibility_v3","path":"scripts/scr_catspeak_compatibility_v3/scr_catspeak_compatibility_v3.yy",},"order":1,},
     {"id":{"name":"obj_testing_example_base_gml","path":"objects/obj_testing_example_base_gml/obj_testing_example_base_gml.yy",},"order":1,},

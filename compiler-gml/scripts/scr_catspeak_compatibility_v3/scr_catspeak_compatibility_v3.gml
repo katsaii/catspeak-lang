@@ -5,51 +5,6 @@
 
 // CATSPEAK 3 //
 
-/// Usually the Catspeak environment tries to self-initialise at the start of
-/// the game, but at what time this happens relative to other scripts is not
-/// guaranteed by GameMaker.
-///
-/// Call this function to force the core Catspeak environment to be
-/// initialised immediately. If Catspeak was already initialised before
-/// calling this function, then nothing will happen.
-///
-/// @deprecated {4.0.0}
-///
-/// @remark
-///   You shouldn't need to call this function unless you are trying to use
-///   Catspeak from within a global script asset, or through
-///   `gml_pragma("global", ...)`.
-///
-///   If neither of these situations apply to you, feel free to forget this
-///   function even exists.
-///
-/// @return {Bool}
-///   Returns `true` the first time this function is called, and `false`
-///   every other time.
-function catspeak_force_init() {
-    static initialised = false;
-    if (initialised) {
-        return false;
-    }
-    initialised = true;
-    /// @ignore
-    global.__catspeakConfig = { };
-    // call initialisers
-    __catspeak_init_alloc();
-    __catspeak_init_operators();
-    __catspeak_init_presets();
-    __catspeak_init_lexer();
-    __catspeak_init_codegen();
-    __catspeak_init_engine();
-    // display the initialisation message
-    var motd = "you are now using Catspeak v" + CATSPEAK_VERSION +
-            " by @katsaii";
-    show_debug_message(motd);
-    return true;
-}
-
-catspeak_force_init();
-
 /// Determines whether sanity checks and unsafe developer features are enabled
 /// at runtime.
 ///
@@ -272,6 +227,7 @@ function __catspeak_init_lexer_keywords() {
     global.__catspeakConfig.keywords = keywords;
     return keywords;
 }
+
 /// @ignore
 ///
 /// @deprecated {4.0.0}
@@ -1208,20 +1164,6 @@ function __catspeak_error_v3_got(msg, got) {
         gotStr = typeof(got);
     }
     __catspeak_error_v3(msg, ", got '", gotStr, "'");
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_error_v3_deprecated(name, alternative=undefined) {
-    if (__catspeak_is_nullish(alternative)) {
-        __catspeak_error_v3_silent("'", name, "' isn't supported anymore");
-    } else {
-        __catspeak_error_v3_silent(
-            "'", name, "' isn't supported anymore",
-            ", use '", alternative, "' instead"
-        );
-    }
 }
 
 /// @ignore
