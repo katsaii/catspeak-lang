@@ -180,8 +180,8 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
         for (var i = 0; i < argument_count; i += 2) {
             var currentName = argument[i];
             var newName = argument[i + 1];
-            __catspeak_check_arg("currentName", currentName, is_string);
-            __catspeak_check_arg("newName", newName, is_string);
+            __catspeak_assert_typeof(currentName, is_string);
+            __catspeak_assert_typeof(newName, is_string);
             __catspeak_keywords_rename(keywords_, currentName, newName);
         }
     };
@@ -207,7 +207,7 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
             var token = argument[i + 1];
-            __catspeak_check_arg("name", name, is_string);
+            __catspeak_assert_typeof(name, is_string);
             keywords_[$ name] = token;
         }
     };
@@ -228,7 +228,7 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
         var keywords_ = keywords;
         for (var i = 0; i < argument_count; i += 2) {
             var name = argument[i];
-            __catspeak_check_arg("name", name, is_string);
+            __catspeak_assert_typeof(name, is_string);
             if (variable_struct_exists(keywords_, name)) {
                 variable_struct_remove(keywords_, name);
             }
@@ -364,9 +364,6 @@ function catspeak_collect() {
 ///
 /// @deprecated {4.0.0}
 function __catspeak_init_lexer() {
-    // initialise map from character to token type
-    /// @ignore
-    //global.__catspeakChar2Token = __catspeak_init_lexer_codepage();
     /// @ignore
     global.__catspeakString2Token = __catspeak_keywords_create();
     global.__catspeakConfig.keywords = global.__catspeakString2Token;
@@ -375,44 +372,11 @@ function __catspeak_init_lexer() {
 /// @ignore
 ///
 /// @deprecated {4.0.0}
-///
-/// @return {Struct}
-function __catspeak_keywords_create() {
-    var keywords = { };
-    keywords[$ "and"] = CatspeakTokenV3.AND;
-    keywords[$ "or"] = CatspeakTokenV3.OR;
-    keywords[$ "xor"] = CatspeakTokenV3.XOR;
-    keywords[$ "do"] = CatspeakTokenV3.DO;
-    keywords[$ "if"] = CatspeakTokenV3.IF;
-    keywords[$ "else"] = CatspeakTokenV3.ELSE;
-    keywords[$ "catch"] = CatspeakTokenV3.CATCH;
-    keywords[$ "while"] = CatspeakTokenV3.WHILE;
-    keywords[$ "for"] = CatspeakTokenV3.FOR;
-    keywords[$ "loop"] = CatspeakTokenV3.LOOP;
-    keywords[$ "with"] = CatspeakTokenV3.WITH;
-    keywords[$ "match"] = CatspeakTokenV3.MATCH;
-    keywords[$ "let"] = CatspeakTokenV3.LET;
-    keywords[$ "fun"] = CatspeakTokenV3.FUN;
-    keywords[$ "params"] = CatspeakTokenV3.PARAMS;
-    keywords[$ "break"] = CatspeakTokenV3.BREAK;
-    keywords[$ "continue"] = CatspeakTokenV3.CONTINUE;
-    keywords[$ "return"] = CatspeakTokenV3.RETURN;
-    keywords[$ "throw"] = CatspeakTokenV3.THROW;
-    keywords[$ "new"] = CatspeakTokenV3.NEW;
-    keywords[$ "impl"] = CatspeakTokenV3.IMPL;
-    keywords[$ "self"] = CatspeakTokenV3.SELF;
-    keywords[$ "other"] = CatspeakTokenV3.OTHER;
-    return keywords;
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
 function __catspeak_keywords_rename(keywords, currentName, newName) {
     if (!variable_struct_exists(keywords, currentName)) {
-        __catspeak_error_v3_silent(
+        __catspeak_error_silent(__catspeak_cat(
             "no keyword with the name '", currentName, "' exists"
-        );
+        ));
         return;
     }
     var token = keywords[$ currentName];
@@ -428,9 +392,11 @@ function __catspeak_keywords_rename(keywords, currentName, newName) {
 ///   This is an O(n) operation. This means that it's slow, and should only
 ///   be used for debugging purposes.
 function __catspeak_keywords_find_name(keywords, token) {
-    __catspeak_check_arg("keywords", keywords, is_struct);
-    __catspeak_check_arg(
-        "token", token, __catspeak_is_token, "CatspeakTokenV3");
+    __catspeak_assert_typeof(keywords, is_struct);
+    __catspeak_assert(
+        is_numeric(token) && token >= 0 && token < CatspeakTokenV3.__SIZE__,
+        "invalid token"
+    );
     var variables = variable_struct_get_names(keywords);
     var variableCount = array_length(variables);
     for (var i = 0; i < variableCount; i += 1) {
@@ -725,11 +691,11 @@ enum CatspeakPreset {
 function __catspeak_preset_get(preset) {
     var presetFunc = global.__catspeakPresets[? preset];
     if (__catspeak_is_nullish(presetFunc)) {
-        __catspeak_error_v3(
+        __catspeak_error(__catspeak_cat(
             "a Catspeak preset with the key '",
             preset, "' does not exist, make sure the preset exists in the ",
             "`CatspeakPreset` enum"
-        );
+        ));
     }
     return presetFunc;
 }
@@ -1219,7 +1185,9 @@ function catspeak_preset_add(key, callback) {
     __catspeak_check_init();
     var presets = global.__catspeakPresets;
     if (ds_map_exists(presets, key)) {
-       __catspeak_error_v3("a preset with the key '", key, "' already exists");
+        __catspeak_error(__catspeak_cat(
+            "a preset with the key '", key, "' already exists"
+        ));
     }
     presets[? key] = callback;
 }
@@ -1245,65 +1213,13 @@ function __catspeak_init_presets() {
 /// @ignore
 ///
 /// @deprecated {4.0.0}
-function __catspeak_error_v3() {
-    var msg = "Catspeak v" + CATSPEAK_VERSION + " (v3 compatibility)";
-    if (argument_count > 0) {
-        msg += ": ";
-        for (var i = 0; i < argument_count; i += 1) {
-            msg += string(argument[i]);
-        }
-    }
-    show_error(msg, false);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_error_v3_silent() {
-    var msg = "Catspeak v" + CATSPEAK_VERSION + " (v3 compatibility)";
-    if (argument_count > 0) {
-        msg += ": ";
-        for (var i = 0; i < argument_count; i += 1) {
-            msg += string(argument[i]);
-        }
-    }
-    show_debug_message(msg);
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
 function __catspeak_check_init() {
     gml_pragma("forceinline");
     if (catspeak_force_init()) {
-        __catspeak_error_v3(
+        __catspeak_error(__catspeak_cat(
             "Catspeak was not initialised at this point, make sure to call ",
             "'catspeak_force_init' at the start of your code if you are ",
             "using Catspeak inside of a script resource"
-        );
+        ));
     }
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_arg(name, val, func, typeName=undefined) {
-    if (func(val)) {
-        return;
-    }
-    typeName ??= __catspeak_infer_type_from_predicate(func);
-    __catspeak_error_v3(
-        "expected argument '", name, "' to be of type '", typeName, "'",
-        ", but got '", typeof(val), "' instead"
-    );
-}
-
-/// @ignore
-///
-/// @deprecated {4.0.0}
-function __catspeak_check_arg_optional(name, val, func, typeName=undefined) {
-    if (val == undefined) {
-        return;
-    }
-    return __catspeak_check_arg(name, val, func, typeName);
 }

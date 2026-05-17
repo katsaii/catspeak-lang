@@ -192,6 +192,39 @@ enum CatspeakToken {
     __SIZE__,
 }
 
+/// intended for better compatibility with v3, not for external use
+/// @ignore
+function __catspeak_keywords_create() {
+    var keywords = { };
+    keywords[$ "self"] = CatspeakToken.SELF;
+    keywords[$ "other"] = CatspeakToken.OTHER;
+    keywords[$ "params"] = CatspeakToken.PARAMS;
+    keywords[$ "and"] = CatspeakToken.AND;
+    keywords[$ "or"] = CatspeakToken.OR;
+    keywords[$ "xor"] = CatspeakToken.XOR;
+    keywords[$ "do"] = CatspeakToken.DO;
+    keywords[$ "if"] = CatspeakToken.IF;
+    keywords[$ "else"] = CatspeakToken.ELSE;
+    keywords[$ "while"] = CatspeakToken.WHILE;
+    keywords[$ "for"] = CatspeakToken.FOR;
+    keywords[$ "loop"] = CatspeakToken.LOOP;
+    keywords[$ "with"] = CatspeakToken.WITH;
+    keywords[$ "match"] = CatspeakToken.MATCH;
+    keywords[$ "case"] = CatspeakToken.CASE;
+    keywords[$ "fun"] = CatspeakToken.FUN;
+    keywords[$ "new"] = CatspeakToken.NEW;
+    keywords[$ "impl"] = CatspeakToken.IMPL;
+    keywords[$ "catch"] = CatspeakToken.CATCH;
+    keywords[$ "import"] = CatspeakToken.IMPORT;
+    keywords[$ "as"] = CatspeakToken.AS;
+    keywords[$ "return"] = CatspeakToken.RETURN;
+    keywords[$ "continue"] = CatspeakToken.CONTINUE;
+    keywords[$ "break"] = CatspeakToken.BREAK;
+    keywords[$ "throw"] = CatspeakToken.THROW;
+    keywords[$ "let"] = CatspeakToken.LET;
+    return keywords;
+}
+
 /// Responsible for tokenising the contents of a GML buffer. This can be used
 /// for syntax highlighting in a programming game which uses Catspeak.
 ///
@@ -739,36 +772,7 @@ function CatspeakLexer(
     };
 
     /// @ignore
-    static __keywords = undefined;
-    if (__keywords == undefined) {
-        __keywords = { };
-        __keywords[$ "self"] = CatspeakToken.SELF;
-        __keywords[$ "other"] = CatspeakToken.OTHER;
-        __keywords[$ "params"] = CatspeakToken.PARAMS;
-        __keywords[$ "and"] = CatspeakToken.AND;
-        __keywords[$ "or"] = CatspeakToken.OR;
-        __keywords[$ "xor"] = CatspeakToken.XOR;
-        __keywords[$ "do"] = CatspeakToken.DO;
-        __keywords[$ "if"] = CatspeakToken.IF;
-        __keywords[$ "else"] = CatspeakToken.ELSE;
-        __keywords[$ "while"] = CatspeakToken.WHILE;
-        __keywords[$ "for"] = CatspeakToken.FOR;
-        __keywords[$ "loop"] = CatspeakToken.LOOP;
-        __keywords[$ "with"] = CatspeakToken.WITH;
-        __keywords[$ "match"] = CatspeakToken.MATCH;
-        __keywords[$ "case"] = CatspeakToken.CASE;
-        __keywords[$ "fun"] = CatspeakToken.FUN;
-        __keywords[$ "new"] = CatspeakToken.NEW;
-        __keywords[$ "impl"] = CatspeakToken.IMPL;
-        __keywords[$ "catch"] = CatspeakToken.CATCH;
-        __keywords[$ "import"] = CatspeakToken.IMPORT;
-        __keywords[$ "as"] = CatspeakToken.AS;
-        __keywords[$ "return"] = CatspeakToken.RETURN;
-        __keywords[$ "continue"] = CatspeakToken.CONTINUE;
-        __keywords[$ "break"] = CatspeakToken.BREAK;
-        __keywords[$ "throw"] = CatspeakToken.THROW;
-        __keywords[$ "let"] = CatspeakToken.LET;
-    }
+    static __keywords = __catspeak_keywords_create();
 
     /// @ignore
     static __literals = undefined;

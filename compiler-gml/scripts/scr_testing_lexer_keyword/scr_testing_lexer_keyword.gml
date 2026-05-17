@@ -102,5 +102,5 @@ test_add(function () : TestLexerToken("lexer-keyword-self",
 ) constructor { });
 
 test_add(function () : TestLexerToken("lexer-keyword-other",
-    CatspeakTokenV3.OTHER, "other", "other"
+    CatspeakToken.OTHER, "other", "other"
 ) constructor { });

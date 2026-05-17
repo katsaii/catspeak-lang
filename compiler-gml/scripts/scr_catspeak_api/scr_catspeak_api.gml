@@ -115,7 +115,7 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
                 var db = __catspeak_get_gml_interface();
                 return variable_struct_exists(db, name) || asset_get_index(name) != -1;
             } catch (_) {
-                __catspeak_error_v3_silent("GML interface not included, defaulting to `false`");
+                __catspeak_error_silent("GML interface not included, defaulting to `false`");
             }
         }
         return false;
@@ -145,7 +145,7 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
                     return asset;
                 }
             } catch (_) {
-                __catspeak_error_v3_silent("GML interface not included, defaulting to `undefined`");
+                __catspeak_error_silent("GML interface not included, defaulting to `undefined`");
             }
         }
         return undefined;
@@ -351,7 +351,9 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
                     }
                 }
                 if (func == undefined) {
-                    __catspeak_error_v3("function with the name '", name, "' cannot be found");
+                    __catspeak_error(__catspeak_cat(
+                        "function with the name '", name, "' cannot be found"
+                    ));
                 }
             } else {
                 name = __catspeak_infer_function_name(func);
@@ -502,7 +504,9 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
                     }
                 }
                 if (func == undefined) {
-                    __catspeak_error_v3("method with the name '", name, "' cannot be found");
+                    __catspeak_error(__catspeak_cat(
+                        "method with the name '", name, "' cannot be found"
+                    ));
                 }
             } else {
                 name = __catspeak_infer_function_name(func);
@@ -522,14 +526,14 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     static exposeAsset = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var name = argument[i];
-            __catspeak_check_arg("name", name, is_string);
+            __catspeak_assert_typeof(name, is_string);
             var value = asset_get_index(name);
             var type = asset_get_type(name);
             // validate that it's an actual GM Asset
             if (value == -1) {
-                __catspeak_error_v3(
+                __catspeak_error(__catspeak_cat(
                     "invalid GMAsset: got '", value, "' from '", name, "'"
-                );
+                ));
             }
             if (type == asset_script) {
                 // scripts must be coerced into methods

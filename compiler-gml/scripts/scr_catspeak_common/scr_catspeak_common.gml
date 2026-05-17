@@ -299,7 +299,9 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
             codepointCount = 1;
             headerMask = 0xC0;
         } else {
-            //__catspeak_error_v3("invalid UTF8 header codepoint '", byte, "'");
+            //__catspeak_error(__catspeak_cat(
+            //    "invalid UTF8 header codepoint '", byte, "'"
+            //));
             return -1;
         }
         // parse UTF8 continuations (2 bit header, followed by 6 bits of data)
@@ -309,7 +311,9 @@ function CatspeakUTF8Scanner(buff_, offset=0, size=infinity) constructor {
             byte = buffer_peek(buff, buffOffset, buffer_u8);
             buffOffset += 1;
             if ((byte & 0x80) == 0) { // if ((byte & 0b10000000) == 0) {
-                //__catspeak_error_v3("invalid UTF8 continuation codepoint '", byte, "'");
+                //__catspeak_error(__catspeak_cat(
+                //    "invalid UTF8 continuation codepoint '", byte, "'"
+                //));
                 return -1;
             }
             utf8Value |= (byte & ~0xC0) << (i * dataWidth); // utf8Value |= (byte & ~0b11000000) << (i * dataWidth);
