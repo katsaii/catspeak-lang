@@ -1122,6 +1122,24 @@ function CatspeakCartWriter() constructor {
         // <result>
         stackSize += 1;
     };
+
+    /// Get the result of an imported module.
+    ///
+    /// @param {String} path
+    ///   The path of the module to find.
+    ///
+    /// @param {Real} [dbg]
+    ///   The approximate location of this instruction in the source code.
+    ///   Defaults to `CATSPEAK_NOLOCATION`.
+    static emitConstImport = function (path, dbg = CATSPEAK_NOLOCATION) {
+        __catspeak_assert(chunkTop >= 0, "function stack empty");
+        var chunk = chunks[| chunkTop];
+        buffer_write(chunk, buffer_u8, __CatspeakInstr.CONST_M);
+        buffer_write(chunk, buffer_u32, dbg);
+        buffer_write(chunk, buffer_string, path);
+        // <result>
+        stackSize += 1;
+    };
 }
 
 /// Returns the version number of this Catspeak cartridge, or `0` if the
@@ -1235,6 +1253,7 @@ function catspeak_cart_version(cart) {
 ///   - `.handleInstrConstNumber(dbg, value)`
 ///   - `.handleInstrConstString(dbg, value)`
 ///   - `.handleInstrConstUndefined(dbg)`
+///   - `.handleInstrConstImport(dbg, path)`
 function CatspeakCartReader(cart_, visitor_) constructor {
     __catspeak_assert_typeof(cart_, __catspeak_is_buffer,
         "buffer doesn't exist"
@@ -1744,6 +1763,14 @@ function CatspeakCartReader(cart_, visitor_) constructor {
     };
 
     /// @ignore
+    static __readIConstImport = function () {
+        var cart_ = cart;
+        var dbg = buffer_read(cart_, buffer_u32);
+        var path = buffer_read(cart_, buffer_string);
+        visitor.handleInstrConstImport(dbg, path);
+    };
+
+    /// @ignore
     static __readerLookup = undefined;
     if (__readerLookup == undefined) {
         __readerLookup = array_create(__CatspeakInstr.__SIZE__, undefined);
@@ -1801,6 +1828,7 @@ function CatspeakCartReader(cart_, visitor_) constructor {
         __readerLookup[@ __CatspeakInstr.CONST_N] = __readIConstNumber;
         __readerLookup[@ __CatspeakInstr.CONST_S] = __readIConstString;
         __readerLookup[@ __CatspeakInstr.CONST_U] = __readIConstUndefined;
+        __readerLookup[@ __CatspeakInstr.CONST_M] = __readIConstImport;
     }
 }
 
@@ -1860,5 +1888,6 @@ enum __CatspeakInstr {
     CONST_N = 1,
     CONST_S = 3,
     CONST_U = 35,
-    __SIZE__ = 55,
+    CONST_M = 55,
+    __SIZE__ = 56,
 }

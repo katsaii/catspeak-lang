@@ -448,4 +448,11 @@ function __CatspeakCartDisassembler() constructor {
         out += "\n  const_u";
         __writeDbg(dbg);
     };
+
+    /// @ignore
+    static handleInstrConstImport = function (dbg, path) {
+        out += "\n  const_m";
+        out += "  " + ("\"" + (path) + "\"");
+        __writeDbg(dbg);
+    };
 }

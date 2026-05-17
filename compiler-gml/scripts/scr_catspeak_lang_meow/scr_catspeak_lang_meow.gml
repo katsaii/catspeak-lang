@@ -1164,7 +1164,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                     }
                 }
                 ir.addInclude(module_, alias);
-                ir.emitConstUndefined(); // TODO :: instruction to get result of module
+                ir.emitConstImport(module_, dbg);
             } else if (peeked == CatspeakToken.RETURN) {
                 peeked = lexer.peek();
                 if (

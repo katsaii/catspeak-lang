@@ -744,6 +744,16 @@ instr-ops:
     exceptional: false
     comptime: undefined
 
+  - name: "const import"
+    name-short: const_m
+    desc: "get the result of an imported module"
+    opcode: 0x37
+    args:
+      - name: path
+        desc: "the path of the module to find"
+        type: string
+    exceptional: false
+
 # After all instructions for a function definition are encoded, information
 # about this function follows in the order they are defined below.
 

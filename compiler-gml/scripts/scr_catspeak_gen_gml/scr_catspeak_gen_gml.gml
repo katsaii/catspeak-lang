@@ -36,6 +36,8 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     /// @ignore
     importsCache = undefined;
     /// @ignore
+    importsResults = undefined;
+    /// @ignore
     ctx = undefined;
     /// @ignore
     localsN = 0;
@@ -96,6 +98,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         funcs = ds_list_create();
         importsMap = { };
         importsCache = { };
+        importsResults = { };
         ctx = {
             globals : globals ?? { },
             binding : undefined,
@@ -121,6 +124,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         var relPath = ctx.meta.path + "::" + path;
         if (variable_struct_exists(modules, relPath)) {
             module_ = modules[$ relPath];
+            importsResults[$ relPath] = module_.result;
         } else if (variable_struct_exists(modules, path)) {
             module_ = modules[$ path];
         }
@@ -130,6 +134,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
                 "' (this could be caused by a cyclic dependency)"
             ));
         }
+        importsResults[$ path] = module_.result;
         var candidates = importsMap[$ alias] ?? [];
         array_push(candidates, module_);
         importsMap[$ alias] = candidates;
@@ -629,6 +634,18 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
             argsN : n,
             args : args
         }, __catspeak_instr_call_i__);
+    };
+
+    /// @ignore
+    static __genExprConstImport = function (path) {
+        if (!variable_struct_exists(importsResults, path)) {
+            __catspeak_error(__catspeak_cat(
+                "cannot find module result with path '", path, "'"
+            ));
+        }
+        return __genExpr({
+            value : importsResults[$ path],
+        }, __catspeak_instr_module_value__);
     };
 
     // automatically generated code generation functions (here be dragons)
@@ -1540,6 +1557,14 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         var expr;
         expr = __genExpr({
         }, __catspeak_instr_const_u__);
+        ds_stack_push(exprStack_, expr);
+    };
+
+    /// @ignore
+    static handleInstrConstImport = function (dbg, path) {
+        var exprStack_ = exprStack;
+        var expr;
+        expr = __genExprConstImport(path);
         ds_stack_push(exprStack_, expr);
     };
 }

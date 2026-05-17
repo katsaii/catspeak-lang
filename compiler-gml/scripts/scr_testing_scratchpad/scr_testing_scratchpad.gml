@@ -17,11 +17,12 @@ TEST_EXPERIMENT "catspeak4-ctx" {
     var moduleGML = new CatspeakModule("test::math");
     moduleGML.globals.add = function (lhs, rhs) { return lhs + string(rhs) };
     moduleGML.globals.random_n_get = function () { return irandom(100) };
+    moduleGML.result = "wahoo";
     ctx.addModule(moduleGML);
     var moduleMeow = ctx.run(@'
         let result = import test::math as self
 
-        return add("res: ", random_n)
+        return add(add("res: ", random_n) + " ", result)
     ');
     show_message(moduleMeow.result); // "hi catspeak"
 }
