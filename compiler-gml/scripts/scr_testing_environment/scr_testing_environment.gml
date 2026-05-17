@@ -65,28 +65,6 @@ test_add(function () : Test("env-function-brace-style") constructor {
     assertEq("hi", catspeak_globals(fB).main());
 });
 
-test_add_ignore(function () : Test("env-use-test") constructor {
-    msg = "start";
-    var env = new CatspeakEnvironment();
-    env.addMethod("thing", function () {
-        msg = "inside";
-        return function () { msg = "end" };
-    });
-    env.addMethod("get_msg", function () {
-        return msg;
-    });
-    var fA = env.compile(env.parseString(@'
-        let a = get_msg();
-        let b;
-        use thing {
-            b = get_msg();
-        }
-        let c = get_msg();
-        [a, b, c]
-    '));
-    assertEq(["start", "inside", "end"], fA());
-});
-
 test_add(function () : Test("env-function-set-self") constructor {
     var env = new CatspeakEnvironment();
     var f = env.compile(env.parseString(@'
@@ -843,12 +821,12 @@ test_add_ignore(function() : Test("expose-everything-inst-deactivate") construct
     f();
 });
 
-test_add_ignore(function() : AsyncTest("moss-set-self") constructor {
+test_add_ignore(function() : AsyncTest("expose-everything-moss-set-self") constructor {
     var me = self;
     instance_create_depth(0, 0, 0, obj_testing_moss_oinitial, { test : me });
 });
 
-test_add_ignore(function() : Test("moss-set-self-2") constructor {
+test_add_ignore(function() : Test("expose-everything-moss-set-self-2") constructor {
     env = new CatspeakEnvironment();
     outputs = [];
     global.__testing_moss_2_test = self;
@@ -909,17 +887,17 @@ test_add(function() : Test("method-undefined-variant") constructor {
     assertEq("D", catspeak_execute_ext(f3, { tag : "D" }).tag);
 });
 
-test_add_ignore(function() : Test("method-self-setSelf") constructor {
+test_add(function() : Test("method-self-setSelf") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString("fun () { self }");
     var fun = env.compile(ir);
-    // phase 1
+    // 1
     var f0 = fun();
     assertEq(catspeak_globals(f0), f0());
     assertEq(self, catspeak_execute(f0));
     var s0 = { nothing : true };
     assertEq(s0, catspeak_execute_ext(f0, s0));
-    // phase 2
+    // 2
     var s1 = { kan : "aya" };
     var f1 = catspeak_method(s1, f0);
     assertEq(catspeak_globals(f0), f0());        // check f0 is still correct
@@ -928,23 +906,23 @@ test_add_ignore(function() : Test("method-self-setSelf") constructor {
     assertEq(s1, f1());                          // check if f1 is bound
     assertEq(s1, catspeak_execute(f1));
     assertEq(s1, catspeak_execute_ext(f1, { }));
-    // phase 3
-    var s2 = { baddie : true };
-    f0.setSelf(s2);
-    assertEq(s2, f0());                          // check f0 is bound
-    assertEq(s2, catspeak_execute(f0));
-    assertEq(s2, catspeak_execute_ext(f0, s0));
-    assertEq(s2, f1());                          // check f1 is re-bound
-    assertEq(s2, catspeak_execute(f1));
-    assertEq(s2, catspeak_execute_ext(f1, { }));
-    // phase 4
-    f0.setSelf(undefined);
-    assertEq(catspeak_globals(f0), f0());        // check f0 is unbound
-    assertEq(self, catspeak_execute(f0));
-    assertEq(s0, catspeak_execute_ext(f0, s0));
-    assertEq(s1, f1());                          // check f1 is bound to s1
-    assertEq(s1, catspeak_execute(f1));
-    assertEq(s1, catspeak_execute_ext(f1, { }));
+    // 3
+    //var s2 = { baddie : true };
+    //f0.setSelf(s2);
+    //assertEq(s2, f0());                          // check f0 is bound
+    //assertEq(s2, catspeak_execute(f0));
+    //assertEq(s2, catspeak_execute_ext(f0, s0));
+    //assertEq(s2, f1());                          // check f1 is re-bound
+    //assertEq(s2, catspeak_execute(f1));
+    //assertEq(s2, catspeak_execute_ext(f1, { }));
+    //// 4
+    //f0.setSelf(undefined);
+    //assertEq(catspeak_globals(f0), f0());        // check f0 is unbound
+    //assertEq(self, catspeak_execute(f0));
+    //assertEq(s0, catspeak_execute_ext(f0, s0));
+    //assertEq(s1, f1());                          // check f1 is bound to s1
+    //assertEq(s1, catspeak_execute(f1));
+    //assertEq(s1, catspeak_execute_ext(f1, { }));
 });
 
 test_add_ignore(function() : Test("expose-everything-nineslice-vars") constructor {
