@@ -14,12 +14,15 @@ var runExperiment = "catspeak4-ctx";
 
 TEST_EXPERIMENT "catspeak4-ctx" {
     var ctx = new CatspeakCtx();
-    ctx.interface.exposeConstant("a", "hi");
-    ctx.interface.globals.b = "catspeak";
-    var module = ctx.run(@'
-        return a + " " + b
+    var moduleGML = new CatspeakModule("test::math");
+    moduleGML.globals.add = function (lhs, rhs) { return lhs + rhs };
+    ctx.addModule(moduleGML);
+    var moduleMeow = ctx.run(@'
+        import test::math as self
+
+        return add("hi", "catspeak")
     ');
-    show_message(module);
+    show_message(moduleMeow.result); // "hi catspeak"
 }
 
 TEST_EXPERIMENT "catspeak4-parse" {
