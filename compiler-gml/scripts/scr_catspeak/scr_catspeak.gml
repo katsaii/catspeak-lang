@@ -69,6 +69,15 @@
 /// @return {Real}
 #macro CATSPEAK_TIMEOUT 1000
 
+/// The default global Catspeak environment. Mostly exists for UX reasons.
+///
+/// Unless you need to have multiple instances of Catspeak with different
+/// configurations, you should use this. Otherwise, you should create a new
+/// sandboxed Catspeak environment using `new CatspeakEnvironment()`.
+///
+/// @return {Struct.CatspeakEnvironment}
+#macro Catspeak global.__catspeak__
+
 /// Usually the Catspeak environment tries to self-initialise at the start of
 /// the game, but at what time this happens relative to other scripts is not
 /// guaranteed by GameMaker.
@@ -103,8 +112,7 @@ function catspeak_force_init() {
         __catspeak_error_silent("skipping compatibility modules: " + ex.message);
     }
     Catspeak = new CatspeakEnvironment();
-    var motd = "you are now using Catspeak v" + CATSPEAK_VERSION +
-            " by @katsaii";
+    var motd = "you are now using Catspeak v" + CATSPEAK_VERSION + " by @katsaii";
     show_debug_message(motd);
     return true;
 }
@@ -472,6 +480,31 @@ function catspeak_debug_tree(value, indent = "  ") {
 /// TODO
 function CatspeakCtx() constructor {
 
+    /// @ignore
+    keywords = undefined;
+
+    /// The tokeniser to use for this Catspeak environment. Defaults to
+    /// `CatspeakLexer`.
+    ///
+    /// @experimental
+    ///
+    /// @return {Function}
+    lexerType = CatspeakLexer;
+    /// The parser to use for this Catspeak environment. Defaults to
+    /// `CatspeakParser`.
+    ///
+    /// @experimental
+    ///
+    /// @return {Function}
+    parserType = CatspeakParser;
+    /// The code generator to use for this Catspeak environment. Defaults to
+    /// `CatspeakGenGML`.
+    ///
+    /// @experimental
+    ///
+    /// @return {Function}
+    codegenType = CatspeakGenGML;
+
     //fileHandler = undefined;
 
     // assign this to make scripts share a global variable scope
@@ -519,6 +552,9 @@ function CatspeakCtx() constructor {
             // TODO :: caching support
             // TODO :: filesystem support
             var lexer = new CatspeakLexer(srcBuff, srcOffset, srcLength);
+            if (keywords != undefined) {
+                lexer.__keywords = keywords; // for compatibility
+            }
             var parser = new CatspeakParser(writer, lexer);
             do {
                 var keepParsing = parser.parseOnce() == undefined;

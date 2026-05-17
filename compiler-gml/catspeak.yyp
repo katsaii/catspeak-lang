@@ -60,7 +60,6 @@
     {"id":{"name":"not_catspeak_statements","path":"notes/not_catspeak_statements/not_catspeak_statements.yy",},"order":4,},
     {"id":{"name":"obj_testing_example_bench_while","path":"objects/obj_testing_example_bench_while/obj_testing_example_bench_while.yy",},"order":4,},
     {"id":{"name":"scr_testing_framework","path":"scripts/scr_testing_framework/scr_testing_framework.yy",},"order":2,},
-    {"id":{"name":"scr_catspeak_environment","path":"scripts/scr_catspeak_environment/scr_catspeak_environment.yy",},"order":2,},
     {"id":{"name":"fnt_testing","path":"fonts/fnt_testing/fnt_testing.yy",},"order":0,},
   ],
   "Options": [

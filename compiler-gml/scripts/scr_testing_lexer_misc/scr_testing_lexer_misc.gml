@@ -135,7 +135,7 @@ test_add(function () : TestLexerTokenStream("env-tokenise",
         CatspeakTokenV3.IDENT,
     )
 });
-/*
+
 test_add(function () : Test("env-tokenise-keywords") constructor {
     var env = new CatspeakEnvironment();
     env.renameKeyword("while", "world");
@@ -161,4 +161,3 @@ test_add(function () : Test("env-delete-keyword") constructor {
     assertEq("fun", lexer.getValue());
     buffer_delete(buff);
 });
-*/

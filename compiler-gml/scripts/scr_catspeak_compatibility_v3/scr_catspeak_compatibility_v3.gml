@@ -28,6 +28,310 @@
 /// @return {Bool}
 #macro CATSPEAK_DEBUG_MODE true
 
+/// Used by Catspeak code generators to expose foreign GML functions,
+/// constants, and properties to the generated Catspeak programs.
+///
+/// @deprecated {4.0.0}
+function CatspeakForeignInterface() : CatspeakModulePrelude() constructor { }
+
+/// Encapsulates all common Catspeak features into a single, configurable box.
+///
+/// @deprecated {4.0.0}
+///   Use `CatspeakCtx` instead.
+function CatspeakEnvironment() : CatspeakCtx() constructor {
+    /// @ignore
+    lexerType = CatspeakLexerV3;
+
+    /// Enables the shared global feature on this Catspeak environment,
+    /// forcing all Catspeak programs compiled after this point to share the
+    /// same global variable scope.
+    ///
+    /// Typically this should not be enabled, but it can be useful for REPL
+    /// (Read-Eval-Print-Loop) style command consoles, where variables persist
+    /// between commands.
+    ///
+    /// Returns the shared global struct if this feature is enabled, or
+    /// `undefined` if the feature is disabled.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Assign an object to `.globals` directly.
+    ///
+    /// @param {Bool} [enabled]
+    ///   Whether to enable this feature. Defaults to `true`.
+    ///
+    /// @return {Struct}
+    static enableSharedGlobal = function (enabled = true) {
+        globals = enabled ? { } : undefined;
+        return globals;
+    };
+
+    /// Applies list of presets to this Catspeak environment. These changes
+    /// cannot be undone, so only choose presets you really need.
+    ///
+    /// You can add additional presets using the `catspeak_preset_add` function.
+    ///
+    /// @experimental
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.addModule()` and the new module system.
+    ///
+    /// @example
+    ///   Enabling the math and draw presets on the default Catspeak
+    ///   environment:
+    ///   ```gml
+    ///   Catspeak.applyPreset(
+    ///     CatspeakPreset.MATH,
+    ///     CatspeakPreset.DRAW
+    ///   );
+    ///   ```
+    ///
+    /// @param {Enum.CatspeakPreset} preset
+    ///   The preset type to apply.
+    ///
+    /// @param {Enum.CatspeakPreset} ...
+    ///   Additional presets.
+    static applyPreset = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var presetFunc = __catspeak_preset_get(argument[i]);
+            presetFunc(getInterface());
+        }
+    };
+
+    /// @deprecated {3.0.0}
+    ///   Use `Catspeak.interface` instead.
+    ///
+    /// @return {Struct.CatspeakModule}
+    static getInterface = function () {
+        return interface;
+    };
+
+    /// Creates a new lazy tokeniser from the supplied buffer, overriding
+    /// the keyword database if one exists for the current Catspeak
+    /// environment.
+    ///
+    /// @deprecated {4.0.0}
+    ///
+    /// @warning
+    ///   The lexer does not take ownership of this buffer, so you must make
+    ///   sure to delete it after calling this function. Failure to do this
+    ///   will result in leaking memory.
+    ///
+    /// @param {Id.Buffer} buff
+    ///   The ID of the GML buffer to use.
+    ///
+    /// @param {Real} [offset]
+    ///   The offset in the buffer to start parsing from. Defaults to 0.
+    ///
+    /// @param {Real} [size]
+    ///   The length of the buffer input. Any characters beyond this limit
+    ///   will be treated as the end of the file. Defaults to `infinity`.
+    ///
+    /// @return {Struct}
+    static tokenise = function (buff, offset = undefined, size = undefined) {
+        return new lexerType(buff, offset, size, keywords);
+    };
+
+    /// Similar to `Catspeak.parse`, except a string is used instead of a buffer.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.parse()` instead.
+    ///
+    /// @param {String} src
+    ///   The string containing Catspeak source code to parse.
+    ///
+    /// @param {String} [filepath]
+    ///   Associates this Catspeak source code with a filename.
+    ///
+    /// @return {Struct}
+    static parseString = parse;
+
+    /// Compiles Catspeak IR into a callable GML function.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.compile()` instead.
+    ///
+    /// @deprecated {3.0.2}
+    ///   Use `Catspeak.compile` instead.
+    ///
+    /// @param {Struct} ir
+    ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
+    ///
+    /// @return {Function}
+    static compileGML = compile;
+
+    /// Used to change the string representation of a Catspeak keyword.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Renaming keywords nolonger supported. Write your own lexer.
+    ///
+    /// @param {String} currentName
+    ///   The current string representation of the keyword to change.
+    ///   E.g. `"fun"`
+    ///
+    /// @param {String} newName
+    ///   The new string representation of the keyword.
+    ///   E.g. `"function"`
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static renameKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+        for (var i = 0; i < argument_count; i += 2) {
+            var currentName = argument[i];
+            var newName = argument[i + 1];
+            __catspeak_check_arg("currentName", currentName, is_string);
+            __catspeak_check_arg("newName", newName, is_string);
+            __catspeak_keywords_rename(keywords_, currentName, newName);
+        }
+    };
+
+    /// Used to add a new Catspeak keyword alias.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Renaming keywords nolonger supported. Write your own lexer.
+    ///
+    /// @param {String} name
+    ///   The name of the keyword to add.
+    ///   E.g. `"otherwise"`
+    ///
+    /// @param {Enum.CatspeakTokenV3} token
+    ///   The token this keyword should represent.
+    ///   E.g. `CatspeakTokenV3.ELSE`
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var token = argument[i + 1];
+            __catspeak_check_arg("name", name, is_string);
+            keywords_[$ name] = token;
+        }
+    };
+
+    /// Used to remove an existing Catspeak keyword from this environment.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Renaming keywords nolonger supported. Write your own lexer.
+    ///
+    /// @param {String} name
+    ///   The name of the keyword to remove.
+    ///   E.g. `"do"`
+    ///
+    /// @param {String} ...
+    ///   Additional keywords to remove.
+    static removeKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            __catspeak_check_arg("name", name, is_string);
+            if (variable_struct_exists(keywords_, name)) {
+                variable_struct_remove(keywords_, name);
+            }
+        }
+    };
+
+    /// Used to add a new constant to this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.exposeConstant` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Any} value
+    ///   The constant value to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addConstant = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 2) {
+            interface_.exposeConstant(argument[i + 0], argument[i + 1]);
+        }
+    };
+
+    /// Used to add a new method to this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.exposeMethod` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addMethod = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 2) {
+            interface_.exposeMethod(argument[i + 0], argument[i + 1]);
+        }
+    };
+
+    /// Used to add a new unbound function to this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.exposeFunction` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addFunction = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 2) {
+            interface_.exposeFunction(argument[i + 0], argument[i + 1]);
+        }
+    };
+
+    /// @ignore
+    static __removeInterface = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 1) {
+            interface_.addBanList([argument[i]]);
+        }
+    };
+
+    /// Used to remove an existing constant from this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.addBanList` instead.
+    ///
+    /// @remark
+    ///   Although you can use this to remove functions, it's recommended to
+    ///   use `Catspeak.removeFunction` for that purpose instead.
+    ///
+    /// @param {String} name
+    ///   The name of the constant to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional constants to remove.
+    static removeConstant = __removeInterface;
+
+    /// Used to remove an existing function from this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.addBanList` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional functions to remove.
+    static removeFunction = __removeInterface;
+}
+
 /// Gets the line component of a Catspeak source location. This is stored as a
 /// 20-bit unsigned integer within the least-significant bits of the supplied
 /// Catspeak location handle.
@@ -53,9 +357,7 @@ function catspeak_location_get_row(location) {
 /// @deprecated {4.0.0}
 ///   Does nothing.
 function catspeak_collect() {
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_init();
-    }
+    __catspeak_check_init();
 }
 
 /// @ignore
@@ -108,11 +410,9 @@ function __catspeak_keywords_create() {
 /// @deprecated {4.0.0}
 function __catspeak_keywords_rename(keywords, currentName, newName) {
     if (!variable_struct_exists(keywords, currentName)) {
-        if (CATSPEAK_DEBUG_MODE) {
-            __catspeak_error_v3_silent(
-                "no keyword with the name '", currentName, "' exists"
-            );
-        }
+        __catspeak_error_v3_silent(
+            "no keyword with the name '", currentName, "' exists"
+        );
         return;
     }
     var token = keywords[$ currentName];
@@ -128,11 +428,9 @@ function __catspeak_keywords_rename(keywords, currentName, newName) {
 ///   This is an O(n) operation. This means that it's slow, and should only
 ///   be used for debugging purposes.
 function __catspeak_keywords_find_name(keywords, token) {
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_arg("keywords", keywords, is_struct);
-        __catspeak_check_arg(
-                "token", token, __catspeak_is_token, "CatspeakTokenV3");
-    }
+    __catspeak_check_arg("keywords", keywords, is_struct);
+    __catspeak_check_arg(
+        "token", token, __catspeak_is_token, "CatspeakTokenV3");
     var variables = variable_struct_get_names(keywords);
     var variableCount = array_length(variables);
     for (var i = 0; i < variableCount; i += 1) {
@@ -426,7 +724,7 @@ enum CatspeakPreset {
 /// @deprecated {4.0.0}
 function __catspeak_preset_get(preset) {
     var presetFunc = global.__catspeakPresets[? preset];
-    if (CATSPEAK_DEBUG_MODE && __catspeak_is_nullish(presetFunc)) {
+    if (__catspeak_is_nullish(presetFunc)) {
         __catspeak_error_v3(
             "a Catspeak preset with the key '",
             preset, "' does not exist, make sure the preset exists in the ",
@@ -918,9 +1216,7 @@ function __catspeak_preset_unsafe(ffi) {
 ///   Catspeak.applyPreset("my-custom");
 ///   ```
 function catspeak_preset_add(key, callback) {
-    if (CATSPEAK_DEBUG_MODE) {
-        __catspeak_check_init();
-    }
+    __catspeak_check_init();
     var presets = global.__catspeakPresets;
     if (ds_map_exists(presets, key)) {
        __catspeak_error_v3("a preset with the key '", key, "' already exists");

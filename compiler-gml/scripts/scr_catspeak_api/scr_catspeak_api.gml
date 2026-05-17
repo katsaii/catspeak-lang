@@ -99,11 +99,57 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = false;
     /// @ignore
     __exists__ = function () {
-        
+        /*
+        if (variable_struct_exists(banList, name)) {
+            // this function has been banned!
+            return false;
+        }
+        if (
+            variable_struct_exists(database, name) ||
+            variable_struct_exists(databaseDynConst, name)
+        ) {
+            return true;
+        }
+        if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
+            try {
+                var db = __catspeak_get_gml_interface();
+                return variable_struct_exists(db, name) || asset_get_index(name) != -1;
+            } catch (_) {
+                __catspeak_error_v3_silent("GML interface not included, defaulting to `false`");
+            }
+        }
+        return false;
+        */
     };
     /// @ignore
     __get__ = function () {
-        
+        /*
+        if (variable_struct_exists(banList, name)) {
+            // this function has been banned!
+            return undefined;
+        }
+        if (variable_struct_exists(database, name)) {
+            return database[$ name];
+        }
+        if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
+            try {
+                var db = __catspeak_get_gml_interface();
+                if (variable_struct_exists(db, name)) {
+                    return db[$ name];
+                }
+                var asset = asset_get_index(name);
+                if (asset != -1) {
+                    if (asset_get_type(name) == asset_script) {
+                        return method(undefined, asset);
+                    }
+                    return asset;
+                }
+            } catch (_) {
+                __catspeak_error_v3_silent("GML interface not included, defaulting to `undefined`");
+            }
+        }
+        return undefined;
+        */
     };
 
     /// Returns whether the foreign symbol is a "dynamic constant".
@@ -476,9 +522,7 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     static exposeAsset = function () {
         for (var i = 0; i < argument_count; i += 1) {
             var name = argument[i];
-            if (CATSPEAK_DEBUG_MODE) {
-                __catspeak_check_arg("name", name, is_string);
-            }
+            __catspeak_check_arg("name", name, is_string);
             var value = asset_get_index(name);
             var type = asset_get_type(name);
             // validate that it's an actual GM Asset
