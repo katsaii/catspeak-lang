@@ -76,9 +76,19 @@ framework. You can find these under `Testing/unit-tests` in the GameMaker IDE.
 
 If you add new logic, please add a relevant unit test.
 
+### Templated Compiler Code
+
+**Do not modify any GML files that start with** `AUTO GENERATED, DO NOT MODIFY THIS FILE`.
+Any changes you make will be overwritten, and you will lose them.
+
+Some parts of the Catspeak codebase are automatically generated. You can find
+these in the `compiler-compiler` directory. Make your changes to the template
+files in the `compiler-compiler/templates` directory, and then rebuild by
+running the `./build.py` Python script.
+
 ### Documentation
 
-The documentation is generated completely automatically using a custom python
+The documentation is generated completely automatically using a custom Python
 script located in the root directory of this project. For this reason, please
 try to add good documentation to any new functions and methods.
 

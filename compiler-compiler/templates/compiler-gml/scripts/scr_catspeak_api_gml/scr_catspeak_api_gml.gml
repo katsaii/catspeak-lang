@@ -1,9 +1,3 @@
-// AUTO GENERATED, DO NOT MODIFY THIS FILE
-// see:
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build.py
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/templates/compiler-gml/scripts/scr_catspeak_api_gml/scr_catspeak_api_gml.gml
-
 //! TODO
 
 //# feather use syntax-errors

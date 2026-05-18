@@ -1,7 +1,7 @@
 // AUTO GENERATED, DO NOT MODIFY THIS FILE
 // see:
 //  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/def-catspeak-ir.yaml
-//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build-ir.py
+//  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/build.py
 //  - https://github.com/katsaii/catspeak-lang/blob/main/compiler-compiler/templates/compiler-gml/scripts/scr_catspeak_disasm/scr_catspeak_disasm.gml
 
 //! Responsible for disassembling a Catspeak cartridge and printing its content
