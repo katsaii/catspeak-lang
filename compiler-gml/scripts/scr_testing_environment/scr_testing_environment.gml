@@ -743,7 +743,7 @@ test_add(function() : Test("while-loop") constructor {
     assertEq(101, res);
 });
 
-test_add_ignore(function() : Test("expose-everything-const") constructor {
+test_add(function() : Test("expose-everything-const") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString("[ev_async_dialog, os_linux, c_maroon]");
@@ -1208,4 +1208,22 @@ test_add_ignore(function() : Test("expose-everything-with-inst-destroy-2") const
     if (instance_exists(inst5)) {
         instance_destroy(inst5);
     }
+});
+
+function __test_recursive_calls(n) {
+    return n > 10 ? n : n + __test_recursive_calls(n + 1);
+}
+
+test_add(function() : Test("recursive-calls") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        f = fun (n) {
+            return if n > 10 { n } else { n + f(n + 1) }
+        };
+        add = fun (n, m) { n + m }
+        -- the 0s force the use of __catspeak_instr_call__
+        add(3, f(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    ');
+    var f = env.compile(ir);
+    assertEq(3 + __test_recursive_calls(1), f());
 });

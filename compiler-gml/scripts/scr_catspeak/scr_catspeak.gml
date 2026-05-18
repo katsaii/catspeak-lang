@@ -510,7 +510,7 @@ function CatspeakCtx() constructor {
     // assign this to make scripts share a global variable scope
     globals = undefined;
     /// TODO
-    interface = new CatspeakModulePrelude();
+    interface = new CatspeakForeignInterface(); // TODO :: use `CatspeakForeignInterface` only in compatibility mode
     /// @ignore
     modules = { };
     addModule(interface);

@@ -48,6 +48,9 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     /// @ignore
     isAlive = false;
 
+    // TODO :: add time limits
+    // TODO :: make indexing exprs less hacky
+
     /// Frees any dynamically allocated resources managed by this generator.
     ///
     /// @warning
@@ -716,6 +719,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         } else {
             closure_.argsN = n;
             closure_.args = args;
+            closure_.argsReified = [];
             return __genExpr(closure_, __catspeak_instr_call__);
         }
     };
@@ -726,7 +730,8 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         return __genExpr({
             callee : callee,
             argsN : n,
-            args : args
+            args : args,
+            argsReified : [],
         }, __catspeak_instr_call_n__);
     };
 
@@ -737,7 +742,8 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
             data : data,
             idx : idx,
             argsN : n,
-            args : args
+            args : args,
+            argsReified : [],
         }, __catspeak_instr_call_i__);
     };
 
@@ -2586,51 +2592,50 @@ function __catspeak_instr_call_8__() {
 
 /// @ignore
 function __catspeak_instr_call__() {
-    static argsComplete = [];
     var callee_ = callee();
     // build args array
     var argsN_ = argsN;
     var args_ = args;
-    array_resize(argsComplete, argsN_);
+    var argsReified_ = argsReified;
+    array_resize(argsReified_, argsN_);
     for (var i = 0; i < argsN_; i += 1) {
         var arg = args_[i];
-        argsComplete[@ i] = arg();
+        argsReified_[@ i] = arg();
     }
     var scopes = __catspeak_scope_get_bound(method_get_self(callee_));
     var result = undefined;
     with (scopes.other_) with (scopes.self_) {
         var calleeUnbound = method_get_index(callee_);
-        result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsComplete);
+        result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsReified_);
     }
-    array_resize(argsComplete, 0);
+    array_resize(argsReified_, 0);
     return result;
 }
 
 /// @ignore
 function __catspeak_instr_call_n__() {
-    static argsComplete = [];
     var callee_ = callee();
     // build args array
     var argsN_ = argsN;
     var args_ = args;
-    array_resize(argsComplete, argsN_);
+    var argsReified_ = argsReified;
+    array_resize(argsReified_, argsN_);
     for (var i = 0; i < argsN_; i += 1) {
         var arg = args_[i];
-        argsComplete[@ i] = arg();
+        argsReified_[@ i] = arg();
     }
     var scopes = __catspeak_scope_get_bound(method_get_self(callee_));
     var result = undefined;
     with (scopes.other_) with (scopes.self_) {
         var calleeUnbound = method_get_index(callee_);
-        result = __catspeak_constructor_call(calleeUnbound, argsComplete);
+        result = __catspeak_constructor_call(calleeUnbound, argsReified_);
     }
-    array_resize(argsComplete, 0);
+    array_resize(argsReified_, 0);
     return result;
 }
 
 /// @ignore
 function __catspeak_instr_call_i__() {
-    static argsComplete = [];
     var data_ = data();
     var idx_ = idx();
     var callee_ = undefined;
@@ -2647,10 +2652,11 @@ function __catspeak_instr_call_i__() {
     // build args array
     var argsN_ = argsN;
     var args_ = args;
-    array_resize(argsComplete, argsN_);
+    var argsReified_ = argsReified;
+    array_resize(argsReified_, argsN_);
     for (var i = 0; i < argsN_; i += 1) {
         var arg = args_[i];
-        argsComplete[@ i] = arg();
+        argsReified_[@ i] = arg();
     }
     // modify scope
     var scopes = __catspeak_scope_get();
@@ -2665,13 +2671,13 @@ function __catspeak_instr_call_i__() {
         var scopes2 = __catspeak_scope_get_bound(method_get_self(callee_));
         with (scopes2.other_) with (scopes2.self_) {
             var calleeUnbound = method_get_index(callee_);
-            result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsComplete);
+            result = __catspeak_script_execute_ext_fixed(calleeUnbound, argsReified_);
         }
     } finally {
         scopes.self_ = oldSelf;
         scopes.other_ = oldOther;
     }
-    array_resize(argsComplete, 0);
+    array_resize(argsReified_, 0);
     return result;
 }
 
