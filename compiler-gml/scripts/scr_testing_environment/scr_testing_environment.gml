@@ -754,7 +754,7 @@ test_add(function() : Test("expose-everything-const") constructor {
     assertEq(c_maroon, result[2]);
 });
 
-test_add_ignore(function() : Test("expose-everything-func") constructor {
+test_add(function() : Test("expose-everything-func") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString("[real, is_string, sha1_string_unicode]");
@@ -766,7 +766,7 @@ test_add_ignore(function() : Test("expose-everything-func") constructor {
     assertEq(sha1_string_unicode("some hash"), result[2]("some hash"));
 });
 
-test_add_ignore(function() : Test("expose-everything-assets") constructor {
+test_add(function() : Test("expose-everything-assets") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -782,7 +782,7 @@ test_add_ignore(function() : Test("expose-everything-assets") constructor {
     instance_destroy(result);
 });
 
-test_add_ignore(function() : Test("expose-everything-aaaaa") constructor {
+test_add(function() : Test("expose-everything-aaaaa") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -796,7 +796,7 @@ test_add_ignore(function() : Test("expose-everything-aaaaa") constructor {
     assertEq(result.show_async, show_message_async);
 });
 
-test_add_ignore(function() : Test("expose-everything-layer-tilemap-create") constructor {
+test_add(function() : Test("expose-everything-layer-tilemap-create") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -808,7 +808,7 @@ test_add_ignore(function() : Test("expose-everything-layer-tilemap-create") cons
     layer_tilemap_destroy(result);
 });
 
-test_add_ignore(function() : Test("expose-everything-inst-deactivate") constructor {
+test_add(function() : Test("expose-everything-inst-deactivate") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var f = env.compile(env.parseString(@'
@@ -821,12 +821,12 @@ test_add_ignore(function() : Test("expose-everything-inst-deactivate") construct
     f();
 });
 
-test_add_ignore(function() : AsyncTest("expose-everything-moss-set-self") constructor {
+test_add(function() : AsyncTest("expose-everything-moss-set-self") constructor {
     var me = self;
     instance_create_depth(0, 0, 0, obj_testing_moss_oinitial, { test : me });
 });
 
-test_add_ignore(function() : Test("expose-everything-moss-set-self-2") constructor {
+test_add(function() : Test("expose-everything-moss-set-self-2") constructor {
     env = new CatspeakEnvironment();
     outputs = [];
     global.__testing_moss_2_test = self;
@@ -925,7 +925,7 @@ test_add(function() : Test("method-self-setSelf") constructor {
     //assertEq(s1, catspeak_execute_ext(f1, { }));
 });
 
-test_add_ignore(function() : Test("expose-everything-nineslice-vars") constructor {
+test_add(function() : Test("expose-everything-nineslice-vars") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -995,7 +995,7 @@ test_add(function() : Test("try-catch-3") constructor {
     assert(is_numeric(result[3]));
 });
 
-test_add_ignore(function() : Test("expose-everything-try-catch-4") constructor {
+test_add(function() : Test("expose-everything-try-catch-4") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var ir = env.parseString(@'
@@ -1132,7 +1132,7 @@ test_add(function() : Test("exploit-obj-bad") constructor {
 });
 */
 
-test_add_ignore(function() : Test("expose-everything-with-inst-destroy") constructor {
+test_add(function() : Test("expose-everything-with-inst-destroy") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var inst1 = instance_create_depth(0, 0, 0, obj_testing_blank);
@@ -1169,7 +1169,7 @@ test_add_ignore(function() : Test("expose-everything-with-inst-destroy") constru
     }
 });
 
-test_add_ignore(function() : Test("expose-everything-with-inst-destroy-2") constructor {
+test_add(function() : Test("expose-everything-with-inst-destroy-2") constructor {
     var env = new CatspeakEnvironment();
     env.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true;
     var inst1 = instance_create_depth(0, 0, 0, obj_testing_blank, { v : 1 });

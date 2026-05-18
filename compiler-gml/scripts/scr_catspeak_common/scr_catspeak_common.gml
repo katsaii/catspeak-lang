@@ -505,41 +505,6 @@ function __catspeak_assert_instanceof(value, constructor_, message_ = undefined)
 }
 
 /// @ignore
-function __catspeak_assert_typeof_optional(value, predicate, message_ = undefined) {
-    gml_pragma("forceinline");
-    if (value != undefined) {
-        __catspeak_assert_typeof(value, predicate, message_);
-    }
-}
-
-/// @ignore
-function __catspeak_assert_get(collection, idx) {
-    if (is_array(collection) || is_numeric(idx)) {
-        __catspeak_assert_typeof(collection, is_array);
-        __catspeak_assert_typeof(idx, is_numeric);
-        var len = array_length(collection);
-        if (idx < 0 || idx >= len) {
-            __catspeak_error(__catspeak_cat(
-                "array index out of bounds, must be >= 0 and < ",
-                __catspeak_repr(len)
-            ));
-        }
-        return collection[idx];
-    } else if (__catspeak_is_withable(collection) || is_string(idx)) {
-        __catspeak_assert_typeof(collection, __catspeak_is_withable);
-        __catspeak_assert_typeof(idx, is_string);
-        if (!variable_struct_exists(collection, idx)) {
-            __catspeak_error(__catspeak_cat(
-                "struct does not contain a key with the name '",
-                __catspeak_repr(idx), "'"
-            ));
-        }
-        return collection[$ idx];
-    }
-    __catspeak_error_bug();
-}
-
-/// @ignore
 function __catspeak_error_message(message_ = undefined) {
     var msg = "Catspeak v" + CATSPEAK_VERSION;
     if (message_ != undefined) {
@@ -558,14 +523,6 @@ function __catspeak_error(message_ = undefined) {
 function __catspeak_error_silent(message_ = undefined) {
     gml_pragma("forceinline");
     show_debug_message(__catspeak_error_message(message_));
-}
-
-/// @ignore
-function __catspeak_error_unimplemented(feature) {
-    gml_pragma("forceinline");
-    __catspeak_error(__catspeak_cat(
-        "the feature '", feature, "' has not been implemented yet"
-    ));
 }
 
 /// @ignore
@@ -604,10 +561,6 @@ function __catspeak_is_withable(val) {
     if (is_struct(val) || val == self || val == other) {
         return true;
     }
-    // for non-LTS versions
-    //if (is_handle(val) && (object_exists(val) || instance_exists(val)) {
-    //    return true;
-    //}
     if (is_numeric(val)) {
         // LTS-specific checks for numeric ids
         if (val < 0) {
@@ -620,34 +573,31 @@ function __catspeak_is_withable(val) {
         } catch (_) { }
         return isInst;
     }
+    try {
+        // for non-LTS versions
+        if (is_handle(val) && (object_exists(val) || instance_exists(val))) {
+            return true;
+        }
+    } catch (_) { }
     var type_ = typeof(val);
     return type_ == "struct" || type_ == "ref" && (object_exists(val) || instance_exists(val));
 }
 
 /// @ignore
 function __catspeak_is_callable(val) {
-    gml_pragma("forceinline");
     if (is_method(val)) {
         return true;
     }
-    var isScript = false;
     try {
-        isScript = script_exists(val);
+        return script_exists(val);
     } catch (_) { }
-    return isScript;
+    return false;
 }
 
 /// @ignore
-function __catspeak_is_nullish(val) {
-    gml_pragma("forceinline");
-    return val == undefined || val == pointer_null;
-}
-
 function __catspeak_is_buffer(val) {
-    gml_pragma("forceinline");
-    var isBuff = false;
     try {
-        isBuff = !is_string(val) && buffer_exists(val);
+        return !is_string(val) && buffer_exists(val);
     } catch (_) { }
-    return isBuff;
+    return false;
 }

@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "scr_catspeak_gml_api",
+  "name": "scr_catspeak_api_gml",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

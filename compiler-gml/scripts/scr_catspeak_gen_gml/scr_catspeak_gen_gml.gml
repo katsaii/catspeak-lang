@@ -1919,7 +1919,7 @@ function __catspeak_instr_set_is__() {
     }
     var specialSet = global.__catspeakGmlSpecialVars[$ idx];
     if (specialSet != undefined) {
-        specialSet(collection_, value_);
+        specialSet(data_, value_);
     } else {
         data_[$ idx] = value_;
     }
@@ -1938,7 +1938,7 @@ function __catspeak_instr_set_is_add__() {
     }
     var specialSet = global.__catspeakGmlSpecialVars[$ idx];
     if (specialSet != undefined) {
-        specialSet(collection_, data_[$ idx] + value_);
+        specialSet(data_, data_[$ idx] + value_);
     } else {
         data_[$ idx] += value_;
     }
@@ -1957,7 +1957,7 @@ function __catspeak_instr_set_is_sub__() {
     }
     var specialSet = global.__catspeakGmlSpecialVars[$ idx];
     if (specialSet != undefined) {
-        specialSet(collection_, data_[$ idx] - value_);
+        specialSet(data_, data_[$ idx] - value_);
     } else {
         data_[$ idx] -= value_;
     }
@@ -1976,7 +1976,7 @@ function __catspeak_instr_set_is_mul__() {
     }
     var specialSet = global.__catspeakGmlSpecialVars[$ idx];
     if (specialSet != undefined) {
-        specialSet(collection_, data_[$ idx] * value_);
+        specialSet(data_, data_[$ idx] * value_);
     } else {
         data_[$ idx] *= value_;
     }
@@ -1995,7 +1995,7 @@ function __catspeak_instr_set_is_div__() {
     }
     var specialSet = global.__catspeakGmlSpecialVars[$ idx];
     if (specialSet != undefined) {
-        specialSet(collection_, data_[$ idx] / value_);
+        specialSet(data_, data_[$ idx] / value_);
     } else {
         data_[$ idx] /= value_;
     }
@@ -2072,9 +2072,9 @@ function __catspeak_instr_set_i__() {
     if (is_array(data_)) {
         data_[@ idx_] = value_;
     } else if (__catspeak_is_withable(data_)) {
-        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx_];
         if (specialSet != undefined) {
-            specialSet(collection_, value_);
+            specialSet(data_, value_);
         } else {
             data_[$ idx_] = value_;
         }
@@ -2095,9 +2095,9 @@ function __catspeak_instr_set_i_add__() {
     if (is_array(data_)) {
         data_[@ idx_] += value_;
     } else if (__catspeak_is_withable(data_)) {
-        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx_];
         if (specialSet != undefined) {
-            specialSet(collection_, data_[$ idx_] + value_);
+            specialSet(data_, data_[$ idx_] + value_);
         } else {
             data_[$ idx_] += value_;
         }
@@ -2118,9 +2118,9 @@ function __catspeak_instr_set_i_sub__() {
     if (is_array(data_)) {
         data_[@ idx_] -= value_;
     } else if (__catspeak_is_withable(data_)) {
-        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx_];
         if (specialSet != undefined) {
-            specialSet(collection_, data_[$ idx_] - value_);
+            specialSet(data_, data_[$ idx_] - value_);
         } else {
             data_[$ idx_] -= value_;
         }
@@ -2141,9 +2141,9 @@ function __catspeak_instr_set_i_mul__() {
     if (is_array(data_)) {
         data_[@ idx_] *= value_;
     } else if (__catspeak_is_withable(data_)) {
-        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx_];
         if (specialSet != undefined) {
-            specialSet(collection_, data_[$ idx_] * value_);
+            specialSet(data_, data_[$ idx_] * value_);
         } else {
             data_[$ idx_] *= value_;
         }
@@ -2164,9 +2164,9 @@ function __catspeak_instr_set_i_div__() {
     if (is_array(data_)) {
         data_[@ idx_] /= value_;
     } else if (__catspeak_is_withable(data_)) {
-        var specialSet = global.__catspeakGmlSpecialVars[$ idx];
+        var specialSet = global.__catspeakGmlSpecialVars[$ idx_];
         if (specialSet != undefined) {
-            specialSet(collection_, data_[$ idx_] / value_);
+            specialSet(data_, data_[$ idx_] / value_);
         } else {
             data_[$ idx_] /= value_;
         }

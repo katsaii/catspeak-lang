@@ -6,7 +6,7 @@
     {"id":{"name":"obj_testing_example_bench_basic","path":"objects/obj_testing_example_bench_basic/obj_testing_example_bench_basic.yy",},"order":0,},
     {"id":{"name":"obj_testing_example_bench_basic_vars","path":"objects/obj_testing_example_bench_basic_vars/obj_testing_example_bench_basic_vars.yy",},"order":2,},
     {"id":{"name":"scr_testing_lexer_keyword","path":"scripts/scr_testing_lexer_keyword/scr_testing_lexer_keyword.yy",},"order":4,},
-    {"id":{"name":"scr_catspeak_gml_api","path":"scripts/scr_catspeak_gml_api/scr_catspeak_gml_api.yy",},"order":0,},
+    {"id":{"name":"scr_catspeak_api_gml","path":"scripts/scr_catspeak_api_gml/scr_catspeak_api_gml.yy",},"order":0,},
     {"id":{"name":"not_catspeak_catspeak_for_modders","path":"notes/not_catspeak_catspeak_for_modders/not_catspeak_catspeak_for_modders.yy",},"order":4,},
     {"id":{"name":"scr_catspeak_lang_gmlite","path":"scripts/scr_catspeak_lang_gmlite/scr_catspeak_lang_gmlite.yy",},"order":1,},
     {"id":{"name":"scr_testing_lexer","path":"scripts/scr_testing_lexer/scr_testing_lexer.yy",},"order":0,},

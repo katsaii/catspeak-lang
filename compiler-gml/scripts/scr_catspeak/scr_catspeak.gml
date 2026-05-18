@@ -417,7 +417,7 @@ function catspeak_get_self(callee) {
     return __catspeak_gml_method_get_self(callee);
 }
 
-/// Returns the... ✌_"index"_✌ ...of the current method, either by returning 
+/// Returns the... ✌_"index"_✌ ...of the current method, either by returning
 /// the compiled Catspeak function or the exposed GML function as a method
 /// bound to `undefined`.
 ///

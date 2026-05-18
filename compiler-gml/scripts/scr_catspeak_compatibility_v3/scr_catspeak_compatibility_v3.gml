@@ -1118,6 +1118,14 @@ enum CatspeakPreset {
 /// @ignore
 ///
 /// @deprecated {4.0.0}
+function __catspeak_is_nullish(val) {
+    gml_pragma("forceinline");
+    return val == undefined || val == pointer_null;
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
 function __catspeak_preset_get(preset) {
     var presetFunc = global.__catspeakPresets[? preset];
     if (__catspeak_is_nullish(presetFunc)) {

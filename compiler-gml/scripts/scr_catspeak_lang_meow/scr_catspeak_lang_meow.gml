@@ -1268,7 +1268,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 ir.emitLoop(dbg);
                 ir.emitUnwindLanding(__getLabelBreak());
             } else if (peeked == CatspeakToken.FOR) {
-                __catspeak_error_unimplemented("for loops");
+                __catspeak_error("'for' loops not implemented (yet)");
             } else if (peeked == CatspeakToken.LOOP) {
                 __pushBlock();
                 __parseStatements("loop");
@@ -1340,7 +1340,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
                 __parseStatements("fun");
                 ir.emitClosure(__popFunc(argc), dbg);
             } else if (peeked == CatspeakToken.IMPL) {
-                __catspeak_error_unimplemented("impl blocks");
+                __catspeak_error("'impl' blocks not implemented (yet)");
             } else {
                 __catspeak_error_bug();
             }
