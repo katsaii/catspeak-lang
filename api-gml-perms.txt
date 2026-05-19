@@ -1,2688 +1,2688 @@
-COMPTIME     all
-COMPTIME     noone
-COMPTIME     global
-COMPTIME     undefined
-COMPTIME     pointer_invalid
-COMPTIME     pointer_null
-COMPTIME     path_action_stop
-COMPTIME     path_action_restart
-COMPTIME     path_action_continue
-COMPTIME     path_action_reverse
-COMPTIME     true
-COMPTIME     false
-COMPTIME     pi
-COMPTIME     NaN
-COMPTIME     infinity
-COMPTIME     GM_build_date
-COMPTIME     GM_version
-COMPTIME     GM_runtime_version
-COMPTIME     GM_build_type
-COMPTIME     is_real
-COMPTIME     is_numeric
-COMPTIME     is_string
-COMPTIME     is_array
-COMPTIME     is_undefined
-COMPTIME     is_int32
-COMPTIME     is_int64
-COMPTIME     is_ptr
-COMPTIME     is_bool
-COMPTIME     is_nan
-COMPTIME     is_infinity
-COMPTIME     is_struct
-COMPTIME     is_method
-COMPTIME     typeof
-COMPTIME     instanceof
-             exception_unhandled_handler
-             variable_global_exists
-             variable_global_get
-             variable_global_set
-             variable_instance_exists
-             variable_instance_get
-             variable_instance_set
-             variable_instance_get_names
-             variable_instance_names_count
-             variable_struct_exists
-             variable_struct_get
-             variable_struct_set
-             variable_struct_get_names
-             variable_struct_names_count
-             variable_struct_remove
-             array_length
-             array_equals
-             array_create
-             array_copy
-             array_resize
-             array_get
-             array_set
-             array_push
-             array_pop
-             array_insert
-             array_delete
-             array_sort
-             random
-             random_range
-             irandom
-             irandom_range
-             random_set_seed
-             random_get_seed
-             randomize
-             randomise
-             choose
-COMPTIME     abs
-COMPTIME     round
-COMPTIME     floor
-COMPTIME     ceil
-COMPTIME     sign
-COMPTIME     frac
-COMPTIME     sqrt
-COMPTIME     sqr
-COMPTIME     exp
-COMPTIME     ln
-COMPTIME     log2
-COMPTIME     log10
-COMPTIME     sin
-COMPTIME     cos
-COMPTIME     tan
-COMPTIME     arcsin
-COMPTIME     arccos
-COMPTIME     arctan
-COMPTIME     arctan2
-COMPTIME     dsin
-COMPTIME     dcos
-COMPTIME     dtan
-COMPTIME     darcsin
-COMPTIME     darccos
-COMPTIME     darctan
-COMPTIME     darctan2
-COMPTIME     degtorad
-COMPTIME     radtodeg
-COMPTIME     power
-COMPTIME     logn
-COMPTIME     min
-COMPTIME     max
-COMPTIME     mean
-COMPTIME     median
-COMPTIME     clamp
-COMPTIME     lerp
-COMPTIME     dot_product
-COMPTIME     dot_product_3d
-COMPTIME     dot_product_normalised
-COMPTIME     dot_product_3d_normalised
-COMPTIME     dot_product_normalized
-COMPTIME     dot_product_3d_normalized
-             math_set_epsilon
-             math_get_epsilon
-COMPTIME     angle_difference
-COMPTIME     point_distance_3d
-COMPTIME     point_distance
-COMPTIME     point_direction
-COMPTIME     lengthdir_x
-COMPTIME     lengthdir_y
-COMPTIME     real
-COMPTIME     bool
-COMPTIME     string
-COMPTIME     int64
-COMPTIME     ptr
-COMPTIME     string_format
-COMPTIME     chr
-COMPTIME     ansi_char
-COMPTIME     ord
-             method
-             method_get_index
-             method_get_self
-COMPTIME     string_length
-COMPTIME     string_byte_length
-COMPTIME     string_pos
-COMPTIME     string_pos_ext
-COMPTIME     string_last_pos
-COMPTIME     string_last_pos_ext
-COMPTIME     string_copy
-COMPTIME     string_char_at
-COMPTIME     string_ord_at
-COMPTIME     string_byte_at
-COMPTIME     string_set_byte_at
-COMPTIME     string_delete
-COMPTIME     string_insert
-COMPTIME     string_lower
-COMPTIME     string_upper
-COMPTIME     string_repeat
-COMPTIME     string_letters
-COMPTIME     string_digits
-COMPTIME     string_lettersdigits
-COMPTIME     string_replace
-COMPTIME     string_replace_all
-COMPTIME     string_count
-COMPTIME     string_hash_to_newline
-COMPTIME     string_ext
-COMPTIME     string_trim_start
-COMPTIME     string_trim_end
-COMPTIME     string_trim
-COMPTIME     string_starts_with
-COMPTIME     string_ends_with
-COMPTIME     string_split
-COMPTIME     string_split_ext
-COMPTIME     string_join
-COMPTIME     string_join_ext
-COMPTIME     string_concat
-COMPTIME     string_concat_ext
-             string_foreach
-             clipboard_has_text
-             clipboard_set_text
-             clipboard_get_text
-             date_current_datetime
-             date_create_datetime
-             date_valid_datetime
-             date_inc_year
-             date_inc_month
-             date_inc_week
-             date_inc_day
-             date_inc_hour
-             date_inc_minute
-             date_inc_second
-             date_get_year
-             date_get_month
-             date_get_week
-             date_get_day
-             date_get_hour
-             date_get_minute
-             date_get_second
-             date_get_weekday
-             date_get_day_of_year
-             date_get_hour_of_year
-             date_get_minute_of_year
-             date_get_second_of_year
-             date_year_span
-             date_month_span
-             date_week_span
-             date_day_span
-             date_hour_span
-             date_minute_span
-             date_second_span
-             date_compare_datetime
-             date_compare_date
-             date_compare_time
-             date_date_of
-             date_time_of
-             date_datetime_string
-             date_date_string
-             date_time_string
-             date_days_in_month
-             date_days_in_year
-             date_leap_year
-             date_is_today
-             date_set_timezone
-             date_get_timezone
-COMPTIME     timezone_local
-COMPTIME     timezone_utc
-             game_set_speed
-             game_get_speed
-COMPTIME     gamespeed_fps
-COMPTIME     gamespeed_microseconds
-             motion_set
-             motion_add
-             place_free
-             place_empty
-             place_meeting
-             place_snapped
-             move_random
-             move_snap
-             move_towards_point
-             move_contact_solid
-             move_contact_all
-             move_outside_solid
-             move_outside_all
-             move_bounce_solid
-             move_bounce_all
-             move_wrap
-             move_and_collide
-             distance_to_point
-             distance_to_object
-             position_empty
-             position_meeting
-             path_start
-             path_end
-             mp_linear_step
-             mp_potential_step
-             mp_linear_step_object
-             mp_potential_step_object
-             mp_potential_settings
-             mp_linear_path
-             mp_potential_path
-             mp_linear_path_object
-             mp_potential_path_object
-             mp_grid_create
-             mp_grid_destroy
-             mp_grid_clear_all
-             mp_grid_clear_cell
-             mp_grid_clear_rectangle
-             mp_grid_add_cell
-             mp_grid_get_cell
-             mp_grid_add_rectangle
-             mp_grid_add_instances
-             mp_grid_path
-             mp_grid_draw
-             mp_grid_to_ds_grid
-             collision_point
-             collision_rectangle
-             collision_circle
-             collision_ellipse
-             collision_line
-             collision_point_list
-             collision_rectangle_list
-             collision_circle_list
-             collision_ellipse_list
-             collision_line_list
-             instance_position_list
-             instance_place_list
-             point_in_rectangle
-             point_in_triangle
-             point_in_circle
-             rectangle_in_rectangle
-             rectangle_in_triangle
-             rectangle_in_circle
-             instance_find
-             instance_exists
-             instance_number
-             instance_position
-             instance_nearest
-             instance_furthest
-             instance_place
-             instance_create_depth
-             instance_create_layer
-             instance_copy
-             instance_change
-             instance_destroy
-             position_destroy
-             position_change
-             instance_id_get
-             instance_deactivate_all
-             instance_deactivate_object
-             instance_deactivate_region
-             instance_activate_all
-             instance_activate_object
-             instance_activate_region
-             room_speed
-             fps
-             fps_real
-             current_time
-             current_year
-             current_month
-             current_day
-             current_weekday
-             current_hour
-             current_minute
-             current_second
-             room
-             room_first
-             room_last
-             room_width
-             room_height
-             room_persistent
-             room_goto
-             room_goto_previous
-             room_goto_next
-             room_previous
-             room_next
-             room_restart
-             game_end
-             game_restart
-             game_load
-             game_save
-             game_save_buffer
-             game_load_buffer
-             scheduler_resolution_set
-             scheduler_resolution_get
-             score
-             lives
-             health
-             event_perform
-             event_perform_async
-             event_user
-             event_perform_object
-             event_inherited
-             event_type
-             event_number
-             event_object
-             event_action
-COMPTIME     ev_create
-COMPTIME     ev_pre_create
-COMPTIME     ev_destroy
-COMPTIME     ev_step
-COMPTIME     ev_alarm
-COMPTIME     ev_keyboard
-COMPTIME     ev_mouse
-COMPTIME     ev_collision
-COMPTIME     ev_other
-COMPTIME     ev_draw
-COMPTIME     ev_draw_begin
-COMPTIME     ev_draw_end
-COMPTIME     ev_draw_pre
-COMPTIME     ev_draw_post
-COMPTIME     ev_keypress
-COMPTIME     ev_keyrelease
-COMPTIME     ev_trigger
-COMPTIME     ev_left_button
-COMPTIME     ev_right_button
-COMPTIME     ev_middle_button
-COMPTIME     ev_no_button
-COMPTIME     ev_left_press
-COMPTIME     ev_right_press
-COMPTIME     ev_middle_press
-COMPTIME     ev_left_release
-COMPTIME     ev_right_release
-COMPTIME     ev_middle_release
-COMPTIME     ev_mouse_enter
-COMPTIME     ev_mouse_leave
-COMPTIME     ev_mouse_wheel_up
-COMPTIME     ev_mouse_wheel_down
-COMPTIME     ev_global_left_button
-COMPTIME     ev_global_right_button
-COMPTIME     ev_global_middle_button
-COMPTIME     ev_global_left_press
-COMPTIME     ev_global_right_press
-COMPTIME     ev_global_middle_press
-COMPTIME     ev_global_left_release
-COMPTIME     ev_global_right_release
-COMPTIME     ev_global_middle_release
-COMPTIME     ev_joystick1_left
-COMPTIME     ev_joystick1_right
-COMPTIME     ev_joystick1_up
-COMPTIME     ev_joystick1_down
-COMPTIME     ev_joystick1_button1
-COMPTIME     ev_joystick1_button2
-COMPTIME     ev_joystick1_button3
-COMPTIME     ev_joystick1_button4
-COMPTIME     ev_joystick1_button5
-COMPTIME     ev_joystick1_button6
-COMPTIME     ev_joystick1_button7
-COMPTIME     ev_joystick1_button8
-COMPTIME     ev_joystick2_left
-COMPTIME     ev_joystick2_right
-COMPTIME     ev_joystick2_up
-COMPTIME     ev_joystick2_down
-COMPTIME     ev_joystick2_button1
-COMPTIME     ev_joystick2_button2
-COMPTIME     ev_joystick2_button3
-COMPTIME     ev_joystick2_button4
-COMPTIME     ev_joystick2_button5
-COMPTIME     ev_joystick2_button6
-COMPTIME     ev_joystick2_button7
-COMPTIME     ev_joystick2_button8
-COMPTIME     ev_outside
-COMPTIME     ev_boundary
-COMPTIME     ev_game_start
-COMPTIME     ev_game_end
-COMPTIME     ev_room_start
-COMPTIME     ev_room_end
-COMPTIME     ev_no_more_lives
-COMPTIME     ev_animation_end
-COMPTIME     ev_end_of_path
-COMPTIME     ev_no_more_health
-COMPTIME     ev_user0
-COMPTIME     ev_user1
-COMPTIME     ev_user2
-COMPTIME     ev_user3
-COMPTIME     ev_user4
-COMPTIME     ev_user5
-COMPTIME     ev_user6
-COMPTIME     ev_user7
-COMPTIME     ev_user8
-COMPTIME     ev_user9
-COMPTIME     ev_user10
-COMPTIME     ev_user11
-COMPTIME     ev_user12
-COMPTIME     ev_user13
-COMPTIME     ev_user14
-COMPTIME     ev_user15
-COMPTIME     ev_outside_view0
-COMPTIME     ev_outside_view1
-COMPTIME     ev_outside_view2
-COMPTIME     ev_outside_view3
-COMPTIME     ev_outside_view4
-COMPTIME     ev_outside_view5
-COMPTIME     ev_outside_view6
-COMPTIME     ev_outside_view7
-COMPTIME     ev_boundary_view0
-COMPTIME     ev_boundary_view1
-COMPTIME     ev_boundary_view2
-COMPTIME     ev_boundary_view3
-COMPTIME     ev_boundary_view4
-COMPTIME     ev_boundary_view5
-COMPTIME     ev_boundary_view6
-COMPTIME     ev_boundary_view7
-COMPTIME     ev_animation_update
-COMPTIME     ev_animation_event
-COMPTIME     ev_web_image_load
-COMPTIME     ev_web_sound_load
-COMPTIME     ev_web_async
-COMPTIME     ev_dialog_async
-COMPTIME     ev_web_iap
-COMPTIME     ev_web_cloud
-COMPTIME     ev_web_networking
-COMPTIME     ev_web_steam
-COMPTIME     ev_social
-COMPTIME     ev_push_notification
-COMPTIME     ev_async_save_load
-COMPTIME     ev_audio_recording
-COMPTIME     ev_audio_playback
-COMPTIME     ev_system_event
-COMPTIME     ev_broadcast_message
-COMPTIME     ev_step_normal
-COMPTIME     ev_step_begin
-COMPTIME     ev_step_end
-COMPTIME     ev_gui
-COMPTIME     ev_gui_begin
-COMPTIME     ev_gui_end
-COMPTIME     ev_cleanup
-COMPTIME     ev_gesture
-COMPTIME     ev_gesture_tap
-COMPTIME     ev_gesture_double_tap
-COMPTIME     ev_gesture_drag_start
-COMPTIME     ev_gesture_dragging
-COMPTIME     ev_gesture_drag_end
-COMPTIME     ev_gesture_flick
-COMPTIME     ev_gesture_pinch_start
-COMPTIME     ev_gesture_pinch_in
-COMPTIME     ev_gesture_pinch_out
-COMPTIME     ev_gesture_pinch_end
-COMPTIME     ev_gesture_rotate_start
-COMPTIME     ev_gesture_rotating
-COMPTIME     ev_gesture_rotate_end
-COMPTIME     ev_global_gesture_tap
-COMPTIME     ev_global_gesture_double_tap
-COMPTIME     ev_global_gesture_drag_start
-COMPTIME     ev_global_gesture_dragging
-COMPTIME     ev_global_gesture_drag_end
-COMPTIME     ev_global_gesture_flick
-COMPTIME     ev_global_gesture_pinch_start
-COMPTIME     ev_global_gesture_pinch_in
-COMPTIME     ev_global_gesture_pinch_out
-COMPTIME     ev_global_gesture_pinch_end
-COMPTIME     ev_global_gesture_rotate_start
-COMPTIME     ev_global_gesture_rotating
-COMPTIME     ev_global_gesture_rotate_end
-COMPTIME     ev_async_web_image_load
-COMPTIME     ev_async_web
-COMPTIME     ev_async_dialog
-COMPTIME     ev_async_web_iap
-COMPTIME     ev_async_web_cloud
-COMPTIME     ev_async_web_networking
-COMPTIME     ev_async_web_steam
-COMPTIME     ev_async_social
-COMPTIME     ev_async_push_notification
-COMPTIME     ev_async_audio_recording
-COMPTIME     ev_async_audio_playback
-COMPTIME     ev_async_system_event
-             application_surface
-             show_debug_message
-             show_debug_overlay
-             debug_mode
-             debug_event
-             debug_get_callstack
-             alarm_get
-             alarm_set
-             font_texture_page_size
-             keyboard_key
-             keyboard_lastkey
-             keyboard_lastchar
-             keyboard_string
-             keyboard_set_map
-             keyboard_get_map
-             keyboard_unset_map
-             keyboard_check
-             keyboard_check_pressed
-             keyboard_check_released
-             keyboard_check_direct
-             keyboard_get_numlock
-             keyboard_set_numlock
-             keyboard_key_press
-             keyboard_key_release
-COMPTIME     vk_nokey
-COMPTIME     vk_anykey
-COMPTIME     vk_enter
-COMPTIME     vk_return
-COMPTIME     vk_shift
-COMPTIME     vk_control
-COMPTIME     vk_alt
-COMPTIME     vk_escape
-COMPTIME     vk_space
-COMPTIME     vk_backspace
-COMPTIME     vk_tab
-COMPTIME     vk_pause
-COMPTIME     vk_printscreen
-COMPTIME     vk_left
-COMPTIME     vk_right
-COMPTIME     vk_up
-COMPTIME     vk_down
-COMPTIME     vk_home
-COMPTIME     vk_end
-COMPTIME     vk_delete
-COMPTIME     vk_insert
-COMPTIME     vk_pageup
-COMPTIME     vk_pagedown
-COMPTIME     vk_f1
-COMPTIME     vk_f2
-COMPTIME     vk_f3
-COMPTIME     vk_f4
-COMPTIME     vk_f5
-COMPTIME     vk_f6
-COMPTIME     vk_f7
-COMPTIME     vk_f8
-COMPTIME     vk_f9
-COMPTIME     vk_f10
-COMPTIME     vk_f11
-COMPTIME     vk_f12
-COMPTIME     vk_numpad0
-COMPTIME     vk_numpad1
-COMPTIME     vk_numpad2
-COMPTIME     vk_numpad3
-COMPTIME     vk_numpad4
-COMPTIME     vk_numpad5
-COMPTIME     vk_numpad6
-COMPTIME     vk_numpad7
-COMPTIME     vk_numpad8
-COMPTIME     vk_numpad9
-COMPTIME     vk_divide
-COMPTIME     vk_multiply
-COMPTIME     vk_subtract
-COMPTIME     vk_add
-COMPTIME     vk_decimal
-COMPTIME     vk_lshift
-COMPTIME     vk_lcontrol
-COMPTIME     vk_lalt
-COMPTIME     vk_rshift
-COMPTIME     vk_rcontrol
-COMPTIME     vk_ralt
-             keyboard_clear
-             io_clear
-             mouse_x
-             mouse_y
-             mouse_button
-             mouse_lastbutton
-COMPTIME     mb_any
-COMPTIME     mb_none
-COMPTIME     mb_left
-COMPTIME     mb_right
-COMPTIME     mb_middle
-COMPTIME     mb_side1
-COMPTIME     mb_side2
-COMPTIME     m_axisx
-COMPTIME     m_axisy
-COMPTIME     m_axisx_gui
-COMPTIME     m_axisy_gui
-COMPTIME     m_scroll_up
-COMPTIME     m_scroll_down
-             mouse_check_button
-             mouse_check_button_pressed
-             mouse_check_button_released
-             mouse_wheel_up
-             mouse_wheel_down
-             mouse_clear
-             cursor_sprite
-COMPTIME     bboxmode_automatic
-COMPTIME     bboxmode_fullimage
-COMPTIME     bboxmode_manual
-COMPTIME     bboxkind_precise
-COMPTIME     bboxkind_rectangular
-COMPTIME     bboxkind_ellipse
-COMPTIME     bboxkind_diamond
-             background_colour
-             background_showcolour
-             background_color
-             background_showcolor
-             draw_self
-             draw_sprite
-             draw_sprite_pos
-             draw_sprite_ext
-             draw_sprite_stretched
-             draw_sprite_stretched_ext
-             draw_sprite_tiled
-             draw_sprite_tiled_ext
-             draw_sprite_part
-             draw_sprite_part_ext
-             draw_sprite_general
-             draw_clear
-             draw_clear_alpha
-             draw_point
-             draw_line
-             draw_line_width
-             draw_rectangle
-             draw_roundrect
-             draw_roundrect_ext
-             draw_triangle
-             draw_circle
-             draw_ellipse
-             draw_set_circle_precision
-             draw_arrow
-             draw_button
-             draw_path
-             draw_healthbar
-             draw_getpixel
-             draw_getpixel_ext
-             draw_set_colour
-             draw_set_color
-             draw_set_alpha
-             draw_get_colour
-             draw_get_color
-             draw_get_alpha
-COMPTIME     c_aqua
-COMPTIME     c_black
-COMPTIME     c_blue
-COMPTIME     c_dkgray
-COMPTIME     c_dkgrey
-COMPTIME     c_fuchsia
-COMPTIME     c_gray
-COMPTIME     c_grey
-COMPTIME     c_green
-COMPTIME     c_lime
-COMPTIME     c_ltgray
-COMPTIME     c_ltgrey
-COMPTIME     c_maroon
-COMPTIME     c_navy
-COMPTIME     c_olive
-COMPTIME     c_purple
-COMPTIME     c_red
-COMPTIME     c_silver
-COMPTIME     c_teal
-COMPTIME     c_white
-COMPTIME     c_yellow
-COMPTIME     c_orange
-COMPTIME     merge_colour
-COMPTIME     make_colour_rgb
-COMPTIME     make_colour_hsv
-COMPTIME     colour_get_red
-COMPTIME     colour_get_green
-COMPTIME     colour_get_blue
-COMPTIME     colour_get_hue
-COMPTIME     colour_get_saturation
-COMPTIME     colour_get_value
-COMPTIME     merge_color
-COMPTIME     make_color_rgb
-COMPTIME     make_color_hsv
-COMPTIME     color_get_red
-COMPTIME     color_get_green
-COMPTIME     color_get_blue
-COMPTIME     color_get_hue
-COMPTIME     color_get_saturation
-COMPTIME     color_get_value
-             screen_save
-             screen_save_part
-             gif_open
-             gif_add_surface
-             gif_save
-             gif_save_buffer
-             draw_set_font
-             draw_get_font
-             draw_set_halign
-             draw_get_halign
-COMPTIME     fa_left
-COMPTIME     fa_center
-COMPTIME     fa_right
-             draw_set_valign
-             draw_get_valign
-COMPTIME     fa_top
-COMPTIME     fa_middle
-COMPTIME     fa_bottom
-             draw_text
-             draw_text_ext
-             string_width
-             string_height
-             string_width_ext
-             string_height_ext
-             draw_text_transformed
-             draw_text_ext_transformed
-             draw_text_colour
-             draw_text_ext_colour
-             draw_text_transformed_colour
-             draw_text_ext_transformed_colour
-             draw_text_color
-             draw_text_ext_color
-             draw_text_transformed_color
-             draw_text_ext_transformed_color
-             draw_point_colour
-             draw_line_colour
-             draw_line_width_colour
-             draw_rectangle_colour
-             draw_roundrect_colour
-             draw_roundrect_colour_ext
-             draw_triangle_colour
-             draw_circle_colour
-             draw_ellipse_colour
-             draw_point_color
-             draw_line_color
-             draw_line_width_color
-             draw_rectangle_color
-             draw_roundrect_color
-             draw_roundrect_color_ext
-             draw_triangle_color
-             draw_circle_color
-             draw_ellipse_color
-COMPTIME     pr_pointlist
-COMPTIME     pr_linelist
-COMPTIME     pr_linestrip
-COMPTIME     pr_trianglelist
-COMPTIME     pr_trianglestrip
-COMPTIME     pr_trianglefan
-             draw_primitive_begin
-             draw_vertex
-             draw_vertex_colour
-             draw_vertex_color
-             draw_primitive_end
-             sprite_get_uvs
-             font_get_uvs
-             font_get_info
-             font_cache_glyph
-             sprite_get_texture
-             font_get_texture
-             texture_get_width
-             texture_get_height
-             texture_get_uvs
-             draw_primitive_begin_texture
-             draw_vertex_texture
-             draw_vertex_texture_colour
-             draw_vertex_texture_color
-             texture_global_scale
-COMPTIME     bm_normal
-COMPTIME     bm_add
-COMPTIME     bm_max
-COMPTIME     bm_subtract
-COMPTIME     bm_zero
-COMPTIME     bm_one
-COMPTIME     bm_src_colour
-COMPTIME     bm_inv_src_colour
-COMPTIME     bm_src_color
-COMPTIME     bm_inv_src_color
-COMPTIME     bm_src_alpha
-COMPTIME     bm_inv_src_alpha
-COMPTIME     bm_dest_alpha
-COMPTIME     bm_inv_dest_alpha
-COMPTIME     bm_dest_colour
-COMPTIME     bm_inv_dest_colour
-COMPTIME     bm_dest_color
-COMPTIME     bm_inv_dest_color
-COMPTIME     bm_src_alpha_sat
-COMPTIME     tf_point
-COMPTIME     tf_linear
-COMPTIME     tf_anisotropic
-COMPTIME     mip_off
-COMPTIME     mip_on
-COMPTIME     mip_markedonly
-COMPTIME     audio_falloff_none
-COMPTIME     audio_falloff_inverse_distance
-COMPTIME     audio_falloff_inverse_distance_clamped
-COMPTIME     audio_falloff_inverse_distance_scaled
-COMPTIME     audio_falloff_linear_distance
-COMPTIME     audio_falloff_linear_distance_clamped
-COMPTIME     audio_falloff_exponent_distance
-COMPTIME     audio_falloff_exponent_distance_clamped
-COMPTIME     audio_falloff_exponent_distance_scaled
-COMPTIME     audio_mono
-COMPTIME     audio_stereo
-             surface_create
-             surface_create_ext
-             surface_resize
-             surface_free
-             surface_exists
-             surface_get_width
-             surface_get_height
-             surface_get_texture
-             surface_set_target
-             surface_set_target_ext
-             surface_get_target
-             surface_get_target_ext
-             surface_reset_target
-             surface_depth_disable
-             surface_get_depth_disable
-             draw_surface
-             draw_surface_stretched
-             draw_surface_tiled
-             draw_surface_part
-             draw_surface_ext
-             draw_surface_stretched_ext
-             draw_surface_tiled_ext
-             draw_surface_part_ext
-             draw_surface_general
-             surface_getpixel
-             surface_getpixel_ext
-             surface_save
-             surface_save_part
-             surface_copy
-             surface_copy_part
-             application_surface_draw_enable
-             application_get_position
-             application_surface_enable
-             application_surface_is_enabled
-             video_open
-             video_close
-             video_set_volume
-             video_draw
-             video_pause
-             video_resume
-             video_enable_loop
-             video_seek_to
-             video_get_duration
-             video_get_position
-             video_get_status
-             video_get_format
-             video_is_looping
-             video_get_volume
-COMPTIME     video_format_rgba
-COMPTIME     video_format_yuv
-COMPTIME     video_status_closed
-COMPTIME     video_status_preparing
-COMPTIME     video_status_playing
-COMPTIME     video_status_paused
-             display_get_width
-             display_get_height
-             display_get_orientation
-             display_get_gui_width
-             display_get_gui_height
-             display_get_frequency
-             display_reset
-             display_mouse_get_x
-             display_mouse_get_y
-             display_mouse_set
-             display_set_ui_visibility
-             window_set_fullscreen
-             window_get_fullscreen
-             window_set_caption
-             window_set_min_width
-             window_set_max_width
-             window_set_min_height
-             window_set_max_height
-             window_get_visible_rects
-             window_get_caption
-             window_set_cursor
-COMPTIME     cr_default
-COMPTIME     cr_none
-COMPTIME     cr_arrow
-COMPTIME     cr_cross
-COMPTIME     cr_beam
-COMPTIME     cr_size_nesw
-COMPTIME     cr_size_ns
-COMPTIME     cr_size_nwse
-COMPTIME     cr_size_we
-COMPTIME     cr_uparrow
-COMPTIME     cr_hourglass
-COMPTIME     cr_drag
-COMPTIME     cr_appstart
-COMPTIME     cr_handpoint
-COMPTIME     cr_size_all
-             window_get_cursor
-             window_set_colour
-             window_get_colour
-             window_set_color
-             window_get_color
-             window_set_position
-             window_set_size
-             window_set_rectangle
-             window_center
-             window_get_x
-             window_get_y
-             window_get_width
-             window_get_height
-             window_mouse_get_x
-             window_mouse_get_y
-             window_mouse_set
-             view_enabled
-             view_current
-             view_visible
-             view_xport
-             view_yport
-             view_wport
-             view_hport
-             view_surface_id
-             view_camera
-             window_view_mouse_get_x
-             window_view_mouse_get_y
-             window_views_mouse_get_x
-             window_views_mouse_get_y
-             audio_listener_position
-             audio_listener_velocity
-             audio_listener_orientation
-             audio_emitter_position
-             audio_emitter_create
-             audio_emitter_free
-             audio_emitter_exists
-             audio_emitter_pitch
-             audio_emitter_velocity
-             audio_emitter_falloff
-             audio_emitter_gain
-             audio_play_sound
-             audio_play_sound_on
-             audio_play_sound_at
-             audio_stop_sound
-             audio_resume_sound
-             audio_pause_sound
-             audio_channel_num
-             audio_sound_length
-             audio_get_type
-             audio_falloff_set_model
-             audio_master_gain
-             audio_sound_gain
-             audio_sound_pitch
-             audio_stop_all
-             audio_resume_all
-             audio_pause_all
-             audio_is_playing
-             audio_is_paused
-             audio_exists
-             audio_system_is_available
-             audio_sound_is_playable
-             audio_emitter_get_gain
-             audio_emitter_get_pitch
-             audio_emitter_get_x
-             audio_emitter_get_y
-             audio_emitter_get_z
-             audio_emitter_get_vx
-             audio_emitter_get_vy
-             audio_emitter_get_vz
-             audio_listener_set_position
-             audio_listener_set_velocity
-             audio_listener_set_orientation
-             audio_listener_get_data
-             audio_set_master_gain
-             audio_get_master_gain
-             audio_sound_get_gain
-             audio_sound_get_pitch
-             audio_get_name
-             audio_sound_set_track_position
-             audio_sound_get_track_position
-             audio_create_stream
-             audio_destroy_stream
-             audio_create_sync_group
-             audio_destroy_sync_group
-             audio_play_in_sync_group
-             audio_start_sync_group
-             audio_stop_sync_group
-             audio_pause_sync_group
-             audio_resume_sync_group
-             audio_sync_group_get_track_pos
-             audio_sync_group_debug
-             audio_sync_group_is_playing
-             audio_debug
-             audio_group_load
-             audio_group_unload
-             audio_group_is_loaded
-             audio_group_load_progress
-             audio_group_name
-             audio_group_stop_all
-             audio_group_set_gain
-             audio_create_buffer_sound
-             audio_free_buffer_sound
-             audio_create_play_queue
-             audio_free_play_queue
-             audio_queue_sound
-             audio_get_recorder_count
-             audio_get_recorder_info
-             audio_start_recording
-             audio_stop_recording
-             audio_sound_get_listener_mask
-             audio_emitter_get_listener_mask
-             audio_get_listener_mask
-             audio_sound_set_listener_mask
-             audio_emitter_set_listener_mask
-             audio_set_listener_mask
-             audio_get_listener_count
-             audio_get_listener_info
-             show_message
-             show_message_async
-             clickable_add
-             clickable_add_ext
-             clickable_change
-             clickable_change_ext
-             clickable_delete
-             clickable_exists
-             clickable_set_style
-             show_question
-             show_question_async
-             get_integer_async
-             get_string_async
-             get_login_async
-             get_open_filename
-             get_save_filename
-             get_open_filename_ext
-             get_save_filename_ext
-             show_error
-             highscore_clear
-             highscore_add
-             highscore_value
-             highscore_name
-             draw_highscore
-             sprite_exists
-             sprite_get_name
-             sprite_get_number
-             sprite_get_width
-             sprite_get_height
-             sprite_get_xoffset
-             sprite_get_yoffset
-             sprite_get_bbox_mode
-             sprite_get_bbox_left
-             sprite_get_bbox_right
-             sprite_get_bbox_top
-             sprite_get_bbox_bottom
-             sprite_set_bbox_mode
-             sprite_set_bbox
-             sprite_save
-             sprite_save_strip
-             sprite_set_cache_size
-             sprite_set_cache_size_ext
-             sprite_get_tpe
-             sprite_prefetch
-             sprite_prefetch_multi
-             sprite_flush
-             sprite_flush_multi
-             sprite_set_speed
-             sprite_get_speed_type
-             sprite_get_speed
-             sprite_get_info
-             sprite_get_nineslice
-             sprite_set_nineslice
-             sprite_nineslice_create
-             texture_is_ready
-             texture_prefetch
-             texture_flush
-             texturegroup_get_textures
-             texturegroup_get_sprites
-             texturegroup_get_fonts
-             texturegroup_get_tilesets
-             texturegroup_load
-             texturegroup_unload
-             texturegroup_get_status
-             texturegroup_set_mode
-             texture_debug_messages
-COMPTIME     spritespeed_framespersecond
-COMPTIME     spritespeed_framespergameframe
-             font_exists
-             font_get_name
-             font_get_fontname
-             font_get_bold
-             font_get_italic
-             font_get_first
-             font_get_last
-             font_get_size
-             font_set_cache_size
-             path_exists
-             path_get_name
-             path_get_length
-             path_get_kind
-             path_get_closed
-             path_get_precision
-             path_get_number
-             path_get_point_x
-             path_get_point_y
-             path_get_point_speed
-             path_get_x
-             path_get_y
-             path_get_speed
-             script_exists
-             script_get_name
-             timeline_add
-             timeline_delete
-             timeline_clear
-             timeline_exists
-             timeline_get_name
-             timeline_moment_clear
-             timeline_moment_add_script
-             timeline_size
-             timeline_max_moment
-             object_exists
-             object_get_name
-             object_get_sprite
-             object_get_solid
-             object_get_visible
-             object_get_persistent
-             object_get_mask
-             object_get_parent
-             object_get_physics
-             object_is_ancestor
-             room_exists
-             room_get_name
-             sprite_set_offset
-             sprite_duplicate
-             sprite_assign
-             sprite_merge
-             sprite_add
-             sprite_replace
-             sprite_create_from_surface
-             sprite_add_from_surface
-             sprite_delete
-             sprite_set_alpha_from_sprite
-             sprite_collision_mask
-             font_add_enable_aa
-             font_add_get_enable_aa
-             font_add
-             font_add_sprite
-             font_add_sprite_ext
-             font_replace_sprite
-             font_replace_sprite_ext
-             font_delete
-             path_set_kind
-             path_set_closed
-             path_set_precision
-             path_add
-             path_assign
-             path_duplicate
-             path_append
-             path_delete
-             path_add_point
-             path_insert_point
-             path_change_point
-             path_delete_point
-             path_clear_points
-             path_reverse
-             path_mirror
-             path_flip
-             path_rotate
-             path_rescale
-             path_shift
-             script_execute
-             script_execute_ext
-             object_set_sprite
-             object_set_solid
-             object_set_visible
-             object_set_persistent
-             object_set_mask
-             room_set_width
-             room_set_height
-             room_set_persistent
-             room_set_viewport
-             room_get_viewport
-             room_set_view_enabled
-             room_add
-             room_duplicate
-             room_assign
-             room_instance_add
-             room_instance_clear
-             room_get_camera
-             room_set_camera
-             asset_get_index
-             asset_get_type
-COMPTIME     asset_object
-COMPTIME     asset_unknown
-COMPTIME     asset_sprite
-COMPTIME     asset_sound
-COMPTIME     asset_room
-COMPTIME     asset_path
-COMPTIME     asset_script
-COMPTIME     asset_font
-COMPTIME     asset_timeline
-COMPTIME     asset_tiles
-COMPTIME     asset_shader
-COMPTIME     asset_sequence
-COMPTIME     asset_animationcurve
-             file_text_open_from_string
-             file_text_open_read
-             file_text_open_write
-             file_text_open_append
-             file_text_close
-             file_text_write_string
-             file_text_write_real
-             file_text_writeln
-             file_text_read_string
-             file_text_read_real
-             file_text_readln
-             file_text_eof
-             file_text_eoln
-             file_exists
-             file_delete
-             file_rename
-             file_copy
-             directory_exists
-             directory_create
-             directory_destroy
-             file_find_first
-             file_find_next
-             file_find_close
-             file_attributes
-             filename_name
-             filename_path
-             filename_dir
-             filename_drive
-             filename_ext
-             filename_change_ext
-             file_bin_open
-             file_bin_rewrite
-             file_bin_close
-             file_bin_position
-             file_bin_size
-             file_bin_seek
-             file_bin_write_byte
-             file_bin_read_byte
-             parameter_count
-             parameter_string
-             environment_get_variable
-COMPTIME     fa_readonly
-COMPTIME     fa_hidden
-COMPTIME     fa_sysfile
-COMPTIME     fa_volumeid
-COMPTIME     fa_directory
-COMPTIME     fa_archive
-             game_id
-             game_display_name
-             game_project_name
-             game_save_id
-             working_directory
-             temp_directory
-             program_directory
-             ini_open_from_string
-             ini_open
-             ini_close
-             ini_read_string
-             ini_read_real
-             ini_write_string
-             ini_write_real
-             ini_key_exists
-             ini_section_exists
-             ini_key_delete
-             ini_section_delete
-             ds_set_precision
-             ds_exists
-COMPTIME     ds_type_map
-COMPTIME     ds_type_list
-COMPTIME     ds_type_stack
-COMPTIME     ds_type_queue
-COMPTIME     ds_type_grid
-COMPTIME     ds_type_priority
-             ds_stack_create
-             ds_stack_destroy
-             ds_stack_clear
-             ds_stack_copy
-             ds_stack_size
-             ds_stack_empty
-             ds_stack_push
-             ds_stack_pop
-             ds_stack_top
-             ds_stack_write
-             ds_stack_read
-             ds_queue_create
-             ds_queue_destroy
-             ds_queue_clear
-             ds_queue_copy
-             ds_queue_size
-             ds_queue_empty
-             ds_queue_enqueue
-             ds_queue_dequeue
-             ds_queue_head
-             ds_queue_tail
-             ds_queue_write
-             ds_queue_read
-             ds_list_create
-             ds_list_destroy
-             ds_list_clear
-             ds_list_copy
-             ds_list_size
-             ds_list_empty
-             ds_list_add
-             ds_list_insert
-             ds_list_replace
-             ds_list_delete
-             ds_list_find_index
-             ds_list_find_value
-             ds_list_is_map
-             ds_list_is_list
-             ds_list_mark_as_list
-             ds_list_mark_as_map
-             ds_list_sort
-             ds_list_shuffle
-             ds_list_write
-             ds_list_read
-             ds_list_set
-             ds_map_create
-             ds_map_destroy
-             ds_map_clear
-             ds_map_copy
-             ds_map_size
-             ds_map_empty
-             ds_map_add
-             ds_map_add_list
-             ds_map_add_map
-             ds_map_replace
-             ds_map_replace_map
-             ds_map_replace_list
-             ds_map_delete
-             ds_map_exists
-             ds_map_values_to_array
-             ds_map_keys_to_array
-             ds_map_find_value
-             ds_map_is_map
-             ds_map_is_list
-             ds_map_find_previous
-             ds_map_find_next
-             ds_map_find_first
-             ds_map_find_last
-             ds_map_write
-             ds_map_read
-             ds_map_secure_save
-             ds_map_secure_load
-             ds_map_secure_load_buffer
-             ds_map_secure_save_buffer
-             ds_map_set
-             ds_priority_create
-             ds_priority_destroy
-             ds_priority_clear
-             ds_priority_copy
-             ds_priority_size
-             ds_priority_empty
-             ds_priority_add
-             ds_priority_change_priority
-             ds_priority_find_priority
-             ds_priority_delete_value
-             ds_priority_delete_min
-             ds_priority_find_min
-             ds_priority_delete_max
-             ds_priority_find_max
-             ds_priority_write
-             ds_priority_read
-             ds_grid_create
-             ds_grid_destroy
-             ds_grid_copy
-             ds_grid_resize
-             ds_grid_width
-             ds_grid_height
-             ds_grid_clear
-             ds_grid_add
-             ds_grid_multiply
-             ds_grid_set_region
-             ds_grid_add_region
-             ds_grid_multiply_region
-             ds_grid_set_disk
-             ds_grid_add_disk
-             ds_grid_multiply_disk
-             ds_grid_set_grid_region
-             ds_grid_add_grid_region
-             ds_grid_multiply_grid_region
-             ds_grid_get_sum
-             ds_grid_get_max
-             ds_grid_get_min
-             ds_grid_get_mean
-             ds_grid_get_disk_sum
-             ds_grid_get_disk_min
-             ds_grid_get_disk_max
-             ds_grid_get_disk_mean
-             ds_grid_value_exists
-             ds_grid_value_x
-             ds_grid_value_y
-             ds_grid_value_disk_exists
-             ds_grid_value_disk_x
-             ds_grid_value_disk_y
-             ds_grid_shuffle
-             ds_grid_write
-             ds_grid_read
-             ds_grid_sort
-             ds_grid_set
-             ds_grid_get
-             effect_create_below
-             effect_create_above
-             effect_clear
-COMPTIME     ef_explosion
-COMPTIME     ef_ring
-COMPTIME     ef_ellipse
-COMPTIME     ef_firework
-COMPTIME     ef_smoke
-COMPTIME     ef_smokeup
-COMPTIME     ef_star
-COMPTIME     ef_spark
-COMPTIME     ef_flare
-COMPTIME     ef_cloud
-COMPTIME     ef_rain
-COMPTIME     ef_snow
-             part_type_create
-             part_type_destroy
-             part_type_exists
-             part_type_clear
-             part_type_shape
-             part_type_sprite
-             part_type_size
-             part_type_scale
-             part_type_orientation
-             part_type_life
-             part_type_step
-             part_type_death
-             part_type_speed
-             part_type_direction
-             part_type_gravity
-             part_type_colour1
-             part_type_colour2
-             part_type_colour3
-             part_type_colour_mix
-             part_type_colour_rgb
-             part_type_colour_hsv
-             part_type_color1
-             part_type_color2
-             part_type_color3
-             part_type_color_mix
-             part_type_color_rgb
-             part_type_color_hsv
-             part_type_alpha1
-             part_type_alpha2
-             part_type_alpha3
-             part_type_blend
-COMPTIME     pt_shape_pixel
-COMPTIME     pt_shape_disk
-COMPTIME     pt_shape_square
-COMPTIME     pt_shape_line
-COMPTIME     pt_shape_star
-COMPTIME     pt_shape_circle
-COMPTIME     pt_shape_ring
-COMPTIME     pt_shape_sphere
-COMPTIME     pt_shape_flare
-COMPTIME     pt_shape_spark
-COMPTIME     pt_shape_explosion
-COMPTIME     pt_shape_cloud
-COMPTIME     pt_shape_smoke
-COMPTIME     pt_shape_snow
-             part_system_create
-             part_system_create_layer
-             part_system_destroy
-             part_system_exists
-             part_system_clear
-             part_system_draw_order
-             part_system_depth
-             part_system_position
-             part_system_automatic_update
-             part_system_automatic_draw
-             part_system_update
-             part_system_drawit
-             part_system_get_layer
-             part_system_layer
-             part_particles_create
-             part_particles_create_colour
-             part_particles_create_color
-             part_particles_clear
-             part_particles_count
-             part_emitter_create
-             part_emitter_destroy
-             part_emitter_destroy_all
-             part_emitter_exists
-             part_emitter_clear
-             part_emitter_region
-             part_emitter_burst
-             part_emitter_stream
-COMPTIME     ps_distr_linear
-COMPTIME     ps_distr_gaussian
-COMPTIME     ps_distr_invgaussian
-COMPTIME     ps_shape_rectangle
-COMPTIME     ps_shape_ellipse
-COMPTIME     ps_shape_diamond
-COMPTIME     ps_shape_line
-UNSAFE       external_call
-UNSAFE       external_define
-UNSAFE       external_free
-UNSAFE       window_handle
-UNSAFE       window_device
-UNSAFE       ty_real
-UNSAFE       ty_string
-UNSAFE       dll_cdecl
-UNSAFE       dll_stdcall
-COMPTIME     matrix_view
-COMPTIME     matrix_projection
-COMPTIME     matrix_world
-             matrix_get
-             matrix_set
-             matrix_build_identity
-             matrix_build
-             matrix_build_lookat
-             matrix_build_projection_ortho
-             matrix_build_projection_perspective
-             matrix_build_projection_perspective_fov
-             matrix_multiply
-             matrix_transform_vertex
-             matrix_stack_push
-             matrix_stack_pop
-             matrix_stack_set
-             matrix_stack_clear
-             matrix_stack_top
-             matrix_stack_is_empty
-COMPTIME     os_windows
-COMPTIME     os_macosx
-COMPTIME     os_ios
-COMPTIME     os_android
-COMPTIME     os_linux
-COMPTIME     os_unknown
-COMPTIME     os_winphone
-COMPTIME     os_win8native
-COMPTIME     os_psvita
-COMPTIME     os_ps4
-COMPTIME     os_xboxone
-COMPTIME     os_ps3
-COMPTIME     os_uwp
-COMPTIME     os_tvos
-COMPTIME     os_switch
-COMPTIME     os_ps5
-COMPTIME     os_xboxseriesxs
-COMPTIME     os_gdk
-COMPTIME     os_operagx
-COMPTIME     os_gxgames
-COMPTIME     browser_not_a_browser
-COMPTIME     browser_unknown
-COMPTIME     browser_ie
-COMPTIME     browser_firefox
-COMPTIME     browser_chrome
-COMPTIME     browser_safari
-COMPTIME     browser_safari_mobile
-COMPTIME     browser_opera
-COMPTIME     browser_tizen
-COMPTIME     browser_edge
-COMPTIME     browser_windows_store
-COMPTIME     browser_ie_mobile
-COMPTIME     browser_width
-COMPTIME     browser_height
-COMPTIME     browser_input_capture
-COMPTIME     device_ios_unknown
-COMPTIME     device_ios_iphone
-COMPTIME     device_ios_iphone_retina
-COMPTIME     device_ios_ipad
-COMPTIME     device_ios_ipad_retina
-COMPTIME     device_ios_iphone5
-COMPTIME     device_ios_iphone6
-COMPTIME     device_ios_iphone6plus
-COMPTIME     device_emulator
-COMPTIME     device_tablet
-COMPTIME     display_landscape
-COMPTIME     display_landscape_flipped
-COMPTIME     display_portrait
-COMPTIME     display_portrait_flipped
-             os_type
-             os_device
-             os_browser
-             os_version
-             os_get_config
-             os_get_info
-             os_get_language
-             os_get_region
-             os_check_permission
-             os_request_permission
-             os_lock_orientation
-             os_set_orientation_lock
-             display_get_dpi_x
-             display_get_dpi_y
-             display_set_gui_size
-             display_set_gui_maximise
-             display_set_gui_maximize
-             device_mouse_dbclick_enable
-             display_aa
-             async_load
-             delta_time
-             webgl_enabled
-             event_data
-             display_set_timing_method
-             display_get_timing_method
-COMPTIME     tm_sleep
-COMPTIME     tm_countvsyncs
-             display_set_sleep_margin
-             display_get_sleep_margin
-COMPTIME     of_challenge_win
-COMPTIME     of_challenge_lose
-COMPTIME     of_challenge_tie
-COMPTIME     leaderboard_type_number
-COMPTIME     leaderboard_type_time_mins_secs
-             virtual_key_add
-             virtual_key_hide
-             virtual_key_delete
-             virtual_key_show
-             draw_enable_drawevent
-             draw_enable_swf_aa
-             draw_set_swf_aa_level
-             draw_get_swf_aa_level
-             draw_texture_flush
-             draw_flush
-COMPTIME     cmpfunc_never
-COMPTIME     cmpfunc_less
-COMPTIME     cmpfunc_equal
-COMPTIME     cmpfunc_lessequal
-COMPTIME     cmpfunc_greater
-COMPTIME     cmpfunc_notequal
-COMPTIME     cmpfunc_greaterequal
-COMPTIME     cmpfunc_always
-COMPTIME     cull_noculling
-COMPTIME     cull_clockwise
-COMPTIME     cull_counterclockwise
-COMPTIME     lighttype_dir
-COMPTIME     lighttype_point
-             gpu_set_blendenable
-             gpu_set_ztestenable
-             gpu_set_zfunc
-             gpu_set_zwriteenable
-             gpu_set_fog
-             gpu_set_cullmode
-             gpu_set_blendmode
-             gpu_set_blendmode_ext
-             gpu_set_blendmode_ext_sepalpha
-             gpu_set_colorwriteenable
-             gpu_set_colourwriteenable
-             gpu_set_alphatestenable
-             gpu_set_alphatestref
-             gpu_set_texfilter
-             gpu_set_texfilter_ext
-             gpu_set_texrepeat
-             gpu_set_texrepeat_ext
-             gpu_set_tex_filter
-             gpu_set_tex_filter_ext
-             gpu_set_tex_repeat
-             gpu_set_tex_repeat_ext
-             gpu_set_tex_mip_filter
-             gpu_set_tex_mip_filter_ext
-             gpu_set_tex_mip_bias
-             gpu_set_tex_mip_bias_ext
-             gpu_set_tex_min_mip
-             gpu_set_tex_min_mip_ext
-             gpu_set_tex_max_mip
-             gpu_set_tex_max_mip_ext
-             gpu_set_tex_max_aniso
-             gpu_set_tex_max_aniso_ext
-             gpu_set_tex_mip_enable
-             gpu_set_tex_mip_enable_ext
-             gpu_get_blendenable
-             gpu_get_ztestenable
-             gpu_get_zfunc
-             gpu_get_zwriteenable
-             gpu_get_fog
-             gpu_get_cullmode
-             gpu_get_blendmode
-             gpu_get_blendmode_ext
-             gpu_get_blendmode_ext_sepalpha
-             gpu_get_blendmode_src
-             gpu_get_blendmode_dest
-             gpu_get_blendmode_srcalpha
-             gpu_get_blendmode_destalpha
-             gpu_get_colorwriteenable
-             gpu_get_colourwriteenable
-             gpu_get_alphatestenable
-             gpu_get_alphatestref
-             gpu_get_texfilter
-             gpu_get_texfilter_ext
-             gpu_get_texrepeat
-             gpu_get_texrepeat_ext
-             gpu_get_tex_filter
-             gpu_get_tex_filter_ext
-             gpu_get_tex_repeat
-             gpu_get_tex_repeat_ext
-             gpu_get_tex_mip_filter
-             gpu_get_tex_mip_filter_ext
-             gpu_get_tex_mip_bias
-             gpu_get_tex_mip_bias_ext
-             gpu_get_tex_min_mip
-             gpu_get_tex_min_mip_ext
-             gpu_get_tex_max_mip
-             gpu_get_tex_max_mip_ext
-             gpu_get_tex_max_aniso
-             gpu_get_tex_max_aniso_ext
-             gpu_get_tex_mip_enable
-             gpu_get_tex_mip_enable_ext
-             gpu_push_state
-             gpu_pop_state
-             gpu_get_state
-             gpu_set_state
-             draw_light_define_ambient
-             draw_light_define_direction
-             draw_light_define_point
-             draw_light_enable
-             draw_set_lighting
-             draw_light_get_ambient
-             draw_light_get
-             draw_get_lighting
-             shop_leave_rating
-             url_get_domain
-             url_open
-             url_open_ext
-             url_open_full
-             get_timer
-             device_get_tilt_x
-             device_get_tilt_y
-             device_get_tilt_z
-             device_is_keypad_open
-             device_mouse_check_button
-             device_mouse_check_button_pressed
-             device_mouse_check_button_released
-             device_mouse_x
-             device_mouse_y
-             device_mouse_raw_x
-             device_mouse_raw_y
-             device_mouse_x_to_gui
-             device_mouse_y_to_gui
-             iap_activate
-             iap_status
-             iap_enumerate_products
-             iap_restore_all
-             iap_acquire
-             iap_consume
-             iap_product_details
-             iap_purchase_details
-             iap_data
-COMPTIME     iap_ev_storeload
-COMPTIME     iap_ev_product
-COMPTIME     iap_ev_purchase
-COMPTIME     iap_ev_consume
-COMPTIME     iap_ev_restore
-COMPTIME     iap_storeload_ok
-COMPTIME     iap_storeload_failed
-COMPTIME     iap_status_uninitialised
-COMPTIME     iap_status_unavailable
-COMPTIME     iap_status_loading
-COMPTIME     iap_status_available
-COMPTIME     iap_status_processing
-COMPTIME     iap_status_restoring
-COMPTIME     iap_failed
-COMPTIME     iap_unavailable
-COMPTIME     iap_available
-COMPTIME     iap_purchased
-COMPTIME     iap_canceled
-COMPTIME     iap_refunded
-             gamepad_is_supported
-             gamepad_get_device_count
-             gamepad_is_connected
-             gamepad_get_description
-             gamepad_get_button_threshold
-             gamepad_set_button_threshold
-             gamepad_get_axis_deadzone
-             gamepad_set_axis_deadzone
-             gamepad_button_count
-             gamepad_button_check
-             gamepad_button_check_pressed
-             gamepad_button_check_released
-             gamepad_button_value
-             gamepad_axis_count
-             gamepad_axis_value
-             gamepad_set_vibration
-             gamepad_set_colour
-             gamepad_set_color
-             gamepad_hat_count
-             gamepad_hat_value
-             gamepad_remove_mapping
-             gamepad_test_mapping
-             gamepad_get_mapping
-             gamepad_get_guid
-             gamepad_set_option
-             gamepad_get_option
-             os_is_paused
-             window_has_focus
-             code_is_compiled
-             http_get
-             http_get_file
-             http_post_string
-             http_request
-             http_get_request_crossorigin
-             http_set_request_crossorigin
-             json_encode
-             json_decode
-             json_stringify
-             json_parse
-             zip_unzip
-             load_csv
-COMPTIME     base64_encode
-COMPTIME     base64_decode
-             md5_string_unicode
-             md5_string_utf8
-             md5_file
-             os_is_network_connected
-             sha1_string_unicode
-             sha1_string_utf8
-             sha1_file
-             os_powersave_enable
-             uwp_livetile_tile_clear
-             uwp_livetile_badge_notification
-             uwp_livetile_badge_clear
-             uwp_livetile_queue_enable
-             uwp_secondarytile_pin
-             uwp_secondarytile_badge_notification
-             uwp_secondarytile_delete
-             uwp_secondarytile_badge_clear
-             uwp_secondarytile_tile_clear
-             uwp_livetile_notification_begin
-             uwp_livetile_notification_secondary_begin
-             uwp_livetile_notification_expiry
-             uwp_livetile_notification_tag
-             uwp_livetile_notification_text_add
-             uwp_livetile_notification_image_add
-             uwp_livetile_notification_end
-             uwp_livetile_notification_template_add
-             uwp_device_touchscreen_available
-             winphone_tile_background_colour
-             winphone_tile_background_color
-             network_create_socket
-             network_create_socket_ext
-             network_create_server
-             network_create_server_raw
-             network_connect
-             network_connect_raw
-             network_connect_async
-             network_connect_raw_async
-             network_send_packet
-             network_send_raw
-             network_send_broadcast
-             network_send_udp
-             network_send_udp_raw
-             network_set_timeout
-             network_set_config
-             network_resolve
-             network_destroy
-COMPTIME     network_socket_tcp
-COMPTIME     network_socket_udp
-COMPTIME     network_socket_ws
-COMPTIME     network_socket_wss
-COMPTIME     network_socket_bluetooth
-COMPTIME     network_type_connect
-COMPTIME     network_type_disconnect
-COMPTIME     network_type_data
-COMPTIME     network_type_non_blocking_connect
-COMPTIME     network_type_up
-COMPTIME     network_type_up_failed
-COMPTIME     network_type_down
-COMPTIME     network_send_binary
-COMPTIME     network_send_text
-COMPTIME     network_config_connect_timeout
-COMPTIME     network_config_use_non_blocking_socket
-COMPTIME     network_config_enable_reliable_udp
-COMPTIME     network_config_disable_reliable_udp
-COMPTIME     network_config_avoid_time_wait
-COMPTIME     network_config_websocket_protocol
-COMPTIME     network_connect_none
-COMPTIME     network_connect_blocking
-COMPTIME     network_connect_nonblocking
-             buffer_create
-             buffer_write
-             buffer_read
-             buffer_seek
-             buffer_get_surface
-             buffer_set_surface
-             buffer_set_used_size
-             buffer_delete
-             buffer_exists
-             buffer_get_type
-             buffer_get_alignment
-             buffer_poke
-             buffer_peek
-             buffer_save
-             buffer_save_ext
-             buffer_load
-             buffer_load_ext
-             buffer_load_partial
-             buffer_copy
-             buffer_fill
-             buffer_get_size
-             buffer_tell
-             buffer_resize
-             buffer_md5
-             buffer_sha1
-             buffer_crc32
-             buffer_base64_encode
-             buffer_base64_decode
-             buffer_base64_decode_ext
-             buffer_sizeof
-             buffer_get_address
-             buffer_create_from_vertex_buffer
-             buffer_create_from_vertex_buffer_ext
-             buffer_copy_from_vertex_buffer
-             buffer_async_group_begin
-             buffer_async_group_option
-             buffer_async_group_end
-             buffer_load_async
-             buffer_save_async
-             buffer_compress
-             buffer_decompress
-COMPTIME     buffer_fixed
-COMPTIME     buffer_grow
-COMPTIME     buffer_wrap
-COMPTIME     buffer_fast
-COMPTIME     buffer_vbuffer
-COMPTIME     buffer_u8
-COMPTIME     buffer_s8
-COMPTIME     buffer_u16
-COMPTIME     buffer_s16
-COMPTIME     buffer_u32
-COMPTIME     buffer_s32
-COMPTIME     buffer_u64
-COMPTIME     buffer_f16
-COMPTIME     buffer_f32
-COMPTIME     buffer_f64
-COMPTIME     buffer_bool
-COMPTIME     buffer_text
-COMPTIME     buffer_string
-COMPTIME     buffer_seek_start
-COMPTIME     buffer_seek_relative
-COMPTIME     buffer_seek_end
-COMPTIME     gp_face1
-COMPTIME     gp_face2
-COMPTIME     gp_face3
-COMPTIME     gp_face4
-COMPTIME     gp_shoulderl
-COMPTIME     gp_shoulderr
-COMPTIME     gp_shoulderlb
-COMPTIME     gp_shoulderrb
-COMPTIME     gp_select
-COMPTIME     gp_start
-COMPTIME     gp_stickl
-COMPTIME     gp_stickr
-COMPTIME     gp_padu
-COMPTIME     gp_padd
-COMPTIME     gp_padl
-COMPTIME     gp_padr
-COMPTIME     gp_axislh
-COMPTIME     gp_axislv
-COMPTIME     gp_axisrh
-COMPTIME     gp_axisrv
-COMPTIME     gp_axis_acceleration_x
-COMPTIME     gp_axis_acceleration_y
-COMPTIME     gp_axis_acceleration_z
-COMPTIME     gp_axis_angular_velocity_x
-COMPTIME     gp_axis_angular_velocity_y
-COMPTIME     gp_axis_angular_velocity_z
-COMPTIME     gp_axis_orientation_x
-COMPTIME     gp_axis_orientation_y
-COMPTIME     gp_axis_orientation_z
-COMPTIME     gp_axis_orientation_w
-             shader_set
-             shader_get_name
-             shader_reset
-             shader_current
-             shader_is_compiled
-             shader_get_sampler_index
-             shader_get_uniform
-             shader_set_uniform_i
-             shader_set_uniform_i_array
-             shader_set_uniform_f
-             shader_set_uniform_f_array
-             shader_set_uniform_matrix
-             shader_set_uniform_matrix_array
-             shader_enable_corner_id
-             texture_set_stage
-             texture_get_texel_width
-             texture_get_texel_height
-             shaders_are_supported
-             vertex_format_begin
-             vertex_format_end
-             vertex_format_delete
-             vertex_format_add_position
-             vertex_format_add_position_3d
-             vertex_format_add_colour
-             vertex_format_add_color
-             vertex_format_add_normal
-             vertex_format_add_texcoord
-             vertex_format_add_custom
-COMPTIME     vertex_usage_position
-COMPTIME     vertex_usage_colour
-COMPTIME     vertex_usage_color
-COMPTIME     vertex_usage_normal
-COMPTIME     vertex_usage_texcoord
-COMPTIME     vertex_usage_blendweight
-COMPTIME     vertex_usage_blendindices
-COMPTIME     vertex_usage_psize
-COMPTIME     vertex_usage_tangent
-COMPTIME     vertex_usage_binormal
-COMPTIME     vertex_usage_fog
-COMPTIME     vertex_usage_depth
-COMPTIME     vertex_usage_sample
-COMPTIME     vertex_type_float1
-COMPTIME     vertex_type_float2
-COMPTIME     vertex_type_float3
-COMPTIME     vertex_type_float4
-COMPTIME     vertex_type_colour
-COMPTIME     vertex_type_color
-COMPTIME     vertex_type_ubyte4
-             vertex_create_buffer
-             vertex_create_buffer_ext
-             vertex_delete_buffer
-             vertex_begin
-             vertex_end
-             vertex_position
-             vertex_position_3d
-             vertex_colour
-             vertex_color
-             vertex_argb
-             vertex_texcoord
-             vertex_normal
-             vertex_float1
-             vertex_float2
-             vertex_float3
-             vertex_float4
-             vertex_ubyte4
-             vertex_submit
-             vertex_freeze
-             vertex_get_number
-             vertex_get_buffer_size
-             vertex_create_buffer_from_buffer
-             vertex_create_buffer_from_buffer_ext
-             skeleton_animation_set
-             skeleton_animation_get
-             skeleton_animation_mix
-             skeleton_animation_set_ext
-             skeleton_animation_get_ext
-             skeleton_animation_get_duration
-             skeleton_animation_get_frames
-             skeleton_animation_clear
-             skeleton_skin_set
-             skeleton_skin_get
-             skeleton_skin_create
-             skeleton_attachment_set
-             skeleton_attachment_get
-             skeleton_attachment_create
-             skeleton_attachment_create_colour
-             skeleton_attachment_create_color
-             skeleton_collision_draw_set
-             skeleton_bone_data_get
-             skeleton_bone_data_set
-             skeleton_bone_state_get
-             skeleton_bone_state_set
-             skeleton_slot_colour_set
-             skeleton_slot_color_set
-             skeleton_slot_colour_get
-             skeleton_slot_color_get
-             skeleton_slot_alpha_get
-             skeleton_find_slot
-             skeleton_get_minmax
-             skeleton_get_num_bounds
-             skeleton_get_bounds
-             skeleton_animation_get_frame
-             skeleton_animation_set_frame
-             skeleton_animation_get_position
-             skeleton_animation_set_position
-             skeleton_animation_get_event_frames
-             skeleton_animation_is_looping
-             skeleton_animation_is_finished
-             draw_skeleton
-             draw_skeleton_time
-             draw_skeleton_instance
-             draw_skeleton_collision
-             draw_enable_skeleton_blendmodes
-             draw_get_enable_skeleton_blendmodes
-             skeleton_animation_list
-             skeleton_skin_list
-             skeleton_bone_list
-             skeleton_slot_list
-             skeleton_slot_data
-             skeleton_slot_data_instance
-             layer_get_id
-             layer_get_id_at_depth
-             layer_get_depth
-             layer_create
-             layer_destroy
-             layer_destroy_instances
-             layer_add_instance
-             layer_has_instance
-             layer_set_visible
-             layer_get_visible
-             layer_exists
-             layer_x
-             layer_y
-             layer_get_x
-             layer_get_y
-             layer_hspeed
-             layer_vspeed
-             layer_get_hspeed
-             layer_get_vspeed
-             layer_script_begin
-             layer_script_end
-             layer_shader
-             layer_get_script_begin
-             layer_get_script_end
-             layer_get_shader
-             layer_set_target_room
-             layer_get_target_room
-             layer_reset_target_room
-             layer_get_all
-             layer_get_all_elements
-             layer_get_name
-             layer_depth
-             layer_get_element_layer
-             layer_get_element_type
-             layer_element_move
-             layer_force_draw_depth
-             layer_is_draw_depth_forced
-             layer_get_forced_depth
-COMPTIME     layerelementtype_undefined
-COMPTIME     layerelementtype_background
-COMPTIME     layerelementtype_instance
-COMPTIME     layerelementtype_oldtilemap
-COMPTIME     layerelementtype_sprite
-COMPTIME     layerelementtype_tilemap
-COMPTIME     layerelementtype_particlesystem
-COMPTIME     layerelementtype_tile
-COMPTIME     layerelementtype_sequence
-             layer_background_get_id
-             layer_background_exists
-             layer_background_create
-             layer_background_destroy
-             layer_background_visible
-             layer_background_change
-             layer_background_sprite
-             layer_background_htiled
-             layer_background_vtiled
-             layer_background_stretch
-             layer_background_yscale
-             layer_background_xscale
-             layer_background_blend
-             layer_background_alpha
-             layer_background_index
-             layer_background_speed
-             layer_background_get_visible
-             layer_background_get_sprite
-             layer_background_get_htiled
-             layer_background_get_vtiled
-             layer_background_get_stretch
-             layer_background_get_yscale
-             layer_background_get_xscale
-             layer_background_get_blend
-             layer_background_get_alpha
-             layer_background_get_index
-             layer_background_get_speed
-             layer_sprite_get_id
-             layer_sprite_exists
-             layer_sprite_create
-             layer_sprite_destroy
-             layer_sprite_change
-             layer_sprite_index
-             layer_sprite_speed
-             layer_sprite_xscale
-             layer_sprite_yscale
-             layer_sprite_angle
-             layer_sprite_blend
-             layer_sprite_alpha
-             layer_sprite_x
-             layer_sprite_y
-             layer_sprite_get_sprite
-             layer_sprite_get_index
-             layer_sprite_get_speed
-             layer_sprite_get_xscale
-             layer_sprite_get_yscale
-             layer_sprite_get_angle
-             layer_sprite_get_blend
-             layer_sprite_get_alpha
-             layer_sprite_get_x
-             layer_sprite_get_y
-             layer_tilemap_get_id
-             layer_tilemap_exists
-             layer_tilemap_create
-             layer_tilemap_destroy
-             tilemap_tileset
-             tilemap_x
-             tilemap_y
-             tilemap_set
-             tilemap_set_at_pixel
-             tileset_get_texture
-             tileset_get_uvs
-             tileset_get_name
-             tilemap_get_tileset
-             tilemap_get_tile_width
-             tilemap_get_tile_height
-             tilemap_get_width
-             tilemap_get_height
-             tilemap_set_width
-             tilemap_set_height
-             tilemap_get_x
-             tilemap_get_y
-             tilemap_get
-             tilemap_get_at_pixel
-             tilemap_get_cell_x_at_pixel
-             tilemap_get_cell_y_at_pixel
-             tilemap_clear
-             draw_tilemap
-             draw_tile
-             tilemap_set_global_mask
-             tilemap_get_global_mask
-             tilemap_set_mask
-             tilemap_get_mask
-             tilemap_get_frame
-             tile_set_empty
-             tile_set_index
-             tile_set_flip
-             tile_set_mirror
-             tile_set_rotate
-             tile_get_empty
-             tile_get_index
-             tile_get_flip
-             tile_get_mirror
-             tile_get_rotate
-COMPTIME     tile_rotate
-COMPTIME     tile_flip
-COMPTIME     tile_mirror
-COMPTIME     tile_index_mask
-             layer_instance_get_instance
-             instance_activate_layer
-             instance_deactivate_layer
-             camera_create
-             camera_create_view
-             camera_destroy
-             camera_apply
-             camera_get_active
-             camera_get_default
-             camera_set_default
-             camera_set_view_mat
-             camera_set_proj_mat
-             camera_set_update_script
-             camera_set_begin_script
-             camera_set_end_script
-             camera_set_view_pos
-             camera_set_view_size
-             camera_set_view_speed
-             camera_set_view_border
-             camera_set_view_angle
-             camera_set_view_target
-             camera_get_view_mat
-             camera_get_proj_mat
-             camera_get_update_script
-             camera_get_begin_script
-             camera_get_end_script
-             camera_get_view_x
-             camera_get_view_y
-             camera_get_view_width
-             camera_get_view_height
-             camera_get_view_speed_x
-             camera_get_view_speed_y
-             camera_get_view_border_x
-             camera_get_view_border_y
-             camera_get_view_angle
-             camera_get_view_target
-             view_get_camera
-             view_get_visible
-             view_get_xport
-             view_get_yport
-             view_get_wport
-             view_get_hport
-             view_get_surface_id
-             view_set_camera
-             view_set_visible
-             view_set_xport
-             view_set_yport
-             view_set_wport
-             view_set_hport
-             view_set_surface_id
-             gesture_drag_time
-             gesture_drag_distance
-             gesture_flick_speed
-             gesture_double_tap_time
-             gesture_double_tap_distance
-             gesture_pinch_distance
-             gesture_pinch_angle_towards
-             gesture_pinch_angle_away
-             gesture_rotate_time
-             gesture_rotate_angle
-             gesture_tap_count
-             gesture_get_drag_time
-             gesture_get_drag_distance
-             gesture_get_flick_speed
-             gesture_get_double_tap_time
-             gesture_get_double_tap_distance
-             gesture_get_pinch_distance
-             gesture_get_pinch_angle_towards
-             gesture_get_pinch_angle_away
-             gesture_get_rotate_time
-             gesture_get_rotate_angle
-             gesture_get_tap_count
-             keyboard_virtual_show
-             keyboard_virtual_hide
-             keyboard_virtual_status
-             keyboard_virtual_height
-COMPTIME     kbv_type_default
-COMPTIME     kbv_type_ascii
-COMPTIME     kbv_type_url
-COMPTIME     kbv_type_email
-COMPTIME     kbv_type_numbers
-COMPTIME     kbv_type_phone
-COMPTIME     kbv_type_phone_name
-COMPTIME     kbv_returnkey_default
-COMPTIME     kbv_returnkey_go
-COMPTIME     kbv_returnkey_google
-COMPTIME     kbv_returnkey_join
-COMPTIME     kbv_returnkey_next
-COMPTIME     kbv_returnkey_route
-COMPTIME     kbv_returnkey_search
-COMPTIME     kbv_returnkey_send
-COMPTIME     kbv_returnkey_yahoo
-COMPTIME     kbv_returnkey_done
-COMPTIME     kbv_returnkey_continue
-COMPTIME     kbv_returnkey_emergency
-COMPTIME     kbv_autocapitalize_none
-COMPTIME     kbv_autocapitalize_words
-COMPTIME     kbv_autocapitalize_sentences
-COMPTIME     kbv_autocapitalize_characters
-COMPTIME     os_permission_denied_dont_request
-COMPTIME     os_permission_denied
-COMPTIME     os_permission_granted
-COMPTIME     nineslice_left
-COMPTIME     nineslice_top
-COMPTIME     nineslice_right
-COMPTIME     nineslice_bottom
-COMPTIME     nineslice_centre
-COMPTIME     nineslice_center
-COMPTIME     nineslice_stretch
-COMPTIME     nineslice_repeat
-COMPTIME     nineslice_mirror
-COMPTIME     nineslice_blank
-COMPTIME     nineslice_hide
-COMPTIME     texturegroup_status_unloaded
-COMPTIME     texturegroup_status_loading
-COMPTIME     texturegroup_status_loaded
-COMPTIME     texturegroup_status_fetched
-             tag_get_asset_ids
-             tag_get_assets
-             asset_get_tags
-             asset_add_tags
-             asset_remove_tags
-             asset_has_tags
-             asset_has_any_tag
-             asset_clear_tags
-             extension_exists
-             extension_get_option_count
-             extension_get_option_names
-             extension_get_option_value
-             extension_get_options
-             layer_sequence_get_instance
-             layer_sequence_create
-             layer_sequence_destroy
-             layer_sequence_exists
-             layer_sequence_x
-             layer_sequence_y
-             layer_sequence_angle
-             layer_sequence_xscale
-             layer_sequence_yscale
-             layer_sequence_headpos
-             layer_sequence_headdir
-             layer_sequence_pause
-             layer_sequence_play
-             layer_sequence_speedscale
-             layer_sequence_get_x
-             layer_sequence_get_y
-             layer_sequence_get_angle
-             layer_sequence_get_xscale
-             layer_sequence_get_yscale
-             layer_sequence_get_headpos
-             layer_sequence_get_headdir
-             layer_sequence_get_sequence
-             layer_sequence_is_paused
-             layer_sequence_is_finished
-             layer_sequence_get_speedscale
-             layer_sequence_get_length
-             animcurve_get
-             animcurve_get_channel
-             animcurve_get_channel_index
-             animcurve_channel_evaluate
-             sequence_create
-             sequence_destroy
-             sequence_exists
-             sequence_get
-             sequence_keyframe_new
-             sequence_keyframedata_new
-             sequence_track_new
-             sequence_get_objects
-             sequence_instance_override_object
-             animcurve_create
-             animcurve_destroy
-             animcurve_exists
-             animcurve_channel_new
-             animcurve_point_new
-             fx_create
-             fx_get_name
-             fx_get_parameter_names
-             fx_get_parameter
-             fx_get_parameters
-             fx_get_single_layer
-             fx_set_parameter
-             fx_set_parameters
-             fx_set_single_layer
-             layer_set_fx
-             layer_get_fx
-             layer_clear_fx
-             layer_enable_fx
-             layer_fx_is_enabled
-COMPTIME     seqtracktype_graphic
-COMPTIME     seqtracktype_audio
-COMPTIME     seqtracktype_real
-COMPTIME     seqtracktype_color
-COMPTIME     seqtracktype_colour
-COMPTIME     seqtracktype_bool
-COMPTIME     seqtracktype_string
-COMPTIME     seqtracktype_sequence
-COMPTIME     seqtracktype_clipmask
-COMPTIME     seqtracktype_clipmask_mask
-COMPTIME     seqtracktype_clipmask_subject
-COMPTIME     seqtracktype_group
-COMPTIME     seqtracktype_empty
-COMPTIME     seqtracktype_spriteframes
-COMPTIME     seqtracktype_instance
-COMPTIME     seqtracktype_message
-COMPTIME     seqtracktype_moment
-COMPTIME     seqtracktype_text
-COMPTIME     seqplay_oneshot
-COMPTIME     seqplay_loop
-COMPTIME     seqplay_pingpong
-COMPTIME     seqdir_right
-COMPTIME     seqdir_left
-COMPTIME     seqinterpolation_assign
-COMPTIME     seqinterpolation_lerp
-COMPTIME     seqaudiokey_loop
-COMPTIME     seqaudiokey_oneshot
-COMPTIME     seqtextkey_left
-COMPTIME     seqtextkey_center
-COMPTIME     seqtextkey_right
-COMPTIME     seqtextkey_justify
-COMPTIME     seqtextkey_top
-COMPTIME     seqtextkey_middle
-COMPTIME     seqtextkey_bottom
-COMPTIME     animcurvetype_linear
-COMPTIME     animcurvetype_catmullrom
-COMPTIME     animcurvetype_bezier
-             gc_collect
-             gc_enable
-             gc_is_enabled
-             gc_get_stats
-             gc_target_frame_time
-             gc_get_target_frame_time
-             weak_ref_create
-             weak_ref_alive
-             weak_ref_any_alive
-COMPTIME     time_source_global
-COMPTIME     time_source_game
-COMPTIME     time_source_units_seconds
-COMPTIME     time_source_units_frames
-COMPTIME     time_source_expire_nearest
-COMPTIME     time_source_expire_after
-COMPTIME     time_source_state_initial
-COMPTIME     time_source_state_active
-COMPTIME     time_source_state_paused
-COMPTIME     time_source_state_stopped
-             time_source_create
-             time_source_destroy
-             time_source_start
-             time_source_stop
-             time_source_pause
-             time_source_resume
-             time_source_reset
-             time_source_reconfigure
-             time_source_get_period
-             time_source_get_reps_completed
-             time_source_get_reps_remaining
-             time_source_get_units
-             time_source_get_time_remaining
-             time_source_get_state
-             time_source_get_parent
-             time_source_get_children
-             time_source_exists
-             time_seconds_to_bpm
-             time_bpm_to_seconds
-             call_later
-             call_cancel
-COMPTIME     is_vec3
-COMPTIME     is_vec4
-COMPTIME     audio_3d
-             get_integer
-             get_string
-             cloud_file_save
-             cloud_string_save
-             cloud_synchronise
-COMPTIME     GM_is_sandboxed
-COMPTIME     is_instanceof
-COMPTIME     is_callable
-COMPTIME     is_handle
-             static_get
-             static_set
-             variable_get_hash
-             variable_clone
-             struct_exists
-             struct_get
-             struct_set
-             struct_get_names
-             struct_names_count
-             struct_remove
-             struct_foreach
-             struct_get_from_hash
-             struct_set_from_hash
-             array_shift
-             array_shuffle
-             array_shuffle_ext
-             array_get_index
-             array_contains
-             array_contains_ext
-             array_first
-             array_last
-             array_create_ext
-             array_find_index
-             array_any
-             array_all
-             array_foreach
-             array_reduce
-             array_filter
-             array_filter_ext
-             array_map
-             array_map_ext
-             array_copy_while
-             array_unique
-             array_unique_ext
-             array_reverse
-             array_reverse_ext
-             array_concat
-             array_union
-             array_intersection
-             handle_parse
-             game_change
-COMPTIME     ev_draw_normal
-COMPTIME     ev_audio_playback_ended
-COMPTIME     ev_async_audio_playback_ended
-             show_debug_message_ext
-             is_debug_overlay_open
-             is_mouse_over_debug_overlay
-             is_keyboard_used_debug_overlay
-             show_debug_log
-             dbg_view
-             dbg_section
-             dbg_view_delete
-             dbg_section_delete
-             dbg_slider
-             dbg_slider_int
-             dbg_drop_down
-             dbg_watch
-             dbg_text
-             dbg_sprite
-             dbg_text_input
-             dbg_checkbox
-             dbg_colour
-             dbg_color
-             dbg_button
-             dbg_same_line
-             dbg_add_font_glyphs
-             ref_create
-COMPTIME     audio_3D
-             surface_get_format
-             surface_format_is_supported
-COMPTIME     surface_rgba8unorm
-COMPTIME     surface_r16float
-COMPTIME     surface_r32float
-COMPTIME     surface_rgba4unorm
-COMPTIME     surface_r8unorm
-COMPTIME     surface_rg8unorm
-COMPTIME     surface_rgba16float
-COMPTIME     surface_rgba32float
-             window_set_showborder
-             window_get_showborder
-             window_enable_borderless_fullscreen
-             window_get_borderless_fullscreen
-             window_mouse_set_locked
-             window_mouse_get_locked
-             window_mouse_get_delta_x
-             window_mouse_get_delta_y
-             audio_play_sound_ext
-             audio_system_is_initialised
-             audio_sound_loop
-             audio_sound_get_loop
-             audio_sound_loop_start
-             audio_sound_get_loop_start
-             audio_sound_loop_end
-             audio_sound_get_loop_end
-             audio_sync_group_is_paused
-             audio_group_get_gain
-             audio_group_get_assets
-             audio_sound_get_audio_group
-             texturegroup_get_names
-             room_get_info
-             sprite_add_ext
-COMPTIME     sprite_add_ext_error_unknown
-COMPTIME     sprite_add_ext_error_cancelled
-COMPTIME     sprite_add_ext_error_spritenotfound
-COMPTIME     sprite_add_ext_error_loadfailed
-COMPTIME     sprite_add_ext_error_decompressfailed
-COMPTIME     sprite_add_ext_error_setupfailed
-             font_enable_sdf
-             font_get_sdf_enabled
-             font_sdf_spread
-             font_get_sdf_spread
-             font_enable_effects
-             method_call
-             asset_get_ids
-COMPTIME     fa_none
-             cache_directory
-             ds_grid_to_mp_grid
-             effect_create_layer
-             effect_create_depth
-             part_type_subimage
-             part_type_size_x
-             part_type_size_y
-             particle_get_info
-             particle_exists
-             part_system_color
-             part_system_colour
-             part_system_angle
-             part_system_global_space
-             part_system_get_info
-             part_particles_burst
-             part_emitter_enable
-             part_emitter_delay
-             part_emitter_interval
-             part_emitter_relative
-COMPTIME     ps_mode_stream
-COMPTIME     ps_mode_burst
-COMPTIME     tm_systemtiming
-             gpu_set_depth
-             gpu_get_depth
-             zip_unzip_async
-             zip_create
-             zip_add_file
-             zip_save
-COMPTIME     network_config_enable_multicast
-COMPTIME     network_config_disable_multicast
-COMPTIME     network_connect_active
-COMPTIME     network_connect_passive
-             buffer_copy_stride
-             shader_set_uniform_f_buffer
-             vertex_format_get_info
-             vertex_submit_ext
-             vertex_update_buffer_from_buffer
-             vertex_update_buffer_from_vertex
-             skeleton_attachment_exists
-             skeleton_attachment_replace
-             skeleton_attachment_replace_colour
-             skeleton_attachment_replace_color
-             skeleton_attachment_destroy
-             tileset_get_info
-             camera_copy_transforms
-             extension_get_version
-COMPTIME     seqtracktype_particlesystem
-COMPTIME     seqtracktype_audioeffect
-COMPTIME     audio_bus_main
-             audio_bus_create
-             audio_effect_create
-             audio_emitter_bus
-             audio_emitter_get_bus
-             audio_bus_get_emitters
-             audio_bus_clear_emitters
-             lin_to_db
-             db_to_lin
+all                                      EFFECTS
+noone                                    EFFECTS
+global                                   EFFECTS
+undefined                                COMPTIME
+pointer_invalid                          COMPTIME
+pointer_null                             COMPTIME
+path_action_stop                         COMPTIME
+path_action_restart                      COMPTIME
+path_action_continue                     COMPTIME
+path_action_reverse                      COMPTIME
+true                                     COMPTIME
+false                                    COMPTIME
+pi                                       COMPTIME
+NaN                                      COMPTIME
+infinity                                 COMPTIME
+GM_build_date                            COMPTIME
+GM_version                               COMPTIME
+GM_runtime_version                       COMPTIME
+GM_build_type                            COMPTIME
+is_real                                  COMPTIME
+is_numeric                               COMPTIME
+is_string                                COMPTIME
+is_array                                 COMPTIME
+is_undefined                             COMPTIME
+is_int32                                 COMPTIME
+is_int64                                 COMPTIME
+is_ptr                                   COMPTIME
+is_bool                                  COMPTIME
+is_nan                                   COMPTIME
+is_infinity                              COMPTIME
+is_struct                                COMPTIME
+is_method                                COMPTIME
+typeof                                   COMPTIME
+instanceof                               COMPTIME
+exception_unhandled_handler              UNSAFE
+variable_global_exists                   UNSAFE
+variable_global_get                      UNSAFE
+variable_global_set                      UNSAFE
+variable_instance_exists                 EFFECTS
+variable_instance_get                    EFFECTS
+variable_instance_set                    EFFECTS
+variable_instance_get_names              EFFECTS
+variable_instance_names_count            EFFECTS
+variable_struct_exists                   EFFECTS
+variable_struct_get                      EFFECTS
+variable_struct_set                      EFFECTS
+variable_struct_get_names                EFFECTS
+variable_struct_names_count              EFFECTS
+variable_struct_remove                   EFFECTS
+array_length                             SAFE
+array_equals                             SAFE
+array_create                             SAFE
+array_copy                               SAFE
+array_resize                             SAFE
+array_get                                SAFE
+array_set                                SAFE
+array_push                               SAFE
+array_pop                                SAFE
+array_insert                             SAFE
+array_delete                             SAFE
+array_sort                               SAFE
+random                                   EFFECTS
+random_range                             EFFECTS
+irandom                                  EFFECTS
+irandom_range                            EFFECTS
+random_set_seed                          EFFECTS
+random_get_seed                          EFFECTS
+randomize                                EFFECTS
+randomise                                EFFECTS
+choose                                   EFFECTS
+abs                                      COMPTIME
+round                                    COMPTIME
+floor                                    COMPTIME
+ceil                                     COMPTIME
+sign                                     COMPTIME
+frac                                     COMPTIME
+sqrt                                     COMPTIME
+sqr                                      COMPTIME
+exp                                      COMPTIME
+ln                                       COMPTIME
+log2                                     COMPTIME
+log10                                    COMPTIME
+sin                                      COMPTIME
+cos                                      COMPTIME
+tan                                      COMPTIME
+arcsin                                   COMPTIME
+arccos                                   COMPTIME
+arctan                                   COMPTIME
+arctan2                                  COMPTIME
+dsin                                     COMPTIME
+dcos                                     COMPTIME
+dtan                                     COMPTIME
+darcsin                                  COMPTIME
+darccos                                  COMPTIME
+darctan                                  COMPTIME
+darctan2                                 COMPTIME
+degtorad                                 COMPTIME
+radtodeg                                 COMPTIME
+power                                    COMPTIME
+logn                                     COMPTIME
+min                                      COMPTIME
+max                                      COMPTIME
+mean                                     COMPTIME
+median                                   COMPTIME
+clamp                                    COMPTIME
+lerp                                     COMPTIME
+dot_product                              COMPTIME
+dot_product_3d                           COMPTIME
+dot_product_normalised                   COMPTIME
+dot_product_3d_normalised                COMPTIME
+dot_product_normalized                   COMPTIME
+dot_product_3d_normalized                COMPTIME
+math_set_epsilon                         OS
+math_get_epsilon                         OS
+angle_difference                         COMPTIME
+point_distance_3d                        COMPTIME
+point_distance                           COMPTIME
+point_direction                          COMPTIME
+lengthdir_x                              COMPTIME
+lengthdir_y                              COMPTIME
+real                                     COMPTIME
+bool                                     COMPTIME
+string                                   COMPTIME
+int64                                    COMPTIME
+ptr                                      COMPTIME
+string_format                            COMPTIME
+chr                                      COMPTIME
+ansi_char                                COMPTIME
+ord                                      COMPTIME
+method                                   UNSAFE
+method_get_index                         UNSAFE
+method_get_self                          UNSAFE
+string_length                            COMPTIME
+string_byte_length                       COMPTIME
+string_pos                               COMPTIME
+string_pos_ext                           COMPTIME
+string_last_pos                          COMPTIME
+string_last_pos_ext                      COMPTIME
+string_copy                              COMPTIME
+string_char_at                           COMPTIME
+string_ord_at                            COMPTIME
+string_byte_at                           COMPTIME
+string_set_byte_at                       COMPTIME
+string_delete                            COMPTIME
+string_insert                            COMPTIME
+string_lower                             COMPTIME
+string_upper                             COMPTIME
+string_repeat                            COMPTIME
+string_letters                           COMPTIME
+string_digits                            COMPTIME
+string_lettersdigits                     COMPTIME
+string_replace                           COMPTIME
+string_replace_all                       COMPTIME
+string_count                             COMPTIME
+string_hash_to_newline                   COMPTIME
+string_ext                               COMPTIME
+string_trim_start                        COMPTIME
+string_trim_end                          COMPTIME
+string_trim                              COMPTIME
+string_starts_with                       COMPTIME
+string_ends_with                         COMPTIME
+string_split                             COMPTIME
+string_split_ext                         COMPTIME
+string_join                              COMPTIME
+string_join_ext                          COMPTIME
+string_concat                            COMPTIME
+string_concat_ext                        COMPTIME
+string_foreach                           SAFE
+clipboard_has_text                       OS
+clipboard_set_text                       OS
+clipboard_get_text                       OS
+date_current_datetime                    SAFE
+date_create_datetime                     SAFE
+date_valid_datetime                      SAFE
+date_inc_year                            SAFE
+date_inc_month                           SAFE
+date_inc_week                            SAFE
+date_inc_day                             SAFE
+date_inc_hour                            SAFE
+date_inc_minute                          SAFE
+date_inc_second                          SAFE
+date_get_year                            SAFE
+date_get_month                           SAFE
+date_get_week                            SAFE
+date_get_day                             SAFE
+date_get_hour                            SAFE
+date_get_minute                          SAFE
+date_get_second                          SAFE
+date_get_weekday                         SAFE
+date_get_day_of_year                     SAFE
+date_get_hour_of_year                    SAFE
+date_get_minute_of_year                  SAFE
+date_get_second_of_year                  SAFE
+date_year_span                           SAFE
+date_month_span                          SAFE
+date_week_span                           SAFE
+date_day_span                            SAFE
+date_hour_span                           SAFE
+date_minute_span                         SAFE
+date_second_span                         SAFE
+date_compare_datetime                    SAFE
+date_compare_date                        SAFE
+date_compare_time                        SAFE
+date_date_of                             SAFE
+date_time_of                             SAFE
+date_datetime_string                     SAFE
+date_date_string                         SAFE
+date_time_string                         SAFE
+date_days_in_month                       SAFE
+date_days_in_year                        SAFE
+date_leap_year                           SAFE
+date_is_today                            SAFE
+date_set_timezone                        EFFECTS
+date_get_timezone                        SAFE
+timezone_local                           COMPTIME
+timezone_utc                             COMPTIME
+game_set_speed                           EFFECTS
+game_get_speed                           SAFE
+gamespeed_fps                            COMPTIME
+gamespeed_microseconds                   COMPTIME
+motion_set
+motion_add
+place_free
+place_empty
+place_meeting
+place_snapped
+move_random
+move_snap
+move_towards_point
+move_contact_solid
+move_contact_all
+move_outside_solid
+move_outside_all
+move_bounce_solid
+move_bounce_all
+move_wrap
+move_and_collide
+distance_to_point
+distance_to_object
+position_empty
+position_meeting
+path_start
+path_end
+mp_linear_step
+mp_potential_step
+mp_linear_step_object
+mp_potential_step_object
+mp_potential_settings
+mp_linear_path
+mp_potential_path
+mp_linear_path_object
+mp_potential_path_object
+mp_grid_create
+mp_grid_destroy
+mp_grid_clear_all
+mp_grid_clear_cell
+mp_grid_clear_rectangle
+mp_grid_add_cell
+mp_grid_get_cell
+mp_grid_add_rectangle
+mp_grid_add_instances
+mp_grid_path
+mp_grid_draw
+mp_grid_to_ds_grid
+collision_point
+collision_rectangle
+collision_circle
+collision_ellipse
+collision_line
+collision_point_list
+collision_rectangle_list
+collision_circle_list
+collision_ellipse_list
+collision_line_list
+instance_position_list
+instance_place_list
+point_in_rectangle                       COMPTIME
+point_in_triangle                        COMPTIME
+point_in_circle                          COMPTIME
+rectangle_in_rectangle                   COMPTIME
+rectangle_in_triangle                    COMPTIME
+rectangle_in_circle                      COMPTIME
+instance_find
+instance_exists
+instance_number
+instance_position
+instance_nearest
+instance_furthest
+instance_place
+instance_create_depth
+instance_create_layer
+instance_copy
+instance_change
+instance_destroy
+position_destroy
+position_change
+instance_id_get
+instance_deactivate_all
+instance_deactivate_object
+instance_deactivate_region
+instance_activate_all
+instance_activate_object
+instance_activate_region
+room_speed
+fps
+fps_real
+current_time
+current_year
+current_month
+current_day
+current_weekday
+current_hour
+current_minute
+current_second
+room                                     SAFE
+room_first                               SAFE
+room_last                                SAFE
+room_width                               SAFE
+room_height                              SAFE
+room_persistent
+room_goto                                UNSAFE
+room_goto_previous                       UNSAFE
+room_goto_next
+room_previous
+room_next                                UNSAFE
+room_restart                             UNSAFE
+game_end                                 OS
+game_restart                             OS
+game_load                                OS
+game_save                                OS
+game_save_buffer                         OS
+game_load_buffer                         OS
+scheduler_resolution_set                 UNSAFE
+scheduler_resolution_get                 UNSAFE
+score                                    EFFECTS
+lives                                    EFFECTS
+health                                   EFFECTS
+event_perform                            EFFECTS
+event_perform_async                      EFFECTS
+event_user                               EFFECTS
+event_perform_object                     EFFECTS
+event_inherited                          EFFECTS
+event_type                               EFFECTS
+event_number                             EFFECTS
+event_object                             EFFECTS
+event_action                             EFFECTS
+ev_create                                COMPTIME
+ev_pre_create                            COMPTIME
+ev_destroy                               COMPTIME
+ev_step                                  COMPTIME
+ev_alarm                                 COMPTIME
+ev_keyboard                              COMPTIME
+ev_mouse                                 COMPTIME
+ev_collision                             COMPTIME
+ev_other                                 COMPTIME
+ev_draw                                  COMPTIME
+ev_draw_begin                            COMPTIME
+ev_draw_end                              COMPTIME
+ev_draw_pre                              COMPTIME
+ev_draw_post                             COMPTIME
+ev_keypress                              COMPTIME
+ev_keyrelease                            COMPTIME
+ev_trigger                               COMPTIME
+ev_left_button                           COMPTIME
+ev_right_button                          COMPTIME
+ev_middle_button                         COMPTIME
+ev_no_button                             COMPTIME
+ev_left_press                            COMPTIME
+ev_right_press                           COMPTIME
+ev_middle_press                          COMPTIME
+ev_left_release                          COMPTIME
+ev_right_release                         COMPTIME
+ev_middle_release                        COMPTIME
+ev_mouse_enter                           COMPTIME
+ev_mouse_leave                           COMPTIME
+ev_mouse_wheel_up                        COMPTIME
+ev_mouse_wheel_down                      COMPTIME
+ev_global_left_button                    COMPTIME
+ev_global_right_button                   COMPTIME
+ev_global_middle_button                  COMPTIME
+ev_global_left_press                     COMPTIME
+ev_global_right_press                    COMPTIME
+ev_global_middle_press                   COMPTIME
+ev_global_left_release                   COMPTIME
+ev_global_right_release                  COMPTIME
+ev_global_middle_release                 COMPTIME
+ev_joystick1_left                        COMPTIME
+ev_joystick1_right                       COMPTIME
+ev_joystick1_up                          COMPTIME
+ev_joystick1_down                        COMPTIME
+ev_joystick1_button1                     COMPTIME
+ev_joystick1_button2                     COMPTIME
+ev_joystick1_button3                     COMPTIME
+ev_joystick1_button4                     COMPTIME
+ev_joystick1_button5                     COMPTIME
+ev_joystick1_button6                     COMPTIME
+ev_joystick1_button7                     COMPTIME
+ev_joystick1_button8                     COMPTIME
+ev_joystick2_left                        COMPTIME
+ev_joystick2_right                       COMPTIME
+ev_joystick2_up                          COMPTIME
+ev_joystick2_down                        COMPTIME
+ev_joystick2_button1                     COMPTIME
+ev_joystick2_button2                     COMPTIME
+ev_joystick2_button3                     COMPTIME
+ev_joystick2_button4                     COMPTIME
+ev_joystick2_button5                     COMPTIME
+ev_joystick2_button6                     COMPTIME
+ev_joystick2_button7                     COMPTIME
+ev_joystick2_button8                     COMPTIME
+ev_outside                               COMPTIME
+ev_boundary                              COMPTIME
+ev_game_start                            COMPTIME
+ev_game_end                              COMPTIME
+ev_room_start                            COMPTIME
+ev_room_end                              COMPTIME
+ev_no_more_lives                         COMPTIME
+ev_animation_end                         COMPTIME
+ev_end_of_path                           COMPTIME
+ev_no_more_health                        COMPTIME
+ev_user0                                 COMPTIME
+ev_user1                                 COMPTIME
+ev_user2                                 COMPTIME
+ev_user3                                 COMPTIME
+ev_user4                                 COMPTIME
+ev_user5                                 COMPTIME
+ev_user6                                 COMPTIME
+ev_user7                                 COMPTIME
+ev_user8                                 COMPTIME
+ev_user9                                 COMPTIME
+ev_user10                                COMPTIME
+ev_user11                                COMPTIME
+ev_user12                                COMPTIME
+ev_user13                                COMPTIME
+ev_user14                                COMPTIME
+ev_user15                                COMPTIME
+ev_outside_view0                         COMPTIME
+ev_outside_view1                         COMPTIME
+ev_outside_view2                         COMPTIME
+ev_outside_view3                         COMPTIME
+ev_outside_view4                         COMPTIME
+ev_outside_view5                         COMPTIME
+ev_outside_view6                         COMPTIME
+ev_outside_view7                         COMPTIME
+ev_boundary_view0                        COMPTIME
+ev_boundary_view1                        COMPTIME
+ev_boundary_view2                        COMPTIME
+ev_boundary_view3                        COMPTIME
+ev_boundary_view4                        COMPTIME
+ev_boundary_view5                        COMPTIME
+ev_boundary_view6                        COMPTIME
+ev_boundary_view7                        COMPTIME
+ev_animation_update                      COMPTIME
+ev_animation_event                       COMPTIME
+ev_web_image_load                        COMPTIME
+ev_web_sound_load                        COMPTIME
+ev_web_async                             COMPTIME
+ev_dialog_async                          COMPTIME
+ev_web_iap                               COMPTIME
+ev_web_cloud                             COMPTIME
+ev_web_networking                        COMPTIME
+ev_web_steam                             COMPTIME
+ev_social                                COMPTIME
+ev_push_notification                     COMPTIME
+ev_async_save_load                       COMPTIME
+ev_audio_recording                       COMPTIME
+ev_audio_playback                        COMPTIME
+ev_system_event                          COMPTIME
+ev_broadcast_message                     COMPTIME
+ev_step_normal                           COMPTIME
+ev_step_begin                            COMPTIME
+ev_step_end                              COMPTIME
+ev_gui                                   COMPTIME
+ev_gui_begin                             COMPTIME
+ev_gui_end                               COMPTIME
+ev_cleanup                               COMPTIME
+ev_gesture                               COMPTIME
+ev_gesture_tap                           COMPTIME
+ev_gesture_double_tap                    COMPTIME
+ev_gesture_drag_start                    COMPTIME
+ev_gesture_dragging                      COMPTIME
+ev_gesture_drag_end                      COMPTIME
+ev_gesture_flick                         COMPTIME
+ev_gesture_pinch_start                   COMPTIME
+ev_gesture_pinch_in                      COMPTIME
+ev_gesture_pinch_out                     COMPTIME
+ev_gesture_pinch_end                     COMPTIME
+ev_gesture_rotate_start                  COMPTIME
+ev_gesture_rotating                      COMPTIME
+ev_gesture_rotate_end                    COMPTIME
+ev_global_gesture_tap                    COMPTIME
+ev_global_gesture_double_tap             COMPTIME
+ev_global_gesture_drag_start             COMPTIME
+ev_global_gesture_dragging               COMPTIME
+ev_global_gesture_drag_end               COMPTIME
+ev_global_gesture_flick                  COMPTIME
+ev_global_gesture_pinch_start            COMPTIME
+ev_global_gesture_pinch_in               COMPTIME
+ev_global_gesture_pinch_out              COMPTIME
+ev_global_gesture_pinch_end              COMPTIME
+ev_global_gesture_rotate_start           COMPTIME
+ev_global_gesture_rotating               COMPTIME
+ev_global_gesture_rotate_end             COMPTIME
+ev_async_web_image_load                  COMPTIME
+ev_async_web                             COMPTIME
+ev_async_dialog                          COMPTIME
+ev_async_web_iap                         COMPTIME
+ev_async_web_cloud                       COMPTIME
+ev_async_web_networking                  COMPTIME
+ev_async_web_steam                       COMPTIME
+ev_async_social                          COMPTIME
+ev_async_push_notification               COMPTIME
+ev_async_audio_recording                 COMPTIME
+ev_async_audio_playback                  COMPTIME
+ev_async_system_event                    COMPTIME
+application_surface                      OS
+show_debug_message                       OS
+show_debug_overlay                       OS
+debug_mode                               OS
+debug_event                              OS
+debug_get_callstack                      OS
+alarm_get                                EFFECTS
+alarm_set                                EFFECTS
+font_texture_page_size
+keyboard_key                             IO
+keyboard_lastkey                         IO
+keyboard_lastchar                        IO
+keyboard_string                          IO
+keyboard_set_map                         OS
+keyboard_get_map                         OS
+keyboard_unset_map                       IO
+keyboard_check                           IO
+keyboard_check_pressed                   IO
+keyboard_check_released                  IO
+keyboard_check_direct                    IO
+keyboard_get_numlock                     IO
+keyboard_set_numlock                     OS
+keyboard_key_press                       IO
+keyboard_key_release                     IO
+vk_nokey                                 COMPTIME
+vk_anykey                                COMPTIME
+vk_enter                                 COMPTIME
+vk_return                                COMPTIME
+vk_shift                                 COMPTIME
+vk_control                               COMPTIME
+vk_alt                                   COMPTIME
+vk_escape                                COMPTIME
+vk_space                                 COMPTIME
+vk_backspace                             COMPTIME
+vk_tab                                   COMPTIME
+vk_pause                                 COMPTIME
+vk_printscreen                           COMPTIME
+vk_left                                  COMPTIME
+vk_right                                 COMPTIME
+vk_up                                    COMPTIME
+vk_down                                  COMPTIME
+vk_home                                  COMPTIME
+vk_end                                   COMPTIME
+vk_delete                                COMPTIME
+vk_insert                                COMPTIME
+vk_pageup                                COMPTIME
+vk_pagedown                              COMPTIME
+vk_f1                                    COMPTIME
+vk_f2                                    COMPTIME
+vk_f3                                    COMPTIME
+vk_f4                                    COMPTIME
+vk_f5                                    COMPTIME
+vk_f6                                    COMPTIME
+vk_f7                                    COMPTIME
+vk_f8                                    COMPTIME
+vk_f9                                    COMPTIME
+vk_f10                                   COMPTIME
+vk_f11                                   COMPTIME
+vk_f12                                   COMPTIME
+vk_numpad0                               COMPTIME
+vk_numpad1                               COMPTIME
+vk_numpad2                               COMPTIME
+vk_numpad3                               COMPTIME
+vk_numpad4                               COMPTIME
+vk_numpad5                               COMPTIME
+vk_numpad6                               COMPTIME
+vk_numpad7                               COMPTIME
+vk_numpad8                               COMPTIME
+vk_numpad9                               COMPTIME
+vk_divide                                COMPTIME
+vk_multiply                              COMPTIME
+vk_subtract                              COMPTIME
+vk_add                                   COMPTIME
+vk_decimal                               COMPTIME
+vk_lshift                                COMPTIME
+vk_lcontrol                              COMPTIME
+vk_lalt                                  COMPTIME
+vk_rshift                                COMPTIME
+vk_rcontrol                              COMPTIME
+vk_ralt                                  COMPTIME
+keyboard_clear                           OS
+io_clear                                 OS
+mouse_x                                  IO
+mouse_y                                  IO
+mouse_button                             IO
+mouse_lastbutton                         IO
+mb_any                                   COMPTIME
+mb_none                                  COMPTIME
+mb_left                                  COMPTIME
+mb_right                                 COMPTIME
+mb_middle                                COMPTIME
+mb_side1                                 COMPTIME
+mb_side2                                 COMPTIME
+m_axisx                                  COMPTIME
+m_axisy                                  COMPTIME
+m_axisx_gui                              COMPTIME
+m_axisy_gui                              COMPTIME
+m_scroll_up                              COMPTIME
+m_scroll_down                            COMPTIME
+mouse_check_button                       IO
+mouse_check_button_pressed               IO
+mouse_check_button_released              IO
+mouse_wheel_up                           IO
+mouse_wheel_down                         IO
+mouse_clear                              OS
+cursor_sprite                            OS
+bboxmode_automatic                       COMPTIME
+bboxmode_fullimage                       COMPTIME
+bboxmode_manual                          COMPTIME
+bboxkind_precise                         COMPTIME
+bboxkind_rectangular                     COMPTIME
+bboxkind_ellipse                         COMPTIME
+bboxkind_diamond                         COMPTIME
+background_colour
+background_showcolour
+background_color
+background_showcolor
+draw_self                                DRAW
+draw_sprite                              DRAW
+draw_sprite_pos                          DRAW
+draw_sprite_ext                          DRAW
+draw_sprite_stretched                    DRAW
+draw_sprite_stretched_ext                DRAW
+draw_sprite_tiled                        DRAW
+draw_sprite_tiled_ext                    DRAW
+draw_sprite_part                         DRAW
+draw_sprite_part_ext                     DRAW
+draw_sprite_general                      DRAW
+draw_clear                               DRAW
+draw_clear_alpha                         DRAW
+draw_point                               DRAW
+draw_line                                DRAW
+draw_line_width                          DRAW
+draw_rectangle                           DRAW
+draw_roundrect                           DRAW
+draw_roundrect_ext                       DRAW
+draw_triangle                            DRAW
+draw_circle                              DRAW
+draw_ellipse                             DRAW
+draw_set_circle_precision                DRAW
+draw_arrow                               DRAW
+draw_button                              DRAW
+draw_path                                DRAW
+draw_healthbar                           DRAW
+draw_getpixel                            DRAW
+draw_getpixel_ext                        DRAW
+draw_set_colour                          DRAW
+draw_set_color                           DRAW
+draw_set_alpha                           DRAW
+draw_get_colour                          DRAW
+draw_get_color                           DRAW
+draw_get_alpha                           DRAW
+c_aqua                                   COMPTIME
+c_black                                  COMPTIME
+c_blue                                   COMPTIME
+c_dkgray                                 COMPTIME
+c_dkgrey                                 COMPTIME
+c_fuchsia                                COMPTIME
+c_gray                                   COMPTIME
+c_grey                                   COMPTIME
+c_green                                  COMPTIME
+c_lime                                   COMPTIME
+c_ltgray                                 COMPTIME
+c_ltgrey                                 COMPTIME
+c_maroon                                 COMPTIME
+c_navy                                   COMPTIME
+c_olive                                  COMPTIME
+c_purple                                 COMPTIME
+c_red                                    COMPTIME
+c_silver                                 COMPTIME
+c_teal                                   COMPTIME
+c_white                                  COMPTIME
+c_yellow                                 COMPTIME
+c_orange                                 COMPTIME
+merge_colour                             COMPTIME
+make_colour_rgb                          COMPTIME
+make_colour_hsv                          COMPTIME
+colour_get_red                           COMPTIME
+colour_get_green                         COMPTIME
+colour_get_blue                          COMPTIME
+colour_get_hue                           COMPTIME
+colour_get_saturation                    COMPTIME
+colour_get_value                         COMPTIME
+merge_color                              COMPTIME
+make_color_rgb                           COMPTIME
+make_color_hsv                           COMPTIME
+color_get_red                            COMPTIME
+color_get_green                          COMPTIME
+color_get_blue                           COMPTIME
+color_get_hue                            COMPTIME
+color_get_saturation                     COMPTIME
+color_get_value                          COMPTIME
+screen_save
+screen_save_part
+gif_open
+gif_add_surface
+gif_save
+gif_save_buffer
+draw_set_font                            DRAW
+draw_get_font                            DRAW
+draw_set_halign                          DRAW
+draw_get_halign                          DRAW
+fa_left                                  COMPTIME
+fa_center                                COMPTIME
+fa_right                                 COMPTIME
+draw_set_valign                          DRAW
+draw_get_valign                          DRAW
+fa_top                                   COMPTIME
+fa_middle                                COMPTIME
+fa_bottom                                COMPTIME
+draw_text
+draw_text_ext
+string_width
+string_height
+string_width_ext
+string_height_ext
+draw_text_transformed
+draw_text_ext_transformed
+draw_text_colour
+draw_text_ext_colour
+draw_text_transformed_colour
+draw_text_ext_transformed_colour
+draw_text_color
+draw_text_ext_color
+draw_text_transformed_color
+draw_text_ext_transformed_color
+draw_point_colour
+draw_line_colour
+draw_line_width_colour
+draw_rectangle_colour
+draw_roundrect_colour
+draw_roundrect_colour_ext
+draw_triangle_colour
+draw_circle_colour
+draw_ellipse_colour
+draw_point_color
+draw_line_color
+draw_line_width_color
+draw_rectangle_color
+draw_roundrect_color
+draw_roundrect_color_ext
+draw_triangle_color
+draw_circle_color
+draw_ellipse_color
+pr_pointlist                             COMPTIME
+pr_linelist                              COMPTIME
+pr_linestrip                             COMPTIME
+pr_trianglelist                          COMPTIME
+pr_trianglestrip                         COMPTIME
+pr_trianglefan                           COMPTIME
+draw_primitive_begin
+draw_vertex
+draw_vertex_colour
+draw_vertex_color
+draw_primitive_end
+sprite_get_uvs
+font_get_uvs
+font_get_info
+font_cache_glyph
+sprite_get_texture
+font_get_texture
+texture_get_width
+texture_get_height
+texture_get_uvs
+draw_primitive_begin_texture
+draw_vertex_texture
+draw_vertex_texture_colour
+draw_vertex_texture_color
+texture_global_scale
+bm_normal                                COMPTIME
+bm_add                                   COMPTIME
+bm_max                                   COMPTIME
+bm_subtract                              COMPTIME
+bm_zero                                  COMPTIME
+bm_one                                   COMPTIME
+bm_src_colour                            COMPTIME
+bm_inv_src_colour                        COMPTIME
+bm_src_color                             COMPTIME
+bm_inv_src_color                         COMPTIME
+bm_src_alpha                             COMPTIME
+bm_inv_src_alpha                         COMPTIME
+bm_dest_alpha                            COMPTIME
+bm_inv_dest_alpha                        COMPTIME
+bm_dest_colour                           COMPTIME
+bm_inv_dest_colour                       COMPTIME
+bm_dest_color                            COMPTIME
+bm_inv_dest_color                        COMPTIME
+bm_src_alpha_sat                         COMPTIME
+tf_point                                 COMPTIME
+tf_linear                                COMPTIME
+tf_anisotropic                           COMPTIME
+mip_off                                  COMPTIME
+mip_on                                   COMPTIME
+mip_markedonly                           COMPTIME
+audio_falloff_none                       COMPTIME
+audio_falloff_inverse_distance           COMPTIME
+audio_falloff_inverse_distance_clamped   COMPTIME
+audio_falloff_inverse_distance_scaled    COMPTIME
+audio_falloff_linear_distance            COMPTIME
+audio_falloff_linear_distance_clamped    COMPTIME
+audio_falloff_exponent_distance          COMPTIME
+audio_falloff_exponent_distance_clamped  COMPTIME
+audio_falloff_exponent_distance_scaled   COMPTIME
+audio_mono                               COMPTIME
+audio_stereo                             COMPTIME
+surface_create
+surface_create_ext
+surface_resize
+surface_free
+surface_exists
+surface_get_width
+surface_get_height
+surface_get_texture
+surface_set_target
+surface_set_target_ext
+surface_get_target
+surface_get_target_ext
+surface_reset_target
+surface_depth_disable
+surface_get_depth_disable
+draw_surface
+draw_surface_stretched
+draw_surface_tiled
+draw_surface_part
+draw_surface_ext
+draw_surface_stretched_ext
+draw_surface_tiled_ext
+draw_surface_part_ext
+draw_surface_general
+surface_getpixel
+surface_getpixel_ext
+surface_save
+surface_save_part
+surface_copy
+surface_copy_part
+application_surface_draw_enable
+application_get_position
+application_surface_enable
+application_surface_is_enabled
+video_open
+video_close
+video_set_volume
+video_draw
+video_pause
+video_resume
+video_enable_loop
+video_seek_to
+video_get_duration
+video_get_position
+video_get_status
+video_get_format
+video_is_looping
+video_get_volume
+video_format_rgba                        COMPTIME
+video_format_yuv                         COMPTIME
+video_status_closed                      COMPTIME
+video_status_preparing                   COMPTIME
+video_status_playing                     COMPTIME
+video_status_paused                      COMPTIME
+display_get_width
+display_get_height
+display_get_orientation
+display_get_gui_width
+display_get_gui_height
+display_get_frequency
+display_reset
+display_mouse_get_x
+display_mouse_get_y
+display_mouse_set
+display_set_ui_visibility
+window_set_fullscreen
+window_get_fullscreen
+window_set_caption
+window_set_min_width
+window_set_max_width
+window_set_min_height
+window_set_max_height
+window_get_visible_rects
+window_get_caption
+window_set_cursor
+cr_default                               COMPTIME
+cr_none                                  COMPTIME
+cr_arrow                                 COMPTIME
+cr_cross                                 COMPTIME
+cr_beam                                  COMPTIME
+cr_size_nesw                             COMPTIME
+cr_size_ns                               COMPTIME
+cr_size_nwse                             COMPTIME
+cr_size_we                               COMPTIME
+cr_uparrow                               COMPTIME
+cr_hourglass                             COMPTIME
+cr_drag                                  COMPTIME
+cr_appstart                              COMPTIME
+cr_handpoint                             COMPTIME
+cr_size_all                              COMPTIME
+window_get_cursor
+window_set_colour
+window_get_colour
+window_set_color
+window_get_color
+window_set_position
+window_set_size
+window_set_rectangle
+window_center
+window_get_x
+window_get_y
+window_get_width
+window_get_height
+window_mouse_get_x
+window_mouse_get_y
+window_mouse_set
+view_enabled
+view_current
+view_visible
+view_xport
+view_yport
+view_wport
+view_hport
+view_surface_id
+view_camera
+window_view_mouse_get_x
+window_view_mouse_get_y
+window_views_mouse_get_x
+window_views_mouse_get_y
+audio_listener_position
+audio_listener_velocity
+audio_listener_orientation
+audio_emitter_position
+audio_emitter_create
+audio_emitter_free
+audio_emitter_exists
+audio_emitter_pitch
+audio_emitter_velocity
+audio_emitter_falloff
+audio_emitter_gain
+audio_play_sound
+audio_play_sound_on
+audio_play_sound_at
+audio_stop_sound
+audio_resume_sound
+audio_pause_sound
+audio_channel_num
+audio_sound_length
+audio_get_type
+audio_falloff_set_model
+audio_master_gain
+audio_sound_gain
+audio_sound_pitch
+audio_stop_all
+audio_resume_all
+audio_pause_all
+audio_is_playing
+audio_is_paused
+audio_exists
+audio_system_is_available
+audio_sound_is_playable
+audio_emitter_get_gain
+audio_emitter_get_pitch
+audio_emitter_get_x
+audio_emitter_get_y
+audio_emitter_get_z
+audio_emitter_get_vx
+audio_emitter_get_vy
+audio_emitter_get_vz
+audio_listener_set_position
+audio_listener_set_velocity
+audio_listener_set_orientation
+audio_listener_get_data
+audio_set_master_gain
+audio_get_master_gain
+audio_sound_get_gain
+audio_sound_get_pitch
+audio_get_name
+audio_sound_set_track_position
+audio_sound_get_track_position
+audio_create_stream
+audio_destroy_stream
+audio_create_sync_group
+audio_destroy_sync_group
+audio_play_in_sync_group
+audio_start_sync_group
+audio_stop_sync_group
+audio_pause_sync_group
+audio_resume_sync_group
+audio_sync_group_get_track_pos
+audio_sync_group_debug
+audio_sync_group_is_playing
+audio_debug
+audio_group_load
+audio_group_unload
+audio_group_is_loaded
+audio_group_load_progress
+audio_group_name
+audio_group_stop_all
+audio_group_set_gain
+audio_create_buffer_sound
+audio_free_buffer_sound
+audio_create_play_queue
+audio_free_play_queue
+audio_queue_sound
+audio_get_recorder_count
+audio_get_recorder_info
+audio_start_recording
+audio_stop_recording
+audio_sound_get_listener_mask
+audio_emitter_get_listener_mask
+audio_get_listener_mask
+audio_sound_set_listener_mask
+audio_emitter_set_listener_mask
+audio_set_listener_mask
+audio_get_listener_count
+audio_get_listener_info
+show_message
+show_message_async
+clickable_add
+clickable_add_ext
+clickable_change
+clickable_change_ext
+clickable_delete
+clickable_exists
+clickable_set_style
+show_question
+show_question_async
+get_integer_async
+get_string_async
+get_login_async
+get_open_filename
+get_save_filename
+get_open_filename_ext
+get_save_filename_ext
+show_error
+highscore_clear
+highscore_add
+highscore_value
+highscore_name
+draw_highscore
+sprite_exists
+sprite_get_name
+sprite_get_number
+sprite_get_width
+sprite_get_height
+sprite_get_xoffset
+sprite_get_yoffset
+sprite_get_bbox_mode
+sprite_get_bbox_left
+sprite_get_bbox_right
+sprite_get_bbox_top
+sprite_get_bbox_bottom
+sprite_set_bbox_mode
+sprite_set_bbox
+sprite_save
+sprite_save_strip
+sprite_set_cache_size
+sprite_set_cache_size_ext
+sprite_get_tpe
+sprite_prefetch
+sprite_prefetch_multi
+sprite_flush
+sprite_flush_multi
+sprite_set_speed
+sprite_get_speed_type
+sprite_get_speed
+sprite_get_info
+sprite_get_nineslice
+sprite_set_nineslice
+sprite_nineslice_create
+texture_is_ready
+texture_prefetch
+texture_flush
+texturegroup_get_textures
+texturegroup_get_sprites
+texturegroup_get_fonts
+texturegroup_get_tilesets
+texturegroup_load
+texturegroup_unload
+texturegroup_get_status
+texturegroup_set_mode
+texture_debug_messages
+spritespeed_framespersecond              COMPTIME
+spritespeed_framespergameframe           COMPTIME
+font_exists
+font_get_name
+font_get_fontname
+font_get_bold
+font_get_italic
+font_get_first
+font_get_last
+font_get_size
+font_set_cache_size
+path_exists
+path_get_name
+path_get_length
+path_get_kind
+path_get_closed
+path_get_precision
+path_get_number
+path_get_point_x
+path_get_point_y
+path_get_point_speed
+path_get_x
+path_get_y
+path_get_speed
+script_exists
+script_get_name
+timeline_add
+timeline_delete
+timeline_clear
+timeline_exists
+timeline_get_name
+timeline_moment_clear
+timeline_moment_add_script
+timeline_size
+timeline_max_moment
+object_exists
+object_get_name
+object_get_sprite
+object_get_solid
+object_get_visible
+object_get_persistent
+object_get_mask
+object_get_parent
+object_get_physics
+object_is_ancestor
+room_exists
+room_get_name
+sprite_set_offset
+sprite_duplicate
+sprite_assign
+sprite_merge
+sprite_add
+sprite_replace
+sprite_create_from_surface
+sprite_add_from_surface
+sprite_delete
+sprite_set_alpha_from_sprite
+sprite_collision_mask
+font_add_enable_aa
+font_add_get_enable_aa
+font_add
+font_add_sprite
+font_add_sprite_ext
+font_replace_sprite
+font_replace_sprite_ext
+font_delete
+path_set_kind
+path_set_closed
+path_set_precision
+path_add
+path_assign
+path_duplicate
+path_append
+path_delete
+path_add_point
+path_insert_point
+path_change_point
+path_delete_point
+path_clear_points
+path_reverse
+path_mirror
+path_flip
+path_rotate
+path_rescale
+path_shift
+script_execute
+script_execute_ext
+object_set_sprite
+object_set_solid
+object_set_visible
+object_set_persistent
+object_set_mask
+room_set_width
+room_set_height
+room_set_persistent
+room_set_viewport
+room_get_viewport
+room_set_view_enabled
+room_add
+room_duplicate
+room_assign
+room_instance_add
+room_instance_clear
+room_get_camera
+room_set_camera
+asset_get_index
+asset_get_type
+asset_object                             COMPTIME
+asset_unknown                            COMPTIME
+asset_sprite                             COMPTIME
+asset_sound                              COMPTIME
+asset_room                               COMPTIME
+asset_path                               COMPTIME
+asset_script                             COMPTIME
+asset_font                               COMPTIME
+asset_timeline                           COMPTIME
+asset_tiles                              COMPTIME
+asset_shader                             COMPTIME
+asset_sequence                           COMPTIME
+asset_animationcurve                     COMPTIME
+file_text_open_from_string
+file_text_open_read
+file_text_open_write
+file_text_open_append
+file_text_close
+file_text_write_string
+file_text_write_real
+file_text_writeln
+file_text_read_string
+file_text_read_real
+file_text_readln
+file_text_eof
+file_text_eoln
+file_exists
+file_delete
+file_rename
+file_copy
+directory_exists
+directory_create
+directory_destroy
+file_find_first
+file_find_next
+file_find_close
+file_attributes
+filename_name
+filename_path
+filename_dir
+filename_drive
+filename_ext
+filename_change_ext
+file_bin_open
+file_bin_rewrite
+file_bin_close
+file_bin_position
+file_bin_size
+file_bin_seek
+file_bin_write_byte
+file_bin_read_byte
+parameter_count
+parameter_string
+environment_get_variable
+fa_readonly                              COMPTIME
+fa_hidden                                COMPTIME
+fa_sysfile                               COMPTIME
+fa_volumeid                              COMPTIME
+fa_directory                             COMPTIME
+fa_archive                               COMPTIME
+game_id
+game_display_name
+game_project_name
+game_save_id
+working_directory
+temp_directory
+program_directory
+ini_open_from_string
+ini_open
+ini_close
+ini_read_string
+ini_read_real
+ini_write_string
+ini_write_real
+ini_key_exists
+ini_section_exists
+ini_key_delete
+ini_section_delete
+ds_set_precision
+ds_exists
+ds_type_map                              COMPTIME
+ds_type_list                             COMPTIME
+ds_type_stack                            COMPTIME
+ds_type_queue                            COMPTIME
+ds_type_grid                             COMPTIME
+ds_type_priority                         COMPTIME
+ds_stack_create
+ds_stack_destroy
+ds_stack_clear
+ds_stack_copy
+ds_stack_size
+ds_stack_empty
+ds_stack_push
+ds_stack_pop
+ds_stack_top
+ds_stack_write
+ds_stack_read
+ds_queue_create
+ds_queue_destroy
+ds_queue_clear
+ds_queue_copy
+ds_queue_size
+ds_queue_empty
+ds_queue_enqueue
+ds_queue_dequeue
+ds_queue_head
+ds_queue_tail
+ds_queue_write
+ds_queue_read
+ds_list_create
+ds_list_destroy
+ds_list_clear
+ds_list_copy
+ds_list_size
+ds_list_empty
+ds_list_add
+ds_list_insert
+ds_list_replace
+ds_list_delete
+ds_list_find_index
+ds_list_find_value
+ds_list_is_map
+ds_list_is_list
+ds_list_mark_as_list
+ds_list_mark_as_map
+ds_list_sort
+ds_list_shuffle
+ds_list_write
+ds_list_read
+ds_list_set
+ds_map_create
+ds_map_destroy
+ds_map_clear
+ds_map_copy
+ds_map_size
+ds_map_empty
+ds_map_add
+ds_map_add_list
+ds_map_add_map
+ds_map_replace
+ds_map_replace_map
+ds_map_replace_list
+ds_map_delete
+ds_map_exists
+ds_map_values_to_array
+ds_map_keys_to_array
+ds_map_find_value
+ds_map_is_map
+ds_map_is_list
+ds_map_find_previous
+ds_map_find_next
+ds_map_find_first
+ds_map_find_last
+ds_map_write
+ds_map_read
+ds_map_secure_save
+ds_map_secure_load
+ds_map_secure_load_buffer
+ds_map_secure_save_buffer
+ds_map_set
+ds_priority_create
+ds_priority_destroy
+ds_priority_clear
+ds_priority_copy
+ds_priority_size
+ds_priority_empty
+ds_priority_add
+ds_priority_change_priority
+ds_priority_find_priority
+ds_priority_delete_value
+ds_priority_delete_min
+ds_priority_find_min
+ds_priority_delete_max
+ds_priority_find_max
+ds_priority_write
+ds_priority_read
+ds_grid_create
+ds_grid_destroy
+ds_grid_copy
+ds_grid_resize
+ds_grid_width
+ds_grid_height
+ds_grid_clear
+ds_grid_add
+ds_grid_multiply
+ds_grid_set_region
+ds_grid_add_region
+ds_grid_multiply_region
+ds_grid_set_disk
+ds_grid_add_disk
+ds_grid_multiply_disk
+ds_grid_set_grid_region
+ds_grid_add_grid_region
+ds_grid_multiply_grid_region
+ds_grid_get_sum
+ds_grid_get_max
+ds_grid_get_min
+ds_grid_get_mean
+ds_grid_get_disk_sum
+ds_grid_get_disk_min
+ds_grid_get_disk_max
+ds_grid_get_disk_mean
+ds_grid_value_exists
+ds_grid_value_x
+ds_grid_value_y
+ds_grid_value_disk_exists
+ds_grid_value_disk_x
+ds_grid_value_disk_y
+ds_grid_shuffle
+ds_grid_write
+ds_grid_read
+ds_grid_sort
+ds_grid_set
+ds_grid_get
+effect_create_below
+effect_create_above
+effect_clear
+ef_explosion                             COMPTIME
+ef_ring                                  COMPTIME
+ef_ellipse                               COMPTIME
+ef_firework                              COMPTIME
+ef_smoke                                 COMPTIME
+ef_smokeup                               COMPTIME
+ef_star                                  COMPTIME
+ef_spark                                 COMPTIME
+ef_flare                                 COMPTIME
+ef_cloud                                 COMPTIME
+ef_rain                                  COMPTIME
+ef_snow                                  COMPTIME
+part_type_create
+part_type_destroy
+part_type_exists
+part_type_clear
+part_type_shape
+part_type_sprite
+part_type_size
+part_type_scale
+part_type_orientation
+part_type_life
+part_type_step
+part_type_death
+part_type_speed
+part_type_direction
+part_type_gravity
+part_type_colour1
+part_type_colour2
+part_type_colour3
+part_type_colour_mix
+part_type_colour_rgb
+part_type_colour_hsv
+part_type_color1
+part_type_color2
+part_type_color3
+part_type_color_mix
+part_type_color_rgb
+part_type_color_hsv
+part_type_alpha1
+part_type_alpha2
+part_type_alpha3
+part_type_blend
+pt_shape_pixel                           COMPTIME
+pt_shape_disk                            COMPTIME
+pt_shape_square                          COMPTIME
+pt_shape_line                            COMPTIME
+pt_shape_star                            COMPTIME
+pt_shape_circle                          COMPTIME
+pt_shape_ring                            COMPTIME
+pt_shape_sphere                          COMPTIME
+pt_shape_flare                           COMPTIME
+pt_shape_spark                           COMPTIME
+pt_shape_explosion                       COMPTIME
+pt_shape_cloud                           COMPTIME
+pt_shape_smoke                           COMPTIME
+pt_shape_snow                            COMPTIME
+part_system_create
+part_system_create_layer
+part_system_destroy
+part_system_exists
+part_system_clear
+part_system_draw_order
+part_system_depth
+part_system_position
+part_system_automatic_update
+part_system_automatic_draw
+part_system_update
+part_system_drawit
+part_system_get_layer
+part_system_layer
+part_particles_create
+part_particles_create_colour
+part_particles_create_color
+part_particles_clear
+part_particles_count
+part_emitter_create
+part_emitter_destroy
+part_emitter_destroy_all
+part_emitter_exists
+part_emitter_clear
+part_emitter_region
+part_emitter_burst
+part_emitter_stream
+ps_distr_linear                          COMPTIME
+ps_distr_gaussian                        COMPTIME
+ps_distr_invgaussian                     COMPTIME
+ps_shape_rectangle                       COMPTIME
+ps_shape_ellipse                         COMPTIME
+ps_shape_diamond                         COMPTIME
+ps_shape_line                            COMPTIME
+external_call                            UNSAFE
+external_define                          UNSAFE
+external_free                            UNSAFE
+window_handle                            UNSAFE
+window_device                            UNSAFE
+ty_real                                  UNSAFE
+ty_string                                UNSAFE
+dll_cdecl                                UNSAFE
+dll_stdcall                              UNSAFE
+matrix_view                              COMPTIME
+matrix_projection                        COMPTIME
+matrix_world                             COMPTIME
+matrix_get
+matrix_set
+matrix_build_identity
+matrix_build
+matrix_build_lookat
+matrix_build_projection_ortho
+matrix_build_projection_perspective
+matrix_build_projection_perspective_fov
+matrix_multiply
+matrix_transform_vertex
+matrix_stack_push
+matrix_stack_pop
+matrix_stack_set
+matrix_stack_clear
+matrix_stack_top
+matrix_stack_is_empty
+os_windows                               COMPTIME
+os_macosx                                COMPTIME
+os_ios                                   COMPTIME
+os_android                               COMPTIME
+os_linux                                 COMPTIME
+os_unknown                               COMPTIME
+os_winphone                              COMPTIME
+os_win8native                            COMPTIME
+os_psvita                                COMPTIME
+os_ps4                                   COMPTIME
+os_xboxone                               COMPTIME
+os_ps3                                   COMPTIME
+os_uwp                                   COMPTIME
+os_tvos                                  COMPTIME
+os_switch                                COMPTIME
+os_ps5                                   COMPTIME
+os_xboxseriesxs                          COMPTIME
+os_gdk                                   COMPTIME
+os_operagx                               COMPTIME
+os_gxgames                               COMPTIME
+browser_not_a_browser                    COMPTIME
+browser_unknown                          COMPTIME
+browser_ie                               COMPTIME
+browser_firefox                          COMPTIME
+browser_chrome                           COMPTIME
+browser_safari                           COMPTIME
+browser_safari_mobile                    COMPTIME
+browser_opera                            COMPTIME
+browser_tizen                            COMPTIME
+browser_edge                             COMPTIME
+browser_windows_store                    COMPTIME
+browser_ie_mobile                        COMPTIME
+browser_width                            COMPTIME
+browser_height                           COMPTIME
+browser_input_capture                    COMPTIME
+device_ios_unknown                       COMPTIME
+device_ios_iphone                        COMPTIME
+device_ios_iphone_retina                 COMPTIME
+device_ios_ipad                          COMPTIME
+device_ios_ipad_retina                   COMPTIME
+device_ios_iphone5                       COMPTIME
+device_ios_iphone6                       COMPTIME
+device_ios_iphone6plus                   COMPTIME
+device_emulator                          COMPTIME
+device_tablet                            COMPTIME
+display_landscape                        COMPTIME
+display_landscape_flipped                COMPTIME
+display_portrait                         COMPTIME
+display_portrait_flipped                 COMPTIME
+os_type
+os_device
+os_browser
+os_version
+os_get_config
+os_get_info
+os_get_language
+os_get_region
+os_check_permission
+os_request_permission
+os_lock_orientation
+os_set_orientation_lock
+display_get_dpi_x
+display_get_dpi_y
+display_set_gui_size
+display_set_gui_maximise
+display_set_gui_maximize
+device_mouse_dbclick_enable
+display_aa
+async_load
+delta_time
+webgl_enabled
+event_data
+display_set_timing_method
+display_get_timing_method
+tm_sleep                                 COMPTIME
+tm_countvsyncs                           COMPTIME
+display_set_sleep_margin
+display_get_sleep_margin
+of_challenge_win                         COMPTIME
+of_challenge_lose                        COMPTIME
+of_challenge_tie                         COMPTIME
+leaderboard_type_number                  COMPTIME
+leaderboard_type_time_mins_secs          COMPTIME
+virtual_key_add
+virtual_key_hide
+virtual_key_delete
+virtual_key_show
+draw_enable_drawevent
+draw_enable_swf_aa
+draw_set_swf_aa_level
+draw_get_swf_aa_level
+draw_texture_flush
+draw_flush
+cmpfunc_never                            COMPTIME
+cmpfunc_less                             COMPTIME
+cmpfunc_equal                            COMPTIME
+cmpfunc_lessequal                        COMPTIME
+cmpfunc_greater                          COMPTIME
+cmpfunc_notequal                         COMPTIME
+cmpfunc_greaterequal                     COMPTIME
+cmpfunc_always                           COMPTIME
+cull_noculling                           COMPTIME
+cull_clockwise                           COMPTIME
+cull_counterclockwise                    COMPTIME
+lighttype_dir                            COMPTIME
+lighttype_point                          COMPTIME
+gpu_set_blendenable
+gpu_set_ztestenable
+gpu_set_zfunc
+gpu_set_zwriteenable
+gpu_set_fog
+gpu_set_cullmode
+gpu_set_blendmode
+gpu_set_blendmode_ext
+gpu_set_blendmode_ext_sepalpha
+gpu_set_colorwriteenable
+gpu_set_colourwriteenable
+gpu_set_alphatestenable
+gpu_set_alphatestref
+gpu_set_texfilter
+gpu_set_texfilter_ext
+gpu_set_texrepeat
+gpu_set_texrepeat_ext
+gpu_set_tex_filter
+gpu_set_tex_filter_ext
+gpu_set_tex_repeat
+gpu_set_tex_repeat_ext
+gpu_set_tex_mip_filter
+gpu_set_tex_mip_filter_ext
+gpu_set_tex_mip_bias
+gpu_set_tex_mip_bias_ext
+gpu_set_tex_min_mip
+gpu_set_tex_min_mip_ext
+gpu_set_tex_max_mip
+gpu_set_tex_max_mip_ext
+gpu_set_tex_max_aniso
+gpu_set_tex_max_aniso_ext
+gpu_set_tex_mip_enable
+gpu_set_tex_mip_enable_ext
+gpu_get_blendenable
+gpu_get_ztestenable
+gpu_get_zfunc
+gpu_get_zwriteenable
+gpu_get_fog
+gpu_get_cullmode
+gpu_get_blendmode
+gpu_get_blendmode_ext
+gpu_get_blendmode_ext_sepalpha
+gpu_get_blendmode_src
+gpu_get_blendmode_dest
+gpu_get_blendmode_srcalpha
+gpu_get_blendmode_destalpha
+gpu_get_colorwriteenable
+gpu_get_colourwriteenable
+gpu_get_alphatestenable
+gpu_get_alphatestref
+gpu_get_texfilter
+gpu_get_texfilter_ext
+gpu_get_texrepeat
+gpu_get_texrepeat_ext
+gpu_get_tex_filter
+gpu_get_tex_filter_ext
+gpu_get_tex_repeat
+gpu_get_tex_repeat_ext
+gpu_get_tex_mip_filter
+gpu_get_tex_mip_filter_ext
+gpu_get_tex_mip_bias
+gpu_get_tex_mip_bias_ext
+gpu_get_tex_min_mip
+gpu_get_tex_min_mip_ext
+gpu_get_tex_max_mip
+gpu_get_tex_max_mip_ext
+gpu_get_tex_max_aniso
+gpu_get_tex_max_aniso_ext
+gpu_get_tex_mip_enable
+gpu_get_tex_mip_enable_ext
+gpu_push_state
+gpu_pop_state
+gpu_get_state
+gpu_set_state
+draw_light_define_ambient
+draw_light_define_direction
+draw_light_define_point
+draw_light_enable
+draw_set_lighting
+draw_light_get_ambient
+draw_light_get
+draw_get_lighting
+shop_leave_rating
+url_get_domain
+url_open
+url_open_ext
+url_open_full
+get_timer
+device_get_tilt_x
+device_get_tilt_y
+device_get_tilt_z
+device_is_keypad_open
+device_mouse_check_button
+device_mouse_check_button_pressed
+device_mouse_check_button_released
+device_mouse_x
+device_mouse_y
+device_mouse_raw_x
+device_mouse_raw_y
+device_mouse_x_to_gui
+device_mouse_y_to_gui
+iap_activate
+iap_status
+iap_enumerate_products
+iap_restore_all
+iap_acquire
+iap_consume
+iap_product_details
+iap_purchase_details
+iap_data
+iap_ev_storeload                         COMPTIME
+iap_ev_product                           COMPTIME
+iap_ev_purchase                          COMPTIME
+iap_ev_consume                           COMPTIME
+iap_ev_restore                           COMPTIME
+iap_storeload_ok                         COMPTIME
+iap_storeload_failed                     COMPTIME
+iap_status_uninitialised                 COMPTIME
+iap_status_unavailable                   COMPTIME
+iap_status_loading                       COMPTIME
+iap_status_available                     COMPTIME
+iap_status_processing                    COMPTIME
+iap_status_restoring                     COMPTIME
+iap_failed                               COMPTIME
+iap_unavailable                          COMPTIME
+iap_available                            COMPTIME
+iap_purchased                            COMPTIME
+iap_canceled                             COMPTIME
+iap_refunded                             COMPTIME
+gamepad_is_supported
+gamepad_get_device_count
+gamepad_is_connected
+gamepad_get_description
+gamepad_get_button_threshold
+gamepad_set_button_threshold
+gamepad_get_axis_deadzone
+gamepad_set_axis_deadzone
+gamepad_button_count
+gamepad_button_check
+gamepad_button_check_pressed
+gamepad_button_check_released
+gamepad_button_value
+gamepad_axis_count
+gamepad_axis_value
+gamepad_set_vibration
+gamepad_set_colour
+gamepad_set_color
+gamepad_hat_count
+gamepad_hat_value
+gamepad_remove_mapping
+gamepad_test_mapping
+gamepad_get_mapping
+gamepad_get_guid
+gamepad_set_option
+gamepad_get_option
+os_is_paused
+window_has_focus
+code_is_compiled
+http_get
+http_get_file
+http_post_string
+http_request
+http_get_request_crossorigin
+http_set_request_crossorigin
+json_encode
+json_decode
+json_stringify
+json_parse
+zip_unzip
+load_csv
+base64_encode                            COMPTIME
+base64_decode                            COMPTIME
+md5_string_unicode
+md5_string_utf8
+md5_file
+os_is_network_connected
+sha1_string_unicode
+sha1_string_utf8
+sha1_file
+os_powersave_enable
+uwp_livetile_tile_clear
+uwp_livetile_badge_notification
+uwp_livetile_badge_clear
+uwp_livetile_queue_enable
+uwp_secondarytile_pin
+uwp_secondarytile_badge_notification
+uwp_secondarytile_delete
+uwp_secondarytile_badge_clear
+uwp_secondarytile_tile_clear
+uwp_livetile_notification_begin
+uwp_livetile_notification_secondary_begin
+uwp_livetile_notification_expiry
+uwp_livetile_notification_tag
+uwp_livetile_notification_text_add
+uwp_livetile_notification_image_add
+uwp_livetile_notification_end
+uwp_livetile_notification_template_add
+uwp_device_touchscreen_available
+winphone_tile_background_colour
+winphone_tile_background_color
+network_create_socket
+network_create_socket_ext
+network_create_server
+network_create_server_raw
+network_connect
+network_connect_raw
+network_connect_async
+network_connect_raw_async
+network_send_packet
+network_send_raw
+network_send_broadcast
+network_send_udp
+network_send_udp_raw
+network_set_timeout
+network_set_config
+network_resolve
+network_destroy
+network_socket_tcp                       COMPTIME
+network_socket_udp                       COMPTIME
+network_socket_ws                        COMPTIME
+network_socket_wss                       COMPTIME
+network_socket_bluetooth                 COMPTIME
+network_type_connect                     COMPTIME
+network_type_disconnect                  COMPTIME
+network_type_data                        COMPTIME
+network_type_non_blocking_connect        COMPTIME
+network_type_up                          COMPTIME
+network_type_up_failed                   COMPTIME
+network_type_down                        COMPTIME
+network_send_binary                      COMPTIME
+network_send_text                        COMPTIME
+network_config_connect_timeout           COMPTIME
+network_config_use_non_blocking_socket   COMPTIME
+network_config_enable_reliable_udp       COMPTIME
+network_config_disable_reliable_udp      COMPTIME
+network_config_avoid_time_wait           COMPTIME
+network_config_websocket_protocol        COMPTIME
+network_connect_none                     COMPTIME
+network_connect_blocking                 COMPTIME
+network_connect_nonblocking              COMPTIME
+buffer_create
+buffer_write
+buffer_read
+buffer_seek
+buffer_get_surface
+buffer_set_surface
+buffer_set_used_size
+buffer_delete
+buffer_exists
+buffer_get_type
+buffer_get_alignment
+buffer_poke
+buffer_peek
+buffer_save
+buffer_save_ext
+buffer_load
+buffer_load_ext
+buffer_load_partial
+buffer_copy
+buffer_fill
+buffer_get_size
+buffer_tell
+buffer_resize
+buffer_md5
+buffer_sha1
+buffer_crc32
+buffer_base64_encode
+buffer_base64_decode
+buffer_base64_decode_ext
+buffer_sizeof
+buffer_get_address
+buffer_create_from_vertex_buffer
+buffer_create_from_vertex_buffer_ext
+buffer_copy_from_vertex_buffer
+buffer_async_group_begin
+buffer_async_group_option
+buffer_async_group_end
+buffer_load_async
+buffer_save_async
+buffer_compress
+buffer_decompress
+buffer_fixed                             COMPTIME
+buffer_grow                              COMPTIME
+buffer_wrap                              COMPTIME
+buffer_fast                              COMPTIME
+buffer_vbuffer                           COMPTIME
+buffer_u8                                COMPTIME
+buffer_s8                                COMPTIME
+buffer_u16                               COMPTIME
+buffer_s16                               COMPTIME
+buffer_u32                               COMPTIME
+buffer_s32                               COMPTIME
+buffer_u64                               COMPTIME
+buffer_f16                               COMPTIME
+buffer_f32                               COMPTIME
+buffer_f64                               COMPTIME
+buffer_bool                              COMPTIME
+buffer_text                              COMPTIME
+buffer_string                            COMPTIME
+buffer_seek_start                        COMPTIME
+buffer_seek_relative                     COMPTIME
+buffer_seek_end                          COMPTIME
+gp_face1                                 COMPTIME
+gp_face2                                 COMPTIME
+gp_face3                                 COMPTIME
+gp_face4                                 COMPTIME
+gp_shoulderl                             COMPTIME
+gp_shoulderr                             COMPTIME
+gp_shoulderlb                            COMPTIME
+gp_shoulderrb                            COMPTIME
+gp_select                                COMPTIME
+gp_start                                 COMPTIME
+gp_stickl                                COMPTIME
+gp_stickr                                COMPTIME
+gp_padu                                  COMPTIME
+gp_padd                                  COMPTIME
+gp_padl                                  COMPTIME
+gp_padr                                  COMPTIME
+gp_axislh                                COMPTIME
+gp_axislv                                COMPTIME
+gp_axisrh                                COMPTIME
+gp_axisrv                                COMPTIME
+gp_axis_acceleration_x                   COMPTIME
+gp_axis_acceleration_y                   COMPTIME
+gp_axis_acceleration_z                   COMPTIME
+gp_axis_angular_velocity_x               COMPTIME
+gp_axis_angular_velocity_y               COMPTIME
+gp_axis_angular_velocity_z               COMPTIME
+gp_axis_orientation_x                    COMPTIME
+gp_axis_orientation_y                    COMPTIME
+gp_axis_orientation_z                    COMPTIME
+gp_axis_orientation_w                    COMPTIME
+shader_set
+shader_get_name
+shader_reset
+shader_current
+shader_is_compiled
+shader_get_sampler_index
+shader_get_uniform
+shader_set_uniform_i
+shader_set_uniform_i_array
+shader_set_uniform_f
+shader_set_uniform_f_array
+shader_set_uniform_matrix
+shader_set_uniform_matrix_array
+shader_enable_corner_id
+texture_set_stage
+texture_get_texel_width
+texture_get_texel_height
+shaders_are_supported
+vertex_format_begin
+vertex_format_end
+vertex_format_delete
+vertex_format_add_position
+vertex_format_add_position_3d
+vertex_format_add_colour
+vertex_format_add_color
+vertex_format_add_normal
+vertex_format_add_texcoord
+vertex_format_add_custom
+vertex_usage_position                    COMPTIME
+vertex_usage_colour                      COMPTIME
+vertex_usage_color                       COMPTIME
+vertex_usage_normal                      COMPTIME
+vertex_usage_texcoord                    COMPTIME
+vertex_usage_blendweight                 COMPTIME
+vertex_usage_blendindices                COMPTIME
+vertex_usage_psize                       COMPTIME
+vertex_usage_tangent                     COMPTIME
+vertex_usage_binormal                    COMPTIME
+vertex_usage_fog                         COMPTIME
+vertex_usage_depth                       COMPTIME
+vertex_usage_sample                      COMPTIME
+vertex_type_float1                       COMPTIME
+vertex_type_float2                       COMPTIME
+vertex_type_float3                       COMPTIME
+vertex_type_float4                       COMPTIME
+vertex_type_colour                       COMPTIME
+vertex_type_color                        COMPTIME
+vertex_type_ubyte4                       COMPTIME
+vertex_create_buffer
+vertex_create_buffer_ext
+vertex_delete_buffer
+vertex_begin
+vertex_end
+vertex_position
+vertex_position_3d
+vertex_colour
+vertex_color
+vertex_argb
+vertex_texcoord
+vertex_normal
+vertex_float1
+vertex_float2
+vertex_float3
+vertex_float4
+vertex_ubyte4
+vertex_submit
+vertex_freeze
+vertex_get_number
+vertex_get_buffer_size
+vertex_create_buffer_from_buffer
+vertex_create_buffer_from_buffer_ext
+skeleton_animation_set
+skeleton_animation_get
+skeleton_animation_mix
+skeleton_animation_set_ext
+skeleton_animation_get_ext
+skeleton_animation_get_duration
+skeleton_animation_get_frames
+skeleton_animation_clear
+skeleton_skin_set
+skeleton_skin_get
+skeleton_skin_create
+skeleton_attachment_set
+skeleton_attachment_get
+skeleton_attachment_create
+skeleton_attachment_create_colour
+skeleton_attachment_create_color
+skeleton_collision_draw_set
+skeleton_bone_data_get
+skeleton_bone_data_set
+skeleton_bone_state_get
+skeleton_bone_state_set
+skeleton_slot_colour_set
+skeleton_slot_color_set
+skeleton_slot_colour_get
+skeleton_slot_color_get
+skeleton_slot_alpha_get
+skeleton_find_slot
+skeleton_get_minmax
+skeleton_get_num_bounds
+skeleton_get_bounds
+skeleton_animation_get_frame
+skeleton_animation_set_frame
+skeleton_animation_get_position
+skeleton_animation_set_position
+skeleton_animation_get_event_frames
+skeleton_animation_is_looping
+skeleton_animation_is_finished
+draw_skeleton
+draw_skeleton_time
+draw_skeleton_instance
+draw_skeleton_collision
+draw_enable_skeleton_blendmodes
+draw_get_enable_skeleton_blendmodes
+skeleton_animation_list
+skeleton_skin_list
+skeleton_bone_list
+skeleton_slot_list
+skeleton_slot_data
+skeleton_slot_data_instance
+layer_get_id
+layer_get_id_at_depth
+layer_get_depth
+layer_create
+layer_destroy
+layer_destroy_instances
+layer_add_instance
+layer_has_instance
+layer_set_visible
+layer_get_visible
+layer_exists
+layer_x
+layer_y
+layer_get_x
+layer_get_y
+layer_hspeed
+layer_vspeed
+layer_get_hspeed
+layer_get_vspeed
+layer_script_begin
+layer_script_end
+layer_shader
+layer_get_script_begin
+layer_get_script_end
+layer_get_shader
+layer_set_target_room
+layer_get_target_room
+layer_reset_target_room
+layer_get_all
+layer_get_all_elements
+layer_get_name
+layer_depth
+layer_get_element_layer
+layer_get_element_type
+layer_element_move
+layer_force_draw_depth
+layer_is_draw_depth_forced
+layer_get_forced_depth
+layerelementtype_undefined               COMPTIME
+layerelementtype_background              COMPTIME
+layerelementtype_instance                COMPTIME
+layerelementtype_oldtilemap              COMPTIME
+layerelementtype_sprite                  COMPTIME
+layerelementtype_tilemap                 COMPTIME
+layerelementtype_particlesystem          COMPTIME
+layerelementtype_tile                    COMPTIME
+layerelementtype_sequence                COMPTIME
+layer_background_get_id
+layer_background_exists
+layer_background_create
+layer_background_destroy
+layer_background_visible
+layer_background_change
+layer_background_sprite
+layer_background_htiled
+layer_background_vtiled
+layer_background_stretch
+layer_background_yscale
+layer_background_xscale
+layer_background_blend
+layer_background_alpha
+layer_background_index
+layer_background_speed
+layer_background_get_visible
+layer_background_get_sprite
+layer_background_get_htiled
+layer_background_get_vtiled
+layer_background_get_stretch
+layer_background_get_yscale
+layer_background_get_xscale
+layer_background_get_blend
+layer_background_get_alpha
+layer_background_get_index
+layer_background_get_speed
+layer_sprite_get_id
+layer_sprite_exists
+layer_sprite_create
+layer_sprite_destroy
+layer_sprite_change
+layer_sprite_index
+layer_sprite_speed
+layer_sprite_xscale
+layer_sprite_yscale
+layer_sprite_angle
+layer_sprite_blend
+layer_sprite_alpha
+layer_sprite_x
+layer_sprite_y
+layer_sprite_get_sprite
+layer_sprite_get_index
+layer_sprite_get_speed
+layer_sprite_get_xscale
+layer_sprite_get_yscale
+layer_sprite_get_angle
+layer_sprite_get_blend
+layer_sprite_get_alpha
+layer_sprite_get_x
+layer_sprite_get_y
+layer_tilemap_get_id
+layer_tilemap_exists
+layer_tilemap_create
+layer_tilemap_destroy
+tilemap_tileset
+tilemap_x
+tilemap_y
+tilemap_set
+tilemap_set_at_pixel
+tileset_get_texture
+tileset_get_uvs
+tileset_get_name
+tilemap_get_tileset
+tilemap_get_tile_width
+tilemap_get_tile_height
+tilemap_get_width
+tilemap_get_height
+tilemap_set_width
+tilemap_set_height
+tilemap_get_x
+tilemap_get_y
+tilemap_get
+tilemap_get_at_pixel
+tilemap_get_cell_x_at_pixel
+tilemap_get_cell_y_at_pixel
+tilemap_clear
+draw_tilemap
+draw_tile
+tilemap_set_global_mask
+tilemap_get_global_mask
+tilemap_set_mask
+tilemap_get_mask
+tilemap_get_frame
+tile_set_empty
+tile_set_index
+tile_set_flip
+tile_set_mirror
+tile_set_rotate
+tile_get_empty
+tile_get_index
+tile_get_flip
+tile_get_mirror
+tile_get_rotate
+tile_rotate                              COMPTIME
+tile_flip                                COMPTIME
+tile_mirror                              COMPTIME
+tile_index_mask                          COMPTIME
+layer_instance_get_instance
+instance_activate_layer
+instance_deactivate_layer
+camera_create
+camera_create_view
+camera_destroy
+camera_apply
+camera_get_active
+camera_get_default
+camera_set_default
+camera_set_view_mat
+camera_set_proj_mat
+camera_set_update_script
+camera_set_begin_script
+camera_set_end_script
+camera_set_view_pos
+camera_set_view_size
+camera_set_view_speed
+camera_set_view_border
+camera_set_view_angle
+camera_set_view_target
+camera_get_view_mat
+camera_get_proj_mat
+camera_get_update_script
+camera_get_begin_script
+camera_get_end_script
+camera_get_view_x
+camera_get_view_y
+camera_get_view_width
+camera_get_view_height
+camera_get_view_speed_x
+camera_get_view_speed_y
+camera_get_view_border_x
+camera_get_view_border_y
+camera_get_view_angle
+camera_get_view_target
+view_get_camera
+view_get_visible
+view_get_xport
+view_get_yport
+view_get_wport
+view_get_hport
+view_get_surface_id
+view_set_camera
+view_set_visible
+view_set_xport
+view_set_yport
+view_set_wport
+view_set_hport
+view_set_surface_id
+gesture_drag_time
+gesture_drag_distance
+gesture_flick_speed
+gesture_double_tap_time
+gesture_double_tap_distance
+gesture_pinch_distance
+gesture_pinch_angle_towards
+gesture_pinch_angle_away
+gesture_rotate_time
+gesture_rotate_angle
+gesture_tap_count
+gesture_get_drag_time
+gesture_get_drag_distance
+gesture_get_flick_speed
+gesture_get_double_tap_time
+gesture_get_double_tap_distance
+gesture_get_pinch_distance
+gesture_get_pinch_angle_towards
+gesture_get_pinch_angle_away
+gesture_get_rotate_time
+gesture_get_rotate_angle
+gesture_get_tap_count
+keyboard_virtual_show
+keyboard_virtual_hide
+keyboard_virtual_status
+keyboard_virtual_height
+kbv_type_default                         COMPTIME
+kbv_type_ascii                           COMPTIME
+kbv_type_url                             COMPTIME
+kbv_type_email                           COMPTIME
+kbv_type_numbers                         COMPTIME
+kbv_type_phone                           COMPTIME
+kbv_type_phone_name                      COMPTIME
+kbv_returnkey_default                    COMPTIME
+kbv_returnkey_go                         COMPTIME
+kbv_returnkey_google                     COMPTIME
+kbv_returnkey_join                       COMPTIME
+kbv_returnkey_next                       COMPTIME
+kbv_returnkey_route                      COMPTIME
+kbv_returnkey_search                     COMPTIME
+kbv_returnkey_send                       COMPTIME
+kbv_returnkey_yahoo                      COMPTIME
+kbv_returnkey_done                       COMPTIME
+kbv_returnkey_continue                   COMPTIME
+kbv_returnkey_emergency                  COMPTIME
+kbv_autocapitalize_none                  COMPTIME
+kbv_autocapitalize_words                 COMPTIME
+kbv_autocapitalize_sentences             COMPTIME
+kbv_autocapitalize_characters            COMPTIME
+os_permission_denied_dont_request        COMPTIME
+os_permission_denied                     COMPTIME
+os_permission_granted                    COMPTIME
+nineslice_left                           COMPTIME
+nineslice_top                            COMPTIME
+nineslice_right                          COMPTIME
+nineslice_bottom                         COMPTIME
+nineslice_centre                         COMPTIME
+nineslice_center                         COMPTIME
+nineslice_stretch                        COMPTIME
+nineslice_repeat                         COMPTIME
+nineslice_mirror                         COMPTIME
+nineslice_blank                          COMPTIME
+nineslice_hide                           COMPTIME
+texturegroup_status_unloaded             COMPTIME
+texturegroup_status_loading              COMPTIME
+texturegroup_status_loaded               COMPTIME
+texturegroup_status_fetched              COMPTIME
+tag_get_asset_ids
+tag_get_assets
+asset_get_tags
+asset_add_tags
+asset_remove_tags
+asset_has_tags
+asset_has_any_tag
+asset_clear_tags
+extension_exists
+extension_get_option_count
+extension_get_option_names
+extension_get_option_value
+extension_get_options
+layer_sequence_get_instance
+layer_sequence_create
+layer_sequence_destroy
+layer_sequence_exists
+layer_sequence_x
+layer_sequence_y
+layer_sequence_angle
+layer_sequence_xscale
+layer_sequence_yscale
+layer_sequence_headpos
+layer_sequence_headdir
+layer_sequence_pause
+layer_sequence_play
+layer_sequence_speedscale
+layer_sequence_get_x
+layer_sequence_get_y
+layer_sequence_get_angle
+layer_sequence_get_xscale
+layer_sequence_get_yscale
+layer_sequence_get_headpos
+layer_sequence_get_headdir
+layer_sequence_get_sequence
+layer_sequence_is_paused
+layer_sequence_is_finished
+layer_sequence_get_speedscale
+layer_sequence_get_length
+animcurve_get
+animcurve_get_channel
+animcurve_get_channel_index
+animcurve_channel_evaluate
+sequence_create
+sequence_destroy
+sequence_exists
+sequence_get
+sequence_keyframe_new
+sequence_keyframedata_new
+sequence_track_new
+sequence_get_objects
+sequence_instance_override_object
+animcurve_create
+animcurve_destroy
+animcurve_exists
+animcurve_channel_new
+animcurve_point_new
+fx_create
+fx_get_name
+fx_get_parameter_names
+fx_get_parameter
+fx_get_parameters
+fx_get_single_layer
+fx_set_parameter
+fx_set_parameters
+fx_set_single_layer
+layer_set_fx
+layer_get_fx
+layer_clear_fx
+layer_enable_fx
+layer_fx_is_enabled
+seqtracktype_graphic                     COMPTIME
+seqtracktype_audio                       COMPTIME
+seqtracktype_real                        COMPTIME
+seqtracktype_color                       COMPTIME
+seqtracktype_colour                      COMPTIME
+seqtracktype_bool                        COMPTIME
+seqtracktype_string                      COMPTIME
+seqtracktype_sequence                    COMPTIME
+seqtracktype_clipmask                    COMPTIME
+seqtracktype_clipmask_mask               COMPTIME
+seqtracktype_clipmask_subject            COMPTIME
+seqtracktype_group                       COMPTIME
+seqtracktype_empty                       COMPTIME
+seqtracktype_spriteframes                COMPTIME
+seqtracktype_instance                    COMPTIME
+seqtracktype_message                     COMPTIME
+seqtracktype_moment                      COMPTIME
+seqtracktype_text                        COMPTIME
+seqplay_oneshot                          COMPTIME
+seqplay_loop                             COMPTIME
+seqplay_pingpong                         COMPTIME
+seqdir_right                             COMPTIME
+seqdir_left                              COMPTIME
+seqinterpolation_assign                  COMPTIME
+seqinterpolation_lerp                    COMPTIME
+seqaudiokey_loop                         COMPTIME
+seqaudiokey_oneshot                      COMPTIME
+seqtextkey_left                          COMPTIME
+seqtextkey_center                        COMPTIME
+seqtextkey_right                         COMPTIME
+seqtextkey_justify                       COMPTIME
+seqtextkey_top                           COMPTIME
+seqtextkey_middle                        COMPTIME
+seqtextkey_bottom                        COMPTIME
+animcurvetype_linear                     COMPTIME
+animcurvetype_catmullrom                 COMPTIME
+animcurvetype_bezier                     COMPTIME
+gc_collect
+gc_enable
+gc_is_enabled
+gc_get_stats
+gc_target_frame_time
+gc_get_target_frame_time
+weak_ref_create
+weak_ref_alive
+weak_ref_any_alive
+time_source_global                       COMPTIME
+time_source_game                         COMPTIME
+time_source_units_seconds                COMPTIME
+time_source_units_frames                 COMPTIME
+time_source_expire_nearest               COMPTIME
+time_source_expire_after                 COMPTIME
+time_source_state_initial                COMPTIME
+time_source_state_active                 COMPTIME
+time_source_state_paused                 COMPTIME
+time_source_state_stopped                COMPTIME
+time_source_create
+time_source_destroy
+time_source_start
+time_source_stop
+time_source_pause
+time_source_resume
+time_source_reset
+time_source_reconfigure
+time_source_get_period
+time_source_get_reps_completed
+time_source_get_reps_remaining
+time_source_get_units
+time_source_get_time_remaining
+time_source_get_state
+time_source_get_parent
+time_source_get_children
+time_source_exists
+time_seconds_to_bpm
+time_bpm_to_seconds
+call_later
+call_cancel
+is_vec3                                  COMPTIME
+is_vec4                                  COMPTIME
+audio_3d                                 COMPTIME
+get_integer
+get_string
+cloud_file_save
+cloud_string_save
+cloud_synchronise
+GM_is_sandboxed                          COMPTIME
+is_instanceof                            COMPTIME
+is_callable                              COMPTIME
+is_handle                                COMPTIME
+static_get
+static_set
+variable_get_hash
+variable_clone
+struct_exists
+struct_get
+struct_set
+struct_get_names
+struct_names_count
+struct_remove
+struct_foreach
+struct_get_from_hash
+struct_set_from_hash
+array_shift
+array_shuffle
+array_shuffle_ext
+array_get_index
+array_contains
+array_contains_ext
+array_first
+array_last
+array_create_ext
+array_find_index
+array_any
+array_all
+array_foreach
+array_reduce
+array_filter
+array_filter_ext
+array_map
+array_map_ext
+array_copy_while
+array_unique
+array_unique_ext
+array_reverse
+array_reverse_ext
+array_concat
+array_union
+array_intersection
+handle_parse
+game_change
+ev_draw_normal                           COMPTIME
+ev_audio_playback_ended                  COMPTIME
+ev_async_audio_playback_ended            COMPTIME
+show_debug_message_ext
+is_debug_overlay_open
+is_mouse_over_debug_overlay
+is_keyboard_used_debug_overlay
+show_debug_log
+dbg_view
+dbg_section
+dbg_view_delete
+dbg_section_delete
+dbg_slider
+dbg_slider_int
+dbg_drop_down
+dbg_watch
+dbg_text
+dbg_sprite
+dbg_text_input
+dbg_checkbox
+dbg_colour
+dbg_color
+dbg_button
+dbg_same_line
+dbg_add_font_glyphs
+ref_create
+audio_3D                                 COMPTIME
+surface_get_format
+surface_format_is_supported
+surface_rgba8unorm                       COMPTIME
+surface_r16float                         COMPTIME
+surface_r32float                         COMPTIME
+surface_rgba4unorm                       COMPTIME
+surface_r8unorm                          COMPTIME
+surface_rg8unorm                         COMPTIME
+surface_rgba16float                      COMPTIME
+surface_rgba32float                      COMPTIME
+window_set_showborder
+window_get_showborder
+window_enable_borderless_fullscreen
+window_get_borderless_fullscreen
+window_mouse_set_locked
+window_mouse_get_locked
+window_mouse_get_delta_x
+window_mouse_get_delta_y
+audio_play_sound_ext
+audio_system_is_initialised
+audio_sound_loop
+audio_sound_get_loop
+audio_sound_loop_start
+audio_sound_get_loop_start
+audio_sound_loop_end
+audio_sound_get_loop_end
+audio_sync_group_is_paused
+audio_group_get_gain
+audio_group_get_assets
+audio_sound_get_audio_group
+texturegroup_get_names
+room_get_info
+sprite_add_ext
+sprite_add_ext_error_unknown             COMPTIME
+sprite_add_ext_error_cancelled           COMPTIME
+sprite_add_ext_error_spritenotfound      COMPTIME
+sprite_add_ext_error_loadfailed          COMPTIME
+sprite_add_ext_error_decompressfailed    COMPTIME
+sprite_add_ext_error_setupfailed         COMPTIME
+font_enable_sdf
+font_get_sdf_enabled
+font_sdf_spread
+font_get_sdf_spread
+font_enable_effects
+method_call
+asset_get_ids
+fa_none                                  COMPTIME
+cache_directory
+ds_grid_to_mp_grid
+effect_create_layer
+effect_create_depth
+part_type_subimage
+part_type_size_x
+part_type_size_y
+particle_get_info
+particle_exists
+part_system_color
+part_system_colour
+part_system_angle
+part_system_global_space
+part_system_get_info
+part_particles_burst
+part_emitter_enable
+part_emitter_delay
+part_emitter_interval
+part_emitter_relative
+ps_mode_stream                           COMPTIME
+ps_mode_burst                            COMPTIME
+tm_systemtiming                          COMPTIME
+gpu_set_depth
+gpu_get_depth
+zip_unzip_async
+zip_create
+zip_add_file
+zip_save
+network_config_enable_multicast          COMPTIME
+network_config_disable_multicast         COMPTIME
+network_connect_active                   COMPTIME
+network_connect_passive                  COMPTIME
+buffer_copy_stride
+shader_set_uniform_f_buffer
+vertex_format_get_info
+vertex_submit_ext
+vertex_update_buffer_from_buffer
+vertex_update_buffer_from_vertex
+skeleton_attachment_exists
+skeleton_attachment_replace
+skeleton_attachment_replace_colour
+skeleton_attachment_replace_color
+skeleton_attachment_destroy
+tileset_get_info
+camera_copy_transforms
+extension_get_version
+seqtracktype_particlesystem              COMPTIME
+seqtracktype_audioeffect                 COMPTIME
+audio_bus_main                           COMPTIME
+audio_bus_create
+audio_effect_create
+audio_emitter_bus
+audio_emitter_get_bus
+audio_bus_get_emitters
+audio_bus_clear_emitters
+lin_to_db
+db_to_lin

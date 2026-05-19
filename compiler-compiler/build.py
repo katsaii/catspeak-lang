@@ -41,16 +41,16 @@ GML_FNAMESES = [
 ]
 
 GML_PERMS_SORTED = False
-GML_PERMS_KIND = { "COMPTIME", "SAFE", "EFFECTS", "IO", "OS", "UNSAFE" }
+GML_PERMS_KIND = { "COMPTIME", "SAFE", "EFFECTS", "IO", "DRAW", "OS", "UNSAFE" }
 GML_PERMS_PATH = "api-gml-perms.txt"
 GML_PERMS = { }
 with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
     for line in perms:
         perm_def = line.split()
         if len(perm_def) >= 2:
-            perm = perm_def[0].upper()
+            perm = perm_def[1].upper()
             if perm in GML_PERMS_KIND:
-                GML_PERMS[perm_def[1]] = perm
+                GML_PERMS[perm_def[0]] = perm
             else:
                 raise Exception(f"invalid GML perm, expected one of {GML_PERMS_KIND}")
         else:
@@ -254,17 +254,20 @@ for script in SCRIPTS:
 
 # re-export api-gml-perms.txt
 perms_str = ""
-perms_max_len = max(len(perm) for perm in GML_PERMS_KIND)
 symbols_full = list(OrderedDict.fromkeys(
     [symbol for (_, symbols) in fnames.items() for (symbol, _) in symbols] +
     [symbol for (symbol, _) in GML_PERMS.items()]
 ))
 if GML_PERMS_SORTED:
     symbols_full = sorted(symbols_full, key=str.casefold)
+symbols_max_len = max(len(symbol) for symbol in symbols_full)
 for symbol in symbols_full:
-    perm_str = GML_PERMS.get(symbol) or ""
-    perm_str_indent = " " * (perms_max_len - len(perm_str))
-    perms_str += f"{perm_str}{perm_str_indent} {symbol}\n"
+    perm = GML_PERMS.get(symbol)
+    if perm == None:
+        perms_str += f"{symbol}\n"
+    else:
+        symbol_indent = " " * (symbols_max_len - len(symbol))
+        perms_str += f"{symbol}{symbol_indent}{perm}\n"
 if not DEBUG:
     print(f"updating {GML_PERMS_PATH}")
     with open(GML_PERMS_PATH, "w", encoding="utf-8") as file:
