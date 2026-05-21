@@ -9,13 +9,14 @@ The Catspeak Compiler compiler. Generates source files from templated code.
 """
 
 import yaml
+import json
 import os
-import re
+import subprocess
 import jinja2
 import jinja2api
+import re
 from pathlib import Path
 from collections import OrderedDict
-import subprocess
 
 DEBUG = False
 
@@ -44,11 +45,6 @@ GML_FNAMESES = [
 GML_PERMS_SORTED = False
 GML_PERMS_PATH = "api-gml-perms.txt"
 GML_PERMS = OrderedDict()
-with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
-    for line in perms:
-        perm_def = line.split()
-        if len(perm_def) >= 2:
-            GML_PERMS[perm_def[0]] = set(x.upper() for x in perm_def[1:])
 
 GML_BLOCKLIST = [
     "argument",
@@ -122,11 +118,58 @@ def get_generated_header(comment_prefix, *paths):
 # populate fnames perms with values from GML-Function-DB
 if not os.path.isdir("GML-Function-DB"):
     try:
-        subprocess.call(["git", "pull"])
-        subprocess.call(["make"])
-        subprocess.call(["make", "test"])
+        subprocess.call(["git", "clone", "git@github.com:katsaii/GML-Function-DB.git"])
     except OSError:
-        print("error initialising directory for GML-Function-DB (do you have git installed?)")
+        print(
+            "error initialising directory for 'GML-Function-DB', please check that:\n"
+            + " - you have git installed\n"
+            + " - git is set-up with ssh\n"
+            + " - you are logged in/have permission to access the repo"
+        )
+if os.path.isdir("GML-Function-DB/db"):
+    for subdir, dirs, files in os.walk("GML-Function-DB/db"):
+        for filename in files:
+            db_path = os.path.join(subdir, filename)
+            with open(db_path, "r", encoding="utf-8") as file:
+                print(f"adding definitions for: {db_path}")
+                db_defs = json.load(file)
+                for name, db_def in db_defs.items():
+                    perms = set()
+                    if db_def.get("is_deprecated", False):
+                        perms.add("DEPRECATED")
+                    if not db_def.get("is_safe", False):
+                        perms.add("UNSAFE")
+                    if not db_def.get("is_sandboxed", False):
+                        perms.add("EFFECTS")
+                    if db_def.get("is_file_io", True):
+                        perms.add("IO_FILE")
+                    if db_def.get("is_network_io", True):
+                        perms.add("IO_NETWORK")
+                    if db_def.get("is_personal_data", True):
+                        perms.add("FINGERPRINTING")
+                    if db_def.get("is_platform_specific", False):
+                        perms.add("PLATFORM_SPECIFIC")
+                    if db_def.get("is_global_effect", True):
+                        perms.add("EFFECTS_GLOBAL")
+                    if db_def.get("is_asset_reflection", True):
+                        perms.add("REFLECTION")
+                    if db_def.get("is_os_dialog", True):
+                        perms.add("OS_DIALOG")
+                    if db_def.get("is_os_directive", True):
+                        perms.add("OS_DIRECTIVE")
+                    GML_PERMS[name] = (False, perms)
+with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
+    for line in perms:
+        perm_def = line.split()
+        overridden = len(perm_def) > 0 and perm_def[0] == "*"
+        if overridden:
+            perm_def = perm_def[1:]
+        if len(perm_def) > 0:
+            name = perm_def[0]
+            old_perms = GML_PERMS[name][1] if name in GML_PERMS else set()
+            new_perms = set(x.upper() for x in perm_def[1:])
+            if new_perms != old_perms:
+                GML_PERMS[name] = (True, new_perms)
 
 # init ir
 IR_PATH = "compiler-compiler/def-catspeak-ir.yaml"
@@ -264,12 +307,13 @@ if not DEBUG:
         symbols_full = sorted(symbols_full, key=str.casefold)
     symbols_max_len = max(len(symbol) for symbol in symbols_full)
     for symbol in symbols_full:
-        if symbol in GML_PERMS:
-            perms = sorted(list(GML_PERMS.get(symbol)))
+        perms = GML_PERMS.get(symbol, None)
+        prefix = "* " if perms != None and perms[0] else "  "
+        if perms != None and len(perms[1]) > 0:
             symbol_indent = " " * (symbols_max_len - len(symbol))
-            perms_str += f"{symbol}{symbol_indent}{' '.join(perms)}\n"
+            perms_str += f"{prefix}{symbol}{symbol_indent} {' '.join(sorted(list(perms[1])))}\n"
         else:
-            perms_str += f"{symbol}\n"
+            perms_str += f"{prefix}{symbol}\n"
     print(f"updating {GML_PERMS_PATH}")
     with open(GML_PERMS_PATH, "w", encoding="utf-8") as file:
         file.write(perms_str)
