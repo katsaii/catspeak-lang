@@ -15,6 +15,7 @@ import jinja2
 import jinja2api
 from pathlib import Path
 from collections import OrderedDict
+import subprocess
 
 DEBUG = False
 
@@ -41,20 +42,13 @@ GML_FNAMESES = [
 ]
 
 GML_PERMS_SORTED = False
-GML_PERMS_KIND = { "COMPTIME", "SAFE", "EFFECTS", "IO", "DRAW", "OS", "UNSAFE" }
 GML_PERMS_PATH = "api-gml-perms.txt"
-GML_PERMS = { }
+GML_PERMS = OrderedDict()
 with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
     for line in perms:
         perm_def = line.split()
         if len(perm_def) >= 2:
-            perm = perm_def[1].upper()
-            if perm in GML_PERMS_KIND:
-                GML_PERMS[perm_def[0]] = perm
-            else:
-                raise Exception(f"invalid GML perm, expected one of {GML_PERMS_KIND}")
-        else:
-            GML_PERMS[line.strip()] = None
+            GML_PERMS[perm_def[0]] = set(x.upper() for x in perm_def[1:])
 
 GML_BLOCKLIST = [
     "argument",
@@ -124,6 +118,15 @@ def get_generated_header(comment_prefix, *paths):
         for path in paths:
             header += f"{comment_prefix}  - {sanitise_file_path(path)}\n"
     return header
+
+# populate fnames perms with values from GML-Function-DB
+if not os.path.isdir("GML-Function-DB"):
+    try:
+        subprocess.call(["git", "pull"])
+        subprocess.call(["make"])
+        subprocess.call(["make", "test"])
+    except OSError:
+        print("error initialising directory for GML-Function-DB (do you have git installed?)")
 
 # init ir
 IR_PATH = "compiler-compiler/def-catspeak-ir.yaml"
@@ -209,8 +212,6 @@ for fnames_path in GML_FNAMESES:
             elif "#" in modifiers:
                 # # = constant
                 flags = flags | TAG_CONST
-                if GML_PERMS[symbol] == None:
-                    GML_PERMS[symbol] = "COMPTIME"
             else:
                 flags = flags | TAG_PROP_GET
                 if "*" in modifiers:
@@ -253,22 +254,22 @@ for script in SCRIPTS:
             file.write(str(temp_script))
 
 # re-export api-gml-perms.txt
-perms_str = ""
-symbols_full = list(OrderedDict.fromkeys(
-    [symbol for (_, symbols) in fnames.items() for (symbol, _) in symbols] +
-    [symbol for (symbol, _) in GML_PERMS.items()]
-))
-if GML_PERMS_SORTED:
-    symbols_full = sorted(symbols_full, key=str.casefold)
-symbols_max_len = max(len(symbol) for symbol in symbols_full)
-for symbol in symbols_full:
-    perm = GML_PERMS.get(symbol)
-    if perm == None:
-        perms_str += f"{symbol}\n"
-    else:
-        symbol_indent = " " * (symbols_max_len - len(symbol))
-        perms_str += f"{symbol}{symbol_indent}{perm}\n"
 if not DEBUG:
+    perms_str = ""
+    symbols_full = list(OrderedDict.fromkeys(
+        [symbol for (_, symbols) in fnames.items() for (symbol, _) in symbols] +
+        [symbol for (symbol, _) in GML_PERMS.items()]
+    ))
+    if GML_PERMS_SORTED:
+        symbols_full = sorted(symbols_full, key=str.casefold)
+    symbols_max_len = max(len(symbol) for symbol in symbols_full)
+    for symbol in symbols_full:
+        if symbol in GML_PERMS:
+            perms = sorted(list(GML_PERMS.get(symbol)))
+            symbol_indent = " " * (symbols_max_len - len(symbol))
+            perms_str += f"{symbol}{symbol_indent}{' '.join(perms)}\n"
+        else:
+            perms_str += f"{symbol}\n"
     print(f"updating {GML_PERMS_PATH}")
     with open(GML_PERMS_PATH, "w", encoding="utf-8") as file:
         file.write(perms_str)
