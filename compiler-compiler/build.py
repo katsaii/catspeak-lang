@@ -131,7 +131,7 @@ if os.path.isdir("GML-Function-DB/db"):
         for filename in files:
             db_path = os.path.join(subdir, filename)
             with open(db_path, "r", encoding="utf-8") as file:
-                print(f"adding definitions for: {db_path}")
+                print(f"loading: {db_path}")
                 db_defs = json.load(file)
                 for name, db_def in db_defs.items():
                     perms = set()
@@ -159,6 +159,7 @@ if os.path.isdir("GML-Function-DB/db"):
                         perms.add("OS_DIRECTIVE")
                     GML_PERMS[name] = (False, perms)
 with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
+    print(f"loading: {GML_PERMS_PATH}")
     for line in perms:
         perm_def = line.split()
         overridden = len(perm_def) > 0 and perm_def[0] == "*"
@@ -209,6 +210,7 @@ if ir_instrs_name_conflict != None:
 symbols = { }
 for fnames_path in GML_FNAMESES:
     with open(fnames_path, "r", encoding="utf-8") as fnames_raw:
+        print(f"loading: {fnames_path}")
         for line in fnames_raw:
             symbol_data = line.strip()
             symbol = None
@@ -314,6 +316,6 @@ if not DEBUG:
             perms_str += f"{prefix}{symbol}{symbol_indent} {' '.join(sorted(list(perms[1])))}\n"
         else:
             perms_str += f"{prefix}{symbol}\n"
-    print(f"updating {GML_PERMS_PATH}")
+    print(f"writing: {GML_PERMS_PATH}")
     with open(GML_PERMS_PATH, "w", encoding="utf-8") as file:
         file.write(perms_str)
