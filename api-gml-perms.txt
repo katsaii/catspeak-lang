@@ -1,6 +1,6 @@
 * all                                        REFLECTION
 * noone                                      REFLECTION
-* global                                     REFLECTION
+* global                                     EXPLOITABLE REFLECTION
   undefined
 * pointer_invalid                            UNSAFE
 * pointer_null                               UNSAFE
@@ -17,19 +17,19 @@
 * GM_version                                 FINGERPRINTING
 * GM_runtime_version                         FINGERPRINTING
 * GM_build_type                              FINGERPRINTING
-* is_real
-* is_numeric
-* is_string
-* is_array
-* is_undefined
-* is_int32
-* is_int64
+  is_real
+  is_numeric
+  is_string
+  is_array
+  is_undefined
+  is_int32
+  is_int64
 * is_ptr                                     UNSAFE
-* is_bool
-* is_nan
-* is_infinity
-* is_struct
-* is_method
+  is_bool
+  is_nan
+  is_infinity
+  is_struct
+  is_method
 * typeof                                     REFLECTION
 * instanceof                                 REFLECTION
 * exception_unhandled_handler                EFFECTS_GLOBAL EXPLOITABLE
@@ -43,307 +43,307 @@
 * variable_instance_names_count              EXPLOITABLE REFLECTION
 * variable_struct_exists
 * variable_struct_get
-* variable_struct_set                        EFFECTS
+  variable_struct_set                        EFFECTS
 * variable_struct_get_names
 * variable_struct_names_count
-* variable_struct_remove                     EFFECTS
-  array_length                               EFFECTS UNSAFE
-  array_equals                               EFFECTS UNSAFE
-  array_create                               EFFECTS UNSAFE
-  array_copy                                 EFFECTS UNSAFE
-  array_resize                               EFFECTS UNSAFE
-  array_get                                  EFFECTS UNSAFE
-  array_set                                  EFFECTS UNSAFE
-  array_push                                 EFFECTS UNSAFE
-  array_pop                                  EFFECTS UNSAFE
-  array_insert                               EFFECTS UNSAFE
-  array_delete                               EFFECTS UNSAFE
-  array_sort                                 EFFECTS UNSAFE
-  random                                     EFFECTS UNSAFE
-  random_range                               EFFECTS UNSAFE
-  irandom                                    EFFECTS UNSAFE
-  irandom_range                              EFFECTS UNSAFE
-  random_set_seed                            EFFECTS EFFECTS_GLOBAL UNSAFE
-  random_get_seed                            EFFECTS UNSAFE
-  randomize                                  EFFECTS UNSAFE
-  randomise                                  EFFECTS UNSAFE
-  choose                                     EFFECTS UNSAFE
-  abs                                        EFFECTS UNSAFE
-  round                                      EFFECTS UNSAFE
-  floor                                      EFFECTS UNSAFE
-  ceil                                       EFFECTS UNSAFE
-  sign                                       EFFECTS UNSAFE
-  frac                                       EFFECTS UNSAFE
-  sqrt                                       EFFECTS UNSAFE
-  sqr                                        EFFECTS UNSAFE
-  exp                                        EFFECTS UNSAFE
-  ln                                         EFFECTS UNSAFE
-  log2                                       EFFECTS UNSAFE
-  log10                                      EFFECTS UNSAFE
-  sin                                        EFFECTS UNSAFE
-  cos                                        EFFECTS UNSAFE
-  tan                                        EFFECTS UNSAFE
-  arcsin                                     EFFECTS UNSAFE
-  arccos                                     EFFECTS UNSAFE
-  arctan                                     EFFECTS UNSAFE
-  arctan2                                    EFFECTS UNSAFE
-  dsin                                       EFFECTS UNSAFE
-  dcos                                       EFFECTS UNSAFE
-  dtan                                       EFFECTS UNSAFE
-  darcsin                                    EFFECTS UNSAFE
-  darccos                                    EFFECTS UNSAFE
-  darctan                                    EFFECTS UNSAFE
-  darctan2                                   EFFECTS UNSAFE
-  degtorad                                   EFFECTS UNSAFE
-  radtodeg                                   EFFECTS UNSAFE
-  power                                      EFFECTS UNSAFE
-  logn                                       EFFECTS UNSAFE
-  min                                        EFFECTS UNSAFE
-  max                                        EFFECTS UNSAFE
-  mean                                       EFFECTS UNSAFE
-  median                                     EFFECTS UNSAFE
-  clamp                                      EFFECTS UNSAFE
-  lerp                                       EFFECTS UNSAFE
-  dot_product                                EFFECTS UNSAFE
-  dot_product_3d                             EFFECTS UNSAFE
-  dot_product_normalised                     EFFECTS UNSAFE
-  dot_product_3d_normalised                  EFFECTS UNSAFE
-  dot_product_normalized                     EFFECTS UNSAFE
-  dot_product_3d_normalized                  EFFECTS UNSAFE
-  math_set_epsilon                           EFFECTS UNSAFE
-  math_get_epsilon                           EFFECTS UNSAFE
-  angle_difference                           EFFECTS UNSAFE
-  point_distance_3d                          EFFECTS UNSAFE
-  point_distance                             EFFECTS UNSAFE
-  point_direction                            EFFECTS UNSAFE
-  lengthdir_x                                EFFECTS UNSAFE
-  lengthdir_y                                EFFECTS UNSAFE
-  real                                       EFFECTS UNSAFE
-  bool                                       EFFECTS UNSAFE
-  string                                     EFFECTS UNSAFE
-  int64                                      EFFECTS UNSAFE
-  ptr                                        EFFECTS UNSAFE
-  string_format                              EFFECTS UNSAFE
-  chr                                        EFFECTS UNSAFE
-  ansi_char                                  EFFECTS UNSAFE
-  ord                                        EFFECTS UNSAFE
-  method                                     EFFECTS REFLECTION UNSAFE
-  method_get_index                           EFFECTS REFLECTION UNSAFE
-  method_get_self                            EFFECTS REFLECTION UNSAFE
-  string_length                              EFFECTS UNSAFE
-  string_byte_length                         EFFECTS UNSAFE
-  string_pos                                 EFFECTS UNSAFE
-  string_pos_ext                             EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  string_last_pos                            EFFECTS UNSAFE
-  string_last_pos_ext                        EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  string_copy                                EFFECTS UNSAFE
-  string_char_at                             EFFECTS UNSAFE
-  string_ord_at                              EFFECTS UNSAFE
-  string_byte_at                             EFFECTS UNSAFE
-  string_set_byte_at                         EFFECTS UNSAFE
-  string_delete                              EFFECTS UNSAFE
-  string_insert                              EFFECTS UNSAFE
-  string_lower                               EFFECTS UNSAFE
-  string_upper                               EFFECTS UNSAFE
-  string_repeat                              EFFECTS UNSAFE
-  string_letters                             EFFECTS UNSAFE
-  string_digits                              EFFECTS UNSAFE
-  string_lettersdigits                       EFFECTS UNSAFE
-  string_replace                             EFFECTS UNSAFE
-  string_replace_all                         EFFECTS UNSAFE
-  string_count                               EFFECTS UNSAFE
-  string_hash_to_newline                     EFFECTS UNSAFE
-  string_ext                                 EFFECTS UNSAFE
-  string_trim_start                          EFFECTS UNSAFE
-  string_trim_end                            EFFECTS UNSAFE
-  string_trim                                EFFECTS UNSAFE
-  string_starts_with                         EFFECTS UNSAFE
-  string_ends_with                           EFFECTS UNSAFE
-  string_split                               EFFECTS UNSAFE
-  string_split_ext                           EFFECTS UNSAFE
-  string_join                                EFFECTS UNSAFE
-  string_join_ext                            EFFECTS UNSAFE
-  string_concat                              EFFECTS UNSAFE
-  string_concat_ext                          EFFECTS UNSAFE
-  string_foreach                             EFFECTS REFLECTION UNSAFE
-  clipboard_has_text                         EFFECTS FINGERPRINTING UNSAFE
-  clipboard_set_text                         EFFECTS FINGERPRINTING UNSAFE
-  clipboard_get_text                         EFFECTS FINGERPRINTING UNSAFE
-  date_current_datetime                      EFFECTS UNSAFE
-  date_create_datetime                       EFFECTS UNSAFE
-  date_valid_datetime                        EFFECTS UNSAFE
-  date_inc_year                              EFFECTS UNSAFE
-  date_inc_month                             EFFECTS UNSAFE
-  date_inc_week                              EFFECTS UNSAFE
-  date_inc_day                               EFFECTS UNSAFE
-  date_inc_hour                              EFFECTS UNSAFE
-  date_inc_minute                            EFFECTS UNSAFE
-  date_inc_second                            EFFECTS UNSAFE
-  date_get_year                              EFFECTS UNSAFE
-  date_get_month                             EFFECTS UNSAFE
-  date_get_week                              EFFECTS UNSAFE
-  date_get_day                               EFFECTS UNSAFE
-  date_get_hour                              EFFECTS UNSAFE
-  date_get_minute                            EFFECTS UNSAFE
-  date_get_second                            EFFECTS UNSAFE
-  date_get_weekday                           EFFECTS UNSAFE
-  date_get_day_of_year                       EFFECTS UNSAFE
-  date_get_hour_of_year                      EFFECTS UNSAFE
-  date_get_minute_of_year                    EFFECTS UNSAFE
-  date_get_second_of_year                    EFFECTS UNSAFE
-  date_year_span                             EFFECTS UNSAFE
-  date_month_span                            EFFECTS UNSAFE
-  date_week_span                             EFFECTS UNSAFE
-  date_day_span                              EFFECTS UNSAFE
-  date_hour_span                             EFFECTS UNSAFE
-  date_minute_span                           EFFECTS UNSAFE
-  date_second_span                           EFFECTS UNSAFE
-  date_compare_datetime                      EFFECTS UNSAFE
-  date_compare_date                          EFFECTS UNSAFE
-  date_compare_time                          EFFECTS UNSAFE
-  date_date_of                               EFFECTS UNSAFE
-  date_time_of                               EFFECTS UNSAFE
-  date_datetime_string                       EFFECTS UNSAFE
-  date_date_string                           EFFECTS UNSAFE
-  date_time_string                           EFFECTS UNSAFE
-  date_days_in_month                         EFFECTS UNSAFE
-  date_days_in_year                          EFFECTS UNSAFE
-  date_leap_year                             EFFECTS UNSAFE
-  date_is_today                              EFFECTS UNSAFE
-  date_set_timezone                          EFFECTS UNSAFE
-  date_get_timezone                          EFFECTS UNSAFE
-  timezone_local
-  timezone_utc
-  game_set_speed                             EFFECTS UNSAFE
-  game_get_speed                             EFFECTS UNSAFE
+  variable_struct_remove                     EFFECTS
+  array_length
+  array_equals
+  array_create
+* array_copy                                 EFFECTS
+* array_resize                               EFFECTS
+  array_get
+* array_set                                  EFFECTS
+* array_push                                 EFFECTS
+* array_pop                                  EFFECTS
+* array_insert                               EFFECTS
+* array_delete                               EFFECTS
+* array_sort                                 EFFECTS
+* random                                     EFFECTS_GLOBAL
+* random_range                               EFFECTS_GLOBAL
+* irandom                                    EFFECTS_GLOBAL
+* irandom_range                              EFFECTS_GLOBAL
+* random_set_seed                            EFFECTS_GLOBAL OS_DIRECTIVE
+* random_get_seed                            EFFECTS_GLOBAL
+* randomize                                  EFFECTS_GLOBAL OS_DIRECTIVE
+* randomise                                  EFFECTS_GLOBAL OS_DIRECTIVE
+* choose                                     EFFECTS_GLOBAL
+  abs
+  round
+  floor
+  ceil
+  sign
+  frac
+  sqrt
+  sqr
+  exp
+  ln
+  log2
+  log10
+  sin
+  cos
+  tan
+  arcsin
+  arccos
+  arctan
+  arctan2
+  dsin
+  dcos
+  dtan
+  darcsin
+  darccos
+  darctan
+  darctan2
+  degtorad
+  radtodeg
+  power
+  logn
+  min
+  max
+  mean
+  median
+  clamp
+  lerp
+  dot_product
+  dot_product_3d
+  dot_product_normalised
+  dot_product_3d_normalised
+  dot_product_normalized
+  dot_product_3d_normalized
+* math_set_epsilon                           EFFECTS_GLOBAL OS_DIRECTIVE
+* math_get_epsilon                           EFFECTS_GLOBAL
+  angle_difference
+  point_distance_3d
+  point_distance
+  point_direction
+  lengthdir_x
+  lengthdir_y
+  real
+  bool
+  string
+  int64
+* ptr                                        UNSAFE
+  string_format
+  chr
+  ansi_char
+  ord
+* method                                     EXPLOITABLE REFLECTION
+* method_get_index                           EXPLOITABLE REFLECTION
+* method_get_self                            EXPLOITABLE REFLECTION
+  string_length
+  string_byte_length
+  string_pos
+  string_pos_ext
+  string_last_pos
+  string_last_pos_ext
+  string_copy
+  string_char_at
+  string_ord_at
+  string_byte_at
+  string_set_byte_at
+  string_delete
+  string_insert
+  string_lower
+  string_upper
+  string_repeat
+  string_letters
+  string_digits
+  string_lettersdigits
+  string_replace
+  string_replace_all
+  string_count
+  string_hash_to_newline
+  string_ext
+  string_trim_start
+  string_trim_end
+  string_trim
+  string_starts_with
+  string_ends_with
+  string_split
+  string_split_ext
+  string_join
+  string_join_ext
+  string_concat
+  string_concat_ext
+* string_foreach
+* clipboard_has_text                         FINGERPRINTING OS_DIRECTIVE PLATFORM_SPECIFIC
+* clipboard_set_text                         EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+* clipboard_get_text                         FINGERPRINTING OS_DIRECTIVE PLATFORM_SPECIFIC
+* date_current_datetime                      FINGERPRINTING OS_DIRECTIVE
+* date_create_datetime
+  date_valid_datetime
+* date_inc_year
+* date_inc_month
+* date_inc_week
+* date_inc_day
+* date_inc_hour
+* date_inc_minute
+* date_inc_second
+* date_get_year
+* date_get_month
+* date_get_week
+* date_get_day
+* date_get_hour
+* date_get_minute
+* date_get_second
+* date_get_weekday
+* date_get_day_of_year
+* date_get_hour_of_year
+* date_get_minute_of_year
+* date_get_second_of_year
+* date_year_span
+* date_month_span
+* date_week_span
+* date_day_span
+* date_hour_span
+* date_minute_span
+* date_second_span
+* date_compare_datetime
+* date_compare_date
+* date_compare_time
+* date_date_of
+* date_time_of
+* date_datetime_string
+* date_date_string
+* date_time_string
+* date_days_in_month
+* date_days_in_year
+* date_leap_year
+* date_is_today                              FINGERPRINTING OS_DIRECTIVE
+* date_set_timezone                          EFFECTS_GLOBAL FINGERPRINTING OS_DIRECTIVE
+* date_get_timezone                          FINGERPRINTING OS_DIRECTIVE
+* timezone_local                             FINGERPRINTING
+* timezone_utc                               FINGERPRINTING
+* game_set_speed                             EFFECTS_GLOBAL
+* game_get_speed                             EFFECTS_GLOBAL
   gamespeed_fps
   gamespeed_microseconds
-  motion_set                                 EFFECTS UNSAFE
-  motion_add                                 EFFECTS UNSAFE
-  place_free                                 EFFECTS UNSAFE
-  place_empty                                EFFECTS REFLECTION UNSAFE
-  place_meeting                              EFFECTS REFLECTION UNSAFE
-  place_snapped                              EFFECTS UNSAFE
-  move_random                                EFFECTS UNSAFE
-  move_snap                                  EFFECTS UNSAFE
-  move_towards_point                         EFFECTS UNSAFE
-  move_contact_solid                         EFFECTS UNSAFE
-  move_contact_all                           EFFECTS UNSAFE
-  move_outside_solid                         EFFECTS UNSAFE
-  move_outside_all                           EFFECTS UNSAFE
-  move_bounce_solid                          EFFECTS UNSAFE
-  move_bounce_all                            EFFECTS UNSAFE
-  move_wrap                                  EFFECTS UNSAFE
-  move_and_collide                           EFFECTS REFLECTION UNSAFE
-  distance_to_point                          EFFECTS UNSAFE
-  distance_to_object                         EFFECTS REFLECTION UNSAFE
-  position_empty                             EFFECTS UNSAFE
-  position_meeting                           EFFECTS REFLECTION UNSAFE
-  path_start                                 EFFECTS REFLECTION UNSAFE
-  path_end                                   EFFECTS UNSAFE
-  mp_linear_step                             EFFECTS UNSAFE
-  mp_potential_step                          EFFECTS UNSAFE
-  mp_linear_step_object                      EFFECTS REFLECTION UNSAFE
-  mp_potential_step_object                   EFFECTS REFLECTION UNSAFE
-  mp_potential_settings                      EFFECTS UNSAFE
-  mp_linear_path                             EFFECTS REFLECTION UNSAFE
-  mp_potential_path                          EFFECTS REFLECTION UNSAFE
-  mp_linear_path_object                      EFFECTS REFLECTION UNSAFE
-  mp_potential_path_object                   EFFECTS REFLECTION UNSAFE
-  mp_grid_create                             EFFECTS REFLECTION UNSAFE
-  mp_grid_destroy                            EFFECTS REFLECTION UNSAFE
-  mp_grid_clear_all                          EFFECTS REFLECTION UNSAFE
-  mp_grid_clear_cell                         EFFECTS REFLECTION UNSAFE
-  mp_grid_clear_rectangle                    EFFECTS REFLECTION UNSAFE
-  mp_grid_add_cell                           EFFECTS REFLECTION UNSAFE
-  mp_grid_get_cell                           EFFECTS REFLECTION UNSAFE
-  mp_grid_add_rectangle                      EFFECTS REFLECTION UNSAFE
-  mp_grid_add_instances                      EFFECTS REFLECTION UNSAFE
-  mp_grid_path                               EFFECTS REFLECTION UNSAFE
-  mp_grid_draw                               EFFECTS REFLECTION UNSAFE
-  mp_grid_to_ds_grid                         EFFECTS REFLECTION UNSAFE
-  collision_point                            EFFECTS REFLECTION UNSAFE
-  collision_rectangle                        EFFECTS REFLECTION UNSAFE
-  collision_circle                           EFFECTS REFLECTION UNSAFE
-  collision_ellipse                          EFFECTS REFLECTION UNSAFE
-  collision_line                             EFFECTS REFLECTION UNSAFE
-  collision_point_list                       EFFECTS REFLECTION UNSAFE
-  collision_rectangle_list                   EFFECTS REFLECTION UNSAFE
-  collision_circle_list                      EFFECTS REFLECTION UNSAFE
-  collision_ellipse_list                     EFFECTS REFLECTION UNSAFE
-  collision_line_list                        EFFECTS REFLECTION UNSAFE
-  instance_position_list                     EFFECTS REFLECTION UNSAFE
-  instance_place_list                        EFFECTS REFLECTION UNSAFE
-  point_in_rectangle                         EFFECTS UNSAFE
-  point_in_triangle                          EFFECTS UNSAFE
-  point_in_circle                            EFFECTS UNSAFE
-  rectangle_in_rectangle                     EFFECTS UNSAFE
-  rectangle_in_triangle                      EFFECTS UNSAFE
-  rectangle_in_circle                        EFFECTS UNSAFE
-  instance_find                              EFFECTS REFLECTION UNSAFE
-  instance_exists                            EFFECTS REFLECTION UNSAFE
-  instance_number                            EFFECTS REFLECTION UNSAFE
-  instance_position                          EFFECTS REFLECTION UNSAFE
-  instance_nearest                           EFFECTS REFLECTION UNSAFE
-  instance_furthest                          EFFECTS REFLECTION UNSAFE
-  instance_place                             EFFECTS REFLECTION UNSAFE
-  instance_create_depth                      EFFECTS REFLECTION UNSAFE
-  instance_create_layer                      EFFECTS REFLECTION UNSAFE
-  instance_copy                              EFFECTS REFLECTION UNSAFE
-  instance_change                            EFFECTS REFLECTION UNSAFE
-  instance_destroy                           EFFECTS REFLECTION UNSAFE
-  position_destroy                           EFFECTS UNSAFE
-  position_change                            EFFECTS REFLECTION UNSAFE
-  instance_id_get                            EFFECTS REFLECTION UNSAFE
-  instance_deactivate_all                    EFFECTS UNSAFE
-  instance_deactivate_object                 EFFECTS REFLECTION UNSAFE
-  instance_deactivate_region                 EFFECTS UNSAFE
-  instance_activate_all                      EFFECTS UNSAFE
-  instance_activate_object                   EFFECTS REFLECTION UNSAFE
-  instance_activate_region                   EFFECTS UNSAFE
-  room_speed
-  fps
-  fps_real
-  current_time
-  current_year
-  current_month
-  current_day
-  current_weekday
-  current_hour
-  current_minute
-  current_second
-  room
-  room_first
-  room_last
-  room_width
-  room_height
-  room_persistent
-  room_goto                                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_goto_previous                         EFFECTS EFFECTS_GLOBAL UNSAFE
-  room_goto_next                             EFFECTS EFFECTS_GLOBAL UNSAFE
-  room_previous                              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_next                                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_restart                               EFFECTS EFFECTS_GLOBAL UNSAFE
-  game_end                                   EFFECTS UNSAFE
-  game_restart                               EFFECTS UNSAFE
-  game_load                                  EFFECTS IO_FILE UNSAFE
-  game_save                                  EFFECTS IO_FILE UNSAFE
-  game_save_buffer                           EFFECTS IO_FILE REFLECTION UNSAFE
-  game_load_buffer                           EFFECTS IO_FILE REFLECTION UNSAFE
-  scheduler_resolution_set                   EFFECTS UNSAFE
-  scheduler_resolution_get                   EFFECTS UNSAFE
-  score
-  lives
-  health
-  event_perform                              EFFECTS REFLECTION UNSAFE
-  event_perform_async                        EFFECTS REFLECTION UNSAFE
-  event_user                                 EFFECTS UNSAFE
-  event_perform_object                       EFFECTS REFLECTION UNSAFE
-  event_inherited                            EFFECTS UNSAFE
-  event_type
-  event_number
-  event_object
-  event_action
+* motion_set                                 EFFECTS
+* motion_add                                 EFFECTS
+* place_free                                 EFFECTS
+* place_empty                                EFFECTS
+* place_meeting                              EFFECTS
+* place_snapped                              EFFECTS
+* move_random                                EFFECTS
+* move_snap                                  EFFECTS
+* move_towards_point                         EFFECTS
+* move_contact_solid                         EFFECTS
+* move_contact_all                           EFFECTS
+* move_outside_solid                         EFFECTS
+* move_outside_all                           EFFECTS
+* move_bounce_solid                          EFFECTS
+* move_bounce_all                            EFFECTS
+* move_wrap                                  EFFECTS
+* move_and_collide                           EFFECTS
+  distance_to_point
+  distance_to_object                         EFFECTS REFLECTION
+* position_empty                             EFFECTS
+* position_meeting                           EFFECTS REFLECTION
+* path_start                                 EFFECTS
+* path_end                                   EFFECTS
+* mp_linear_step                             EFFECTS
+* mp_potential_step                          EFFECTS
+* mp_linear_step_object                      EFFECTS REFLECTION
+* mp_potential_step_object                   EFFECTS REFLECTION
+* mp_potential_settings                      EFFECTS
+* mp_linear_path                             EFFECTS
+* mp_potential_path                          EFFECTS
+* mp_linear_path_object                      EFFECTS REFLECTION
+* mp_potential_path_object                   EFFECTS REFLECTION
+* mp_grid_create
+* mp_grid_destroy                            EFFECTS
+* mp_grid_clear_all                          EFFECTS
+* mp_grid_clear_cell                         EFFECTS
+* mp_grid_clear_rectangle                    EFFECTS
+* mp_grid_add_cell                           EFFECTS
+* mp_grid_get_cell
+* mp_grid_add_rectangle                      EFFECTS
+* mp_grid_add_instances                      EFFECTS REFLECTION
+* mp_grid_path                               EFFECTS
+* mp_grid_draw                               IO_RENDER
+* mp_grid_to_ds_grid                         EFFECTS
+* collision_point                            EFFECTS REFLECTION
+* collision_rectangle                        EFFECTS REFLECTION
+* collision_circle                           EFFECTS REFLECTION
+* collision_ellipse                          EFFECTS REFLECTION
+* collision_line                             EFFECTS REFLECTION
+* collision_point_list                       EFFECTS REFLECTION
+* collision_rectangle_list                   EFFECTS REFLECTION
+* collision_circle_list                      EFFECTS REFLECTION
+* collision_ellipse_list                     EFFECTS REFLECTION
+* collision_line_list                        EFFECTS REFLECTION
+* instance_position_list                     EFFECTS REFLECTION
+* instance_place_list                        EFFECTS REFLECTION
+* point_in_rectangle
+* point_in_triangle
+* point_in_circle
+* rectangle_in_rectangle
+* rectangle_in_triangle
+* rectangle_in_circle
+* instance_find                              EFFECTS REFLECTION
+* instance_exists                            EFFECTS REFLECTION
+* instance_number                            EFFECTS REFLECTION
+* instance_position                          EFFECTS REFLECTION
+* instance_nearest                           EFFECTS REFLECTION
+* instance_furthest                          EFFECTS REFLECTION
+* instance_place                             EFFECTS REFLECTION
+* instance_create_depth                      EFFECTS REFLECTION
+* instance_create_layer                      EFFECTS REFLECTION
+* instance_copy                              EFFECTS REFLECTION
+* instance_change                            EFFECTS REFLECTION
+* instance_destroy                           EFFECTS REFLECTION
+* position_destroy                           EFFECTS
+* position_change                            EFFECTS EXPLOITABLE
+* instance_id_get                            EFFECTS REFLECTION
+* instance_deactivate_all                    EFFECTS EXPLOITABLE
+* instance_deactivate_object                 EFFECTS EXPLOITABLE REFLECTION
+* instance_deactivate_region                 EFFECTS EXPLOITABLE
+* instance_activate_all                      EFFECTS EXPLOITABLE
+* instance_activate_object                   EFFECTS EXPLOITABLE REFLECTION
+* instance_activate_region                   EFFECTS EXPLOITABLE
+* room_speed                                 EFFECTS_GLOBAL
+* fps                                        EFFECTS_GLOBAL FINGERPRINTING
+* fps_real                                   EFFECTS_GLOBAL FINGERPRINTING
+* current_time                               FINGERPRINTING
+* current_year                               FINGERPRINTING
+* current_month                              FINGERPRINTING
+* current_day                                FINGERPRINTING
+* current_weekday                            FINGERPRINTING
+* current_hour                               FINGERPRINTING
+* current_minute                             FINGERPRINTING
+* current_second                             FINGERPRINTING
+* room                                       EFFECTS_GLOBAL EXPLOITABLE REFLECTION
+* room_first                                 REFLECTION
+* room_last                                  REFLECTION
+* room_width                                 EFFECTS_GLOBAL
+* room_height                                EFFECTS_GLOBAL
+* room_persistent                            EFFECTS_GLOBAL
+* room_goto                                  EFFECTS_GLOBAL EXPLOITABLE REFLECTION
+* room_goto_previous                         EFFECTS_GLOBAL EXPLOITABLE REFLECTION
+* room_goto_next                             EFFECTS_GLOBAL EXPLOITABLE REFLECTION
+* room_previous                              REFLECTION
+* room_next                                  REFLECTION
+* room_restart                               EFFECTS_GLOBAL EXPLOITABLE
+* game_end                                   EFFECTS_GLOBAL OS_DIRECTIVE
+* game_restart                               EFFECTS_GLOBAL OS_DIRECTIVE
+* game_load                                  EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
+* game_save                                  EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
+* game_save_buffer                           EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
+* game_load_buffer                           EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
+* scheduler_resolution_set                   EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+* scheduler_resolution_get                   OS_DIRECTIVE UNSAFE
+* score                                      EFFECTS_GLOBAL
+* lives                                      EFFECTS_GLOBAL
+* health                                     EFFECTS_GLOBAL
+* event_perform                              EFFECTS EXPLOITABLE REFLECTION
+* event_perform_async                        EFFECTS EXPLOITABLE REFLECTION
+* event_user                                 EFFECTS EXPLOITABLE REFLECTION
+* event_perform_object                       EFFECTS EXPLOITABLE REFLECTION
+* event_inherited                            EFFECTS EXPLOITABLE REFLECTION
+* event_type                                 EFFECTS EXPLOITABLE REFLECTION
+* event_number                               EFFECTS EXPLOITABLE REFLECTION
+* event_object                               EFFECTS EXPLOITABLE REFLECTION
+* event_action                               EFFECTS EXPLOITABLE REFLECTION
   ev_create
   ev_pre_create
   ev_destroy
@@ -513,14 +513,14 @@
   ev_async_audio_recording
   ev_async_audio_playback
   ev_async_system_event
-  application_surface
-  show_debug_message                         EFFECTS UNSAFE
-  show_debug_overlay                         EFFECTS UNSAFE
-  debug_mode
-  debug_event                                EFFECTS UNSAFE
-  debug_get_callstack                        EFFECTS UNSAFE
-  alarm_get                                  EFFECTS UNSAFE
-  alarm_set                                  EFFECTS UNSAFE
+* application_surface                        IO_RENDER
+* show_debug_message                         EFFECTS_GLOBAL IO_DIALOG
+* show_debug_overlay                         EFFECTS_GLOBAL IO_DIALOG
+* debug_mode                                 FINGERPRINTING
+* debug_event                                EFFECTS_GLOBAL IO_DIALOG
+* debug_get_callstack                        EFFECTS_GLOBAL EXPLOITABLE FINGERPRINTING
+* alarm_get                                  REFLECTION
+* alarm_set                                  EFFECTS REFLECTION
   font_texture_page_size
   keyboard_key
   keyboard_lastkey
@@ -725,10 +725,10 @@
   fa_bottom
   draw_text                                  EFFECTS UNSAFE
   draw_text_ext                              EFFECTS UNSAFE
-  string_width                               EFFECTS UNSAFE
-  string_height                              EFFECTS UNSAFE
-  string_width_ext                           EFFECTS UNSAFE
-  string_height_ext                          EFFECTS UNSAFE
+  string_width                               EFFECTS
+  string_height                              EFFECTS
+  string_width_ext                           EFFECTS
+  string_height_ext                          EFFECTS
   draw_text_transformed                      EFFECTS UNSAFE
   draw_text_ext_transformed                  EFFECTS UNSAFE
   draw_text_colour                           EFFECTS UNSAFE
@@ -763,11 +763,11 @@
   pr_trianglelist
   pr_trianglestrip
   pr_trianglefan
-  draw_primitive_begin                       EFFECTS UNSAFE
-  draw_vertex                                EFFECTS UNSAFE
-  draw_vertex_colour                         EFFECTS UNSAFE
-  draw_vertex_color                          EFFECTS UNSAFE
-  draw_primitive_end                         EFFECTS UNSAFE
+  draw_primitive_begin
+  draw_vertex
+  draw_vertex_colour
+  draw_vertex_color
+  draw_primitive_end
   sprite_get_uvs                             EFFECTS REFLECTION UNSAFE
   font_get_uvs                               EFFECTS REFLECTION UNSAFE
   font_get_info                              EFFECTS REFLECTION UNSAFE
@@ -777,10 +777,10 @@
   texture_get_width                          EFFECTS REFLECTION UNSAFE
   texture_get_height                         EFFECTS REFLECTION UNSAFE
   texture_get_uvs                            EFFECTS REFLECTION UNSAFE
-  draw_primitive_begin_texture               EFFECTS REFLECTION UNSAFE
-  draw_vertex_texture                        EFFECTS UNSAFE
-  draw_vertex_texture_colour                 EFFECTS UNSAFE
-  draw_vertex_texture_color                  EFFECTS UNSAFE
+  draw_primitive_begin_texture               EFFECTS REFLECTION
+  draw_vertex_texture
+  draw_vertex_texture_colour
+  draw_vertex_texture_color
   texture_global_scale                       EFFECTS EFFECTS_GLOBAL UNSAFE
   bm_normal
   bm_add
@@ -1518,22 +1518,22 @@
   matrix_view
   matrix_projection
   matrix_world
-  matrix_get                                 EFFECTS UNSAFE
-  matrix_set                                 EFFECTS UNSAFE
-  matrix_build_identity                      EFFECTS UNSAFE
-  matrix_build                               EFFECTS UNSAFE
-  matrix_build_lookat                        EFFECTS UNSAFE
-  matrix_build_projection_ortho              EFFECTS UNSAFE
-  matrix_build_projection_perspective        EFFECTS UNSAFE
-  matrix_build_projection_perspective_fov    EFFECTS UNSAFE
-  matrix_multiply                            EFFECTS UNSAFE
-  matrix_transform_vertex                    EFFECTS UNSAFE
-  matrix_stack_push                          EFFECTS UNSAFE
-  matrix_stack_pop                           EFFECTS UNSAFE
-  matrix_stack_set                           EFFECTS UNSAFE
-  matrix_stack_clear                         EFFECTS UNSAFE
-  matrix_stack_top                           EFFECTS UNSAFE
-  matrix_stack_is_empty                      EFFECTS UNSAFE
+  matrix_get                                 EFFECTS
+  matrix_set                                 EFFECTS EFFECTS_GLOBAL
+  matrix_build_identity
+  matrix_build
+  matrix_build_lookat
+  matrix_build_projection_ortho
+  matrix_build_projection_perspective
+  matrix_build_projection_perspective_fov
+  matrix_multiply
+  matrix_transform_vertex
+  matrix_stack_push                          EFFECTS_GLOBAL
+  matrix_stack_pop                           EFFECTS_GLOBAL
+  matrix_stack_set                           EFFECTS_GLOBAL
+  matrix_stack_clear                         EFFECTS_GLOBAL
+  matrix_stack_top
+  matrix_stack_is_empty
   os_windows
   os_macosx
   os_ios
@@ -1990,16 +1990,16 @@
   texture_get_texel_width                    EFFECTS REFLECTION UNSAFE
   texture_get_texel_height                   EFFECTS REFLECTION UNSAFE
   shaders_are_supported                      EFFECTS UNSAFE
-  vertex_format_begin                        EFFECTS UNSAFE
-  vertex_format_end                          EFFECTS REFLECTION UNSAFE
-  vertex_format_delete                       EFFECTS REFLECTION UNSAFE
-  vertex_format_add_position                 EFFECTS UNSAFE
-  vertex_format_add_position_3d              EFFECTS UNSAFE
-  vertex_format_add_colour                   EFFECTS UNSAFE
-  vertex_format_add_color                    EFFECTS UNSAFE
-  vertex_format_add_normal                   EFFECTS UNSAFE
-  vertex_format_add_texcoord                 EFFECTS UNSAFE
-  vertex_format_add_custom                   EFFECTS UNSAFE
+  vertex_format_begin
+  vertex_format_end                          EFFECTS REFLECTION
+  vertex_format_delete                       EFFECTS REFLECTION
+  vertex_format_add_position
+  vertex_format_add_position_3d
+  vertex_format_add_colour
+  vertex_format_add_color
+  vertex_format_add_normal
+  vertex_format_add_texcoord
+  vertex_format_add_custom
   vertex_usage_position
   vertex_usage_colour
   vertex_usage_color
@@ -2020,29 +2020,29 @@
   vertex_type_colour
   vertex_type_color
   vertex_type_ubyte4
-  vertex_create_buffer                       EFFECTS REFLECTION UNSAFE
-  vertex_create_buffer_ext                   EFFECTS REFLECTION UNSAFE
-  vertex_delete_buffer                       EFFECTS REFLECTION UNSAFE
-  vertex_begin                               EFFECTS REFLECTION UNSAFE
-  vertex_end                                 EFFECTS REFLECTION UNSAFE
-  vertex_position                            EFFECTS REFLECTION UNSAFE
-  vertex_position_3d                         EFFECTS REFLECTION UNSAFE
-  vertex_colour                              EFFECTS REFLECTION UNSAFE
-  vertex_color                               EFFECTS REFLECTION UNSAFE
-  vertex_argb                                EFFECTS REFLECTION UNSAFE
-  vertex_texcoord                            EFFECTS REFLECTION UNSAFE
-  vertex_normal                              EFFECTS REFLECTION UNSAFE
-  vertex_float1                              EFFECTS REFLECTION UNSAFE
-  vertex_float2                              EFFECTS REFLECTION UNSAFE
-  vertex_float3                              EFFECTS REFLECTION UNSAFE
-  vertex_float4                              EFFECTS REFLECTION UNSAFE
-  vertex_ubyte4                              EFFECTS REFLECTION UNSAFE
-  vertex_submit                              EFFECTS REFLECTION UNSAFE
-  vertex_freeze                              EFFECTS REFLECTION UNSAFE
-  vertex_get_number                          EFFECTS REFLECTION UNSAFE
-  vertex_get_buffer_size                     EFFECTS REFLECTION UNSAFE
-  vertex_create_buffer_from_buffer           EFFECTS REFLECTION UNSAFE
-  vertex_create_buffer_from_buffer_ext       EFFECTS REFLECTION UNSAFE
+  vertex_create_buffer                       EFFECTS REFLECTION
+  vertex_create_buffer_ext                   EFFECTS REFLECTION
+  vertex_delete_buffer                       EFFECTS REFLECTION
+  vertex_begin                               EFFECTS REFLECTION
+  vertex_end                                 EFFECTS REFLECTION
+  vertex_position                            EFFECTS REFLECTION
+  vertex_position_3d                         EFFECTS REFLECTION
+  vertex_colour                              EFFECTS REFLECTION
+  vertex_color                               EFFECTS REFLECTION
+  vertex_argb                                EFFECTS REFLECTION
+  vertex_texcoord                            EFFECTS REFLECTION
+  vertex_normal                              EFFECTS REFLECTION
+  vertex_float1                              EFFECTS REFLECTION
+  vertex_float2                              EFFECTS REFLECTION
+  vertex_float3                              EFFECTS REFLECTION
+  vertex_float4                              EFFECTS REFLECTION
+  vertex_ubyte4                              EFFECTS REFLECTION
+  vertex_submit                              EFFECTS REFLECTION
+  vertex_freeze                              EFFECTS REFLECTION
+  vertex_get_number                          EFFECTS REFLECTION
+  vertex_get_buffer_size                     EFFECTS REFLECTION
+  vertex_create_buffer_from_buffer           EFFECTS REFLECTION
+  vertex_create_buffer_from_buffer_ext       EFFECTS REFLECTION
   skeleton_animation_set                     EFFECTS UNSAFE
   skeleton_animation_get                     EFFECTS UNSAFE
   skeleton_animation_mix                     EFFECTS UNSAFE
@@ -2511,54 +2511,54 @@
   cloud_string_save                          DEPRECATED EFFECTS IO_FILE UNSAFE
   cloud_synchronise                          DEPRECATED EFFECTS UNSAFE
   GM_is_sandboxed
-  is_instanceof                              EFFECTS REFLECTION UNSAFE
-  is_callable                                EFFECTS UNSAFE
-  is_handle                                  EFFECTS UNSAFE
-  static_get                                 EFFECTS REFLECTION UNSAFE
-  static_set                                 EFFECTS UNSAFE
-  variable_get_hash                          EFFECTS UNSAFE
-  variable_clone                             EFFECTS UNSAFE
-  struct_exists                              EFFECTS UNSAFE
-  struct_get                                 EFFECTS UNSAFE
-  struct_set                                 EFFECTS UNSAFE
-  struct_get_names                           EFFECTS REFLECTION UNSAFE
-  struct_names_count                         EFFECTS UNSAFE
-  struct_remove                              EFFECTS UNSAFE
-  struct_foreach                             EFFECTS REFLECTION UNSAFE
-  struct_get_from_hash                       EFFECTS UNSAFE
-  struct_set_from_hash                       EFFECTS UNSAFE
-  array_shift                                EFFECTS UNSAFE
-  array_shuffle                              EFFECTS UNSAFE
-  array_shuffle_ext                          EFFECTS UNSAFE
-  array_get_index                            EFFECTS REFLECTION UNSAFE
-  array_contains                             EFFECTS UNSAFE
-  array_contains_ext                         EFFECTS UNSAFE
-  array_first                                EFFECTS UNSAFE
-  array_last                                 EFFECTS UNSAFE
-  array_create_ext                           EFFECTS REFLECTION UNSAFE
-  array_find_index                           EFFECTS REFLECTION UNSAFE
-  array_any                                  EFFECTS REFLECTION UNSAFE
-  array_all                                  EFFECTS REFLECTION UNSAFE
-  array_foreach                              EFFECTS REFLECTION UNSAFE
-  array_reduce                               EFFECTS REFLECTION UNSAFE
-  array_filter                               EFFECTS REFLECTION UNSAFE
-  array_filter_ext                           EFFECTS REFLECTION UNSAFE
-  array_map                                  EFFECTS REFLECTION UNSAFE
-  array_map_ext                              EFFECTS REFLECTION UNSAFE
-  array_copy_while                           EFFECTS REFLECTION UNSAFE
-  array_unique                               EFFECTS UNSAFE
-  array_unique_ext                           EFFECTS UNSAFE
-  array_reverse                              EFFECTS UNSAFE
-  array_reverse_ext                          EFFECTS UNSAFE
-  array_concat                               EFFECTS UNSAFE
-  array_union                                EFFECTS UNSAFE
-  array_intersection                         EFFECTS UNSAFE
-  handle_parse                               EFFECTS REFLECTION UNSAFE
+  is_instanceof                              EFFECTS REFLECTION
+  is_callable
+  is_handle
+  static_get                                 EFFECTS REFLECTION
+  static_set
+  variable_get_hash
+  variable_clone
+  struct_exists
+  struct_get
+  struct_set
+  struct_get_names
+  struct_names_count
+  struct_remove
+  struct_foreach                             EFFECTS REFLECTION
+  struct_get_from_hash
+  struct_set_from_hash
+  array_shift
+  array_shuffle
+  array_shuffle_ext
+  array_get_index
+  array_contains
+  array_contains_ext
+  array_first
+  array_last
+  array_create_ext                           EFFECTS REFLECTION
+  array_find_index                           EFFECTS REFLECTION
+  array_any                                  EFFECTS REFLECTION
+  array_all                                  EFFECTS REFLECTION
+  array_foreach                              EFFECTS REFLECTION
+  array_reduce                               EFFECTS REFLECTION
+  array_filter                               EFFECTS REFLECTION
+  array_filter_ext                           EFFECTS REFLECTION
+  array_map                                  EFFECTS REFLECTION
+  array_map_ext                              EFFECTS REFLECTION
+  array_copy_while                           EFFECTS REFLECTION
+  array_unique
+  array_unique_ext
+  array_reverse
+  array_reverse_ext
+  array_concat
+  array_union
+  array_intersection
+  handle_parse                               EFFECTS REFLECTION
   game_change                                EFFECTS UNSAFE
   ev_draw_normal
   ev_audio_playback_ended
   ev_async_audio_playback_ended
-  show_debug_message_ext                     EFFECTS UNSAFE
+  show_debug_message_ext                     OS_DIRECTIVE
   is_debug_overlay_open                      EFFECTS UNSAFE
   is_mouse_over_debug_overlay                EFFECTS UNSAFE
   is_keyboard_used_debug_overlay             EFFECTS UNSAFE
@@ -2580,7 +2580,7 @@
   dbg_button                                 EFFECTS REFLECTION UNSAFE
   dbg_same_line                              EFFECTS REFLECTION UNSAFE
   dbg_add_font_glyphs                        EFFECTS UNSAFE
-  ref_create                                 EFFECTS REFLECTION UNSAFE
+  ref_create                                 EFFECTS REFLECTION
   audio_3D
   surface_get_format                         EFFECTS REFLECTION UNSAFE
   surface_format_is_supported                EFFECTS UNSAFE
@@ -2626,7 +2626,7 @@
   font_sdf_spread                            EFFECTS REFLECTION UNSAFE
   font_get_sdf_spread                        EFFECTS REFLECTION UNSAFE
   font_enable_effects                        EFFECTS REFLECTION UNSAFE
-  method_call                                EFFECTS REFLECTION UNSAFE
+  method_call                                EFFECTS REFLECTION
   asset_get_ids                              EFFECTS REFLECTION UNSAFE
   fa_none
   cache_directory
@@ -2663,10 +2663,10 @@
   network_connect_passive
   buffer_copy_stride                         EFFECTS REFLECTION UNSAFE
   shader_set_uniform_f_buffer                EFFECTS REFLECTION UNSAFE
-  vertex_format_get_info                     EFFECTS REFLECTION UNSAFE
-  vertex_submit_ext                          EFFECTS REFLECTION UNSAFE
-  vertex_update_buffer_from_buffer           EFFECTS REFLECTION UNSAFE
-  vertex_update_buffer_from_vertex           EFFECTS REFLECTION UNSAFE
+  vertex_format_get_info                     EFFECTS REFLECTION
+  vertex_submit_ext                          EFFECTS REFLECTION
+  vertex_update_buffer_from_buffer           EFFECTS REFLECTION
+  vertex_update_buffer_from_vertex           EFFECTS REFLECTION
   skeleton_attachment_exists                 EFFECTS UNSAFE
   skeleton_attachment_replace                EFFECTS REFLECTION UNSAFE
   skeleton_attachment_replace_colour         EFFECTS REFLECTION UNSAFE
@@ -2828,12 +2828,12 @@
   buffer_set_surface_depth                   EFFECTS REFLECTION UNSAFE
   gml_pragma                                 EFFECTS UNSAFE
   gml_release_mode                           EFFECTS UNSAFE
-  array_height_2d                            DEPRECATED EFFECTS UNSAFE
-  array_length_1d                            DEPRECATED EFFECTS UNSAFE
-  array_length_2d                            DEPRECATED EFFECTS UNSAFE
-  nameof                                     EFFECTS UNSAFE
-  struct_exists_from_hash                    EFFECTS UNSAFE
-  struct_remove_from_hash                    EFFECTS UNSAFE
+  array_height_2d                            DEPRECATED
+  array_length_1d                            DEPRECATED
+  array_length_2d                            DEPRECATED
+  nameof
+  struct_exists_from_hash
+  struct_remove_from_hash
   analytics_event                            DEPRECATED EFFECTS IO_NETWORK UNSAFE
   analytics_event_ext                        DEPRECATED EFFECTS IO_NETWORK UNSAFE
   rollback_chat                              EFFECTS UNSAFE
@@ -2995,7 +2995,7 @@
   layer_text_y                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
   layer_text_yorigin                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
   layer_text_yscale                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  vertex_format_add_textcoord                DEPRECATED EFFECTS UNSAFE
+  vertex_format_add_textcoord                DEPRECATED
   draw_enable_svg_aa                         EFFECTS UNSAFE
   draw_get_svg_aa_level                      EFFECTS UNSAFE
   draw_set_svg_aa_level                      EFFECTS OS_DIRECTIVE UNSAFE
@@ -3070,7 +3070,7 @@
   flexpanel_node_style_set_position          EFFECTS REFLECTION UNSAFE
   flexpanel_node_style_set_position_type     EFFECTS REFLECTION UNSAFE
   flexpanel_node_style_set_width             EFFECTS REFLECTION UNSAFE
-  matrix_inverse                             EFFECTS UNSAFE
+  matrix_inverse
   window_minimise                            EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
   window_minimize                            EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
   window_restore                             EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
