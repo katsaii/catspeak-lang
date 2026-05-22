@@ -45,6 +45,7 @@ GML_FNAMESES = [
 GML_PERMS_SORTED = False
 GML_PERMS_PATH = "api-gml-perms.txt"
 GML_PERMS = OrderedDict()
+env.globals["GML_PERMS"] = GML_PERMS
 
 GML_BLOCKLIST = [
     "argument",
@@ -76,6 +77,7 @@ GML_SYMBOL_MAP = {
     "method_get_self": "catspeak_get_self",
     "method_get_index": "catspeak_get_index",
 }
+env.globals["GML_SYMBOL_MAP"] = GML_SYMBOL_MAP
 
 TAG_NONE       = 0
 TAG_FUNCTION   = 0b000001

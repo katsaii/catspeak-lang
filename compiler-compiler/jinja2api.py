@@ -8,6 +8,17 @@ def jinja2_export(func):
     JINJA2_FUNCS.append(func)
     return func
 
+# bitwise (why doesn't jinja have these by default...)
+
+@jinja2_export
+def band(lhs, rhs): return lhs & rhs
+
+@jinja2_export
+def bor(lhs, rhs): return lhs | rhs
+
+@jinja2_export
+def bxor(lhs, rhs): return lhs ^ rhs
+
 # case conversion
 
 def case_explode(ident):
@@ -75,6 +86,12 @@ def get(*idxs):
         for idx in idxs:
             value = value[idx]
         return value
+    return inner_
+
+@jinja2_export
+def add_prefix(prefix):
+    def inner_(x):
+        return f"{prefix}{x}"
     return inner_
 
 @jinja2_export

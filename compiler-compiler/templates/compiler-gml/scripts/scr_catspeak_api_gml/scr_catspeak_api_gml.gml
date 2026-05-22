@@ -58,8 +58,53 @@ function CatspeakModuleGML(perms_) : CatspeakModule("gm::gml") constructor {
         return undefined;
     };
     /// @ignore
-    static db = undefined;
-    if (db == undefined) {
-        db = { };
+    static defs = undefined;
+    if (defs == undefined) {
+        defs = { };
+        with ({ }) { // protects from incorrectly reading a missing function from an instance variable
+            var defPerms;
+{% for (fnameses, symbols) in fnames.items() %}
+{%  if len(symbols) > 0 %}
+            try {
+{%   for (symbol, flags) in symbols %}
+{%    set symbol_alias = GML_SYMBOL_MAP.get(symbol, symbol) %}
+{%    set symbol_perms = GML_PERMS.get(symbol, (None, []))[1] %}
+{%    if len(symbol_perms) < 1 %}
+{%     set symbol_perms = ["NONE"] %}
+{%    endif %}
+{%    set symbol_perms_str = " | ".join(map(add_prefix("CatspeakPerm."), symbol_perms)) %}
+{%     if band(flags, TAG_FUNCTION) %}
+                defs[$ "{{ symbol }}"] = { v : method(undefined, {{ symbol_alias }}), perms : {{ symbol_perms_str }} };
+{%     endif %}
+{%     if band(flags, TAG_CONST) %}
+{%      if symbol == "global" %}
+                defs[$ "{{ symbol }}"] = { v : catspeak_special_to_struct({{ symbol_alias }}), perms : {{ symbol_perms_str }} };
+{%      else %}
+                defs[$ "{{ symbol }}"] = { v : {{ symbol_alias }}, perms : {{ symbol_perms_str }} };
+{%      endif %}
+{%     endif %}
+{%     if band(flags, TAG_PROP_GET) %}
+                defs[$ "{{ symbol }}_get"] = { v : method(undefined, function () { return {{ symbol_alias }} }), perms : {{ symbol_perms_str }} };
+{%     endif %}
+{%     if band(flags, TAG_PROP_SET) %}
+                defs[$ "{{ symbol }}_set"] = { v : method(undefined, function (val) { return {{ symbol_alias }} = val }), perms : {{ symbol_perms_str }} };
+{%     endif %}
+{%     if band(flags, TAG_PROP_GET_I) %}
+                defs[$ "{{ symbol }}_get"] = { v : method(undefined, function (idx) { return {{ symbol_alias }}[idx] }), perms : {{ symbol_perms_str }} };
+{%     endif %}
+{%     if band(flags, TAG_PROP_SET_I) %}
+                defs[$ "{{ symbol }}_set"] = { v : method(undefined, function (idx, val) { return {{ symbol_alias }}[idx] = val }), perms : {{ symbol_perms_str }} };
+{%     endif %}
+{%   endfor %}
+            } catch (err_) {
+                __catspeak_error_silent(__catspeak_cat(
+                    "skipping GML API versions: {{ ', '.join(fnameses) }} ",
+                    "(your GameMaker version may be out of date) reason: ",
+                    err_.message
+                ));
+            }
+{%  endif %}
+{% endfor %}
+        }
     }
 }
