@@ -1,13 +1,21 @@
-//! TODO
+//! A full-fat module containing the GML standard library functions, constants,
+//! and properties. Permissions can be granted by passing `CatspeakPerm` mask
+//! into the `CatspeakModuleGML` constructor.
 
 //# feather use syntax-errors
 
-/// TODO
+/// Catspeak GML API permissions, ranging from no special permissions
+/// (i.e. functions that are completely sandboxed) like `abs` or `make_colour_rgb`,
+/// to unsafe functions like `external_define`.
+///
+/// The default permissions for Catspeak programs are
+/// `CatspeakPerm.EFFECTS | CatspeakPerm.IO_INPUT | CatspeakPerm.IO_RENDER`.
+/// These are available under an alias called `CatspeakPerm.DEFAULT_`.
 ///
 /// @remark
 ///   Some permissions courtesy of: https://github.com/tinkerer-red/GML-Function-DB
 enum CatspeakPerm {
-    /// No special permissions needed.
+    /// No special permissions required.
     NONE = 0,
     /// Allow deprecated API functions.
     DEPRECATED = 1 << 0,
@@ -16,7 +24,10 @@ enum CatspeakPerm {
     /// Allow functions which could be used to exploit the Catspeak sandbox
     /// or break internal Catspeak behaviour.
     EXPLOITABLE = 1 << 2,
-    /// Allow functions which mutate their inputs.
+    /// Allow functions which mutate their inputs (local effects), e.g. `array_push`.
+    ///
+    /// This also applies to any functions which modify the variables of `self`
+    /// and `other` implicitly.
     EFFECTS = 1 << 3,
     /// Allow functions which have global effects.
     EFFECTS_GLOBAL = 1 << 4,
@@ -28,7 +39,7 @@ enum CatspeakPerm {
     IO_INPUT = 1 << 7,
     /// Allow access to rendering/draw functions.
     IO_RENDER = 1 << 8,
-    /// ALlow access to platform-specific functions.
+    /// Allow access to platform-specific functions.
     PLATFORM_SPECIFIC = 1 << 9,
     /// Allow access to functions which leak personal information.
     FINGERPRINTING = 1 << 10,
@@ -45,17 +56,28 @@ enum CatspeakPerm {
     __UNSPECIFIED = 0xFFFFFFFF,
 }
 
-/// TODO
-function CatspeakModuleGML(perms_) : CatspeakModule("gm::gml") constructor {
+/// A module for exposing the GML API to Catspeak programs, with configurable
+/// permissions.
+///
+/// @param {String} [name]
+///   The name of the module. Defaults to `"gm::gml"`.
+///
+/// @param {Enum.CatspeakPerm} [perms_]
+///   A bitmask representing the permissions to allow.
+function CatspeakModuleGML(
+    name = "gm::gml", perms_ = CatspeakPerm.DEFAULT_
+) : CatspeakModule(name) constructor {
     /// @ignore
     perms = perms_;
     /// @ignore
     __exists__ = function (name) {
-        return false;
+        var def = defs[$ name];
+        return def == undefined || (def.perms & perms) == def.perms;
     };
     /// @ignore
     __get__ = function (name) {
-        return undefined;
+        var def = defs[$ name];
+        return def == undefined || (def.perms & perms) == def.perms ? undefined : def.v;
     };
     /// @ignore
     static defs = undefined;
