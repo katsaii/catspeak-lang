@@ -45,6 +45,26 @@ GML_FNAMESES = [
 GML_PERMS_SORTED = False
 GML_PERMS_PATH = "api-gml-perms.txt"
 GML_PERMS = OrderedDict()
+GML_PERMS_ORD = {
+    "DEPRECATED": 40,
+    "UNSAFE": 41,
+    "EXPLOITABLE": 42,
+    "EFFECTS": 50,
+    "GLOBAL": 33,
+    "SELF": 31,
+    "OTHER": 32,
+    "ASSET": 30,
+    "ASSET_REFLECTION": 72,
+    "IO_FILE": 20,
+    "IO_NETWORK": 21,
+    "IO_INPUT": 22,
+    "IO_RENDER": 23,
+    "IO_AUDIO": 24,
+    "PLATFORM_SPECIFIC": 70,
+    "FINGERPRINTING": 82,
+    "OS_DIALOG": 80,
+    "OS_DIRECTIVE": 81,
+}
 env.globals["GML_PERMS"] = GML_PERMS
 
 GML_BLOCKLIST = [
@@ -138,9 +158,9 @@ if os.path.isdir("GML-Function-DB/db"):
                 for name, db_def in db_defs.items():
                     perms = set([
                         "DEPRECATED", "UNSAFE", "EXPLOITABLE", "EFFECTS",
-                        "GLOBAL", "SELF", "OTHER", "ROOM", "IO_FILE",
+                        "GLOBAL", "SELF", "OTHER", "ASSET", "IO_FILE",
                         "IO_NETWORK", "IO_INPUT", "IO_RENDER", "IO_AUDIO",
-                        "PLATFORM_SPECIFIC", "FINGERPRINTING", "REFLECTION",
+                        "PLATFORM_SPECIFIC", "FINGERPRINTING", "ASSET_REFLECTION",
                         "OS_DIALOG", "OS_DIRECTIVE"
                     ])
                     if not db_def.get("is_deprecated", False):
@@ -161,7 +181,7 @@ if os.path.isdir("GML-Function-DB/db"):
                         perms.discard("EFFECTS")
                         perms.discard("GLOBAL")
                     if not db_def.get("is_asset_reflection", True):
-                        perms.discard("REFLECTION")
+                        perms.discard("ASSET_REFLECTION")
                     if not db_def.get("is_os_dialog", True):
                         perms.discard("OS_DIALOG")
                     if not db_def.get("is_os_directive", True):
@@ -322,7 +342,8 @@ if not DEBUG:
         prefix = "* " if perms != None and perms[0] else "  "
         if perms != None and len(perms[1]) > 0:
             symbol_indent = " " * (symbols_max_len - len(symbol))
-            perms_str += f"{prefix}{symbol}{symbol_indent} {' '.join(sorted(list(perms[1])))}\n"
+            perms_sorted = sorted(list(perms[1]), key=lambda x: GML_PERMS_ORD[x])
+            perms_str += f"{prefix}{symbol}{symbol_indent} {' '.join(perms_sorted)}\n"
         else:
             perms_str += f"{prefix}{symbol}\n"
     print(f"writing: {GML_PERMS_PATH}")

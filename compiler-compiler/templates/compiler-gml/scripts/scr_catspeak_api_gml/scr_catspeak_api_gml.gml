@@ -35,8 +35,11 @@ enum CatspeakPerm {
     SELF = 1 << 14,
     /// Implicitly makes use of `other`.
     OTHER = 1 << 15,
-    /// Allow access to the room and its instances, such as for collision detection.
-    ROOM = 1 << 16,
+    /// Allow access to functions which use room assets, such as for collision
+    /// detection.
+    ASSET = 1 << 16,
+    /// Allow asset reflection.
+    ASSET_REFLECTION = 1 << 11,
     /// Allow access to the users filesystem.
     IO_FILE = 1 << 5,
     /// Allow access to networking behaviour.
@@ -51,8 +54,6 @@ enum CatspeakPerm {
     PLATFORM_SPECIFIC = 1 << 9,
     /// Allow access to functions which leak personal information.
     FINGERPRINTING = 1 << 10,
-    /// Allow asset reflection.
-    REFLECTION = 1 << 11,
     /// Allow window dialogs, e.g. `show_message` and debug overlays.
     OS_DIALOG = 1 << 12,
     /// Allow mods to modify window state.
