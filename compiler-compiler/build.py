@@ -136,30 +136,36 @@ if os.path.isdir("GML-Function-DB/db"):
                 print(f"loading: {db_path}")
                 db_defs = json.load(file)
                 for name, db_def in db_defs.items():
-                    perms = set()
-                    if db_def.get("is_deprecated", False):
-                        perms.add("DEPRECATED")
-                    if not db_def.get("is_safe", False):
-                        perms.add("UNSAFE")
-                    if not db_def.get("is_sandboxed", False):
-                        perms.add("EFFECTS")
-                    if db_def.get("is_file_io", True):
-                        perms.add("IO_FILE")
-                    if db_def.get("is_network_io", True):
-                        perms.add("IO_NETWORK")
-                    if db_def.get("is_personal_data", True):
-                        perms.add("FINGERPRINTING")
-                    if db_def.get("is_platform_specific", False):
-                        perms.add("PLATFORM_SPECIFIC")
-                    if db_def.get("is_global_effect", True):
-                        perms.add("EFFECTS")
-                        perms.add("GLOBAL")
-                    if db_def.get("is_asset_reflection", True):
-                        perms.add("REFLECTION")
-                    if db_def.get("is_os_dialog", True):
-                        perms.add("OS_DIALOG")
-                    if db_def.get("is_os_directive", True):
-                        perms.add("OS_DIRECTIVE")
+                    perms = set(
+                        "DEPRECATED", "UNSAFE", "EXPLOITABLE", "EFFECTS",
+                        "GLOBAL", "SELF", "OTHER", "ROOM", "IO_FILE",
+                        "IO_NETWORK", "IO_INPUT", "IO_RENDER", "IO_AUDIO",
+                        "PLATFORM_SPECIFIC", "FINGERPRINTING", "REFLECTION",
+                        "OS_DIALOG", "OS_DIRECTIVE"
+                    )
+                    if not db_def.get("is_deprecated", False):
+                        perms.remove("DEPRECATED")
+                    if db_def.get("is_safe", False):
+                        perms.remove("UNSAFE")
+                    if db_def.get("is_sandboxed", False):
+                        perms.remove("EFFECTS")
+                    if not db_def.get("is_file_io", True):
+                        perms.remove("IO_FILE")
+                    if not db_def.get("is_network_io", True):
+                        perms.remove("IO_NETWORK")
+                    if not db_def.get("is_personal_data", True):
+                        perms.remove("FINGERPRINTING")
+                    if not db_def.get("is_platform_specific", False):
+                        perms.remove("PLATFORM_SPECIFIC")
+                    if not db_def.get("is_global_effect", True):
+                        perms.remove("EFFECTS")
+                        perms.remove("GLOBAL")
+                    if not db_def.get("is_asset_reflection", True):
+                        perms.remove("REFLECTION")
+                    if not db_def.get("is_os_dialog", True):
+                        perms.remove("OS_DIALOG")
+                    if not db_def.get("is_os_directive", True):
+                        perms.remove("OS_DIRECTIVE")
                     GML_PERMS[name] = (False, perms)
 with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
     print(f"loading: {GML_PERMS_PATH}")

@@ -652,7 +652,7 @@
 * draw_triangle                              IO_RENDER
 * draw_circle                                IO_RENDER
 * draw_ellipse                               IO_RENDER
-* draw_set_circle_precision                  EFFECTS IO_RENDER OS_DIRECTIVE
+* draw_set_circle_precision                  EFFECTS IO_RENDER
 * draw_arrow                                 IO_RENDER
 * draw_button                                IO_RENDER
 * draw_path                                  IO_RENDER
@@ -690,84 +690,84 @@
   merge_colour                               EFFECTS UNSAFE
   make_colour_rgb                            EFFECTS UNSAFE
   make_colour_hsv                            EFFECTS UNSAFE
-  colour_get_red                             EFFECTS UNSAFE
-  colour_get_green                           EFFECTS UNSAFE
-  colour_get_blue                            EFFECTS UNSAFE
-  colour_get_hue                             EFFECTS UNSAFE
-  colour_get_saturation                      EFFECTS UNSAFE
-  colour_get_value                           EFFECTS UNSAFE
+* colour_get_red
+* colour_get_green
+* colour_get_blue
+* colour_get_hue
+* colour_get_saturation
+* colour_get_value
   merge_color                                EFFECTS UNSAFE
   make_color_rgb                             EFFECTS UNSAFE
   make_color_hsv                             EFFECTS UNSAFE
-  color_get_red                              EFFECTS UNSAFE
-  color_get_green                            EFFECTS UNSAFE
-  color_get_blue                             EFFECTS UNSAFE
-  color_get_hue                              EFFECTS UNSAFE
-  color_get_saturation                       EFFECTS UNSAFE
-  color_get_value                            EFFECTS UNSAFE
+* color_get_red
+* color_get_green
+* color_get_blue
+* color_get_hue
+* color_get_saturation
+* color_get_value
   screen_save                                EFFECTS IO_FILE UNSAFE
   screen_save_part                           EFFECTS IO_FILE UNSAFE
   gif_open                                   EFFECTS REFLECTION UNSAFE
   gif_add_surface                            EFFECTS REFLECTION UNSAFE
   gif_save                                   EFFECTS IO_FILE REFLECTION UNSAFE
   gif_save_buffer                            EFFECTS IO_FILE REFLECTION UNSAFE
-  draw_set_font                              EFFECTS OS_DIRECTIVE REFLECTION UNSAFE
-  draw_get_font                              EFFECTS REFLECTION UNSAFE
-  draw_set_halign                            EFFECTS OS_DIRECTIVE UNSAFE
-  draw_get_halign                            EFFECTS UNSAFE
+* draw_set_font                              EFFECTS IO_RENDER REFLECTION
+* draw_get_font                              IO_RENDER
+* draw_set_halign                            EFFECTS IO_RENDER
+* draw_get_halign                            IO_RENDER
   fa_left
   fa_center
   fa_right
-  draw_set_valign                            EFFECTS OS_DIRECTIVE UNSAFE
-  draw_get_valign                            EFFECTS UNSAFE
+* draw_set_valign                            EFFECTS IO_RENDER
+* draw_get_valign                            IO_RENDER
   fa_top
   fa_middle
   fa_bottom
-  draw_text                                  EFFECTS UNSAFE
-  draw_text_ext                              EFFECTS UNSAFE
+* draw_text                                  IO_RENDER
+* draw_text_ext                              IO_RENDER
   string_width                               EFFECTS
   string_height                              EFFECTS
   string_width_ext                           EFFECTS
   string_height_ext                          EFFECTS
-  draw_text_transformed                      EFFECTS UNSAFE
-  draw_text_ext_transformed                  EFFECTS UNSAFE
-  draw_text_colour                           EFFECTS UNSAFE
-  draw_text_ext_colour                       EFFECTS UNSAFE
-  draw_text_transformed_colour               EFFECTS UNSAFE
-  draw_text_ext_transformed_colour           EFFECTS UNSAFE
-  draw_text_color                            EFFECTS UNSAFE
-  draw_text_ext_color                        EFFECTS UNSAFE
-  draw_text_transformed_color                EFFECTS UNSAFE
-  draw_text_ext_transformed_color            EFFECTS UNSAFE
-  draw_point_colour                          EFFECTS UNSAFE
-  draw_line_colour                           EFFECTS UNSAFE
-  draw_line_width_colour                     EFFECTS UNSAFE
-  draw_rectangle_colour                      EFFECTS UNSAFE
-  draw_roundrect_colour                      EFFECTS UNSAFE
-  draw_roundrect_colour_ext                  EFFECTS UNSAFE
-  draw_triangle_colour                       EFFECTS UNSAFE
+* draw_text_transformed                      IO_RENDER
+* draw_text_ext_transformed                  IO_RENDER
+* draw_text_colour                           IO_RENDER
+* draw_text_ext_colour                       IO_RENDER
+* draw_text_transformed_colour               IO_RENDER
+* draw_text_ext_transformed_colour           IO_RENDER
+* draw_text_color                            IO_RENDER
+* draw_text_ext_color                        IO_RENDER
+* draw_text_transformed_color                IO_RENDER
+* draw_text_ext_transformed_color            IO_RENDER
+* draw_point_colour                          IO_RENDER
+* draw_line_colour                           IO_RENDER
+* draw_line_width_colour                     IO_RENDER
+* draw_rectangle_colour                      IO_RENDER
+* draw_roundrect_colour                      IO_RENDER
+* draw_roundrect_colour_ext                  IO_RENDER
+* draw_triangle_colour                       IO_RENDER
   draw_circle_colour                         EFFECTS UNSAFE
-  draw_ellipse_colour                        EFFECTS UNSAFE
-  draw_point_color                           EFFECTS UNSAFE
-  draw_line_color                            EFFECTS UNSAFE
-  draw_line_width_color                      EFFECTS UNSAFE
-  draw_rectangle_color                       EFFECTS UNSAFE
-  draw_roundrect_color                       EFFECTS UNSAFE
-  draw_roundrect_color_ext                   EFFECTS UNSAFE
-  draw_triangle_color                        EFFECTS UNSAFE
+* draw_ellipse_colour                        IO_RENDER
+* draw_point_color                           IO_RENDER
+* draw_line_color                            IO_RENDER
+* draw_line_width_color                      IO_RENDER
+* draw_rectangle_color                       IO_RENDER
+* draw_roundrect_color                       IO_RENDER
+* draw_roundrect_color_ext                   IO_RENDER
+* draw_triangle_color                        IO_RENDER
   draw_circle_color                          EFFECTS UNSAFE
-  draw_ellipse_color                         EFFECTS UNSAFE
+* draw_ellipse_color                         IO_RENDER
   pr_pointlist
   pr_linelist
   pr_linestrip
   pr_trianglelist
   pr_trianglestrip
   pr_trianglefan
-  draw_primitive_begin
-  draw_vertex
-  draw_vertex_colour
-  draw_vertex_color
-  draw_primitive_end
+* draw_primitive_begin                       IO_RENDER
+* draw_vertex                                IO_RENDER
+* draw_vertex_colour                         IO_RENDER
+* draw_vertex_color                          IO_RENDER
+* draw_primitive_end                         IO_RENDER
   sprite_get_uvs                             EFFECTS REFLECTION UNSAFE
   font_get_uvs                               EFFECTS REFLECTION UNSAFE
   font_get_info                              EFFECTS REFLECTION UNSAFE
@@ -777,10 +777,10 @@
   texture_get_width                          EFFECTS REFLECTION UNSAFE
   texture_get_height                         EFFECTS REFLECTION UNSAFE
   texture_get_uvs                            EFFECTS REFLECTION UNSAFE
-  draw_primitive_begin_texture               EFFECTS REFLECTION
-  draw_vertex_texture
-  draw_vertex_texture_colour
-  draw_vertex_texture_color
+* draw_primitive_begin_texture               IO_RENDER
+* draw_vertex_texture                        IO_RENDER
+* draw_vertex_texture_colour                 IO_RENDER
+* draw_vertex_texture_color                  IO_RENDER
   texture_global_scale                       EFFECTS GLOBAL UNSAFE
   bm_normal
   bm_add
@@ -833,15 +833,15 @@
   surface_reset_target                       EFFECTS UNSAFE
   surface_depth_disable                      EFFECTS UNSAFE
   surface_get_depth_disable                  EFFECTS UNSAFE
-  draw_surface                               EFFECTS REFLECTION UNSAFE
-  draw_surface_stretched                     EFFECTS REFLECTION UNSAFE
-  draw_surface_tiled                         EFFECTS REFLECTION UNSAFE
-  draw_surface_part                          EFFECTS REFLECTION UNSAFE
-  draw_surface_ext                           EFFECTS REFLECTION UNSAFE
-  draw_surface_stretched_ext                 EFFECTS REFLECTION UNSAFE
-  draw_surface_tiled_ext                     EFFECTS REFLECTION UNSAFE
-  draw_surface_part_ext                      EFFECTS REFLECTION UNSAFE
-  draw_surface_general                       EFFECTS REFLECTION UNSAFE
+* draw_surface                               IO_RENDER
+* draw_surface_stretched                     IO_RENDER
+* draw_surface_tiled                         IO_RENDER
+* draw_surface_part                          IO_RENDER
+* draw_surface_ext                           IO_RENDER
+* draw_surface_stretched_ext                 IO_RENDER
+* draw_surface_tiled_ext                     IO_RENDER
+* draw_surface_part_ext                      IO_RENDER
+* draw_surface_general                       IO_RENDER
   surface_getpixel                           EFFECTS REFLECTION UNSAFE
   surface_getpixel_ext                       EFFECTS REFLECTION UNSAFE
   surface_save                               EFFECTS IO_FILE REFLECTION UNSAFE
@@ -883,16 +883,16 @@
   display_mouse_get_y                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   display_mouse_set                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   display_set_ui_visibility                  EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_fullscreen                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_fullscreen                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_caption                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_min_width                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_max_width                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_min_height                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_max_height                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_visible_rects                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_caption                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_cursor                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+* window_set_fullscreen                      EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_fullscreen                      FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_set_caption                         EFFECTS GLOBAL OS_DIRECTIVE
+* window_set_min_width                       EFFECTS GLOBAL OS_DIRECTIVE
+* window_set_max_width                       EFFECTS GLOBAL OS_DIRECTIVE
+* window_set_min_height                      EFFECTS GLOBAL OS_DIRECTIVE
+* window_set_max_height                      EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_visible_rects                   FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_get_caption                         GLOBAL OS_DIRECTIVE
+* window_set_cursor                          EFFECTS GLOBAL OS_DIRECTIVE
   cr_default
   cr_none
   cr_arrow
@@ -908,35 +908,35 @@
   cr_appstart
   cr_handpoint
   cr_size_all
-  window_get_cursor                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_colour                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_colour                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_color                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_color                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_position                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_size                            EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_rectangle                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_center                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_x                               EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_y                               EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_width                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_height                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_x                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_y                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_set                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  view_enabled
-  view_current
-  view_visible
-  view_xport
-  view_yport
-  view_wport
-  view_hport
-  view_surface_id
-  view_camera
-  window_view_mouse_get_x                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_view_mouse_get_y                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_views_mouse_get_x                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_views_mouse_get_y                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+* window_get_cursor                          GLOBAL OS_DIRECTIVE
+* window_set_colour                          EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_colour                          GLOBAL OS_DIRECTIVE
+* window_set_color                           EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_color                           GLOBAL OS_DIRECTIVE
+* window_set_position                        EFFECTS GLOBAL OS_DIRECTIVE
+* window_set_size                            EFFECTS GLOBAL OS_DIRECTIVE
+* window_set_rectangle                       EFFECTS GLOBAL OS_DIRECTIVE
+* window_center                              EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_x                               FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_get_y                               FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_get_width                           FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_get_height                          FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_mouse_get_x                         GLOBAL IO_INPUT OS_DIRECTIVE
+* window_mouse_get_y                         GLOBAL IO_INPUT OS_DIRECTIVE
+* window_mouse_set                           EFFECTS GLOBAL IO_INPUT OS_DIRECTIVE
+* view_enabled                               EFFECTS IO_RENDER ROOM
+* view_current                               IO_RENDER ROOM
+* view_visible                               EFFECTS IO_RENDER ROOM
+* view_xport                                 EFFECTS IO_RENDER ROOM
+* view_yport                                 EFFECTS IO_RENDER ROOM
+* view_wport                                 EFFECTS IO_RENDER ROOM
+* view_hport                                 EFFECTS IO_RENDER ROOM
+* view_surface_id                            EFFECTS IO_RENDER ROOM
+* view_camera                                EFFECTS IO_RENDER ROOM
+* window_view_mouse_get_x                    GLOBAL IO_INPUT OS_DIRECTIVE
+* window_view_mouse_get_y                    GLOBAL IO_INPUT OS_DIRECTIVE
+* window_views_mouse_get_x                   GLOBAL IO_INPUT OS_DIRECTIVE
+* window_views_mouse_get_y                   GLOBAL IO_INPUT OS_DIRECTIVE
   audio_listener_position                    EFFECTS UNSAFE
   audio_listener_velocity                    EFFECTS UNSAFE
   audio_listener_orientation                 EFFECTS UNSAFE
@@ -1048,7 +1048,7 @@
   highscore_add                              EFFECTS UNSAFE
   highscore_value                            EFFECTS UNSAFE
   highscore_name                             EFFECTS UNSAFE
-  draw_highscore                             EFFECTS UNSAFE
+* draw_highscore                             IO_RENDER
   sprite_exists                              EFFECTS REFLECTION UNSAFE
   sprite_get_name                            EFFECTS REFLECTION UNSAFE
   sprite_get_number                          EFFECTS REFLECTION UNSAFE
@@ -1262,8 +1262,8 @@
   game_display_name
   game_project_name
   game_save_id
-  working_directory
-  temp_directory
+* working_directory                          FINGERPRINTING IO_FILE PLATFORM_SPECIFIC
+* temp_directory                             FINGERPRINTING IO_FILE PLATFORM_SPECIFIC
   program_directory
   ini_open_from_string                       EFFECTS IO_FILE UNSAFE
   ini_open                                   EFFECTS IO_FILE UNSAFE
@@ -1509,8 +1509,8 @@
   external_call                              EFFECTS REFLECTION UNSAFE
   external_define                            EFFECTS REFLECTION UNSAFE
   external_free                              EFFECTS UNSAFE
-  window_handle                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_device                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+* window_handle                              GLOBAL OS_DIRECTIVE UNSAFE
+* window_device                              DEPRECATED GLOBAL OS_DIRECTIVE UNSAFE
   ty_real
   ty_string
   dll_cdecl
@@ -1604,7 +1604,7 @@
   display_aa
   async_load
   delta_time
-  webgl_enabled
+* webgl_enabled                              FINGERPRINTING PLATFORM_SPECIFIC
   event_data
   display_set_timing_method                  EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   display_get_timing_method                  EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
@@ -1617,16 +1617,16 @@
   of_challenge_tie
   leaderboard_type_number
   leaderboard_type_time_mins_secs
-  virtual_key_add                            EFFECTS GLOBAL
-  virtual_key_hide                           EFFECTS GLOBAL
-  virtual_key_delete                         EFFECTS GLOBAL
-  virtual_key_show                           EFFECTS GLOBAL
-  draw_enable_drawevent                      EFFECTS UNSAFE
-  draw_enable_swf_aa                         EFFECTS UNSAFE
-  draw_set_swf_aa_level                      EFFECTS OS_DIRECTIVE UNSAFE
-  draw_get_swf_aa_level                      EFFECTS UNSAFE
-  draw_texture_flush                         EFFECTS UNSAFE
-  draw_flush                                 EFFECTS UNSAFE
+* virtual_key_add                            EFFECTS GLOBAL IO_INPUT
+* virtual_key_hide                           EFFECTS GLOBAL IO_INPUT
+* virtual_key_delete                         EFFECTS GLOBAL IO_INPUT
+* virtual_key_show                           EFFECTS GLOBAL IO_INPUT
+* draw_enable_drawevent                      IO_RENDER OS_DIRECTIVE
+* draw_enable_swf_aa                         IO_RENDER OS_DIRECTIVE
+* draw_set_swf_aa_level                      EFFECTS IO_RENDER OS_DIRECTIVE
+* draw_get_swf_aa_level                      IO_RENDER
+* draw_texture_flush                         EFFECTS IO_RENDER
+* draw_flush                                 IO_RENDER OS_DIRECTIVE
   cmpfunc_never
   cmpfunc_less
   cmpfunc_equal
@@ -1714,14 +1714,14 @@
   gpu_pop_state
   gpu_get_state
   gpu_set_state
-  draw_light_define_ambient                  EFFECTS UNSAFE
-  draw_light_define_direction                EFFECTS UNSAFE
-  draw_light_define_point                    EFFECTS UNSAFE
-  draw_light_enable                          EFFECTS UNSAFE
-  draw_set_lighting                          EFFECTS OS_DIRECTIVE UNSAFE
-  draw_light_get_ambient                     EFFECTS UNSAFE
-  draw_light_get                             EFFECTS UNSAFE
-  draw_get_lighting                          EFFECTS UNSAFE
+* draw_light_define_ambient                  GLOBAL IO_RENDER
+* draw_light_define_direction                GLOBAL IO_RENDER
+* draw_light_define_point                    GLOBAL IO_RENDER
+* draw_light_enable                          GLOBAL IO_RENDER
+* draw_set_lighting                          EFFECTS IO_RENDER OS_DIRECTIVE
+* draw_light_get_ambient                     GLOBAL IO_RENDER
+* draw_light_get                             GLOBAL IO_RENDER
+* draw_get_lighting                          IO_RENDER
   shop_leave_rating                          EFFECTS UNSAFE
   url_get_domain                             EFFECTS IO_NETWORK UNSAFE
   url_open                                   EFFECTS IO_NETWORK UNSAFE
@@ -1796,8 +1796,8 @@
   gamepad_set_option                         EFFECTS GLOBAL PLATFORM_SPECIFIC
   gamepad_get_option                         EFFECTS PLATFORM_SPECIFIC
   os_is_paused                               EFFECTS FINGERPRINTING GLOBAL UNSAFE
-  window_has_focus                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  code_is_compiled                           EFFECTS UNSAFE
+* window_has_focus                           FINGERPRINTING GLOBAL OS_DIRECTIVE
+* code_is_compiled
   http_get                                   EFFECTS IO_NETWORK UNSAFE
   http_get_file                              EFFECTS IO_FILE IO_NETWORK UNSAFE
   http_post_string                           EFFECTS IO_NETWORK UNSAFE
@@ -1808,7 +1808,7 @@
   json_decode                                EFFECTS UNSAFE
   json_stringify                             EFFECTS REFLECTION UNSAFE
   json_parse                                 EFFECTS REFLECTION UNSAFE
-  zip_unzip                                  EFFECTS IO_FILE UNSAFE
+* zip_unzip                                  EFFECTS IO_FILE
   load_csv                                   EFFECTS IO_FILE REFLECTION UNSAFE
   base64_encode                              EFFECTS UNSAFE
   base64_decode                              EFFECTS UNSAFE
@@ -1838,8 +1838,8 @@
   uwp_livetile_notification_end              DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_livetile_notification_template_add     DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_device_touchscreen_available           DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_background_colour            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_background_color             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
+* winphone_tile_background_colour            DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_background_color             DEPRECATED EFFECTS PLATFORM_SPECIFIC
   network_create_socket                      EFFECTS IO_NETWORK REFLECTION UNSAFE
   network_create_socket_ext                  EFFECTS IO_NETWORK REFLECTION UNSAFE
   network_create_server                      EFFECTS IO_NETWORK UNSAFE
@@ -2080,12 +2080,12 @@
   skeleton_animation_get_event_frames        EFFECTS UNSAFE
   skeleton_animation_is_looping              EFFECTS UNSAFE
   skeleton_animation_is_finished             EFFECTS UNSAFE
-  draw_skeleton                              EFFECTS REFLECTION UNSAFE
-  draw_skeleton_time                         EFFECTS REFLECTION UNSAFE
-  draw_skeleton_instance                     EFFECTS REFLECTION UNSAFE
-  draw_skeleton_collision                    EFFECTS REFLECTION UNSAFE
-  draw_enable_skeleton_blendmodes            EFFECTS UNSAFE
-  draw_get_enable_skeleton_blendmodes        EFFECTS UNSAFE
+* draw_skeleton                              IO_RENDER REFLECTION
+* draw_skeleton_time                         IO_RENDER REFLECTION
+* draw_skeleton_instance                     IO_RENDER REFLECTION ROOM
+* draw_skeleton_collision                    IO_RENDER REFLECTION ROOM
+* draw_enable_skeleton_blendmodes            IO_RENDER OS_DIRECTIVE REFLECTION
+* draw_get_enable_skeleton_blendmodes        IO_RENDER REFLECTION
   skeleton_animation_list                    EFFECTS REFLECTION UNSAFE
   skeleton_skin_list                         EFFECTS REFLECTION UNSAFE
   skeleton_bone_list                         EFFECTS REFLECTION UNSAFE
@@ -2216,8 +2216,8 @@
   tilemap_get_cell_x_at_pixel                EFFECTS REFLECTION UNSAFE
   tilemap_get_cell_y_at_pixel                EFFECTS REFLECTION UNSAFE
   tilemap_clear                              EFFECTS REFLECTION UNSAFE
-  draw_tilemap                               EFFECTS REFLECTION UNSAFE
-  draw_tile                                  EFFECTS REFLECTION UNSAFE
+* draw_tilemap                               IO_RENDER
+* draw_tile                                  IO_RENDER
   tilemap_set_global_mask                    EFFECTS UNSAFE
   tilemap_get_global_mask                    EFFECTS UNSAFE
   tilemap_set_mask                           EFFECTS REFLECTION UNSAFE
@@ -2273,20 +2273,20 @@
   camera_get_view_border_y                   EFFECTS REFLECTION UNSAFE
   camera_get_view_angle                      EFFECTS REFLECTION UNSAFE
   camera_get_view_target                     EFFECTS REFLECTION UNSAFE
-  view_get_camera                            EFFECTS UNSAFE
-  view_get_visible                           EFFECTS UNSAFE
-  view_get_xport                             EFFECTS UNSAFE
-  view_get_yport                             EFFECTS UNSAFE
-  view_get_wport                             EFFECTS UNSAFE
-  view_get_hport                             EFFECTS UNSAFE
-  view_get_surface_id                        EFFECTS REFLECTION UNSAFE
-  view_set_camera                            EFFECTS REFLECTION UNSAFE
-  view_set_visible                           EFFECTS UNSAFE
-  view_set_xport                             EFFECTS UNSAFE
-  view_set_yport                             EFFECTS UNSAFE
-  view_set_wport                             EFFECTS UNSAFE
-  view_set_hport                             EFFECTS UNSAFE
-  view_set_surface_id                        EFFECTS REFLECTION UNSAFE
+* view_get_camera                            IO_RENDER ROOM
+* view_get_visible                           IO_RENDER ROOM
+* view_get_xport                             IO_RENDER ROOM
+* view_get_yport                             IO_RENDER ROOM
+* view_get_wport                             IO_RENDER ROOM
+* view_get_hport                             IO_RENDER ROOM
+* view_get_surface_id                        IO_RENDER ROOM
+* view_set_camera                            EFFECTS IO_RENDER ROOM
+* view_set_visible                           EFFECTS IO_RENDER ROOM
+* view_set_xport                             EFFECTS IO_RENDER ROOM
+* view_set_yport                             EFFECTS IO_RENDER ROOM
+* view_set_wport                             EFFECTS IO_RENDER ROOM
+* view_set_hport                             EFFECTS IO_RENDER ROOM
+* view_set_surface_id                        EFFECTS IO_RENDER ROOM
   gesture_drag_time                          EFFECTS GLOBAL PLATFORM_SPECIFIC
   gesture_drag_distance                      EFFECTS GLOBAL PLATFORM_SPECIFIC
   gesture_flick_speed                        EFFECTS GLOBAL PLATFORM_SPECIFIC
@@ -2468,9 +2468,9 @@
   gc_get_stats                               EFFECTS UNSAFE
   gc_target_frame_time                       EFFECTS UNSAFE
   gc_get_target_frame_time                   EFFECTS UNSAFE
-  weak_ref_create                            EFFECTS UNSAFE
-  weak_ref_alive                             EFFECTS UNSAFE
-  weak_ref_any_alive                         EFFECTS UNSAFE
+* weak_ref_create                            EFFECTS
+* weak_ref_alive
+* weak_ref_any_alive
   time_source_global
   time_source_game
   time_source_units_seconds
@@ -2507,9 +2507,9 @@
   audio_3d
   get_integer                                DEPRECATED EFFECTS UNSAFE
   get_string                                 DEPRECATED EFFECTS UNSAFE
-  cloud_file_save                            DEPRECATED EFFECTS IO_FILE UNSAFE
-  cloud_string_save                          DEPRECATED EFFECTS IO_FILE UNSAFE
-  cloud_synchronise                          DEPRECATED EFFECTS UNSAFE
+* cloud_file_save                            DEPRECATED EFFECTS IO_FILE IO_NETWORK
+* cloud_string_save                          DEPRECATED EFFECTS IO_FILE IO_NETWORK
+* cloud_synchronise                          DEPRECATED EFFECTS IO_FILE IO_NETWORK
   GM_is_sandboxed
   is_instanceof                              EFFECTS REFLECTION
   is_callable
@@ -2563,23 +2563,23 @@
   is_mouse_over_debug_overlay                EFFECTS UNSAFE
   is_keyboard_used_debug_overlay             EFFECTS UNSAFE
   show_debug_log                             EFFECTS UNSAFE
-  dbg_view                                   EFFECTS REFLECTION UNSAFE
-  dbg_section                                EFFECTS REFLECTION UNSAFE
-  dbg_view_delete                            EFFECTS REFLECTION UNSAFE
-  dbg_section_delete                         EFFECTS REFLECTION UNSAFE
-  dbg_slider                                 EFFECTS REFLECTION UNSAFE
-  dbg_slider_int                             EFFECTS REFLECTION UNSAFE
-  dbg_drop_down                              EFFECTS REFLECTION UNSAFE
-  dbg_watch                                  EFFECTS REFLECTION UNSAFE
-  dbg_text                                   EFFECTS REFLECTION UNSAFE
-  dbg_sprite                                 EFFECTS REFLECTION UNSAFE
-  dbg_text_input                             EFFECTS REFLECTION UNSAFE
-  dbg_checkbox                               EFFECTS REFLECTION UNSAFE
-  dbg_colour                                 EFFECTS REFLECTION UNSAFE
-  dbg_color                                  EFFECTS REFLECTION UNSAFE
-  dbg_button                                 EFFECTS REFLECTION UNSAFE
-  dbg_same_line                              EFFECTS REFLECTION UNSAFE
-  dbg_add_font_glyphs                        EFFECTS UNSAFE
+* dbg_view                                   GLOBAL OS_DIALOG
+* dbg_section                                GLOBAL OS_DIALOG
+* dbg_view_delete                            GLOBAL OS_DIALOG
+* dbg_section_delete                         GLOBAL OS_DIALOG
+* dbg_slider                                 GLOBAL OS_DIALOG
+* dbg_slider_int                             GLOBAL OS_DIALOG
+* dbg_drop_down                              GLOBAL OS_DIALOG
+* dbg_watch                                  GLOBAL OS_DIALOG
+* dbg_text                                   GLOBAL OS_DIALOG
+* dbg_sprite                                 GLOBAL OS_DIALOG
+* dbg_text_input                             GLOBAL OS_DIALOG
+* dbg_checkbox                               GLOBAL OS_DIALOG
+* dbg_colour                                 GLOBAL OS_DIALOG
+* dbg_color                                  GLOBAL OS_DIALOG
+* dbg_button                                 GLOBAL OS_DIALOG
+* dbg_same_line                              GLOBAL OS_DIALOG
+* dbg_add_font_glyphs                        GLOBAL OS_DIALOG REFLECTION
   ref_create                                 EFFECTS REFLECTION
   audio_3D
   surface_get_format                         EFFECTS REFLECTION UNSAFE
@@ -2592,14 +2592,14 @@
   surface_rg8unorm
   surface_rgba16float
   surface_rgba32float
-  window_set_showborder                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_showborder                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_enable_borderless_fullscreen        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_borderless_fullscreen           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_set_locked                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_locked                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_delta_x                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_delta_y                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+* window_set_showborder                      EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_showborder                      FINGERPRINTING GLOBAL OS_DIRECTIVE
+* window_enable_borderless_fullscreen        EFFECTS GLOBAL OS_DIRECTIVE
+* window_get_borderless_fullscreen           GLOBAL OS_DIRECTIVE
+* window_mouse_set_locked                    EFFECTS GLOBAL IO_INPUT OS_DIRECTIVE
+* window_mouse_get_locked                    GLOBAL IO_INPUT OS_DIRECTIVE
+* window_mouse_get_delta_x                   GLOBAL IO_INPUT OS_DIRECTIVE
+* window_mouse_get_delta_y                   GLOBAL IO_INPUT OS_DIRECTIVE
   audio_play_sound_ext                       EFFECTS REFLECTION UNSAFE
   audio_system_is_initialised                EFFECTS UNSAFE
   audio_sound_loop                           EFFECTS REFLECTION UNSAFE
@@ -2653,10 +2653,10 @@
   tm_systemtiming
   gpu_set_depth
   gpu_get_depth
-  zip_unzip_async                            EFFECTS IO_FILE UNSAFE
-  zip_create                                 EFFECTS IO_FILE UNSAFE
-  zip_add_file                               EFFECTS IO_FILE UNSAFE
-  zip_save                                   EFFECTS IO_FILE UNSAFE
+* zip_unzip_async                            EFFECTS IO_FILE
+* zip_create                                 EFFECTS IO_FILE
+* zip_add_file                               EFFECTS IO_FILE
+* zip_save                                   EFFECTS IO_FILE
   network_config_enable_multicast
   network_config_disable_multicast
   network_connect_active
@@ -2685,11 +2685,11 @@
   audio_bus_get_emitters                     EFFECTS REFLECTION UNSAFE
   audio_bus_clear_emitters                   EFFECTS UNSAFE
   lin_to_db                                  EFFECTS UNSAFE
-  db_to_lin                                  EFFECTS UNSAFE
-  dbg_section_exists                         EFFECTS REFLECTION UNSAFE
-  dbg_sprite_button                          EFFECTS REFLECTION UNSAFE
-  dbg_text_separator                         EFFECTS REFLECTION UNSAFE
-  dbg_view_exists                            EFFECTS REFLECTION UNSAFE
+* db_to_lin
+* dbg_section_exists                         GLOBAL OS_DIALOG
+* dbg_sprite_button                          GLOBAL OS_DIALOG
+* dbg_text_separator                         GLOBAL OS_DIALOG
+* dbg_view_exists                            GLOBAL OS_DIALOG
   draw_clear_depth                           EFFECTS UNSAFE
   draw_clear_ext                             EFFECTS UNSAFE
   draw_clear_stencil                         EFFECTS UNSAFE
@@ -2765,63 +2765,63 @@
   push_get_next_local_notification           DEPRECATED EFFECTS IO_NETWORK UNSAFE
   push_local_notification                    DEPRECATED EFFECTS IO_NETWORK UNSAFE
   push_set_application_badge_number          DEPRECATED EFFECTS IO_NETWORK UNSAFE
-  rollback_define_extra_network_latency      EFFECTS IO_NETWORK UNSAFE
+* rollback_define_extra_network_latency      DEPRECATED EFFECTS GLOBAL IO_NETWORK
   room_set_background_color                  DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
   room_set_background_colour                 DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
   uwp_appbar_add_element                     DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_appbar_enable                          DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_appbar_remove_element                  DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_appbar_add_element                    DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_appbar_enable                         DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_appbar_remove_element                 DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_device_touchscreen_available          DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_license_initialize_sandbox            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_license_trial_version                 DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_badge_clear                  DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_badge_notification           DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_begin           DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_end             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_expiry          DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_image_add       DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_secondary_begin DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_tag             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_notification_text_add        DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_queue_enable                 DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_tile_clear                   DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_livetile_tile_notification            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_search_add_suggestions                DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_search_disable                        DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_search_enable                         DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_secondarytile_badge_notification      DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_secondarytile_delete                  DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_secondarytile_pin                     DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_settingscharm_add_entry               DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_settingscharm_add_html_entry          DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_settingscharm_add_xaml_entry          DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_settingscharm_get_xaml_property       DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_settingscharm_remove_entry            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_settingscharm_set_xaml_property       DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_share_file                            DEPRECATED EFFECTS IO_FILE PLATFORM_SPECIFIC UNSAFE
-  win8_share_image                           DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_share_screenshot                      DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_share_text                            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  win8_share_url                             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_license_trial_version             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_back_content                 DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_back_content_wide            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_back_image                   DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_back_image_wide              DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_back_title                   DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_count                        DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_cycle_images                 DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_front_image                  DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_front_image_small            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_front_image_wide             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_icon_image                   DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_small_background_image       DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_small_icon_image             DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_title                        DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
-  winphone_tile_wide_content                 DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
+* win8_appbar_add_element                    DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_appbar_enable                         DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_appbar_remove_element                 DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_device_touchscreen_available          DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_license_initialize_sandbox            DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_license_trial_version                 DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_badge_clear                  DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_badge_notification           DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_begin           DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_end             DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_expiry          DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_image_add       DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_secondary_begin DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_tag             DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_notification_text_add        DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_queue_enable                 DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_tile_clear                   DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_livetile_tile_notification            DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_search_add_suggestions                DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_search_disable                        DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_search_enable                         DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_secondarytile_badge_notification      DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_secondarytile_delete                  DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_secondarytile_pin                     DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_settingscharm_add_entry               DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_settingscharm_add_html_entry          DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_settingscharm_add_xaml_entry          DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_settingscharm_get_xaml_property       DEPRECATED PLATFORM_SPECIFIC
+* win8_settingscharm_remove_entry            DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_settingscharm_set_xaml_property       DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* win8_share_file                            DEPRECATED EFFECTS IO_FILE IO_NETWORK PLATFORM_SPECIFIC
+* win8_share_image                           DEPRECATED EFFECTS IO_NETWORK PLATFORM_SPECIFIC
+* win8_share_screenshot                      DEPRECATED EFFECTS IO_NETWORK PLATFORM_SPECIFIC
+* win8_share_text                            DEPRECATED EFFECTS IO_NETWORK PLATFORM_SPECIFIC
+* win8_share_url                             DEPRECATED EFFECTS IO_NETWORK PLATFORM_SPECIFIC
+* winphone_license_trial_version             DEPRECATED EFFECTS FINGERPRINTING PLATFORM_SPECIFIC
+* winphone_tile_back_content                 DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_back_content_wide            DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_back_image                   DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_back_image_wide              DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_back_title                   DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_count                        DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_cycle_images                 DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_front_image                  DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_front_image_small            DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_front_image_wide             DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_icon_image                   DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_small_background_image       DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_small_icon_image             DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_title                        DEPRECATED EFFECTS PLATFORM_SPECIFIC
+* winphone_tile_wide_content                 DEPRECATED EFFECTS PLATFORM_SPECIFIC
   wallpaper_set_config                       EFFECTS UNSAFE
   wallpaper_set_subscriptions                EFFECTS UNSAFE
   buffer_get_surface_depth                   EFFECTS REFLECTION UNSAFE
@@ -2836,24 +2836,24 @@
   struct_remove_from_hash
   analytics_event                            DEPRECATED EFFECTS IO_NETWORK UNSAFE
   analytics_event_ext                        DEPRECATED EFFECTS IO_NETWORK UNSAFE
-  rollback_chat                              EFFECTS UNSAFE
-  rollback_create_game                       EFFECTS UNSAFE
-  rollback_define_input                      EFFECTS UNSAFE
-  rollback_define_input_frame_delay          EFFECTS UNSAFE
-  rollback_define_mock_input                 EFFECTS UNSAFE
-  rollback_define_player                     EFFECTS REFLECTION UNSAFE
-  rollback_display_events                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  rollback_get_info                          EFFECTS UNSAFE
-  rollback_get_input                         EFFECTS UNSAFE
-  rollback_get_player_prefs                  EFFECTS GLOBAL UNSAFE
-  rollback_join_game                         EFFECTS UNSAFE
-  rollback_leave_game                        EFFECTS UNSAFE
-  rollback_set_player_prefs                  EFFECTS GLOBAL UNSAFE
-  rollback_start_game                        EFFECTS UNSAFE
-  rollback_sync_on_frame                     EFFECTS UNSAFE
-  rollback_use_manual_start                  EFFECTS UNSAFE
-  rollback_use_player_prefs                  EFFECTS GLOBAL UNSAFE
-  rollback_use_random_input                  EFFECTS UNSAFE
+* rollback_chat                              DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_create_game                       DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_define_input                      DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_define_input_frame_delay          DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_define_mock_input                 DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_define_player                     DEPRECATED EFFECTS GLOBAL IO_NETWORK REFLECTION
+* rollback_display_events                    DEPRECATED EFFECTS GLOBAL IO_NETWORK OS_DIRECTIVE
+* rollback_get_info                          DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_get_input                         DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_get_player_prefs                  DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_join_game                         DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_leave_game                        DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_set_player_prefs                  DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_start_game                        DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_sync_on_frame                     DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_use_manual_start                  DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_use_player_prefs                  DEPRECATED EFFECTS GLOBAL IO_NETWORK
+* rollback_use_random_input                  DEPRECATED EFFECTS GLOBAL IO_NETWORK
   gamepad_enumerate                          EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC UNSAFE
   http_get_connect_timeout                   EFFECTS IO_NETWORK UNSAFE
   http_set_connect_timeout                   EFFECTS IO_NETWORK UNSAFE
@@ -2996,9 +2996,9 @@
   layer_text_yorigin                         EFFECTS GLOBAL REFLECTION UNSAFE
   layer_text_yscale                          EFFECTS GLOBAL REFLECTION UNSAFE
   vertex_format_add_textcoord                DEPRECATED
-  draw_enable_svg_aa                         EFFECTS UNSAFE
-  draw_get_svg_aa_level                      EFFECTS UNSAFE
-  draw_set_svg_aa_level                      EFFECTS OS_DIRECTIVE UNSAFE
+* draw_enable_svg_aa                         IO_RENDER OS_DIRECTIVE
+* draw_get_svg_aa_level                      IO_RENDER
+* draw_set_svg_aa_level                      EFFECTS IO_RENDER OS_DIRECTIVE
   surface_get_target_depth                   EFFECTS REFLECTION UNSAFE
   surface_get_texture_depth                  EFFECTS REFLECTION UNSAFE
   surface_has_depth                          EFFECTS REFLECTION UNSAFE
@@ -3071,6 +3071,6 @@
   flexpanel_node_style_set_position_type     EFFECTS REFLECTION UNSAFE
   flexpanel_node_style_set_width             EFFECTS REFLECTION UNSAFE
   matrix_inverse
-  window_minimise                            EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_minimize                            EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
-  window_restore                             EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+* window_minimise                            EFFECTS GLOBAL OS_DIRECTIVE
+* window_minimize                            EFFECTS GLOBAL OS_DIRECTIVE
+* window_restore                             EFFECTS GLOBAL OS_DIRECTIVE
