@@ -152,7 +152,8 @@ if os.path.isdir("GML-Function-DB/db"):
                     if db_def.get("is_platform_specific", False):
                         perms.add("PLATFORM_SPECIFIC")
                     if db_def.get("is_global_effect", True):
-                        perms.add("EFFECTS_GLOBAL")
+                        perms.add("EFFECTS")
+                        perms.add("GLOBAL")
                     if db_def.get("is_asset_reflection", True):
                         perms.add("REFLECTION")
                     if db_def.get("is_os_dialog", True):

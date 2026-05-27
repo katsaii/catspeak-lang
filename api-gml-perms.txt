@@ -1,6 +1,6 @@
 * all                                        REFLECTION
 * noone                                      REFLECTION
-* global                                     EXPLOITABLE REFLECTION
+* global                                     EXPLOITABLE GLOBAL REFLECTION
   undefined
 * pointer_invalid                            UNSAFE
 * pointer_null                               UNSAFE
@@ -30,17 +30,17 @@
   is_infinity
   is_struct
   is_method
-* typeof                                     REFLECTION
-* instanceof                                 REFLECTION
-* exception_unhandled_handler                EFFECTS_GLOBAL EXPLOITABLE
-* variable_global_exists                     EXPLOITABLE REFLECTION
-* variable_global_get                        EXPLOITABLE REFLECTION
-* variable_global_set                        EFFECTS_GLOBAL EXPLOITABLE REFLECTION
-* variable_instance_exists                   EXPLOITABLE REFLECTION
-* variable_instance_get                      EXPLOITABLE REFLECTION
-* variable_instance_set                      EFFECTS EXPLOITABLE REFLECTION
-* variable_instance_get_names                EXPLOITABLE REFLECTION
-* variable_instance_names_count              EXPLOITABLE REFLECTION
+  typeof
+* instanceof
+* exception_unhandled_handler                EFFECTS EXPLOITABLE GLOBAL
+* variable_global_exists                     EXPLOITABLE GLOBAL REFLECTION
+* variable_global_get                        EXPLOITABLE GLOBAL REFLECTION
+* variable_global_set                        EFFECTS EXPLOITABLE GLOBAL REFLECTION
+* variable_instance_exists                   EXPLOITABLE REFLECTION ROOM
+* variable_instance_get                      EXPLOITABLE REFLECTION ROOM
+* variable_instance_set                      EFFECTS EXPLOITABLE REFLECTION ROOM
+* variable_instance_get_names                EXPLOITABLE REFLECTION ROOM
+* variable_instance_names_count              EXPLOITABLE REFLECTION ROOM
 * variable_struct_exists
 * variable_struct_get
   variable_struct_set                        EFFECTS
@@ -59,15 +59,15 @@
 * array_insert                               EFFECTS
 * array_delete                               EFFECTS
 * array_sort                                 EFFECTS
-* random                                     EFFECTS_GLOBAL
-* random_range                               EFFECTS_GLOBAL
-* irandom                                    EFFECTS_GLOBAL
-* irandom_range                              EFFECTS_GLOBAL
-* random_set_seed                            EFFECTS_GLOBAL OS_DIRECTIVE
-* random_get_seed                            EFFECTS_GLOBAL
-* randomize                                  EFFECTS_GLOBAL OS_DIRECTIVE
-* randomise                                  EFFECTS_GLOBAL OS_DIRECTIVE
-* choose                                     EFFECTS_GLOBAL
+* random                                     EFFECTS GLOBAL
+* random_range                               EFFECTS GLOBAL
+* irandom                                    EFFECTS GLOBAL
+* irandom_range                              EFFECTS GLOBAL
+* random_set_seed                            EFFECTS GLOBAL OS_DIRECTIVE
+* random_get_seed                            EFFECTS GLOBAL
+* randomize                                  EFFECTS GLOBAL OS_DIRECTIVE
+* randomise                                  EFFECTS GLOBAL OS_DIRECTIVE
+* choose                                     EFFECTS GLOBAL
   abs
   round
   floor
@@ -80,20 +80,20 @@
   ln
   log2
   log10
-  sin
-  cos
-  tan
-  arcsin
-  arccos
-  arctan
-  arctan2
-  dsin
-  dcos
-  dtan
-  darcsin
-  darccos
-  darctan
-  darctan2
+* sin                                        GLOBAL
+* cos                                        GLOBAL
+* tan                                        GLOBAL
+* arcsin                                     GLOBAL
+* arccos                                     GLOBAL
+* arctan                                     GLOBAL
+* arctan2                                    GLOBAL
+* dsin                                       GLOBAL
+* dcos                                       GLOBAL
+* dtan                                       GLOBAL
+* darcsin                                    GLOBAL
+* darccos                                    GLOBAL
+* darctan                                    GLOBAL
+* darctan2                                   GLOBAL
   degtorad
   radtodeg
   power
@@ -110,8 +110,8 @@
   dot_product_3d_normalised
   dot_product_normalized
   dot_product_3d_normalized
-* math_set_epsilon                           EFFECTS_GLOBAL OS_DIRECTIVE
-* math_get_epsilon                           EFFECTS_GLOBAL
+* math_set_epsilon                           EFFECTS GLOBAL OS_DIRECTIVE
+* math_get_epsilon                           EFFECTS GLOBAL
   angle_difference
   point_distance_3d
   point_distance
@@ -166,10 +166,10 @@
   string_concat
   string_concat_ext
 * string_foreach
-* clipboard_has_text                         FINGERPRINTING OS_DIRECTIVE PLATFORM_SPECIFIC
-* clipboard_set_text                         EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
-* clipboard_get_text                         FINGERPRINTING OS_DIRECTIVE PLATFORM_SPECIFIC
-* date_current_datetime                      FINGERPRINTING OS_DIRECTIVE
+* clipboard_has_text                         FINGERPRINTING GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+* clipboard_set_text                         EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+* clipboard_get_text                         FINGERPRINTING GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+* date_current_datetime                      FINGERPRINTING GLOBAL OS_DIRECTIVE
 * date_create_datetime
   date_valid_datetime
 * date_inc_year
@@ -209,101 +209,101 @@
 * date_days_in_month
 * date_days_in_year
 * date_leap_year
-* date_is_today                              FINGERPRINTING OS_DIRECTIVE
-* date_set_timezone                          EFFECTS_GLOBAL FINGERPRINTING OS_DIRECTIVE
-* date_get_timezone                          FINGERPRINTING OS_DIRECTIVE
+* date_is_today                              FINGERPRINTING GLOBAL OS_DIRECTIVE
+* date_set_timezone                          EFFECTS FINGERPRINTING GLOBAL OS_DIRECTIVE
+* date_get_timezone                          FINGERPRINTING GLOBAL OS_DIRECTIVE
 * timezone_local                             FINGERPRINTING
 * timezone_utc                               FINGERPRINTING
-* game_set_speed                             EFFECTS_GLOBAL
-* game_get_speed                             EFFECTS_GLOBAL
+* game_set_speed                             EFFECTS GLOBAL ROOM
+* game_get_speed                             GLOBAL ROOM
   gamespeed_fps
   gamespeed_microseconds
-* motion_set                                 EFFECTS
-* motion_add                                 EFFECTS
-* place_free                                 EFFECTS
-* place_empty                                EFFECTS
-* place_meeting                              EFFECTS
-* place_snapped                              EFFECTS
-* move_random                                EFFECTS
-* move_snap                                  EFFECTS
-* move_towards_point                         EFFECTS
-* move_contact_solid                         EFFECTS
-* move_contact_all                           EFFECTS
-* move_outside_solid                         EFFECTS
-* move_outside_all                           EFFECTS
-* move_bounce_solid                          EFFECTS
-* move_bounce_all                            EFFECTS
-* move_wrap                                  EFFECTS
-* move_and_collide                           EFFECTS
-  distance_to_point
-  distance_to_object                         EFFECTS REFLECTION
-* position_empty                             EFFECTS
-* position_meeting                           EFFECTS REFLECTION
-* path_start                                 EFFECTS
-* path_end                                   EFFECTS
-* mp_linear_step                             EFFECTS
-* mp_potential_step                          EFFECTS
-* mp_linear_step_object                      EFFECTS REFLECTION
-* mp_potential_step_object                   EFFECTS REFLECTION
-* mp_potential_settings                      EFFECTS
-* mp_linear_path                             EFFECTS
-* mp_potential_path                          EFFECTS
-* mp_linear_path_object                      EFFECTS REFLECTION
-* mp_potential_path_object                   EFFECTS REFLECTION
-* mp_grid_create
-* mp_grid_destroy                            EFFECTS
-* mp_grid_clear_all                          EFFECTS
-* mp_grid_clear_cell                         EFFECTS
-* mp_grid_clear_rectangle                    EFFECTS
-* mp_grid_add_cell                           EFFECTS
-* mp_grid_get_cell
-* mp_grid_add_rectangle                      EFFECTS
-* mp_grid_add_instances                      EFFECTS REFLECTION
-* mp_grid_path                               EFFECTS
-* mp_grid_draw                               IO_RENDER
-* mp_grid_to_ds_grid                         EFFECTS
-* collision_point                            EFFECTS REFLECTION
-* collision_rectangle                        EFFECTS REFLECTION
-* collision_circle                           EFFECTS REFLECTION
-* collision_ellipse                          EFFECTS REFLECTION
-* collision_line                             EFFECTS REFLECTION
-* collision_point_list                       EFFECTS REFLECTION
-* collision_rectangle_list                   EFFECTS REFLECTION
-* collision_circle_list                      EFFECTS REFLECTION
-* collision_ellipse_list                     EFFECTS REFLECTION
-* collision_line_list                        EFFECTS REFLECTION
-* instance_position_list                     EFFECTS REFLECTION
-* instance_place_list                        EFFECTS REFLECTION
+* motion_set                                 EFFECTS ROOM SELF
+* motion_add                                 EFFECTS ROOM SELF
+* place_free                                 ROOM SELF
+* place_empty                                ROOM SELF
+* place_meeting                              ROOM SELF
+* place_snapped                              ROOM SELF
+* move_random                                EFFECTS ROOM SELF
+* move_snap                                  EFFECTS ROOM SELF
+* move_towards_point                         EFFECTS ROOM SELF
+* move_contact_solid                         EFFECTS ROOM SELF
+* move_contact_all                           EFFECTS ROOM SELF
+* move_outside_solid                         EFFECTS ROOM SELF
+* move_outside_all                           EFFECTS ROOM SELF
+* move_bounce_solid                          EFFECTS ROOM SELF
+* move_bounce_all                            EFFECTS ROOM SELF
+* move_wrap                                  EFFECTS ROOM SELF
+* move_and_collide                           EFFECTS ROOM SELF
+* distance_to_point                          ROOM SELF
+* distance_to_object                         EFFECTS REFLECTION ROOM SELF
+* position_empty                             ROOM
+* position_meeting                           REFLECTION ROOM
+* path_start                                 EFFECTS ROOM SELF
+* path_end                                   EFFECTS ROOM SELF
+* mp_linear_step                             EFFECTS ROOM SELF
+* mp_potential_step                          EFFECTS ROOM SELF
+* mp_linear_step_object                      EFFECTS REFLECTION ROOM SELF
+* mp_potential_step_object                   EFFECTS REFLECTION ROOM SELF
+* mp_potential_settings                      EFFECTS ROOM SELF
+* mp_linear_path                             EFFECTS ROOM SELF
+* mp_potential_path                          EFFECTS ROOM SELF
+* mp_linear_path_object                      EFFECTS REFLECTION ROOM SELF
+* mp_potential_path_object                   EFFECTS REFLECTION ROOM SELF
+* mp_grid_create                             ROOM
+* mp_grid_destroy                            ROOMEFFECTS
+* mp_grid_clear_all                          ROOMEFFECTS
+* mp_grid_clear_cell                         ROOMEFFECTS
+* mp_grid_clear_rectangle                    ROOMEFFECTS
+* mp_grid_add_cell                           ROOMEFFECTS
+* mp_grid_get_cell                           ROOM
+* mp_grid_add_rectangle                      EFFECTS ROOM
+* mp_grid_add_instances                      EFFECTS REFLECTION ROOM
+* mp_grid_path                               EFFECTS ROOM
+* mp_grid_draw                               IO_RENDER ROOM
+* mp_grid_to_ds_grid                         EFFECTS ROOM
+* collision_point                            REFLECTION ROOM SELF
+* collision_rectangle                        REFLECTION ROOM SELF
+* collision_circle                           REFLECTION ROOM SELF
+* collision_ellipse                          REFLECTION ROOM SELF
+* collision_line                             REFLECTION ROOM SELF
+* collision_point_list                       EFFECTS REFLECTION ROOM SELF
+* collision_rectangle_list                   EFFECTS REFLECTION ROOM SELF
+* collision_circle_list                      EFFECTS REFLECTION ROOM SELF
+* collision_ellipse_list                     EFFECTS REFLECTION ROOM SELF
+* collision_line_list                        EFFECTS REFLECTION ROOM SELF
+* instance_position_list                     EFFECTS REFLECTION ROOM
+* instance_place_list                        EFFECTS REFLECTION ROOM
 * point_in_rectangle
 * point_in_triangle
 * point_in_circle
 * rectangle_in_rectangle
 * rectangle_in_triangle
 * rectangle_in_circle
-* instance_find                              EFFECTS REFLECTION
-* instance_exists                            EFFECTS REFLECTION
-* instance_number                            EFFECTS REFLECTION
-* instance_position                          EFFECTS REFLECTION
-* instance_nearest                           EFFECTS REFLECTION
-* instance_furthest                          EFFECTS REFLECTION
-* instance_place                             EFFECTS REFLECTION
-* instance_create_depth                      EFFECTS REFLECTION
-* instance_create_layer                      EFFECTS REFLECTION
-* instance_copy                              EFFECTS REFLECTION
-* instance_change                            EFFECTS REFLECTION
-* instance_destroy                           EFFECTS REFLECTION
-* position_destroy                           EFFECTS
-* position_change                            EFFECTS EXPLOITABLE
-* instance_id_get                            EFFECTS REFLECTION
-* instance_deactivate_all                    EFFECTS EXPLOITABLE
-* instance_deactivate_object                 EFFECTS EXPLOITABLE REFLECTION
-* instance_deactivate_region                 EFFECTS EXPLOITABLE
-* instance_activate_all                      EFFECTS EXPLOITABLE
-* instance_activate_object                   EFFECTS EXPLOITABLE REFLECTION
-* instance_activate_region                   EFFECTS EXPLOITABLE
-* room_speed                                 EFFECTS_GLOBAL
-* fps                                        EFFECTS_GLOBAL FINGERPRINTING
-* fps_real                                   EFFECTS_GLOBAL FINGERPRINTING
+* instance_find                              REFLECTION ROOM
+* instance_exists                            REFLECTION ROOM
+* instance_number                            REFLECTION ROOM
+* instance_position                          REFLECTION ROOM
+* instance_nearest                           REFLECTION ROOM
+* instance_furthest                          REFLECTION ROOM
+* instance_place                             REFLECTION ROOM
+* instance_create_depth                      EFFECTS REFLECTION ROOM
+* instance_create_layer                      EFFECTS REFLECTION ROOM
+* instance_copy                              EFFECTS REFLECTION ROOM
+* instance_change                            EFFECTS REFLECTION ROOM
+* instance_destroy                           EFFECTS REFLECTION ROOM
+* position_destroy                           EFFECTS ROOM
+* position_change                            EFFECTS EXPLOITABLE ROOM
+* instance_id_get                            REFLECTION ROOM
+* instance_deactivate_all                    EFFECTS EXPLOITABLE ROOM
+* instance_deactivate_object                 EFFECTS EXPLOITABLE REFLECTION ROOM
+* instance_deactivate_region                 EFFECTS EXPLOITABLE ROOM
+* instance_activate_all                      EFFECTS EXPLOITABLE ROOM
+* instance_activate_object                   EFFECTS EXPLOITABLE REFLECTION ROOM
+* instance_activate_region                   EFFECTS EXPLOITABLE ROOM
+* room_speed                                 EFFECTS GLOBAL ROOM
+* fps                                        FINGERPRINTING ROOM
+* fps_real                                   FINGERPRINTING ROOM
 * current_time                               FINGERPRINTING
 * current_year                               FINGERPRINTING
 * current_month                              FINGERPRINTING
@@ -312,38 +312,38 @@
 * current_hour                               FINGERPRINTING
 * current_minute                             FINGERPRINTING
 * current_second                             FINGERPRINTING
-* room                                       EFFECTS_GLOBAL EXPLOITABLE REFLECTION
-* room_first                                 REFLECTION
-* room_last                                  REFLECTION
-* room_width                                 EFFECTS_GLOBAL
-* room_height                                EFFECTS_GLOBAL
-* room_persistent                            EFFECTS_GLOBAL
-* room_goto                                  EFFECTS_GLOBAL EXPLOITABLE REFLECTION
-* room_goto_previous                         EFFECTS_GLOBAL EXPLOITABLE REFLECTION
-* room_goto_next                             EFFECTS_GLOBAL EXPLOITABLE REFLECTION
-* room_previous                              REFLECTION
-* room_next                                  REFLECTION
-* room_restart                               EFFECTS_GLOBAL EXPLOITABLE
-* game_end                                   EFFECTS_GLOBAL OS_DIRECTIVE
-* game_restart                               EFFECTS_GLOBAL OS_DIRECTIVE
-* game_load                                  EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
-* game_save                                  EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
-* game_save_buffer                           EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
-* game_load_buffer                           EFFECTS_GLOBAL IO_FILE OS_DIRECTIVE
-* scheduler_resolution_set                   EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+* room                                       EFFECTS EXPLOITABLE GLOBAL REFLECTION ROOM
+* room_first                                 REFLECTION ROOM
+* room_last                                  REFLECTION ROOM
+* room_width                                 EFFECTS GLOBAL ROOM
+* room_height                                EFFECTS GLOBAL ROOM
+* room_persistent                            EFFECTS GLOBAL ROOM
+* room_goto                                  EFFECTS EXPLOITABLE GLOBAL REFLECTION ROOM
+* room_goto_previous                         EFFECTS EXPLOITABLE GLOBAL REFLECTION ROOM
+* room_goto_next                             EFFECTS EXPLOITABLE GLOBAL REFLECTION ROOM
+* room_previous                              REFLECTION ROOM
+* room_next                                  REFLECTION ROOM
+* room_restart                               EFFECTS EXPLOITABLE GLOBAL ROOM
+* game_end                                   EFFECTS GLOBAL OS_DIRECTIVE
+* game_restart                               EFFECTS GLOBAL OS_DIRECTIVE
+* game_load                                  EFFECTS GLOBAL IO_FILE OS_DIRECTIVE
+* game_save                                  EFFECTS GLOBAL IO_FILE OS_DIRECTIVE
+* game_save_buffer                           EFFECTS GLOBAL IO_FILE OS_DIRECTIVE
+* game_load_buffer                           EFFECTS GLOBAL IO_FILE OS_DIRECTIVE
+* scheduler_resolution_set                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
 * scheduler_resolution_get                   OS_DIRECTIVE UNSAFE
-* score                                      EFFECTS_GLOBAL
-* lives                                      EFFECTS_GLOBAL
-* health                                     EFFECTS_GLOBAL
-* event_perform                              EFFECTS EXPLOITABLE REFLECTION
-* event_perform_async                        EFFECTS EXPLOITABLE REFLECTION
-* event_user                                 EFFECTS EXPLOITABLE REFLECTION
-* event_perform_object                       EFFECTS EXPLOITABLE REFLECTION
-* event_inherited                            EFFECTS EXPLOITABLE REFLECTION
-* event_type                                 EFFECTS EXPLOITABLE REFLECTION
-* event_number                               EFFECTS EXPLOITABLE REFLECTION
-* event_object                               EFFECTS EXPLOITABLE REFLECTION
-* event_action                               EFFECTS EXPLOITABLE REFLECTION
+* score                                      EFFECTS GLOBAL
+* lives                                      EFFECTS GLOBAL
+* health                                     EFFECTS GLOBAL
+* event_perform                              EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_perform_async                        EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_user                                 EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_perform_object                       EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_inherited                            EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_type                                 EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_number                               EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_object                               EFFECTS EXPLOITABLE REFLECTION ROOM
+* event_action                               EFFECTS EXPLOITABLE REFLECTION ROOM
   ev_create
   ev_pre_create
   ev_destroy
@@ -514,29 +514,29 @@
   ev_async_audio_playback
   ev_async_system_event
 * application_surface                        IO_RENDER
-* show_debug_message                         EFFECTS_GLOBAL IO_DIALOG
-* show_debug_overlay                         EFFECTS_GLOBAL IO_DIALOG
+* show_debug_message                         EFFECTS GLOBAL IO_DIALOG
+* show_debug_overlay                         EFFECTS GLOBAL IO_DIALOG
 * debug_mode                                 FINGERPRINTING
-* debug_event                                EFFECTS_GLOBAL IO_DIALOG
-* debug_get_callstack                        EFFECTS_GLOBAL EXPLOITABLE FINGERPRINTING
-* alarm_get                                  REFLECTION
-* alarm_set                                  EFFECTS REFLECTION
+* debug_event                                EFFECTS GLOBAL IO_DIALOG
+* debug_get_callstack                        EFFECTS EXPLOITABLE FINGERPRINTING GLOBAL
+* alarm_get                                  REFLECTION ROOM
+* alarm_set                                  EFFECTS REFLECTION ROOM
   font_texture_page_size
-  keyboard_key
-  keyboard_lastkey
-  keyboard_lastchar
-  keyboard_string
-  keyboard_set_map                           EFFECTS EFFECTS_GLOBAL
-  keyboard_get_map
-  keyboard_unset_map                         EFFECTS EFFECTS_GLOBAL
-  keyboard_check
-  keyboard_check_pressed
-  keyboard_check_released
-  keyboard_check_direct                      EFFECTS FINGERPRINTING PLATFORM_SPECIFIC UNSAFE
-  keyboard_get_numlock                       PLATFORM_SPECIFIC
-  keyboard_set_numlock                       EFFECTS EFFECTS_GLOBAL OS_DIALOG OS_DIRECTIVE PLATFORM_SPECIFIC UNSAFE
-  keyboard_key_press                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  keyboard_key_release                       EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+* keyboard_key                               IO_INPUT
+* keyboard_lastkey                           IO_INPUT
+* keyboard_lastchar                          IO_INPUT
+* keyboard_string                            IO_INPUT
+* keyboard_set_map                           EFFECTS IO_INPUT
+* keyboard_get_map                           IO_INPUT
+* keyboard_unset_map                         EFFECTS IO_INPUT
+* keyboard_check                             IO_INPUT
+* keyboard_check_pressed                     GLOBL IO_INPUT
+* keyboard_check_released                    IO_INPUT
+* keyboard_check_direct                      FINGERPRINTING IO_INPUT OS_DIRECTIVE PLATFORM_SPECIFIC
+* keyboard_get_numlock                       FINGERPRINTING IO_INPUT OS_DIRECTIVE PLATFORM_SPECIFIC
+* keyboard_set_numlock                       EFFECTS FINGERPRINTING IO_INPUT OS_DIRECTIVE PLATFORM_SPECIFIC
+* keyboard_key_press                         EFFECTS IO_INPUT OS_DIRECTIVE PLATFORM_SPECIFIC
+* keyboard_key_release                       EFFECTS IO_INPUT OS_DIRECTIVE PLATFORM_SPECIFIC
   vk_nokey
   vk_anykey
   vk_enter
@@ -593,12 +593,12 @@
   vk_rshift
   vk_rcontrol
   vk_ralt
-  keyboard_clear                             EFFECTS EFFECTS_GLOBAL
-  io_clear                                   EFFECTS EFFECTS_GLOBAL UNSAFE
-  mouse_x
-  mouse_y
-  mouse_button
-  mouse_lastbutton
+* keyboard_clear                             EFFECTS IO_INPUT
+* io_clear                                   EFFECTS IO_INPUT
+* mouse_x                                    IO_INPUT
+* mouse_y                                    IO_INPUT
+* mouse_button                               IO_INPUT
+* mouse_lastbutton                           IO_INPUT
   mb_any
   mb_none
   mb_left
@@ -612,13 +612,13 @@
   m_axisy_gui
   m_scroll_up
   m_scroll_down
-  mouse_check_button
-  mouse_check_button_pressed
-  mouse_check_button_released
-  mouse_wheel_up
-  mouse_wheel_down
-  mouse_clear                                EFFECTS EFFECTS_GLOBAL
-  cursor_sprite
+* mouse_check_button                         IO_INPUT
+* mouse_check_button_pressed                 IO_INPUT
+* mouse_check_button_released                IO_INPUT
+* mouse_wheel_up                             IO_INPUT
+* mouse_wheel_down                           IO_INPUT
+* mouse_clear                                EFFECTS IO_INPUT
+* cursor_sprite                              EFFECTS IO_INPUT
   bboxmode_automatic
   bboxmode_fullimage
   bboxmode_manual
@@ -626,45 +626,45 @@
   bboxkind_rectangular
   bboxkind_ellipse
   bboxkind_diamond
-  background_colour
-  background_showcolour
-  background_color
-  background_showcolor
-  draw_self                                  EFFECTS UNSAFE
-  draw_sprite                                EFFECTS REFLECTION UNSAFE
-  draw_sprite_pos                            EFFECTS REFLECTION UNSAFE
-  draw_sprite_ext                            EFFECTS REFLECTION UNSAFE
-  draw_sprite_stretched                      EFFECTS REFLECTION UNSAFE
-  draw_sprite_stretched_ext                  EFFECTS REFLECTION UNSAFE
-  draw_sprite_tiled                          EFFECTS REFLECTION UNSAFE
-  draw_sprite_tiled_ext                      EFFECTS REFLECTION UNSAFE
-  draw_sprite_part                           EFFECTS REFLECTION UNSAFE
-  draw_sprite_part_ext                       EFFECTS REFLECTION UNSAFE
-  draw_sprite_general                        EFFECTS REFLECTION UNSAFE
-  draw_clear                                 EFFECTS UNSAFE
-  draw_clear_alpha                           EFFECTS UNSAFE
-  draw_point                                 EFFECTS UNSAFE
-  draw_line                                  EFFECTS UNSAFE
-  draw_line_width                            EFFECTS UNSAFE
-  draw_rectangle                             EFFECTS UNSAFE
-  draw_roundrect                             EFFECTS UNSAFE
-  draw_roundrect_ext                         EFFECTS UNSAFE
-  draw_triangle                              EFFECTS UNSAFE
-  draw_circle                                EFFECTS UNSAFE
-  draw_ellipse                               EFFECTS UNSAFE
-  draw_set_circle_precision                  EFFECTS OS_DIRECTIVE UNSAFE
-  draw_arrow                                 EFFECTS UNSAFE
-  draw_button                                EFFECTS UNSAFE
-  draw_path                                  EFFECTS UNSAFE
-  draw_healthbar                             EFFECTS UNSAFE
-  draw_getpixel                              EFFECTS UNSAFE
-  draw_getpixel_ext                          EFFECTS UNSAFE
-  draw_set_colour                            EFFECTS OS_DIRECTIVE UNSAFE
-  draw_set_color                             EFFECTS OS_DIRECTIVE UNSAFE
-  draw_set_alpha                             EFFECTS OS_DIRECTIVE UNSAFE
-  draw_get_colour                            EFFECTS UNSAFE
-  draw_get_color                             EFFECTS UNSAFE
-  draw_get_alpha                             EFFECTS UNSAFE
+* background_colour                          DEPRECATED ROOM
+* background_showcolour                      DEPRECATED ROOM
+* background_color                           DEPRECATED ROOM
+* background_showcolor                       DEPRECATED ROOM
+* draw_self                                  IO_RENDER SELF
+* draw_sprite                                IO_RENDER REFLECTION
+* draw_sprite_pos                            IO_RENDER REFLECTION
+* draw_sprite_ext                            IO_RENDER REFLECTION
+* draw_sprite_stretched                      IO_RENDER REFLECTION
+* draw_sprite_stretched_ext                  IO_RENDER REFLECTION
+* draw_sprite_tiled                          IO_RENDER REFLECTION
+* draw_sprite_tiled_ext                      IO_RENDER REFLECTION
+* draw_sprite_part                           IO_RENDER REFLECTION
+* draw_sprite_part_ext                       IO_RENDER REFLECTION
+* draw_sprite_general                        IO_RENDER REFLECTION
+* draw_clear                                 IO_RENDER
+* draw_clear_alpha                           IO_RENDER
+* draw_point                                 IO_RENDER
+* draw_line                                  IO_RENDER
+* draw_line_width                            IO_RENDER
+* draw_rectangle                             IO_RENDER
+* draw_roundrect                             IO_RENDER
+* draw_roundrect_ext                         IO_RENDER
+* draw_triangle                              IO_RENDER
+* draw_circle                                IO_RENDER
+* draw_ellipse                               IO_RENDER
+* draw_set_circle_precision                  EFFECTS IO_RENDER OS_DIRECTIVE
+* draw_arrow                                 IO_RENDER
+* draw_button                                IO_RENDER
+* draw_path                                  IO_RENDER
+* draw_healthbar                             IO_RENDER
+* draw_getpixel                              IO_RENDER
+* draw_getpixel_ext                          IO_RENDER
+* draw_set_colour                            EFFECTS IO_RENDER
+* draw_set_color                             EFFECTS IO_RENDER
+* draw_set_alpha                             EFFECTS IO_RENDER
+* draw_get_colour                            IO_RENDER
+* draw_get_color                             IO_RENDER
+* draw_get_alpha                             IO_RENDER
   c_aqua
   c_black
   c_blue
@@ -781,7 +781,7 @@
   draw_vertex_texture
   draw_vertex_texture_colour
   draw_vertex_texture_color
-  texture_global_scale                       EFFECTS EFFECTS_GLOBAL UNSAFE
+  texture_global_scale                       EFFECTS GLOBAL UNSAFE
   bm_normal
   bm_add
   bm_max
@@ -872,27 +872,27 @@
   video_status_preparing
   video_status_playing
   video_status_paused
-  display_get_width                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_height                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_orientation                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_gui_width                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_gui_height                     EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_frequency                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_reset                              EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_mouse_get_x                        EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_mouse_get_y                        EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_mouse_set                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_set_ui_visibility                  EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_fullscreen                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_fullscreen                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_caption                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_min_width                       EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_max_width                       EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_min_height                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_max_height                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_visible_rects                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_caption                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_cursor                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_width                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_height                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_orientation                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_gui_width                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_gui_height                     EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_frequency                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_reset                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_mouse_get_x                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_mouse_get_y                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_mouse_set                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_set_ui_visibility                  EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_fullscreen                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_fullscreen                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_caption                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_min_width                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_max_width                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_min_height                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_max_height                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_visible_rects                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_caption                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_cursor                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   cr_default
   cr_none
   cr_arrow
@@ -908,22 +908,22 @@
   cr_appstart
   cr_handpoint
   cr_size_all
-  window_get_cursor                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_colour                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_colour                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_color                           EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_color                           EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_position                        EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_size                            EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_set_rectangle                       EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_center                              EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_x                               EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_y                               EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_width                           EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_height                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_x                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_y                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_set                           EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_cursor                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_colour                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_colour                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_color                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_color                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_position                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_size                            EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_rectangle                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_center                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_x                               EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_y                               EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_width                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_height                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_get_x                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_get_y                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_set                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   view_enabled
   view_current
   view_visible
@@ -933,10 +933,10 @@
   view_hport
   view_surface_id
   view_camera
-  window_view_mouse_get_x                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_view_mouse_get_y                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_views_mouse_get_x                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_views_mouse_get_y                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  window_view_mouse_get_x                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_view_mouse_get_y                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_views_mouse_get_x                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_views_mouse_get_y                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   audio_listener_position                    EFFECTS UNSAFE
   audio_listener_velocity                    EFFECTS UNSAFE
   audio_listener_orientation                 EFFECTS UNSAFE
@@ -1001,13 +1001,13 @@
   audio_sync_group_debug                     EFFECTS REFLECTION UNSAFE
   audio_sync_group_is_playing                EFFECTS REFLECTION UNSAFE
   audio_debug                                EFFECTS UNSAFE
-  audio_group_load                           EFFECTS EFFECTS_GLOBAL IO_FILE REFLECTION UNSAFE
-  audio_group_unload                         EFFECTS EFFECTS_GLOBAL IO_FILE REFLECTION UNSAFE
-  audio_group_is_loaded                      EFFECTS EFFECTS_GLOBAL IO_FILE REFLECTION UNSAFE
-  audio_group_load_progress                  EFFECTS EFFECTS_GLOBAL IO_FILE REFLECTION UNSAFE
-  audio_group_name                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  audio_group_stop_all                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  audio_group_set_gain                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  audio_group_load                           EFFECTS GLOBAL IO_FILE REFLECTION UNSAFE
+  audio_group_unload                         EFFECTS GLOBAL IO_FILE REFLECTION UNSAFE
+  audio_group_is_loaded                      EFFECTS GLOBAL IO_FILE REFLECTION UNSAFE
+  audio_group_load_progress                  EFFECTS GLOBAL IO_FILE REFLECTION UNSAFE
+  audio_group_name                           EFFECTS GLOBAL REFLECTION UNSAFE
+  audio_group_stop_all                       EFFECTS GLOBAL REFLECTION UNSAFE
+  audio_group_set_gain                       EFFECTS GLOBAL REFLECTION UNSAFE
   audio_create_buffer_sound                  EFFECTS REFLECTION UNSAFE
   audio_free_buffer_sound                    EFFECTS REFLECTION UNSAFE
   audio_create_play_queue                    EFFECTS UNSAFE
@@ -1082,14 +1082,14 @@
   texture_is_ready                           EFFECTS UNSAFE
   texture_prefetch                           EFFECTS UNSAFE
   texture_flush                              EFFECTS UNSAFE
-  texturegroup_get_textures                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  texturegroup_get_sprites                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  texturegroup_get_fonts                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  texturegroup_get_tilesets                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  texturegroup_load                          EFFECTS EFFECTS_GLOBAL IO_FILE UNSAFE
-  texturegroup_unload                        EFFECTS EFFECTS_GLOBAL IO_FILE UNSAFE
-  texturegroup_get_status                    EFFECTS EFFECTS_GLOBAL UNSAFE
-  texturegroup_set_mode                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  texturegroup_get_textures                  EFFECTS GLOBAL REFLECTION UNSAFE
+  texturegroup_get_sprites                   EFFECTS GLOBAL REFLECTION UNSAFE
+  texturegroup_get_fonts                     EFFECTS GLOBAL REFLECTION UNSAFE
+  texturegroup_get_tilesets                  EFFECTS GLOBAL REFLECTION UNSAFE
+  texturegroup_load                          EFFECTS GLOBAL IO_FILE UNSAFE
+  texturegroup_unload                        EFFECTS GLOBAL IO_FILE UNSAFE
+  texturegroup_get_status                    EFFECTS GLOBAL UNSAFE
+  texturegroup_set_mode                      EFFECTS GLOBAL REFLECTION UNSAFE
   texture_debug_messages                     EFFECTS UNSAFE
   spritespeed_framespersecond
   spritespeed_framespergameframe
@@ -1117,15 +1117,15 @@
   path_get_speed                             EFFECTS REFLECTION UNSAFE
   script_exists                              EFFECTS REFLECTION UNSAFE
   script_get_name                            EFFECTS REFLECTION UNSAFE
-  timeline_add                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_delete                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_clear                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_exists                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_get_name                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_moment_clear                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_moment_add_script                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_size                              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  timeline_max_moment                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  timeline_add                               EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_delete                            EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_clear                             EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_exists                            EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_get_name                          EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_moment_clear                      EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_moment_add_script                 EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_size                              EFFECTS GLOBAL REFLECTION UNSAFE
+  timeline_max_moment                        EFFECTS GLOBAL REFLECTION UNSAFE
   object_exists                              EFFECTS REFLECTION UNSAFE
   object_get_name                            EFFECTS REFLECTION UNSAFE
   object_get_sprite                          EFFECTS REFLECTION UNSAFE
@@ -1136,8 +1136,8 @@
   object_get_parent                          EFFECTS REFLECTION UNSAFE
   object_get_physics                         EFFECTS REFLECTION UNSAFE
   object_is_ancestor                         EFFECTS REFLECTION UNSAFE
-  room_exists                                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_get_name                              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  room_exists                                EFFECTS GLOBAL REFLECTION UNSAFE
+  room_get_name                              EFFECTS GLOBAL REFLECTION UNSAFE
   sprite_set_offset                          EFFECTS REFLECTION UNSAFE
   sprite_duplicate                           EFFECTS REFLECTION UNSAFE
   sprite_assign                              EFFECTS REFLECTION UNSAFE
@@ -1183,19 +1183,19 @@
   object_set_visible                         EFFECTS REFLECTION UNSAFE
   object_set_persistent                      EFFECTS REFLECTION UNSAFE
   object_set_mask                            EFFECTS REFLECTION UNSAFE
-  room_set_width                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_set_height                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_set_persistent                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_set_viewport                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_get_viewport                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_set_view_enabled                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_add                                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_duplicate                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_assign                                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_instance_add                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_instance_clear                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_get_camera                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_set_camera                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  room_set_width                             EFFECTS GLOBAL REFLECTION UNSAFE
+  room_set_height                            EFFECTS GLOBAL REFLECTION UNSAFE
+  room_set_persistent                        EFFECTS GLOBAL REFLECTION UNSAFE
+  room_set_viewport                          EFFECTS GLOBAL REFLECTION UNSAFE
+  room_get_viewport                          EFFECTS GLOBAL REFLECTION UNSAFE
+  room_set_view_enabled                      EFFECTS GLOBAL REFLECTION UNSAFE
+  room_add                                   EFFECTS GLOBAL REFLECTION UNSAFE
+  room_duplicate                             EFFECTS GLOBAL REFLECTION UNSAFE
+  room_assign                                EFFECTS GLOBAL REFLECTION UNSAFE
+  room_instance_add                          EFFECTS GLOBAL REFLECTION UNSAFE
+  room_instance_clear                        EFFECTS GLOBAL REFLECTION UNSAFE
+  room_get_camera                            EFFECTS GLOBAL REFLECTION UNSAFE
+  room_set_camera                            EFFECTS GLOBAL REFLECTION UNSAFE
   asset_get_index                            EFFECTS REFLECTION UNSAFE
   asset_get_type                             EFFECTS REFLECTION UNSAFE
   asset_object
@@ -1509,8 +1509,8 @@
   external_call                              EFFECTS REFLECTION UNSAFE
   external_define                            EFFECTS REFLECTION UNSAFE
   external_free                              EFFECTS UNSAFE
-  window_handle                              EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_device                              EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  window_handle                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_device                              EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   ty_real
   ty_string
   dll_cdecl
@@ -1519,7 +1519,7 @@
   matrix_projection
   matrix_world
   matrix_get                                 EFFECTS
-  matrix_set                                 EFFECTS EFFECTS_GLOBAL
+  matrix_set                                 EFFECTS GLOBAL
   matrix_build_identity
   matrix_build
   matrix_build_lookat
@@ -1528,10 +1528,10 @@
   matrix_build_projection_perspective_fov
   matrix_multiply
   matrix_transform_vertex
-  matrix_stack_push                          EFFECTS_GLOBAL
-  matrix_stack_pop                           EFFECTS_GLOBAL
-  matrix_stack_set                           EFFECTS_GLOBAL
-  matrix_stack_clear                         EFFECTS_GLOBAL
+  matrix_stack_push                          EFFECTS GLOBAL
+  matrix_stack_pop                           EFFECTS GLOBAL
+  matrix_stack_set                           EFFECTS GLOBAL
+  matrix_stack_clear                         EFFECTS GLOBAL
   matrix_stack_top
   matrix_stack_is_empty
   os_windows
@@ -1587,40 +1587,40 @@
   os_device
   os_browser
   os_version
-  os_get_config                              EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  os_get_info                                EFFECTS EFFECTS_GLOBAL FINGERPRINTING REFLECTION UNSAFE
-  os_get_language                            EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  os_get_region                              EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  os_check_permission                        EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  os_request_permission                      EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  os_lock_orientation                        EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  os_set_orientation_lock                    EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  display_get_dpi_x                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_dpi_y                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_set_gui_size                       EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_set_gui_maximise                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_set_gui_maximize                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  device_mouse_dbclick_enable                EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE
+  os_get_config                              EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  os_get_info                                EFFECTS FINGERPRINTING GLOBAL REFLECTION UNSAFE
+  os_get_language                            EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  os_get_region                              EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  os_check_permission                        EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  os_request_permission                      EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  os_lock_orientation                        EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  os_set_orientation_lock                    EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  display_get_dpi_x                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_dpi_y                          EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_set_gui_size                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_set_gui_maximise                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_set_gui_maximize                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  device_mouse_dbclick_enable                EFFECTS GLOBAL OS_DIRECTIVE
   display_aa
   async_load
   delta_time
   webgl_enabled
   event_data
-  display_set_timing_method                  EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_timing_method                  EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  display_set_timing_method                  EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_timing_method                  EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   tm_sleep
   tm_countvsyncs
-  display_set_sleep_margin                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  display_get_sleep_margin                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  display_set_sleep_margin                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  display_get_sleep_margin                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   of_challenge_win
   of_challenge_lose
   of_challenge_tie
   leaderboard_type_number
   leaderboard_type_time_mins_secs
-  virtual_key_add                            EFFECTS EFFECTS_GLOBAL
-  virtual_key_hide                           EFFECTS EFFECTS_GLOBAL
-  virtual_key_delete                         EFFECTS EFFECTS_GLOBAL
-  virtual_key_show                           EFFECTS EFFECTS_GLOBAL
+  virtual_key_add                            EFFECTS GLOBAL
+  virtual_key_hide                           EFFECTS GLOBAL
+  virtual_key_delete                         EFFECTS GLOBAL
+  virtual_key_show                           EFFECTS GLOBAL
   draw_enable_drawevent                      EFFECTS UNSAFE
   draw_enable_swf_aa                         EFFECTS UNSAFE
   draw_set_swf_aa_level                      EFFECTS OS_DIRECTIVE UNSAFE
@@ -1657,22 +1657,22 @@
   gpu_set_texfilter_ext
   gpu_set_texrepeat
   gpu_set_texrepeat_ext
-  gpu_set_tex_filter                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_filter_ext                     EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_repeat                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_repeat_ext                     EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_mip_filter                     EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_mip_filter_ext                 EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_mip_bias                       EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_mip_bias_ext                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_min_mip                        EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_min_mip_ext                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_max_mip                        EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_max_mip_ext                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_max_aniso                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_max_aniso_ext                  EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
-  gpu_set_tex_mip_enable                     EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  gpu_set_tex_mip_enable_ext                 EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_filter                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_filter_ext                     EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_repeat                         EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_repeat_ext                     EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_mip_filter                     EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_mip_filter_ext                 EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_mip_bias                       EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_mip_bias_ext                   EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_min_mip                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_min_mip_ext                    EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_max_mip                        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_max_mip_ext                    EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_max_aniso                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_max_aniso_ext                  EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
+  gpu_set_tex_mip_enable                     EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  gpu_set_tex_mip_enable_ext                 EFFECTS GLOBAL OS_DIRECTIVE REFLECTION UNSAFE
   gpu_get_blendenable
   gpu_get_ztestenable
   gpu_get_zfunc
@@ -1774,9 +1774,9 @@
   gamepad_is_connected
   gamepad_get_description
   gamepad_get_button_threshold
-  gamepad_set_button_threshold               EFFECTS EFFECTS_GLOBAL
+  gamepad_set_button_threshold               EFFECTS GLOBAL
   gamepad_get_axis_deadzone
-  gamepad_set_axis_deadzone                  EFFECTS EFFECTS_GLOBAL
+  gamepad_set_axis_deadzone                  EFFECTS GLOBAL
   gamepad_button_count
   gamepad_button_check
   gamepad_button_check_pressed
@@ -1784,19 +1784,19 @@
   gamepad_button_value
   gamepad_axis_count
   gamepad_axis_value
-  gamepad_set_vibration                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
-  gamepad_set_colour                         EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
-  gamepad_set_color                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+  gamepad_set_vibration                      EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+  gamepad_set_colour                         EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+  gamepad_set_color                          EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
   gamepad_hat_count
   gamepad_hat_value
-  gamepad_remove_mapping                     EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gamepad_test_mapping                       EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
+  gamepad_remove_mapping                     EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gamepad_test_mapping                       EFFECTS GLOBAL PLATFORM_SPECIFIC
   gamepad_get_mapping                        EFFECTS PLATFORM_SPECIFIC
   gamepad_get_guid                           PLATFORM_SPECIFIC
-  gamepad_set_option                         EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
+  gamepad_set_option                         EFFECTS GLOBAL PLATFORM_SPECIFIC
   gamepad_get_option                         EFFECTS PLATFORM_SPECIFIC
-  os_is_paused                               EFFECTS EFFECTS_GLOBAL FINGERPRINTING UNSAFE
-  window_has_focus                           EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  os_is_paused                               EFFECTS FINGERPRINTING GLOBAL UNSAFE
+  window_has_focus                           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   code_is_compiled                           EFFECTS UNSAFE
   http_get                                   EFFECTS IO_NETWORK UNSAFE
   http_get_file                              EFFECTS IO_FILE IO_NETWORK UNSAFE
@@ -1815,11 +1815,11 @@
   md5_string_unicode                         EFFECTS UNSAFE
   md5_string_utf8                            EFFECTS UNSAFE
   md5_file                                   EFFECTS IO_FILE UNSAFE
-  os_is_network_connected                    EFFECTS EFFECTS_GLOBAL FINGERPRINTING IO_NETWORK UNSAFE
+  os_is_network_connected                    EFFECTS FINGERPRINTING GLOBAL IO_NETWORK UNSAFE
   sha1_string_unicode                        EFFECTS UNSAFE
   sha1_string_utf8                           EFFECTS UNSAFE
   sha1_file                                  EFFECTS IO_FILE UNSAFE
-  os_powersave_enable                        EFFECTS EFFECTS_GLOBAL FINGERPRINTING IO_FILE UNSAFE
+  os_powersave_enable                        EFFECTS FINGERPRINTING GLOBAL IO_FILE UNSAFE
   uwp_livetile_tile_clear                    DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_livetile_badge_notification            DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_livetile_badge_clear                   DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
@@ -2092,44 +2092,44 @@
   skeleton_slot_list                         EFFECTS REFLECTION UNSAFE
   skeleton_slot_data                         EFFECTS REFLECTION UNSAFE
   skeleton_slot_data_instance                EFFECTS REFLECTION UNSAFE
-  layer_get_id                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_id_at_depth                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_depth                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_create                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_destroy                              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_destroy_instances                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_add_instance                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_has_instance                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_set_visible                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_visible                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_exists                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_x                                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_y                                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_x                                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_y                                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_hspeed                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_vspeed                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_hspeed                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_vspeed                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_script_begin                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_script_end                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_shader                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_script_begin                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_script_end                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_shader                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_set_target_room                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_target_room                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_reset_target_room                    EFFECTS EFFECTS_GLOBAL UNSAFE
-  layer_get_all                              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_all_elements                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_name                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_depth                                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_element_layer                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_element_type                     EFFECTS EFFECTS_GLOBAL UNSAFE
-  layer_element_move                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_force_draw_depth                     EFFECTS EFFECTS_GLOBAL UNSAFE
-  layer_is_draw_depth_forced                 EFFECTS EFFECTS_GLOBAL UNSAFE
-  layer_get_forced_depth                     EFFECTS EFFECTS_GLOBAL UNSAFE
+  layer_get_id                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_id_at_depth                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_depth                            EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_create                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_destroy                              EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_destroy_instances                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_add_instance                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_has_instance                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_set_visible                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_visible                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_exists                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_x                                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_y                                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_x                                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_y                                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_hspeed                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_vspeed                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_hspeed                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_vspeed                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_script_begin                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_script_end                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_shader                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_script_begin                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_script_end                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_shader                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_set_target_room                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_target_room                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_reset_target_room                    EFFECTS GLOBAL UNSAFE
+  layer_get_all                              EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_all_elements                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_name                             EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_depth                                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_element_layer                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_element_type                     EFFECTS GLOBAL UNSAFE
+  layer_element_move                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_force_draw_depth                     EFFECTS GLOBAL UNSAFE
+  layer_is_draw_depth_forced                 EFFECTS GLOBAL UNSAFE
+  layer_get_forced_depth                     EFFECTS GLOBAL UNSAFE
   layerelementtype_undefined
   layerelementtype_background
   layerelementtype_instance
@@ -2139,61 +2139,61 @@
   layerelementtype_particlesystem
   layerelementtype_tile
   layerelementtype_sequence
-  layer_background_get_id                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_exists                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_create                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_destroy                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_visible                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_change                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_sprite                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_htiled                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_vtiled                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_stretch                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_yscale                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_xscale                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_blend                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_alpha                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_index                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_speed                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_visible               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_sprite                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_htiled                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_vtiled                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_stretch               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_yscale                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_xscale                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_blend                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_alpha                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_index                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_background_get_speed                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_id                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_exists                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_create                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_destroy                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_change                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_index                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_speed                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_xscale                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_yscale                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_angle                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_blend                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_alpha                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_x                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_y                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_sprite                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_index                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_speed                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_xscale                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_yscale                    EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_angle                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_blend                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_alpha                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_x                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sprite_get_y                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tilemap_get_id                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tilemap_exists                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tilemap_create                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tilemap_destroy                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  layer_background_get_id                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_exists                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_create                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_destroy                   EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_visible                   EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_change                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_sprite                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_htiled                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_vtiled                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_stretch                   EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_yscale                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_xscale                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_blend                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_alpha                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_index                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_speed                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_visible               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_sprite                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_htiled                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_vtiled                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_stretch               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_yscale                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_xscale                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_blend                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_alpha                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_index                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_background_get_speed                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_id                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_exists                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_create                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_destroy                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_change                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_index                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_speed                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_xscale                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_yscale                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_angle                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_blend                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_alpha                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_x                             EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_y                             EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_sprite                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_index                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_speed                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_xscale                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_yscale                    EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_angle                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_blend                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_alpha                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_x                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sprite_get_y                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tilemap_get_id                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tilemap_exists                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tilemap_create                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tilemap_destroy                      EFFECTS GLOBAL REFLECTION UNSAFE
   tilemap_tileset                            EFFECTS REFLECTION UNSAFE
   tilemap_x                                  EFFECTS REFLECTION UNSAFE
   tilemap_y                                  EFFECTS REFLECTION UNSAFE
@@ -2237,7 +2237,7 @@
   tile_flip
   tile_mirror
   tile_index_mask
-  layer_instance_get_instance                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  layer_instance_get_instance                EFFECTS GLOBAL REFLECTION UNSAFE
   instance_activate_layer                    EFFECTS REFLECTION UNSAFE
   instance_deactivate_layer                  EFFECTS REFLECTION UNSAFE
   camera_create                              EFFECTS REFLECTION UNSAFE
@@ -2287,17 +2287,17 @@
   view_set_wport                             EFFECTS UNSAFE
   view_set_hport                             EFFECTS UNSAFE
   view_set_surface_id                        EFFECTS REFLECTION UNSAFE
-  gesture_drag_time                          EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_drag_distance                      EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_flick_speed                        EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_double_tap_time                    EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_double_tap_distance                EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_pinch_distance                     EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_pinch_angle_towards                EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_pinch_angle_away                   EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_rotate_time                        EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_rotate_angle                       EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
-  gesture_tap_count                          EFFECTS EFFECTS_GLOBAL PLATFORM_SPECIFIC
+  gesture_drag_time                          EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_drag_distance                      EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_flick_speed                        EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_double_tap_time                    EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_double_tap_distance                EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_pinch_distance                     EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_pinch_angle_towards                EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_pinch_angle_away                   EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_rotate_time                        EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_rotate_angle                       EFFECTS GLOBAL PLATFORM_SPECIFIC
+  gesture_tap_count                          EFFECTS GLOBAL PLATFORM_SPECIFIC
   gesture_get_drag_time                      EFFECTS PLATFORM_SPECIFIC
   gesture_get_drag_distance                  EFFECTS PLATFORM_SPECIFIC
   gesture_get_flick_speed                    EFFECTS PLATFORM_SPECIFIC
@@ -2309,8 +2309,8 @@
   gesture_get_rotate_time                    EFFECTS PLATFORM_SPECIFIC
   gesture_get_rotate_angle                   EFFECTS PLATFORM_SPECIFIC
   gesture_get_tap_count                      EFFECTS PLATFORM_SPECIFIC
-  keyboard_virtual_show                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
-  keyboard_virtual_hide                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+  keyboard_virtual_show                      EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
+  keyboard_virtual_hide                      EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC
   keyboard_virtual_status                    EFFECTS PLATFORM_SPECIFIC
   keyboard_virtual_height                    EFFECTS PLATFORM_SPECIFIC
   kbv_type_default
@@ -2367,45 +2367,45 @@
   extension_get_option_names                 EFFECTS UNSAFE
   extension_get_option_value                 EFFECTS UNSAFE
   extension_get_options                      EFFECTS UNSAFE
-  layer_sequence_get_instance                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_create                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_destroy                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_exists                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_x                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_y                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_angle                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_xscale                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_yscale                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_headpos                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_headdir                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_pause                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_play                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_speedscale                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_x                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_y                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_angle                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_xscale                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_yscale                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_headpos                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_headdir                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_sequence                EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_is_paused                   EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_is_finished                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_speedscale              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_sequence_get_length                  EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_instance                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_create                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_destroy                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_exists                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_x                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_y                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_angle                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_xscale                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_yscale                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_headpos                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_headdir                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_pause                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_play                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_speedscale                  EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_x                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_y                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_angle                   EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_xscale                  EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_yscale                  EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_headpos                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_headdir                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_sequence                EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_is_paused                   EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_is_finished                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_speedscale              EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_sequence_get_length                  EFFECTS GLOBAL REFLECTION UNSAFE
   animcurve_get                              EFFECTS REFLECTION UNSAFE
   animcurve_get_channel                      EFFECTS REFLECTION UNSAFE
   animcurve_get_channel_index                EFFECTS UNSAFE
   animcurve_channel_evaluate                 EFFECTS UNSAFE
-  sequence_create                            EFFECTS EFFECTS_GLOBAL UNSAFE
-  sequence_destroy                           EFFECTS EFFECTS_GLOBAL UNSAFE
-  sequence_exists                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  sequence_get                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  sequence_keyframe_new                      EFFECTS EFFECTS_GLOBAL UNSAFE
-  sequence_keyframedata_new                  EFFECTS EFFECTS_GLOBAL UNSAFE
-  sequence_track_new                         EFFECTS EFFECTS_GLOBAL UNSAFE
-  sequence_get_objects                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  sequence_instance_override_object          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  sequence_create                            EFFECTS GLOBAL UNSAFE
+  sequence_destroy                           EFFECTS GLOBAL UNSAFE
+  sequence_exists                            EFFECTS GLOBAL REFLECTION UNSAFE
+  sequence_get                               EFFECTS GLOBAL REFLECTION UNSAFE
+  sequence_keyframe_new                      EFFECTS GLOBAL UNSAFE
+  sequence_keyframedata_new                  EFFECTS GLOBAL UNSAFE
+  sequence_track_new                         EFFECTS GLOBAL UNSAFE
+  sequence_get_objects                       EFFECTS GLOBAL REFLECTION UNSAFE
+  sequence_instance_override_object          EFFECTS GLOBAL REFLECTION UNSAFE
   animcurve_create                           EFFECTS UNSAFE
   animcurve_destroy                          EFFECTS UNSAFE
   animcurve_exists                           EFFECTS REFLECTION UNSAFE
@@ -2420,11 +2420,11 @@
   fx_set_parameter                           EFFECTS UNSAFE
   fx_set_parameters                          EFFECTS UNSAFE
   fx_set_single_layer                        EFFECTS UNSAFE
-  layer_set_fx                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_get_fx                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_clear_fx                             EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_enable_fx                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_fx_is_enabled                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  layer_set_fx                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_get_fx                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_clear_fx                             EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_enable_fx                            EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_fx_is_enabled                        EFFECTS GLOBAL REFLECTION UNSAFE
   seqtracktype_graphic
   seqtracktype_audio
   seqtracktype_real
@@ -2592,14 +2592,14 @@
   surface_rg8unorm
   surface_rgba16float
   surface_rgba32float
-  window_set_showborder                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_showborder                      EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_enable_borderless_fullscreen        EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_get_borderless_fullscreen           EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_set_locked                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_locked                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_delta_x                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_mouse_get_delta_y                   EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  window_set_showborder                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_showborder                      EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_enable_borderless_fullscreen        EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_get_borderless_fullscreen           EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_set_locked                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_get_locked                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_get_delta_x                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_mouse_get_delta_y                   EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   audio_play_sound_ext                       EFFECTS REFLECTION UNSAFE
   audio_system_is_initialised                EFFECTS UNSAFE
   audio_sound_loop                           EFFECTS REFLECTION UNSAFE
@@ -2609,11 +2609,11 @@
   audio_sound_loop_end                       EFFECTS REFLECTION UNSAFE
   audio_sound_get_loop_end                   EFFECTS REFLECTION UNSAFE
   audio_sync_group_is_paused                 EFFECTS REFLECTION UNSAFE
-  audio_group_get_gain                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  audio_group_get_assets                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  audio_group_get_gain                       EFFECTS GLOBAL REFLECTION UNSAFE
+  audio_group_get_assets                     EFFECTS GLOBAL REFLECTION UNSAFE
   audio_sound_get_audio_group                EFFECTS REFLECTION UNSAFE
-  texturegroup_get_names                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_get_info                              EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  texturegroup_get_names                     EFFECTS GLOBAL REFLECTION UNSAFE
+  room_get_info                              EFFECTS GLOBAL REFLECTION UNSAFE
   sprite_add_ext                             EFFECTS REFLECTION UNSAFE
   sprite_add_ext_error_unknown
   sprite_add_ext_error_cancelled
@@ -2696,26 +2696,26 @@
   physics_mass_properties                    EFFECTS UNSAFE
   physics_raycast                            EFFECTS REFLECTION UNSAFE
   physics_test_overlap                       EFFECTS REFLECTION UNSAFE
-  achievement_available                      DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_event                          DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_get_challenges                 DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_get_info                       DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_get_pic                        DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_increment                      DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_load_friends                   DEPRECATED EFFECTS EFFECTS_GLOBAL IO_FILE UNSAFE
-  achievement_load_leaderboard               DEPRECATED EFFECTS EFFECTS_GLOBAL IO_FILE UNSAFE
-  achievement_load_progress                  DEPRECATED EFFECTS EFFECTS_GLOBAL IO_FILE UNSAFE
-  achievement_login                          DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_login_status                   DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_logout                         DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_post                           DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_post_score                     DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_reset                          DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_send_challenge                 DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_show                           DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_show_achievements              DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_show_challenge_notifications   DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
-  achievement_show_leaderboards              DEPRECATED EFFECTS EFFECTS_GLOBAL UNSAFE
+  achievement_available                      DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_event                          DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_get_challenges                 DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_get_info                       DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_get_pic                        DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_increment                      DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_load_friends                   DEPRECATED EFFECTS GLOBAL IO_FILE UNSAFE
+  achievement_load_leaderboard               DEPRECATED EFFECTS GLOBAL IO_FILE UNSAFE
+  achievement_load_progress                  DEPRECATED EFFECTS GLOBAL IO_FILE UNSAFE
+  achievement_login                          DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_login_status                   DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_logout                         DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_post                           DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_post_score                     DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_reset                          DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_send_challenge                 DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_show                           DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_show_achievements              DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_show_challenge_notifications   DEPRECATED EFFECTS GLOBAL UNSAFE
+  achievement_show_leaderboards              DEPRECATED EFFECTS GLOBAL UNSAFE
   ads_disable                                DEPRECATED EFFECTS UNSAFE
   ads_enable                                 DEPRECATED EFFECTS UNSAFE
   ads_engagement_active                      DEPRECATED EFFECTS UNSAFE
@@ -2723,8 +2723,8 @@
   ads_engagement_launch                      DEPRECATED EFFECTS UNSAFE
   ads_event                                  DEPRECATED EFFECTS UNSAFE
   ads_event_preload                          DEPRECATED EFFECTS IO_FILE UNSAFE
-  ads_get_display_height                     DEPRECATED EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  ads_get_display_width                      DEPRECATED EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  ads_get_display_height                     DEPRECATED EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  ads_get_display_width                      DEPRECATED EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   ads_interstitial_available                 DEPRECATED EFFECTS UNSAFE
   ads_interstitial_display                   DEPRECATED EFFECTS UNSAFE
   ads_move                                   DEPRECATED EFFECTS UNSAFE
@@ -2738,27 +2738,27 @@
   audio_stop_music                           DEPRECATED EFFECTS UNSAFE
   audio_system                               DEPRECATED EFFECTS UNSAFE
   gpu_get_blendequation_sepalpha             EFFECTS UNSAFE
-  layer_tile_alpha                           DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_blend                           DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_change                          DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_create                          DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_destroy                         DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_exists                          DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_alpha                       DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_blend                       DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_region                      DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_sprite                      DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_visible                     DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_x                           DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_xscale                      DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_y                           DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_get_yscale                      DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_region                          DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_visible                         DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_x                               DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_xscale                          DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_y                               DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_tile_yscale                          DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  layer_tile_alpha                           DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_blend                           DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_change                          DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_create                          DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_destroy                         DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_exists                          DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_alpha                       DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_blend                       DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_region                      DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_sprite                      DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_visible                     DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_x                           DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_xscale                      DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_y                           DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_get_yscale                      DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_region                          DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_visible                         DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_x                               DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_xscale                          DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_y                               DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_tile_yscale                          DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
   push_cancel_local_notification             DEPRECATED EFFECTS IO_NETWORK UNSAFE
   push_get_application_badge_number          DEPRECATED EFFECTS IO_NETWORK UNSAFE
   push_get_first_local_notification          DEPRECATED EFFECTS IO_NETWORK UNSAFE
@@ -2766,8 +2766,8 @@
   push_local_notification                    DEPRECATED EFFECTS IO_NETWORK UNSAFE
   push_set_application_badge_number          DEPRECATED EFFECTS IO_NETWORK UNSAFE
   rollback_define_extra_network_latency      EFFECTS IO_NETWORK UNSAFE
-  room_set_background_color                  DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  room_set_background_colour                 DEPRECATED EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  room_set_background_color                  DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
+  room_set_background_colour                 DEPRECATED EFFECTS GLOBAL REFLECTION UNSAFE
   uwp_appbar_add_element                     DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_appbar_enable                          DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
   uwp_appbar_remove_element                  DEPRECATED EFFECTS PLATFORM_SPECIFIC UNSAFE
@@ -2842,28 +2842,28 @@
   rollback_define_input_frame_delay          EFFECTS UNSAFE
   rollback_define_mock_input                 EFFECTS UNSAFE
   rollback_define_player                     EFFECTS REFLECTION UNSAFE
-  rollback_display_events                    EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  rollback_display_events                    EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
   rollback_get_info                          EFFECTS UNSAFE
   rollback_get_input                         EFFECTS UNSAFE
-  rollback_get_player_prefs                  EFFECTS EFFECTS_GLOBAL UNSAFE
+  rollback_get_player_prefs                  EFFECTS GLOBAL UNSAFE
   rollback_join_game                         EFFECTS UNSAFE
   rollback_leave_game                        EFFECTS UNSAFE
-  rollback_set_player_prefs                  EFFECTS EFFECTS_GLOBAL UNSAFE
+  rollback_set_player_prefs                  EFFECTS GLOBAL UNSAFE
   rollback_start_game                        EFFECTS UNSAFE
   rollback_sync_on_frame                     EFFECTS UNSAFE
   rollback_use_manual_start                  EFFECTS UNSAFE
-  rollback_use_player_prefs                  EFFECTS EFFECTS_GLOBAL UNSAFE
+  rollback_use_player_prefs                  EFFECTS GLOBAL UNSAFE
   rollback_use_random_input                  EFFECTS UNSAFE
-  gamepad_enumerate                          EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC UNSAFE
+  gamepad_enumerate                          EFFECTS GLOBAL OS_DIRECTIVE PLATFORM_SPECIFIC UNSAFE
   http_get_connect_timeout                   EFFECTS IO_NETWORK UNSAFE
   http_set_connect_timeout                   EFFECTS IO_NETWORK UNSAFE
   physics_draw_debug                         EFFECTS UNSAFE
   physics_pause_enable                       EFFECTS UNSAFE
-  physics_world_create                       EFFECTS EFFECTS_GLOBAL UNSAFE
-  physics_world_draw_debug                   EFFECTS EFFECTS_GLOBAL UNSAFE
-  physics_world_gravity                      EFFECTS EFFECTS_GLOBAL UNSAFE
-  physics_world_update_iterations            EFFECTS EFFECTS_GLOBAL UNSAFE
-  physics_world_update_speed                 EFFECTS EFFECTS_GLOBAL UNSAFE
+  physics_world_create                       EFFECTS GLOBAL UNSAFE
+  physics_world_draw_debug                   EFFECTS GLOBAL UNSAFE
+  physics_world_gravity                      EFFECTS GLOBAL UNSAFE
+  physics_world_update_iterations            EFFECTS GLOBAL UNSAFE
+  physics_world_update_speed                 EFFECTS GLOBAL UNSAFE
   physics_joint_delete                       EFFECTS REFLECTION UNSAFE
   physics_joint_distance_create              EFFECTS REFLECTION UNSAFE
   physics_joint_enable_motor                 EFFECTS REFLECTION UNSAFE
@@ -2955,46 +2955,46 @@
   physics_set_restitution                    EFFECTS REFLECTION UNSAFE
   audio_sound_get_asset                      EFFECTS REFLECTION UNSAFE
   audio_throw_on_error                       EFFECTS UNSAFE
-  layer_text_alpha                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_angle                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_blend                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_charspacing                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_create                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_destroy                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_exists                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_font                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_frameh                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_framew                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_alpha                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_angle                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_blend                       EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_charspacing                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_font                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_frameh                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_framew                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_halign                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_id                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_linespacing                 EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_text                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_valign                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_wrap                        EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_x                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_xorigin                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_xscale                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_y                           EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_yorigin                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_get_yscale                      EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_halign                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_linespacing                     EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_text                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_valign                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_wrap                            EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_x                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_xorigin                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_xscale                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_y                               EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_yorigin                         EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
-  layer_text_yscale                          EFFECTS EFFECTS_GLOBAL REFLECTION UNSAFE
+  layer_text_alpha                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_angle                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_blend                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_charspacing                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_create                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_destroy                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_exists                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_font                            EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_frameh                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_framew                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_alpha                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_angle                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_blend                       EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_charspacing                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_font                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_frameh                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_framew                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_halign                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_id                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_linespacing                 EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_text                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_valign                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_wrap                        EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_x                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_xorigin                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_xscale                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_y                           EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_yorigin                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_get_yscale                      EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_halign                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_linespacing                     EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_text                            EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_valign                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_wrap                            EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_x                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_xorigin                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_xscale                          EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_y                               EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_yorigin                         EFFECTS GLOBAL REFLECTION UNSAFE
+  layer_text_yscale                          EFFECTS GLOBAL REFLECTION UNSAFE
   vertex_format_add_textcoord                DEPRECATED
   draw_enable_svg_aa                         EFFECTS UNSAFE
   draw_get_svg_aa_level                      EFFECTS UNSAFE
@@ -3071,6 +3071,6 @@
   flexpanel_node_style_set_position_type     EFFECTS REFLECTION UNSAFE
   flexpanel_node_style_set_width             EFFECTS REFLECTION UNSAFE
   matrix_inverse
-  window_minimise                            EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_minimize                            EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
-  window_restore                             EFFECTS EFFECTS_GLOBAL OS_DIRECTIVE UNSAFE
+  window_minimise                            EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_minimize                            EFFECTS GLOBAL OS_DIRECTIVE UNSAFE
+  window_restore                             EFFECTS GLOBAL OS_DIRECTIVE UNSAFE

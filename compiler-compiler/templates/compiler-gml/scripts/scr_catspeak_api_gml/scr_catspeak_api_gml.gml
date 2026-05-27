@@ -29,8 +29,14 @@ enum CatspeakPerm {
     /// This also applies to any functions which modify the variables of `self`
     /// and `other` implicitly.
     EFFECTS = 1 << 3,
-    /// Allow functions which have global effects.
-    EFFECTS_GLOBAL = 1 << 4,
+    /// Implicitly makes use of global state.
+    GLOBAL = 1 << 4,
+    /// Implicitly makes use of `self` or the current calling instance.
+    SELF = 1 << 14,
+    /// Implicitly makes use of `other`.
+    OTHER = 1 << 15,
+    /// Allow access to the room and its instances, such as collision detection.
+    ROOM = 1 << 16,
     /// Allow access to the users filesystem.
     IO_FILE = 1 << 5,
     /// Allow access to networking behaviour.
