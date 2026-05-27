@@ -136,36 +136,36 @@ if os.path.isdir("GML-Function-DB/db"):
                 print(f"loading: {db_path}")
                 db_defs = json.load(file)
                 for name, db_def in db_defs.items():
-                    perms = set(
+                    perms = set([
                         "DEPRECATED", "UNSAFE", "EXPLOITABLE", "EFFECTS",
                         "GLOBAL", "SELF", "OTHER", "ROOM", "IO_FILE",
                         "IO_NETWORK", "IO_INPUT", "IO_RENDER", "IO_AUDIO",
                         "PLATFORM_SPECIFIC", "FINGERPRINTING", "REFLECTION",
                         "OS_DIALOG", "OS_DIRECTIVE"
-                    )
+                    ])
                     if not db_def.get("is_deprecated", False):
-                        perms.remove("DEPRECATED")
+                        perms.discard("DEPRECATED")
                     if db_def.get("is_safe", False):
-                        perms.remove("UNSAFE")
+                        perms.discard("UNSAFE")
                     if db_def.get("is_sandboxed", False):
-                        perms.remove("EFFECTS")
+                        perms.discard("EFFECTS")
                     if not db_def.get("is_file_io", True):
-                        perms.remove("IO_FILE")
+                        perms.discard("IO_FILE")
                     if not db_def.get("is_network_io", True):
-                        perms.remove("IO_NETWORK")
+                        perms.discard("IO_NETWORK")
                     if not db_def.get("is_personal_data", True):
-                        perms.remove("FINGERPRINTING")
+                        perms.discard("FINGERPRINTING")
                     if not db_def.get("is_platform_specific", False):
-                        perms.remove("PLATFORM_SPECIFIC")
+                        perms.discard("PLATFORM_SPECIFIC")
                     if not db_def.get("is_global_effect", True):
-                        perms.remove("EFFECTS")
-                        perms.remove("GLOBAL")
+                        perms.discard("EFFECTS")
+                        perms.discard("GLOBAL")
                     if not db_def.get("is_asset_reflection", True):
-                        perms.remove("REFLECTION")
+                        perms.discard("REFLECTION")
                     if not db_def.get("is_os_dialog", True):
-                        perms.remove("OS_DIALOG")
+                        perms.discard("OS_DIALOG")
                     if not db_def.get("is_os_directive", True):
-                        perms.remove("OS_DIRECTIVE")
+                        perms.discard("OS_DIRECTIVE")
                     GML_PERMS[name] = (False, perms)
 with open(GML_PERMS_PATH, "r", encoding="utf-8") as perms:
     print(f"loading: {GML_PERMS_PATH}")
