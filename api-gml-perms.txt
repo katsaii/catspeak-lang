@@ -49,7 +49,7 @@
 * variable_struct_remove                     EFFECTS
 * array_length
 * array_equals
-* array_create                               EFFECTS
+* array_create
 * array_copy                                 EFFECTS
 * array_resize                               EFFECTS
 * array_get
@@ -630,38 +630,38 @@
 * background_showcolour                      ASSET DEPRECATED
 * background_color                           ASSET DEPRECATED
 * background_showcolor                       ASSET DEPRECATED
-* draw_self                                  IO_RENDER SELF
-* draw_sprite                                IO_RENDER
-* draw_sprite_pos                            IO_RENDER
-* draw_sprite_ext                            IO_RENDER
-* draw_sprite_stretched                      IO_RENDER
-* draw_sprite_stretched_ext                  IO_RENDER
-* draw_sprite_tiled                          IO_RENDER
-* draw_sprite_tiled_ext                      IO_RENDER
-* draw_sprite_part                           IO_RENDER
-* draw_sprite_part_ext                       IO_RENDER
-* draw_sprite_general                        IO_RENDER
-* draw_clear                                 IO_RENDER
-* draw_clear_alpha                           IO_RENDER
-* draw_point                                 IO_RENDER
-* draw_line                                  IO_RENDER
-* draw_line_width                            IO_RENDER
-* draw_rectangle                             IO_RENDER
-* draw_roundrect                             IO_RENDER
-* draw_roundrect_ext                         IO_RENDER
-* draw_triangle                              IO_RENDER
-* draw_circle                                IO_RENDER
-* draw_ellipse                               IO_RENDER
-* draw_set_circle_precision                  IO_RENDER EFFECTS
-* draw_arrow                                 IO_RENDER
-* draw_button                                IO_RENDER
-* draw_path                                  IO_RENDER
-* draw_healthbar                             IO_RENDER
+* draw_self                                  IO_RENDER SELF EFFECTS
+* draw_sprite                                IO_RENDER ASSET EFFECTS
+* draw_sprite_pos                            IO_RENDER ASSET EFFECTS
+* draw_sprite_ext                            IO_RENDER ASSET EFFECTS
+* draw_sprite_stretched                      IO_RENDER ASSET EFFECTS
+* draw_sprite_stretched_ext                  IO_RENDER ASSET EFFECTS
+* draw_sprite_tiled                          IO_RENDER ASSET EFFECTS
+* draw_sprite_tiled_ext                      IO_RENDER ASSET EFFECTS
+* draw_sprite_part                           IO_RENDER ASSET EFFECTS
+* draw_sprite_part_ext                       IO_RENDER ASSET EFFECTS
+* draw_sprite_general                        IO_RENDER ASSET EFFECTS
+* draw_clear                                 IO_RENDER EFFECTS
+* draw_clear_alpha                           IO_RENDER EFFECTS
+* draw_point                                 IO_RENDER EFFECTS
+* draw_line                                  IO_RENDER EFFECTS
+* draw_line_width                            IO_RENDER EFFECTS
+* draw_rectangle                             IO_RENDER EFFECTS
+* draw_roundrect                             IO_RENDER EFFECTS
+* draw_roundrect_ext                         IO_RENDER EFFECTS
+* draw_triangle                              IO_RENDER EFFECTS
+* draw_circle                                IO_RENDER EFFECTS
+* draw_ellipse                               IO_RENDER EFFECTS
+* draw_set_circle_precision                  IO_RENDER EFFECTS OS_DIRECTIVE
+* draw_arrow                                 IO_RENDER EFFECTS
+* draw_button                                IO_RENDER EFFECTS
+* draw_path                                  IO_RENDER EFFECTS
+* draw_healthbar                             IO_RENDER EFFECTS
 * draw_getpixel                              IO_RENDER
 * draw_getpixel_ext                          IO_RENDER
-* draw_set_colour                            IO_RENDER EFFECTS
-* draw_set_color                             IO_RENDER EFFECTS
-* draw_set_alpha                             IO_RENDER EFFECTS
+* draw_set_colour                            IO_RENDER EFFECTS OS_DIRECTIVE
+* draw_set_color                             IO_RENDER EFFECTS OS_DIRECTIVE
+* draw_set_alpha                             IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_get_colour                            IO_RENDER
 * draw_get_color                             IO_RENDER
 * draw_get_alpha                             IO_RENDER
@@ -711,63 +711,63 @@
 * gif_add_surface                            EFFECTS
 * gif_save                                   IO_FILE
 * gif_save_buffer
-* draw_set_font                              IO_RENDER EFFECTS
+* draw_set_font                              IO_RENDER ASSET EFFECTS OS_DIRECTIVE
 * draw_get_font                              IO_RENDER
-* draw_set_halign                            IO_RENDER EFFECTS
+* draw_set_halign                            IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_get_halign                            IO_RENDER
   fa_left
   fa_center
   fa_right
-* draw_set_valign                            IO_RENDER EFFECTS
+* draw_set_valign                            IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_get_valign                            IO_RENDER
   fa_top
   fa_middle
   fa_bottom
-* draw_text                                  IO_RENDER
-* draw_text_ext                              IO_RENDER
+* draw_text                                  IO_RENDER EFFECTS
+* draw_text_ext                              IO_RENDER EFFECTS
 * string_width                               IO_RENDER
 * string_height                              IO_RENDER
 * string_width_ext                           IO_RENDER
 * string_height_ext                          IO_RENDER
-* draw_text_transformed                      IO_RENDER
-* draw_text_ext_transformed                  IO_RENDER
-* draw_text_colour                           IO_RENDER
-* draw_text_ext_colour                       IO_RENDER
-* draw_text_transformed_colour               IO_RENDER
-* draw_text_ext_transformed_colour           IO_RENDER
-* draw_text_color                            IO_RENDER
-* draw_text_ext_color                        IO_RENDER
-* draw_text_transformed_color                IO_RENDER
-* draw_text_ext_transformed_color            IO_RENDER
-* draw_point_colour                          IO_RENDER
-* draw_line_colour                           IO_RENDER
-* draw_line_width_colour                     IO_RENDER
-* draw_rectangle_colour                      IO_RENDER
-* draw_roundrect_colour                      IO_RENDER
-* draw_roundrect_colour_ext                  IO_RENDER
-* draw_triangle_colour                       IO_RENDER
-* draw_circle_colour                         IO_RENDER
-* draw_ellipse_colour                        IO_RENDER
-* draw_point_color                           IO_RENDER
-* draw_line_color                            IO_RENDER
-* draw_line_width_color                      IO_RENDER
-* draw_rectangle_color                       IO_RENDER
-* draw_roundrect_color                       IO_RENDER
-* draw_roundrect_color_ext                   IO_RENDER
-* draw_triangle_color                        IO_RENDER
-* draw_circle_color                          IO_RENDER
-* draw_ellipse_color                         IO_RENDER
+* draw_text_transformed                      IO_RENDER EFFECTS
+* draw_text_ext_transformed                  IO_RENDER EFFECTS
+* draw_text_colour                           IO_RENDER EFFECTS
+* draw_text_ext_colour                       IO_RENDER EFFECTS
+* draw_text_transformed_colour               IO_RENDER EFFECTS
+* draw_text_ext_transformed_colour           IO_RENDER EFFECTS
+* draw_text_color                            IO_RENDER EFFECTS
+* draw_text_ext_color                        IO_RENDER EFFECTS
+* draw_text_transformed_color                IO_RENDER EFFECTS
+* draw_text_ext_transformed_color            IO_RENDER EFFECTS
+* draw_point_colour                          IO_RENDER EFFECTS
+* draw_line_colour                           IO_RENDER EFFECTS
+* draw_line_width_colour                     IO_RENDER EFFECTS
+* draw_rectangle_colour                      IO_RENDER EFFECTS
+* draw_roundrect_colour                      IO_RENDER EFFECTS
+* draw_roundrect_colour_ext                  IO_RENDER EFFECTS
+* draw_triangle_colour                       IO_RENDER EFFECTS
+* draw_circle_colour                         IO_RENDER EFFECTS
+* draw_ellipse_colour                        IO_RENDER EFFECTS
+* draw_point_color                           IO_RENDER EFFECTS
+* draw_line_color                            IO_RENDER EFFECTS
+* draw_line_width_color                      IO_RENDER EFFECTS
+* draw_rectangle_color                       IO_RENDER EFFECTS
+* draw_roundrect_color                       IO_RENDER EFFECTS
+* draw_roundrect_color_ext                   IO_RENDER EFFECTS
+* draw_triangle_color                        IO_RENDER EFFECTS
+* draw_circle_color                          IO_RENDER EFFECTS
+* draw_ellipse_color                         IO_RENDER EFFECTS
   pr_pointlist
   pr_linelist
   pr_linestrip
   pr_trianglelist
   pr_trianglestrip
   pr_trianglefan
-* draw_primitive_begin                       IO_RENDER
-* draw_vertex                                IO_RENDER
-* draw_vertex_colour                         IO_RENDER
-* draw_vertex_color                          IO_RENDER
-* draw_primitive_end                         IO_RENDER
+* draw_primitive_begin                       IO_RENDER EFFECTS
+* draw_vertex                                IO_RENDER EFFECTS
+* draw_vertex_colour                         IO_RENDER EFFECTS
+* draw_vertex_color                          IO_RENDER EFFECTS
+* draw_primitive_end                         IO_RENDER EFFECTS
 * sprite_get_uvs                             ASSET
 * font_get_uvs                               ASSET
 * font_get_info                              ASSET
@@ -777,10 +777,10 @@
 * texture_get_width                          IO_RENDER
 * texture_get_height                         IO_RENDER
 * texture_get_uvs                            IO_RENDER
-* draw_primitive_begin_texture               IO_RENDER
-* draw_vertex_texture                        IO_RENDER
-* draw_vertex_texture_colour                 IO_RENDER
-* draw_vertex_texture_color                  IO_RENDER
+* draw_primitive_begin_texture               IO_RENDER EFFECTS
+* draw_vertex_texture                        IO_RENDER EFFECTS
+* draw_vertex_texture_colour                 IO_RENDER EFFECTS
+* draw_vertex_texture_color                  IO_RENDER EFFECTS
 * texture_global_scale                       IO_RENDER OS_DIRECTIVE
   bm_normal
   bm_add
@@ -833,15 +833,15 @@
 * surface_reset_target                       IO_RENDER GLOBAL EFFECTS OS_DIRECTIVE
 * surface_depth_disable                      IO_RENDER GLOBAL EFFECTS OS_DIRECTIVE
 * surface_get_depth_disable                  IO_RENDER GLOBAL
-* draw_surface                               IO_RENDER
-* draw_surface_stretched                     IO_RENDER
-* draw_surface_tiled                         IO_RENDER
-* draw_surface_part                          IO_RENDER
-* draw_surface_ext                           IO_RENDER
-* draw_surface_stretched_ext                 IO_RENDER
-* draw_surface_tiled_ext                     IO_RENDER
-* draw_surface_part_ext                      IO_RENDER
-* draw_surface_general                       IO_RENDER
+* draw_surface                               IO_RENDER EFFECTS
+* draw_surface_stretched                     IO_RENDER EFFECTS
+* draw_surface_tiled                         IO_RENDER EFFECTS
+* draw_surface_part                          IO_RENDER EFFECTS
+* draw_surface_ext                           IO_RENDER EFFECTS
+* draw_surface_stretched_ext                 IO_RENDER EFFECTS
+* draw_surface_tiled_ext                     IO_RENDER EFFECTS
+* draw_surface_part_ext                      IO_RENDER EFFECTS
+* draw_surface_general                       IO_RENDER EFFECTS
 * surface_getpixel                           IO_RENDER
 * surface_getpixel_ext                       IO_RENDER
 * surface_save                               IO_FILE IO_RENDER
@@ -966,17 +966,17 @@
   audio_pause_all                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_is_playing                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_is_paused                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_exists                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* audio_exists                               IO_AUDIO ASSET
   audio_system_is_available                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_sound_is_playable                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_gain                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_pitch                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_x                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_y                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_z                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_vx                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_vy                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_vz                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* audio_emitter_get_gain                     IO_AUDIO
+* audio_emitter_get_pitch                    IO_AUDIO
+* audio_emitter_get_x                        IO_AUDIO
+* audio_emitter_get_y                        IO_AUDIO
+* audio_emitter_get_z                        IO_AUDIO
+* audio_emitter_get_vx                       IO_AUDIO
+* audio_emitter_get_vy                       IO_AUDIO
+* audio_emitter_get_vz                       IO_AUDIO
   audio_listener_set_position                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_listener_set_velocity                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_listener_set_orientation             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
@@ -988,10 +988,10 @@
   audio_get_name                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_sound_set_track_position             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_sound_get_track_position             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_create_stream                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_destroy_stream                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_create_sync_group                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_destroy_sync_group                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* audio_create_stream                        IO_AUDIO
+* audio_destroy_stream                       IO_AUDIO EFFECTS
+* audio_create_sync_group                    IO_AUDIO
+* audio_destroy_sync_group                   IO_AUDIO EFFECTS
   audio_play_in_sync_group                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_start_sync_group                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_stop_sync_group                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -1000,7 +1000,7 @@
   audio_sync_group_get_track_pos             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_sync_group_debug                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_sync_group_is_playing                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_debug                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* audio_debug                                IO_AUDIO OS_DIALOG
   audio_group_load                           IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   audio_group_unload                         IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   audio_group_is_loaded                      IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
@@ -1008,9 +1008,9 @@
   audio_group_name                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   audio_group_stop_all                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   audio_group_set_gain                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
-  audio_create_buffer_sound                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* audio_create_buffer_sound                  IO_AUDIO
   audio_free_buffer_sound                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_create_play_queue                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* audio_create_play_queue                    IO_AUDIO
   audio_free_play_queue                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_queue_sound                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   audio_get_recorder_count                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
@@ -1018,10 +1018,10 @@
   audio_start_recording                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_stop_recording                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_sound_get_listener_mask              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_listener_mask            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* audio_emitter_get_listener_mask            IO_AUDIO
   audio_get_listener_mask                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_sound_set_listener_mask              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_set_listener_mask            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* audio_emitter_set_listener_mask            IO_AUDIO EFFECTS
   audio_set_listener_mask                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_get_listener_count                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   audio_get_listener_info                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -1048,7 +1048,7 @@
   highscore_add                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   highscore_value                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   highscore_name                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-* draw_highscore                             IO_RENDER
+* draw_highscore                             IO_RENDER EFFECTS
   sprite_exists                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   sprite_get_name                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   sprite_get_number                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -1196,8 +1196,8 @@
   room_instance_clear                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   room_get_camera                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   room_set_camera                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
-  asset_get_index                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  asset_get_type                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* asset_get_index                            ASSET GLOBAL EXPLOITABLE ASSET_REFLECTION
+* asset_get_type                             ASSET GLOBAL EXPLOITABLE ASSET_REFLECTION
   asset_object
   asset_unknown
   asset_sprite
@@ -1251,7 +1251,7 @@
   file_bin_read_byte                         IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   parameter_count                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   parameter_string                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  environment_get_variable                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE FINGERPRINTING
+* environment_get_variable                   EFFECTS OS_DIRECTIVE FINGERPRINTING
   fa_readonly
   fa_hidden
   fa_sysfile
@@ -1276,142 +1276,142 @@
   ini_section_exists                         IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   ini_key_delete                             IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   ini_section_delete                         IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  ds_set_precision                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  ds_exists                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* ds_set_precision                           GLOBAL EFFECTS
+* ds_exists
   ds_type_map
   ds_type_list
   ds_type_stack
   ds_type_queue
   ds_type_grid
   ds_type_priority
-  ds_stack_create                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_destroy                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_clear                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_copy                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_size                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_empty                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_push                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_pop                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_top                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_write                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_stack_read                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_create                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_destroy                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_clear                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_copy                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_size                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_empty                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_enqueue                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_dequeue                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_head                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_tail                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_write                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_queue_read                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_create                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_destroy                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_clear                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_copy                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_size                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_empty                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_add                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_insert                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_replace                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_delete                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_find_index                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_find_value                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_is_map                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_is_list                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_mark_as_list                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_mark_as_map                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_sort                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_shuffle                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_write                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_read                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_list_set                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_create                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_destroy                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_clear                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_copy                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_size                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_empty                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_add                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_add_list                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_add_map                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_replace                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_replace_map                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_replace_list                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_delete                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_exists                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_values_to_array                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_keys_to_array                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_find_value                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_is_map                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_is_list                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_find_previous                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_find_next                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_find_first                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_find_last                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_write                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_read                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_secure_save                         IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_secure_load                         IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_secure_load_buffer                  IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_secure_save_buffer                  IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_map_set                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_create                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_destroy                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_clear                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_copy                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_size                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_empty                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_add                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_change_priority                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_find_priority                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_delete_value                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_delete_min                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_find_min                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_delete_max                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_find_max                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_write                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_priority_read                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_create                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_destroy                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_copy                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_resize                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_width                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_height                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_clear                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_add                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_multiply                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_set_region                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_add_region                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_multiply_region                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_set_disk                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_add_disk                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_multiply_disk                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_set_grid_region                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_add_grid_region                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_multiply_grid_region               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_sum                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_max                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_min                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_mean                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_disk_sum                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_disk_min                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_disk_max                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get_disk_mean                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_value_exists                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_value_x                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_value_y                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_value_disk_exists                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_value_disk_x                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_value_disk_y                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_shuffle                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_write                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_read                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_sort                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_set                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  ds_grid_get                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* ds_stack_create
+* ds_stack_destroy                           EFFECTS
+* ds_stack_clear                             EFFECTS
+* ds_stack_copy                              EFFECTS
+* ds_stack_size
+* ds_stack_empty
+* ds_stack_push                              EFFECTS
+* ds_stack_pop                               EFFECTS
+* ds_stack_top
+* ds_stack_write
+* ds_stack_read
+* ds_queue_create
+* ds_queue_destroy                           EFFECTS
+* ds_queue_clear                             EFFECTS
+* ds_queue_copy                              EFFECTS
+* ds_queue_size
+* ds_queue_empty
+* ds_queue_enqueue                           EFFECTS
+* ds_queue_dequeue                           EFFECTS
+* ds_queue_head
+* ds_queue_tail
+* ds_queue_write
+* ds_queue_read
+* ds_list_create
+* ds_list_destroy                            EFFECTS
+* ds_list_clear                              EFFECTS
+* ds_list_copy                               EFFECTS
+* ds_list_size
+* ds_list_empty
+* ds_list_add                                EFFECTS
+* ds_list_insert                             EFFECTS
+* ds_list_replace                            EFFECTS
+* ds_list_delete                             EFFECTS
+* ds_list_find_index
+* ds_list_find_value
+* ds_list_is_map
+* ds_list_is_list
+* ds_list_mark_as_list                       EFFECTS
+* ds_list_mark_as_map                        EFFECTS
+* ds_list_sort                               EFFECTS
+* ds_list_shuffle                            EFFECTS
+* ds_list_write
+* ds_list_read
+* ds_list_set                                EFFECTS
+* ds_map_create
+* ds_map_destroy                             EFFECTS
+* ds_map_clear                               EFFECTS
+* ds_map_copy                                EFFECTS
+* ds_map_size
+* ds_map_empty
+* ds_map_add                                 EFFECTS
+* ds_map_add_list                            EFFECTS
+* ds_map_add_map                             EFFECTS
+* ds_map_replace                             EFFECTS
+* ds_map_replace_map                         EFFECTS
+* ds_map_replace_list                        EFFECTS
+* ds_map_delete                              EFFECTS
+* ds_map_exists
+* ds_map_values_to_array
+* ds_map_keys_to_array
+* ds_map_find_value
+* ds_map_is_map
+* ds_map_is_list
+* ds_map_find_previous
+* ds_map_find_next
+* ds_map_find_first
+* ds_map_find_last
+* ds_map_write
+* ds_map_read
+* ds_map_secure_save                         IO_FILE EFFECTS
+* ds_map_secure_load                         IO_FILE EFFECTS
+* ds_map_secure_load_buffer
+* ds_map_secure_save_buffer
+* ds_map_set                                 EFFECTS
+* ds_priority_create
+* ds_priority_destroy                        EFFECTS
+* ds_priority_clear                          EFFECTS
+* ds_priority_copy                           EFFECTS
+* ds_priority_size
+* ds_priority_empty
+* ds_priority_add                            EFFECTS
+* ds_priority_change_priority                EFFECTS
+* ds_priority_find_priority
+* ds_priority_delete_value                   EFFECTS
+* ds_priority_delete_min                     EFFECTS
+* ds_priority_find_min
+* ds_priority_delete_max                     EFFECTS
+* ds_priority_find_max
+* ds_priority_write
+* ds_priority_read
+* ds_grid_create
+* ds_grid_destroy                            EFFECTS
+* ds_grid_copy                               EFFECTS
+* ds_grid_resize                             EFFECTS
+* ds_grid_width
+* ds_grid_height
+* ds_grid_clear                              EFFECTS
+* ds_grid_add                                EFFECTS
+* ds_grid_multiply                           EFFECTS
+* ds_grid_set_region                         EFFECTS
+* ds_grid_add_region                         EFFECTS
+* ds_grid_multiply_region                    EFFECTS
+* ds_grid_set_disk                           EFFECTS
+* ds_grid_add_disk                           EFFECTS
+* ds_grid_multiply_disk                      EFFECTS
+* ds_grid_set_grid_region                    EFFECTS
+* ds_grid_add_grid_region                    EFFECTS
+* ds_grid_multiply_grid_region               EFFECTS
+* ds_grid_get_sum
+* ds_grid_get_max
+* ds_grid_get_min
+* ds_grid_get_mean
+* ds_grid_get_disk_sum
+* ds_grid_get_disk_min
+* ds_grid_get_disk_max
+* ds_grid_get_disk_mean
+* ds_grid_value_exists
+* ds_grid_value_x
+* ds_grid_value_y
+* ds_grid_value_disk_exists
+* ds_grid_value_disk_x
+* ds_grid_value_disk_y
+* ds_grid_shuffle                            EFFECTS
+* ds_grid_write
+* ds_grid_read
+* ds_grid_sort                               EFFECTS
+* ds_grid_set                                EFFECTS
+* ds_grid_get
   effect_create_below                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   effect_create_above                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   effect_clear                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
@@ -1621,12 +1621,12 @@
 * virtual_key_hide                           IO_INPUT GLOBAL EFFECTS
 * virtual_key_delete                         IO_INPUT GLOBAL EFFECTS
 * virtual_key_show                           IO_INPUT GLOBAL EFFECTS
-* draw_enable_drawevent                      IO_RENDER OS_DIRECTIVE
-* draw_enable_swf_aa                         IO_RENDER OS_DIRECTIVE
+* draw_enable_drawevent                      IO_RENDER EFFECTS OS_DIRECTIVE
+* draw_enable_swf_aa                         IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_set_swf_aa_level                      IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_get_swf_aa_level                      IO_RENDER
 * draw_texture_flush                         IO_RENDER EFFECTS
-* draw_flush                                 IO_RENDER OS_DIRECTIVE
+* draw_flush                                 IO_RENDER EFFECTS OS_DIRECTIVE
   cmpfunc_never
   cmpfunc_less
   cmpfunc_equal
@@ -1714,10 +1714,10 @@
   gpu_pop_state
   gpu_get_state
   gpu_set_state
-* draw_light_define_ambient                  IO_RENDER GLOBAL
-* draw_light_define_direction                IO_RENDER GLOBAL
-* draw_light_define_point                    IO_RENDER GLOBAL
-* draw_light_enable                          IO_RENDER GLOBAL
+* draw_light_define_ambient                  IO_RENDER GLOBAL EFFECTS
+* draw_light_define_direction                IO_RENDER GLOBAL EFFECTS
+* draw_light_define_point                    IO_RENDER GLOBAL EFFECTS
+* draw_light_enable                          IO_RENDER GLOBAL EFFECTS
 * draw_set_lighting                          IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_light_get_ambient                     IO_RENDER GLOBAL
 * draw_light_get                             IO_RENDER GLOBAL
@@ -1810,8 +1810,8 @@
   json_parse                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
 * zip_unzip                                  IO_FILE EFFECTS
   load_csv                                   IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  base64_encode                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  base64_decode                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* base64_encode
+* base64_decode
   md5_string_unicode                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   md5_string_utf8                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   md5_file                                   IO_FILE IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
@@ -2080,11 +2080,11 @@
   skeleton_animation_get_event_frames        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   skeleton_animation_is_looping              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   skeleton_animation_is_finished             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-* draw_skeleton                              IO_RENDER ASSET_REFLECTION
-* draw_skeleton_time                         IO_RENDER ASSET_REFLECTION
-* draw_skeleton_instance                     IO_RENDER ASSET ASSET_REFLECTION
-* draw_skeleton_collision                    IO_RENDER ASSET ASSET_REFLECTION
-* draw_enable_skeleton_blendmodes            IO_RENDER ASSET_REFLECTION OS_DIRECTIVE
+* draw_skeleton                              IO_RENDER ASSET EFFECTS
+* draw_skeleton_time                         IO_RENDER ASSET EFFECTS
+* draw_skeleton_instance                     IO_RENDER ASSET EFFECTS
+* draw_skeleton_collision                    IO_RENDER ASSET EFFECTS
+* draw_enable_skeleton_blendmodes            IO_RENDER EFFECTS ASSET_REFLECTION OS_DIRECTIVE
 * draw_get_enable_skeleton_blendmodes        IO_RENDER ASSET_REFLECTION
   skeleton_animation_list                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   skeleton_skin_list                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -2216,8 +2216,8 @@
   tilemap_get_cell_x_at_pixel                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   tilemap_get_cell_y_at_pixel                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   tilemap_clear                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-* draw_tilemap                               IO_RENDER
-* draw_tile                                  IO_RENDER
+* draw_tilemap                               IO_RENDER EFFECTS
+* draw_tile                                  IO_RENDER EFFECTS
   tilemap_set_global_mask                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   tilemap_get_global_mask                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   tilemap_set_mask                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -2356,12 +2356,12 @@
   texturegroup_status_fetched
   tag_get_asset_ids                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   tag_get_assets                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  asset_get_tags                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  asset_add_tags                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  asset_remove_tags                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  asset_has_tags                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  asset_has_any_tag                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  asset_clear_tags                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* asset_get_tags                             ASSET GLOBAL EXPLOITABLE ASSET_REFLECTION
+* asset_add_tags                             ASSET GLOBAL EXPLOITABLE EFFECTS ASSET_REFLECTION
+* asset_remove_tags                          ASSET GLOBAL EXPLOITABLE EFFECTS ASSET_REFLECTION
+* asset_has_tags                             ASSET GLOBAL EXPLOITABLE ASSET_REFLECTION
+* asset_has_any_tag                          ASSET GLOBAL EXPLOITABLE ASSET_REFLECTION
+* asset_clear_tags                           ASSET GLOBAL EXPLOITABLE EFFECTS ASSET_REFLECTION
   extension_exists                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   extension_get_option_count                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   extension_get_option_names                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
@@ -2393,10 +2393,10 @@
   layer_sequence_is_finished                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   layer_sequence_get_speedscale              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   layer_sequence_get_length                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
-  animcurve_get                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  animcurve_get_channel                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  animcurve_get_channel_index                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  animcurve_channel_evaluate                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* animcurve_get                              EFFECTS
+* animcurve_get_channel                      EFFECTS
+* animcurve_get_channel_index
+* animcurve_channel_evaluate
   sequence_create                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS
   sequence_destroy                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS
   sequence_exists                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
@@ -2406,11 +2406,11 @@
   sequence_track_new                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS
   sequence_get_objects                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   sequence_instance_override_object          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
-  animcurve_create                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  animcurve_destroy                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  animcurve_exists                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  animcurve_channel_new                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  animcurve_point_new                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* animcurve_create
+* animcurve_destroy                          EFFECTS
+* animcurve_exists                           ASSET
+* animcurve_channel_new                      EFFECTS
+* animcurve_point_new                        EFFECTS
   fx_create                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   fx_get_name                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   fx_get_parameter_names                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
@@ -2469,8 +2469,8 @@
   gc_target_frame_time                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   gc_get_target_frame_time                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
 * weak_ref_create                            EFFECTS
-* weak_ref_alive
-* weak_ref_any_alive
+* weak_ref_alive                             EFFECTS
+* weak_ref_any_alive                         EFFECTS
   time_source_global
   time_source_game
   time_source_units_seconds
@@ -2518,41 +2518,41 @@
   static_set                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
   variable_get_hash                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
   variable_clone                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_exists                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_get                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_set                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_get_names                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_names_count                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_remove                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_foreach                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  struct_get_from_hash                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_set_from_hash                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_shift                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_shuffle                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_shuffle_ext                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_get_index                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_contains                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_contains_ext                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_first                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_last                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_create_ext                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_find_index                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_any                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_all                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_foreach                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_reduce                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_filter                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_filter_ext                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_map                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_map_ext                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_copy_while                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  array_unique                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_unique_ext                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_reverse                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_reverse_ext                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_concat                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_union                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  array_intersection                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
+* struct_exists
+* struct_get
+* struct_set                                 EFFECTS
+* struct_get_names
+* struct_names_count
+* struct_remove                              EFFECTS
+* struct_foreach                             EFFECTS
+* struct_get_from_hash
+* struct_set_from_hash                       EFFECTS
+* array_shift                                EFFECTS
+* array_shuffle
+* array_shuffle_ext                          EFFECTS
+* array_get_index
+* array_contains
+* array_contains_ext
+* array_first
+* array_last
+* array_create_ext
+* array_find_index
+* array_any
+* array_all
+* array_foreach
+* array_reduce
+* array_filter
+* array_filter_ext                           EFFECTS
+* array_map
+* array_map_ext                              EFFECTS
+* array_copy_while
+* array_unique
+* array_unique_ext                           EFFECTS
+* array_reverse
+* array_reverse_ext                          EFFECTS
+* array_concat
+* array_union
+* array_intersection
   handle_parse                               IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
   game_change                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   ev_draw_normal
@@ -2582,8 +2582,8 @@
 * dbg_add_font_glyphs                        GLOBAL ASSET_REFLECTION OS_DIALOG
   ref_create                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
   audio_3D
-  surface_get_format                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  surface_format_is_supported                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* surface_get_format                         IO_RENDER
+* surface_format_is_supported                IO_RENDER PLATFORM_SPECIFIC
   surface_rgba8unorm
   surface_r16float
   surface_r32float
@@ -2627,10 +2627,10 @@
   font_get_sdf_spread                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   font_enable_effects                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   method_call                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
-  asset_get_ids                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* asset_get_ids                              ASSET GLOBAL EXPLOITABLE ASSET_REFLECTION
   fa_none
   cache_directory
-  ds_grid_to_mp_grid                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* ds_grid_to_mp_grid
   effect_create_layer                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   effect_create_depth                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   part_type_subimage                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -2678,21 +2678,21 @@
   seqtracktype_particlesystem
   seqtracktype_audioeffect
   audio_bus_main
-  audio_bus_create                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  audio_effect_create                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  audio_emitter_bus                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_emitter_get_bus                      IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_bus_get_emitters                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  audio_bus_clear_emitters                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* audio_bus_create                           IO_AUDIO
+* audio_effect_create                        IO_AUDIO
+* audio_emitter_bus                          IO_AUDIO EFFECTS
+* audio_emitter_get_bus                      IO_AUDIO
+* audio_bus_get_emitters                     IO_AUDIO EFFECTS
+* audio_bus_clear_emitters                   IO_AUDIO EFFECTS
   lin_to_db                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
 * db_to_lin
 * dbg_section_exists                         GLOBAL OS_DIALOG
 * dbg_sprite_button                          GLOBAL OS_DIALOG
 * dbg_text_separator                         GLOBAL OS_DIALOG
 * dbg_view_exists                            GLOBAL OS_DIALOG
-  draw_clear_depth                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  draw_clear_ext                             IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  draw_clear_stencil                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
+* draw_clear_depth                           IO_RENDER EFFECTS
+* draw_clear_ext                             IO_RENDER EFFECTS
+* draw_clear_stencil                         IO_RENDER EFFECTS
   physics_mass_properties                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   physics_raycast                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   physics_test_overlap                       IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
@@ -2828,12 +2828,12 @@
   buffer_set_surface_depth                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
   gml_pragma                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   gml_release_mode                           IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
-  array_height_2d                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER DEPRECATED EXPLOITABLE
-  array_length_1d                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER DEPRECATED EXPLOITABLE
-  array_length_2d                            IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER DEPRECATED EXPLOITABLE
+* array_height_2d                            DEPRECATED
+* array_length_1d                            DEPRECATED
+* array_length_2d                            DEPRECATED
   nameof                                     IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_exists_from_hash                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  struct_remove_from_hash                    IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
+* struct_exists_from_hash
+* struct_remove_from_hash                    EFFECTS
   analytics_event                            IO_NETWORK IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER DEPRECATED UNSAFE EXPLOITABLE
   analytics_event_ext                        IO_NETWORK IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER DEPRECATED UNSAFE EXPLOITABLE
 * rollback_chat                              IO_NETWORK GLOBAL DEPRECATED EFFECTS
@@ -2996,12 +2996,12 @@
   layer_text_yorigin                         IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   layer_text_yscale                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER GLOBAL UNSAFE EXPLOITABLE EFFECTS ASSET_REFLECTION
   vertex_format_add_textcoord                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER DEPRECATED EXPLOITABLE
-* draw_enable_svg_aa                         IO_RENDER OS_DIRECTIVE
+* draw_enable_svg_aa                         IO_RENDER EFFECTS OS_DIRECTIVE
 * draw_get_svg_aa_level                      IO_RENDER
 * draw_set_svg_aa_level                      IO_RENDER EFFECTS OS_DIRECTIVE
   surface_get_target_depth                   IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  surface_get_texture_depth                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
-  surface_has_depth                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE ASSET_REFLECTION
+* surface_get_texture_depth                  IO_RENDER
+* surface_has_depth                          IO_RENDER
   gpu_get_stencil_read_mask                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   gpu_get_stencil_ref                        IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
   gpu_get_stencil_write_mask                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER UNSAFE EXPLOITABLE
