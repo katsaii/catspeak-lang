@@ -1,3 +1,4 @@
-bin/*
-.venv/*
+bin/
+venv/
+GML-Function-DB/
 **/__pycache__/

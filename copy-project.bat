@@ -1,4 +1,4 @@
 @echo off
-@mkdir "bin/src-lts"
-@xcopy "src-lts" "bin/src-lts" /s /e
-echo moved src-lts to bin/src-lts
+@mkdir "bin/compiler-gml"
+@xcopy "compiler-gml" "bin/compiler-gml" /s /e
+echo moved compiler-gml to bin/compiler-gml

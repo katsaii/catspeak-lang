@@ -1,0 +1,1663 @@
+//! Contains a simple compatibility layer for help with converting projects
+//! from Catspeak 3 to Catspeak 4.
+
+//# feather use syntax-errors
+
+// CATSPEAK 3 //
+
+/// Determines whether sanity checks and unsafe developer features are enabled
+/// at runtime.
+///
+/// @deprecated {4.0.0}
+///   Debug info is embedded by default now.
+///
+/// Debug mode is enabled by default, but you can disable these checks by
+/// defining a configuration macro, and setting it to `false`:
+/// ```gml
+/// #macro Release:CATSPEAK_DEBUG_MODE false
+/// ```
+///
+/// @warning
+///   Although disabling this macro may give a noticable performance boost, it
+///   will also result in **undefined behaviour** and **cryptic error messages**
+///   if an error occurs.
+///
+///   If you are getting errors in your game, and you suspect Catspeak may be
+///   the cause, make sure to re-enable debug mode if you have it disabled.
+///
+/// @return {Bool}
+#macro CATSPEAK_DEBUG_MODE true
+
+/// Used by Catspeak code generators to expose foreign GML functions,
+/// constants, and properties to the generated Catspeak programs.
+///
+/// @deprecated {4.0.0}
+function CatspeakForeignInterface() : CatspeakModulePrelude() constructor {
+    /// @ignore
+    banList = { };
+    /// @ignore
+    __exists__super = __exists__;
+    /// @ignore
+    __exists__ = function (name) {
+        if (variable_struct_exists(banList, name)) {
+            // this function has been banned!
+            return false;
+        }
+        return __exists__super(name);
+    };
+    /// @ignore
+    __get__super = __get__;
+    /// @ignore
+    __get__ = function (name) {
+        if (variable_struct_exists(banList, name)) {
+            // this function has been banned!
+            return undefined;
+        }
+        return __get__super(name);
+    };
+
+    /// Returns whether the foreign symbol is a "dynamic constant".
+    /// If the symbol hasn't been added then this function returns `false`.
+    ///
+    /// @experimental
+    ///
+    /// @deprecated {4.0.0}
+    ///
+    /// @param {String} name
+    ///   The name of the symbol as it appears in Catspeak.
+    ///
+    /// @return {Bool}
+    static isDynamicConstant = function (name) {
+        return false;
+    };
+
+    /// Bans an array of symbols from being used by this interface. Any
+    /// symbols in this list will be treated as though they do not exist. To
+    /// unban a set of symbols, you should use the `addPardonList` method.
+    ///
+    /// If a symbol was previously banned, this function will have no effect.
+    ///
+    /// @deprecated {4.0.0}
+    ///   If you need this, then you're probably cutting corners.
+    ///
+    /// @param {String} ban
+    ///   The symbol to ban the usage of from within Catspeak.
+    static addBanList = function () {
+        var banList_ = banList;
+        for (var i = 0; i < argument_count; i += 1) {
+            var ban = argument[i];
+            banList_[$ ban] = true;
+        }
+    };
+
+    /// Pardons an array of symbols within this interface.
+    ///
+    /// If a symbol was not previously banned by `addBanList`, there will be
+    /// no effect.
+    ///
+    /// @deprecated {4.0.0}
+    ///   If you need this, then you're probably cutting corners.
+    ///
+    /// @param {String} pardon
+    ///   The symbol to pardon the usage of from within Catspeak.
+    static addPardonList = function () {
+        var banList_ = banList;
+        for (var i = 0; i < argument_count; i += 1) {
+            var pardon = argument[i];
+            if (variable_struct_exists(banList_, pardon)) {
+                variable_struct_remove(banList_, pardon);
+            }
+        }
+    };
+
+    /// Exposes a constant value to this interface.
+    ///
+    /// @remark
+    ///   You cannot expose GML functions using this method. Instead you
+    ///   should use one of `exposeDynamicConstant`, `exposeFunction`, or
+    ///   `exposeMethod`.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Assign constants directly to `.globals` now:
+    ///   ```gml
+    ///   var module = new CatspeakModule();
+    ///   module.globals.one = 1;
+    ///   ```
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Any} value
+    ///   The constant value to add.
+    static exposeConstant = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var value = argument[i + 1];
+            globals[$ name] = value;
+        }
+    };
+
+    /// Exposes a "dynamic constant" to this interface. The value provided for
+    /// the constant should be a script or method. When the dynamic constant
+    /// is evaluated at runtime, the method will be executed with zero
+    /// arguments and the return value used as the value of the constant.
+    ///
+    /// @experimental
+    ///
+    /// @deprecated {4.0.0}
+    ///   Assign "dynamic constants" directly to `.globals` now:
+    ///   ```gml
+    ///   var module = new CatspeakModule();
+    ///   module.globals.random_n_get = function () { return choose(1, 2, 3) };
+    ///   ```
+    ///   Instead of `exposeDynamicConstant("random_n", function () { ... })`.
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script ID or function to add.
+    static exposeDynamicConstant = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            func = is_method(func) ? func : catspeak_method(undefined, func);
+            globals[$ name + "_get"] = func;
+        }
+    };
+
+    /// Exposes a new unbound function to this interface. When passed a bound
+    /// method (i.e. a non-global function), it will be unbound before it is
+    /// added to the interface.
+    ///
+    /// @remark
+    ///   If you would prefer to keep the bound `self` of a method, you should
+    ///   use the `exposeMethod` method instead.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Assign functions directly to `.globals` now:
+    ///   ```gml
+    ///   var module = new CatspeakModule();
+    ///   module.globals.show_message = show_message;
+    ///   ```
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script ID or function to add.
+    static exposeFunction = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            func = is_method(func) ? catspeak_get_index(func) : func;
+            globals[$ name] = catspeak_method(undefined, func);
+        }
+    };
+
+    /// Behaves similarly to `exposeFunction`, except the name of definition
+    /// is inferred. There are three ways this name will be inferred:
+    ///
+    ///  1) If the value is a script resource, `script_get_name` is used.
+    ///  2) If the value is a method and a `name` field exists, then the value
+    ///     of this `name` field will be used as the name.
+    ///  3) If the value is a method and a `name` field does not exist, then
+    ///     `script_get_name` will be called on the underlying bound script
+    ///     resource.
+    ///
+    /// @remark
+    ///   If you would prefer to keep the bound `self` of a method, you should
+    ///   use the `exposeMethodByName` method instead.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Will not work on GMRT.
+    ///
+    /// @param {Function} func
+    ///   The script ID or function to add.
+    static exposeFunctionByName = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var func = argument[i];
+            var name;
+            if (is_string(func)) {
+                name = func;
+                func = undefined;
+                if (
+                    !string_starts_with(name, "<unknown>") &&
+                    !string_starts_with(name, "@@") &&
+                    !string_starts_with(name, "$") &&
+                    !string_starts_with(name, "YoYo") &&
+                    !string_starts_with(name, "yy") &&
+                    !string_starts_with(name, "[[") &&
+                    !string_starts_with(name, "__")
+                ) {
+                    for(var builtinID = 0; builtinID < 10000; builtinID += 1;) {
+                        var scriptName = script_get_name(builtinID);
+                        if (scriptName == name) {
+                            func = builtinID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+                        var scriptName = script_get_name(scriptID);
+                        if (
+                            string_starts_with(scriptName, "anon") ||
+                            string_count("gml_GlobalScript", scriptName) > 0 ||
+                            string_count("__struct__", scriptName) > 0
+                        ) {
+                            continue;
+                        }
+                        if (scriptName == name) {
+                            func = scriptID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    __catspeak_error(__catspeak_cat(
+                        "function with the name '", name, "' cannot be found"
+                    ));
+                }
+            } else {
+                name = __catspeak_infer_function_name(func);
+                func = is_method(func) ? catspeak_get_index(func) : func;
+            }
+            globals[$ name] = catspeak_method(undefined, func);
+        }
+    };
+
+    /// Exposes many user-defined global GML functions to this interface which
+    /// share a common prefix.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Will not work on GMRT.
+    ///
+    /// @param {String} namespace
+    ///   The common prefix for the set of functions you want to expose to
+    ///   Catspeak.
+    static exposeFunctionByPrefix = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var namespace = argument[i];
+            // asset scanning for functions can be a lil weird, in my experience
+            // i've came across a few variations
+            //
+            // their positions aren't always 100% known, except for anon
+            // (which is always at the front)
+            //
+            // NOTE: not GMRT compatible
+            var database_ = globals;
+            if (
+                !string_starts_with(namespace, "<unknown>") &&
+                !string_starts_with(namespace, "@@") &&
+                !string_starts_with(namespace, "$") &&
+                !string_starts_with(namespace, "YoYo") &&
+                !string_starts_with(namespace, "yy") &&
+                !string_starts_with(namespace, "[[") &&
+                !string_starts_with(namespace, "__")
+            ) {
+                for(var builtinID = 0; builtinID < 10000; builtinID += 1;) {
+                    var name = script_get_name(builtinID);
+                    if (string_starts_with(name, namespace)) {
+                        database_[$ name] = method(undefined, builtinID);
+                    }
+                }
+            }
+            for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+                var name = script_get_name(scriptID);
+                if (
+                    string_starts_with(name, "anon") ||
+                    string_count("gml_GlobalScript", name) > 0 ||
+                    string_count("__struct__", name) > 0
+                ) {
+                    continue;
+                }
+                if (string_starts_with(name, namespace)) {
+                    database_[$ name] = method(undefined, scriptID); 
+                }
+            }
+        }
+    };
+
+    /// Exposes a new bound function to this interface.
+    ///
+    /// @remark
+    ///   If you would prefer to ignore the bound `self` value of the function,
+    ///   and treat it as a global script, you should use the `exposeFunction`
+    ///   method instead.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Assign functions directly to `.globals` now:
+    ///   ```gml
+    ///   var module = new CatspeakModule();
+    ///   module.globals.add_3 = function (a, b, c) { return a + b + c };
+    ///   ```
+    ///
+    /// @param {String} name
+    ///   The name of the method as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script ID or method to add.
+    static exposeMethod = function () {
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i + 0];
+            var func = argument[i + 1];
+            func = is_method(func) ? func : method(undefined, func);
+            globals[$ name] = func;
+        }
+    };
+
+    /// Behaves similarly to `exposeMethod`, except the name of definition
+    /// is inferred. There are three ways a name will be inferred:
+    ///
+    ///  1) If the value is a script resource, `script_get_name` is used.
+    ///  2) If the value is a method and a `name` field exists, then the value
+    ///     of this `name` field will be used as the name.
+    ///  3) If the value is a method and a `name` field does not exist, then
+    ///     `script_get_name` will be called on the underlying bound script
+    ///     resource.
+    ///
+    /// @remark
+    ///   If you would prefer to ignore the bound `self` value of the function,
+    ///   and treat it as a global script, you should use the
+    ///   `exposeFunctionByName` method instead.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Will not work on GMRT.
+    ///
+    /// @param {Function} func
+    ///   The script ID or method to add.
+    static exposeMethodByName = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var func = argument[i];
+            var name;
+            if (is_string(func)) {
+                name = func;
+                func = undefined;
+                if (
+                    !string_starts_with(name, "<unknown>") &&
+                    !string_starts_with(name, "@@") &&
+                    !string_starts_with(name, "$") &&
+                    !string_starts_with(name, "YoYo") &&
+                    !string_starts_with(name, "yy") &&
+                    !string_starts_with(name, "[[") &&
+                    !string_starts_with(name, "__")
+                ) {
+                    for(var builtinID = 0; builtinID < 10000; builtinID += 1;) {
+                        var scriptName = script_get_name(builtinID);
+                        if (scriptName == name) {
+                            func = builtinID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    for (var scriptID = 100001; script_exists(scriptID); scriptID += 1) {
+                        var scriptName = script_get_name(scriptID);
+                        if (
+                            string_starts_with(scriptName, "anon") ||
+                            string_count("gml_GlobalScript", scriptName) > 0 ||
+                            string_count("__struct__", scriptName) > 0
+                        ) {
+                            continue;
+                        }
+                        if (scriptName == name) {
+                            func = scriptID;
+                            break;
+                        }
+                    }
+                }
+                if (func == undefined) {
+                    __catspeak_error(__catspeak_cat(
+                        "method with the name '", name, "' cannot be found"
+                    ));
+                }
+            } else {
+                name = __catspeak_infer_function_name(func);
+            }
+            func = is_method(func) ? func : method(undefined, func);
+            globals[$ name] = func;
+        }
+    };
+
+    /// Exposes a GameMaker asset from the resource tree to this interface.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `CatspeakModuleAssets` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the GM asset that you wish to expose to Catspeak.
+    static exposeAsset = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var name = argument[i];
+            __catspeak_assert_typeof(name, is_string);
+            var value = asset_get_index(name);
+            var type = asset_get_type(name);
+            // validate that it's an actual GM Asset
+            if (value == -1) {
+                __catspeak_error(__catspeak_cat(
+                    "invalid GMAsset: got '", value, "' from '", name, "'"
+                ));
+            }
+            if (type == asset_script) {
+                // scripts must be coerced into methods
+                value = method(undefined, value);
+            }
+            globals[$ name] = value;
+        }
+    };
+
+    /// Exposes a set of tagged GameMaker assets to this interface.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `CatspeakModuleAssets` instead.
+    ///
+    /// @param {Any} tag
+    ///   The name of a tag, or array of tags, of assets to expose to Catspeak.
+    static exposeAssetByTag = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var assets = tag_get_assets(argument[i]);
+            for (var j = array_length(assets) - 1; j >= 0; j -= 1) {
+                exposeAsset(assets[j]);
+            }
+        }
+    };
+}
+
+/// Encapsulates all common Catspeak features into a single, configurable box.
+///
+/// @deprecated {4.0.0}
+///   Use `CatspeakCtx` instead.
+function CatspeakEnvironment() : CatspeakCtx() constructor {
+    /// @ignore
+    lexerType = CatspeakLexerV3;
+
+    /// Enables the shared global feature on this Catspeak environment,
+    /// forcing all Catspeak programs compiled after this point to share the
+    /// same global variable scope.
+    ///
+    /// Typically this should not be enabled, but it can be useful for REPL
+    /// (Read-Eval-Print-Loop) style command consoles, where variables persist
+    /// between commands.
+    ///
+    /// Returns the shared global struct if this feature is enabled, or
+    /// `undefined` if the feature is disabled.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Assign an object to `.globals` directly.
+    ///
+    /// @param {Bool} [enabled]
+    ///   Whether to enable this feature. Defaults to `true`.
+    ///
+    /// @return {Struct}
+    static enableSharedGlobal = function (enabled = true) {
+        globals = enabled ? { } : undefined;
+        return globals;
+    };
+
+    /// Applies list of presets to this Catspeak environment. These changes
+    /// cannot be undone, so only choose presets you really need.
+    ///
+    /// You can add additional presets using the `catspeak_preset_add` function.
+    ///
+    /// @experimental
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.addModule()` and the new module system.
+    ///
+    /// @example
+    ///   Enabling the math and draw presets on the default Catspeak
+    ///   environment:
+    ///   ```gml
+    ///   Catspeak.applyPreset(
+    ///     CatspeakPreset.MATH,
+    ///     CatspeakPreset.DRAW
+    ///   );
+    ///   ```
+    ///
+    /// @param {Enum.CatspeakPreset} preset
+    ///   The preset type to apply.
+    ///
+    /// @param {Enum.CatspeakPreset} ...
+    ///   Additional presets.
+    static applyPreset = function () {
+        for (var i = 0; i < argument_count; i += 1) {
+            var presetFunc = __catspeak_preset_get(argument[i]);
+            presetFunc(getInterface());
+        }
+    };
+
+    /// @deprecated {3.0.0}
+    ///   Use `Catspeak.interface` instead.
+    ///
+    /// @return {Struct.CatspeakModule}
+    static getInterface = function () {
+        return interface;
+    };
+
+    /// Creates a new lazy tokeniser from the supplied buffer, overriding
+    /// the keyword database if one exists for the current Catspeak
+    /// environment.
+    ///
+    /// @deprecated {4.0.0}
+    ///
+    /// @warning
+    ///   The lexer does not take ownership of this buffer, so you must make
+    ///   sure to delete it after calling this function. Failure to do this
+    ///   will result in leaking memory.
+    ///
+    /// @param {Id.Buffer} buff
+    ///   The ID of the GML buffer to use.
+    ///
+    /// @param {Real} [offset]
+    ///   The offset in the buffer to start parsing from. Defaults to 0.
+    ///
+    /// @param {Real} [size]
+    ///   The length of the buffer input. Any characters beyond this limit
+    ///   will be treated as the end of the file. Defaults to `infinity`.
+    ///
+    /// @return {Struct}
+    static tokenise = function (buff, offset = undefined, size = undefined) {
+        return new lexerType(buff, offset, size, keywords);
+    };
+
+    /// Similar to `Catspeak.parse`, except a string is used instead of a buffer.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.parse()` instead.
+    ///
+    /// @param {String} src
+    ///   The string containing Catspeak source code to parse.
+    ///
+    /// @param {String} [filepath]
+    ///   Associates this Catspeak source code with a filename.
+    ///
+    /// @return {Struct}
+    static parseString = parse;
+
+    /// Compiles Catspeak IR into a callable GML function.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Use `.compile()` instead.
+    ///
+    /// @deprecated {3.0.2}
+    ///   Use `Catspeak.compile` instead.
+    ///
+    /// @param {Struct} ir
+    ///   The Catspeak IR to compile. You can get this from `Catspeak.parse`.
+    ///
+    /// @return {Function}
+    static compileGML = compile;
+
+    /// Used to change the string representation of a Catspeak keyword.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Renaming keywords nolonger supported. Write your own lexer.
+    ///
+    /// @param {String} currentName
+    ///   The current string representation of the keyword to change.
+    ///   E.g. `"fun"`
+    ///
+    /// @param {String} newName
+    ///   The new string representation of the keyword.
+    ///   E.g. `"function"`
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static renameKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+        for (var i = 0; i < argument_count; i += 2) {
+            var currentName = argument[i];
+            var newName = argument[i + 1];
+            __catspeak_assert_typeof(currentName, is_string);
+            __catspeak_assert_typeof(newName, is_string);
+            __catspeak_keywords_rename(keywords_, currentName, newName);
+        }
+    };
+
+    /// Used to add a new Catspeak keyword alias.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Renaming keywords nolonger supported. Write your own lexer.
+    ///
+    /// @param {String} name
+    ///   The name of the keyword to add.
+    ///   E.g. `"otherwise"`
+    ///
+    /// @param {Enum.CatspeakTokenV3} token
+    ///   The token this keyword should represent.
+    ///   E.g. `CatspeakTokenV3.ELSE`
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            var token = argument[i + 1];
+            __catspeak_assert_typeof(name, is_string);
+            keywords_[$ name] = token;
+        }
+    };
+
+    /// Used to remove an existing Catspeak keyword from this environment.
+    ///
+    /// @deprecated {4.0.0}
+    ///   Renaming keywords nolonger supported. Write your own lexer.
+    ///
+    /// @param {String} name
+    ///   The name of the keyword to remove.
+    ///   E.g. `"do"`
+    ///
+    /// @param {String} ...
+    ///   Additional keywords to remove.
+    static removeKeyword = function () {
+        keywords ??= __catspeak_keywords_create();
+        var keywords_ = keywords;
+        for (var i = 0; i < argument_count; i += 2) {
+            var name = argument[i];
+            __catspeak_assert_typeof(name, is_string);
+            if (variable_struct_exists(keywords_, name)) {
+                variable_struct_remove(keywords_, name);
+            }
+        }
+    };
+
+    /// Used to add a new constant to this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.exposeConstant` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the constant as it will appear in Catspeak.
+    ///
+    /// @param {Any} value
+    ///   The constant value to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addConstant = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 2) {
+            interface_.exposeConstant(argument[i + 0], argument[i + 1]);
+        }
+    };
+
+    /// Used to add a new method to this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.exposeMethod` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addMethod = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 2) {
+            interface_.exposeMethod(argument[i + 0], argument[i + 1]);
+        }
+    };
+
+    /// Used to add a new unbound function to this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.exposeFunction` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function as it will appear in Catspeak.
+    ///
+    /// @param {Function} func
+    ///   The script or function to add.
+    ///
+    /// @param {Any} ...
+    ///   Additional arguments in the same name-value format.
+    static addFunction = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 2) {
+            interface_.exposeFunction(argument[i + 0], argument[i + 1]);
+        }
+    };
+
+    /// @ignore
+    static __removeInterface = function () {
+        var interface_ = getInterface();
+        for (var i = 0; i < argument_count; i += 1) {
+            interface_.addBanList([argument[i]]);
+        }
+    };
+
+    /// Used to remove an existing constant from this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.addBanList` instead.
+    ///
+    /// @remark
+    ///   Although you can use this to remove functions, it's recommended to
+    ///   use `Catspeak.removeFunction` for that purpose instead.
+    ///
+    /// @param {String} name
+    ///   The name of the constant to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional constants to remove.
+    static removeConstant = __removeInterface;
+
+    /// Used to remove an existing function from this environment.
+    ///
+    /// @deprecated {3.0.1}
+    ///   Use `Catspeak.interface.addBanList` instead.
+    ///
+    /// @param {String} name
+    ///   The name of the function to remove.
+    ///
+    /// @param {String} ...
+    ///   Additional functions to remove.
+    static removeFunction = __removeInterface;
+}
+
+/// Gets the line component of a Catspeak source location. This is stored as a
+/// 20-bit unsigned integer within the least-significant bits of the supplied
+/// Catspeak location handle.
+///
+/// @deprecated {4.0.0}
+///   Use `catspeak_location_get_line` instead.
+///
+/// @param {Real} location
+///   A 32-bit integer representing the diagnostic information of a Catspeak
+///   program.
+///
+/// @returns {Real}
+function catspeak_location_get_row(location) {
+    gml_pragma("forceinline");
+    return catspeak_location_get_line(location);
+}
+
+/// At times, Catspeak creates a lot of garbage which tends to have a longer
+/// lifetime than is typically expected.
+///
+/// Calling this function forces Catspeak to collect that garbage.
+///
+/// @deprecated {4.0.0}
+///   Does nothing.
+function catspeak_collect() {
+    __catspeak_check_init();
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_init_lexer() {
+    /// @ignore
+    global.__catspeakString2Token = __catspeak_keywords_create();
+    global.__catspeakConfig.keywords = global.__catspeakString2Token;
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_keywords_rename(keywords, currentName, newName) {
+    if (!variable_struct_exists(keywords, currentName)) {
+        __catspeak_error_silent(__catspeak_cat(
+            "no keyword with the name '", currentName, "' exists"
+        ));
+        return;
+    }
+    var token = keywords[$ currentName];
+    variable_struct_remove(keywords, currentName);
+    keywords[$ newName] = token;
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+///
+/// @remark
+///   This is an O(n) operation. This means that it's slow, and should only
+///   be used for debugging purposes.
+function __catspeak_keywords_find_name(keywords, token) {
+    __catspeak_assert_typeof(keywords, is_struct);
+    __catspeak_assert(
+        is_numeric(token) && token >= 0 && token < CatspeakTokenV3.__SIZE__,
+        "invalid token"
+    );
+    var variables = variable_struct_get_names(keywords);
+    var variableCount = array_length(variables);
+    for (var i = 0; i < variableCount; i += 1) {
+        var variable = variables[i];
+        if (keywords[$ variable] == token) {
+            return variable;
+        }
+    }
+    return undefined;
+}
+
+/// A token in Catspeak is a series of characters with meaning, usually
+/// separated by whitespace. These meanings are represented by unique
+/// elements of the `CatspeakTokenV3` enum.
+///
+/// @deprecated {4.0.0}
+///   Use `CatspeakToken` instead.
+///
+/// @example
+///   Some examples of tokens in Catspeak, and their meanings:
+///   - `if`   (is a `CatspeakTokenV3.IF`)
+///   - `else` (is a `CatspeakTokenV3.ELSE`)
+///   - `12.3` (is a `CatspeakTokenV3.VALUE`)
+///   - `+`    (is a `CatspeakTokenV3.PLUS`)
+enum CatspeakTokenV3 {
+    /// The `(` character.
+    PAREN_LEFT = CatspeakToken.PAREN_LEFT,
+    /// The `)` character.
+    PAREN_RIGHT = CatspeakToken.PAREN_RIGHT,
+    /// The `[` character.
+    BOX_LEFT = CatspeakToken.BOX_LEFT,
+    /// The `]` character.
+    BOX_RIGHT = CatspeakToken.BOX_RIGHT,
+    /// The `{` character.
+    BRACE_LEFT = CatspeakToken.BRACE_LEFT,
+    /// The `}` character.
+    BRACE_RIGHT = CatspeakToken.BRACE_RIGHT,
+    /// The `:` character.
+    COLON = CatspeakToken.COLON,
+    /// The `;` character.
+    SEMICOLON = CatspeakToken.SEMICOLON,
+    /// The `,` character.
+    COMMA = CatspeakToken.COMMA,
+    /// The `.` operator.
+    DOT = CatspeakToken.DOT,
+    /// The `=>` operator.
+    ARROW = CatspeakToken.ARROW,
+    /// @ignore
+    __OP_ASSIGN_BEGIN__ = CatspeakToken.ASSIGN,
+    /// The `=` operator.
+    ASSIGN = CatspeakToken.ASSIGN,
+    /// The `*=` operator.
+    ASSIGN_MULTIPLY = CatspeakToken.ASSIGN_MULTIPLY,
+    /// The `/=` operator.
+    ASSIGN_DIVIDE = CatspeakToken.ASSIGN_DIVIDE,
+    /// The `-=` operator.
+    ASSIGN_SUBTRACT = CatspeakToken.ASSIGN_MINUS,
+    /// The `+=` operator.
+    ASSIGN_PLUS = CatspeakToken.ASSIGN_PLUS,
+    /// @ignore
+    __OP_BEGIN__ = CatspeakToken.REMAINDER,
+    /// The remainder `%` operator.
+    REMAINDER = CatspeakToken.REMAINDER,
+    /// The `*` operator.
+    MULTIPLY = CatspeakToken.MULTIPLY,
+    /// The `/` operator.
+    DIVIDE = CatspeakToken.DIVIDE,
+    /// The integer division `//` operator.
+    DIVIDE_INT = CatspeakToken.DIVIDE_INT,
+    /// The `-` operator.
+    SUBTRACT = CatspeakToken.MINUS,
+    /// The `+` operator.
+    PLUS = CatspeakToken.PLUS,
+    /// The relational `==` operator.
+    EQUAL = CatspeakToken.EQUAL,
+    /// The relational `!=` operator.
+    NOT_EQUAL = CatspeakToken.NOT_EQUAL,
+    /// The relational `>` operator.
+    GREATER = CatspeakToken.GREATER,
+    /// The relational `>=` operator.
+    GREATER_EQUAL = CatspeakToken.GREATER_EQUAL,
+    /// The relational `<` operator.
+    LESS = CatspeakToken.LESS,
+    /// The relational `<=` operator.
+    LESS_EQUAL = CatspeakToken.LESS_EQUAL,
+    /// The logical negation `!` operator.
+    NOT = CatspeakToken.NOT,
+    /// The bitwise negation `~` operator.
+    BITWISE_NOT = CatspeakToken.BITWISE_NOT,
+    /// The bitwise right shift `>>` operator.
+    SHIFT_RIGHT = CatspeakToken.SHIFT_RIGHT,
+    /// The bitwise left shift `<<` operator.
+    SHIFT_LEFT = CatspeakToken.SHIFT_LEFT,
+    /// The bitwise and `&` operator.
+    BITWISE_AND = CatspeakToken.BITWISE_AND,
+    /// The bitwise xor `^` operator.
+    BITWISE_XOR = CatspeakToken.BITWISE_XOR,
+    /// The bitwise or `|` operator.
+    BITWISE_OR = CatspeakToken.BITWISE_OR,
+    /// The logical `and` operator.
+    AND = CatspeakToken.AND,
+    /// The logical `or` operator.
+    OR = CatspeakToken.OR,
+    /// The logical `xor` operator.
+    XOR = CatspeakToken.XOR,
+    /// The functional pipe right `|>` operator.
+    PIPE_RIGHT = CatspeakToken.PIPE_RIGHT,
+    /// The functional pipe left `<|` operator.
+    PIPE_LEFT = CatspeakToken.PIPE_LEFT,
+    /// The `do` keyword.
+    DO = CatspeakToken.DO,
+    /// The `if` keyword.
+    IF = CatspeakToken.IF,
+    /// The `else` keyword.
+    ELSE = CatspeakToken.ELSE,
+    /// The `catch` keyword.
+    CATCH = CatspeakToken.CATCH,
+    /// The `while` keyword.
+    WHILE = CatspeakToken.WHILE,
+    /// The `for` keyword.
+    ///
+    /// @experimental
+    FOR = CatspeakToken.FOR,
+    /// The `loop` keyword.
+    ///
+    /// @experimental
+    LOOP = CatspeakToken.LOOP,
+    /// The `with` keyword.
+    ///
+    /// @experimental
+    WITH = CatspeakToken.WITH,
+    /// The `match` keyword.
+    ///
+    /// @experimental
+    MATCH = CatspeakToken.MATCH,
+    /// The `let` keyword.
+    LET = CatspeakToken.LET,
+    /// The `fun` keyword.
+    FUN = CatspeakToken.FUN,
+    /// The `break` keyword.
+    BREAK = CatspeakToken.BREAK,
+    /// The `continue` keyword.
+    CONTINUE = CatspeakToken.CONTINUE,
+    /// The `return` keyword.
+    RETURN = CatspeakToken.RETURN,
+    /// The `throw` keyword.
+    THROW = CatspeakToken.THROW,
+    /// The `new` keyword.
+    NEW = CatspeakToken.NEW,
+    /// The `impl` keyword.
+    ///
+    /// @experimental
+    IMPL = CatspeakToken.IMPL,
+    /// The `self` keyword.
+    ///
+    /// @experimental
+    SELF = CatspeakToken.SELF,
+    /// The `params` keyword.
+    ///
+    /// @experimental
+    PARAMS = CatspeakToken.PARAMS,
+    /// The `params_count` keyword.
+    ///
+    /// @experimental
+    PARAMS_COUNT = CatspeakToken.PARAMS_COUNT,
+    /// Represents a variable name.
+    IDENT = CatspeakToken.IDENT,
+    /// Represents a GML value. This could be one of:
+    ///  - string literal:    `"hello world"`
+    ///  - verbatim literal:  `@"\(0_0)/ no escapes!"`
+    ///  - integer:           `1`, `2`, `5`
+    ///  - float:             `1.25`, `0.5`
+    ///  - character:         `'A'`, `'0'`, `'\n'`
+    ///  - boolean:           `true` or `false`
+    ///  - `undefined`
+    //VALUE = CatspeakToken.NUMBER,
+    VALUE_NUMBER = CatspeakToken.NUMBER,
+    VALUE_STRING = CatspeakToken.STRING,
+    VALUE_UNDEFINED = CatspeakToken.UNDEFINED,
+    /// Represents a sequence of non-breaking whitespace characters.
+    WHITESPACE = CatspeakToken.WHITESPACE,
+    /// Represents a comment.
+    COMMENT = CatspeakToken.COMMENT,
+    /// Represents the end of the file.
+    EOF = CatspeakToken.EOF,
+    /// Represents any other unrecognised character.
+    ///
+    /// @remark
+    ///   If the compiler encounters a token of this type, it will typically
+    ///   raise an exception. This likely indicates that a Catspeak script has
+    ///   a syntax error somewhere.
+    OTHER = CatspeakToken.ERROR,
+    /// @ignore
+    __SIZE__ = CatspeakToken.__SIZE__,
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_is_token(val) {
+    // the user can modify what keywords are, so just check
+    // that they've used one of the enum types instead of a
+    // random ass value
+    return is_numeric(val) && (
+        val >= 0 && val < CatspeakTokenV3.__SIZE__
+    );
+}
+
+/// Responsible for tokenising the contents of a GML buffer. This can be used
+/// for syntax highlighting in a programming game which uses Catspeak.
+///
+/// @deprecated {4.0.0}
+///   Use `CatspeakLexer` instead.
+///
+/// @warning
+///   The lexer does not take ownership of its buffer, so you must make sure
+///   to delete the buffer once the lexer is complete. Failure to do this will
+///   result in leaking memory.
+///
+/// @param {Id.Buffer} buff
+///   The ID of the GML buffer to use.
+///
+/// @param {Real} [offset]
+///   The offset in the buffer to start parsing from. Defaults to 0.
+///
+/// @param {Real} [size]
+///   The length of the buffer input. Any characters beyond this limit
+///   will be treated as the end of the file. Defaults to `infinity`.
+///
+/// @param {Struct} [keywords]
+///   A struct whose keys map to the corresponding Catspeak tokens they
+///   represent. Defaults to the vanilla set of Catspeak keywords.
+function CatspeakLexerV3(
+    buff, offset=0, size=infinity, keywords=undefined
+) : CatspeakLexer(buff, offset, size) constructor {
+    /// @ignore
+    __keywords = keywords ?? global.__catspeakString2Token;
+    /// @ignore
+    __nextUTF8Char = __nextChar;
+    /// @ignore
+    __advance = advanceChar;
+    /// @ignore
+    __clearLexeme = clearLexeme;
+}
+
+// Presets are built-in collections of GML functions and constants which
+// can be shared between different instances of `CatspeakEnvironment` in
+// bulk.
+//
+// A limited set of safe, built-in GML standard library functions and
+// constants are packaged with Catspeak by default. See `Catspeak.interface`
+// if you need to expose individual functions instead of many.
+//
+// @experimental
+
+//# feather use syntax-errors
+
+/// Represents the set of environment presets understood by Catspeak.
+/// When used with `setPreset`, this enum determines what GML
+/// functions, constants, and keywords get exposed.
+///
+/// @deprecated {4.0.0}
+enum CatspeakPreset {
+    /// Exposes safe type checking and type conversion functions.
+    TYPE,
+    /// Exposes safe array functions.
+    ARRAY,
+    /// Exposes safe struct functions.
+    STRUCT,
+    /// Exposes safe string functions.
+    STRING,
+    /// Exposes safe mathematical and statistical functions.
+    MATH,
+    /// Exposes safe 3D functions.
+    MATH_3D,
+    /// Exposes safe colour functions and constants.
+    COLOUR,
+    /// Exposes safe drawing functions.
+    DRAW,
+    /// Exposes safe randomisation functions.
+    RANDOM,
+    /// Exposes unsafe reflection and debug functions.
+    /// Use this preset with extreme caution, because all bets are off.
+    UNSAFE,
+    /// @ignore
+    __SIZE__,
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_is_nullish(val) {
+    gml_pragma("forceinline");
+    return val == undefined || val == pointer_null;
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_get(preset) {
+    var presetFunc = global.__catspeakPresets[? preset];
+    if (__catspeak_is_nullish(presetFunc)) {
+        __catspeak_error(__catspeak_cat(
+            "a Catspeak preset with the key '",
+            preset, "' does not exist, make sure the preset exists in the ",
+            "`CatspeakPreset` enum"
+        ));
+    }
+    return presetFunc;
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_type(ffi) {
+    ffi.exposeFunction(
+        "is_string", is_string,
+        "is_real", is_real,
+        "is_numeric", is_numeric,
+        "is_bool", is_bool,
+        "is_array", is_array,
+        "is_struct", is_struct,
+        "is_method", is_method,
+        //"is_callable", is_callable,
+        "is_ptr", is_ptr,
+        "is_int32", is_int32,
+        "is_int64", is_int64,
+        "is_undefined", is_undefined,
+        "is_nan", is_nan,
+        "is_infinity", is_infinity,
+        "typeof", typeof,
+        "bool", bool,
+        "ptr", ptr,
+        "int64", int64,
+        "string", string,
+        "real", real
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_array(ffi) {
+    ffi.exposeFunction(
+        "array_create", array_create,
+        "array_copy", array_copy,
+        "array_equals", array_equals,
+        "array_get", array_get,
+        "array_set", array_set,
+        "array_push", array_push,
+        "array_pop", array_pop,
+        //"array_shift", array_shift,
+        "array_insert", array_insert,
+        "array_delete", array_delete,
+        //"array_get_index", array_get_index,
+        //"array_contains", array_contains,
+        //"array_contains_ext", array_contains_ext,
+        "array_sort", array_sort,
+        //"array_reverse", array_reverse,
+        //"array_shuffle", array_shuffle,
+        "array_length", array_length,
+        "array_resize", array_resize,
+        //"array_first", array_first,
+        //"array_last", array_last,
+        //"array_find_index", array_find_index,
+        //"array_any", array_any,
+        //"array_all", array_all,
+        //"array_foreach", array_foreach,
+        //"array_reduce", array_reduce,
+        //"array_concat", array_concat,
+        //"array_union", array_union,
+        //"array_intersection", array_intersection,
+        //"array_filter", array_filter,
+        //"array_map", array_map,
+        //"array_unique", array_unique,
+        //"array_copy_while", array_copy_while,
+        //"array_create_ext", array_create_ext,
+        //"array_filter_ext", array_filter_ext,
+        //"array_map_ext", array_map_ext,
+        //"array_unique_ext", array_unique_ext,
+        //"array_reverse_ext", array_reverse_ext,
+        //"array_shuffle_ext", array_shuffle_ext
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_struct(ffi) {
+    ffi.exposeFunction(
+        "struct_exists", variable_struct_exists,
+        "struct_get", variable_struct_get,
+        "struct_set", variable_struct_set,
+        "struct_remove", variable_struct_remove,
+        "struct_get_names", variable_struct_get_names,
+        "struct_names_count", variable_struct_names_count,
+        //"is_instanceof", is_instanceof,
+        "instanceof", instanceof,
+        //"struct_foreach", struct_foreach,
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_string(ffi) {
+    ffi.exposeFunction(
+        "ansi_char", ansi_char,
+        "chr", chr,
+        "ord", ord,
+        "string_byte_at", string_byte_at,
+        "string_byte_length", string_byte_length,
+        "string_set_byte_at", string_set_byte_at,
+        "string_char_at", string_char_at,
+        "string_ord_at", string_ord_at,
+        "string_length", string_length,
+        "string_pos", string_pos,
+        "string_pos_ext", string_pos_ext,
+        "string_last_pos", string_last_pos,
+        "string_last_pos_ext", string_last_pos_ext,
+        "string_starts_with", string_starts_with,
+        "string_ends_with", string_ends_with,
+        "string_count", string_count,
+        "string_copy", string_copy,
+        "string_delete", string_delete,
+        "string_digits", string_digits,
+        "string_format", string_format,
+        "string_insert", string_insert,
+        "string_letters", string_letters,
+        "string_lettersdigits", string_lettersdigits,
+        "string_lower", string_lower,
+        "string_repeat", string_repeat,
+        "string_replace", string_replace,
+        "string_replace_all", string_replace_all,
+        "string_upper", string_upper,
+        "string_hash_to_newline", string_hash_to_newline,
+        "string_trim", string_trim,
+        "string_trim_start", string_trim_start,
+        "string_trim_end", string_trim_end,
+        "string_split", string_split,
+        "string_split_ext", string_split_ext,
+        "string_join", string_join,
+        "string_join_ext", string_join_ext,
+        "string_concat", string_concat,
+        "string_concat_ext", string_concat_ext,
+        "string_width", string_width,
+        "string_width_ext", string_width_ext,
+        "string_height", string_height,
+        "string_height_ext", string_height_ext,
+        "string_foreach", string_foreach
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_math(ffi) {
+    ffi.exposeFunction(
+        "round", round,
+        "frac", frac,
+        "abs", abs,
+        "sign", sign,
+        "floor", floor,
+        "ceil", ceil,
+        "min", min,
+        "max", max,
+        "mean", mean,
+        "median", median,
+        "lerp", lerp,
+        "clamp", clamp,
+        "exp", exp,
+        "ln", ln,
+        "power", power,
+        "sqr", sqr,
+        "sqrt", sqrt,
+        "log2", log2,
+        "log10", log10,
+        "logn", logn,
+        "arccos", arccos,
+        "arcsin", arcsin,
+        "arctan", arctan,
+        "arctan2", arctan2,
+        "cos", cos,
+        "sin", sin,
+        "tan", tan,
+        "dcos", dcos,
+        "dsin", dsin,
+        "dtan", dtan,
+        "darccos", darccos,
+        "darcsin", darcsin,
+        "darctan", darctan,
+        "darctan2", darctan2,
+        "degtorad", degtorad,
+        "radtodeg", radtodeg,
+        "point_direction", point_direction,
+        "point_distance", point_distance,
+        //"distance_to_object", distance_to_object,
+        "distance_to_point", distance_to_point,
+        "dot_product", dot_product,
+        "dot_product_normalised", dot_product_normalised,
+        "angle_difference", angle_difference,
+        "lengthdir_x", lengthdir_x,
+        "lengthdir_y", lengthdir_y
+    );
+    ffi.exposeConstant("pi", pi);
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_math_3d(ffi) {
+    ffi.exposeFunction(
+        "point_distance_3d", point_distance_3d,
+        "dot_product_3d", dot_product_3d,
+        "dot_product_3d_normalised", dot_product_3d_normalised,
+        "matrix_build", matrix_build,
+        "matrix_multiply", matrix_multiply,
+        "matrix_build_identity", matrix_build_identity,
+        "matrix_build_lookat", matrix_build_lookat,
+        "matrix_build_projection_ortho", matrix_build_projection_ortho,
+        "matrix_build_projection_perspective", matrix_build_projection_perspective,
+        "matrix_build_projection_perspective_fov", matrix_build_projection_perspective_fov,
+        "matrix_transform_vertex", matrix_transform_vertex
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_colour(ffi) {
+    ffi.exposeFunction(
+        "colour_get_blue", colour_get_blue,
+        "colour_get_green", colour_get_green,
+        "colour_get_red", colour_get_red,
+        "colour_get_hue", colour_get_hue,
+        "colour_get_saturation", colour_get_saturation,
+        "colour_get_value", colour_get_value,
+        "make_colour_rgb", make_colour_rgb,
+        "make_colour_hsv", make_colour_hsv,
+        "merge_colour", merge_colour
+    );
+    ffi.exposeConstant(
+        "c_aqua", c_aqua,
+        "c_black", c_black,
+        "c_blue", c_blue,
+        "c_dkgray", c_dkgray,
+        "c_fuchsia", c_fuchsia,
+        "c_grey", c_grey,
+        "c_green", c_green,
+        "c_lime", c_lime,
+        "c_ltgrey", c_ltgrey,
+        "c_maroon", c_maroon,
+        "c_navy", c_navy,
+        "c_olive", c_olive,
+        "c_orange", c_orange,
+        "c_purple", c_purple,
+        "c_red", c_red,
+        "c_silver", c_silver,
+        "c_teal", c_teal,
+        "c_white", c_white,
+        "c_yellow", c_yellow
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_draw(ffi) {
+    ffi.exposeFunction(
+        "draw_self", draw_self,
+        "draw_sprite", draw_sprite,
+        "draw_sprite_pos", draw_sprite_pos,
+        "draw_sprite_ext", draw_sprite_ext,
+        "draw_sprite_stretched", draw_sprite_stretched,
+        "draw_sprite_stretched_ext", draw_sprite_stretched_ext,
+        "draw_sprite_tiled", draw_sprite_tiled,
+        "draw_sprite_tiled_ext", draw_sprite_tiled_ext,
+        "draw_sprite_part", draw_sprite_part,
+        "draw_sprite_part_ext", draw_sprite_part_ext,
+        "draw_sprite_general", draw_sprite_general,
+        "draw_clear", draw_clear,
+        "draw_clear_alpha", draw_clear_alpha,
+        "draw_point", draw_point,
+        "draw_line", draw_line,
+        "draw_line_width", draw_line_width,
+        "draw_rectangle", draw_rectangle,
+        "draw_roundrect", draw_roundrect,
+        "draw_roundrect_ext", draw_roundrect_ext,
+        "draw_triangle", draw_triangle,
+        "draw_circle", draw_circle,
+        "draw_ellipse", draw_ellipse,
+        "draw_set_circle_precision", draw_set_circle_precision,
+        "draw_arrow", draw_arrow,
+        "draw_button", draw_button,
+        "draw_path", draw_path,
+        "draw_healthbar", draw_healthbar,
+        "draw_getpixel", draw_getpixel,
+        "draw_getpixel_ext", draw_getpixel_ext,
+        "draw_set_colour", draw_set_colour,
+        "draw_set_color", draw_set_color,
+        "draw_set_alpha", draw_set_alpha,
+        "draw_get_colour", draw_get_colour,
+        "draw_get_color", draw_get_color,
+        "draw_get_alpha", draw_get_alpha,
+        "draw_set_font", draw_set_font,
+        "draw_get_font", draw_get_font,
+        "draw_set_halign", draw_set_halign,
+        "draw_get_halign", draw_get_halign,
+        "draw_set_valign", draw_set_valign,
+        "draw_get_valign", draw_get_valign,
+        "draw_text", draw_text,
+        "draw_text_ext", draw_text_ext,
+        "draw_text_transformed", draw_text_transformed,
+        "draw_text_ext_transformed", draw_text_ext_transformed,
+        "draw_text_colour", draw_text_colour,
+        "draw_text_ext_colour", draw_text_ext_colour,
+        "draw_text_transformed_colour", draw_text_transformed_colour,
+        "draw_text_ext_transformed_colour", draw_text_ext_transformed_colour,
+        "draw_text_color", draw_text_color,
+        "draw_text_ext_color", draw_text_ext_color,
+        "draw_text_transformed_color", draw_text_transformed_color,
+        "draw_text_ext_transformed_color", draw_text_ext_transformed_color,
+        "draw_point_colour", draw_point_colour,
+        "draw_line_colour", draw_line_colour,
+        "draw_line_width_colour", draw_line_width_colour,
+        "draw_rectangle_colour", draw_rectangle_colour,
+        "draw_roundrect_colour", draw_roundrect_colour,
+        "draw_roundrect_colour_ext", draw_roundrect_colour_ext,
+        "draw_triangle_colour", draw_triangle_colour,
+        "draw_circle_colour", draw_circle_colour,
+        "draw_ellipse_colour", draw_ellipse_colour,
+        "draw_point_color", draw_point_color,
+        "draw_line_color", draw_line_color,
+        "draw_line_width_color", draw_line_width_color,
+        "draw_rectangle_color", draw_rectangle_color,
+        "draw_roundrect_color", draw_roundrect_color,
+        "draw_roundrect_color_ext", draw_roundrect_color_ext,
+        "draw_triangle_color", draw_triangle_color,
+        "draw_circle_color", draw_circle_color,
+        "draw_ellipse_color", draw_ellipse_color,
+        "draw_primitive_begin", draw_primitive_begin,
+        "draw_vertex", draw_vertex,
+        "draw_vertex_colour", draw_vertex_colour,
+        "draw_vertex_color", draw_vertex_color,
+        "draw_primitive_end", draw_primitive_end,
+        "draw_primitive_begin_texture", draw_primitive_begin_texture,
+        "draw_vertex_texture", draw_vertex_texture,
+        "draw_vertex_texture_colour", draw_vertex_texture_colour,
+        "draw_vertex_texture_color", draw_vertex_texture_color,
+        "draw_surface", draw_surface,
+        "draw_surface_stretched", draw_surface_stretched,
+        "draw_surface_tiled", draw_surface_tiled,
+        "draw_surface_part", draw_surface_part,
+        "draw_surface_ext", draw_surface_ext,
+        "draw_surface_stretched_ext", draw_surface_stretched_ext,
+        "draw_surface_tiled_ext", draw_surface_tiled_ext,
+        "draw_surface_part_ext", draw_surface_part_ext,
+        "draw_surface_general", draw_surface_general,
+        "draw_highscore", draw_highscore,
+        "draw_enable_drawevent", draw_enable_drawevent,
+        "draw_enable_swf_aa", draw_enable_swf_aa,
+        "draw_set_swf_aa_level", draw_set_swf_aa_level,
+        "draw_get_swf_aa_level", draw_get_swf_aa_level,
+        "draw_texture_flush", draw_texture_flush,
+        "draw_flush", draw_flush,
+        "draw_light_define_ambient", draw_light_define_ambient,
+        "draw_light_define_direction", draw_light_define_direction,
+        "draw_light_define_point", draw_light_define_point,
+        "draw_light_enable", draw_light_enable,
+        "draw_set_lighting", draw_set_lighting,
+        "draw_light_get_ambient", draw_light_get_ambient,
+        "draw_light_get", draw_light_get,
+        "draw_get_lighting", draw_get_lighting,
+        "draw_tilemap", draw_tilemap,
+        "draw_tile", draw_tile,
+        // vertex buffers
+        "vertex_format_begin", vertex_format_begin,
+        "vertex_format_end", vertex_format_end,
+        "vertex_format_delete", vertex_format_delete,
+        "vertex_format_add_position", vertex_format_add_position,
+        "vertex_format_add_position_3d", vertex_format_add_position_3d,
+        "vertex_format_add_colour", vertex_format_add_colour,
+        "vertex_format_add_color", vertex_format_add_color,
+        "vertex_format_add_normal", vertex_format_add_normal,
+        "vertex_format_add_texcoord", vertex_format_add_texcoord,
+        "vertex_format_add_textcoord", vertex_format_add_texcoord,
+        "vertex_format_add_custom", vertex_format_add_custom,
+        "vertex_create_buffer", vertex_create_buffer,
+        "vertex_create_buffer_ext", vertex_create_buffer_ext,
+        "vertex_delete_buffer", vertex_delete_buffer,
+        "vertex_begin", vertex_begin,
+        "vertex_end", vertex_end,
+        "vertex_position", vertex_position,
+        "vertex_position_3d", vertex_position_3d,
+        "vertex_colour", vertex_colour,
+        "vertex_color", vertex_color,
+        "vertex_argb", vertex_argb,
+        "vertex_texcoord", vertex_texcoord,
+        "vertex_normal", vertex_normal,
+        "vertex_float1", vertex_float1,
+        "vertex_float2", vertex_float2,
+        "vertex_float3", vertex_float3,
+        "vertex_float4", vertex_float4,
+        "vertex_ubyte4", vertex_ubyte4,
+        "vertex_submit", vertex_submit,
+        "vertex_freeze", vertex_freeze,
+        "vertex_get_number", vertex_get_number,
+        "vertex_get_buffer_size", vertex_get_buffer_size,
+    );
+    ffi.exposeConstant(
+        "vertex_usage_position", vertex_usage_position,
+        "vertex_usage_colour", vertex_usage_colour,
+        "vertex_usage_color", vertex_usage_color,
+        "vertex_usage_normal", vertex_usage_normal,
+        "vertex_usage_texcoord", vertex_usage_texcoord,
+        "vertex_usage_textcoord", vertex_usage_texcoord,
+        "vertex_usage_blendweight", vertex_usage_blendweight,
+        "vertex_usage_blendindices", vertex_usage_blendindices,
+        "vertex_usage_psize", vertex_usage_psize,
+        "vertex_usage_tangent", vertex_usage_tangent,
+        "vertex_usage_binormal", vertex_usage_binormal,
+        "vertex_usage_fog", vertex_usage_fog,
+        "vertex_usage_depth", vertex_usage_depth,
+        "vertex_usage_sample", vertex_usage_sample,
+        "vertex_type_float1", vertex_type_float1,
+        "vertex_type_float2", vertex_type_float2,
+        "vertex_type_float3", vertex_type_float3,
+        "vertex_type_float4", vertex_type_float4,
+        "vertex_type_colour", vertex_type_colour,
+        "vertex_type_color", vertex_type_color,
+        "vertex_type_ubyte4", vertex_type_ubyte4,
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_random(ffi) {
+    ffi.exposeFunction(
+        "choose", choose,
+        "random", random,
+        "random_range", random_range,
+        "irandom", irandom,
+        "irandom_range", irandom_range
+    );
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_preset_unsafe(ffi) {
+    ffi.exposeFunction(
+        "asset_get_index", asset_get_index,
+        "asset_get_type", asset_get_type,
+        "tag_get_asset_ids", tag_get_asset_ids,
+        "tag_get_assets", tag_get_assets,
+        "asset_get_tags", asset_get_tags,
+        "asset_add_tags", asset_add_tags,
+        "asset_remove_tags", asset_remove_tags,
+        "asset_has_tags", asset_has_tags,
+        "asset_has_any_tag", asset_has_any_tag,
+        "asset_clear_tags", asset_clear_tags
+    );
+}
+
+/// Adds a new global preset function which can be used to initialise any new
+/// catspeak environments.
+///
+/// @deprecated {4.0.0}
+///   Use the new module system. (See `CatspeakCtx`)
+///
+/// @param {Any} key
+///   The key to use for the preset. Preferably a string, but it can be any
+///   value type.
+///
+/// @param {Function} callback
+///   The function to call to initialise the environment.
+///
+/// @example
+///   Adds a new preset called "my-custom" which, when applied, will
+///   add an `rgb` function to the given `CatspeakEnvironment`.
+///
+///   ```gml
+///   catspeak_preset_add("my-custom", function (interface, keywords) {
+///     interface.exposeFunction("rgb", make_colour_rgb);
+///   });
+///   ```
+///
+///   This preset can then be applied using `Catspeak.applyPreset`:
+///   ```gml
+///   Catspeak.applyPreset("my-custom");
+///   ```
+function catspeak_preset_add(key, callback) {
+    __catspeak_check_init();
+    var presets = global.__catspeakPresets;
+    if (ds_map_exists(presets, key)) {
+        __catspeak_error(__catspeak_cat(
+            "a preset with the key '", key, "' already exists"
+        ));
+    }
+    presets[? key] = callback;
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_init_presets() {
+    /// @ignore
+    global.__catspeakPresets = ds_map_create();
+    catspeak_preset_add(CatspeakPreset.TYPE, __catspeak_preset_type);
+    catspeak_preset_add(CatspeakPreset.ARRAY, __catspeak_preset_array);
+    catspeak_preset_add(CatspeakPreset.STRUCT, __catspeak_preset_struct);
+    catspeak_preset_add(CatspeakPreset.STRING, __catspeak_preset_string);
+    catspeak_preset_add(CatspeakPreset.MATH, __catspeak_preset_math);
+    catspeak_preset_add(CatspeakPreset.MATH_3D, __catspeak_preset_math_3d);
+    catspeak_preset_add(CatspeakPreset.COLOUR, __catspeak_preset_colour);
+    catspeak_preset_add(CatspeakPreset.DRAW, __catspeak_preset_draw);
+    catspeak_preset_add(CatspeakPreset.RANDOM, __catspeak_preset_random);
+    catspeak_preset_add(CatspeakPreset.UNSAFE, __catspeak_preset_unsafe);
+}
+
+/// @ignore
+///
+/// @deprecated {4.0.0}
+function __catspeak_check_init() {
+    gml_pragma("forceinline");
+    if (catspeak_force_init()) {
+        __catspeak_error(__catspeak_cat(
+            "Catspeak was not initialised at this point, make sure to call ",
+            "'catspeak_force_init' at the start of your code if you are ",
+            "using Catspeak inside of a script resource"
+        ));
+    }
+}

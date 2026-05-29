@@ -1,2 +1,2 @@
-cp -r "src-lts" "bin"
-echo moved src-lts to bin/src-lts
+cp -r "compiler-gml" "bin/compiler-gml"
+echo moved compiler-gml to bin/compiler-gml
