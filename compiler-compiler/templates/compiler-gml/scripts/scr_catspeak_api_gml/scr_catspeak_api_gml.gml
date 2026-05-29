@@ -47,7 +47,7 @@ enum CatspeakPerm {
     /// Allow access to user input.
     IO_INPUT = 1 << 7,
     /// Allow access to rendering/draw functions.
-    IO_RENDER = 1 << 8,]
+    IO_RENDER = 1 << 8,
     /// Allow access to computer audio.
     IO_AUDIO = 1 << 17,
     /// Allow access to platform-specific functions.
@@ -81,12 +81,12 @@ function CatspeakModuleGML(
     /// @ignore
     __exists__ = function (name) {
         var def = defs[$ name];
-        return def == undefined || (def.perms & perms) == def.perms;
+        return def != undefined && (def.perms & perms) == def.perms;
     };
     /// @ignore
     __get__ = function (name) {
         var def = defs[$ name];
-        return def == undefined || (def.perms & perms) == def.perms ? undefined : def.v;
+        return def != undefined && (def.perms & perms) == def.perms ? def.v : undefined;
     };
     /// @ignore
     static defs = undefined;

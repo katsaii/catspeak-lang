@@ -1,35 +1,11 @@
 //! TODO
 
 /// TODO
-///
-/// @remark
-///   Courtesy of: https://github.com/tinkerer-red/GML-Function-DB
-enum CatspeakTag {
-    NONE = 0,
-    UNSPECIFIED = 1 << 0,
-    DEPRECATED = 1 << 1,
-    SAFE = 1 << 2,
-    SANDBOXED = 1 << 3,
-    FILE_IO = 1 << 4,
-    NETWORK_IO = 1 << 5,
-    PERSONAL_DATA = 1 << 6,
-    PLATFORM_SPECIFIC = 1 << 7,
-    //GETTER = 1 << 8,
-    //SETTER = 1 << 9,
-    GLOBAL_EFFECT = 1 << 10,
-    ASSET_REFLECTION = 1 << 11,
-    OS_DIALOG = 1 << 12,
-    OS_DIRECTIVE = 1 << 13,
-}
-
-/// TODO
 function CatspeakModule(path_) constructor {
     /// TODO
     path = path_;
     /// TODO
     globals = { };
-    /// TODO
-    tags = { };
     /// TODO
     result = undefined;
     /// TODO
@@ -61,11 +37,6 @@ function CatspeakModule(path_) constructor {
         }
         return undefined;
     };
-
-    /// TODO
-    static getTag = function (name) {
-        return tags[$ name] ?? CatspeakTag.UNSPECIFIED;
-    };
 }
 
 /// TODO
@@ -80,6 +51,7 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     /// available in GML (with a few exceptions).
     ///
     /// @experimental
+    /// @advanced
     ///
     /// @remark
     ///   **Does not** support the physics capabilities of GameMaker because of some
@@ -98,36 +70,40 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     /// @ignore
     __exists__ = function (name) {
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            try {
-                var db = __catspeak_get_gml_interface();
-                return variable_struct_exists(db, name) || asset_get_index(name) != -1;
-            } catch (_) {
-                __catspeak_error_silent("GML interface not included, defaulting to `false`");
-            }
+            return asset_get_index(name) != -1 || __catspeak_get_gml_api().exists(name);
         }
         return false;
     };
     /// @ignore
     __get__ = function (name) {
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            try {
-                var db = __catspeak_get_gml_interface();
-                if (variable_struct_exists(db, name)) {
-                    return db[$ name];
+            var asset = asset_get_index(name);
+            if (asset != -1) {
+                if (asset_get_type(name) == asset_script) {
+                    return method(undefined, asset);
                 }
-                var asset = asset_get_index(name);
-                if (asset != -1) {
-                    if (asset_get_type(name) == asset_script) {
-                        return method(undefined, asset);
-                    }
-                    return asset;
-                }
-            } catch (_) {
-                __catspeak_error_silent("GML interface not included, defaulting to `undefined`");
+                return asset;
             }
+            return __catspeak_get_gml_api().get(name);
         }
         return undefined;
     };
+}
+
+function __catspeak_get_gml_api() {
+    static module_ = undefined;
+    static loaded = false;
+    if (!loaded) {
+        loaded = true;
+        try {
+            module_ = new CatspeakModuleGML(undefined, CatspeakPerm.__UNSPECIFIED);
+        } catch (ex) {
+            __catspeak_error_silent(__catspeak_cat(
+                "error encountered when trying to load the GML interface: ", ex.message
+            ));
+        }
+    }
+    return module_;
 }
 
 /// @ignore
