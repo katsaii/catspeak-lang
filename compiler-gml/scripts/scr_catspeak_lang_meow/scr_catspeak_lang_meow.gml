@@ -477,7 +477,6 @@ function CatspeakLexer(
             (charNext_ == ord("x") || charNext_ == ord("X"))
         ) {
             // hex literals
-            // TODO :: some way to avoid code duplication between all these digit parsers
             advanceChar();
             if (!__catspeak_char_is_digit_hex(charNext)) {
                 // binary literals must start with a digit
@@ -1679,7 +1678,6 @@ function CatspeakParser(cartWriter, lexer_) constructor {
             lexer.next();
             ir.emitConstUndefined(dbg);
         } else if (peeked == CatspeakToken.IDENT) {
-            // TODO :: module::module_item
             lexer.next();
             var module = CATSPEAK_CURRENT_MODULE;
             var name = lexer.getValue();
