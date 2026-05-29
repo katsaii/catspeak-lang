@@ -43,7 +43,6 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
     isAlive = false;
 
     // TODO :: add time limits
-    // TODO :: make indexing exprs less hacky
 
     /// Frees any dynamically allocated resources managed by this generator.
     ///

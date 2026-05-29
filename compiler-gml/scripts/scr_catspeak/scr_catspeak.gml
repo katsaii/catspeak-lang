@@ -450,10 +450,17 @@ function catspeak_get_index(callee) {
     return __catspeak_gml_method(undefined, callee);
 }
 
-/// TODO
+/// **Intended for debug purposes.** Returns the AST of an compiled Catspeak
+/// program as a string.
+///
+/// @param {Any} value
+///   The Catspeak program to dump the AST of.
 ///
 /// @experimental
 function catspeak_debug_tree(value, indent = "  ") {
+    if (string_length(indent) > 50) {
+        __catspeak_error("tree depth exceeded (recursive method?)");
+    }
     if (is_method(value)) {
         var msg = script_get_name(__catspeak_gml_method_get_index(value));
         if (is_catspeak(value)) {
@@ -479,10 +486,15 @@ function catspeak_debug_tree(value, indent = "  ") {
 
 /// TODO
 function CatspeakCtx() constructor {
+    var prelude_;
+    try {
+        prelude_ = new CatspeakForeignInterface();
+    } catch (_) {
+        prelude_ = new CatspeakModulePrelude();
+    }
 
     /// @ignore
-    keywords = undefined;
-
+    keywords = undefined; // for v3 compatibility
     /// The tokeniser to use for this Catspeak environment. Defaults to
     /// `CatspeakLexer`.
     ///
@@ -510,7 +522,7 @@ function CatspeakCtx() constructor {
     // assign this to make scripts share a global variable scope
     globals = undefined;
     /// TODO
-    interface = new CatspeakForeignInterface(); // TODO :: use `CatspeakForeignInterface` only in compatibility mode
+    interface = prelude_;
     /// @ignore
     modules = { };
     addModule(interface);
