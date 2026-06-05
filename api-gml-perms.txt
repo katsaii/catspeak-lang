@@ -1407,7 +1407,7 @@
 * ds_grid_value_disk_x                       EXPLOITABLE
 * ds_grid_value_disk_y                       EXPLOITABLE
 * ds_grid_shuffle                            EFFECTS EXPLOITABLE
-* ds_grid_write                              EXPLOITABL
+* ds_grid_write                              EXPLOITABLE
 * ds_grid_read                               EXPLOITABLE
 * ds_grid_sort                               EFFECTS EXPLOITABLE
 * ds_grid_set                                EFFECTS EXPLOITABLE
@@ -2513,7 +2513,7 @@
   GM_is_sandboxed
   is_instanceof                              IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
   is_callable                                IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
-  is_handle                                  IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER
+  is_handle                                  
   static_get                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE ASSET_REFLECTION
   static_set                                 IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
   variable_get_hash                          IO_INPUT IO_RENDER IO_AUDIO ASSET SELF OTHER EXPLOITABLE
