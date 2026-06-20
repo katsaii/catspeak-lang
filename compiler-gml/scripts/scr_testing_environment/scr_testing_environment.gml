@@ -1250,10 +1250,45 @@ test_add(function() : Test("struct-toString-computed") constructor {
     assertEq("bweh", f().toString());
 });
 
-
 test_add(function() : Test("struct-toString-literal") constructor {
     var env = new CatspeakEnvironment();
     var ir = env.parseString(@'{ toString : fun () { "bweh" } }');
     var f = env.compile(ir);
     assertEq("bweh", f().toString());
+});
+
+test_add(function() : Test("do-execution-order-1") constructor {
+    var env = new CatspeakEnvironment();
+    vals = [];
+    env.interface.globals[$ "trace"] = function (v) { array_push(vals, v) };
+    var ir = env.parseString(@'trace(1); do { trace(2); let a; }');
+    var f = env.compile(ir);
+    f();
+    assertEq(2, array_length(vals));
+    assertEq(1, vals[0]);
+    assertEq(2, vals[1]);
+});
+
+test_add(function() : Test("do-execution-order-2") constructor {
+    var env = new CatspeakEnvironment();
+    vals = [];
+    env.interface.globals[$ "trace"] = function (v) { array_push(vals, v) };
+    var ir = env.parseString(@'trace(3); do { trace(4); }');
+    var f = env.compile(ir);
+    f();
+    assertEq(2, array_length(vals));
+    assertEq(3, vals[0]);
+    assertEq(4, vals[1]);
+});
+
+test_add(function() : Test("do-execution-order-3") constructor {
+    var env = new CatspeakEnvironment();
+    vals = [];
+    env.interface.globals[$ "trace"] = function (v) { array_push(vals, v) };
+    var ir = env.parseString(@'trace(5); do { let a; trace(6); }');
+    var f = env.compile(ir);
+    f();
+    assertEq(2, array_length(vals));
+    assertEq(5, vals[0]);
+    assertEq(6, vals[1]);
 });
