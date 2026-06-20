@@ -50,6 +50,8 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     /// attempt to expose all functions, assets, constants, and global properties
     /// available in GML (with a few exceptions).
     ///
+    /// **Requires the official `api-gml` plugin! (`scr_catspeak_api_gml`)**
+    ///
     /// @experimental
     /// @advanced
     ///
@@ -70,20 +72,13 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     /// @ignore
     __exists__ = function (name) {
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            return asset_get_index(name) != -1 || __catspeak_get_gml_api().exists(name);
+            return __catspeak_get_gml_api().exists(name);
         }
         return false;
     };
     /// @ignore
     __get__ = function (name) {
         if (exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis) {
-            var asset = asset_get_index(name);
-            if (asset != -1) {
-                if (asset_get_type(name) == asset_script) {
-                    return method(undefined, asset);
-                }
-                return asset;
-            }
             return __catspeak_get_gml_api().get(name);
         }
         return undefined;
@@ -96,10 +91,12 @@ function __catspeak_get_gml_api() {
     if (!loaded) {
         loaded = true;
         try {
-            module_ = new CatspeakModuleGML(undefined, CatspeakPerm.__UNSPECIFIED);
+            module_ = new CatspeakModuleGML();
         } catch (ex) {
-            __catspeak_error_silent(__catspeak_cat(
-                "error encountered when trying to load the GML interface: ", ex.message
+            __catspeak_error(__catspeak_cat(
+                "error encountered when trying to load the GML interface ",
+                "(are you missing the GML API plugin? 'scr_catspeak_api_gml'): ",
+                ex.message
             ));
         }
     }
