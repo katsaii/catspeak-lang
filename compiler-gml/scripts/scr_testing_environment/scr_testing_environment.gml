@@ -1227,3 +1227,33 @@ test_add(function() : Test("recursive-calls") constructor {
     var f = env.compile(ir);
     assertEq(3 + __test_recursive_calls(1), f());
 });
+
+test_add(function() : Test("struct-toString") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        let s = { }
+        s.toString = fun () { "bweh" }
+        return s
+    ');
+    var f = env.compile(ir);
+    assertEq("bweh", f().toString());
+});
+
+test_add(function() : Test("struct-toString-computed") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'
+        let s = { "a": "a" }
+        s["toString"] = fun () { "bweh" }
+        return s
+    ');
+    var f = env.compile(ir);
+    assertEq("bweh", f().toString());
+});
+
+
+test_add(function() : Test("struct-toString-literal") constructor {
+    var env = new CatspeakEnvironment();
+    var ir = env.parseString(@'{ toString : fun () { "bweh" } }');
+    var f = env.compile(ir);
+    assertEq("bweh", f().toString());
+});

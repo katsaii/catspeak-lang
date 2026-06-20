@@ -78,6 +78,32 @@
 /// @return {Struct.CatspeakEnvironment}
 #macro Catspeak global.__catspeak__
 
+/// Gets a struct value without `toString`.
+///
+/// @ignore
+function __catspeak_exists(s, k) {
+    static gmlToString = undefined;
+    if (gmlToString == undefined) {
+        gmlToString = { }.toString;
+    }
+    if (variable_struct_exists(s, k)) {
+        return s[$ k] != gmlToString || k != "toString";
+    }
+    return false;
+}
+
+/// Gets a struct value without `toString`.
+///
+/// @ignore
+function __catspeak_get(s, k) {
+    static gmlToString = undefined;
+    if (gmlToString == undefined) {
+        gmlToString = { }.toString;
+    }
+    var val = s[$ k];
+    return val == gmlToString && k == "toString" ? undefined : val;
+}
+
 /// Usually the Catspeak environment tries to self-initialise at the start of
 /// the game, but at what time this happens relative to other scripts is not
 /// guaranteed by GameMaker.

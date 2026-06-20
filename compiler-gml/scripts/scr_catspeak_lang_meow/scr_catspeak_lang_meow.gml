@@ -341,11 +341,12 @@ function CatspeakLexer(
             }
             value = getLexeme();
             hasValue = true;
-            var keyword = __keywords[$ value];
+            // toString is not meant to be a keyword/literal :dewstare: :osakastare:
+            var keyword = __catspeak_get(__keywords, value);
             if (keyword != undefined) {
                 return keyword;
             }
-            var literal = __literals[$ value];
+            var literal = __catspeak_get(__literals, value);
             if (literal != undefined) {
                 value = literal;
                 return CatspeakToken.NUMBER;
@@ -1023,7 +1024,7 @@ function CatspeakParser(cartWriter, lexer_) constructor {
         var func = funcs[funcTop];
         for (var i = func.blockTop; i >= 0; i -= 1) {
             var block = func.blocks[i];
-            var idx = block.vars[$ name];
+            var idx = __catspeak_get(block.vars, name);
             if (idx != undefined) {
                 return idx;
             }
