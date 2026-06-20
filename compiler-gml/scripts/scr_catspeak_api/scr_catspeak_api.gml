@@ -30,7 +30,7 @@ function CatspeakModule(path_) constructor {
     /// TODO
     static get = function (name) {
         if (variable_struct_exists(globals, name)) {
-            return globals[$ name];
+            return __catspeak_get(globals, name);
         }
         if (__get__ != undefined) {
             return __get__(name);

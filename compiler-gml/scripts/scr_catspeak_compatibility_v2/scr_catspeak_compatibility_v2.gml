@@ -23,7 +23,7 @@ function catspeak_config() {
         for (var i = array_length(keys) - 1; i > 0; i -= 1) {
             var key = keys[i];
             if (variable_struct_exists(config, key)) {
-                config[$ key] = newConfig[$ key];
+                config[$ key] = __catspeak_get(newConfig, key);
             }
         }
     }

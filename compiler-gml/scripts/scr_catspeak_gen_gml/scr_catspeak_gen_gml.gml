@@ -125,10 +125,10 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         var module_ = undefined;
         var relPath = ctx.meta.path + "::" + path;
         if (variable_struct_exists(modules, relPath)) {
-            module_ = modules[$ relPath];
+            module_ = __catspeak_get(modules, relPath);
             importsResults[$ relPath] = module_.result;
         } else if (variable_struct_exists(modules, path)) {
-            module_ = modules[$ path];
+            module_ = __catspeak_get(modules, path);
         }
         if (module_ == undefined) {
             __catspeak_error(__catspeak_cat(
@@ -137,7 +137,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
             ));
         }
         importsResults[$ path] = module_.result;
-        var candidates = importsMap[$ alias] ?? [];
+        var candidates = __catspeak_get(importsMap, alias) ?? [];
         array_push(candidates, module_);
         importsMap[$ alias] = candidates;
     };
@@ -198,6 +198,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         global.__catspeakGmlSpecialVars = { };
         var db = global.__catspeakGmlSpecialVars;
         // addresses an LTS bug where self[$ name] = val doesn't work for internal properties
+        db[$ "toString"] = function (s, v) { s.toString = v };
         db[$ "enabled"] = function (s, v) { s.enabled = v };
         db[$ "left"] = function (s, v) { s.left = v };
         db[$ "right"] = function (s, v) { s.right = v };
@@ -378,10 +379,10 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
 
     static __findModuleItem = function (name, path) {
         var cacheName = path + "::" + name;
-        if (variable_struct_exists(importsCache, cacheName)) {
-            return importsCache[$ cacheName];
+        if (__catspeak_exists(importsCache, cacheName)) {
+            return __catspeak_get(importsCache, cacheName);
         }
-        var candidates = importsMap[$ path];
+        var candidates = __catspeak_get(importsMap, path);
         var foundModule = undefined;
         var foundValue = undefined;
         for (var i = array_length(candidates) - 1; i >= 0; i -= 1) {

@@ -42,7 +42,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "is_vec4"] = method(undefined, is_vec4);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API versions: fnames-2022-lts, fnames-vec3-vec4 ",
+                    "skipping GML API versions: fnames-vec3-vec4, fnames-2022-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));

@@ -189,6 +189,7 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
         global.__catspeakGmlSpecialVars = { };
         var db = global.__catspeakGmlSpecialVars;
         // addresses an LTS bug where self[$ name] = val doesn't work for internal properties
+        db[$ "toString"] = function (s, v) { s.toString = v };
         db[$ "enabled"] = function (s, v) { s.enabled = v };
         db[$ "left"] = function (s, v) { s.left = v };
         db[$ "right"] = function (s, v) { s.right = v };

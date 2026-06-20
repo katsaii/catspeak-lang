@@ -809,7 +809,7 @@ function __catspeak_keywords_rename(keywords, currentName, newName) {
         ));
         return;
     }
-    var token = keywords[$ currentName];
+    var token = __catspeak_get(keywords, currentName);
     variable_struct_remove(keywords, currentName);
     keywords[$ newName] = token;
 }
@@ -831,7 +831,7 @@ function __catspeak_keywords_find_name(keywords, token) {
     var variableCount = array_length(variables);
     for (var i = 0; i < variableCount; i += 1) {
         var variable = variables[i];
-        if (keywords[$ variable] == token) {
+        if (__catspeak_get(keywords, variable) == token) {
             return variable;
         }
     }
