@@ -1,0 +1,4 @@
+# isolate is_vec3 and is_vec4 from the rest of the fnames versions
+
+is_vec3(val)
+is_vec4(val)
