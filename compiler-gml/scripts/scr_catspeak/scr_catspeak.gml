@@ -137,7 +137,12 @@ function catspeak_force_init() {
     } catch (ex) {
         __catspeak_error_silent("skipping compatibility modules: " + ex.message);
     }
-    Catspeak = new CatspeakEnvironment();
+    try {
+        Catspeak = new CatspeakEnvironment();
+    } catch (ex) {
+        __catspeak_error_silent("skipping compatibility environment: " + ex.message);
+        Catspeak = new CatspeakCtx();
+    }
     var motd = "you are now using Catspeak v" + CATSPEAK_VERSION + " by @katsaii";
     show_debug_message(motd);
     return true;
@@ -510,15 +515,26 @@ function catspeak_debug_tree(value, indent = "  ") {
     }
 }
 
+/// @ignore
+function __catspeak_get_prelude_t() {
+    static prelude = undefined;
+    if (prelude == undefined) {
+        try {
+            if (script_exists(CatspeakForeignInterface)) {
+                prelude = CatspeakForeignInterface;
+            }
+        } catch (ex) {
+            __catspeak_error(__catspeak_cat(
+                "skipping compatibility interface: ", ex.message
+            ));
+            prelude = CatspeakModulePrelude;
+        }
+    }
+    return prelude;
+}
+
 /// TODO
 function CatspeakCtx() constructor {
-    var prelude_;
-    try {
-        prelude_ = new CatspeakForeignInterface();
-    } catch (_) {
-        prelude_ = new CatspeakModulePrelude();
-    }
-
     /// @ignore
     keywords = undefined; // for v3 compatibility
     /// The tokeniser to use for this Catspeak environment. Defaults to
@@ -548,16 +564,11 @@ function CatspeakCtx() constructor {
     // assign this to make scripts share a global variable scope
     globals = undefined;
     /// TODO
-    interface = prelude_;
+    var interfaceType = __catspeak_get_prelude_t();
+    interface = new interfaceType();
     /// @ignore
     modules = { };
     addModule(interface);
-
-    /// @deprecated {3.0.0}
-    ///   Use `Catspeak.interface` instead.
-    ///
-    /// @return {Struct.CatspeakForeignInterface}
-    static getInterface = function () { return interface };
 
     /// TODO
     static addModule = function (module) {
