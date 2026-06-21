@@ -50,13 +50,13 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "{{ symbol }}_get"] = method(undefined, function () { return {{ symbol_alias }} });
 {%     endif %}
 {%     if band(flags, TAG_PROP_SET) %}
-                defs[$ "{{ symbol }}_set"] = method(undefined, function (val) { return {{ symbol_alias }} = val });
+                defs[$ "{{ symbol }}_set"] = method(undefined, function (val) { {{ symbol_alias }} = val });
 {%     endif %}
 {%     if band(flags, TAG_PROP_GET_I) %}
                 defs[$ "{{ symbol }}_get"] = method(undefined, function (idx) { return {{ symbol_alias }}[idx] });
 {%     endif %}
 {%     if band(flags, TAG_PROP_SET_I) %}
-                defs[$ "{{ symbol }}_set"] = method(undefined, function (idx, val) { return {{ symbol_alias }}[idx] = val });
+                defs[$ "{{ symbol }}_set"] = method(undefined, function (idx, val) { {{ symbol_alias }}[idx] = val });
 {%     endif %}
 {%   endfor %}
             } catch (err_) {
