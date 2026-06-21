@@ -2543,7 +2543,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "call_cancel"] = method(undefined, call_cancel);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2022-lts + fnames-2026-lts ",
+                    "skipping GML API version: fnames-2026-lts + fnames-2024-2-0-163 + fnames-2022-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -2552,7 +2552,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "audio_3d"] = audio_3d;
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2022-lts + fnames-2026-lts ",
+                    "skipping GML API version: fnames-2026-lts + fnames-2022-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -2790,7 +2790,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "db_to_lin"] = method(undefined, db_to_lin);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2026-lts ",
+                    "skipping GML API version: fnames-2026-lts + fnames-2024-2-0-163 ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));

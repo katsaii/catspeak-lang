@@ -427,7 +427,42 @@ function CatspeakGenGML(modules_ = undefined, globals_ = undefined) constructor 
 
     /// @ignore
     static __genExprSetGlobal = function (flavour, name, path, value) {
-        // TODO :: setters on modules
+        var setter = __findModuleItem(name + "_set", path);
+        if (setter.hasValue) {
+            // setters
+            var func = undefined;
+            switch (flavour) {
+            case ord("="): break;
+            case ord("+"): func = __catspeak_instr_add__; break;
+            case ord("-"): func = __catspeak_instr_sub__; break;
+            case ord("*"): func = __catspeak_instr_mult__; break;
+            case ord("/"): func = __catspeak_instr_div__; break;
+            default:
+                __catspeak_error_bug();
+                break;
+            }
+            if (func != undefined) {
+                var getter = __findModuleItem(name + "_get", path);
+                if (!getter.hasValue) {
+                    __catspeak_error(getter.hasValue, __catspeak_cat(
+                        "missing getter ('", name, "_get') for property '", name, "'"
+                    ));
+                }
+                value = __genExpr({
+                    lhs : __genExprCall(
+                        0, __genExpr({
+                            value : getter.value,
+                        }, __catspeak_instr_module_value__), []
+                    ),
+                    rhs : value,
+                }, func);
+            }
+            return __genExprCall(
+                1, __genExpr({
+                    value : setter.value,
+                }, __catspeak_instr_module_value__), [value]
+            );
+        }
         var func;
         switch (flavour) {
         case ord("="): func = __catspeak_instr_set_g__; break;
