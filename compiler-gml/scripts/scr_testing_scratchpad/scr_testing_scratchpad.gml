@@ -17,10 +17,18 @@ TEST_EXPERIMENT "catspeak4-ctx" {
     var moduleGML = new CatspeakModule("test::math");
     moduleGML.globals.add = function (lhs, rhs) { return lhs + string(rhs) };
     moduleGML.globals.random_n_get = function () { return irandom(100) };
+    moduleGML.globals.x_get = function () { return global.x_ };
+    moduleGML.globals.x_set = function (v) { global.x_ = v };
+    moduleGML.globals.trace = catspeak_method(undefined, show_message);
     moduleGML.result = "wahoo";
     ctx.addModule(moduleGML);
     var moduleMeow = ctx.run(@'
         let result = import test::math as self
+
+        x = 1
+        trace(x)
+        x += 5
+        trace(x)
 
         return add(add("res: ", random_n) + " ", result)
     ');
