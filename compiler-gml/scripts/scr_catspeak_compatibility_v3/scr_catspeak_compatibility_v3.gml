@@ -472,6 +472,12 @@ function CatspeakEnvironment() : CatspeakCtx() constructor {
     /// @ignore
     lexerType = CatspeakLexerV3;
 
+    /// @deprecated {3.0.0}
+    ///   Use `Catspeak.interface` instead.
+    ///
+    /// @return {Struct.CatspeakForeignInterface}
+    static getInterface = function () { return interface };
+
     /// Enables the shared global feature on this Catspeak environment,
     /// forcing all Catspeak programs compiled after this point to share the
     /// same global variable scope.
