@@ -347,7 +347,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "instance_activate_object"] = method(undefined, instance_activate_object);
                 defs[$ "instance_activate_region"] = method(undefined, instance_activate_region);
                 defs[$ "room_speed_get"] = method(undefined, function () { return room_speed });
-                defs[$ "room_speed_set"] = method(undefined, function (val) { return room_speed = val });
+                defs[$ "room_speed_set"] = method(undefined, function (val) { room_speed = val });
                 defs[$ "fps_get"] = method(undefined, function () { return fps });
                 defs[$ "fps_real_get"] = method(undefined, function () { return fps_real });
                 defs[$ "current_time_get"] = method(undefined, function () { return current_time });
@@ -359,15 +359,15 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "current_minute_get"] = method(undefined, function () { return current_minute });
                 defs[$ "current_second_get"] = method(undefined, function () { return current_second });
                 defs[$ "room_get"] = method(undefined, function () { return room });
-                defs[$ "room_set"] = method(undefined, function (val) { return room = val });
+                defs[$ "room_set"] = method(undefined, function (val) { room = val });
                 defs[$ "room_first_get"] = method(undefined, function () { return room_first });
                 defs[$ "room_last_get"] = method(undefined, function () { return room_last });
                 defs[$ "room_width_get"] = method(undefined, function () { return room_width });
-                defs[$ "room_width_set"] = method(undefined, function (val) { return room_width = val });
+                defs[$ "room_width_set"] = method(undefined, function (val) { room_width = val });
                 defs[$ "room_height_get"] = method(undefined, function () { return room_height });
-                defs[$ "room_height_set"] = method(undefined, function (val) { return room_height = val });
+                defs[$ "room_height_set"] = method(undefined, function (val) { room_height = val });
                 defs[$ "room_persistent_get"] = method(undefined, function () { return room_persistent });
-                defs[$ "room_persistent_set"] = method(undefined, function (val) { return room_persistent = val });
+                defs[$ "room_persistent_set"] = method(undefined, function (val) { room_persistent = val });
                 defs[$ "room_goto"] = method(undefined, room_goto);
                 defs[$ "room_goto_previous"] = method(undefined, room_goto_previous);
                 defs[$ "room_goto_next"] = method(undefined, room_goto_next);
@@ -383,11 +383,11 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "scheduler_resolution_set"] = method(undefined, scheduler_resolution_set);
                 defs[$ "scheduler_resolution_get"] = method(undefined, scheduler_resolution_get);
                 defs[$ "score_get"] = method(undefined, function () { return score });
-                defs[$ "score_set"] = method(undefined, function (val) { return score = val });
+                defs[$ "score_set"] = method(undefined, function (val) { score = val });
                 defs[$ "lives_get"] = method(undefined, function () { return lives });
-                defs[$ "lives_set"] = method(undefined, function (val) { return lives = val });
+                defs[$ "lives_set"] = method(undefined, function (val) { lives = val });
                 defs[$ "health_get"] = method(undefined, function () { return health });
-                defs[$ "health_set"] = method(undefined, function (val) { return health = val });
+                defs[$ "health_set"] = method(undefined, function (val) { health = val });
                 defs[$ "event_perform"] = method(undefined, event_perform);
                 defs[$ "event_perform_async"] = method(undefined, event_perform_async);
                 defs[$ "event_user"] = method(undefined, event_user);
@@ -575,15 +575,15 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "alarm_get"] = method(undefined, alarm_get);
                 defs[$ "alarm_set"] = method(undefined, alarm_set);
                 defs[$ "font_texture_page_size_get"] = method(undefined, function () { return font_texture_page_size });
-                defs[$ "font_texture_page_size_set"] = method(undefined, function (val) { return font_texture_page_size = val });
+                defs[$ "font_texture_page_size_set"] = method(undefined, function (val) { font_texture_page_size = val });
                 defs[$ "keyboard_key_get"] = method(undefined, function () { return keyboard_key });
-                defs[$ "keyboard_key_set"] = method(undefined, function (val) { return keyboard_key = val });
+                defs[$ "keyboard_key_set"] = method(undefined, function (val) { keyboard_key = val });
                 defs[$ "keyboard_lastkey_get"] = method(undefined, function () { return keyboard_lastkey });
-                defs[$ "keyboard_lastkey_set"] = method(undefined, function (val) { return keyboard_lastkey = val });
+                defs[$ "keyboard_lastkey_set"] = method(undefined, function (val) { keyboard_lastkey = val });
                 defs[$ "keyboard_lastchar_get"] = method(undefined, function () { return keyboard_lastchar });
-                defs[$ "keyboard_lastchar_set"] = method(undefined, function (val) { return keyboard_lastchar = val });
+                defs[$ "keyboard_lastchar_set"] = method(undefined, function (val) { keyboard_lastchar = val });
                 defs[$ "keyboard_string_get"] = method(undefined, function () { return keyboard_string });
-                defs[$ "keyboard_string_set"] = method(undefined, function (val) { return keyboard_string = val });
+                defs[$ "keyboard_string_set"] = method(undefined, function (val) { keyboard_string = val });
                 defs[$ "keyboard_set_map"] = method(undefined, keyboard_set_map);
                 defs[$ "keyboard_get_map"] = method(undefined, keyboard_get_map);
                 defs[$ "keyboard_unset_map"] = method(undefined, keyboard_unset_map);
@@ -656,9 +656,9 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "mouse_x_get"] = method(undefined, function () { return mouse_x });
                 defs[$ "mouse_y_get"] = method(undefined, function () { return mouse_y });
                 defs[$ "mouse_button_get"] = method(undefined, function () { return mouse_button });
-                defs[$ "mouse_button_set"] = method(undefined, function (val) { return mouse_button = val });
+                defs[$ "mouse_button_set"] = method(undefined, function (val) { mouse_button = val });
                 defs[$ "mouse_lastbutton_get"] = method(undefined, function () { return mouse_lastbutton });
-                defs[$ "mouse_lastbutton_set"] = method(undefined, function (val) { return mouse_lastbutton = val });
+                defs[$ "mouse_lastbutton_set"] = method(undefined, function (val) { mouse_lastbutton = val });
                 defs[$ "mb_any"] = mb_any;
                 defs[$ "mb_none"] = mb_none;
                 defs[$ "mb_left"] = mb_left;
@@ -679,7 +679,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "mouse_wheel_down"] = method(undefined, mouse_wheel_down);
                 defs[$ "mouse_clear"] = method(undefined, mouse_clear);
                 defs[$ "cursor_sprite_get"] = method(undefined, function () { return cursor_sprite });
-                defs[$ "cursor_sprite_set"] = method(undefined, function (val) { return cursor_sprite = val });
+                defs[$ "cursor_sprite_set"] = method(undefined, function (val) { cursor_sprite = val });
                 defs[$ "bboxmode_automatic"] = bboxmode_automatic;
                 defs[$ "bboxmode_fullimage"] = bboxmode_fullimage;
                 defs[$ "bboxmode_manual"] = bboxmode_manual;
@@ -688,13 +688,13 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "bboxkind_ellipse"] = bboxkind_ellipse;
                 defs[$ "bboxkind_diamond"] = bboxkind_diamond;
                 defs[$ "background_colour_get"] = method(undefined, function () { return background_colour });
-                defs[$ "background_colour_set"] = method(undefined, function (val) { return background_colour = val });
+                defs[$ "background_colour_set"] = method(undefined, function (val) { background_colour = val });
                 defs[$ "background_showcolour_get"] = method(undefined, function () { return background_showcolour });
-                defs[$ "background_showcolour_set"] = method(undefined, function (val) { return background_showcolour = val });
+                defs[$ "background_showcolour_set"] = method(undefined, function (val) { background_showcolour = val });
                 defs[$ "background_color_get"] = method(undefined, function () { return background_color });
-                defs[$ "background_color_set"] = method(undefined, function (val) { return background_color = val });
+                defs[$ "background_color_set"] = method(undefined, function (val) { background_color = val });
                 defs[$ "background_showcolor_get"] = method(undefined, function () { return background_showcolor });
-                defs[$ "background_showcolor_set"] = method(undefined, function (val) { return background_showcolor = val });
+                defs[$ "background_showcolor_set"] = method(undefined, function (val) { background_showcolor = val });
                 defs[$ "draw_self"] = method(undefined, draw_self);
                 defs[$ "draw_sprite"] = method(undefined, draw_sprite);
                 defs[$ "draw_sprite_pos"] = method(undefined, draw_sprite_pos);
@@ -990,22 +990,22 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "window_mouse_get_y"] = method(undefined, window_mouse_get_y);
                 defs[$ "window_mouse_set"] = method(undefined, window_mouse_set);
                 defs[$ "view_enabled_get"] = method(undefined, function () { return view_enabled });
-                defs[$ "view_enabled_set"] = method(undefined, function (val) { return view_enabled = val });
+                defs[$ "view_enabled_set"] = method(undefined, function (val) { view_enabled = val });
                 defs[$ "view_current_get"] = method(undefined, function () { return view_current });
                 defs[$ "view_visible_get"] = method(undefined, function (idx) { return view_visible[idx] });
-                defs[$ "view_visible_set"] = method(undefined, function (idx, val) { return view_visible[idx] = val });
+                defs[$ "view_visible_set"] = method(undefined, function (idx, val) { view_visible[idx] = val });
                 defs[$ "view_xport_get"] = method(undefined, function (idx) { return view_xport[idx] });
-                defs[$ "view_xport_set"] = method(undefined, function (idx, val) { return view_xport[idx] = val });
+                defs[$ "view_xport_set"] = method(undefined, function (idx, val) { view_xport[idx] = val });
                 defs[$ "view_yport_get"] = method(undefined, function (idx) { return view_yport[idx] });
-                defs[$ "view_yport_set"] = method(undefined, function (idx, val) { return view_yport[idx] = val });
+                defs[$ "view_yport_set"] = method(undefined, function (idx, val) { view_yport[idx] = val });
                 defs[$ "view_wport_get"] = method(undefined, function (idx) { return view_wport[idx] });
-                defs[$ "view_wport_set"] = method(undefined, function (idx, val) { return view_wport[idx] = val });
+                defs[$ "view_wport_set"] = method(undefined, function (idx, val) { view_wport[idx] = val });
                 defs[$ "view_hport_get"] = method(undefined, function (idx) { return view_hport[idx] });
-                defs[$ "view_hport_set"] = method(undefined, function (idx, val) { return view_hport[idx] = val });
+                defs[$ "view_hport_set"] = method(undefined, function (idx, val) { view_hport[idx] = val });
                 defs[$ "view_surface_id_get"] = method(undefined, function (idx) { return view_surface_id[idx] });
-                defs[$ "view_surface_id_set"] = method(undefined, function (idx, val) { return view_surface_id[idx] = val });
+                defs[$ "view_surface_id_set"] = method(undefined, function (idx, val) { view_surface_id[idx] = val });
                 defs[$ "view_camera_get"] = method(undefined, function (idx) { return view_camera[idx] });
-                defs[$ "view_camera_set"] = method(undefined, function (idx, val) { return view_camera[idx] = val });
+                defs[$ "view_camera_set"] = method(undefined, function (idx, val) { view_camera[idx] = val });
                 defs[$ "window_view_mouse_get_x"] = method(undefined, window_view_mouse_get_x);
                 defs[$ "window_view_mouse_get_y"] = method(undefined, window_view_mouse_get_y);
                 defs[$ "window_views_mouse_get_x"] = method(undefined, window_views_mouse_get_x);
@@ -2543,7 +2543,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "call_cancel"] = method(undefined, call_cancel);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2026-lts + fnames-2024-2-0-163 + fnames-2022-lts ",
+                    "skipping GML API version: fnames-2022-lts + fnames-2026-lts + fnames-2024-2-0-163 ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -2552,7 +2552,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "audio_3d"] = audio_3d;
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2026-lts + fnames-2022-lts ",
+                    "skipping GML API version: fnames-2022-lts + fnames-2026-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -2607,7 +2607,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "winphone_tile_background_color"] = method(undefined, winphone_tile_background_color);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2022-lts ",
+                    "skipping GML API version: fnames-2022-lts + fnames-2024-2-0-163 ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -2790,7 +2790,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "db_to_lin"] = method(undefined, db_to_lin);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API version: fnames-2026-lts + fnames-2024-2-0-163 ",
+                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2026-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));

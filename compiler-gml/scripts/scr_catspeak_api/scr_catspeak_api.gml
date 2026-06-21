@@ -85,6 +85,7 @@ function CatspeakModulePrelude() : CatspeakModule("core::prelude") constructor {
     };
 }
 
+/// @ignore
 function __catspeak_get_gml_api() {
     static module_ = undefined;
     static loaded = false;
