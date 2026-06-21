@@ -41,6 +41,7 @@ GML_FNAMESES = [
     "fnames-vec3-vec4",
     "fnames-2022-lts",
     "fnames-2024-2-0-163",
+    "fnames-2026-lts",
 ]
 
 GML_BLOCKLIST = {
@@ -105,6 +106,10 @@ env.globals["TAG_PROP_SET_I"] = TAG_PROP_SET_I
 GML_FNAMES_PROP_OVERRIDE = {
     "room_width": TAG_PROP_SET, # these should have setters, according to #160
     "room_height": TAG_PROP_SET,
+}
+
+GML_FNAMES_MODIFIERS_OVERRIDE = {
+    "debug_mode": "*", # for some reason this disappeared in LTS2026
 }
 
 def infer_comment_style_from_path(path):
@@ -203,6 +208,7 @@ for fnames_path in GML_FNAMESES:
                 #   ^ = do not add to autocomplete
                 continue
             flags = GML_FNAMES_PROP_OVERRIDE.get(symbol, TAG_NONE)
+            modifiers = modifiers + GML_FNAMES_MODIFIERS_OVERRIDE.get(symbol, "")
             if is_function:
                 flags = flags | TAG_FUNCTION
             elif is_index:

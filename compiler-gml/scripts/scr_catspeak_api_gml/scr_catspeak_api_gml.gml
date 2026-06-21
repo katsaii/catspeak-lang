@@ -42,7 +42,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "is_vec4"] = method(undefined, is_vec4);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API versions: fnames-vec3-vec4, fnames-2022-lts ",
+                    "skipping GML API version: fnames-vec3-vec4 + fnames-2022-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -1613,13 +1613,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "os_android"] = os_android;
                 defs[$ "os_linux"] = os_linux;
                 defs[$ "os_unknown"] = os_unknown;
-                defs[$ "os_winphone"] = os_winphone;
-                defs[$ "os_win8native"] = os_win8native;
-                defs[$ "os_psvita"] = os_psvita;
                 defs[$ "os_ps4"] = os_ps4;
-                defs[$ "os_xboxone"] = os_xboxone;
-                defs[$ "os_ps3"] = os_ps3;
-                defs[$ "os_uwp"] = os_uwp;
                 defs[$ "os_tvos"] = os_tvos;
                 defs[$ "os_switch"] = os_switch;
                 defs[$ "os_ps5"] = os_ps5;
@@ -1814,14 +1808,6 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "device_mouse_raw_y"] = method(undefined, device_mouse_raw_y);
                 defs[$ "device_mouse_x_to_gui"] = method(undefined, device_mouse_x_to_gui);
                 defs[$ "device_mouse_y_to_gui"] = method(undefined, device_mouse_y_to_gui);
-                defs[$ "iap_activate"] = method(undefined, iap_activate);
-                defs[$ "iap_status"] = method(undefined, iap_status);
-                defs[$ "iap_enumerate_products"] = method(undefined, iap_enumerate_products);
-                defs[$ "iap_restore_all"] = method(undefined, iap_restore_all);
-                defs[$ "iap_acquire"] = method(undefined, iap_acquire);
-                defs[$ "iap_consume"] = method(undefined, iap_consume);
-                defs[$ "iap_product_details"] = method(undefined, iap_product_details);
-                defs[$ "iap_purchase_details"] = method(undefined, iap_purchase_details);
                 defs[$ "iap_data_get"] = method(undefined, function () { return iap_data });
                 defs[$ "iap_ev_storeload"] = iap_ev_storeload;
                 defs[$ "iap_ev_product"] = iap_ev_product;
@@ -1893,26 +1879,6 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "sha1_string_utf8"] = method(undefined, sha1_string_utf8);
                 defs[$ "sha1_file"] = method(undefined, sha1_file);
                 defs[$ "os_powersave_enable"] = method(undefined, os_powersave_enable);
-                defs[$ "uwp_livetile_tile_clear"] = method(undefined, uwp_livetile_tile_clear);
-                defs[$ "uwp_livetile_badge_notification"] = method(undefined, uwp_livetile_badge_notification);
-                defs[$ "uwp_livetile_badge_clear"] = method(undefined, uwp_livetile_badge_clear);
-                defs[$ "uwp_livetile_queue_enable"] = method(undefined, uwp_livetile_queue_enable);
-                defs[$ "uwp_secondarytile_pin"] = method(undefined, uwp_secondarytile_pin);
-                defs[$ "uwp_secondarytile_badge_notification"] = method(undefined, uwp_secondarytile_badge_notification);
-                defs[$ "uwp_secondarytile_delete"] = method(undefined, uwp_secondarytile_delete);
-                defs[$ "uwp_secondarytile_badge_clear"] = method(undefined, uwp_secondarytile_badge_clear);
-                defs[$ "uwp_secondarytile_tile_clear"] = method(undefined, uwp_secondarytile_tile_clear);
-                defs[$ "uwp_livetile_notification_begin"] = method(undefined, uwp_livetile_notification_begin);
-                defs[$ "uwp_livetile_notification_secondary_begin"] = method(undefined, uwp_livetile_notification_secondary_begin);
-                defs[$ "uwp_livetile_notification_expiry"] = method(undefined, uwp_livetile_notification_expiry);
-                defs[$ "uwp_livetile_notification_tag"] = method(undefined, uwp_livetile_notification_tag);
-                defs[$ "uwp_livetile_notification_text_add"] = method(undefined, uwp_livetile_notification_text_add);
-                defs[$ "uwp_livetile_notification_image_add"] = method(undefined, uwp_livetile_notification_image_add);
-                defs[$ "uwp_livetile_notification_end"] = method(undefined, uwp_livetile_notification_end);
-                defs[$ "uwp_livetile_notification_template_add"] = method(undefined, uwp_livetile_notification_template_add);
-                defs[$ "uwp_device_touchscreen_available"] = method(undefined, uwp_device_touchscreen_available);
-                defs[$ "winphone_tile_background_colour"] = method(undefined, winphone_tile_background_colour);
-                defs[$ "winphone_tile_background_color"] = method(undefined, winphone_tile_background_color);
                 defs[$ "network_create_socket"] = method(undefined, network_create_socket);
                 defs[$ "network_create_socket_ext"] = method(undefined, network_create_socket_ext);
                 defs[$ "network_create_server"] = method(undefined, network_create_server);
@@ -2577,13 +2543,21 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "call_cancel"] = method(undefined, call_cancel);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API versions: fnames-2022-lts, fnames-2024-2-0-163 ",
+                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2022-lts + fnames-2026-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
             }
             try {
                 defs[$ "audio_3d"] = audio_3d;
+            } catch (err_) {
+                __catspeak_error_silent(__catspeak_cat(
+                    "skipping GML API version: fnames-2022-lts + fnames-2026-lts ",
+                    "(your GameMaker version may be out of date) reason: ",
+                    err_.message
+                ));
+            }
+            try {
                 defs[$ "get_integer"] = method(undefined, get_integer);
                 defs[$ "get_string"] = method(undefined, get_string);
                 defs[$ "cloud_file_save"] = method(undefined, cloud_file_save);
@@ -2591,7 +2565,49 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "cloud_synchronise"] = method(undefined, cloud_synchronise);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API versions: fnames-2022-lts ",
+                    "skipping GML API version: fnames-2022-lts ",
+                    "(your GameMaker version may be out of date) reason: ",
+                    err_.message
+                ));
+            }
+            try {
+                defs[$ "os_winphone"] = os_winphone;
+                defs[$ "os_win8native"] = os_win8native;
+                defs[$ "os_psvita"] = os_psvita;
+                defs[$ "os_xboxone"] = os_xboxone;
+                defs[$ "os_ps3"] = os_ps3;
+                defs[$ "os_uwp"] = os_uwp;
+                defs[$ "iap_activate"] = method(undefined, iap_activate);
+                defs[$ "iap_status"] = method(undefined, iap_status);
+                defs[$ "iap_enumerate_products"] = method(undefined, iap_enumerate_products);
+                defs[$ "iap_restore_all"] = method(undefined, iap_restore_all);
+                defs[$ "iap_acquire"] = method(undefined, iap_acquire);
+                defs[$ "iap_consume"] = method(undefined, iap_consume);
+                defs[$ "iap_product_details"] = method(undefined, iap_product_details);
+                defs[$ "iap_purchase_details"] = method(undefined, iap_purchase_details);
+                defs[$ "uwp_livetile_tile_clear"] = method(undefined, uwp_livetile_tile_clear);
+                defs[$ "uwp_livetile_badge_notification"] = method(undefined, uwp_livetile_badge_notification);
+                defs[$ "uwp_livetile_badge_clear"] = method(undefined, uwp_livetile_badge_clear);
+                defs[$ "uwp_livetile_queue_enable"] = method(undefined, uwp_livetile_queue_enable);
+                defs[$ "uwp_secondarytile_pin"] = method(undefined, uwp_secondarytile_pin);
+                defs[$ "uwp_secondarytile_badge_notification"] = method(undefined, uwp_secondarytile_badge_notification);
+                defs[$ "uwp_secondarytile_delete"] = method(undefined, uwp_secondarytile_delete);
+                defs[$ "uwp_secondarytile_badge_clear"] = method(undefined, uwp_secondarytile_badge_clear);
+                defs[$ "uwp_secondarytile_tile_clear"] = method(undefined, uwp_secondarytile_tile_clear);
+                defs[$ "uwp_livetile_notification_begin"] = method(undefined, uwp_livetile_notification_begin);
+                defs[$ "uwp_livetile_notification_secondary_begin"] = method(undefined, uwp_livetile_notification_secondary_begin);
+                defs[$ "uwp_livetile_notification_expiry"] = method(undefined, uwp_livetile_notification_expiry);
+                defs[$ "uwp_livetile_notification_tag"] = method(undefined, uwp_livetile_notification_tag);
+                defs[$ "uwp_livetile_notification_text_add"] = method(undefined, uwp_livetile_notification_text_add);
+                defs[$ "uwp_livetile_notification_image_add"] = method(undefined, uwp_livetile_notification_image_add);
+                defs[$ "uwp_livetile_notification_end"] = method(undefined, uwp_livetile_notification_end);
+                defs[$ "uwp_livetile_notification_template_add"] = method(undefined, uwp_livetile_notification_template_add);
+                defs[$ "uwp_device_touchscreen_available"] = method(undefined, uwp_device_touchscreen_available);
+                defs[$ "winphone_tile_background_colour"] = method(undefined, winphone_tile_background_colour);
+                defs[$ "winphone_tile_background_color"] = method(undefined, winphone_tile_background_color);
+            } catch (err_) {
+                __catspeak_error_silent(__catspeak_cat(
+                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2022-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
@@ -2668,7 +2684,6 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "dbg_same_line"] = method(undefined, dbg_same_line);
                 defs[$ "dbg_add_font_glyphs"] = method(undefined, dbg_add_font_glyphs);
                 defs[$ "ref_create"] = method(undefined, ref_create);
-                defs[$ "audio_3D"] = audio_3d;
                 defs[$ "surface_get_format"] = method(undefined, surface_get_format);
                 defs[$ "surface_format_is_supported"] = method(undefined, surface_format_is_supported);
                 defs[$ "surface_rgba8unorm"] = surface_rgba8unorm;
@@ -2775,7 +2790,321 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
                 defs[$ "db_to_lin"] = method(undefined, db_to_lin);
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API versions: fnames-2024-2-0-163 ",
+                    "skipping GML API version: fnames-2024-2-0-163 + fnames-2026-lts ",
+                    "(your GameMaker version may be out of date) reason: ",
+                    err_.message
+                ));
+            }
+            try {
+                defs[$ "audio_3D"] = audio_3d;
+            } catch (err_) {
+                __catspeak_error_silent(__catspeak_cat(
+                    "skipping GML API version: fnames-2024-2-0-163 ",
+                    "(your GameMaker version may be out of date) reason: ",
+                    err_.message
+                ));
+            }
+            try {
+                defs[$ "GM_runtime_type"] = GM_runtime_type;
+                defs[$ "struct_exists_from_hash"] = method(undefined, struct_exists_from_hash);
+                defs[$ "struct_remove_from_hash"] = method(undefined, struct_remove_from_hash);
+                defs[$ "sphere_is_visible"] = method(undefined, sphere_is_visible);
+                defs[$ "dbg_view_exists"] = method(undefined, dbg_view_exists);
+                defs[$ "dbg_set_view"] = method(undefined, dbg_set_view);
+                defs[$ "dbg_section_exists"] = method(undefined, dbg_section_exists);
+                defs[$ "dbg_set_section"] = method(undefined, dbg_set_section);
+                defs[$ "dbg_control_delete"] = method(undefined, dbg_control_delete);
+                defs[$ "dbg_control_exists"] = method(undefined, dbg_control_exists);
+                defs[$ "dbg_text_separator"] = method(undefined, dbg_text_separator);
+                defs[$ "dbg_sprite_button"] = method(undefined, dbg_sprite_button);
+                defs[$ "dbg_get_gamepad_input"] = method(undefined, dbg_get_gamepad_input);
+                defs[$ "debug_input_record"] = method(undefined, debug_input_record);
+                defs[$ "debug_input_save"] = method(undefined, debug_input_save);
+                defs[$ "debug_input_playback"] = method(undefined, debug_input_playback);
+                defs[$ "debug_input_filter_keyboard"] = debug_input_filter_keyboard;
+                defs[$ "debug_input_filter_mouse"] = debug_input_filter_mouse;
+                defs[$ "debug_input_filter_touch"] = debug_input_filter_touch;
+                defs[$ "bboxkind_spine"] = bboxkind_spine;
+                defs[$ "draw_clear_depth"] = method(undefined, draw_clear_depth);
+                defs[$ "draw_clear_stencil"] = method(undefined, draw_clear_stencil);
+                defs[$ "draw_clear_ext"] = method(undefined, draw_clear_ext);
+                defs[$ "draw_get_circle_precision"] = method(undefined, draw_get_circle_precision);
+                defs[$ "bm_min"] = bm_min;
+                defs[$ "bm_reverse_subtract"] = bm_reverse_subtract;
+                defs[$ "bm_eq_add"] = bm_eq_add;
+                defs[$ "bm_eq_max"] = bm_eq_max;
+                defs[$ "bm_eq_subtract"] = bm_eq_subtract;
+                defs[$ "bm_eq_min"] = bm_eq_min;
+                defs[$ "bm_eq_reverse_subtract"] = bm_eq_reverse_subtract;
+                defs[$ "surface_get_texture_depth"] = method(undefined, surface_get_texture_depth);
+                defs[$ "surface_get_target_depth"] = method(undefined, surface_get_target_depth);
+                defs[$ "surface_has_depth"] = method(undefined, surface_has_depth);
+                defs[$ "application_surface_is_draw_enabled"] = method(undefined, application_surface_is_draw_enabled);
+                defs[$ "window_minimise"] = method(undefined, window_minimise);
+                defs[$ "window_minimize"] = method(undefined, window_minimize);
+                defs[$ "window_restore"] = method(undefined, window_restore);
+                defs[$ "audio_sound_get_asset"] = method(undefined, audio_sound_get_asset);
+                defs[$ "audio_throw_on_error"] = method(undefined, audio_throw_on_error);
+                defs[$ "sprite_get_convex_hull"] = method(undefined, sprite_get_convex_hull);
+                defs[$ "texturegroup_exists"] = method(undefined, texturegroup_exists);
+                defs[$ "texturegroup_add"] = method(undefined, texturegroup_add);
+                defs[$ "texturegroup_delete"] = method(undefined, texturegroup_delete);
+                defs[$ "asset_particlesystem"] = asset_particlesystem;
+                defs[$ "particle_add"] = method(undefined, particle_add);
+                defs[$ "particle_delete"] = method(undefined, particle_delete);
+                defs[$ "window_post_message"] = method(undefined, window_post_message);
+                defs[$ "matrix_inverse"] = method(undefined, matrix_inverse);
+                defs[$ "os_switch2"] = os_switch2;
+                defs[$ "mac_refresh_receipt_validation"] = method(undefined, mac_refresh_receipt_validation);
+                defs[$ "tm_countvsyncs_winalt"] = tm_countvsyncs_winalt;
+                defs[$ "draw_enable_svg_aa"] = method(undefined, draw_enable_svg_aa);
+                defs[$ "draw_set_svg_aa_level"] = method(undefined, draw_set_svg_aa_level);
+                defs[$ "draw_get_svg_aa_level"] = method(undefined, draw_get_svg_aa_level);
+                defs[$ "vector_sprite_cache_limit"] = method(undefined, vector_sprite_cache_limit);
+                defs[$ "vector_sprite_cache_prune_fraction"] = method(undefined, vector_sprite_cache_prune_fraction);
+                defs[$ "vector_sprite_cache_prune_age"] = method(undefined, vector_sprite_cache_prune_age);
+                defs[$ "vector_sprite_cache_get_limit"] = method(undefined, vector_sprite_cache_get_limit);
+                defs[$ "vector_sprite_cache_get_prune_fraction"] = method(undefined, vector_sprite_cache_get_prune_fraction);
+                defs[$ "vector_sprite_cache_get_prune_age"] = method(undefined, vector_sprite_cache_get_prune_age);
+                defs[$ "vector_sprite_cache_get_used"] = method(undefined, vector_sprite_cache_get_used);
+                defs[$ "vector_sprite_cache_get_max_used"] = method(undefined, vector_sprite_cache_get_max_used);
+                defs[$ "vector_sprite_cache_get_oldest_entry_age"] = method(undefined, vector_sprite_cache_get_oldest_entry_age);
+                defs[$ "stencilop_keep"] = stencilop_keep;
+                defs[$ "stencilop_zero"] = stencilop_zero;
+                defs[$ "stencilop_replace"] = stencilop_replace;
+                defs[$ "stencilop_incr_wrap"] = stencilop_incr_wrap;
+                defs[$ "stencilop_decr_wrap"] = stencilop_decr_wrap;
+                defs[$ "stencilop_invert"] = stencilop_invert;
+                defs[$ "stencilop_incr"] = stencilop_incr;
+                defs[$ "stencilop_decr"] = stencilop_decr;
+                defs[$ "gpu_set_stencil_depth_fail"] = method(undefined, gpu_set_stencil_depth_fail);
+                defs[$ "gpu_set_stencil_enable"] = method(undefined, gpu_set_stencil_enable);
+                defs[$ "gpu_set_stencil_fail"] = method(undefined, gpu_set_stencil_fail);
+                defs[$ "gpu_set_stencil_func"] = method(undefined, gpu_set_stencil_func);
+                defs[$ "gpu_set_stencil_pass"] = method(undefined, gpu_set_stencil_pass);
+                defs[$ "gpu_set_stencil_read_mask"] = method(undefined, gpu_set_stencil_read_mask);
+                defs[$ "gpu_set_stencil_ref"] = method(undefined, gpu_set_stencil_ref);
+                defs[$ "gpu_set_stencil_write_mask"] = method(undefined, gpu_set_stencil_write_mask);
+                defs[$ "gpu_set_sprite_cull"] = method(undefined, gpu_set_sprite_cull);
+                defs[$ "gpu_set_blendequation"] = method(undefined, gpu_set_blendequation);
+                defs[$ "gpu_set_blendequation_sepalpha"] = method(undefined, gpu_set_blendequation_sepalpha);
+                defs[$ "gpu_get_stencil_enable"] = method(undefined, gpu_get_stencil_enable);
+                defs[$ "gpu_get_stencil_func"] = method(undefined, gpu_get_stencil_func);
+                defs[$ "gpu_get_stencil_ref"] = method(undefined, gpu_get_stencil_ref);
+                defs[$ "gpu_get_stencil_read_mask"] = method(undefined, gpu_get_stencil_read_mask);
+                defs[$ "gpu_get_stencil_write_mask"] = method(undefined, gpu_get_stencil_write_mask);
+                defs[$ "gpu_get_stencil_fail"] = method(undefined, gpu_get_stencil_fail);
+                defs[$ "gpu_get_stencil_depth_fail"] = method(undefined, gpu_get_stencil_depth_fail);
+                defs[$ "gpu_get_stencil_pass"] = method(undefined, gpu_get_stencil_pass);
+                defs[$ "gpu_get_sprite_cull"] = method(undefined, gpu_get_sprite_cull);
+                defs[$ "gpu_get_blendequation"] = method(undefined, gpu_get_blendequation);
+                defs[$ "gpu_get_blendequation_sepalpha"] = method(undefined, gpu_get_blendequation_sepalpha);
+                defs[$ "gpu_get_scissor"] = method(undefined, gpu_get_scissor);
+                defs[$ "gpu_set_scissor"] = method(undefined, gpu_set_scissor);
+                defs[$ "gamepad_enumerate"] = method(undefined, gamepad_enumerate);
+                defs[$ "http_get_connect_timeout"] = method(undefined, http_get_connect_timeout);
+                defs[$ "http_set_connect_timeout"] = method(undefined, http_set_connect_timeout);
+                defs[$ "network_config_message_size_limit"] = network_config_message_size_limit;
+                defs[$ "buffer_get_surface_depth"] = method(undefined, buffer_get_surface_depth);
+                defs[$ "buffer_set_surface_depth"] = method(undefined, buffer_set_surface_depth);
+                defs[$ "buffer_get_used_size"] = method(undefined, buffer_get_used_size);
+                defs[$ "buffer_error_general"] = buffer_error_general;
+                defs[$ "buffer_error_out_of_space"] = buffer_error_out_of_space;
+                defs[$ "buffer_error_invalid_type"] = buffer_error_invalid_type;
+                defs[$ "gx_share"] = method(undefined, gx_share);
+                defs[$ "gp_home"] = gp_home;
+                defs[$ "gp_extra1"] = gp_extra1;
+                defs[$ "gp_extra2"] = gp_extra2;
+                defs[$ "gp_extra3"] = gp_extra3;
+                defs[$ "gp_extra4"] = gp_extra4;
+                defs[$ "gp_paddler"] = gp_paddler;
+                defs[$ "gp_paddlel"] = gp_paddlel;
+                defs[$ "gp_paddlerb"] = gp_paddlerb;
+                defs[$ "gp_paddlelb"] = gp_paddlelb;
+                defs[$ "gp_touchpadbutton"] = gp_touchpadbutton;
+                defs[$ "gp_extra5"] = gp_extra5;
+                defs[$ "gp_extra6"] = gp_extra6;
+                defs[$ "vertex_format_exists"] = method(undefined, vertex_format_exists);
+                defs[$ "vertex_buffer_exists"] = method(undefined, vertex_buffer_exists);
+                defs[$ "draw_enable_skeleton_blend_override"] = method(undefined, draw_enable_skeleton_blend_override);
+                defs[$ "draw_get_enable_skeleton_blend_override"] = method(undefined, draw_get_enable_skeleton_blend_override);
+                defs[$ "layer_get_flexpanel_node"] = method(undefined, layer_get_flexpanel_node);
+                defs[$ "layer_get_type"] = method(undefined, layer_get_type);
+                defs[$ "layerelementtype_text"] = layerelementtype_text;
+                defs[$ "layer_type_unknown"] = layer_type_unknown;
+                defs[$ "layer_type_room"] = layer_type_room;
+                defs[$ "layer_type_ui_viewports"] = layer_type_ui_viewports;
+                defs[$ "layer_type_ui_display"] = layer_type_ui_display;
+                defs[$ "layer_tilemap_set_colmask"] = method(undefined, layer_tilemap_set_colmask);
+                defs[$ "layer_tilemap_get_colmask"] = method(undefined, layer_tilemap_get_colmask);
+                defs[$ "keyboard_virtual_set_position"] = method(undefined, keyboard_virtual_set_position);
+                defs[$ "layer_sequence_alpha"] = method(undefined, layer_sequence_alpha);
+                defs[$ "layer_sequence_blend"] = method(undefined, layer_sequence_blend);
+                defs[$ "layer_particle_xscale"] = method(undefined, layer_particle_xscale);
+                defs[$ "layer_particle_yscale"] = method(undefined, layer_particle_yscale);
+                defs[$ "layer_particle_angle"] = method(undefined, layer_particle_angle);
+                defs[$ "layer_particle_blend"] = method(undefined, layer_particle_blend);
+                defs[$ "layer_particle_alpha"] = method(undefined, layer_particle_alpha);
+                defs[$ "layer_particle_x"] = method(undefined, layer_particle_x);
+                defs[$ "layer_particle_y"] = method(undefined, layer_particle_y);
+                defs[$ "layer_particle_get_id"] = method(undefined, layer_particle_get_id);
+                defs[$ "layer_particle_get_instance"] = method(undefined, layer_particle_get_instance);
+                defs[$ "layer_particle_get_system"] = method(undefined, layer_particle_get_system);
+                defs[$ "layer_particle_get_xscale"] = method(undefined, layer_particle_get_xscale);
+                defs[$ "layer_particle_get_yscale"] = method(undefined, layer_particle_get_yscale);
+                defs[$ "layer_particle_get_angle"] = method(undefined, layer_particle_get_angle);
+                defs[$ "layer_particle_get_blend"] = method(undefined, layer_particle_get_blend);
+                defs[$ "layer_particle_get_alpha"] = method(undefined, layer_particle_get_alpha);
+                defs[$ "layer_particle_get_x"] = method(undefined, layer_particle_get_x);
+                defs[$ "layer_particle_get_y"] = method(undefined, layer_particle_get_y);
+                defs[$ "layer_text_get_id"] = method(undefined, layer_text_get_id);
+                defs[$ "layer_text_exists"] = method(undefined, layer_text_exists);
+                defs[$ "layer_text_create"] = method(undefined, layer_text_create);
+                defs[$ "layer_text_destroy"] = method(undefined, layer_text_destroy);
+                defs[$ "layer_text_x"] = method(undefined, layer_text_x);
+                defs[$ "layer_text_y"] = method(undefined, layer_text_y);
+                defs[$ "layer_text_angle"] = method(undefined, layer_text_angle);
+                defs[$ "layer_text_xscale"] = method(undefined, layer_text_xscale);
+                defs[$ "layer_text_yscale"] = method(undefined, layer_text_yscale);
+                defs[$ "layer_text_blend"] = method(undefined, layer_text_blend);
+                defs[$ "layer_text_alpha"] = method(undefined, layer_text_alpha);
+                defs[$ "layer_text_font"] = method(undefined, layer_text_font);
+                defs[$ "layer_text_xorigin"] = method(undefined, layer_text_xorigin);
+                defs[$ "layer_text_yorigin"] = method(undefined, layer_text_yorigin);
+                defs[$ "layer_text_origin"] = method(undefined, layer_text_origin);
+                defs[$ "layer_text_text"] = method(undefined, layer_text_text);
+                defs[$ "layer_text_halign"] = method(undefined, layer_text_halign);
+                defs[$ "layer_text_valign"] = method(undefined, layer_text_valign);
+                defs[$ "layer_text_charspacing"] = method(undefined, layer_text_charspacing);
+                defs[$ "layer_text_linespacing"] = method(undefined, layer_text_linespacing);
+                defs[$ "layer_text_paragraphspacing"] = method(undefined, layer_text_paragraphspacing);
+                defs[$ "layer_text_framew"] = method(undefined, layer_text_framew);
+                defs[$ "layer_text_frameh"] = method(undefined, layer_text_frameh);
+                defs[$ "layer_text_wrap"] = method(undefined, layer_text_wrap);
+                defs[$ "layer_text_wrapmode"] = method(undefined, layer_text_wrapmode);
+                defs[$ "layer_text_get_x"] = method(undefined, layer_text_get_x);
+                defs[$ "layer_text_get_y"] = method(undefined, layer_text_get_y);
+                defs[$ "layer_text_get_xscale"] = method(undefined, layer_text_get_xscale);
+                defs[$ "layer_text_get_yscale"] = method(undefined, layer_text_get_yscale);
+                defs[$ "layer_text_get_angle"] = method(undefined, layer_text_get_angle);
+                defs[$ "layer_text_get_blend"] = method(undefined, layer_text_get_blend);
+                defs[$ "layer_text_get_alpha"] = method(undefined, layer_text_get_alpha);
+                defs[$ "layer_text_get_font"] = method(undefined, layer_text_get_font);
+                defs[$ "layer_text_get_xorigin"] = method(undefined, layer_text_get_xorigin);
+                defs[$ "layer_text_get_yorigin"] = method(undefined, layer_text_get_yorigin);
+                defs[$ "layer_text_get_origin"] = method(undefined, layer_text_get_origin);
+                defs[$ "layer_text_get_text"] = method(undefined, layer_text_get_text);
+                defs[$ "layer_text_get_halign"] = method(undefined, layer_text_get_halign);
+                defs[$ "layer_text_get_valign"] = method(undefined, layer_text_get_valign);
+                defs[$ "layer_text_get_charspacing"] = method(undefined, layer_text_get_charspacing);
+                defs[$ "layer_text_get_linespacing"] = method(undefined, layer_text_get_linespacing);
+                defs[$ "layer_text_get_paragraphspacing"] = method(undefined, layer_text_get_paragraphspacing);
+                defs[$ "layer_text_get_framew"] = method(undefined, layer_text_get_framew);
+                defs[$ "layer_text_get_frameh"] = method(undefined, layer_text_get_frameh);
+                defs[$ "layer_text_get_wrap"] = method(undefined, layer_text_get_wrap);
+                defs[$ "layer_text_get_wrapmode"] = method(undefined, layer_text_get_wrapmode);
+                defs[$ "textalign_left"] = textalign_left;
+                defs[$ "textalign_center"] = textalign_center;
+                defs[$ "textalign_right"] = textalign_right;
+                defs[$ "textalign_justify"] = textalign_justify;
+                defs[$ "textalign_top"] = textalign_top;
+                defs[$ "textalign_middle"] = textalign_middle;
+                defs[$ "textalign_bottom"] = textalign_bottom;
+                defs[$ "origin_topleft"] = origin_topleft;
+                defs[$ "origin_topcentre"] = origin_topcentre;
+                defs[$ "origin_topright"] = origin_topright;
+                defs[$ "origin_middleleft"] = origin_middleleft;
+                defs[$ "origin_middlecentre"] = origin_middlecentre;
+                defs[$ "origin_middleright"] = origin_middleright;
+                defs[$ "origin_bottomleft"] = origin_bottomleft;
+                defs[$ "origin_bottomcentre"] = origin_bottomcentre;
+                defs[$ "origin_bottomright"] = origin_bottomright;
+                defs[$ "textwrap_default"] = textwrap_default;
+                defs[$ "textwrap_splitwords"] = textwrap_splitwords;
+                defs[$ "flexpanel_create_node"] = method(undefined, flexpanel_create_node);
+                defs[$ "flexpanel_delete_node"] = method(undefined, flexpanel_delete_node);
+                defs[$ "flexpanel_node_insert_child"] = method(undefined, flexpanel_node_insert_child);
+                defs[$ "flexpanel_node_remove_child"] = method(undefined, flexpanel_node_remove_child);
+                defs[$ "flexpanel_node_remove_all_children"] = method(undefined, flexpanel_node_remove_all_children);
+                defs[$ "flexpanel_node_get_num_children"] = method(undefined, flexpanel_node_get_num_children);
+                defs[$ "flexpanel_node_get_child"] = method(undefined, flexpanel_node_get_child);
+                defs[$ "flexpanel_node_get_child_hash"] = method(undefined, flexpanel_node_get_child_hash);
+                defs[$ "flexpanel_node_get_parent"] = method(undefined, flexpanel_node_get_parent);
+                defs[$ "flexpanel_node_get_name"] = method(undefined, flexpanel_node_get_name);
+                defs[$ "flexpanel_node_get_data"] = method(undefined, flexpanel_node_get_data);
+                defs[$ "flexpanel_node_set_name"] = method(undefined, flexpanel_node_set_name);
+                defs[$ "flexpanel_node_set_data"] = method(undefined, flexpanel_node_set_data);
+                defs[$ "flexpanel_node_get_struct"] = method(undefined, flexpanel_node_get_struct);
+                defs[$ "flexpanel_node_get_measure_function"] = method(undefined, flexpanel_node_get_measure_function);
+                defs[$ "flexpanel_node_set_measure_function"] = method(undefined, flexpanel_node_set_measure_function);
+                defs[$ "flexpanel_calculate_layout"] = method(undefined, flexpanel_calculate_layout);
+                defs[$ "flexpanel_node_layout_get_position"] = method(undefined, flexpanel_node_layout_get_position);
+                defs[$ "flexpanel_set_rounding_scale"] = method(undefined, flexpanel_set_rounding_scale);
+                defs[$ "flexpanel_get_rounding_scale"] = method(undefined, flexpanel_get_rounding_scale);
+                defs[$ "flexpanel_node_style_get_align_content"] = method(undefined, flexpanel_node_style_get_align_content);
+                defs[$ "flexpanel_node_style_get_align_items"] = method(undefined, flexpanel_node_style_get_align_items);
+                defs[$ "flexpanel_node_style_get_align_self"] = method(undefined, flexpanel_node_style_get_align_self);
+                defs[$ "flexpanel_node_style_get_aspect_ratio"] = method(undefined, flexpanel_node_style_get_aspect_ratio);
+                defs[$ "flexpanel_node_style_get_display"] = method(undefined, flexpanel_node_style_get_display);
+                defs[$ "flexpanel_node_style_get_flex"] = method(undefined, flexpanel_node_style_get_flex);
+                defs[$ "flexpanel_node_style_get_flex_grow"] = method(undefined, flexpanel_node_style_get_flex_grow);
+                defs[$ "flexpanel_node_style_get_flex_shrink"] = method(undefined, flexpanel_node_style_get_flex_shrink);
+                defs[$ "flexpanel_node_style_get_flex_basis"] = method(undefined, flexpanel_node_style_get_flex_basis);
+                defs[$ "flexpanel_node_style_get_flex_direction"] = method(undefined, flexpanel_node_style_get_flex_direction);
+                defs[$ "flexpanel_node_style_get_flex_wrap"] = method(undefined, flexpanel_node_style_get_flex_wrap);
+                defs[$ "flexpanel_node_style_get_gap"] = method(undefined, flexpanel_node_style_get_gap);
+                defs[$ "flexpanel_node_style_get_position"] = method(undefined, flexpanel_node_style_get_position);
+                defs[$ "flexpanel_node_style_get_justify_content"] = method(undefined, flexpanel_node_style_get_justify_content);
+                defs[$ "flexpanel_node_style_get_direction"] = method(undefined, flexpanel_node_style_get_direction);
+                defs[$ "flexpanel_node_style_get_margin"] = method(undefined, flexpanel_node_style_get_margin);
+                defs[$ "flexpanel_node_style_get_padding"] = method(undefined, flexpanel_node_style_get_padding);
+                defs[$ "flexpanel_node_style_get_border"] = method(undefined, flexpanel_node_style_get_border);
+                defs[$ "flexpanel_node_style_get_position_type"] = method(undefined, flexpanel_node_style_get_position_type);
+                defs[$ "flexpanel_node_style_get_min_width"] = method(undefined, flexpanel_node_style_get_min_width);
+                defs[$ "flexpanel_node_style_get_max_width"] = method(undefined, flexpanel_node_style_get_max_width);
+                defs[$ "flexpanel_node_style_get_min_height"] = method(undefined, flexpanel_node_style_get_min_height);
+                defs[$ "flexpanel_node_style_get_max_height"] = method(undefined, flexpanel_node_style_get_max_height);
+                defs[$ "flexpanel_node_style_get_width"] = method(undefined, flexpanel_node_style_get_width);
+                defs[$ "flexpanel_node_style_get_height"] = method(undefined, flexpanel_node_style_get_height);
+                defs[$ "flexpanel_node_style_set_align_content"] = method(undefined, flexpanel_node_style_set_align_content);
+                defs[$ "flexpanel_node_style_set_align_items"] = method(undefined, flexpanel_node_style_set_align_items);
+                defs[$ "flexpanel_node_style_set_align_self"] = method(undefined, flexpanel_node_style_set_align_self);
+                defs[$ "flexpanel_node_style_set_aspect_ratio"] = method(undefined, flexpanel_node_style_set_aspect_ratio);
+                defs[$ "flexpanel_node_style_set_display"] = method(undefined, flexpanel_node_style_set_display);
+                defs[$ "flexpanel_node_style_set_flex"] = method(undefined, flexpanel_node_style_set_flex);
+                defs[$ "flexpanel_node_style_set_flex_grow"] = method(undefined, flexpanel_node_style_set_flex_grow);
+                defs[$ "flexpanel_node_style_set_flex_shrink"] = method(undefined, flexpanel_node_style_set_flex_shrink);
+                defs[$ "flexpanel_node_style_set_flex_basis"] = method(undefined, flexpanel_node_style_set_flex_basis);
+                defs[$ "flexpanel_node_style_set_flex_direction"] = method(undefined, flexpanel_node_style_set_flex_direction);
+                defs[$ "flexpanel_node_style_set_flex_wrap"] = method(undefined, flexpanel_node_style_set_flex_wrap);
+                defs[$ "flexpanel_node_style_set_gap"] = method(undefined, flexpanel_node_style_set_gap);
+                defs[$ "flexpanel_node_style_set_position"] = method(undefined, flexpanel_node_style_set_position);
+                defs[$ "flexpanel_node_style_set_justify_content"] = method(undefined, flexpanel_node_style_set_justify_content);
+                defs[$ "flexpanel_node_style_set_direction"] = method(undefined, flexpanel_node_style_set_direction);
+                defs[$ "flexpanel_node_style_set_margin"] = method(undefined, flexpanel_node_style_set_margin);
+                defs[$ "flexpanel_node_style_set_padding"] = method(undefined, flexpanel_node_style_set_padding);
+                defs[$ "flexpanel_node_style_set_border"] = method(undefined, flexpanel_node_style_set_border);
+                defs[$ "flexpanel_node_style_set_position_type"] = method(undefined, flexpanel_node_style_set_position_type);
+                defs[$ "flexpanel_node_style_set_min_width"] = method(undefined, flexpanel_node_style_set_min_width);
+                defs[$ "flexpanel_node_style_set_max_width"] = method(undefined, flexpanel_node_style_set_max_width);
+                defs[$ "flexpanel_node_style_set_min_height"] = method(undefined, flexpanel_node_style_set_min_height);
+                defs[$ "flexpanel_node_style_set_max_height"] = method(undefined, flexpanel_node_style_set_max_height);
+                defs[$ "flexpanel_node_style_set_width"] = method(undefined, flexpanel_node_style_set_width);
+                defs[$ "flexpanel_node_style_set_height"] = method(undefined, flexpanel_node_style_set_height);
+                defs[$ "flexpanel_unit"] = flexpanel_unit;
+                defs[$ "flexpanel_position_type"] = flexpanel_position_type;
+                defs[$ "flexpanel_justify"] = flexpanel_justify;
+                defs[$ "flexpanel_direction"] = flexpanel_direction;
+                defs[$ "flexpanel_gutter"] = flexpanel_gutter;
+                defs[$ "flexpanel_display"] = flexpanel_display;
+                defs[$ "flexpanel_flex_direction"] = flexpanel_flex_direction;
+                defs[$ "flexpanel_align"] = flexpanel_align;
+                defs[$ "flexpanel_wrap"] = flexpanel_wrap;
+                defs[$ "flexpanel_edge"] = flexpanel_edge;
+                defs[$ "colspace"] = colspace;
+            } catch (err_) {
+                __catspeak_error_silent(__catspeak_cat(
+                    "skipping GML API version: fnames-2026-lts ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));

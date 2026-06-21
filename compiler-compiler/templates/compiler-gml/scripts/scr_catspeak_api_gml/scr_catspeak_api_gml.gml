@@ -61,7 +61,7 @@ function CatspeakModuleGML(name = "gm::gml") : CatspeakModule(name) constructor 
 {%   endfor %}
             } catch (err_) {
                 __catspeak_error_silent(__catspeak_cat(
-                    "skipping GML API versions: {{ ', '.join(fnameses) }} ",
+                    "skipping GML API version: {{ ' + '.join(fnameses) }} ",
                     "(your GameMaker version may be out of date) reason: ",
                     err_.message
                 ));
