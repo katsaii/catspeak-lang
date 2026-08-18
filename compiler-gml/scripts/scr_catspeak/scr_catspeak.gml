@@ -533,7 +533,8 @@ function __catspeak_get_prelude_t() {
     return prelude;
 }
 
-/// TODO
+/// Manages the parsing, compiling, and evaluation of Catspeak modules. Also supports
+/// exposing GML modules to Catspeak code via the `.addModule` method.
 function CatspeakCtx() constructor {
     /// @ignore
     keywords = undefined; // for v3 compatibility
@@ -563,16 +564,56 @@ function CatspeakCtx() constructor {
 
     // assign this to make scripts share a global variable scope
     globals = undefined;
-    /// TODO
     var interfaceType = __catspeak_get_prelude_t();
+    /// The default module, imported by default into every compiled Catspeak
+    /// program.
+    ///
+    /// This is where you can define functions and constants that you want
+    /// modders to have access to from within Catspeak.
+    ///
+    /// @remark
+    ///   You can also add your own modules by using the `.addModule` method.
     interface = new interfaceType();
     /// @ignore
+    interface_ = undefined;
+    /// @ignore
     modules = { };
-    addModule(interface);
+    __checkInterface();
 
-    /// TODO
+    /// @ignore
+    static __checkInterface = function () {
+        if (interface_ != interface) {
+            // makes sure that the `interface` field stays in the `modules` struct
+            if (interface_ != undefined) {
+                removeModule(interface_);
+            }
+            addModule(interface);
+            interface_ = interface;
+        }
+    };
+
+    /// Adds a module to this `CatspeakCtx`, allowing all other future Catspeak
+    /// modules to access its items.
+    ///
+    /// @warning
+    ///   If the new module shares a `.path` with an existing module, then it
+    ///   will replace the old module.
     static addModule = function (module) {
         modules[$ module.path] = module;
+    };
+
+    /// Removes a module from this `CatspeakCtx`.
+    ///
+    /// @remark
+    ///   Does not retroactively affect any existing modules that have been compiled.
+    ///
+    /// @warning
+    ///   If the module was renamed since it was added, then it will not be able to
+    ///   be removed. Sorry! **Try not to rename your modules, please.**
+    static removeModule = function (module) {
+        if (modules[$ module.path] == module) {
+            variable_struct_remove(modules, module.path);
+        }
     };
 
     /// TODO
@@ -620,6 +661,7 @@ function CatspeakCtx() constructor {
 
     /// TODO
     static compile = function (cart) {
+        __checkInterface();
         // TODO :: multi-backend support
         // TODO :: module system
         var codegen;

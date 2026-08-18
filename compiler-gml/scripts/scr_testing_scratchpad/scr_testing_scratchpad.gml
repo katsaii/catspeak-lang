@@ -26,9 +26,9 @@ TEST_EXPERIMENT "catspeak4-ctx" {
         let result = import test::math as self
 
         x = 1
-        trace(x)
+        --trace(x)
         x += 5
-        trace(x)
+        --trace(x)
 
         return add(add("res: ", random_n) + " ", result)
     ');
