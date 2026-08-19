@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="katsaii">
+    <link rel="shortcut icon" href="./cats-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modding language for GameMaker">
+    <title>Catspeak</title>
+    <style>
+      html { box-sizing : border-box }
+      *, *:before, *:after { box-sizing : inherit }
+
+      /* * { outline : red solid 1px } */
+
+      :root {
+        --c-bg : #f9f9f9;
+        --c-bg-dark : #2024240f; /* #ecebeb; */
+        --c-fg : #202424;
+        --c-fg-light : #cacecf;
+        --c-fg-2 : #1c5353; /* #526666; */
+        --c-accent : #007ffd;
+        --c-stab : #fff2dc;
+
+        --f-mono : "Courier New", Courier, monospace;
+        --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
+
+        --pad : 1rem;
+        --code-title-height : 20px;
+
+        font-size : 0.8em;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --c-bg : #1b1e1f;
+          --c-bg-dark : #d3cfc90f; /* #232627; */
+          --c-fg : #d3cfc9;
+          --c-fg-light : #3e4346;
+          --c-fg-2 : #a2947d;
+          --c-accent : #34a4ff;
+          --c-stab : #362c2c;
+
+          color-scheme : dark;
+        }
+      }
+
+      body {
+        margin : 2.5% 15%;
+        background-color : var(--c-bg);
+      }
+
+      .separator {
+        border-bottom : var(--c-fg-light) solid 1px;
+      }
+
+      .d-inline { display : inline }
+      .d-inline-block { display : inline-block }
+      .d-block { display : block }
+
+      .t-break { word-break: break-all }
+      .t-centre { text-align : center }
+      .t-balanced { text-wrap : balance }
+      .t-pre { white-space : pre }
+
+      .f-mono { font-family : var(--f-mono) }
+      .f-prop { font-family : var(--f-prop) }
+      .f-thick { font-weight : bold; }
+
+      .c-bg { color : var(--c-bg) }
+      .c-fg { color : var(--c-fg) }
+      .c-fg-2 { color : var(--c-fg-2) }
+      .c-accent { color : var(--c-accent) }
+
+      .blk-centre {
+        display : block;
+        margin-left : auto;
+        margin-right : auto;
+      }
+
+      a {
+        cursor : pointer;
+        color : var(--c-fg);
+        transition : color 0.25s;
+      }
+
+      a:hover { color : var(--c-accent) }
+
+      img { max-width : 100% }
+
+      .header { padding: 10rem 2rem 0 2rem }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        align-items: center;
+      }
+
+      .grid-centre {
+        justify-items : center;
+      }
+
+      .grid > article {
+        margin : 0.5rem;
+        padding : 0.5rem;
+      }
+
+      .grid > article > img {
+        height : 10rem;
+        width : auto;
+      }
+
+      .grid > article p {
+        font-size : 1.25rem;
+        font-weight : 200;
+      }
+
+      .grid > article p b {
+        font-weight : 400;
+      }
+
+      .nav {
+        display : flex;
+        flex-wrap : wrap;
+        justify-content : space-evenly;
+      }
+
+      .nav > article {
+        padding : 0.5rem;
+        font-weight : bold;
+        font-size : 1.5em;
+        font-family : var(--f-prop);
+      }
+
+      @media screen and (max-width : 9in) {
+        body { margin : 1rem 2rem }
+        .grid { padding : 0 }
+      }
+
+      ul { text-align : left }
+
+      .code {
+        padding : 0.75rem;
+        background-color : var(--c-bg-dark); /*rgb(249, 243, 241)*/
+        outline : var(--c-fg-light) solid 1px;
+        border-radius : 10px;
+        font-family : var(--f-mono) !important;
+        white-space : pre;
+        overflow-x : auto;
+      }
+
+      .code * { color : var(--c-fg) }
+
+      .kw-com { color : #080!important; font-style : italic }
+      .kw-key { color : #34347e!important; font-weight : bold }
+      .kw-val { color : #fa3232!important }
+      .kw-var { opacity : 0.9 }
+      .kw-fun { color : #808!important }
+      .kw-typ { color : #7b7c26!important; font-weight : bold }
+      .kw-mac { color : #ff2558!important; font-weight : bold }
+
+      @media (prefers-color-scheme: dark) {
+          .kw-com { color : #416e41!important }
+          .kw-key { color : #5c5c9b!important; font-weight : bold }
+          .kw-val { color : #c78888!important }
+          .kw-var { opacity : 0.9 }
+          .kw-fun { color : #8f5c8f!important }
+          .kw-typ { color : #7b7c26!important; font-weight : bold }
+          .kw-mac { color : #a72555!important; font-weight : bold }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid header">
+      <article>
+        <!--<h1 class="f-mono t-break t-centre">Catspeak</h1>-->
+        <img class="blk-centre" src="cats-title.svg">
+        <div class="centre">
+          <p class="f-prop t-centre t-balanced">A <b>cross-platform</b> scripting language and compiler back-end for exposing modding APIs in <a href="https://gamemaker.io/"><b>GameMaker</b></a> projects.</p>
+          <p class="f-prop t-centre t-balanced">Designed with performance and safety in mind: the sandboxed environment prevents modders from modifying sensitive game state, or freezing your game with infinite loops.</p>
+        </div>
+        <div class="nav">
+          <article>
+            <a href="https://codeberg.org/katsaii/catspeak-lang">Source Code</a>
+          </article>
+          <article>
+            <a href="./3.2.0/hom-welcome.html">Documentation</a> <code><sub>(<a href="./archive.html">Archive</a>)</sub></code>
+          </article>
+          <article>
+            <a href="https://katsaii.itch.io/catspeak#download">Download</a> <code><sub>(3.2.0)</sub></code>
+          </article>
+          <article>
+            <a href="https://discord.gg/8krYCqr">Discord</a>
+          </article>
+        </div>
+      </article>
+      <article>
+        <div class="code">speed = <span class="kw-val">2</span>
+
+step = <span class="kw-key">fun</span> (inst) {
+  <span class="kw-com">-- update player position using WASD</span>
+  <span class="kw-key">let</span> dirX = <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'D'</span>) - <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'A'</span>)
+  <span class="kw-key">let</span> dirY = <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'S'</span>) - <span class="kw-fun">keyboard_check</span>(<span class="kw-val">'W'</span>)
+
+  inst.x += dirX * speed
+  inst.y += dirY * speed
+}
+
+draw = <span class="kw-key">fun</span> (inst) {
+  <span class="kw-com">-- draw the player</span>
+  <span class="kw-fun">draw_sprite</span>(spr_player, <span class="kw-val">0</span>, inst.x, inst.y)
+}</div>
+      </article>
+    </div>
+    <div class="separator"></div>
+    <div class="f-prop"><i>Catspeak (c) 2021-2026 <a href="https://www.katsaii.com/">Katsaii</a>, <a href="https://codeberg.org/katsaii/catspeak-lang/raw/branch/main/LICENSE">LICENSE</a> (<a href="https://raw.githubusercontent.com/katsaii/catspeak-lang/refs/heads/main/LICENSE">DOCS</a>).</i></div>
+    <div class="f-mono t-pre c-fg">
+ |\ /|
+>(OwO)< Little Catspeak
+    \(
+    </div>
+  </body>
+</html>

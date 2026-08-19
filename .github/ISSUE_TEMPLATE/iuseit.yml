@@ -1,0 +1,22 @@
+name: I Use Catspeak!
+description: Request your project be added to the `README.md`
+labels: ["chore", "low priority"]
+body:
+  - type: input
+    id: project-name
+    attributes:
+      label: Project name
+    validations:
+      required: true
+  - type: input
+    id: project-site
+    attributes:
+      label: Website link
+      placeholder: https://example.com/
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Note: if the link to your project expires, it will be temporarily
+        removed to avoid exploits.
