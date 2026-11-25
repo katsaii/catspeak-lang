@@ -1,0 +1,3 @@
+*.yy  linguist-language=Json
+*.yyp linguist-language=Json
+docs/* linguist-vendored

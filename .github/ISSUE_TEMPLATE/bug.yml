@@ -1,0 +1,60 @@
+name: Bug Report
+description: Report a bug with Catspeak
+labels: ["bug", "high priority"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create this issue. If you need more immediate response times, get in contact on [Discord](https://discord.com/channels/724320164371497020/1007968808926982184).
+  - type: dropdown
+    id: version
+    attributes:
+      label: What version of Catspeak are you using?
+      multiple: false
+      options:
+        - "`4.0.0-beta`"
+        - "`3.4.0`"
+        - "`3.3.0`"
+        - "`3.2.0`"
+        - "`3.1.2`"
+        - "`3.1.1`"
+        - "`3.1.0`"
+        - "`3.0.2`"
+        - "`3.0.1`"
+        - "`3.0.0`"
+        - "`3.0.0-beta3`"
+        - "`3.0.0-beta2`"
+        - "`3.0.0-beta`"
+        - "`2.3.3`"
+        - "`2.3.2`"
+        - "`2.3.1`"
+        - "`2.3.0`"
+        - "`2.2.0`"
+        - "`2.1.1`"
+        - "`2.1.0`"
+        - "`2.0.0`"
+        - "`1.2.3`"
+        - "`1.2.2`"
+        - "`1.2.1`"
+        - "`1.2.0`"
+        - "`1.1.0`"
+        - "`1.0.1`"
+        - "`1.0.0`"
+        - "`0.3.0`"
+        - "`0.2.0`"
+        - "`0.1.0`"
+        - "unstable (`main`)"
+        - "forked/custom flavour"
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: What happened? What did you expect to happen? What are the steps to reproduce the bug?
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "**`(.@ w @.) b  <(Thanks!)`**"

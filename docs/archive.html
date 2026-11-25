@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="katsaii">
+    <link rel="shortcut icon" href="./cats-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modding language for GameMaker">
+    <title>Catspeak</title>
+    <style>
+      html { box-sizing : border-box }
+      *, *:before, *:after { box-sizing : inherit }
+
+      /* * { outline : red solid 1px } */
+
+      :root {
+        --c-bg : #f9f9f9;
+        --c-fg : #202424;
+        --c-fg-2 : #526666;
+        --c-fg-light : #cacecf;
+        --c-accent : #007ffd;
+
+        --f-mono : "Courier New", Courier, monospace;
+        --f-prop : "Segoe UI", 'Source Sans Pro', sans-serif;
+
+        font-size : 0.8em;
+      }
+
+      body {
+        margin : 2.5% 15%;
+        background-color : var(--c-bg);
+      }
+
+      .separator {
+        border-bottom : var(--c-fg-light) solid 1px;
+      }
+
+      .d-inline { display : inline }
+      .d-inline-block { display : inline-block }
+      .d-block { display : block }
+
+      .t-break { word-break: break-all }
+      .t-centre { text-align : center }
+      .t-balanced { text-wrap : balance }
+      .t-pre { white-space : pre }
+
+      .f-mono { font-family : var(--f-mono) }
+      .f-prop { font-family : var(--f-prop) }
+      .f-thick { font-weight : bold; }
+
+      .c-bg { color : var(--c-bg) }
+      .c-fg { color : var(--c-fg) }
+      .c-fg-2 { color : var(--c-fg-2) }
+      .c-accent { color : var(--c-accent) }
+
+      .blk-centre {
+        display : block;
+        margin-left : auto;
+        margin-right : auto;
+      }
+
+      a {
+        cursor : pointer;
+        color : var(--c-fg);
+        transition : color 0.25s;
+      }
+
+      a:hover { color : var(--c-accent) }
+
+      img { max-width : 100% }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        align-items: center;
+      }
+
+      .grid-centre {
+        justify-items : center;
+      }
+
+      .grid > article {
+        margin : 0.5rem;
+        padding : 0.5rem;
+      }
+
+      .grid > article > img {
+        height : 10rem;
+        width : auto;
+      }
+
+      .grid > article p {
+        font-size : 1.25rem;
+        font-weight : 200;
+      }
+
+      .grid > article p b {
+        font-weight : 400;
+      }
+
+      @media screen and (max-width : 9in) {
+        body { margin : 1rem 2rem }
+        .grid { padding : 0 }
+      }
+
+      ul { text-align : left }
+
+      .code {
+        padding : 0.75rem;
+        background-color : rgb(249, 243, 241);
+        outline : rgb(49, 49, 49, 27%) solid 1px;
+        border-radius : 10px;
+        font-family : var(--f-mono) !important;
+        white-space : pre;
+        overflow-x : scroll;
+      }
+
+      .nav {
+        display : flex;
+        flex-wrap : wrap;
+        flex-direction : column;
+        align-content : center;
+        justify-content : space-evenly;
+      }
+
+      .nav > article {
+        padding : 0.5rem;
+        font-weight : bold;
+        font-size : 1.5em;
+        font-family : var(--f-mono);
+      }
+
+      .code * { color : var(--c-fg) }
+
+      .header > code {
+        font-size : 2em;
+        margin : auto;
+        width : fit-content;
+        display : block;
+        color : var(--c-fg-2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <article class="header">
+        <img class="blk-centre" src="cats-title.svg">
+        <code>Documentation Archive <sub>(<a href="./index.html">&lt;-home</a>)</sub></code>
+        <br>
+        <div class="nav">
+          <article>
+            <a href="./3.2.0/hom-welcome.html">3.2.0</a>
+          </article>
+          <article>
+            <a href="./3.1.2/hom-welcome.html">3.1.2</a>
+          </article>
+          <article>
+            <a href="./3.1.1/hom-welcome.html">3.1.1</a>
+          </article>
+          <article>
+            <a href="./3.1.0/hom-welcome.html">3.1.0</a>
+          </article>
+          <article>
+            <a href="./3.0.2/hom-welcome.html">3.0.2</a>
+          </article>
+          <article>
+            <a href="./3.0.0/hom-welcome.html">3.0.0</a>
+          </article>
+          <article>
+            <a href="./2.3.3/index.html">2.3.3</a>
+          </article>
+          <article>
+            <a href="./2.3.1/index.html">2.3.1</a>
+          </article>
+          <article>
+            <a href="./2.3.0/index.html">2.3.0</a>
+          </article>
+        </div>
+      </article>
+    </div>
+  </body>
+</html>

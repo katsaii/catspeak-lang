@@ -1,0 +1,25 @@
+name: Feature Request
+description: Request a new feature for Catspeak
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create this issue. If you need more immediate response times, get in contact on [Discord](https://discord.com/channels/724320164371497020/1007968808926982184).
+  - type: textarea
+    id: what-feature
+    attributes:
+      label: What is your feature request? 
+      placeholder: What is your feature request? Is your feature request related to a problem? Have you managed to find a work around?
+    validations:
+      required: true
+  - type: textarea
+    id: what-detail
+    attributes:
+      label: Please describe in detail how you expect this new feature to behave.
+      placeholder: The stage is all yours! Make a convincing argument.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: "**`(.@ w @.) b  <(Thanks!)`**"
